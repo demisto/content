@@ -19,7 +19,7 @@ https://docs.google.com/document/d/1wETtBEKg37PHNU8tYeB56M1LE314ux086z3HFeF_cX0
 HelloWorld API
 --------------
 
-The HelloWorld API is a simple API that shows a realistic use case for an XSOAR
+The HelloWorld API is a simple API that shows a realistic use case for a Cortex XSOAR
 integration. It's actually a real API that is available to the following URL:
 https://soar.mastersofhack.com - if you need an API Key to test it out please
 reach out to your Cortex XSOAR contacts.
@@ -28,7 +28,7 @@ This API has a few basic functions:
 - Alerts: the endpoint returns mocked alerts and allows you to search based on
 a number of parameters, such as state (ACTIVE or CLOSED), type, timestamp. It
 can also return a single alert by ID. This is used to create new Alerts in
-XSOAR by using the ``fetch-alerts`` command, which is by default invoked
+Cortex XSOAR by using the ``fetch-alerts`` command, which is by default invoked
 every minute.
 There is also an endpoint that allows to retrieve additional details about a
 specific alert by ID, and one to change the alert status to "CLOSED" once
@@ -38,9 +38,9 @@ it has been resolved.
 domain respectively, a WHOIS lookup of the entity as well as a reputation score
 (from 0 to 100) that is used to determine whether the entity is malicious. This
 endpoint is called by XSOAR reputation commands ``ip`` and ``domain`` that
-are run automatically every time an indicator is extracted in XSOAR. As a best
+are run automatically every time an indicator is extracted in Cortex XSOAR. As a best
 practice of design, it is important to map and document the mapping between
-a score in the original API format (0 to 100 in this case) to a score in XSOAR
+a score in the original API format (0 to 100 in this case) to a score in Cortex XSOAR
 format (0 to 3). This score is called ``DBotScore``, and is returned in the
 context to allow automated handling of indicators based on their reputation.
 More information: https://xsoar.pan.dev/docs/integrations/dbot
@@ -81,18 +81,18 @@ Imports
 -------
 
 Here you can import Python module you need for your integration. If you need
-a module that is not part of the default XSOAR Docker images, you can add
+a module that is not part of the default Cortex XSOAR Docker images, you can add
 a custom one. More details: https://xsoar.pan.dev/docs/integrations/docker
 
-There are also internal imports that are used by XSOAR:
+There are also internal imports that are used by Cortex XSOAR:
 - demistomock (imported as demisto): allows your code to work offline for
 testing. The actual ``demisto`` module is provided at runtime when the
-code runs in XSOAR.
+code runs in Cortex XSOAR.
 - CommonServerPython.py: contains a set of helper functions, base classes
 and other useful components that will make your integration code easier
 to maintain.
 - CommonServerUserPython.py: includes a set of user defined commands that
-are specific to an XSOAR installation. Do not use it for integrations that
+are specific to a Cortex XSOAR installation. Do not use it for integrations that
 are meant to be shared externally.
 
 These imports are automatically loaded at runtime within the XSOAR script
@@ -119,7 +119,7 @@ Note that the Client class should NOT contain any Cortex XSOAR specific code,
 i.e. it shouldn't use anything in the ``demisto`` class (functions such as
 ``demisto.args()`` or ``demisto.results()`` or even ``return_results`` and
 ``return_error``.
-You will use the Command Functions to handle XSOAR inputs and outputs.
+You will use the Command Functions to handle Cortex XSOAR inputs and outputs.
 
 When calling an API, you should use the ``_http.request()`` method and you
 can return the raw data to the calling function (usually a Command function).
@@ -135,7 +135,7 @@ Helper Functions
 
 Helper functions are usually used as utility functions that are used by several
 command functions throughout your code. For example they map arguments to types
-or convert severity formats from integration-specific to XSOAR.
+or convert severity formats from integration-specific to Cortex XSOAR.
 Many helper functions are already defined in ``CommonServerPython.py`` and are
 often very handy.
 
@@ -143,7 +143,7 @@ often very handy.
 Command Functions
 -----------------
 
-Command functions perform the mapping between XSOAR inputs and outputs to the
+Command functions perform the mapping between Cortex XSOAR inputs and outputs to the
 Client class functions inputs and outputs. As a best practice, they shouldn't
 contain calls to ``demisto.args()``, ``demisto.results()``, ``return_error``
 and ``demisto.command()`` as those should be handled through the ``main()``
@@ -151,7 +151,7 @@ function.
 However, in command functions, use ``demisto`` or ``CommonServerPython.py``
 artifacts, such as ``demisto.debug()`` or the ``CommandResults`` class and the
 ``Common.*`` classes.
-Usually you will have one command function for every specific XSOAR command
+Usually you will have one command function for every specific Cortex XSOAR command
 you want to implement in your integration, plus ``test-module``,
 ``fetch-alerts`` and ``fetch-indicators``(if the latter two are supported
 by your integration). Each command function should invoke one specific function
@@ -161,7 +161,7 @@ Command functions, when invoked through an XSOAR command usually return data
 using the ``CommandResults`` class, that is then passed to ``return_results()``
 in the ``main()`` function.
 ``return_results()`` is defined in ``CommonServerPython.py`` to return
-the data to XSOAR. ``return_results()`` actually wraps ``demisto.results()``.
+the data to Cortex XSOAR. ``return_results()`` actually wraps ``demisto.results()``.
 You should never use ``demisto.results()`` directly.
 
 Sometimes you will need to return values in a format that is not compatible
@@ -183,7 +183,7 @@ to ``return_results()`` using the ``readable_output`` argument, or the
 ``return_results()`` function will call ``tableToMarkdown()`` automatically for
 you.
 
-- Context Output: this is the machine readable data, JSON based, that XSOAR can
+- Context Output: this is the machine readable data, JSON based, that Cortex XSOAR can
 parse and manage in the Playbooks or Alert's War Room. The Context Output
 fields should be defined in your integration YML file and is important during
 the design phase. Make sure you define the format and follow best practices.
@@ -583,7 +583,7 @@ def say_hello_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     # INTEGRATION DEVELOPER TIP
     # In this case 'name' is an argument set in the HelloWorld.yml file as mandatory,
-    # so the null check here as XSOAR will always check it before your code is called.
+    # so the null check here as Cortex XSOAR will always check it before your code is called.
     # Although it's not mandatory to check, you are welcome to do so.
 
     name = args.get('name', None)
@@ -621,7 +621,7 @@ def fetch_alerts(client: Client, max_results: int, last_run: Dict[str, int],
 
     This function has to implement the logic of making sure that alerts are
     fetched only onces and no alerts are missed. By default it's invoked by
-    XSOAR every minute. It will use last_run to save the timestamp of the last
+    Cortex XSOAR every minute. It will use last_run to save the timestamp of the last
     alert it processed. If last_run is not provided, it should use the
     integration parameter first_fetch_time to determine when to start fetching
     the first time.
@@ -660,7 +660,7 @@ def fetch_alerts(client: Client, max_results: int, last_run: Dict[str, int],
         A tuple containing two elements:
             next_run (``Dict[str, int]``): Contains the timestamp that will be
                     used in ``last_run`` on the next fetch.
-            alerts (``List[dict]``): List of alerts that will be created in XSOAR
+            alerts (``List[dict]``): List of alerts that will be created in Cortex XSOAR
 
     :rtype: ``Tuple[Dict[str, int], List[dict]]``
     """
@@ -716,9 +716,9 @@ def fetch_alerts(client: Client, max_results: int, last_run: Dict[str, int],
         # handle the conversion.
         # rawJSON: everything else is packed in a string via json.dumps()
         # and is included in rawJSON. It will be used later for classification
-        # and mapping inside XSOAR.
+        # and mapping inside Cortex XSOAR.
         # severity: it's not mandatory, but is recommended. It must be
-        # converted to XSOAR specific severity (int 1 to 4)
+        # converted to Cortex XSOAR specific severity (int 1 to 4)
         # Note that there are other fields commented out here. You can do some
         # mapping of fields (either out of the box fields, like "details" and
         # "type") or custom fields (like "helloworldid") directly here in the
@@ -730,7 +730,7 @@ def fetch_alerts(client: Client, max_results: int, last_run: Dict[str, int],
             # 'details': alert['name'],
             'occurred': timestamp_to_datestring(alert_created_time_ms),
             'rawJSON': json.dumps(alert),
-            # 'type': 'Hello World Alert',  # Map to a specific XSOAR alert Type
+            # 'type': 'Hello World Alert',  # Map to a specific Cortex XSOAR alert Type
             'severity': convert_to_demisto_severity(alert.get('severity', 'Low')),
             # 'CustomFields': {  # Map specific XSOAR Custom Fields
             #     'helloworldid': alert.get('alert_id'),
@@ -765,7 +765,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
     :type default_threshold: ``int``
     :param default_threshold:
         default threshold to determine whether an IP is malicious
-        if threshold is not specified in the XSOAR arguments
+        if threshold is not specified in the Cortex XSOAR arguments
 
     :return:
         A ``CommandResults`` object that is then passed to ``return_results``,
@@ -776,7 +776,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
 
     # INTEGRATION DEVELOPER TIP
     # Reputation commands usually support multiple inputs (i.e. arrays), so
-    # they can be invoked once in XSOAR. In this case the API supports a single
+    # they can be invoked once in Cortex XSOAR. In this case the API supports a single
     # IP at a time, so we will cycle this for all the members of the array.
     # We use argToList(), implemented in CommonServerPython.py to automatically
     # return a list of a single element even if the provided input is a scalar.
@@ -815,7 +815,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
                 entity_b_type=FeedIndicatorType.URL,
                 brand='HelloWorld'))
 
-        # HelloWorld score to XSOAR reputation mapping
+        # HelloWorld score to Cortex XSOAR reputation mapping
         # See: https://xsoar.pan.dev/docs/integrations/dbot
         # We are using Common.DBotScore as macros to simplify
         # the mapping.
@@ -910,7 +910,7 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
     :type default_threshold: ``int``
     :param default_threshold:
         default threshold to determine whether an domain is malicious
-        if threshold is not specified in the XSOAR arguments
+        if threshold is not specified in the Cortex XSOAR arguments
 
     :return:
         A ``CommandResults`` object that is then passed to ``return_results``,
@@ -927,7 +927,7 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
     # return a list of a single element even if the provided input is a scalar.
 
     domains = argToList(args.get('domain'))
-    if len(domains) == 0:
+    if not domains:
         raise ValueError('domain(s) not specified')
 
     threshold = int(args.get('threshold', default_threshold))
@@ -1360,19 +1360,22 @@ def main() -> None:
     :rtype:
     """
 
-    api_key = demisto.params().get('apikey')
+    params = demisto.params()
+    args = demisto.args()
+
+    api_key = params.get('apikey')
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    base_url = urljoin(params['url'], '/api/v1')
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_certificate = not params.get('insecure', False)
 
     # How much time before the first fetch to retrieve alerts
     first_fetch_time = arg_to_datetime(
-        arg=demisto.params().get('first_fetch', '3 days'),
+        arg=params.get('first_fetch', '3 days'),
         arg_name='First fetch time',
         required=True
     )
@@ -1382,7 +1385,7 @@ def main() -> None:
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
+    proxy = params.get('proxy', False)
 
     # INTEGRATION DEVELOPER TIP
     # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
@@ -1408,13 +1411,13 @@ def main() -> None:
 
         elif demisto.command() == 'fetch-alerts':
             # Set and define the fetch alerts command to run after activated via integration settings.
-            alert_status = demisto.params().get('alert_status', None)
-            alert_type = demisto.params().get('alert_type', None)
-            min_severity = demisto.params().get('min_severity', None)
+            alert_status = params.get('alert_status', None)
+            alert_type = params.get('alert_type', None)
+            min_severity = params.get('min_severity', None)
 
             # Convert the argument to an int using helper function or set to MAX_ALERTS_TO_FETCH
             max_results = arg_to_number(
-                arg=demisto.params().get('max_fetch'),
+                arg=params.get('max_fetch'),
                 arg_name='max_fetch',
                 required=False
             )
@@ -1438,33 +1441,33 @@ def main() -> None:
             demisto.alerts(alerts)
 
         elif demisto.command() == 'ip':
-            default_threshold_ip = int(demisto.params().get('threshold_ip', '65'))
-            return_results(ip_reputation_command(client, demisto.args(), default_threshold_ip))
+            default_threshold_ip = int(params.get('threshold_ip', '65'))
+            return_results(ip_reputation_command(client, args, default_threshold_ip))
 
         elif demisto.command() == 'domain':
-            default_threshold_domain = int(demisto.params().get('threshold_domain', '65'))
-            return_results(domain_reputation_command(client, demisto.args(), default_threshold_domain))
+            default_threshold_domain = int(params.get('threshold_domain', '65'))
+            return_results(domain_reputation_command(client, args, default_threshold_domain))
 
         elif demisto.command() == 'helloworld-say-hello':
-            return_results(say_hello_command(client, demisto.args()))
+            return_results(say_hello_command(client, args))
 
         elif demisto.command() == 'helloworld-search-alerts':
-            return_results(search_alerts_command(client, demisto.args()))
+            return_results(search_alerts_command(client, args))
 
         elif demisto.command() == 'helloworld-get-alert':
-            return_results(get_alert_command(client, demisto.args()))
+            return_results(get_alert_command(client, args))
 
         elif demisto.command() == 'helloworld-update-alert-status':
-            return_results(update_alert_status_command(client, demisto.args()))
+            return_results(update_alert_status_command(client, args))
 
         elif demisto.command() == 'helloworld-scan-start':
-            return_results(scan_start_command(client, demisto.args()))
+            return_results(scan_start_command(client, args))
 
         elif demisto.command() == 'helloworld-scan-status':
-            return_results(scan_status_command(client, demisto.args()))
+            return_results(scan_status_command(client, args))
 
         elif demisto.command() == 'helloworld-scan-results':
-            return_results(scan_results_command(client, demisto.args()))
+            return_results(scan_results_command(client, args))
 
     # Log exceptions and return errors
     except Exception as e:
