@@ -5,7 +5,7 @@ name: VxStream
 deprecated: true
 display: CrowdStrike Falcon Sandbox (Deprecated)
 category: Forensics & Malware Analysis
-description: Deprecated. Use Crowdstrike Falccon Sandbox V2 instead.
+description: Deprecated. Use CrowdStrike Falcon Sandbox V2 instead.
 configuration:
 - display: Server URL (e.g. https://216.3.128.82)
   name: serverUrl
