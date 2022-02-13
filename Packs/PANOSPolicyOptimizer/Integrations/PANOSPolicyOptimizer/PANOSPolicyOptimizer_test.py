@@ -122,7 +122,7 @@ def test_querying_invalid_dynamic_address_group_response(mocker, client):
         - querying for a specific dynamic group.
 
     Then
-        - a valid error response is returned.
+        - an entry indicating that no dynamic address group was found.
     """
     mocker.patch.object(client, 'token_generator', return_value='123')
     mocker.patch.object(client.session, 'post')
