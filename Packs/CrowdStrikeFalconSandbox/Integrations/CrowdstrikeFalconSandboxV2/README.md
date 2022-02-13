@@ -26,7 +26,7 @@ Obtain an API key by:
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | API Key |  | False |
+    | API Key |  | True |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -60,7 +60,7 @@ Obtain an API key by:
 The maximum file upload size is 100 MB.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI as part of an automation or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cs-falcon-sandbox-scan
@@ -77,7 +77,7 @@ Gets summary information for a given MD5, SHA1, or SHA256 and all the reports ge
 | --- | --- | --- |
 | file | A comma-separated list of file hashes (MD5, SHA1, or SHA256). | Required | 
 | polling | Whether to poll until there is at least one result. Possible values are: true, false. | Optional | 
-| JobID | The JobID to check the state of when polling.                                         | Optional | 
+| JobID | The JobID to check the state of when polling. | Optional | 
 
 
 #### Context Output
@@ -89,12 +89,12 @@ Gets summary information for a given MD5, SHA1, or SHA256 and all the reports ge
 | CrowdStrike.Report.environment_description | String | The environment description. | 
 | CrowdStrike.Report.size | Number | The file size. | 
 | CrowdStrike.Report.type | String | The file type. | 
-| CrowdStrike.Report.type_short | String |  | 
-| CrowdStrike.Report.target_url | String |  | 
+| CrowdStrike.Report.type_short | String | The short description of the file type. | 
+| CrowdStrike.Report.target_url | String | The target url. | 
 | CrowdStrike.Report.state | String | The report state. | 
-| CrowdStrike.Report.error_type | String |  | 
-| CrowdStrike.Report.error_origin | String |  | 
-| CrowdStrike.Report.submit_name | String | The name of the file when submitted. | 
+| CrowdStrike.Report.error_type | String | The error type. | 
+| CrowdStrike.Report.error_origin | String | The error origin. | 
+| CrowdStrike.Report.submit_name | String | The name of the file when submitted | 
 | CrowdStrike.Report.md5 | String | The MD5 hash of the file. | 
 | CrowdStrike.Report.sha1 | String | The SHA1 hash of the file. | 
 | CrowdStrike.Report.sha256 | String | The SHA256 hash of the file. | 
@@ -103,21 +103,21 @@ Gets summary information for a given MD5, SHA1, or SHA256 and all the reports ge
 | CrowdStrike.Report.imphash | String | The imphash hash of the file. | 
 | CrowdStrike.Report.av_detect | Number | The AV Multiscan range, for example 50-70 \(min 0, max 100\). | 
 | CrowdStrike.Report.vx_family | String | The file malware family. | 
-| CrowdStrike.Report.url_analysis | Boolean |  | 
-| CrowdStrike.Report.analysis_start_time | Date |  | 
+| CrowdStrike.Report.url_analysis | Boolean | Whether this report is url analysis. | 
+| CrowdStrike.Report.analysis_start_time | Date | The start time of the analysis. | 
 | CrowdStrike.Report.threat_score | Number | The file threat score. | 
 | CrowdStrike.Report.interesting | Boolean | Whether the file was found to be interesting. | 
 | CrowdStrike.Report.threat_level | Number | The file threat level. | 
 | CrowdStrike.Report.verdict | String | The file verdict. | 
-| CrowdStrike.Report.total_network_connections | Number |  | 
-| CrowdStrike.Report.total_processes | Number |  | 
-| CrowdStrike.Report.total_signatures | Number |  | 
+| CrowdStrike.Report.total_network_connections | Number | The total number of network connections. | 
+| CrowdStrike.Report.total_processes | Number | The total number of processes. | 
+| CrowdStrike.Report.total_signatures | Number | The total number of signatures. | 
 | CrowdStrike.Report.file_metadata | Object | The file metadata. | 
 | CrowdStrike.Report.submissions.submission_id | String | The submission ID. | 
-| CrowdStrike.Report.submissions.filename | String |  | 
-| CrowdStrike.Report.submissions.url | String |  | 
-| CrowdStrike.Report.submissions.created_at | Date |  | 
-| CrowdStrike.Report.network_mode | String |  | 
+| CrowdStrike.Report.submissions.filename | String | The name of the file. | 
+| CrowdStrike.Report.submissions.url | String | The url. | 
+| CrowdStrike.Report.submissions.created_at | Date | When the submission was created. | 
+| CrowdStrike.Report.network_mode | String | The network mode. | 
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.SHA1 | string | The SHA1 hash of the file. | 
 | File.MD5 | string | The MD5 hash of the file. | 
@@ -1079,7 +1079,7 @@ Submits a file from the investigation to the analysis server.
 | comment | Optional comment text that may be associated with the submission/sample (Note: you can use #tags). | Optional | 
 | custom_cmd_line | Optional command line that should be passed to the analysis file. | Optional | 
 | custom_run_time | Optional runtime duration (in seconds). | Optional | 
-| submit_name | Optional 'submission name' field that will be used for file type detection and analysis. Ignored unless url contains a file | Optional | 
+| submit_name | Optional 'submission name' field that will be used for file type detection and analysis. Ignored unless url contains a file. | Optional | 
 | priority | Optional priority value between 1 (lowest) and 10 (highest). By default all samples run with highest priority. Possible values are: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10. | Optional | 
 | document_password | Optional document password used to fill in Adobe/Office password prompts. | Optional | 
 | environment_variable | Optional system environment value. The value is provided in the format name=value. | Optional | 
@@ -1095,14 +1095,14 @@ Submits a file from the investigation to the analysis server.
 | CrowdStrike.Submit.sha256 | String | The SHA256 hash of the file. | 
 | CrowdStrike.Report.job_id | String | The report job ID. | 
 | CrowdStrike.Report.environment_id | Number | The report environment ID. | 
-| CrowdStrike.Report.environment_description | String |  | 
+| CrowdStrike.Report.environment_description | String | The environment description. | 
 | CrowdStrike.Report.size | Number | The file size. | 
 | CrowdStrike.Report.type | String | The file type. | 
-| CrowdStrike.Report.type_short | String |  | 
-| CrowdStrike.Report.target_url | String |  | 
+| CrowdStrike.Report.type_short | String | The short description of the file type. | 
+| CrowdStrike.Report.target_url | String | The target url. | 
 | CrowdStrike.Report.state | String | The report state. | 
-| CrowdStrike.Report.error_type | String |  | 
-| CrowdStrike.Report.error_origin | String |  | 
+| CrowdStrike.Report.error_type | String | The error type. | 
+| CrowdStrike.Report.error_origin | String | The error origin. | 
 | CrowdStrike.Report.submit_name | String | The name of the file when submitted. | 
 | CrowdStrike.Report.md5 | String | The MD5 hash of the file. | 
 | CrowdStrike.Report.sha1 | String | The SHA1 hash of the file. | 
@@ -1112,21 +1112,21 @@ Submits a file from the investigation to the analysis server.
 | CrowdStrike.Report.imphash | String | The imphash hash of the file. | 
 | CrowdStrike.Report.av_detect | Number | The AV Multiscan range, for example 50-70 \(min 0, max 100\). | 
 | CrowdStrike.Report.vx_family | String | The file malware family. | 
-| CrowdStrike.Report.url_analysis | Boolean |  | 
-| CrowdStrike.Report.analysis_start_time | Date |  | 
+| CrowdStrike.Report.url_analysis | Boolean | Whether this report is url analysis. | 
+| CrowdStrike.Report.analysis_start_time | Date | The start time of the analysis. | 
 | CrowdStrike.Report.threat_score | Number | The file threat score. | 
 | CrowdStrike.Report.interesting | Boolean | Whether the file was found to be interesting. | 
 | CrowdStrike.Report.threat_level | Number | The file threat level. | 
 | CrowdStrike.Report.verdict | String | The file verdict. | 
-| CrowdStrike.Report.total_network_connections | Number |  | 
-| CrowdStrike.Report.total_processes | Number |  | 
-| CrowdStrike.Report.total_signatures | Number |  | 
+| CrowdStrike.Report.total_network_connections | Number | The total number of network connections. | 
+| CrowdStrike.Report.total_processes | Number | The total number of processes. | 
+| CrowdStrike.Report.total_signatures | Number | The total number of signatures. | 
 | CrowdStrike.Report.file_metadata | Object | The file metadata. | 
 | CrowdStrike.Report.submissions.submission_id | String | The submission ID | 
-| CrowdStrike.Report.submissions.filename | String |  | 
-| CrowdStrike.Report.submissions.url | String |  | 
-| CrowdStrike.Report.submissions.created_at | Date |  | 
-| CrowdStrike.Report.network_mode | String |  | 
+| CrowdStrike.Report.submissions.filename | String | The name of the file. | 
+| CrowdStrike.Report.submissions.url | String | The url. | 
+| CrowdStrike.Report.submissions.created_at | Date | When the submission was created. | 
+| CrowdStrike.Report.network_mode | String | The network mode. | 
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.SHA1 | string | The SHA1 hash of the file | 
 | File.MD5 | string | The MD5 hash of the file. | 
@@ -1149,30 +1149,30 @@ Searches the database using the Falcon Sandbox search syntax.
 `cs-falcon-sandbox-search`
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                      | **Required** |
-|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| query             | The Falcon Sandbox query syntax, for example url:google,host:95.181.53.78. This argument integrates all other arguments into one and cannot be given along with the other arguments.                                                                                                                                                                                 | Optional | 
-| filename          | The file name, for example invoice.exe.                                                                                                                                                                                                                                                                                                                              | Optional | 
-| filetype          | The file type. Available options: 64bits, android, assembly, bat, cmd, com, csv, data, doc, docx, elf, empty, executable, flash, html, hwp, hwpx, img, iqy, java, javascript, library, lnk, macho, mshelp, msi, native, neexe, office, outlook, pdf, pedll, peexe, perl, ppt, pptx, ps, pub, python, rtf, script, sct, sh, svg, text, url, vbe, vbs, wsf, xls, xlsx. | Optional | 
-| filetype_desc     | The file type description, for example PE32 executable.                                                                                                                                                                                                                                                                                                              | Optional | 
-| env_id            | The environment ID.                                                                                                                                                                                                                                                                                                                                                  | Optional | 
-| country           | The country (3 digit ISO), for example swe.                                                                                                                                                                                                                                                                                                                          | Optional | 
-| verdict           | The search result verdict. Available options: Whitelisted, NoVerdict, NoSpecificThreat, Suspicious, Malicious. Possible values are: Whitelisted, NoVerdict, NoSpecificThreat, Suspicious, Malicious.                                                                                                                                                                 | Optional | 
-| av_detect         | The AV Multiscan range, for example 50-70 (min 0, max 100).                                                                                                                                                                                                                                                                                                          | Optional | 
-| vx_family         | The AV Family Substring, for example nemucod.                                                                                                                                                                                                                                                                                                                        | Optional | 
-| limit             | The max number of search results to return. Default is 10.                                                                                                                                                                                                                                                                                                           | Optional | 
-| tag               | The hashtag, for example ransomware.                                                                                                                                                                                                                                                                                                                                 | Optional | 
-| date_from         | The date from in format 'YYYY-MM-DD HH:MM', for example 2018-09-28 15:30.                                                                                                                                                                                                                                                                                            | Optional | 
-| date_to           | The date to in format 'YYYY-MM-DD HH:MM', for example 2018-09-28 15:30.                                                                                                                                                                                                                                                                                              | Optional | 
-| port              | The port, for example 8080.                                                                                                                                                                                                                                                                                                                                          | Optional | 
-| host              | The host, for example 192.168.0.1.                                                                                                                                                                                                                                                                                                                                   | Optional | 
-| domain            | The domain, for example checkip.dyndns.org.                                                                                                                                                                                                                                                                                                                          | Optional | 
-| url               | The HTTP request substring, for example google.                                                                                                                                                                                                                                                                                                                      | Optional | 
-| similar_to        | Similar samples, for example &lt;sha256&gt;.                                                                                                                                                                                                                                                                                                                         | Optional | 
-| context           | Sample context, for example &lt;sha256&gt;.                                                                                                                                                                                                                                                                                                                          | Optional | 
-| imp_hash          | The import hash.                                                                                                                                                                                                                                                                                                                                                     | Optional | 
-| ssdeep            | The SSDeep hash.                                                                                                                                                                                                                                                                                                                                                     | Optional | 
-| authentihash      | The file authentihash.                                                                                                                                                                                                                                                                                                                                               | Optional | 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | The Falcon Sandbox query syntax, for example url:google,host:95.181.53.78. This argument integrates all other arguments into one and cannot be given along with the other arguments. | Optional | 
+| filename | The file name, for example invoice.exe. | Optional | 
+| filetype | The file type. Available options: 64bits, android, assembly, bat, cmd, com, csv, data, doc, docx, elf, empty, executable, flash, html, hwp, hwpx, img, iqy, java, javascript, library, lnk, macho, mshelp, msi, native, neexe, office, outlook, pdf, pedll, peexe, perl, ppt, pptx, ps, pub, python, rtf, script, sct, sh, svg, text, url, vbe, vbs, wsf, xls, xlsx. | Optional | 
+| filetype_desc | The file type description, for example PE32 executable. | Optional | 
+| env_id | The environment ID. | Optional | 
+| country | The country (3 digit ISO), for example swe. | Optional | 
+| verdict | The search result verdict. Available options: Whitelisted, NoVerdict, NoSpecificThreat, Suspicious, Malicious. Possible values are: Whitelisted, NoVerdict, NoSpecificThreat, Suspicious, Malicious. | Optional | 
+| av_detect | The AV Multiscan range, for example 50-70 (min 0, max 100). | Optional | 
+| vx_family | The AV Family Substring, for example nemucod. | Optional | 
+| limit | The max number of search results to return. Default is 10. | Optional | 
+| tag | The hashtag, for example ransomware. | Optional | 
+| date_from | The date from in format 'YYYY-MM-DD HH:MM', for example 2018-09-28 15:30. | Optional | 
+| date_to | The date to in format 'YYYY-MM-DD HH:MM', for example 2018-09-28 15:30. | Optional | 
+| port | The port, for example 8080. | Optional | 
+| host | The host, for example 192.168.0.1. | Optional | 
+| domain | The domain, for example checkip.dyndns.org. | Optional | 
+| url | The HTTP request substring, for example google. | Optional | 
+| similar_to | Similar samples, for example &lt;sha256&gt;. | Optional | 
+| context | Sample context, for example &lt;sha256&gt;. | Optional | 
+| imp_hash | The import hash. | Optional | 
+| ssdeep | The SSDeep hash. | Optional | 
+| authentihash | The file authentihash. | Optional | 
 
 
 #### Context Output
@@ -1182,24 +1182,24 @@ Searches the database using the Falcon Sandbox search syntax.
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.Name | string | The file submission name. | 
 | File.MalwareFamily | string | The file family classification. | 
-| File.Extension | string |  | 
+| File.Extension | string | The file extension. | 
 | File.MalwareFamily | String | The malware family associated with the file. | 
-| CrowdStrike.Search.search_terms.id | String |  | 
-| CrowdStrike.Search.search_terms.value | String |  | 
-| CrowdStrike.Search.count | Number |  | 
-| CrowdStrike.Search.result.verdict | String |  | 
-| CrowdStrike.Search.result.av_detect | String |  | 
-| CrowdStrike.Search.result.threat_score | Number |  | 
-| CrowdStrike.Search.result.vx_family | String |  | 
-| CrowdStrike.Search.result.job_id | String |  | 
-| CrowdStrike.Search.result.sha256 | String |  | 
-| CrowdStrike.Search.result.environment_id | Number |  | 
-| CrowdStrike.Search.result.analysis_start_time | Date |  | 
-| CrowdStrike.Search.result.submit_name | String |  | 
-| CrowdStrike.Search.result.environment_description | String |  | 
-| CrowdStrike.Search.result.size | Number |  | 
-| CrowdStrike.Search.result.type | String |  | 
-| CrowdStrike.Search.result.type_short | String |  | 
+| CrowdStrike.Search.search_terms.id | String | The id of the search term. | 
+| CrowdStrike.Search.search_terms.value | String | The value of the search term. | 
+| CrowdStrike.Search.count | Number | The number of results for this search. | 
+| CrowdStrike.Search.result.verdict | String | The file verdict. | 
+| CrowdStrike.Search.result.av_detect | String | The AV Multiscan range, for example 50-70 \(min 0, max 100\). | 
+| CrowdStrike.Search.result.threat_score | Number | The file threat score. | 
+| CrowdStrike.Search.result.vx_family | String | The file malware family. | 
+| CrowdStrike.Search.result.job_id | String | The JobID of the result. | 
+| CrowdStrike.Search.result.sha256 | String | The sha256 hash of the file. | 
+| CrowdStrike.Search.result.environment_id | Number | The environment ID. | 
+| CrowdStrike.Search.result.analysis_start_time | Date | The start time of the analysis. | 
+| CrowdStrike.Search.result.submit_name | String | The name of the file. | 
+| CrowdStrike.Search.result.environment_description | String | The environment description. | 
+| CrowdStrike.Search.result.size | Number | The size of the file. | 
+| CrowdStrike.Search.result.type | String | The file type. | 
+| CrowdStrike.Search.result.type_short | String | The short description of the file type. | 
 
 #### Command example
 ```!cs-falcon-sandbox-search filename=sample.pdf```
@@ -1644,21 +1644,6 @@ Searches the database using the Falcon Sandbox search syntax.
                 "vx_family": null
             },
             {
-                "analysis_start_time": "2018-11-22 20:24:37",
-                "av_detect": "0",
-                "environment_description": "Windows 7 64 bit",
-                "environment_id": 120,
-                "job_id": "5bf702607ca3e16165774af7",
-                "sha256": "9f49c971051e7026314e979e3e1f06552a52f44bd56fe4eb9cf7867f82c8755f",
-                "size": 6782390,
-                "submit_name": "sample.pdf",
-                "threat_score": null,
-                "type": null,
-                "type_short": "pdf",
-                "verdict": "no specific threat",
-                "vx_family": null
-            },
-            {
                 "analysis_start_time": "2018-10-17 08:14:46",
                 "av_detect": "67",
                 "environment_description": "Windows 7 64 bit",
@@ -1813,20 +1798,93 @@ Searches the database using the Falcon Sandbox search syntax.
     "File": [
         {
             "Extension": "pdf",
-            "JobID": "5f60f00aeac13102de2fce70",
-            "Name": "file",
-            "SHA256": "8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51",
-            "Size": 3028,
+            "JobID": "620587e270d21856e87f7164",
+            "MalwareFamily": "Trojan.PDF.Phishing",
+            "Name": "sample.pdf",
+            "SHA256": "9e8eb1889ec6b32a6074dd5b963c84fd27d7ba7f314ea997f3e3eb4a1ac70757",
+            "Size": 164833,
+            "av_detect": "61",
+            "environmentDescription": "Windows 7 32 bit",
+            "environmentId": 100,
+            "size": 164833,
+            "start_time": "2022-02-10 21:47:19",
+            "submitname": "sample.pdf",
+            "threatscore": 95,
+            "type": null,
+            "type_short": "pdf",
+            "verdict": "malicious",
+            "vx_family": "Trojan.PDF.Phishing"
+        },
+        {
+            "Extension": "pdf",
+            "JobID": "6204334534edcd3b4a77c57e",
+            "Name": "sample.pdf",
+            "SHA256": "05fd3790624f8eed569a244ea550231f173e9c697c85a8a762a1cdac156548c8",
+            "Size": 96456,
             "av_detect": "0",
-            "environmentDescription": "Static Analysis",
-            "environmentId": null,
-            "size": 3028,
-            "start_time": "2020-09-15T16:47:06+00:00",
-            "submitname": "file",
+            "environmentDescription": "Linux (Ubuntu 16.04, 64 bit)",
+            "environmentId": 300,
+            "size": 96456,
+            "start_time": "2022-02-09T21:33:57+00:00",
+            "submitname": "sample.pdf",
             "threatscore": null,
             "type": null,
             "type_short": "pdf",
-            "verdict": "whitelisted",
+            "verdict": null,
+            "vx_family": null
+        },
+        {
+            "Extension": "pdf",
+            "JobID": "620232a39f065a6af02c3ca3",
+            "Name": "sample.pdf",
+            "SHA256": "2834c221137f03516befdfb3fec545442bb77de3984f141212e4813da924e0c2",
+            "Size": 126204,
+            "av_detect": "0",
+            "environmentDescription": "Windows 7 32 bit",
+            "environmentId": 100,
+            "size": 126204,
+            "start_time": "2022-02-08 09:06:45",
+            "submitname": "sample.pdf",
+            "threatscore": null,
+            "type": null,
+            "type_short": "pdf",
+            "verdict": "no specific threat",
+            "vx_family": null
+        },
+        {
+            "Extension": "pdf",
+            "JobID": "6201302fba54b008a31228ef",
+            "Name": "sample.pdf",
+            "SHA256": "fb6dd79ebb7755eb5aeabf605e6a30e0de5090e4b3039c9b0337877f435c4d66",
+            "Size": 120719,
+            "av_detect": "0",
+            "environmentDescription": "Windows 7 32 bit",
+            "environmentId": 100,
+            "size": 120719,
+            "start_time": "2022-02-07 14:44:06",
+            "submitname": "sample.pdf",
+            "threatscore": null,
+            "type": null,
+            "type_short": "pdf",
+            "verdict": "no specific threat",
+            "vx_family": null
+        },
+        {
+            "Extension": "pdf",
+            "JobID": "61ae29f24e69ff77d566ab48",
+            "Name": "samplePdf.pdf",
+            "SHA256": "8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51",
+            "Size": 3506,
+            "av_detect": "0",
+            "environmentDescription": "Android Static Analysis",
+            "environmentId": 200,
+            "size": 3506,
+            "start_time": "2021-12-06 15:19:23",
+            "submitname": "samplePdf.pdf",
+            "threatscore": null,
+            "type": null,
+            "type_short": "pdf",
+            "verdict": "no specific threat",
             "vx_family": null
         },
         {
@@ -1883,660 +1941,6 @@ Searches the database using the Falcon Sandbox search syntax.
             "type_short": "pdf",
             "verdict": "malicious",
             "vx_family": "RDN/Generic.cf"
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "61043759e4ae00628e4757d9",
-            "Name": "sample.pdf",
-            "SHA256": "45d2de1252ebd402728b2cb810d8a9232a99e9887f75146d2e7d1d84d46fd360",
-            "Size": 561412,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 32 bit",
-            "environmentId": 100,
-            "size": 561412,
-            "start_time": "2021-07-30 17:31:11",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "60d3f3bb942da51feb3c77b5",
-            "Name": "Sample.pdf",
-            "SHA256": "b33d6fa9eac776c1ad07c406bacef7c9af8ce052a181a5801a0bffa1f24ebf1d",
-            "Size": 25138418,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 64 bit",
-            "environmentId": 120,
-            "size": 25138418,
-            "start_time": "2021-06-24 02:53:57",
-            "submitname": "Sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "60b8a59139899b32c2459c98",
-            "Name": "sample.pdf",
-            "SHA256": "7207460b6cf6e4965b7ab20bfadca652ab1629240781e49f7e783de8a9c31900",
-            "Size": 370299,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 64 bit",
-            "environmentId": 120,
-            "size": 370299,
-            "start_time": "2021-06-03 09:49:10",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5f29acffc8af093b787e92de",
-            "MalwareFamily": "Unavailable",
-            "Name": "Sample.pdf",
-            "SHA256": "4af3aa3c6afd3db86a65f191bd69306650e12475fd5611ccaec5519543276d5a",
-            "Size": 64532,
-            "av_detect": "2",
-            "environmentDescription": "Windows 7 32 bit",
-            "environmentId": 100,
-            "size": 64532,
-            "start_time": "2020-08-04 18:46:31",
-            "submitname": "Sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": "Unavailable"
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5f05c7c22ada7e11701edcc2",
-            "Name": "sample.pdf",
-            "SHA256": "02b0fcf5406a4cd1c816ea21bc25f6f0bcb5ae36b8da9526d3af6f5aab89b6de",
-            "Size": 394003,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 32 bit",
-            "environmentId": 100,
-            "size": 394003,
-            "start_time": "2020-07-08 15:39:36",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5eeb85187ce0e079d35424e7",
-            "Name": "sample.pdf",
-            "SHA256": "3714ef17995d459f9c81d99b77bdef830b24dbe28d893b2b4f1952279ca91aa6",
-            "Size": 5639308,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 32 bit",
-            "environmentId": 100,
-            "size": 5639308,
-            "start_time": "2020-06-18 15:15:46",
-            "submitname": "sample.pdf",
-            "threatscore": 29,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "suspicious",
-            "vx_family": null
-        },
-        {
-            "Extension": "64-bit elf",
-            "JobID": "5ed9f5ae2466ef104967e5bb",
-            "MalwareFamily": "Unavailable",
-            "Name": "sample.pdf",
-            "SHA256": "9d0bfa6a3c99f83bb6d9fb4822855c488dedd3a9a2fe19010e0e176437422b04",
-            "Size": 5732088,
-            "av_detect": "42",
-            "environmentDescription": "Linux (Ubuntu 16.04, 64 bit)",
-            "environmentId": 300,
-            "size": 5732088,
-            "start_time": "2020-06-05T07:35:10+00:00",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "64-bit elf",
-            "verdict": null,
-            "vx_family": "Unavailable"
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5ed884ca8989f014bf0a2867",
-            "Name": "Sample.pdf",
-            "SHA256": "91f5a577e0df35103c8bf6d5d5ea6690b97ed319570ba61688379d254fe9b1ed",
-            "Size": 159219,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 32 bit",
-            "environmentId": 100,
-            "size": 159219,
-            "start_time": "2020-06-04 05:21:19",
-            "submitname": "Sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5eb799e4098ed957b177f7f1",
-            "Name": "Sample.pdf",
-            "SHA256": "6822023d6f22b0f08f788c4528eed07c424603b1d68fc4fdb8ef8a9e6dfab3b6",
-            "Size": 69992,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 32 bit",
-            "environmentId": 100,
-            "size": 69992,
-            "start_time": "2020-05-10 06:06:38",
-            "submitname": "Sample.pdf",
-            "threatscore": 56,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "suspicious",
-            "vx_family": null
-        },
-        {
-            "Extension": "html",
-            "JobID": "5e4626f1428a7c6bd26e42e8",
-            "Name": "sample.pdf",
-            "SHA256": "a5963f78a27e384421e23ff54974094a34112b8eeec77615cd4235d7b82812c7",
-            "Size": 35270,
-            "av_detect": null,
-            "environmentDescription": "Windows 7 32 bit",
-            "environmentId": 100,
-            "size": 35270,
-            "start_time": "2020-02-14 04:50:05",
-            "submitname": "sample.pdf",
-            "threatscore": 35,
-            "type": null,
-            "type_short": "html",
-            "verdict": "suspicious",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5d8b17a8028838f13e7f6bf4",
-            "Name": "sample.pdf",
-            "SHA256": "7856688c84402d991250abf44d8bea30131837f11a69891fb9597816e8902f4e",
-            "Size": 189630,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 64 bit",
-            "environmentId": 120,
-            "size": 189630,
-            "start_time": "2019-09-25 07:30:35",
-            "submitname": "sample.pdf",
-            "threatscore": 45,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "suspicious",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5d8b1180028838e40e7f6bc1",
-            "MalwareFamily": "Unavailable",
-            "Name": "sample.pdf",
-            "SHA256": "ed511c548b99fe89836cbd9258e81a9f84df95bb8fc8cccc7958b2b5bd40a6e3",
-            "Size": 186763,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 64 bit",
-            "environmentId": 120,
-            "size": 186763,
-            "start_time": "2019-09-25 07:04:24",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": "Unavailable"
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5d7616ef0388386b85511900",
-            "Name": "sample.pdf",
-            "SHA256": "6d056be8945a60bc2f68c6468bd4f6b68a37f99e69090478e0f8f078b9763176",
-            "Size": 50790,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 32 bit",
-            "environmentId": 100,
-            "size": 50790,
-            "start_time": "2019-09-09 09:07:09",
-            "submitname": "sample.pdf",
-            "threatscore": 29,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "suspicious",
-            "vx_family": null
-        },
-        {
-            "Extension": "text",
-            "JobID": "5d6b9e1a0288383930c48455",
-            "Name": "sample.pdf",
-            "SHA256": "8b46920adaa5a4d2d2912f68452dea622fa215d78e923a878647a5febe082a36",
-            "Size": 58,
-            "av_detect": null,
-            "environmentDescription": "Windows 7 64 bit",
-            "environmentId": 120,
-            "size": 58,
-            "start_time": "2019-09-01T10:31:54+00:00",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "text",
-            "verdict": null,
-            "vx_family": null
-        },
-        {
-            "Extension": "text",
-            "JobID": "5d6b96660388389c397057c2",
-            "Name": "sample.pdf",
-            "SHA256": "84e0435537ceedd0819188759387f4eeb59c8bc63d243c9b4a3399a90e564715",
-            "Size": 41,
-            "av_detect": null,
-            "environmentDescription": "Windows 7 64 bit",
-            "environmentId": 120,
-            "size": 41,
-            "start_time": "2019-09-01T10:00:10+00:00",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "text",
-            "verdict": null,
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5d0e1e790288380b0e2af5eb",
-            "Name": "sample.pdf",
-            "SHA256": "9fcb5ed2265c1aca54a8e4ebc847e0c9c19b7aa7984f3e7ca0794b314057505e",
-            "Size": 2669339,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 32 bit (HWP Support)",
-            "environmentId": 110,
-            "size": 2669339,
-            "start_time": "2019-06-22 12:25:24",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5cbd62160388381a4caf198e",
-            "Name": "sample.pdf",
-            "SHA256": "6042d499aca0c5700fb416a4970fdd9238272397732beda9b4065a21c0150e8e",
-            "Size": 440654,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 32 bit",
-            "environmentId": 100,
-            "size": 440654,
-            "start_time": "2019-04-22 06:41:37",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5c9da41c02883869997acd28",
-            "Name": "sample.pdf",
-            "SHA256": "c979e4b6a1850794609860fcc68bda58edc0f51989d57a199808d3f1a2564d7a",
-            "Size": 95318,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 64 bit",
-            "environmentId": 120,
-            "size": 95318,
-            "start_time": "2019-03-29 04:41:26",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5c927c1f038838b59636b712",
-            "Name": "sample.pdf",
-            "SHA256": "b26054c33e5f201a2a4cafb5047c576115c389451e5a74f3f75400e4f0504512",
-            "Size": 95271,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 32 bit",
-            "environmentId": 100,
-            "size": 95271,
-            "start_time": "2019-03-20T17:45:03+00:00",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": null,
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5c909092028838fe55b4f755",
-            "Name": "sample.pdf",
-            "SHA256": "f8bf163014405cd4dc8f133fc563886e92a2b98862edd98d5f8656eba67db284",
-            "Size": 496372,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 64 bit",
-            "environmentId": 120,
-            "size": 496372,
-            "start_time": "2019-03-19 06:38:41",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5c8a8c39038838899a329921",
-            "Name": "sample.pdf",
-            "SHA256": "65ab8a0fd8920379c37d03ad3b5f7d62d5a8b00b902c5d72229269328aa2221f",
-            "Size": 1317691,
-            "av_detect": null,
-            "environmentDescription": "Windows 7 64 bit",
-            "environmentId": 120,
-            "size": 1317691,
-            "start_time": "2019-03-14 17:06:41",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5c8361e20388387f5d1006a4",
-            "Name": "Sample.pdf",
-            "SHA256": "e28401b6fa6f8fafc7db5946c30a18ab2d306748b277609caec5ecf970506529",
-            "Size": 696561,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 64 bit",
-            "environmentId": 120,
-            "size": 696561,
-            "start_time": "2019-03-09 06:40:22",
-            "submitname": "Sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5c758a5a038838514ca50f27",
-            "Name": "sample.pdf",
-            "SHA256": "a84b84b85911e68b421172a1d857da81706a7608eae6415e9a52bb9e59801e59",
-            "Size": 1154729,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 32 bit",
-            "environmentId": 100,
-            "size": 1154729,
-            "start_time": "2019-02-26 18:41:27",
-            "submitname": "sample.pdf",
-            "threatscore": 20,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "malicious",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5c6676c07ca3e17d121f3f11",
-            "Name": "sample.pdf",
-            "SHA256": "855e15b9e02ff992d81e2cf93fdec286b81e8374b5acad5a9009d1569ca86cf0",
-            "Size": 324101,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 64 bit",
-            "environmentId": 120,
-            "size": 324101,
-            "start_time": "2019-02-15 09:36:27",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "raw data",
-            "JobID": "5c5236d97ca3e107a93e8333",
-            "Name": "sample.pdf",
-            "SHA256": "33adb4f6630443600d5d1381350ac018f1676d8523084af814b5c01da3e7a609",
-            "Size": 80468,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 32 bit",
-            "environmentId": 100,
-            "size": 80468,
-            "start_time": "2019-01-30T18:15:14-06:00",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "raw data",
-            "verdict": null,
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5bf702607ca3e16165774af7",
-            "Name": "sample.pdf",
-            "SHA256": "9f49c971051e7026314e979e3e1f06552a52f44bd56fe4eb9cf7867f82c8755f",
-            "Size": 6782390,
-            "av_detect": "0",
-            "environmentDescription": "Windows 7 64 bit",
-            "environmentId": 120,
-            "size": 6782390,
-            "start_time": "2018-11-22 20:24:37",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5bc6d34b7ca3e104a26ff5c3",
-            "MalwareFamily": "PDF:Exploit.PDF",
-            "Name": "extract-1424750780.560286-HTTP-FTdiED2cMH3iOTs3c4.raw.pdf",
-            "SHA256": "a927b3f2244e901e23e50f6b7a4929b837f0f0d1d8e0dc0a1957f5208b4e4e51",
-            "Size": 11961,
-            "av_detect": "67",
-            "environmentDescription": "Windows 7 64 bit",
-            "environmentId": 120,
-            "size": 11961,
-            "start_time": "2018-10-17 08:14:46",
-            "submitname": "extract-1424750780.560286-HTTP-FTdiED2cMH3iOTs3c4.raw.pdf",
-            "threatscore": 100,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "malicious",
-            "vx_family": "PDF:Exploit.PDF"
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "57c116c0aac2edfe59c7c2a0",
-            "MalwareFamily": "Trojan.Eicartest",
-            "Name": "pdf-doc-vba-eicar-dropper.pdf",
-            "SHA256": "86a96ec03ba8242c1486456d67ee17f919128754846dbb3bdf5e836059091dba",
-            "Size": 10866,
-            "av_detect": "75",
-            "environmentDescription": "Windows 7 32 bit",
-            "environmentId": 100,
-            "size": 10866,
-            "start_time": "2016-08-27 06:28:06",
-            "submitname": "pdf-doc-vba-eicar-dropper.pdf",
-            "threatscore": 100,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "malicious",
-            "vx_family": "Trojan.Eicartest"
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "61dcfd7f797bea289de8eaff",
-            "Name": "sample.pdf",
-            "SHA256": "55c3b94ca033edb56010d8cfbbc17c900911e0f5bc938020debdc8d454a15313",
-            "Size": 254738,
-            "av_detect": "0",
-            "environmentDescription": "Static Analysis",
-            "environmentId": null,
-            "size": 254738,
-            "start_time": "2022-01-11T03:46:07+00:00",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "61d588df797bea289d371b1d",
-            "Name": "SAMPLE.pdf",
-            "SHA256": "6332a96c88c486d1b396f9346e689d1ad15c06ae733539cd4e66a2bd8dbec9ff",
-            "Size": 218816,
-            "av_detect": "0",
-            "environmentDescription": "Static Analysis",
-            "environmentId": null,
-            "size": 218816,
-            "start_time": "2022-01-05T12:02:39+00:00",
-            "submitname": "SAMPLE.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "6100efb09a02dd8ce6bb695a",
-            "MalwareFamily": "Unavailable",
-            "Name": "sample.pdf",
-            "SHA256": "177661da747aebe78fa66313ca239143a226be23d397a5327329c732c4d2670b",
-            "Size": 727215,
-            "av_detect": "0",
-            "environmentDescription": "Static Analysis",
-            "environmentId": null,
-            "size": 727215,
-            "start_time": "2021-07-28T05:48:32+00:00",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": "Unavailable"
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "60519e929a02dd8ce6f4090c",
-            "Name": "SAMPLE.PDF",
-            "SHA256": "111ee199588c1a167be496933b037fefaa69c45404f915054edc8e209a73fa4c",
-            "Size": 215461,
-            "av_detect": "0",
-            "environmentDescription": "Static Analysis",
-            "environmentId": null,
-            "size": 215461,
-            "start_time": "2021-03-17T06:15:46+00:00",
-            "submitname": "SAMPLE.PDF",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5ffc09bf40fe1d5daa5ca658",
-            "Name": "Sample.pdf",
-            "SHA256": "dc13bd74b9e78ea241bbb0736a8e660eb56afc53b2701b75964d89cb47f6edb0",
-            "Size": 1285713,
-            "av_detect": "0",
-            "environmentDescription": "Static Analysis",
-            "environmentId": null,
-            "size": 1285713,
-            "start_time": "2021-01-11T08:18:07+00:00",
-            "submitname": "Sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5ff7f1e440fe1d5daa17422b",
-            "Name": "Sample.pdf",
-            "SHA256": "6486ef92ad7b591f6da0eacf04304840e8d293b591ca4e48c2eeca664bf0d120",
-            "Size": 2037209,
-            "av_detect": "0",
-            "environmentDescription": "Static Analysis",
-            "environmentId": null,
-            "size": 2037209,
-            "start_time": "2021-01-08T05:47:16+00:00",
-            "submitname": "Sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5fd1971b40fe1d5daa721221",
-            "Name": "sample.pdf",
-            "SHA256": "d60dee8111b0289e66e5858dd27f29855d1611f3602564f0cdfe06725790c144",
-            "Size": 268886,
-            "av_detect": "0",
-            "environmentDescription": "Static Analysis",
-            "environmentId": null,
-            "size": 268886,
-            "start_time": "2020-12-10T03:33:47+00:00",
-            "submitname": "sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
-        },
-        {
-            "Extension": "pdf",
-            "JobID": "5fbe593a40fe1d5daa57823e",
-            "Name": "Sample.pdf",
-            "SHA256": "5ff12f55a1a8c198ccafff9e1920b9e2a5d5cde0f2f6cfe787264c43cbac808c",
-            "Size": 381447,
-            "av_detect": "0",
-            "environmentDescription": "Static Analysis",
-            "environmentId": null,
-            "size": 381447,
-            "start_time": "2020-11-25T13:16:42+00:00",
-            "submitname": "Sample.pdf",
-            "threatscore": null,
-            "type": null,
-            "type_short": "pdf",
-            "verdict": "no specific threat",
-            "vx_family": null
         }
     ]
 }
@@ -2553,49 +1957,6 @@ Searches the database using the Falcon Sandbox search syntax.
 >| Sample.pdf | no specific threat |  |  | e4c0b73252211528f355e7db301da6369e69e079c6daad9e8fbb0134cc44ce27 | 160626 | 100 | pdf | 2021-11-30 03:00:10 |
 >| sample.pdf | no specific threat |  |  | 2f0de9415b0e746b1189d939d84d0dd15ea93d457bd0a42ebec8b52475c2be63 | 468452 | 100 | pdf | 2021-11-05 17:02:53 |
 >| Sample.pdf | malicious | RDN/Generic.cf | 100 | 98983e00b47bcbe9ebbaf5f28ea6cdbf619dd88c91f481b18fec7ffdb68ab741 | 254635 | 120 | pdf | 2021-08-09 07:15:50 |
->| sample.pdf | no specific threat |  |  | 45d2de1252ebd402728b2cb810d8a9232a99e9887f75146d2e7d1d84d46fd360 | 561412 | 100 | pdf | 2021-07-30 17:31:11 |
->| Sample.pdf | no specific threat |  |  | b33d6fa9eac776c1ad07c406bacef7c9af8ce052a181a5801a0bffa1f24ebf1d | 25138418 | 120 | pdf | 2021-06-24 02:53:57 |
->| sample.pdf | no specific threat |  |  | 7207460b6cf6e4965b7ab20bfadca652ab1629240781e49f7e783de8a9c31900 | 370299 | 120 | pdf | 2021-06-03 09:49:10 |
->| Sample.pdf | no specific threat | Unavailable |  | 4af3aa3c6afd3db86a65f191bd69306650e12475fd5611ccaec5519543276d5a | 64532 | 100 | pdf | 2020-08-04 18:46:31 |
->| sample.pdf | no specific threat |  |  | 02b0fcf5406a4cd1c816ea21bc25f6f0bcb5ae36b8da9526d3af6f5aab89b6de | 394003 | 100 | pdf | 2020-07-08 15:39:36 |
->| sample.pdf | suspicious |  | 29 | 3714ef17995d459f9c81d99b77bdef830b24dbe28d893b2b4f1952279ca91aa6 | 5639308 | 100 | pdf | 2020-06-18 15:15:46 |
->| sample.pdf |  | Unavailable |  | 9d0bfa6a3c99f83bb6d9fb4822855c488dedd3a9a2fe19010e0e176437422b04 | 5732088 | 300 | 64-bit elf | 2020-06-05T07:35:10+00:00 |
->| Sample.pdf | no specific threat |  |  | 91f5a577e0df35103c8bf6d5d5ea6690b97ed319570ba61688379d254fe9b1ed | 159219 | 100 | pdf | 2020-06-04 05:21:19 |
->| Sample.pdf | suspicious |  | 56 | 6822023d6f22b0f08f788c4528eed07c424603b1d68fc4fdb8ef8a9e6dfab3b6 | 69992 | 100 | pdf | 2020-05-10 06:06:38 |
->| sample.pdf | suspicious |  | 35 | a5963f78a27e384421e23ff54974094a34112b8eeec77615cd4235d7b82812c7 | 35270 | 100 | html | 2020-02-14 04:50:05 |
->| sample.pdf | suspicious |  | 45 | 7856688c84402d991250abf44d8bea30131837f11a69891fb9597816e8902f4e | 189630 | 120 | pdf | 2019-09-25 07:30:35 |
->| sample.pdf | no specific threat | Unavailable |  | ed511c548b99fe89836cbd9258e81a9f84df95bb8fc8cccc7958b2b5bd40a6e3 | 186763 | 120 | pdf | 2019-09-25 07:04:24 |
->| sample.pdf | no specific threat |  |  | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 | 3506 | 120 | pdf | 2019-09-24 13:39:34 |
->| sample.pdf | suspicious |  | 29 | 6d056be8945a60bc2f68c6468bd4f6b68a37f99e69090478e0f8f078b9763176 | 50790 | 100 | pdf | 2019-09-09 09:07:09 |
->| sample.pdf |  |  |  | 8b46920adaa5a4d2d2912f68452dea622fa215d78e923a878647a5febe082a36 | 58 | 120 | text | 2019-09-01T10:31:54+00:00 |
->| sample.pdf |  |  |  | 84e0435537ceedd0819188759387f4eeb59c8bc63d243c9b4a3399a90e564715 | 41 | 120 | text | 2019-09-01T10:00:10+00:00 |
->| sample.pdf | no specific threat |  |  | 9fcb5ed2265c1aca54a8e4ebc847e0c9c19b7aa7984f3e7ca0794b314057505e | 2669339 | 120 | pdf | 2019-06-22 12:28:03 |
->| sample.pdf | no specific threat |  |  | 9fcb5ed2265c1aca54a8e4ebc847e0c9c19b7aa7984f3e7ca0794b314057505e | 2669339 | 200 | pdf | 2019-06-22 12:28:06 |
->| sample.pdf |  |  |  | 9fcb5ed2265c1aca54a8e4ebc847e0c9c19b7aa7984f3e7ca0794b314057505e | 1250161 | 300 | pdf | 2019-06-22T12:29:15+00:00 |
->| sample.pdf | no specific threat |  |  | 9fcb5ed2265c1aca54a8e4ebc847e0c9c19b7aa7984f3e7ca0794b314057505e | 2669339 | 110 | pdf | 2019-06-22 12:25:24 |
->| sample.pdf | no specific threat |  |  | 6042d499aca0c5700fb416a4970fdd9238272397732beda9b4065a21c0150e8e | 440654 | 100 | pdf | 2019-04-22 06:41:37 |
->| sample.pdf | no specific threat |  |  | c979e4b6a1850794609860fcc68bda58edc0f51989d57a199808d3f1a2564d7a | 95318 | 120 | pdf | 2019-03-29 04:41:26 |
->| sample.pdf |  |  |  | b26054c33e5f201a2a4cafb5047c576115c389451e5a74f3f75400e4f0504512 | 95271 | 100 | pdf | 2019-03-20T17:45:03+00:00 |
->| sample.pdf | no specific threat |  |  | f8bf163014405cd4dc8f133fc563886e92a2b98862edd98d5f8656eba67db284 | 496372 | 120 | pdf | 2019-03-19 06:38:41 |
->| sample.pdf | no specific threat |  |  | 65ab8a0fd8920379c37d03ad3b5f7d62d5a8b00b902c5d72229269328aa2221f | 1317691 | 120 | pdf | 2019-03-14 17:06:41 |
->| Sample.pdf | no specific threat |  |  | e28401b6fa6f8fafc7db5946c30a18ab2d306748b277609caec5ecf970506529 | 696561 | 120 | pdf | 2019-03-09 06:40:22 |
->| sample.pdf | malicious |  | 20 | a84b84b85911e68b421172a1d857da81706a7608eae6415e9a52bb9e59801e59 | 1154729 | 100 | pdf | 2019-02-26 18:41:27 |
->| sample.pdf | no specific threat |  |  | 855e15b9e02ff992d81e2cf93fdec286b81e8374b5acad5a9009d1569ca86cf0 | 324101 | 120 | pdf | 2019-02-15 09:36:27 |
->| sample.pdf |  |  |  | 33adb4f6630443600d5d1381350ac018f1676d8523084af814b5c01da3e7a609 | 80468 | 100 | raw data | 2019-01-30T18:15:14-06:00 |
->| sample.pdf | no specific threat |  |  | 9f49c971051e7026314e979e3e1f06552a52f44bd56fe4eb9cf7867f82c8755f | 6782390 | 120 | pdf | 2018-11-22 20:24:37 |
->| sample.pdf | no specific threat |  |  | 7788dc62ba791614492dfb74a78367a9f69b20e9cb5bee106bea578f2cbc29c3 | 40677967 | 120 | pdf | 2018-11-19 17:30:23 |
->| extract-1424750780.560286-HTTP-FTdiED2cMH3iOTs3c4.raw.pdf | malicious | PDF:Exploit.PDF | 100 | a927b3f2244e901e23e50f6b7a4929b837f0f0d1d8e0dc0a1957f5208b4e4e51 | 11961 | 120 | pdf | 2018-10-17 08:14:46 |
->|  | whitelisted |  |  | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 | 3506 | 100 | pdf | 2019-02-09 01:41:57 |
->| pdf-doc-vba-eicar-dropper.pdf | malicious | Trojan.Eicartest | 100 | 86a96ec03ba8242c1486456d67ee17f919128754846dbb3bdf5e836059091dba | 10866 | 100 | pdf | 2016-08-27 06:28:06 |
->| sample.pdf | no specific threat |  |  | 55c3b94ca033edb56010d8cfbbc17c900911e0f5bc938020debdc8d454a15313 | 254738 |  | pdf | 2022-01-11T03:46:07+00:00 |
->| SAMPLE.pdf | no specific threat |  |  | 6332a96c88c486d1b396f9346e689d1ad15c06ae733539cd4e66a2bd8dbec9ff | 218816 |  | pdf | 2022-01-05T12:02:39+00:00 |
->| sample.pdf | no specific threat | Unavailable |  | 177661da747aebe78fa66313ca239143a226be23d397a5327329c732c4d2670b | 727215 |  | pdf | 2021-07-28T05:48:32+00:00 |
->| SAMPLE.PDF | no specific threat |  |  | 111ee199588c1a167be496933b037fefaa69c45404f915054edc8e209a73fa4c | 215461 |  | pdf | 2021-03-17T06:15:46+00:00 |
->| Sample.pdf | no specific threat |  |  | dc13bd74b9e78ea241bbb0736a8e660eb56afc53b2701b75964d89cb47f6edb0 | 1285713 |  | pdf | 2021-01-11T08:18:07+00:00 |
->| Sample.pdf | no specific threat |  |  | 6486ef92ad7b591f6da0eacf04304840e8d293b591ca4e48c2eeca664bf0d120 | 2037209 |  | pdf | 2021-01-08T05:47:16+00:00 |
->| sample.pdf | no specific threat |  |  | d60dee8111b0289e66e5858dd27f29855d1611f3602564f0cdfe06725790c144 | 268886 |  | pdf | 2020-12-10T03:33:47+00:00 |
->| Sample.pdf | no specific threat |  |  | 5ff12f55a1a8c198ccafff9e1920b9e2a5d5cde0f2f6cfe787264c43cbac808c | 381447 |  | pdf | 2020-11-25T13:16:42+00:00 |
->| file | whitelisted |  |  | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 | 3028 |  | pdf | 2020-09-15T16:47:06+00:00 |
 
 
 ### cs-falcon-sandbox-result
@@ -2623,14 +1984,14 @@ Retrieves result data on a file. Note: This command returns a file.
 | --- | --- | --- |
 | CrowdStrike.Report.job_id | String | The file job ID. | 
 | CrowdStrike.Report.environment_id | Number | The report environment ID. | 
-| CrowdStrike.Report.environment_description | String |  | 
+| CrowdStrike.Report.environment_description | String | The environment description. | 
 | CrowdStrike.Report.size | Number | The file size. | 
 | CrowdStrike.Report.type | String | The file type. | 
-| CrowdStrike.Report.type_short | String |  | 
-| CrowdStrike.Report.target_url | String |  | 
+| CrowdStrike.Report.type_short | String | The short description of the file type. | 
+| CrowdStrike.Report.target_url | String | The target url. | 
 | CrowdStrike.Report.state | String | The report state. | 
-| CrowdStrike.Report.error_type | String |  | 
-| CrowdStrike.Report.error_origin | String |  | 
+| CrowdStrike.Report.error_type | String | The error type. | 
+| CrowdStrike.Report.error_origin | String | The error origin. | 
 | CrowdStrike.Report.submit_name | String | The file name when submitted. | 
 | CrowdStrike.Report.md5 | String | The MD5 hash of the file. | 
 | CrowdStrike.Report.sha1 | String | The SHA1 hash of the file. | 
@@ -2640,21 +2001,21 @@ Retrieves result data on a file. Note: This command returns a file.
 | CrowdStrike.Report.imphash | String | The imphash hash of the file. | 
 | CrowdStrike.Report.av_detect | Number | The AV Multiscan range, for example 50-70 \(min 0, max 100\). | 
 | CrowdStrike.Report.vx_family | String | The file malware family. | 
-| CrowdStrike.Report.url_analysis | Boolean |  | 
-| CrowdStrike.Report.analysis_start_time | Date |  | 
+| CrowdStrike.Report.url_analysis | Boolean | Whether this report is url analysis. | 
+| CrowdStrike.Report.analysis_start_time | Date | The start time of the analysis. | 
 | CrowdStrike.Report.threat_score | Number | The file threat score. | 
 | CrowdStrike.Report.interesting | Boolean | Whether the file was found to be interesting. | 
 | CrowdStrike.Report.threat_level | Number | The file threat level. | 
 | CrowdStrike.Report.verdict | String | The file verdict. | 
-| CrowdStrike.Report.total_network_connections | Number |  | 
-| CrowdStrike.Report.total_processes | Number |  | 
-| CrowdStrike.Report.total_signatures | Number |  | 
+| CrowdStrike.Report.total_network_connections | Number | The total number of network connections. | 
+| CrowdStrike.Report.total_processes | Number | The total number of processes. | 
+| CrowdStrike.Report.total_signatures | Number | The total number of signatures. | 
 | CrowdStrike.Report.file_metadata | Object | The file metadata. | 
-| CrowdStrike.Report.submissions.submission_id | String |  | 
-| CrowdStrike.Report.submissions.filename | String |  | 
-| CrowdStrike.Report.submissions.url | String |  | 
-| CrowdStrike.Report.submissions.created_at | Date |  | 
-| CrowdStrike.Report.network_mode | String |  | 
+| CrowdStrike.Report.submissions.submission_id | String | The ID of the submission. | 
+| CrowdStrike.Report.submissions.filename | String | The name of the file. | 
+| CrowdStrike.Report.submissions.url | String | The url. | 
+| CrowdStrike.Report.submissions.created_at | Date | When the submission was created. | 
+| CrowdStrike.Report.network_mode | String | The network mode. | 
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.SHA1 | string | The SHA1 hash of the file. | 
 | File.MD5 | string | The MD5 hash of the file. | 
@@ -2701,7 +2062,7 @@ Submits a URL for analysis.
 | comment | Optional comment text that may be associated with the submission/sample (Note: you can use #tags). | Optional | 
 | custom_cmd_line | Optional command line that should be passed to the analysis file. | Optional | 
 | custom_run_time | Optional runtime duration (in seconds). | Optional | 
-| submit_name | Optional 'submission name' field that will be used for file type detection and analysis. Ignored unless url contains a file | Optional | 
+| submit_name | Optional 'submission name' field that will be used for file type detection and analysis. Ignored unless url contains a file. | Optional | 
 | priority | Optional priority value between 1 (lowest) and 10 (highest). By default all samples run with highest priority. Possible values are: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10. | Optional | 
 | document_password | Optional document password used to fill in Adobe/Office password prompts. | Optional | 
 | environment_variable | Optional system environment value. The value is provided in the format name=value. | Optional | 
@@ -2712,20 +2073,20 @@ Submits a URL for analysis.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CrowdStrike.Submit.job_id | String | The The submitted report job ID. | 
-| CrowdStrike.Submit.submission_type | String |  | 
+| CrowdStrike.Submit.submission_type | String | The type of the submission. | 
 | CrowdStrike.Submit.submission_id | String | The submission ID. | 
 | CrowdStrike.Submit.environment_id | Number | The submission environment ID. | 
 | CrowdStrike.Submit.sha256 | String | The SHA256 hash of the file. | 
 | CrowdStrike.Report.job_id | String | The report job ID. | 
 | CrowdStrike.Report.environment_id | Number | The report environment ID. | 
-| CrowdStrike.Report.environment_description | String |  | 
+| CrowdStrike.Report.environment_description | String | The environment description. | 
 | CrowdStrike.Report.size | Number | The file size. | 
 | CrowdStrike.Report.type | String | The file type. | 
-| CrowdStrike.Report.type_short | String |  | 
-| CrowdStrike.Report.target_url | String |  | 
+| CrowdStrike.Report.type_short | String | The short description of the file type. | 
+| CrowdStrike.Report.target_url | String | The target url. | 
 | CrowdStrike.Report.state | String | The report state. | 
-| CrowdStrike.Report.error_type | String |  | 
-| CrowdStrike.Report.error_origin | String |  | 
+| CrowdStrike.Report.error_type | String | The error type. | 
+| CrowdStrike.Report.error_origin | String | The error origin. | 
 | CrowdStrike.Report.submit_name | String | The file name when submitted. | 
 | CrowdStrike.Report.md5 | String | The MD5 hash of the file. | 
 | CrowdStrike.Report.sha1 | String | The SHA1 hash of the file. | 
@@ -2735,21 +2096,21 @@ Submits a URL for analysis.
 | CrowdStrike.Report.imphash | String | The imphash hash of the file. | 
 | CrowdStrike.Report.av_detect | Number | The AV Multiscan range, for example 50-70 \(min 0, max 100\) | 
 | CrowdStrike.Report.vx_family | String | The file malware famil. | 
-| CrowdStrike.Report.url_analysis | Boolean |  | 
-| CrowdStrike.Report.analysis_start_time | Date |  | 
+| CrowdStrike.Report.url_analysis | Boolean | Whether this report is url analysis. | 
+| CrowdStrike.Report.analysis_start_time | Date | The start time of the analysis. | 
 | CrowdStrike.Report.threat_score | Number | The file threat score. | 
 | CrowdStrike.Report.interesting | Boolean | Whether the file was found to be interesting. | 
 | CrowdStrike.Report.threat_level | Number | The file threat level. | 
 | CrowdStrike.Report.verdict | String | The file verdict. | 
-| CrowdStrike.Report.total_network_connections | Number |  | 
-| CrowdStrike.Report.total_processes | Number |  | 
-| CrowdStrike.Report.total_signatures | Number |  | 
+| CrowdStrike.Report.total_network_connections | Number | The total number of network connections. | 
+| CrowdStrike.Report.total_processes | Number | The total number of processes. | 
+| CrowdStrike.Report.total_signatures | Number | The total number of signatures. | 
 | CrowdStrike.Report.file_metadata | Object | The file metadata. | 
 | CrowdStrike.Report.submissions.submission_id | String | The submission ID. | 
-| CrowdStrike.Report.submissions.filename | String |  | 
-| CrowdStrike.Report.submissions.url | String |  | 
-| CrowdStrike.Report.submissions.created_at | Date |  | 
-| CrowdStrike.Report.network_mode | String |  | 
+| CrowdStrike.Report.submissions.filename | String | The name of the file. | 
+| CrowdStrike.Report.submissions.url | String | The url. | 
+| CrowdStrike.Report.submissions.created_at | Date | When the submission was created. | 
+| CrowdStrike.Report.network_mode | String | The network mode. | 
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.SHA1 | string | The SHA1 hash of the file. | 
 | File.MD5 | string | The MD5 hash of the file. | 
@@ -3162,6 +2523,84 @@ Retrieves screenshots from a report
 | InfoFile.Info | string | Basic information about the file. | 
 | InfoFile.Extension | string | The file extension. | 
 
+#### Command example
+```!cs-falcon-sandbox-get-screenshots file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 environmentID=100```
+#### Context Example
+```json
+{
+    "InfoFile": [
+        {
+            "EntryID": "414@8aab2ce5-e14e-4cfc-81dc-6eef69c76e68",
+            "Extension": "png",
+            "Info": "image/png",
+            "Name": "screen_0.png",
+            "Size": 285728,
+            "Type": "PNG image data, 1024 x 617, 8-bit/color RGBA, non-interlaced"
+        },
+        {
+            "EntryID": "415@8aab2ce5-e14e-4cfc-81dc-6eef69c76e68",
+            "Extension": "png",
+            "Info": "image/png",
+            "Name": "screen_1.png",
+            "Size": 245749,
+            "Type": "PNG image data, 1024 x 617, 8-bit/color RGBA, non-interlaced"
+        },
+        {
+            "EntryID": "416@8aab2ce5-e14e-4cfc-81dc-6eef69c76e68",
+            "Extension": "png",
+            "Info": "image/png",
+            "Name": "screen_2.png",
+            "Size": 115116,
+            "Type": "PNG image data, 1024 x 617, 8-bit/color RGBA, non-interlaced"
+        },
+        {
+            "EntryID": "417@8aab2ce5-e14e-4cfc-81dc-6eef69c76e68",
+            "Extension": "png",
+            "Info": "image/png",
+            "Name": "screen_3.png",
+            "Size": 96757,
+            "Type": "PNG image data, 1024 x 617, 8-bit/color RGBA, non-interlaced"
+        },
+        {
+            "EntryID": "418@8aab2ce5-e14e-4cfc-81dc-6eef69c76e68",
+            "Extension": "png",
+            "Info": "image/png",
+            "Name": "screen_4.png",
+            "Size": 38843,
+            "Type": "PNG image data, 1020 x 1320, 8-bit/color RGB, non-interlaced"
+        },
+        {
+            "EntryID": "419@8aab2ce5-e14e-4cfc-81dc-6eef69c76e68",
+            "Extension": "png",
+            "Info": "image/png",
+            "Name": "screen_5.png",
+            "Size": 28781,
+            "Type": "PNG image data, 1020 x 1320, 8-bit/color RGB, non-interlaced"
+        },
+        {
+            "EntryID": "420@8aab2ce5-e14e-4cfc-81dc-6eef69c76e68",
+            "Extension": "png",
+            "Info": "image/png",
+            "Name": "screen_6.png",
+            "Size": 113982,
+            "Type": "PNG image data, 1024 x 617, 8-bit/color RGBA, non-interlaced"
+        },
+        {
+            "EntryID": "421@8aab2ce5-e14e-4cfc-81dc-6eef69c76e68",
+            "Extension": "png",
+            "Info": "image/png",
+            "Name": "screen_7.png",
+            "Size": 107333,
+            "Type": "PNG image data, 1024 x 617, 8-bit/color RGBA, non-interlaced"
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+
+
 ### cs-falcon-sandbox-analysis-overview
 ***
 Gets the hash overview.
@@ -3182,35 +2621,35 @@ Gets the hash overview.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CrowdStrike.AnalysisOverview.sha256 | String | The SHA256 hash of the file. | 
-| CrowdStrike.AnalysisOverview.last_file_name | String |  | 
-| CrowdStrike.AnalysisOverview.threat_score | Number |  | 
-| CrowdStrike.AnalysisOverview.verdict | String |  | 
-| CrowdStrike.AnalysisOverview.url_analysis | Boolean |  | 
-| CrowdStrike.AnalysisOverview.size | Number |  | 
-| CrowdStrike.AnalysisOverview.type | String |  | 
-| CrowdStrike.AnalysisOverview.type_short | String |  | 
-| CrowdStrike.AnalysisOverview.analysis_start_time | Date |  | 
-| CrowdStrike.AnalysisOverview.last_multi_scan | Date |  | 
-| CrowdStrike.AnalysisOverview.architecture | String |  | 
-| CrowdStrike.AnalysisOverview.multiscan_result | Number |  | 
-| CrowdStrike.AnalysisOverview.scanners.name | String |  | 
-| CrowdStrike.AnalysisOverview.scanners.status | String |  | 
-| CrowdStrike.AnalysisOverview.scanners.error_message | String |  | 
-| CrowdStrike.AnalysisOverview.scanners.progress | Number |  | 
-| CrowdStrike.AnalysisOverview.scanners.total | Number |  | 
-| CrowdStrike.AnalysisOverview.scanners.positives | Number |  | 
-| CrowdStrike.AnalysisOverview.scanners.percent | Number |  | 
-| CrowdStrike.AnalysisOverview.scanners.anti_virus_results.name | String |  | 
-| CrowdStrike.AnalysisOverview.scanners.anti_virus_results.result | Boolean |  | 
-| CrowdStrike.AnalysisOverview.scanners.anti_virus_results.threat_found | String |  | 
-| CrowdStrike.AnalysisOverview.reports | String |  | 
-| CrowdStrike.AnalysisOverview.whitelisted | Boolean |  | 
-| CrowdStrike.AnalysisOverview.children_in_queue | Number |  | 
-| CrowdStrike.AnalysisOverview.children_in_progress | Number |  | 
-| File.Size | number |  | 
-| File.SHA256 | string |  | 
-| File.Name | string |  | 
-| File.Type | string |  | 
+| CrowdStrike.AnalysisOverview.last_file_name | String | The last name of the file. | 
+| CrowdStrike.AnalysisOverview.threat_score | Number | The file threat score. | 
+| CrowdStrike.AnalysisOverview.verdict | String | The file verdict. | 
+| CrowdStrike.AnalysisOverview.url_analysis | Boolean | Whether this report is url analysis. | 
+| CrowdStrike.AnalysisOverview.size | Number | The size of the file. | 
+| CrowdStrike.AnalysisOverview.type | String | The file type. | 
+| CrowdStrike.AnalysisOverview.type_short | String | The short description of the file type. | 
+| CrowdStrike.AnalysisOverview.analysis_start_time | Date | The start time of the analysis. | 
+| CrowdStrike.AnalysisOverview.last_multi_scan | Date | The last multi-scan. | 
+| CrowdStrike.AnalysisOverview.architecture | String | The environment architecture. | 
+| CrowdStrike.AnalysisOverview.multiscan_result | Number | The multi-scan result. | 
+| CrowdStrike.AnalysisOverview.scanners.name | String | The name of the scanner. | 
+| CrowdStrike.AnalysisOverview.scanners.status | String | The status of the scanner. | 
+| CrowdStrike.AnalysisOverview.scanners.error_message | String | The error message. | 
+| CrowdStrike.AnalysisOverview.scanners.progress | Number | The progress of the scanner. | 
+| CrowdStrike.AnalysisOverview.scanners.total | Number | The total number of scanners. | 
+| CrowdStrike.AnalysisOverview.scanners.positives | Number | The number of positives. | 
+| CrowdStrike.AnalysisOverview.scanners.percent | Number | The percent of the scanner. | 
+| CrowdStrike.AnalysisOverview.scanners.anti_virus_results.name | String | The name of the antivirus results. | 
+| CrowdStrike.AnalysisOverview.scanners.anti_virus_results.result | Boolean | The antivirus result. | 
+| CrowdStrike.AnalysisOverview.scanners.anti_virus_results.threat_found | String | The threat found the the scanner. | 
+| CrowdStrike.AnalysisOverview.reports | String | The reports of the analysis. | 
+| CrowdStrike.AnalysisOverview.whitelisted | Boolean | If the result is whitelisted. | 
+| CrowdStrike.AnalysisOverview.children_in_queue | Number | The number of children in queue. | 
+| CrowdStrike.AnalysisOverview.children_in_progress | Number | The number of children in progress. | 
+| File.Size | number | The file size. | 
+| File.SHA256 | string | The SHA256 hash of the file. | 
+| File.Name | string | The file name. | 
+| File.type | string | The file type. | 
 
 #### Command example
 ```!cs-falcon-sandbox-analysis-overview file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51```
@@ -3224,7 +2663,7 @@ Gets the hash overview.
             "children_in_progress": 0,
             "children_in_queue": 0,
             "last_file_name": "file",
-            "last_multi_scan": "2022-01-25T14:15:07+00:00",
+            "last_multi_scan": "2022-02-07T12:52:10+00:00",
             "multiscan_result": 0,
             "other_file_name": [
                 "5_Journals_3_Manuscripts_10_Version_1_Revision_0_CoverLetter.pdf",
@@ -3284,19 +2723,13 @@ Gets the hash overview.
             ],
             "scanners": [
                 {
-                    "anti_virus_results": [
-                        {
-                            "name": "CrowdStrike",
-                            "result": false,
-                            "threat_found": null
-                        }
-                    ],
-                    "error_message": null,
+                    "anti_virus_results": [],
+                    "error_message": "Unknown error occurred",
                     "name": "CrowdStrike Falcon Static Analysis (ML)",
-                    "percent": 0,
+                    "percent": null,
                     "positives": null,
                     "progress": 100,
-                    "status": "clean",
+                    "status": "error",
                     "total": null
                 },
                 {
@@ -3357,11 +2790,6 @@ Gets the hash overview.
                             "threat_found": null
                         },
                         {
-                            "name": "Symantec",
-                            "result": false,
-                            "threat_found": null
-                        },
-                        {
                             "name": "Huorong",
                             "result": false,
                             "threat_found": null
@@ -3373,11 +2801,6 @@ Gets the hash overview.
                         },
                         {
                             "name": "Avira",
-                            "result": false,
-                            "threat_found": null
-                        },
-                        {
-                            "name": "Zillya!",
                             "result": false,
                             "threat_found": null
                         },
@@ -3443,7 +2866,7 @@ Gets the hash overview.
                     "positives": 0,
                     "progress": 100,
                     "status": "clean",
-                    "total": 27
+                    "total": 25
                 },
                 {
                     "anti_virus_results": [],
@@ -3453,7 +2876,7 @@ Gets the hash overview.
                     "positives": 0,
                     "progress": 100,
                     "status": "clean",
-                    "total": 59
+                    "total": 54
                 }
             ],
             "sha256": "8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51",
@@ -3509,9 +2932,9 @@ Returns the hash overview.
 | CrowdStrike.AnalysisOverviewSummary.sha256 | String | The SHA256 hash of the file. | 
 | CrowdStrike.AnalysisOverviewSummary.threat_score | Number | The file threat score. | 
 | CrowdStrike.AnalysisOverviewSummary.verdict | String | The file verdict. | 
-| CrowdStrike.AnalysisOverviewSummary.analysis_start_time | Date |  | 
-| CrowdStrike.AnalysisOverviewSummary.last_multi_scan | Date |  | 
-| CrowdStrike.AnalysisOverviewSummary.multiscan_result | Number |  | 
+| CrowdStrike.AnalysisOverviewSummary.analysis_start_time | Date | The start time of the analysis. | 
+| CrowdStrike.AnalysisOverviewSummary.last_multi_scan | Date | The last multi-scan. | 
+| CrowdStrike.AnalysisOverviewSummary.multiscan_result | Number | The multi-scan result. | 
 
 #### Command example
 ```!cs-falcon-sandbox-analysis-overview-summary file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51```
@@ -3521,7 +2944,7 @@ Returns the hash overview.
     "CrowdStrike": {
         "AnalysisOverview": {
             "analysis_start_time": "2022-01-10T08:33:11+00:00",
-            "last_multi_scan": "2022-01-25T14:15:07+00:00",
+            "last_multi_scan": "2022-02-07T12:52:10+00:00",
             "multiscan_result": 0,
             "sha256": "8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51",
             "threat_score": null,
@@ -3536,7 +2959,7 @@ Returns the hash overview.
 >### Analysis Overview Summary:
 >|Analysis Start Time|Last Multi Scan|Multiscan Result|Sha256|Verdict|
 >|---|---|---|---|---|
->| 2022-01-10T08:33:11+00:00 | 2022-01-25T14:15:07+00:00 | 0 | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 | whitelisted |
+>| 2022-01-10T08:33:11+00:00 | 2022-02-07T12:52:10+00:00 | 0 | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 | whitelisted |
 
 
 ### cs-falcon-sandbox-analysis-overview-refresh
@@ -3584,14 +3007,14 @@ Returns file information and reputation.
 | --- | --- | --- |
 | CrowdStrike.Report.job_id | String | The file job ID. | 
 | CrowdStrike.Report.environment_id | Number | The report environment ID. | 
-| CrowdStrike.Report.environment_description | String |  | 
+| CrowdStrike.Report.environment_description | String | The environment description. | 
 | CrowdStrike.Report.size | Number | The file size. | 
 | CrowdStrike.Report.type | String | The file type. | 
-| CrowdStrike.Report.type_short | String |  | 
-| CrowdStrike.Report.target_url | String |  | 
+| CrowdStrike.Report.type_short | String | The short description of the file type. | 
+| CrowdStrike.Report.target_url | String | The target url. | 
 | CrowdStrike.Report.state | String | The report state. | 
-| CrowdStrike.Report.error_type | String |  | 
-| CrowdStrike.Report.error_origin | String |  | 
+| CrowdStrike.Report.error_type | String | The error type. | 
+| CrowdStrike.Report.error_origin | String | The error origin. | 
 | CrowdStrike.Report.submit_name | String | The file name when submitted. | 
 | CrowdStrike.Report.md5 | String | The MD5 hash of the file. | 
 | CrowdStrike.Report.sha1 | String | The SHA1 hash of the file. | 
@@ -3601,21 +3024,21 @@ Returns file information and reputation.
 | CrowdStrike.Report.imphash | String | The imphash hash of the file. | 
 | CrowdStrike.Report.av_detect | Number | The AV Multiscan range, for example 50-70 \(min 0, max 100\). | 
 | CrowdStrike.Report.vx_family | String | The file malware family. | 
-| CrowdStrike.Report.url_analysis | Boolean |  | 
-| CrowdStrike.Report.analysis_start_time | Date |  | 
+| CrowdStrike.Report.url_analysis | Boolean | Whether this report is url analysis. | 
+| CrowdStrike.Report.analysis_start_time | Date | The start time of the analysis. | 
 | CrowdStrike.Report.threat_score | Number | The file threat score. | 
 | CrowdStrike.Report.interesting | Boolean | Whether the file was found to be interesting. | 
 | CrowdStrike.Report.threat_level | Number | The file threat level. | 
 | CrowdStrike.Report.verdict | String | The file verdict. | 
-| CrowdStrike.Report.total_network_connections | Number |  | 
-| CrowdStrike.Report.total_processes | Number |  | 
-| CrowdStrike.Report.total_signatures | Number |  | 
+| CrowdStrike.Report.total_network_connections | Number | The total number of network connections. | 
+| CrowdStrike.Report.total_processes | Number | The total number of processes. | 
+| CrowdStrike.Report.total_signatures | Number | The total number of signatures. | 
 | CrowdStrike.Report.file_metadata | Object | The file metadata. | 
 | CrowdStrike.Report.submissions.submission_id | String | The submission ID. | 
-| CrowdStrike.Report.submissions.filename | String |  | 
-| CrowdStrike.Report.submissions.url | String |  | 
-| CrowdStrike.Report.submissions.created_at | Date |  | 
-| CrowdStrike.Report.network_mode | String |  | 
+| CrowdStrike.Report.submissions.filename | String | The name of the file. | 
+| CrowdStrike.Report.submissions.url | String | The url. | 
+| CrowdStrike.Report.submissions.created_at | Date | When the submission was created. | 
+| CrowdStrike.Report.network_mode | String | The network mode. | 
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.SHA1 | string | The SHA1 hash of the file. | 
 | File.MD5 | string | The MD5 hash of the file. | 
@@ -3633,6 +3056,12 @@ Returns file information and reputation.
 #### Context Example
 ```json
 {
+    "CofenseIntelligence": {
+        "File": {
+            "Data": "8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51",
+            "Threats": []
+        }
+    },
     "CrowdStrike": {
         "Report": [
             {
@@ -4311,10 +3740,6 @@ Returns file information and reputation.
 >### Scan Results:
 >|submit name|threat level|verdict|total network connections|total processes|environment description|interesting|environment id|url analysis|analysis start time|total signatures|type|type short|sha256|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| file | 0 | whitelisted | 0 | 0 | Static Analysis | false |  | false | 2020-09-15T16:47:06+00:00 | 0 | PDF document, version 1.3 | pdf | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 |
->| samplePdf.pdf | 0 | no specific threat | 0 | 0 | Android Static Analysis | false | 200 | false | 2021-12-06T15:19:23+00:00 | 1 | PDF document, version 1.3 | pdf | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 |
->| file | 0 | no specific threat | 0 | 4 | Windows 7 32 bit (HWP Support) | false | 110 | false | 2020-04-14T13:11:37+00:00 | 14 | PDF document, version 1.3 | pdf | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 |
->| sample.pdf | 0 | no specific threat | 0 | 4 | Windows 7 64 bit | false | 120 | false | 2019-09-24T13:39:34+00:00 | 12 | PDF document, version 1.3 | pdf | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 |
 >| 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51_1549672910345_sample.pdf | 0 | whitelisted | 0 | 1 | Windows 7 32 bit | false | 100 | false | 2019-02-09T01:41:57+00:00 | 9 | PDF document, version 1.3 | pdf | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 |
 
 
@@ -4353,7 +3778,7 @@ Downloads the sample file.
 ```json
 {
     "File": {
-        "EntryID": "321@f80880ff-f5c9-4e8f-843b-3fcfb6f8c1c6",
+        "EntryID": "425@8aab2ce5-e14e-4cfc-81dc-6eef69c76e68",
         "Extension": "gz",
         "Info": "gz",
         "MD5": "227f491cfca844bc56127216c956c59a",
@@ -4368,9 +3793,6 @@ Downloads the sample file.
 }
 ```
 
-#### Human Readable Output
-
->Requested sample is available for download under the name 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51.bin.sample.gz
 
 ### cs-falcon-sandbox-report-state
 ***
@@ -4393,10 +3815,10 @@ Gets the report state for the given ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.State.state | String |  | 
-| CrowdStrike.State.error_type | String |  | 
-| CrowdStrike.State.error_origin | String |  | 
-| CrowdStrike.State.error | String |  | 
+| CrowdStrike.State.state | String | The state of the report. | 
+| CrowdStrike.State.error_type | String | The error type of the report. | 
+| CrowdStrike.State.error_origin | String | The error origin. | 
+| CrowdStrike.State.error | String | The error description. | 
 
 #### Command example
 ```!cs-falcon-sandbox-report-state file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 environmentID=300```
