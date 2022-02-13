@@ -891,7 +891,7 @@ def get_images_data(packs_list: list):
     return images_data
 
 
-def sign_and_zip_pack(pack, signature_key, delete_test_playbooks):
+def sign_and_zip_pack(pack, signature_key, delete_test_playbooks=False):
     """
     Prepares the pack before zip, and then zips it.
     Args:
