@@ -842,7 +842,6 @@ POLLING_CASES = [
 
 @pytest.mark.parametrize('args,request_status,args_to_compare,expected_results', POLLING_CASES)
 def test_run_script_polling(mocker, args, request_status, args_to_compare, expected_results):
-    import MicrosoftDefenderAdvancedThreatProtection
     import CommonServerPython
 
     def mock_action_command(client, args):
