@@ -1,8 +1,5 @@
 import pytest
-import requests
-
 from Lastline_v2 import *
-import Lastline_v2
 
 from CommonServerPython import DemistoException
 
