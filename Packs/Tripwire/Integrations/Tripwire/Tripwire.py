@@ -22,7 +22,7 @@ URL_SUFFIX: Dict[str, str] = {
     'ELEMENTS': '/elements?{}',
     'VERSIONS': '/versions?{}',
     'TOKEN': '/csrf-token',
-    'RULES': '/rules?{}', }
+    'RULES': '/rules?{}', 'TESTS': '/tests?{}'}
 
 RULES_HUMAN_READABLE_HEADERS: Dict[str, list] = {
     'RULES': ['name', 'id', 'severity', 'elementName', 'type', 'command', 'importedTime', 'modifiedTime'],
