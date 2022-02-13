@@ -920,7 +920,8 @@ def prepare_and_zip_pack(pack, signature_key):
     return task_status
 
 
-def upload_packs_with_dependencies_zip(signature_key, storage_bucket, storage_base_path, packs_for_current_marketplace_dict):
+def upload_packs_with_dependencies_zip(signature_key, storage_bucket, storage_base_path,
+                                       packs_for_current_marketplace_dict):
     """
     Uploads packs with mandatory dependencies zip for all packs
     Args:
@@ -933,7 +934,7 @@ def upload_packs_with_dependencies_zip(signature_key, storage_bucket, storage_ba
     """
     logging.info("Starting to collect pack with dependencies zips")
     try:
-        for pack_name, pack in packs_for_current_marketplace_dict:
+        for pack_name, pack in packs_for_current_marketplace_dict.items():
             logging.info(f"Collecting dependencies of {pack_name}")
             pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
             zip_with_deps_path = os.path.join(pack.path, pack_name + "_with_dependencies.zip")
@@ -1113,7 +1114,7 @@ def main():
             packs_for_current_marketplace_dict[pack.name] = pack
 
     # iterating over packs that are for this current marketplace
-    # we iterate over all packs (and not just for modified packs) for ceveral reasons -
+    # we iterate over all packs (and not just for modified packs) for several reasons -
     # 1. we might need the info about this pack if a modified pack is dependent on it.
     # 2. even if the pack is not updated, we still keep some fields in it's metadata updated, such as download count,
     # changelog, etc.
