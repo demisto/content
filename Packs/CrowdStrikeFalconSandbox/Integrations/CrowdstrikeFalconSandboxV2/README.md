@@ -2,7 +2,7 @@
 
 Use the CrowdStrike Falcon Sandbox integration to submit and analyze files and URLs.
 
-This integration is backwards compatible with CrowdStrike Falcon Sandbox v1.
+This integration is backwards compatible with the CrowdStrike Falcon Sandbox integration.
 
 The maximum file upload size is 100 MB.
 
