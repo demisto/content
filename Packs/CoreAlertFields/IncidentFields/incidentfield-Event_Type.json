@@ -1,19 +1,19 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "excluded",
+    "cliName": "eventtype",
     "closeForm": false,
     "content": true,
-    "description": "Whether the alert is excluded by an exclusion configuration",
+    "description": "The type of event on which the alert was triggered: File Event, Injection Event, Load Image Event, Network Event, Process Execution, Registry Event",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_excluded",
+    "id": "incident_eventtype",
     "isReadOnly": false,
     "locked": false,
-    "name": "Excluded",
+    "name": "Event Type",
     "neverSetAsRequired": false,
-    "openEnded": false,
+    "openEnded": true,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
@@ -22,11 +22,11 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "boolean",
+    "type": "multiSelect",
     "unmapped": true,
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "is_whitelisted"
+	"x2_fields": "event_type"
 }

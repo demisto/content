@@ -1,19 +1,19 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "excluded",
+    "cliName": "action",
     "closeForm": false,
     "content": true,
-    "description": "Whether the alert is excluded by an exclusion configuration",
+    "description": "Action taken by the alert sensor, either Detected or Prevented with action status displayed in parenthesis.",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_excluded",
+    "id": "incident_action",
     "isReadOnly": false,
     "locked": false,
-    "name": "Excluded",
+    "name": "Action",
     "neverSetAsRequired": false,
-    "openEnded": false,
+    "openEnded": true,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
@@ -22,11 +22,11 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "boolean",
+    "type": "shortText",
     "unmapped": true,
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "is_whitelisted"
+	"x2_fields": "alert_action_status"
 }
