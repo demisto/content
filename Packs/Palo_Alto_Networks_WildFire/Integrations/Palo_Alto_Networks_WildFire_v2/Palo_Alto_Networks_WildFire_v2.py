@@ -735,25 +735,34 @@ def parse_file_report(reports, file_info):
     for report in reports:
         if 'network' in report and report["network"]:
             if 'UDP' in report["network"]:
-                for udp_obj in report["network"]["UDP"]:
-                    if '-ip' in udp_obj:
-                        udp_ip.append(udp_obj["-ip"])
-                        feed_related_indicators.append({'value': udp_obj["-ip"], 'type': 'IP'})
-                    if '-port' in udp_obj:
-                        udp_port.append(udp_obj["-port"])
+                udp_objects = report["network"]["UDP"]
+                if not isinstance(udp_objects, list):
+                    udp_objects = [udp_objects]
+                for udp_obj in udp_objects:
+                    if '@ip' in udp_obj:
+                        udp_ip.append(udp_obj["@ip"])
+                        feed_related_indicators.append({'value': udp_obj["@ip"], 'type': 'IP'})
+                    if '@port' in udp_obj:
+                        udp_port.append(udp_obj["@port"])
             if 'TCP' in report["network"]:
-                for tcp_obj in report["network"]["TCP"]:
-                    if '-ip' in tcp_obj:
-                        tcp_ip.append(tcp_obj["-ip"])
-                        feed_related_indicators.append({'value': tcp_obj["-ip"], 'type': 'IP'})
-                    if '-port' in tcp_obj:
-                        tcp_port.append(tcp_obj['-port'])
+                tcp_objects = report["network"]["TCP"]
+                if not isinstance(tcp_objects, list):
+                    tcp_objects = [tcp_objects]
+                for tcp_obj in tcp_objects:
+                    if '@ip' in tcp_obj:
+                        tcp_ip.append(tcp_obj["@ip"])
+                        feed_related_indicators.append({'value': tcp_obj["@ip"], 'type': 'IP'})
+                    if '@port' in tcp_obj:
+                        tcp_port.append(tcp_obj['@port'])
             if 'dns' in report["network"]:
-                for dns_obj in report["network"]["dns"]:
-                    if '-query' in dns_obj:
-                        dns_query.append(dns_obj['-query'])
-                    if '-response' in dns_obj:
-                        dns_response.append(dns_obj['-response'])
+                dns_objects = report["network"]["dns"]
+                if not isinstance(dns_objects, list):
+                    dns_objects = [dns_objects]
+                for dns_obj in dns_objects:
+                    if '@query' in dns_obj:
+                        dns_query.append(dns_obj['@query'])
+                    if '@response' in dns_obj:
+                        dns_response.append(dns_obj['@response'])
             if 'url' in report["network"]:
                 url = ''
                 if '@host' in report["network"]["url"]:
@@ -766,29 +775,45 @@ def parse_file_report(reports, file_info):
         if 'evidence' in report and report["evidence"]:
             if 'file' in report["evidence"]:
                 if isinstance(report["evidence"]["file"], dict) and 'entry' in report["evidence"]["file"]:
-                    if '-md5' in report["evidence"]["file"]["entry"]:
-                        evidence_md5.append(report["evidence"]["file"]["entry"]["-md5"])
-                    if '-text' in report["evidence"]["file"]["entry"]:
-                        evidence_text.append(report["evidence"]["file"]["entry"]["-text"])
+                    if '@md5' in report["evidence"]["file"]["entry"]:
+                        evidence_md5.append(report["evidence"]["file"]["entry"]["@md5"])
+                    if '@text' in report["evidence"]["file"]["entry"]:
+                        evidence_text.append(report["evidence"]["file"]["entry"]["@text"])
 
         if 'elf_info' in report and report["elf_info"]:
             if 'Domains' in report["elf_info"]:
                 if isinstance(report["elf_info"]["Domains"], dict) and 'entry' in report["elf_info"]["Domains"]:
-                    for domain in report["elf_info"]["Domains"]["entry"]:
+                    entry = report["elf_info"]["Domains"]["entry"]
+                    # when there is only one entry, it is returned as a single string not a list
+                    if not isinstance(entry, list):
+                        entry = [entry]
+                    for domain in entry:
                         feed_related_indicators.append({'value': domain, 'type': 'Domain'})
             if 'IP_Addresses' in report["elf_info"]:
-                if isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in\
+                if isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in \
                         report["elf_info"]["IP_Addresses"]:
-                    for ip in report["elf_info"]["IP_Addresses"]["entry"]:
+                    entry = report["elf_info"]["IP_Addresses"]["entry"]
+                    # when there is only one entry, it is returned as a single string not a list
+                    if not isinstance(entry, list):
+                        entry = [entry]
+                    for ip in entry:
                         feed_related_indicators.append({'value': ip, 'type': 'IP'})
             if 'suspicious' in report["elf_info"]:
-                if 'entry' in report["elf_info"]['suspicious']:
-                    for entry_obj in report["elf_info"]['suspicious']['entry']:
+                if isinstance(report["elf_info"]["suspicious"], dict) and 'entry' in report["elf_info"]['suspicious']:
+                    entry = report["elf_info"]["suspicious"]["entry"]
+                    # when there is only one entry, it is returned as a single json not a list
+                    if not isinstance(entry, list):
+                        entry = [entry]
+                    for entry_obj in entry:
                         if '#text' in entry_obj and '@description' in entry_obj:
                             behavior.append({'details': entry_obj['#text'], 'action': entry_obj['@description']})
             if 'URLs' in report["elf_info"]:
-                if 'entry' in report["elf_info"]['URLs']:
-                    for url in report["elf_info"]['URLs']['entry']:
+                if isinstance(report["elf_info"]["URLs"], dict) and 'entry' in report["elf_info"]['URLs']:
+                    entry = report["elf_info"]["URLs"]["entry"]
+                    # when there is only one entry, it is returned as a single string not a list
+                    if not isinstance(entry, list):
+                        entry = [entry]
+                    for url in entry:
                         feed_related_indicators.append({'value': url, 'type': 'URL'})
 
     outputs = {
@@ -810,7 +835,7 @@ def parse_file_report(reports, file_info):
         if len(tcp_ip) > 0 or len(tcp_port) > 0:
             outputs["Network"]["TCP"] = {}
             if len(tcp_ip) > 0:
-                outputs["Network"]["TCP."]["IP"] = tcp_ip
+                outputs["Network"]["TCP"]["IP"] = tcp_ip
             if len(tcp_port) > 0:
                 outputs["Network"]["TCP"]["Port"] = tcp_port
 
@@ -1025,6 +1050,7 @@ def wildfire_get_report_command(args):
     md5 = args.get('md5')
     inputs = urls if urls else hash_args_handler(sha256, md5)
 
+    status = ''
     for element in inputs:
         command_results, status = wildfire_get_url_report(element) if urls else wildfire_get_file_report(element, args)
         command_results_list.append(command_results)

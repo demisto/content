@@ -10,7 +10,7 @@ import glob
 from unittest.mock import mock_open
 from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
-from distutils.version import LooseVersion
+from packaging.version import Version
 from freezegun import freeze_time
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple, Any
@@ -84,7 +84,7 @@ class TestMetadataParsing:
     def dummy_pack(self):
         """ dummy pack fixture
         """
-        return Pack(pack_name="Test Pack Name", pack_path="dummy_path")
+        return Pack(pack_name="Test Pack Name", pack_path="dummy_path", marketplace="xsoar")
 
     def test_validate_all_fields_of_parsed_metadata(self, dummy_pack, dummy_pack_metadata):
         """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
@@ -483,7 +483,7 @@ class TestHelperFunctions:
         """ Tests that is_feed for pack changes if it has a playbook that starts with "TIM " or an integration with
             script.feed==true
         """
-        dummy_pack = Pack(pack_name="TestPack", pack_path="dummy_path")
+        dummy_pack = Pack(pack_name="TestPack", pack_path="dummy_path", marketplace="xsoar")
         dummy_pack.is_feed_pack(yaml_context, yaml_type)
         assert dummy_pack.is_feed == is_actually_feed
 
@@ -502,7 +502,8 @@ class TestHelperFunctions:
         os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks')
         os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test/Integrations')
         os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks/NonCircleTests')
-        test_pack = Pack(pack_name="pack_to_test", pack_path='Tests/Marketplace/Tests/test_data/pack_to_test')
+        test_pack = Pack(pack_name="pack_to_test", pack_path='Tests/Marketplace/Tests/test_data/pack_to_test',
+                         marketplace="xsoar")
         test_pack.remove_unwanted_files()
         assert not os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks')
         assert os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/Integrations')
@@ -518,7 +519,7 @@ class TestVersionSorting:
     def dummy_pack(self):
         """ dummy pack fixture
         """
-        return Pack(pack_name="TestPack", pack_path="dummy_path")
+        return Pack(pack_name="TestPack", pack_path="dummy_path", marketplace="xsoar")
 
     def test_not_existing_changelog_json(self, mocker, dummy_pack):
         """ In case changelog.json doesn't exists, expected result should be initial version 1.0.0
@@ -538,7 +539,7 @@ class TestChangelogCreation:
         """ dummy pack fixture
         """
         dummy_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data")
-        sample_pack = Pack(pack_name="TestPack", pack_path=dummy_path)
+        sample_pack = Pack(pack_name="TestPack", pack_path=dummy_path, marketplace="xsoar")
         sample_pack.description = 'Sample description'
         sample_pack.current_version = '1.0.0'
         return sample_pack
@@ -1032,7 +1033,7 @@ class TestImagesUpload:
     def dummy_pack(self):
         """ dummy pack fixture
         """
-        return Pack(pack_name="TestPack", pack_path="dummy_path")
+        return Pack(pack_name="TestPack", pack_path="dummy_path", marketplace="xsoar")
 
     @pytest.mark.parametrize("integration_name,expected_result", [
         ("Have I Been Pwned? v2",
@@ -1180,7 +1181,7 @@ class TestCopyAndUploadToStorage:
     def dummy_pack(self):
         """ dummy pack fixture
         """
-        return Pack(pack_name="TestPack", pack_path="dummy_path")
+        return Pack(pack_name="TestPack", pack_path="dummy_path", marketplace="xsoar")
 
     def test_copy_and_upload_to_storage_not_found(self, mocker, dummy_pack):
         """
@@ -1266,7 +1267,7 @@ class TestLoadUserMetadata:
     def dummy_pack(self):
         """ dummy pack fixture
         """
-        return Pack(pack_name="TestPack", pack_path="dummy_path")
+        return Pack(pack_name="TestPack", pack_path="dummy_path", marketplace="xsoar")
 
     def test_load_user_metadata(self, dummy_pack, dummy_pack_metadata, tmp_path):
         """
@@ -1362,7 +1363,7 @@ class TestSetDependencies:
             }
         }
 
-        p = Pack('ImpossibleTraveler', 'dummy_path')
+        p = Pack('ImpossibleTraveler', 'dummy_path', marketplace="xsoar")
         dependencies = json.dumps(metadata['dependencies'])
         dependencies = json.loads(dependencies)
         dependencies.update(generated_dependencies['ImpossibleTraveler']['dependencies'])
@@ -1421,7 +1422,7 @@ class TestSetDependencies:
         }
 
         metadata['dependencies'] = {}
-        p = Pack('ImpossibleTraveler', 'dummy_path')
+        p = Pack('ImpossibleTraveler', 'dummy_path', marketplace="xsoar")
         p._user_metadata = metadata
         p.set_pack_dependencies(generated_dependencies)
 
@@ -1441,7 +1442,7 @@ class TestSetDependencies:
 
         metadata = self.get_pack_metadata()
         dependencies = metadata['dependencies']
-        p = Pack('ImpossibleTraveler', 'dummy_path')
+        p = Pack('ImpossibleTraveler', 'dummy_path', 'xsoar')
         p._user_metadata = metadata
         p.set_pack_dependencies({})
         assert p.user_metadata['dependencies'] == dependencies
@@ -1477,7 +1478,7 @@ class TestSetDependencies:
         metadata['dependencies'] = {}
         metadata['name'] = 'HelloWorld'
         metadata['id'] = 'HelloWorld'
-        p = Pack('HelloWorld', 'dummy_path')
+        p = Pack('HelloWorld', 'dummy_path', 'xsoar')
         p._user_metadata = metadata
         dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
         dependencies = json.loads(dependencies)
@@ -1522,7 +1523,7 @@ class TestSetDependencies:
         }
 
         metadata['dependencies'] = {}
-        p = Pack('HelloWorld', 'dummy_path')
+        p = Pack('HelloWorld', 'dummy_path', 'xsoar')
         p._user_metadata = metadata
 
         with pytest.raises(Exception) as e:
@@ -1565,7 +1566,7 @@ class TestSetDependencies:
             }
         }
 
-        p = Pack('HelloWorld', 'dummy_path')
+        p = Pack('HelloWorld', 'dummy_path', 'xsoar')
         user_dependencies = metadata['dependencies']
         dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
         dependencies = json.loads(dependencies)
@@ -1586,7 +1587,7 @@ class TestReleaseNotes:
     def dummy_pack(self):
         """ dummy pack fixture
         """
-        return Pack(pack_name="TestPack", pack_path="dummy_path")
+        return Pack(pack_name="TestPack", pack_path="dummy_path", marketplace="xsoar")
 
     def test_get_changelog_latest_rn(self, mocker, dummy_pack):
         """
@@ -1626,7 +1627,7 @@ class TestReleaseNotes:
         mocker.patch('os.path.exists', return_value=True)
         changelog, changelog_latest_rn_version, changelog_latest_rn = dummy_pack.get_changelog_latest_rn('fake_path')
         assert changelog == original_changelog_dict
-        assert changelog_latest_rn_version == LooseVersion('2.0.0')
+        assert changelog_latest_rn_version == Version('2.0.0')
         assert changelog_latest_rn == "Second release notes"
 
     def test_create_local_changelog(self, mocker, dummy_pack):
@@ -1678,7 +1679,7 @@ class TestReleaseNotes:
         open_mocker['rn_dir_fake_path/2_0_0.md'].read_data = rn_two
         mocker.patch('builtins.open', open_mocker)
         rn_lines, latest_rn, new_versions = \
-            dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.0'), '')
+            dummy_pack.get_release_notes_lines('rn_dir_fake_path', Version('1.0.0'), '')
         assert latest_rn == '2.0.0'
         assert rn_lines == aggregated_rn
         assert new_versions == ['1.1.0', '2.0.0']
@@ -1700,7 +1701,7 @@ class TestReleaseNotes:
         mocker.patch('builtins.open', mock_open(read_data=rn))
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
         rn_lines, latest_rn, new_versions = \
-            dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'), rn)
+            dummy_pack.get_release_notes_lines('rn_dir_fake_path', Version('1.0.1'), rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == rn
         assert new_versions == []
@@ -1723,31 +1724,31 @@ class TestReleaseNotes:
 
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
         rn_lines, latest_rn, new_versions = \
-            dummy_pack.get_release_notes_lines('wow', LooseVersion('1.0.1'), changelog_latest_rn)
+            dummy_pack.get_release_notes_lines('wow', Version('1.0.1'), changelog_latest_rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == changelog_latest_rn
         assert new_versions == []
 
-    CHANGELOG_ENTRY_CONTAINS_BC_VERSION_INPUTS = [(LooseVersion('0.0.0'), LooseVersion('1.0.0'), [], dict(), dict()),
+    CHANGELOG_ENTRY_CONTAINS_BC_VERSION_INPUTS = [(Version('0.0.0'), Version('1.0.0'), [], dict(), dict()),
                                                   (
-                                                      LooseVersion('0.0.0'), LooseVersion('1.0.0'),
-                                                      [LooseVersion('1.0.1')], {'1.0.1': 'BC text'}, dict()),
+                                                      Version('0.0.0'), Version('1.0.0'),
+                                                      [Version('1.0.1')], {'1.0.1': 'BC text'}, dict()),
                                                   (
-                                                      LooseVersion('0.0.0'), LooseVersion('1.0.0'),
-                                                      [LooseVersion('1.0.0')], {'1.0.0': None},
+                                                      Version('0.0.0'), Version('1.0.0'),
+                                                      [Version('1.0.0')], {'1.0.0': None},
                                                       {'1.0.0': None}),
                                                   (
-                                                      LooseVersion('2.3.1'), LooseVersion('2.4.0'),
-                                                      [LooseVersion('2.3.1')], {'2.3.1': 'BC text'},
+                                                      Version('2.3.1'), Version('2.4.0'),
+                                                      [Version('2.3.1')], {'2.3.1': 'BC text'},
                                                       dict()),
-                                                  (LooseVersion('2.3.1'), LooseVersion('2.4.0'),
-                                                   [LooseVersion('2.3.1'), LooseVersion('2.3.2')],
+                                                  (Version('2.3.1'), Version('2.4.0'),
+                                                   [Version('2.3.1'), Version('2.3.2')],
                                                    {'2.3.1': None, '2.3.2': 'BC Text 232'}, {'2.3.2': 'BC Text 232'})]
 
     @pytest.mark.parametrize('predecessor_version, rn_version, bc_versions_list,bc_version_to_text, expected',
                              CHANGELOG_ENTRY_CONTAINS_BC_VERSION_INPUTS)
-    def test_changelog_entry_contains_bc_version(self, predecessor_version: LooseVersion, rn_version: LooseVersion,
-                                                 bc_versions_list: List[LooseVersion], bc_version_to_text, expected):
+    def test_changelog_entry_contains_bc_version(self, predecessor_version: Version, rn_version: Version,
+                                                 bc_versions_list: List[Version], bc_version_to_text, expected):
         """
            Given:
            - predecessor_version: Predecessor version of the changelog entry.
@@ -2081,7 +2082,10 @@ class TestStoreInCircleCIArtifacts:
 
     @staticmethod
     def get_successful_packs():
-        successful_packs = [Pack(pack_name='TestPack1', pack_path='.'), Pack(pack_name='TestPack2', pack_path='.')]
+        successful_packs = [
+            Pack(pack_name='TestPack1', pack_path='.', marketplace='xsoar'),
+            Pack(pack_name='TestPack2', pack_path='.', marketplace='xsoar'),
+        ]
         for pack in successful_packs:
             pack._status = PackStatus.SUCCESS.name
             pack._aggregated = True
@@ -2091,7 +2095,10 @@ class TestStoreInCircleCIArtifacts:
 
     @staticmethod
     def get_failed_packs():
-        failed_packs = [Pack(pack_name='TestPack3', pack_path='.'), Pack(pack_name='TestPack4', pack_path='.')]
+        failed_packs = [
+            Pack(pack_name='TestPack3', pack_path='.', marketplace='xsoar'),
+            Pack(pack_name='TestPack4', pack_path='.', marketplace='xsoar'),
+        ]
         for pack in failed_packs:
             pack._status = PackStatus.FAILED_UPLOADING_PACK.name
             pack._aggregated = False
@@ -2332,7 +2339,7 @@ class TestImageClassification:
     def dummy_pack(self):
         """ dummy pack fixture
         """
-        return Pack(pack_name="TestPack", pack_path="dummy_path")
+        return Pack(pack_name="TestPack", pack_path="dummy_path", marketplace="xsoar")
 
     @pytest.mark.parametrize('file_path, result', [
         ('Packs/TestPack/Author_image.png', False),

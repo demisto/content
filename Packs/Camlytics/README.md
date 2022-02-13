@@ -1,0 +1,1 @@
+Camlytics is a camera monitoring, surveillance and space analytics solution, used to get instant real-time statistics on people counting, vehicle counting, locations occupancy, queues, heatmaps and more.

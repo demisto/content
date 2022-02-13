@@ -26,7 +26,8 @@ def pass_files_to_docs_review(files_for_review: List[str]) -> int:
     doc_reviewer = DocReviewer(file_paths=files_for_review,
                                release_notes_only=True,
                                known_words_file_paths=['Tests/known_words.txt'],
-                               load_known_words_from_pack=True)
+                               load_known_words_from_pack=True,
+                               no_camel_case=True)
 
     result = doc_reviewer.run_doc_review()
     if not result:

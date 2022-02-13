@@ -2210,9 +2210,10 @@ def panorama_custom_url_category_remove_items(custom_url_category_name: str, ite
         raise Exception('Please commit the instance prior to editing the Custom URL Category.')
     description = custom_url_category.get('description')
 
+    custom_url_category_items = None
     if 'list' in custom_url_category:
         if 'member' in custom_url_category['list']:
-            custom_url_category_items = custom_url_category['list']['member']
+            custom_url_category_items = argToList(custom_url_category['list']['member'])
     if not custom_url_category_items:
         raise Exception('Custom url category does not contain sites or categories.')
 
@@ -4002,7 +4003,7 @@ def build_traffic_logs_query(source: str, destination: Optional[str], receive_ti
     if destination and len(destination) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(addr.dst in ' + source + ')'
+        query += '(addr.dst in ' + destination + ')'
     if receive_time and len(receive_time) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '

@@ -153,7 +153,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: json-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.23980
+  dockerimage: demisto/py3-tools:0.0.1.26536
   feed: true
   isfetch: false
   longRunning: false

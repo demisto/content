@@ -1,0 +1,42 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "remotehost",
+    "closeForm": false,
+    "content": true,
+	"description": "If the alert triggered on network activity (the Event Type is Network Connection) this is the the remote host name that triggered the alert. If not, then N/A.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_remotehost",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Remote Host",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+	"x2_fields": "action_external_hostname",
+    "Aliases": [
+        {
+          "cliName": "desthostname",
+          "type": "shortText"
+        },
+        {
+            "cliName": "detectedexternalhosts",
+            "type": "shortText"
+        }
+    ]
+}
