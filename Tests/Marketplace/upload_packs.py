@@ -1105,7 +1105,7 @@ def main():
             pack.cleanup()
             continue
 
-        if not pack.should_upload_to_marketplace:
+        if marketplace not in pack.marketplaces:
             logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
             pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name
             pack.cleanup()
@@ -1118,7 +1118,7 @@ def main():
     # 1. we might need the info about this pack if a modified pack is dependent on it.
     # 2. even if the pack is not updated, we still keep some fields in it's metadata updated, such as download count,
     # changelog, etc.
-    for pack_name, pack in packs_for_current_marketplace_dict:
+    for pack_name, pack in packs_for_current_marketplace_dict.items():
         task_status = pack.collect_content_items()
         if not task_status:
             pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
