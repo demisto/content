@@ -1526,10 +1526,6 @@ class Pack(object):
                 }
                 logging.info(f'Created {Pack.CHANGELOG_JSON} for pack {self._pack_name} starting at version'
                              f' {self._current_version}')
-            # else:
-            #     logging.error(f"No release notes found for: {self._pack_name}")
-            #     task_status = False
-            #     return task_status, not_updated_build
 
             # Update change log entries with BC flag.
             self.add_bc_entries_if_needed(release_notes_dir, changelog)
