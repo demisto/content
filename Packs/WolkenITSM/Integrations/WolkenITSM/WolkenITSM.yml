@@ -9,7 +9,7 @@ configuration:
   required: true
   type: 0
 - display: API Key
-  name: api_key
+  name: credentials
   required: true
   type: 4
 - display: Client Id
@@ -40,7 +40,7 @@ contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
     itemVersion: ""
-    packID: 28ef71d8-1a45-488f-8a6d-3748f8cec171
+    packID: c1091d0b-427c-4355-825d-fb6be56bb89f
     propagationLabels:
     - all
     toServerVersion: ""
@@ -111,7 +111,8 @@ script:
       name: file_type
     - description: Pass file entry Id required to add in the incident
       name: file_entryId
-    - name: SourceId
+    - description: Pass SourceId required to add in the incident
+      name: SourceId
     description: Creates new Wolken ITSM incident
     name: wolken-create-incident-requestv1
     outputs:

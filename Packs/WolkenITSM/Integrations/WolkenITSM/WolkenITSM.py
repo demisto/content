@@ -34,9 +34,6 @@ class Client(BaseClient):
         })
 
         headers['accept'] = 'application/json'
-        print(formData)
-        print(headers)
-        print(type(formData))
         response = self._http_request('post', 'api/v1/incidents', data=formData, headers=headers)
         return response
 
@@ -273,7 +270,6 @@ def create_incident_requestv1_command(client: Client, args: Dict[str, Any]) -> C
         fileentryId = args.get('file_entryId')
 
     if filename is not None and filetype is not None and fileentryId is not None:
-        # print("123")
         file = [
             ('file', (filename, fileentryId, filetype))
         ]
@@ -317,7 +313,7 @@ def add_internal_notes_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 def get_access_token_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     params: Dict[str, Any] = demisto.params()
-    Authorization = params.get('api_key')
+    Authorization = params.get('credentials')
     domain = params.get('Domain')
     grant_type = str(args.get('grant_type', 'refresh_token'))
     refresh_token = params.get('Refresh Token')
@@ -332,14 +328,10 @@ def get_access_token_command(client: Client, args: Dict[str, Any]) -> CommandRes
                      f'correct usage when using OAuth).\n\n{e}')
 
     command_results = CommandResults(
-        # outputs_prefix='Wolken.UpdateIncidents',
-        # outputs_key_field='',
-        # outputs=response,
         raw_response=hr
     )
-    # return hr
 
-    CommandResults()
+    return command_results
 
 
 def get_incident_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -556,7 +548,7 @@ def main() -> None:
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     headers = {}
-    headers['Authorization'] = params['api_key']
+    headers['Authorization'] = params['credentials']
     headers['clientId'] = clientId
     headers['serviceAccount'] = serviceAccount
     headers['domain'] = domain
@@ -599,7 +591,7 @@ def main() -> None:
             raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
+        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
