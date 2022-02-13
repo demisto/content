@@ -102,6 +102,17 @@ def extract_file_info(entry_id: str) -> tuple:
     return file_type, file_path, file_name
 
 
+def parse_nesting_level(nesting_level_to_return, output):
+    if nesting_level_to_return == 'Outer file':
+        # return only the outer email info
+        return [output[0]]
+
+    elif nesting_level_to_return == 'Inner file':
+        # the last file in list it is the inner attached file
+        return [output[-1]]
+    return output
+
+
 def main():
     args = demisto.args()
     entry_id = args.get('entryid')
@@ -111,6 +122,7 @@ def main():
     parse_only_headers = argToBoolean(args.get('parse_only_headers', 'false'))
     forced_encoding = args.get('forced_encoding')
     default_encoding = args.get('default_encoding')
+    nesting_level_to_return = args.get('nesting_level_to_return', 'All files')
 
     file_type, file_path, file_name = extract_file_info(entry_id)
 
@@ -123,6 +135,9 @@ def main():
         results = []
         if isinstance(output, dict):
             output = [output]
+
+        elif nesting_level_to_return != 'All files':
+            output = parse_nesting_level(nesting_level_to_return, output)
 
         for email in output:
             if email.get('AttachmentsData'):

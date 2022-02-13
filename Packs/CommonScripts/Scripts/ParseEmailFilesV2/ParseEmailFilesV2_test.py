@@ -1,6 +1,8 @@
+import pytest
+
 import demistomock as demisto
 from CommonServerPython import *
-from ParseEmailFilesV2 import main, data_to_md
+from ParseEmailFilesV2 import main, data_to_md, parse_nesting_level
 
 
 def exec_command_for_file(
@@ -417,3 +419,83 @@ def test_md_output_with_body_text():
 
     md = data_to_md(email_data)
     assert expected == md
+
+
+@pytest.mark.parametrize('nesting_level_to_return, output, res', [('All files', ['output1'], ['output1']),
+                                                                  ('Outer file', ['output1', 'output2', 'output3'],
+                                                                   ['output1']),
+                                                                  ('Inner file', ['output1', 'output2', 'output3'],
+                                                                   ['output3'])])
+def test_parse_nesting_level(nesting_level_to_return, output, res):
+    """
+    Given:
+    - parsed email output, nesting_level_to_return param - All files.
+    - parsed email output, nesting_level_to_return param - Outer file.
+    - parsed email output, nesting_level_to_return param - Inner file.
+    When:
+    - Getting all nested emails.
+    - Getting only outer email file.
+    - Getting only inner email file.
+    Then: Validate that returned result as expected.
+    """
+    assert parse_nesting_level(nesting_level_to_return, output) == res
+
+
+@pytest.mark.parametrize('nesting_level_to_return, results_len, depth, results_index', [('All files', 4, 0, 2),
+                                                                                        ('Outer file', 3, 0, 2),
+                                                                                        ('Inner file', 1, 1, 0)])
+def test_eml_contains_eml_nesting_level(mocker, nesting_level_to_return, results_len, depth, results_index):
+    """
+    Given:
+    - A eml file contains eml, nesting_level_to_return param - All files.
+    - A eml file contains eml, nesting_level_to_return param - Outer file.
+    - A eml file contains eml, nesting_level_to_return param - Inner file.
+    When:
+    - Getting all nested emails.
+    - Getting only outer email file.
+    - Getting only inner email file.
+    Then: Validate that returned result as expected.
+    """
+    """
+    Given:
+        - A eml file contains eml
+        - depth = 1
+    When:
+        - run the ParseEmailFilesV2 script
+    Then:
+        - Ensure only the first mail is parsed
+        - Ensure the attachments of the first mail was returned
+    """
+    def executeCommand(name, args=None):
+        if name == 'getFilePath':
+            return [
+                {
+                    'Type': entryTypes['note'],
+                    'Contents': {
+                        'path': 'test_data/Fwd_test-inner_attachment_eml.eml',
+                        'name': 'Fwd_test-inner_attachment_eml.eml'
+                    }
+                }
+            ]
+        elif name == 'getEntry':
+            return [
+                {
+                    'Type': entryTypes['file'],
+                    'FileMetadata': {
+                        'info': 'news or mail text, ASCII text'
+                    }
+                }
+            ]
+        else:
+            raise ValueError('Unimplemented command called: {}'.format(name))
+
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test',
+                                                       'nesting_level_to_return': nesting_level_to_return})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'results')
+    main()
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args_list
+
+    assert len(results) == results_len
+    assert results[results_index].args[0]['EntryContext']['Email']['Depth'] == depth
