@@ -398,7 +398,7 @@ def run_url_command(url: str, params: dict) -> CommandResults:
             url (str): The queried URL.
 
          Returns:
-             result (CommandResults): The CommandResults object representing the url command results .
+             result (CommandResults): The CommandResults object representing the url command resultsgit .
     """
     try:
         url_information = query_url_information(url, params.get('api_url'), params.get('use_ssl')).json()
