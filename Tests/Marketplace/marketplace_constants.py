@@ -9,7 +9,7 @@ PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
 IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
 LANDING_PAGE_SECTIONS_PATH = os.path.abspath(os.path.join(__file__, '../landingPage_sections.json'))
-
+BASE_PACK_DEPENDENCY_DICT = {"Base": {"mandatory": True, "display_name": "Base"}}
 
 class BucketUploadFlow(object):
     """ Bucket Upload Flow constants
@@ -133,6 +133,7 @@ class Metadata(object):
     USE_CASES = 'useCases'
     KEY_WORDS = 'keywords'
     DEPENDENCIES = 'dependencies'
+    ALL_LEVELS_DEPENDENCIES = 'allLevelDependencies'
     PREMIUM = 'premium'
     VENDOR_ID = 'vendorId'
     PARTNER_ID = 'partnerId'

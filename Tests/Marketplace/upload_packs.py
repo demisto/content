@@ -890,37 +890,6 @@ def get_images_data(packs_list: list):
     return images_data
 
 
-def map_pack_dependencies_graph(pack_name, first_level_graph, full_dep_graph):
-    """ Travel the mandatory dependencies to collect all dependencies under each pack name
-
-    Args:
-        pack_name (str): Name of the pack to look dependencies for.
-        first_level_graph (dict): Graph of the first level dependencies.
-        full_dep_graph (dict): Graph of all level mandatory dependencies (lazily loaded).
-
-    Returns:
-        (dict): Full dependencies graph
-    """
-    if pack_name not in full_dep_graph:
-        pack_deps = set()
-        if pack_name != "Base":
-            # Base is always missing from the dependencies graph, but all are dependent on it
-            pack_deps.add("Base")
-        full_dep_graph[pack_name] = pack_deps
-        deps = first_level_graph.get(pack_name, {}).get('dependencies')
-        if not deps:
-            return full_dep_graph
-        for dep_name, dep_val in deps.items():
-            # add 1st level mandatory dependencies
-            if dep_val.get('mandatory'):
-                pack_deps.add(dep_name)
-                # add 2nd+ level mandatory dependencies
-                map_pack_dependencies_graph(dep_name, first_level_graph, full_dep_graph)
-                for inner_dep_name in full_dep_graph[dep_name]:
-                    pack_deps.add(inner_dep_name)
-    return full_dep_graph
-
-
 def prepare_and_zip_pack(pack, signature_key):
     """
     Prepares the pack before zip, and then zips it.
@@ -932,16 +901,6 @@ def prepare_and_zip_pack(pack, signature_key):
         (bool): Whether the zip was successful
     """
 
-    if not pack.should_upload_to_marketplace:
-        logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
-        pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name
-        pack.cleanup()
-        return False
-    # task_status = pack.collect_content_items()
-    # if not task_status:
-    #     pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
-    #     pack.cleanup()
-    #     return False
     task_status = pack.remove_unwanted_files()
     if not task_status:
         pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
@@ -960,47 +919,33 @@ def prepare_and_zip_pack(pack, signature_key):
     return task_status
 
 
-def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, signature_key,
-                                       storage_bucket, storage_base_path, packs_dict):
+def upload_packs_with_dependencies_zip(signature_key, storage_bucket, storage_base_path, packs_for_current_marketplace_dict):
     """
     Uploads packs with mandatory dependencies zip for all packs
     Args:
-        extract_destination_path (str): Base destination of Packs folder
-        packs_dependencies_mapping (dict): First level dependency mapping
         signature_key (str): Signature key used for encrypting packs
         storage_base_path (str): The upload destination in the target bucket for all packs (in the format of
                                  <some_path_in_the_target_bucket>/content/Packs).
         storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
-        packs_dict (dict): Dict of packs relevant for current marketplact as {pack_name: pack_object}
+        packs_for_current_marketplace_dict (dict): Dict of packs relevant for current marketplace as {pack_name: pack_object}
 
     """
     logging.info("Starting to collect pack with dependencies zips")
-    full_deps_graph: dict = {}
     try:
-        for pack_name, pack in packs_dict:
+        for pack_name, pack in packs_for_current_marketplace_dict:
             logging.info(f"Collecting dependencies of {pack_name}")
             pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
             zip_with_deps_path = os.path.join(pack.path, pack_name + "_with_dependencies.zip")
             upload_path = os.path.join(storage_base_path, pack_name, pack_name + "_with_dependencies.zip")
             Path(pack_with_dep_path).mkdir(parents=True, exist_ok=True)
-            full_deps_graph = map_pack_dependencies_graph(pack_name, packs_dependencies_mapping, full_deps_graph)
-            if pack_name not in full_deps_graph:
-                logging.error(f"Skipping dependencies collection for {pack_name}. missing from full_deps_graph")
-                continue
-            pack_deps = full_deps_graph[pack_name]
             if not (pack.zip_path and os.path.isfile(pack.zip_path)):
                 task_status = prepare_and_zip_pack(pack, signature_key)
                 if not task_status:
                     logging.warning(f"Skipping dependencies collection for {pack_name}. Failed zipping")
                     continue
             shutil.copy(pack.zip_path, os.path.join(pack_with_dep_path, pack_name + ".zip"))
-            for dep_name in pack_deps:
-                # sanity - all packs should already be in packs_dict
-                if dep_name not in packs_dict:
-                    dep_pack = Pack(dep_name, os.path.join(extract_destination_path, dep_name))
-                    packs_dict[dep_name] = dep_pack
-                else:
-                    dep_pack = packs_dict[dep_name]
+            for dep_name in pack.all_levels_dependencies:
+                dep_pack = packs_for_current_marketplace_dict.get(dep_name)
                 if not (dep_pack.zip_path and os.path.isfile(dep_pack.zip_path)):
                     task_status = prepare_and_zip_pack(dep_pack, signature_key)
                     if not task_status:
@@ -1333,8 +1278,7 @@ def main():
     # marketplace v2 isn't currently supported - dependencies zip should only be used for v1
     if is_create_dependencies_zip and marketplace == 'xsoar':
         # handle packs with dependencies zip
-        upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, signature_key,
-                                           storage_bucket, storage_base_path, id_set, packs_list, marketplace)
+        upload_packs_with_dependencies_zip(signature_key, storage_bucket, storage_base_path, packs_for_current_marketplace_dict)
 
 
 if __name__ == '__main__':
