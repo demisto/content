@@ -32,73 +32,59 @@
     "Aliases": [
         {
             "cliName": "sourceipoffense",
-            "type": "multiSelect",
-            "name": "Source IP - Offense"
+            "type": "multiSelect"
         },
         {
             "cliName": "f5silverlinegeolocationsourceip",
-            "type": "shortText",
-            "name": "F5 Silverline Geo Location Source IP"
+            "type": "shortText"
         },
         {
             "cliName": "f5silverlinemessageoriginatorsourceip",
-            "type": "shortText",
-            "name": "F5 Silverline Message Originator Source IP "
+            "type": "shortText"
         },
         {
             "cliName": "f5silverlinetranslatedsourceip",
-            "type": "shortText",
-            "name": "F5 Silverline Translated Source IP"
+            "type": "shortText"
         },
         {
             "cliName": "sourceip",
-            "type": "shortText",
-            "name": "Source IP"
+            "type": "shortText"
         },
         {
             "cliName": "sourceips",
-            "type": "multiSelect",
-            "name": "Source IPs"
+            "type": "multiSelect"
         },
         {
             "cliName": "src",
-            "type": "shortText",
-            "name": "Src"
+            "type": "shortText"
         },
         {
             "cliName": "srcs",
-            "type": "multiSelect",
-            "name": "Srcs"
+            "type": "multiSelect"
         },
         {
             "cliName": "srcs",
-            "type": "multiSelect",
-            "name": "Srcs"
+            "type": "multiSelect"
         },
         {
             "cliName": "devicelocalip",
-            "type": "shortText",
-            "name": "Device Local IP"
+            "type": "shortText"
         },
         {
             "cliName": "sourceipv6",
-            "type": "multiSelect",
-            "name": "Source IPV6"
+            "type": "multiSelect"
         },
         {
             "cliName": "threathuntingdetectedip",
-            "type": "multiSelect",
-            "name": "Threat Hunting Detected IP"
+            "type": "multiSelect"
         },
         {
             "cliName": "detectedinternalips",
-            "type": "shortText",
-            "name": "Detected Internal IPs"
+            "type": "shortText"
         },
         {
             "cliName": "digitalguardiansourceip",
-            "type": "shortText",
-            "name": "Digital Guardian Source IP"
+            "type": "shortText"
         }
     ]
 }

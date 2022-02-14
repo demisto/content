@@ -32,18 +32,15 @@
     "Aliases": [
         {
             "cliName": "sourcenetwork",
-            "type": "shortText",
-            "name": "Source Network"
+            "type": "shortText"
         },
         {
             "cliName": "irondefensesrcnetworkid",
-            "type": "shortText",
-            "name": "IronDefense Src Network ID"
+            "type": "shortText"
         },
         {
             "cliName": "sourcenetworkoffense",
-            "type": "shortText",
-            "name": "Source Network - Offense"
+            "type": "shortText"
         }
     ]
 }

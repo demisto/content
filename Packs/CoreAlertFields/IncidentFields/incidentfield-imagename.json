@@ -31,8 +31,7 @@
     "Aliases": [
         {
             "cliName": "prismacloudcomputeimage",
-            "type": "shortText",
-            "name": "Prisma Cloud Compute Image"
+            "type": "shortText"
         }
     ]
 }

@@ -32,43 +32,35 @@
     "Aliases": [
         {
             "cliName": "chronicledomainname",
-            "type": "shortText",
-            "name": "Chronicle Domain Name"
+            "type": "shortText"
         },
         {
             "cliName": "cyberpiondomain",
-            "type": "multiSelect",
-            "name": "Cyberpion Domain"
+            "type": "multiSelect"
         },
         {
             "cliName": "destntdomain",
-            "type": "shortText",
-            "name": "Dest NT Domain"
+            "type": "shortText"
         },
         {
             "cliName": "digitalguardiandestinationdnsdomain",
-            "type": "shortText",
-            "name": "Digital Guardian Destination DNS Domain"
+            "type": "shortText"
         },
         {
             "cliName": "domainoffense",
-            "type": "shortText",
-            "name": "Domain - Offense"
+            "type": "shortText"
         },
         {
             "cliName": "expansedomain",
-            "type": "shortText",
-            "name": "Expanse Domain"
+            "type": "shortText"
         },
         {
             "cliName": "fireeyedomainname",
-            "type": "shortText",
-            "name": "FireEye Domain Name"
+            "type": "shortText"
         },
         {
             "cliName": "srcntdomain",
-            "type": "shortText",
-            "name": "Src NT Domain"
+            "type": "shortText"
         }
     ]
 }

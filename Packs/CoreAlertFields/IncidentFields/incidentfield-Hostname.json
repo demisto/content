@@ -32,108 +32,87 @@
     "Aliases": [
         {
             "cliName": "sourcehostname",
-            "type": "multiSelect",
-            "name": "Source Hostname"
+            "type": "multiSelect"
         },
         {
             "cliName": "hostname",
-            "type": "shortText",
-            "name": "Host Name"
+            "type": "shortText"
         },
         {
             "cliName": "illusivenetworkshostname",
-            "type": "shortText",
-            "name": "Illusive Networks Host Name"
+            "type": "shortText"
         },
         {
             "cliName": "infectedhostnames",
-            "type": "shortText",
-            "name": "Infected Hostnames"
+            "type": "shortText"
         },
         {
             "cliName": "infinipointhostname",
-            "type": "shortText",
-            "name": "Infinipoint hostname"
+            "type": "shortText"
         },
         {
             "cliName": "prismacloudcomputehost",
-            "type": "shortText",
-            "name": "Prisma Cloud Compute Host"
+            "type": "shortText"
         },
         {
             "cliName": "shadowitfqdn",
-            "type": "shortText",
-            "name": "Shadow IT FQDN"
+            "type": "shortText"
         },
         {
             "cliName": "sourcehostname",
-            "type": "shortText",
-            "name": "Source Hostname"
+            "type": "shortText"
         },
         {
             "cliName": "srchostname",
-            "type": "shortText",
-            "name": "Src Hostname"
+            "type": "shortText"
         },
         {
             "cliName": "threathuntingdetectedhostnames",
-            "type": "multiSelect",
-            "name": "Threat Hunting Detected Hostnames"
+            "type": "multiSelect"
         },
         {
             "cliName": "tidyhost",
-            "type": "shortText",
-            "name": "TidyHost"
+            "type": "shortText"
         },
         {
             "cliName": "bitsightassets",
-            "type": "longText",
-            "name": "BitSight Assets"
+            "type": "longText"
         },
         {
             "cliName": "bmcremedyforceclientname",
-            "type": "shortText",
-            "name": "Bmc Remedyforce Client Name"
+            "type": "shortText"
         },
         {
             "cliName": "darktracedevicehostname",
-            "type": "shortText",
-            "name": "Darktrace Device Hostname"
+            "type": "shortText"
         },
         {
             "cliName": "digitalguardiancomputername",
-            "type": "shortText",
-            "name": "Digital Guardian Computer Name "
+            "type": "shortText"
         },
         {
             "cliName": "dnsname",
-            "type": "multiSelect",
-            "name": "DNS Name"
+            "type": "multiSelect"
         },
         {
             "cliName": "extrahophostname",
-            "type": "shortText",
-            "name": "ExtraHop Hostname"
+            "type": "shortText"
         },
         {
             "cliName": "googlecloudsccfindingsourcepropertieshostname",
-            "type": "shortText",
-            "name": "GoogleCloudSCC Finding SourceProperties HostName"
+            "type": "shortText"
         },
         {
             "cliName": "desthostname",
-            "type": "shortText",
-            "name": "Dest Hostname"
+            "type": "shortText"
         },
         {
             "cliName": "destinationhostname",
-            "type": "shortText",
-            "name": "Destination Hostname"
+            "type": "shortText"
         },
         {
             "cliName": "hostnames",
-            "type": "multiSelect",
-            "name": "Hostnames"
+            "type": "multiSelect"
         }
     ]
 }

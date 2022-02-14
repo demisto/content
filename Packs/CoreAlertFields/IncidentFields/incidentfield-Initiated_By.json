@@ -32,18 +32,15 @@
     "Aliases": [
         {
             "cliName": "processname",
-            "type": "shortText",
-            "name": "Process Name"
+            "type": "shortText"
         },
         {
             "cliName": "carbonblackesprocessname",
-            "type": "shortText",
-            "name": "Carbon Black ES Process Name"
+            "type": "shortText"
         },
         {
             "cliName": "digitalguardianprocessname",
-            "type": "shortText",
-            "name": "Digital Guardian Process Name"
+            "type": "shortText"
         }
     ]
 }

@@ -32,43 +32,35 @@
     "Aliases": [
         {
             "cliName": "fireeyenxalertvictimport",
-            "type": "shortText",
-            "name": "FireEye NX Alert Victim Port"
+            "type": "shortText"
         },
         {
             "cliName": "fireeyenxeventvictimport",
-            "type": "shortText",
-            "name": "FireEye NX Event Victim Port"
+            "type": "shortText"
         },
         {
             "cliName": "sourceport",
-            "type": "shortText",
-            "name": "Source Port"
+            "type": "shortText"
         },
         {
             "cliName": "srcports",
-            "type": "shortText",
-            "name": "Src Ports"
+            "type": "shortText"
         },
         {
             "cliName": "f5silverlineclientport",
-            "type": "shortText",
-            "name": "F5 Silverline Client Port"
+            "type": "shortText"
         },
         {
             "cliName": "f5silverlinetranslatedsourceport",
-            "type": "shortText",
-            "name": "F5 Silverline Translated Source Port"
+            "type": "shortText"
         },
         {
             "cliName": "shadowitport",
-            "type": "number",
-            "name": "Shadow IT Port"
+            "type": "number"
         },
         {
             "cliName": "expanseport",
-            "type": "number",
-            "name": "Expanse Port"
+            "type": "number"
         }
     ]
 }

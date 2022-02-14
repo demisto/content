@@ -4,7 +4,6 @@
     "cliName": "filename",
     "closeForm": false,
     "content": true,
-    "description": "",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -32,28 +31,23 @@
     "Aliases": [
         {
             "cliName": "gibleakedfilename",
-            "type": "shortText",
-            "name": "GIB Leaked File Name"
+            "type": "shortText"
         },
         {
             "cliName": "pcapfilename",
-            "type": "shortText",
-            "name": "PCAP File Name"
+            "type": "shortText"
         },
         {
             "cliName": "digitalguardianattachmentfilename",
-            "type": "shortText",
-            "name": "Digital Guardian Attachment Filename"
+            "type": "shortText"
         },
         {
             "cliName": "digitalguardianfilename",
-            "type": "shortText",
-            "name": "Digital Guardian Filename"
+            "type": "shortText"
         },
         {
             "cliName": "filenames",
-            "type": "shortText",
-            "name": "File Names"
+            "type": "shortText"
         }
     ]
 }

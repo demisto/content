@@ -32,13 +32,11 @@
     "Aliases": [
         {
             "cliName": "processpath",
-            "type": "shortText",
-            "name": "Process Path"
+            "type": "shortText"
         },
         {
             "cliName": "cmdline",
-            "type": "multiSelect",
-            "name": "CMD line"
+            "type": "multiSelect"
         }
     ]
 }

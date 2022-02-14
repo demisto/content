@@ -32,13 +32,11 @@
     "Aliases": [
         {
             "cliName": "carbonblackesprocessid",
-            "type": "shortText",
-            "name": "Carbon Black ES Process Id"
+            "type": "shortText"
         },
         {
             "cliName": "pid",
-            "type": "multiSelect",
-            "name": "PID"
+            "type": "multiSelect"
         }
     ]
 }

@@ -4,7 +4,7 @@
     "cliName": "cgosha256",
     "closeForm": false,
     "content": true,
-	"description": "The SHA256 value of the CGO that initiated the alert.",
+    "description": "The SHA256 value of the CGO that initiated the alert.",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -28,5 +28,5 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "causality_actor_process_image_sha256"
+    "x2_fields": "causality_actor_process_image_sha256"
 }

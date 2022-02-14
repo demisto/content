@@ -32,8 +32,7 @@
     "Aliases": [
         {
             "cliName": "sha256",
-            "type": "shortText",
-            "name": "SHA256"
+            "type": "shortText"
         }
     ]
 }

@@ -32,63 +32,51 @@
     "Aliases": [
         {
             "cliName": "emailfrom",
-            "type": "shortText",
-            "name": "Email From"
+            "type": "shortText"
         },
         {
             "cliName": "ironscalessenderemail",
-            "type": "shortText",
-            "name": "Ironscales-sender_email"
+            "type": "shortText"
         },
         {
             "cliName": "proofpointtapsenderaddress",
-            "type": "shortText",
-            "name": "Proofpoint TAP Sender Address"
+            "type": "shortText"
         },
         {
             "cliName": "apdmessagemailfrom",
-            "type": "shortText",
-            "name": "APD Message Mail From"
+            "type": "shortText"
         },
         {
             "cliName": "cofensetriagereportfromaddress",
-            "type": "shortText",
-            "name": "Cofense Triage Report From Address"
+            "type": "shortText"
         },
         {
             "cliName": "cymulatesourceemailaddress",
-            "type": "shortText",
-            "name": "Cymulate Source Email Address"
+            "type": "shortText"
         },
         {
             "cliName": "cyrenexternalfrom",
-            "type": "shortText",
-            "name": "Cyren External From"
+            "type": "shortText"
         },
         {
             "cliName": "cyrenexternalsender",
-            "type": "shortText",
-            "name": "Cyren External Sender"
+            "type": "shortText"
         },
         {
             "cliName": "cyrenfromaddress",
-            "type": "shortText",
-            "name": "Cyren From Address"
+            "type": "shortText"
         },
         {
             "cliName": "cyrensenderaddress",
-            "type": "shortText",
-            "name": "Cyren Sender Address"
+            "type": "shortText"
         },
         {
             "cliName": "digitalguardianemailsender",
-            "type": "shortText",
-            "name": "Digital Guardian Email Sender"
+            "type": "shortText"
         },
         {
             "cliName": "phisheremailfrom",
-            "type": "shortText",
-            "name": "PhishER Email From"
+            "type": "shortText"
         }
     ]
 }

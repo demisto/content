@@ -28,5 +28,5 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "fw_vsys"
+    "x2_fields": "fw_vsys"
 }

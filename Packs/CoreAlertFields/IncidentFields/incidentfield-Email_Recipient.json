@@ -32,23 +32,19 @@
     "Aliases": [
         {
             "cliName": "emailto",
-            "type": "shortText",
-            "name": "Email To"
+            "type": "shortText"
         },
         {
             "cliName": "campaignemailto",
-            "type": "shortText",
-            "name": "Campaign Email To"
+            "type": "shortText"
         },
         {
             "cliName": "proofpointtapsmtprecipient",
-            "type": "shortText",
-            "name": "Proofpoint TAP SMTP Recipient"
+            "type": "shortText"
         },
         {
             "cliName": "digitalguardianemailrecipient",
-            "type": "shortText",
-            "name": "Digital Guardian Email Recipient"
+            "type": "shortText"
         }
     ]
 }

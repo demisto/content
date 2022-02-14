@@ -32,18 +32,15 @@
     "Aliases": [
         {
             "cliName": "cmd",
-            "type": "multiSelect",
-            "name": "CMD"
+            "type": "multiSelect"
         },
         {
             "cliName": "commandline",
-            "type": "shortText",
-            "name": "Command Line"
+            "type": "shortText"
         },
         {
             "cliName": "digitalguardiancommandline",
-            "type": "shortText",
-            "name": "Digital Guardian Command line"
+            "type": "shortText"
         }
     ]
 }

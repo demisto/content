@@ -32,8 +32,7 @@
     "Aliases": [
         {
             "cliName": "parentcmdline",
-            "type": "multiSelect",
-            "name": "Parent CMD line"
+            "type": "multiSelect"
         }
     ]
 }

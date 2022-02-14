@@ -32,43 +32,35 @@
     "Aliases": [
         {
             "cliName": "dstports",
-            "type": "multiSelect",
-            "name": "Dst Ports"
+            "type": "multiSelect"
         },
         {
             "cliName": "destinationport",
-            "type": "shortText",
-            "name": "Destination Port"
+            "type": "shortText"
         },
         {
             "cliName": "destinationports",
-            "type": "shortText",
-            "name": "Destination Ports"
+            "type": "shortText"
         },
         {
             "cliName": "digitalguardianremoteport",
-            "type": "shortText",
-            "name": "Digital Guardian Remote Port"
+            "type": "shortText"
         },
         {
             "cliName": "expanseport",
-            "type": "number",
-            "name": "Expanse Port"
+            "type": "number"
         },
         {
             "cliName": "fireeyec2port",
-            "type": "shortText",
-            "name": "FireEye C2 Port"
+            "type": "shortText"
         },
         {
             "cliName": "fireeyenxeventdestinationport",
-            "type": "shortText",
-            "name": "FireEye NX Event Destination Port"
+            "type": "shortText"
         },
         {
             "cliName": "irondefensedstport",
-            "type": "number",
-            "name": "IronDefense Dst Port"
+            "type": "number"
         }
     ]
 }

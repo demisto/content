@@ -28,5 +28,5 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "action_process_image_sha256"
+    "x2_fields": "action_process_image_sha256"
 }

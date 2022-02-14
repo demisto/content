@@ -32,8 +32,7 @@
     "Aliases": [
         {
             "cliName": "resourceid",
-            "type": "shortText",
-            "name": "Resource ID"
+            "type": "shortText"
         }
     ]
 }

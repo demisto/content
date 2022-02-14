@@ -32,53 +32,43 @@
     "Aliases": [
         {
             "cliName": "digitalguardiandestinationaddress",
-            "type": "shortText",
-            "name": "Digital Guardian Destination Address"
+            "type": "shortText"
         },
         {
             "cliName": "f5silverlinetranslateddestip",
-            "type": "shortText",
-            "name": "F5 Silverline Translated Dest IP"
+            "type": "shortText"
         },
         {
             "cliName": "irondefensedstip",
-            "type": "shortText",
-            "name": "IronDefense Dst IP"
+            "type": "shortText"
         },
         {
             "cliName": "destinationip",
-            "type": "shortText",
-            "name": "Destination IP"
+            "type": "shortText"
         },
         {
             "cliName": "destinationipoffense",
-            "type": "multiSelect",
-            "name": "Destination IP - Offense"
+            "type": "multiSelect"
         },
         {
             "cliName": "fireeyenxeventattackerip",
-            "type": "shortText",
-            "name": "FireEye NX Event Attacker IP"
+            "type": "shortText"
         },
         {
             "cliName": "dest",
-            "type": "shortText",
-            "name": "Dest"
+            "type": "shortText"
         },
         {
             "cliName": "destinationips",
-            "type": "multiSelect",
-            "name": "Destination IPs"
+            "type": "multiSelect"
         },
         {
             "cliName": "deviceexternalip",
-            "type": "shortText",
-            "name": "Device External IP"
+            "type": "shortText"
         },
         {
             "cliName": "externaladdresses",
-            "type": "shortText",
-            "name": "External Addresses"
+            "type": "shortText"
         }
     ]
 }

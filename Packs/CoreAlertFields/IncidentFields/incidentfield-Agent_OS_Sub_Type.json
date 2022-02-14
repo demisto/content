@@ -32,8 +32,7 @@
     "Aliases": [
         {
             "cliName": "osversion",
-            "type": "shortText",
-            "name": "OS Version"
+            "type": "shortText"
         }
     ]
 }

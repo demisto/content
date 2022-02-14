@@ -32,8 +32,7 @@
     "Aliases": [
         {
             "cliName": "chronicleruleid",
-            "type": "shortText",
-            "name": "Chronicle Rule ID"
+            "type": "shortText"
         }
     ]
 }
