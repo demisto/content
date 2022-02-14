@@ -65,7 +65,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       all:
-        simple: true
+        simple: yes
     separatecontext: false
     skipunavailable: false
     task:
