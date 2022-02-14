@@ -6,7 +6,7 @@
         "PAN-OS Network Operations - System Information"
     ],
     "caseInsensitive": true,
-    "cliName": "panoshighavailabilityupdatedstate",
+    "cliName": "panosnetworkoperationshighavailabilityupdatedstate",
     "closeForm": false,
     "columns": [
         {
@@ -42,10 +42,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panoshighavailabilityupdatedstate",
+    "id": "incident_panosnetworkoperationshighavailabilityupdatedstate",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS High-Availability Updated State",
+    "name": "PAN-OS Network Operations - High-Availability Updated State",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

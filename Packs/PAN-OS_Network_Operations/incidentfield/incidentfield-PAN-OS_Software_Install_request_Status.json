@@ -4,7 +4,7 @@
         "PAN-OS Network Operations - Device Upgrade"
     ],
     "caseInsensitive": true,
-    "cliName": "panossoftwareinstallrequeststatus",
+    "cliName": "panosnetworkoperationssoftwareinstallrequeststatus",
     "closeForm": false,
     "columns": [
         {
@@ -40,10 +40,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panossoftwareinstallrequeststatus",
+    "id": "incident_panosnetworkoperationssoftwareinstallrequeststatus",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS Software Install request Status",
+    "name": "PAN-OS Network Operations - Software Install request Status",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

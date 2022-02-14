@@ -4,7 +4,7 @@
         "PAN-OS Visibility Hygiene"
     ],
     "caseInsensitive": true,
-    "cliName": "panosconfigurationhygienecheckresult",
+    "cliName": "panosnetworkoperationsconfigurationhygienecheckresult",
     "closeForm": false,
     "columns": [
         {
@@ -76,10 +76,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panosconfigurationhygienecheckresult",
+    "id": "incident_panosnetworkoperationsconfigurationhygienecheckresult",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS Configuration Hygiene Check Result",
+    "name": "PAN-OS Network Operations - Configuration Hygiene Check Result",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

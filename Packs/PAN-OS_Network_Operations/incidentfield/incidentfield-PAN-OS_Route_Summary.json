@@ -4,7 +4,7 @@
         "PAN-OS Network Operations - System Information"
     ],
     "caseInsensitive": true,
-    "cliName": "panosroutesummary",
+    "cliName": "panosnetworkoperationsroutesummary",
     "closeForm": false,
     "columns": [
         {
@@ -54,10 +54,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panosroutesummary",
+    "id": "incident_panosnetworkoperationsroutesummary",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS Route Summary",
+    "name": "PAN-OS Network Operations - Route Summary",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

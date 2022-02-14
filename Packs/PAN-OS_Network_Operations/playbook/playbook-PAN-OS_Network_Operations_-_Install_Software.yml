@@ -244,6 +244,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: 'Check if the software installation finished successfully.'
       brand: ""
       id: 7481bd96-1858-484e-8fbb-33b38f81e2ad
       iscommand: false

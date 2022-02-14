@@ -278,7 +278,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "panosconfigurationhygieneissues",
+                                "fieldId": "panosnetworkoperationsconfigurationhygieneissues",
                                 "height": 106,
                                 "id": "638d5b20-5bd6-11ec-b441-5721a615e1db",
                                 "index": 0,
@@ -307,7 +307,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "panosconfigurationhygienecheck",
+                                "fieldId": "panosnetworkoperationsconfigurationhygienecheck",
                                 "height": 22,
                                 "id": "f13a1df0-72ce-11ec-8cac-f9439bbac0d8",
                                 "index": 0,

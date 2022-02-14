@@ -187,12 +187,12 @@ tasks:
           - - left:
                 iscontext: true
                 value:
-                  simple: incident.panosconfigurationhygieneissues.issuecode
+                  simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
               operator: isEqualString
               right:
                 value:
                   simple: BP-V-3
-          root: incident.panosconfigurationhygieneissues
+          root: incident.panosnetworkoperationsconfigurationhygieneissues
     separatecontext: false
     skipunavailable: false
     task:
@@ -269,12 +269,12 @@ tasks:
                 - - left:
                       iscontext: true
                       value:
-                        simple: incident.panosconfigurationhygieneissues.issuecode
+                        simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
                     operator: isEqualString
                     right:
                       value:
                         simple: BP-V-3
-                root: incident.panosconfigurationhygieneissues
+                root: incident.panosnetworkoperationsconfigurationhygieneissues
           operator: isExists
       - - left:
             iscontext: true
@@ -295,12 +295,12 @@ tasks:
                 - - left:
                       iscontext: true
                       value:
-                        simple: incident.panosconfigurationhygieneissues.issuecode
+                        simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
                     operator: isEqualString
                     right:
                       value:
                         simple: BP-V-3
-                root: incident.panosconfigurationhygieneissues
+                root: incident.panosnetworkoperationsconfigurationhygieneissues
           operator: isExists
       label: true
     id: '8'
@@ -340,13 +340,13 @@ tasks:
                 - - left:
                       iscontext: true
                       value:
-                        simple: incident.panosconfigurationhygieneissues.issuecode
+                        simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
                     operator: notIn
                     right:
                       iscontext: true
                       value:
                         simple: inputs.supported_codes
-                root: incident.panosconfigurationhygieneissues
+                root: incident.panosnetworkoperationsconfigurationhygieneissues
                 transformers:
                 - operator: uniq
           operator: isExists
@@ -487,13 +487,13 @@ tasks:
             - - left:
                   iscontext: true
                   value:
-                    simple: incident.panosconfigurationhygieneissues.issuecode
+                    simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
                 operator: notIn
                 right:
                   iscontext: true
                   value:
                     simple: SupportedCodes
-            root: incident.panosconfigurationhygieneissues
+            root: incident.panosnetworkoperationsconfigurationhygieneissues
             transformers:
             - args:
                 prefix:
@@ -582,12 +582,12 @@ tasks:
                 - - left:
                       iscontext: true
                       value:
-                        simple: incident.panosconfigurationhygieneissues.issuecode
+                        simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
                     operator: isEqualString
                     right:
                       value:
                         simple: BP-V-7
-                root: incident.panosconfigurationhygieneissues
+                root: incident.panosnetworkoperationsconfigurationhygieneissues
           operator: isExists
       label: true
     id: '13'
@@ -632,12 +632,12 @@ tasks:
             - - left:
                   iscontext: true
                   value:
-                    simple: incident.panosconfigurationhygieneissues.issuecode
+                    simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
                 operator: isEqualString
                 right:
                   value:
                     simple: BP-V-7
-            root: incident.panosconfigurationhygieneissues
+            root: incident.panosnetworkoperationsconfigurationhygieneissues
             transformers:
             - args:
                 prefix:
@@ -771,12 +771,12 @@ tasks:
           - - left:
                 iscontext: true
                 value:
-                  simple: incident.panosconfigurationhygieneissues.issuecode
+                  simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
               operator: isEqualString
               right:
                 value:
                   simple: BP-V-7
-          root: incident.panosconfigurationhygieneissues
+          root: incident.panosnetworkoperationsconfigurationhygieneissues
       log_forwarding_profile_name:
         simple: ${BP-V-7 Fix Confirmation.Answers.1}
     separatecontext: false

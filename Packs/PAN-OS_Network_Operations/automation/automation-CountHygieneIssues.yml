@@ -14,7 +14,7 @@ runas: DBotWeakRole
 runonce: false
 script: |+
   incident = demisto.incidents()
-  issues = (incident[0].get('CustomFields', {}).get('panosconfigurationhygieneissues'))
+  issues = (incident[0].get('CustomFields', {}).get('panosnetworkoperationsconfigurationhygieneissues'))
 
   data = {
       "Type": 17,

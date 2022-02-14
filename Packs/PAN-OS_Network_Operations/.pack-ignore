@@ -11,3 +11,7 @@ ignore=IF113
 ignore=IF113
 [file:incidentfield-Threat_Content_Release_Date.json]
 ignore=IF113
+[file:incidentfield-Device_Upgrade_Timer.json]
+ignore=IF113
+[file:incidentfield-Management_Default_Gateway.json]
+ignore=IF113

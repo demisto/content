@@ -25,7 +25,7 @@ script: |+
 
   issue_list = []
   for incident in incidents:
-      grid_field = incident.get("CustomFields").get("panosconfigurationhygieneissues")
+      grid_field = incident.get("CustomFields").get("panosnetworkoperationsconfigurationhygieneissues")
       issue_list += grid_field
 
   count = len(issue_list)

@@ -308,13 +308,13 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      panosconfigurationhygienecheck:
+      panosnetworkoperationsconfigurationhygienecheck:
         complex:
           accessor: Summary
           root: PANOS.ConfigurationHygiene
           transformers:
           - operator: ConvertKeysToTableFieldFormat
-      panosconfigurationhygieneissues:
+      panosnetworkoperationsconfigurationhygieneissues:
         complex:
           accessor: Result
           root: PANOS.ConfigurationHygiene
