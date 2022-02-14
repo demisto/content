@@ -283,6 +283,7 @@ class IncidentSeverity(object):
     HIGH = 3
     CRITICAL = 4
 
+
 AlertSeverity = IncidentSeverity
 
 
