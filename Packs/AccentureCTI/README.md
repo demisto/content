@@ -3,6 +3,7 @@
 This pack has 2 sub-pack/integration namely:
 - ACTI Indicator Query
 - ACTI Vulnerability Query
+- ACTI Threat Intelligence Report
 _____
 
 
@@ -11,3 +12,4 @@ _____
 - Aggregates and pushes threat indicators (_IPs, URLs , Domains_) from ACTI into your XSOAR platform.
 - Enables you to run ad-hoc queries for threat indicators (_IPs, URLs, Domains_) in the IntelGraph network.
 - Provides intel data related to a vulnerability where a CVE ID can be queried.
+- Provides access to Intelligence alerts and reports of ACTI IntelGraph in XSOAR platform itself.
