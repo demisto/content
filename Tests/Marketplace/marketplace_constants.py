@@ -11,6 +11,7 @@ IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
 LANDING_PAGE_SECTIONS_PATH = os.path.abspath(os.path.join(__file__, '../landingPage_sections.json'))
 BASE_PACK_DEPENDENCY_DICT = {"Base": {"mandatory": True, "display_name": "Base"}}
 
+
 class BucketUploadFlow(object):
     """ Bucket Upload Flow constants
 

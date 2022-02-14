@@ -66,6 +66,7 @@ AGGREGATED_CHANGELOG = {
 DUMMY_PACKS_DICT = {'HelloWorld': '', 'ServiceNow': '', 'Ipstack': '', 'Active_Directory_Query': '', 'SlackV2': '',
                     'CommonTypes': '', 'CommonPlaybooks': ''}
 
+
 @pytest.fixture(scope="module")
 def dummy_pack_metadata():
     """ Fixture for dummy pack_metadata.json file that is part of pack folder  in content repo.
