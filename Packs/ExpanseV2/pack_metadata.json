@@ -78,6 +78,6 @@
         }
     },
     "marketplaces": [
-        "xsoar"
+        "xsoar", "marketplacev2"
     ]
 }
