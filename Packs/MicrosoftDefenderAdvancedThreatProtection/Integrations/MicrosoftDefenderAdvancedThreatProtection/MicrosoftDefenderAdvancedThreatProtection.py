@@ -339,13 +339,13 @@ class MsClient:
         cmd_url = '/alerts'
         params = {}
         if evidence:
-            params.update({'$expand': 'evidence'})
+            params['$expand'] = 'evidence'
         if filter_req:
             if creation_time:
                 filter_req += f"and {create_filter_alerts_creation_time(creation_time)}"
-            params.update({'$filter': filter_req})
+            params['$filter'] = filter_req
         if limit:
-            params.update({'$top': limit})
+            params['$top'] = limit
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
     def update_alert(self, alert_id, json_data):
@@ -479,7 +479,7 @@ class MsClient:
         cmd_url = '/machineactions'
         params = {'$top': limit}
         if filter_req:
-            params.update({'$filter': filter_req})
+            params['$filter'] = filter_req
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
     def get_investigation_package(self, machine_id, comment):
@@ -750,6 +750,7 @@ class MsClient:
 
     def get_file_data(self, file_hash):
         """Retrieves a File by identifier SHA1 or SHA256.
+        For more details, see the docs:
         https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-file-information?view=o365-worldwide#http-request
         Args:
             file_hash(str): The file hash.
@@ -1210,14 +1211,14 @@ def reformat_filter_with_list_arg(fields_to_filter_by, field_key_from_type_list)
         fields_to_filter_by[field_key_from_type_list] = field_value_from_type_list[0]
         return reformat_filter(fields_to_filter_by)
 
-    filter_all_req = []
+    filter_conditions = []
     for item in field_value_from_type_list:
         current_fields_to_filter = {key: value for (key, value) in fields_to_filter_by.items() if
                                     key != field_key_from_type_list}
         current_fields_to_filter.update({field_key_from_type_list: item})
-        filter_all_req.append(reformat_filter(current_fields_to_filter))
+        filter_conditions.append(reformat_filter(current_fields_to_filter))
 
-    return ' or '.join(f"({condition})" for condition in filter_all_req)
+    return ' or '.join(f"({condition})" for condition in filter_conditions)
 
 
 def get_file_related_machines_command(client: MsClient, args: dict) -> CommandResults:

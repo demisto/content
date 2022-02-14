@@ -1,4 +1,4 @@
-Transform a XSOAR indicator into a Microsoft Defender for Endpoint IOC. The output (at TransformIndicatorToMSDefenderIOC.JsonOutput) is a json represents the indicators in MSDE format. This json can be the input for the *microsoft-atp-indicator-batch-update* command.
+Transform a XSOAR indicator into a Microsoft Defender for Endpoint IOC. The output (at TransformIndicatorToMSDefenderIOC.JsonOutput) is a json representation of the indicators in MSDE format. This json can be the input for the *microsoft-atp-indicator-batch-update* command.
 
 ## Script Data
 ---

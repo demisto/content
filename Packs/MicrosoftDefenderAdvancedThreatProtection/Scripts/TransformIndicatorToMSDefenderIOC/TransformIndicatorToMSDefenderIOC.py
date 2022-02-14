@@ -89,7 +89,7 @@ def get_indicators_by_query():
 def main():
     try:
         ms_defender_iocs = get_indicators_by_query()
-        human_readable = tableToMarkdown('TransformIndicatorToMSDefenderIOC id done:',
+        human_readable = tableToMarkdown('TransformIndicatorToMSDefenderIOC is done:',
                                          ms_defender_iocs, removeNull=True,
                                          headers=list(INDICATOR_FIELDS_TO_MS_DEFENDER_IOC.values()))
         context = {
