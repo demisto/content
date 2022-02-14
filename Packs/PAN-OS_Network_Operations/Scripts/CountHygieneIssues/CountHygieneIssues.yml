@@ -1,6 +1,7 @@
 args:
 - description: The custom grid field to count.
   name: custom_field
+comment: Counts the number of hygiene issues present in incidents.
 commonfields:
   id: CountHygieneIssues
   version: -1
