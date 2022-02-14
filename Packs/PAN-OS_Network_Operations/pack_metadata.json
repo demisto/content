@@ -13,7 +13,7 @@
 	"shouldCommit": false,
 	"currentVersion": "",
 	"name": "PAN-OS Network Operations",
-	"description": "",
+	"description": "A series of use cases designed to help manage PAN-OS Network topologies.",
 	"updated": "0001-01-01T00:00:00Z",
 	"created": "2022-01-31T05:24:02.903383307Z",
 	"support": "internalContribution",
