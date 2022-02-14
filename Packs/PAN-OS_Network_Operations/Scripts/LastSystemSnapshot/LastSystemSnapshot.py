@@ -10,6 +10,8 @@ try:
     pass
 except:
     from CommonServerPython import *
+    pass
+
 
 current_incident_id = demisto.incidents()[0].get("id")
 res = demisto.executeCommand("GetIncidentsByQuery", {

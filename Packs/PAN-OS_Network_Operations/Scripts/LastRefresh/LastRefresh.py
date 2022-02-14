@@ -10,6 +10,8 @@ try:
     pass
 except:
     from CommonServerPython import *
+    pass
+
 
 incident = demisto.incidents()[0]
 
