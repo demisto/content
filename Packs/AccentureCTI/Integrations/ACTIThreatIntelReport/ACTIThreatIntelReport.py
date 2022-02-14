@@ -11,7 +11,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ENDPOINTS = {
     'document': '/rest/document'
 }
-
+ATTACHMENT_LINK='https://intelgraph.idefense.com/rest/files/download'
 
 class Client(BaseClient):
     def __init__(self, input_url:str, api_key:str, verify_certificate: bool, proxy: bool, endpoint="/rest/document"):
@@ -78,19 +78,30 @@ def _calculate_dbot_score(severity: int) -> int:
 
 
 def getThreatReport_command(client: Client, args: dict , reliability: DBotScoreReliability):
-    ia_ir_url: str = str(args.get('url'))
-    ia_ir_uuid = ia_ir_url.split('/')[-1]
-    result = client.document_download(url_suffix=f'/v0/{ia_ir_uuid}')
-    context = _ia_ir_extract(result, reliability)
-    return_results(CommandResults(outputs=context,readable_output=f"Report with UUID:{result['uuid']} has been fetched"))
+    try:
+        result={}
+        ia_ir_url: str = str(args.get('url'))
+        ia_ir_uuid = ia_ir_url.split('/')[-1]
+        result = client.document_download(url_suffix=f'/v0/{ia_ir_uuid}')
+        context = _ia_ir_extract(result, reliability)
+        return CommandResults(raw_response=result,outputs=context,readable_output=f"Report with UUID: {ia_ir_uuid} has been fetched")
+        
+    except Exception as e:
+        if 'Failed to parse json object from response' in e.args[0]:
+            return CommandResults(indicator=None, raw_response={},
+                                  readable_output=f"No report was found for UUID: {ia_ir_uuid} !!")
+        else:
+            raise e
 
 
 def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
-    severity = Res.get('severity')
-    if severity:
-        dbot_score = _calculate_dbot_score(severity)
-    else:
-        dbot_score = 'NA'
+    """
+    """
+    threat_types = Res.get('threat_types','')
+    threattypes=''
+    if threat_types:
+            for threat_type in threat_types:
+                threattypes= threattypes+'\n- '+threat_type
     context = {
         "Report": {
                 'created_on' : Res.get('created_on','NA'),
@@ -101,25 +112,42 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
                 'last_modified' : Res.get('last_modified','NA'),
                 'last_published' : Res.get('last_published','NA'),
                 'links' : Res.get('links','NA'),
-                'sources_external' : Res.get('sources_external','NA'),
-                'threat_types' : Res.get('threat_types','NA'),
+                'threat_types' : threattypes,
                 'title' : Res.get('title','NA'),
                 'type' : Res.get('type','NA'),
                 'uuid' : Res.get('uuid','NA'),
                 'analysis' : Res.get('analysis','NA'),
-                'conclusion' : Res.get('conclusion','NA'),
-                'report_type' : Res.get('report_type','NA'),
-                'severity' : Res.get('severity','NA'),
-                'summary' : Res.get('summary','NA')
+                'sources_external' : Res.get('sources_external','NA')
             },
             "DBotScore": {
                 "Indicator": Res.get('display_text','NA'),
                 "Reliability": reliability,
-                "Score": dbot_score,
                 "Type": "Report",
                 "Vendor": "ACTI Threat Intelligence Report"
             }
         }
+    type_of_report = Res.get('type','NA')
+    if 'intelligence_report' in type_of_report:
+        context['Report']['conclusion'] = Res.get('conclusion','NA')
+        context['Report']['summary'] = Res.get('summary','NA')
+        context['DBotScore']['Score'] = Res.get('NA')  # Intelligence alerts shouldn't contain severity
+    else:
+        severity_dbot_score = Res.get('severity','NA')
+        if severity_dbot_score != 'NA':
+            severity_dbot_score = _calculate_dbot_score(severity_dbot_score)
+        context['Report']['mitigation'] = Res.get('mitigation','NA')
+        context['Report']['severity'] = Res.get('severity','NA')
+        context['Report']['abstract'] = Res.get('abstract','NA')
+        attachment_links = Res.get('attachment_links','')
+        fqlink: str = ''
+        if attachment_links:
+            for link in attachment_links:
+                fqlink= fqlink+'\n- '+(ATTACHMENT_LINK+link)
+        else:
+            fqlink = 'NA'
+        context['Report']['attachment_links'] = fqlink
+        context['DBotScore']['Score'] = severity_dbot_score
+    
     return context
 
 def main():
