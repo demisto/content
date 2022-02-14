@@ -365,6 +365,30 @@ def list_job_events(client: Client, args: dict) -> CommandResults:
     )
 
 
+def list_job_events_by_id(client: Client, args: dict) -> CommandResults:
+    job_id = args.get('job_id')
+    url_suffix = f'jobs/{job_id}/job_events/'
+
+    response = client.api_request(method='GET', url_suffix=url_suffix, params=args)
+
+    results = response.get('results', [])
+    if not results:
+        return CommandResults(
+            readable_output=f"No results were found for the following arguments {str(args)}",
+            raw_response=response
+        )
+
+    context_data = results_output_data(results)
+    headers = get_headers(context_data)
+    return CommandResults(
+        outputs_prefix='AnsibleAWX.JobEvents',
+        outputs_key_field='id',
+        outputs=context_data,
+        readable_output=tableToMarkdown(name='Results', t=context_data, removeNull=True, headers=headers),
+        raw_response=response
+    )
+
+
 def create_ad_hoc_command(client: Client, args: dict) -> CommandResults:
     inventory_id = args.get('inventory_id')
     credential_id = args.get('credential_id')
@@ -479,6 +503,7 @@ def main() -> None:
         'ansible-tower-job-stdout': job_stdout,
         'ansible-tower-job-status': job_status,
         'ansible-tower-job-events-list': list_job_events,
+        'ansible-tower-job-events-list-by-id': list_job_events_by_id,
         'ansible-tower-adhoc-command-launch': create_ad_hoc_command,
         'ansible-tower-adhoc-command-relaunch': relaunch_ad_hoc_command,
         'ansible-tower-adhoc-command-cancel': cancel_ad_hoc_command,

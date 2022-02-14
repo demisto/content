@@ -26,7 +26,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description:  The inventory ID for which to retrieve the specific inventory.
+      description: The inventory ID for which to retrieve the specific inventory.
       isArray: false
       name: id
       required: false
@@ -46,12 +46,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
+      description: The search query string used to perform a case-insensitive search
+        within all designated text fields of a model.
       isArray: false
       name: search
       required: false
       secret: false
-      deprecated: false
+    deprecated: false
     description: Retrieves the list of inventories.
     execution: false
     name: ansible-tower-inventories-list
@@ -90,13 +91,15 @@ script:
       description: Inventory variables in JSON or YAML format.
       type: String
     - contextPath: AnsibleAWX.Inventory.total_inventory_sources
-      description: Total number of external inventory sources configured within this inventory.
+      description: Total number of external inventory sources configured within this
+        inventory.
       type: Number
     - contextPath: AnsibleAWX.Inventory.inventory_sources_with_failures
       description: Number of external inventory sources in this inventory with failures.
       type: Number
     - contextPath: AnsibleAWX.Inventory.insights_credential
-      description: Credentials to be used by hosts belonging to this inventory when accessing Red Hat Insights API.
+      description: Credentials to be used by hosts belonging to this inventory when
+        accessing Red Hat Insights API.
       type: Number
     - contextPath: AnsibleAWX.Inventory.pending_deletion
       description: Flag indicating the inventory is being deleted.
@@ -129,13 +132,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
+      description: The search query string used to perform a case-insensitive search
+        within all designated text fields of a model.
       isArray: false
       name: search
       required: false
       secret: false
     deprecated: false
-    description: Retrieves the list of hosts. If an inventory ID is specified, retrieve the host located under the specific inventory.
+    description: Retrieves the list of hosts. If an inventory ID is specified, retrieve
+      the host located under the specific inventory.
     execution: false
     name: ansible-tower-hosts-list
     outputs:
@@ -167,7 +172,8 @@ script:
       description: Whether this host is online and available for running jobs.
       type: Boolean
     - contextPath: AnsibleAWX.Host.instance_id
-      description: The value used by the remote inventory source to uniquely identify the host.
+      description: The value used by the remote inventory source to uniquely identify
+        the host.
       type: String
     - contextPath: AnsibleAWX.Host.variables
       description: Host variables in JSON or YAML format.
@@ -202,13 +208,15 @@ script:
       secret: false
     - default: false
       defaultValue: 'True'
-      description: Whether this host will be online and available for running jobs. Default is "True".
+      description: Whether this host will be online and available for running jobs.
+        Default is "True".
       isArray: false
       name: enabled
       required: false
       secret: false
     deprecated: false
-    description: Creates a host under the specified inventory ID and with the specified name.
+    description: Creates a host under the specified inventory ID and with the specified
+      name.
     execution: false
     name: ansible-tower-host-create
     outputs:
@@ -240,7 +248,8 @@ script:
       description: Whether this host is online and available for running jobs.
       type: Boolean
     - contextPath: AnsibleAWX.Host.instance_id
-      description: The value used by the remote inventory source to uniquely identify the host.
+      description: The value used by the remote inventory source to uniquely identify
+        the host.
       type: String
     - contextPath: AnsibleAWX.Host.variables
       description: Host variables in JSON or YAML format.
@@ -277,7 +286,8 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: Inventory ID of the jobs that are managed with hosts under this inventory.
+      description: Inventory ID of the jobs that are managed with hosts under this
+        inventory.
       isArray: false
       name: inventory_id
       required: false
@@ -297,7 +307,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
+      description: The search query string used to perform a case-insensitive search
+        within all designated text fields of a model.
       isArray: false
       name: search
       required: false
@@ -347,16 +358,19 @@ script:
       description: Playbook name.
       type: String
     - contextPath: AnsibleAWX.JobTemplate.limit
-      description: The host pattern that will limit the list of hosts that will be managed or affected by the playbook.
+      description: The host pattern that will limit the list of hosts that will be
+        managed or affected by the playbook.
       type: String
     - contextPath: AnsibleAWX.JobTemplate.extra_vars
       description: Extra command line variables that were passed to the playbook.
       type: String
     - contextPath: AnsibleAWX.JobTemplate.job_tags
-      description: Job tags. These tags are useful when you have a large playbook and you want to run a specific part of a playbook or task.
+      description: Job tags. These tags are useful when you have a large playbook
+        and you want to run a specific part of a playbook or task.
       type: String
     - contextPath: AnsibleAWX.JobTemplate.skip_tags
-      description: Skip tags. These tags are useful when you have a large playbook and you want to skip a specific part of a playbook or task.
+      description: Skip tags. These tags are useful when you have a large playbook
+        and you want to skip a specific part of a playbook or task.
       type: String
     - contextPath: AnsibleAWX.JobTemplate.timeout
       description: The number of seconds to wait before the task is canceled.
@@ -371,7 +385,8 @@ script:
       description: Timestamp of the next job run.
       type: Date
     - contextPath: AnsibleAWX.JobTemplate.status
-      description: Status of the job. Can be new, pending, waiting, running, successful, failed, error, canceled, or never updated.
+      description: Status of the job. Can be new, pending, waiting, running, successful,
+        failed, error, canceled, or never updated.
       type: String
     - contextPath: AnsibleAWX.JobTemplate.host_config_key
       description: The host config key that ran the job.
@@ -383,10 +398,12 @@ script:
       description: Whether the job template was enabled.
       type: Boolean
     - contextPath: AnsibleAWX.JobTemplate.custom_virtualenv
-      description: Local absolute file path containing a custom Python virtualenv to use.
+      description: Local absolute file path containing a custom Python virtualenv
+        to use.
       type: String
     - contextPath: AnsibleAWX.JobTemplate.credential
-      description: Credential ID that allowed Tower to access the node this job was run against.
+      description: Credential ID that allowed Tower to access the node this job was
+        run against.
       type: Number
   - arguments:
     - default: false
@@ -410,13 +427,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
+      description: The search query string used to perform a case-insensitive search
+        within all designated text fields of a model.
       isArray: false
       name: search
       required: false
       secret: false
     deprecated: false
-    description: Retrieves the list of credentials. If an ID is specified, retrieve the specific credential.
+    description: Retrieves the list of credentials. If an ID is specified, retrieve
+      the specific credential.
     execution: false
     name: ansible-tower-credentials-list
     outputs:
@@ -458,13 +477,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the inventory that contains the host you want this job to manage if the job template does not have an inventory to start.
+      description: The ID of the inventory that contains the host you want this job
+        to manage if the job template does not have an inventory to start.
       isArray: false
       name: inventory_id
       required: false
       secret: false
     - default: false
-      description: The ID of the credentials that allow Tower to access the node this job will be run against.
+      description: The ID of the credentials that allow Tower to access the node this
+        job will be run against.
       isArray: false
       name: credentials_id
       required: false
@@ -514,25 +535,30 @@ script:
       description: Playbook name.
       type: String
     - contextPath: AnsibleAWX.Job.limit
-      description: The host pattern that will limit the list of hosts that will be managed or affected by the playbook.
+      description: The host pattern that will limit the list of hosts that will be
+        managed or affected by the playbook.
       type: String
     - contextPath: AnsibleAWX.Job.extra_vars
       description: Extra command line variables that were passed to the playbook.
       type: String
     - contextPath: AnsibleAWX.Job.job_tags
-      description: Job tags. These tags are useful when you have a large playbook and you want to run a specific part of a playbook or task.
+      description: Job tags. These tags are useful when you have a large playbook
+        and you want to run a specific part of a playbook or task.
       type: String
     - contextPath: AnsibleAWX.Job.skip_tags
-      description: Skip tags. These tags are useful when you have a large playbook and you want to skip a specific part of a playbook or task.
+      description: Skip tags. These tags are useful when you have a large playbook
+        and you want to skip a specific part of a playbook or task.
       type: String
     - contextPath: AnsibleAWX.Job.timeout
       description: The number of seconds to wait before the task is canceled.
       type: Number
     - contextPath: AnsibleAWX.Job.launch_type
-      description: Launch type of the job. Can be manual, relaunch, callback, scheduled, dependency, workflow, webhook, sync, or scm.
+      description: Launch type of the job. Can be manual, relaunch, callback, scheduled,
+        dependency, workflow, webhook, sync, or scm.
       type: String
     - contextPath: AnsibleAWX.Job.status
-      description: Status of the job. Can be new, pending, waiting, running, successful, failed, error, canceled, or never updated.
+      description: Status of the job. Can be new, pending, waiting, running, successful,
+        failed, error, canceled, or never updated.
       type: String
     - contextPath: AnsibleAWX.Job.failed
       description: Whether the job failed.
@@ -553,7 +579,8 @@ script:
       description: Current working directory (CWD) of the job.
       type: String
     - contextPath: AnsibleAWX.Job.job_explanation
-      description: Indicates the state of the job if it was not able to run and capture the standard output
+      description: Indicates the state of the job if it was not able to run and capture
+        the standard output
       type: String
     - contextPath: AnsibleAWX.Job.execution_node
       description: The node the job executed on.
@@ -568,13 +595,15 @@ script:
       description: The ID of the job template for this job.
       type: Number
     - contextPath: AnsibleAWX.Job.scm_revision
-      description: The source control management revision of the project used for this job, if available.
+      description: The source control management revision of the project used for
+        this job, if available.
       type: String
     - contextPath: AnsibleAWX.Job.instance_group
       description: The instance group the job was run under.
       type: Number
     - contextPath: AnsibleAWX.Job.credential
-      description: Credential ID that allowed Tower to access the node this job was run against.
+      description: Credential ID that allowed Tower to access the node this job was
+        run against.
       type: Number
   - arguments:
     - default: false
@@ -586,7 +615,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: all
-      description: 'The hosts to relaunch the job. Can be all the hosts or only the ones where the job failed. Possible values are: "all" and "failed". Default is "all".'
+      description: 'The hosts to relaunch the job. Can be all the hosts or only the
+        ones where the job failed. Possible values are: "all" and "failed". Default
+        is "all".'
       isArray: false
       name: relaunch_hosts
       predefined:
@@ -642,25 +673,30 @@ script:
       description: Playbook name
       type: String
     - contextPath: AnsibleAWX.Job.limit
-      description: The host pattern that will limit the list of hosts that will be managed or affected by the playbook.
+      description: The host pattern that will limit the list of hosts that will be
+        managed or affected by the playbook.
       type: String
     - contextPath: AnsibleAWX.Job.extra_vars
       description: Extra command line variables that were passed to the playbook.
       type: String
     - contextPath: AnsibleAWX.Job.job_tags
-      description: Job tags. These tags are useful when you have a large playbook and you want to run a specific part of a playbook or task.
+      description: Job tags. These tags are useful when you have a large playbook
+        and you want to run a specific part of a playbook or task.
       type: String
     - contextPath: AnsibleAWX.Job.skip_tags
-      description: Skip tags. These tags are useful when you have a large playbook and you want to skip a specific part of a playbook or task.
+      description: Skip tags. These tags are useful when you have a large playbook
+        and you want to skip a specific part of a playbook or task.
       type: String
     - contextPath: AnsibleAWX.Job.timeout
       description: The number of seconds to wait before the task is canceled.
       type: Number
     - contextPath: AnsibleAWX.Job.launch_type
-      description: Launch type of the job. Can be manual, relaunch, callback, scheduled, dependency, workflow, webhook, sync, or scm.
+      description: Launch type of the job. Can be manual, relaunch, callback, scheduled,
+        dependency, workflow, webhook, sync, or scm.
       type: String
     - contextPath: AnsibleAWX.Job.status
-      description: Status of the job. Can be new, pending, waiting, running, successful, failed, error, canceled, or never updated.
+      description: Status of the job. Can be new, pending, waiting, running, successful,
+        failed, error, canceled, or never updated.
       type: String
     - contextPath: AnsibleAWX.Job.failed
       description: Whether the job failed.
@@ -678,7 +714,8 @@ script:
       description: Current working directory (CWD) of the job.
       type: String
     - contextPath: AnsibleAWX.Job.job_explanation
-      description: Indicates the state of the job if it was not able to run and capture the standard output
+      description: Indicates the state of the job if it was not able to run and capture
+        the standard output
       type: String
     - contextPath: AnsibleAWX.Job.execution_node
       description: The node the job executed on.
@@ -693,13 +730,15 @@ script:
       description: The ID of the job template of this job.
       type: Number
     - contextPath: AnsibleAWX.Job.scm_revision
-      description: The source control management revision of the project used for this job, if available.
+      description: The source control management revision of the project used for
+        this job, if available.
       type: String
     - contextPath: AnsibleAWX.Job.instance_group
       description: The instance group the job was run under.
       type: Number
     - contextPath: AnsibleAWX.Job.credential
-      description: Credential ID that allowed Tower to access the node this job was run against.
+      description: Credential ID that allowed Tower to access the node this job was
+        run against.
       type: Number
   - arguments:
     - default: false
@@ -747,25 +786,30 @@ script:
       description: Playbook name.
       type: String
     - contextPath: AnsibleAWX.Job.limit
-      description: The host pattern that will limit the list of hosts that will be managed or affected by the playbook.
+      description: The host pattern that will limit the list of hosts that will be
+        managed or affected by the playbook.
       type: String
     - contextPath: AnsibleAWX.Job.extra_vars
       description: Extra command line variables that were passed to the playbook.
       type: String
     - contextPath: AnsibleAWX.Job.job_tags
-      description: Job tags. These tags are useful when you have a large playbook and you want to run a specific part of a playbook or task.
+      description: Job tags. These tags are useful when you have a large playbook
+        and you want to run a specific part of a playbook or task.
       type: String
     - contextPath: AnsibleAWX.Job.skip_tags
-      description: Skip tags. These tags are useful when you have a large playbook and you want to skip a specific part of a playbook or task.
+      description: Skip tags. These tags are useful when you have a large playbook
+        and you want to skip a specific part of a playbook or task.
       type: String
     - contextPath: AnsibleAWX.Job.timeout
       description: The number of seconds to wait before the task is canceled.
       type: Number
     - contextPath: AnsibleAWX.Job.launch_type
-      description: Launch type of the job. Can be manual, relaunch, callback, scheduled, dependency, workflow, webhook, sync, or scm.
+      description: Launch type of the job. Can be manual, relaunch, callback, scheduled,
+        dependency, workflow, webhook, sync, or scm.
       type: String
     - contextPath: AnsibleAWX.Job.status
-      description: Status of the job. Can be new, pending, waiting, running, successful, failed, error, canceled, or never updated.
+      description: Status of the job. Can be new, pending, waiting, running, successful,
+        failed, error, canceled, or never updated.
       type: String
     - contextPath: AnsibleAWX.Job.failed
       description: Whether the job failed.
@@ -786,7 +830,8 @@ script:
       description: Current working directory (CWD) of the job.
       type: String
     - contextPath: AnsibleAWX.Job.job_explanation
-      description: Indicates the state of the job if it was not able to run and capture the standard output.
+      description: Indicates the state of the job if it was not able to run and capture
+        the standard output.
       type: String
     - contextPath: AnsibleAWX.Job.execution_node
       description: The node the job executed on.
@@ -801,17 +846,19 @@ script:
       description: The ID of the job template of this job.
       type: Number
     - contextPath: AnsibleAWX.Job.scm_revision
-      description: The source control management revision of the project used for this job, if available.
+      description: The source control management revision of the project used for
+        this job, if available.
       type: String
     - contextPath: AnsibleAWX.Job.instance_group
       description: The instance group the job was run under.
       type: Number
     - contextPath: AnsibleAWX.Job.credential
-      description: Credential ID that allowed Tower to access the node this job was run against.
+      description: Credential ID that allowed Tower to access the node this job was
+        run against.
       type: Number
   - arguments:
     - default: false
-      description: The ID of the job. 
+      description: The ID of the job.
       isArray: false
       name: job_id
       required: true
@@ -819,7 +866,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: 'Whether to print the output. Possible values are: "True" and "False". Default is "True".'
+      description: 'Whether to print the output. Possible values are: "True" and "False".
+        Default is "True".'
       isArray: false
       name: print_output
       predefined:
@@ -828,7 +876,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The string by which to filter lines in the standard output. For example, enter 'success' to filter the standard output lines containing this word.
+      description: The string by which to filter lines in the standard output. For
+        example, enter 'success' to filter the standard output lines containing this
+        word.
       isArray: false
       name: text_filter
       required: false
@@ -852,7 +902,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
+      description: The search query string used to perform a case-insensitive search
+        within all designated text fields of a model.
       isArray: false
       name: search
       required: false
@@ -896,25 +947,30 @@ script:
       description: Playbook name.
       type: String
     - contextPath: AnsibleAWX.Job.limit
-      description: The host pattern that will limit the list of hosts that will be managed or affected by the playbook.
+      description: The host pattern that will limit the list of hosts that will be
+        managed or affected by the playbook.
       type: String
     - contextPath: AnsibleAWX.Job.extra_vars
       description: Extra command line variables that were passed to the playbook.
       type: String
     - contextPath: AnsibleAWX.Job.job_tags
-      description: Job tags. These tags are useful when you have a large playbook and you want to run a specific part of a playbook or task.
+      description: Job tags. These tags are useful when you have a large playbook
+        and you want to run a specific part of a playbook or task.
       type: String
     - contextPath: AnsibleAWX.Job.skip_tags
-      description: Skip tags. These tags are useful when you have a large playbook and you want to skip a specific part of a playbook or task.
+      description: Skip tags. These tags are useful when you have a large playbook
+        and you want to skip a specific part of a playbook or task.
       type: String
     - contextPath: AnsibleAWX.Job.timeout
       description: The number of seconds to wait before the task is canceled.
       type: Number
     - contextPath: AnsibleAWX.Job.launch_type
-      description: Launch type of the job. Can be manual, relaunch, callback, scheduled, dependency, workflow, webhook, sync, or scm.
+      description: Launch type of the job. Can be manual, relaunch, callback, scheduled,
+        dependency, workflow, webhook, sync, or scm.
       type: String
     - contextPath: AnsibleAWX.Job.status
-      description: Status of the job. Can be new, pending, waiting, running, successful, failed, error, canceled, or never updated.
+      description: Status of the job. Can be new, pending, waiting, running, successful,
+        failed, error, canceled, or never updated.
       type: String
     - contextPath: AnsibleAWX.Job.failed
       description: Whether the job failed.
@@ -935,7 +991,8 @@ script:
       description: Current working directory (CWD) of the job.
       type: String
     - contextPath: AnsibleAWX.Job.job_explanation
-      description: Indicates the state of the job if it was not able to run and capture the standard output.
+      description: Indicates the state of the job if it was not able to run and capture
+        the standard output.
       type: String
     - contextPath: AnsibleAWX.Job.execution_node
       description: The node the job executed on.
@@ -950,21 +1007,17 @@ script:
       description: The ID of the job template of this job.
       type: Number
     - contextPath: AnsibleAWX.Job.scm_revision
-      description: The source control management revision of the project used for this job, if available.
+      description: The source control management revision of the project used for
+        this job, if available.
       type: String
     - contextPath: AnsibleAWX.Job.instance_group
       description: The instance group the job was run under.
       type: Number
     - contextPath: AnsibleAWX.Job.credential
-      description: Credential ID that allowed Tower to access the node this job was run against.
+      description: Credential ID that allowed Tower to access the node this job was
+        run against.
       type: Number
   - arguments:
-    - default: false
-      description: The ID of the job event.
-      isArray: false
-      name: id
-      required: false
-      secret: false
     - default: false
       defaultValue: '1'
       description: The page number to retrieve. Default is 1.
@@ -980,7 +1033,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
+      description: The search query string used to perform a case-insensitive search
+        within all designated text fields of a model.
       isArray: false
       name: search
       required: false
@@ -1009,7 +1063,105 @@ script:
       description: Job ID.
       type: Number
     - contextPath: AnsibleAWX.JobEvents.event
-      description: The specific event. For example, runner_on_failed (Host Failed), runner_on_start (Host Started), etc.
+      description: The specific event. For example, runner_on_failed (Host Failed),
+        runner_on_start (Host Started), etc.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.counter
+      description: Job event counter.
+      type: Number
+    - contextPath: AnsibleAWX.JobEvents.event_display
+      description: Event display. For example, Playbook Started.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.event_level
+      description: The event level.
+      type: Number
+    - contextPath: AnsibleAWX.JobEvents.failed
+      description: Whether the job failed.
+      type: Boolean
+    - contextPath: AnsibleAWX.JobEvents.changed
+      description: Whether the job changed.
+      type: Boolean
+    - contextPath: AnsibleAWX.JobEvents.uuid
+      description: UUID of the job event.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.parent_uuid
+      description: Parent UUID.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.host
+      description: Host ID associated with the event.
+      type: Number
+    - contextPath: AnsibleAWX.JobEvents.host_name
+      description: Host name associated with the event.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.playbook
+      description: Playbook name of this job.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.task
+      description: Task name.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.stdout
+      description: Standard output of the job.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.start_line
+      description: Starting line number of the execution.
+      type: Number
+    - contextPath: AnsibleAWX.JobEvents.end_line
+      description: Ending line number of the execution.
+      type: Number
+  - arguments:
+    - default: false
+      description: The ID of the job event.
+      isArray: false
+      name: job_id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page number to retrieve. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Page size. Default is 50.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: The search query string used to perform a case-insensitive search
+        within all designated text fields of a model.
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the list of job events of specific job.
+    execution: false
+    name: ansible-tower-job-events-list-by-id
+    outputs:
+    - contextPath: AnsibleAWX.JobEvents.id
+      description: Database ID for this job event.
+      type: Number
+    - contextPath: AnsibleAWX.JobEvents.type
+      description: Data type for this job event.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.url
+      description: URL for this job event.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.created
+      description: Timestamp indicating when this job event was created.
+      type: Date
+    - contextPath: AnsibleAWX.JobEvents.modified
+      description: Timestamp indicating when this job event was last modified.
+      type: Date
+    - contextPath: AnsibleAWX.JobEvents.job
+      description: Job ID.
+      type: Number
+    - contextPath: AnsibleAWX.JobEvents.event
+      description: The specific event. For example, runner_on_failed (Host Failed),
+        runner_on_start (Host Started), etc.
       type: String
     - contextPath: AnsibleAWX.JobEvents.counter
       description: Job event counter.
@@ -1068,7 +1220,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The name of the module.Modules are discrete units of code that can be used from the command line or in a playbook task. Ansible ships with a number of modules that can be executed directly on remote hosts or through playbooks.
+      description: The name of the module.Modules are discrete units of code that
+        can be used from the command line or in a playbook task. Ansible ships with
+        a number of modules that can be executed directly on remote hosts or through
+        playbooks.
       isArray: false
       name: module_name
       predefined:
@@ -1123,10 +1278,12 @@ script:
       description: Name of this ad hoc command.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.launch_type
-      description: Launch type of the job. Can be manual, relaunch, callback, scheduled, dependency, workflow, webhook, sync, or scm.
+      description: Launch type of the job. Can be manual, relaunch, callback, scheduled,
+        dependency, workflow, webhook, sync, or scm.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.status
-      description: Status of the job. Can be new, pending, waiting, running, successful, failed, error, canceled, or never updated.
+      description: Status of the job. Can be new, pending, waiting, running, successful,
+        failed, error, canceled, or never updated.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.failed
       description: Whether the job failed.
@@ -1141,7 +1298,8 @@ script:
       description: The amount of time in seconds that it took the job to run.
       type: Number
     - contextPath: AnsibleAWX.AdhocCommand.job_explanation
-      description: Indicates the state of the job if it was not able to run and capture the standard output.
+      description: Indicates the state of the job if it was not able to run and capture
+        the standard output.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.execution_node
       description: The node the job executed on.
@@ -1156,10 +1314,12 @@ script:
       description: Inventory ID.
       type: Number
     - contextPath: AnsibleAWX.AdhocCommand.limit
-      description: The host pattern that will limit the list of hosts that will be managed or affected by the playbook.
+      description: The host pattern that will limit the list of hosts that will be
+        managed or affected by the playbook.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.credential
-      description: Credential ID that allowed Tower to access the node this job was run against.
+      description: Credential ID that allowed Tower to access the node this job was
+        run against.
       type: Number
     - contextPath: AnsibleAWX.AdhocCommand.module_name
       description: Selected module name.
@@ -1204,10 +1364,12 @@ script:
       description: Name of this ad hoc command.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.launch_type
-      description: Launch type. Can be manual, relaunch, callback, scheduled, dependency, workflow, webhook, sync, or scm.
+      description: Launch type. Can be manual, relaunch, callback, scheduled, dependency,
+        workflow, webhook, sync, or scm.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.status
-      description: Status. Can be new, pending, waiting, running, successful, failed, error, canceled, or never updated.
+      description: Status. Can be new, pending, waiting, running, successful, failed,
+        error, canceled, or never updated.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.failed
       description: Whether the job failed.
@@ -1222,7 +1384,8 @@ script:
       description: The amount of time in seconds that it took the job to run.
       type: Number
     - contextPath: AnsibleAWX.AdhocCommand.job_explanation
-      description: Indicates the state of the job if it was not able to run and capture the standard output.
+      description: Indicates the state of the job if it was not able to run and capture
+        the standard output.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.execution_node
       description: The node the job executed on
@@ -1237,10 +1400,12 @@ script:
       description: Inventory ID.
       type: Number
     - contextPath: AnsibleAWX.AdhocCommand.limit
-      description: The host pattern that will limit the list of hosts that will be managed or affected by the playbook.
+      description: The host pattern that will limit the list of hosts that will be
+        managed or affected by the playbook.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.credential
-      description: Credential ID that allowed Tower to access the node this job was run against.
+      description: Credential ID that allowed Tower to access the node this job was
+        run against.
       type: Number
     - contextPath: AnsibleAWX.AdhocCommand.module_name
       description: Selected module name.
@@ -1285,17 +1450,19 @@ script:
       description: Name of this ad hoc command.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.launch_type
-      description: Launch type. Can be manual, relaunch, callback, scheduled, dependency, workflow, webhook, sync, or scm.
+      description: Launch type. Can be manual, relaunch, callback, scheduled, dependency,
+        workflow, webhook, sync, or scm.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.status
-      description: Status. Can be new, pending, waiting, running, successful, failed, error, canceled, or never updated.
+      description: Status. Can be new, pending, waiting, running, successful, failed,
+        error, canceled, or never updated.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.failed
       description: Whether the job failed.
       type: Boolean
     - contextPath: AnsibleAWX.AdhocCommand.started
       description: The date and time the job was queued to start.
-      type: 
+      type: Unknown
     - contextPath: AnsibleAWX.AdhocCommand.finished
       description: The date and time the job finished execution.
       type: Date
@@ -1309,7 +1476,8 @@ script:
       description: Current working directory (CWD) of the job.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.job_explanation
-      description: Indicates the state of the job if it was not able to run and capture the standard output.
+      description: Indicates the state of the job if it was not able to run and capture
+        the standard output.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.execution_node
       description: The node the job executed on.
@@ -1327,10 +1495,12 @@ script:
       description: Inventory ID.
       type: Number
     - contextPath: AnsibleAWX.AdhocCommand.limit
-      description: The host pattern that will limit the list of hosts that will be managed or affected by the playbook.
+      description: The host pattern that will limit the list of hosts that will be
+        managed or affected by the playbook.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.credential
-      description: Credential ID that allowed Tower to access the node this job was run against.
+      description: Credential ID that allowed Tower to access the node this job was
+        run against.
       type: Number
     - contextPath: AnsibleAWX.AdhocCommand.module_name
       description: Selected module name.
@@ -1354,7 +1524,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: 'Prints the ad hoc command output. Possible values are: "True" and "False". Default is "True".'
+      description: 'Prints the ad hoc command output. Possible values are: "True"
+        and "False". Default is "True".'
       isArray: false
       name: print_output
       predefined:
@@ -1363,7 +1534,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The string by which to filter lines in the standard output. For example, enter 'success' to filter the standard output lines containing this word.
+      description: The string by which to filter lines in the standard output. For
+        example, enter 'success' to filter the standard output lines containing this
+        word.
       isArray: false
       name: text_filter
       required: false
@@ -1407,10 +1580,12 @@ script:
       description: Name of this ad hoc command.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.launch_type
-      description: Launch type. Can be manual, relaunch, callback, scheduled, dependency, workflow, webhook, sync, or scm.
+      description: Launch type. Can be manual, relaunch, callback, scheduled, dependency,
+        workflow, webhook, sync, or scm.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.status
-      description: Status. Can be new, pending, waiting, running, successful, failed, error, canceled, or never updated.
+      description: Status. Can be new, pending, waiting, running, successful, failed,
+        error, canceled, or never updated.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.failed
       description: Whether the job failed.
@@ -1431,7 +1606,8 @@ script:
       description: Current working directory (CWD) of the job.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.job_explanation
-      description: Indicates the state of the job if it was not able to run and capture the standard output.
+      description: Indicates the state of the job if it was not able to run and capture
+        the standard output.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.execution_node
       description: The node the job executed on.
@@ -1449,10 +1625,12 @@ script:
       description: Inventory ID.
       type: Number
     - contextPath: AnsibleAWX.AdhocCommand.limit
-      description: The host pattern that will limit the list of hosts that will be managed or affected by the playbook.
+      description: The host pattern that will limit the list of hosts that will be
+        managed or affected by the playbook.
       type: String
     - contextPath: AnsibleAWX.AdhocCommand.credential
-      description: Credential ID that allowed Tower to access the node this job was run against.
+      description: Credential ID that allowed Tower to access the node this job was
+        run against.
       type: Number
     - contextPath: AnsibleAWX.AdhocCommand.module_name
       description: Selected module name.
