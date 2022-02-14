@@ -31,13 +31,12 @@ class Client(BaseClient):
         self.timeout = timeout
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
 
-    def test_module(self, first_fetch_time):
+    def test_module(self):
         """
             Performs basic get request to get item samples
         """
-        last_one_day, _ = parse_date_range(first_fetch_time, TIME_FORMAT)
         try:
-            self.get_incidents(lte_creation_time=last_one_day, limit=1)
+            self.get_incidents(limit=1)
         except Exception as err:
             if 'API request Unauthorized' in str(err):
                 # this error is received from the Core server when the client clock is not in sync to the server
@@ -2848,7 +2847,7 @@ def main():
 
     try:
         if command == 'test-module':
-            client.test_module('3 days')
+            client.test_module()
             demisto.results('ok')
 
         elif command == 'core-get-endpoints':
