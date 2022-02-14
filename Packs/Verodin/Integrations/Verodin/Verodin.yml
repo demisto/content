@@ -1,0 +1,415 @@
+versionedfields: {}
+commonfields:
+  id: Verodin
+  version: -1
+name: Verodin
+display: Verodin
+category: Network Security
+description: Verodin simulations and topology
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Port
+  name: port
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: verodin-get-topology-nodes
+    arguments: []
+    outputs:
+    - contextPath: Verodin.Nodes.ID
+      description: Node id
+    - contextPath: Verodin.Nodes.CommMode
+      description: Node comm mode
+    - contextPath: Verodin.Nodes.CodeType
+      description: Node code type
+    - contextPath: Verodin.Nodes.Description
+      description: Node description
+    - contextPath: Verodin.Nodes.Gateway
+      description: Node getaway
+    - contextPath: Verodin.Nodes.Hostname
+      description: Node hostname
+    - contextPath: Verodin.Nodes.LastComms
+      description: Node last comms
+    - contextPath: Verodin.Nodes.LastUpdate
+      description: Node last update
+    - contextPath: Verodin.Nodes.Location
+      description: Node location
+    - contextPath: Verodin.Nodes.Tags
+      description: Node tags
+    - contextPath: Verodin.Nodes.MmgmtIP
+      description: Node mmgmt ip
+    - contextPath: Verodin.Nodes.Name
+      description: Node name
+    - contextPath: Verodin.Nodes.SecurityZoneID
+      description: Node security zone id
+    - contextPath: Verodin.Nodes.Version
+      description: Node version
+    - contextPath: Verodin.Nodes.NetMask
+      description: Node net mask
+    - contextPath: Verodin.Nodes.OrganizationID
+      description: Node organization id
+    - contextPath: Verodin.Nodes.OS.Type
+      description: Node os type
+    - contextPath: Verodin.Nodes.OS.Architecture
+      description: Node os architecture
+    - contextPath: Verodin.Nodes.OS.Full
+      description: Node os full
+    - contextPath: Verodin.Nodes.Processor
+      description: Node processor
+    description: Lists all Nodes and their details
+  - name: verodin-get-topology-map
+    arguments: []
+    outputs:
+    - contextPath: Verodin.Topolody.Device.ID
+      description: Device ID
+    - contextPath: Verodin.Topolody.Device.Updated
+      description: Device update
+    - contextPath: Verodin.Topolody.Device.OrganizationID
+      description: Device organization id
+    - contextPath: Verodin.Topolody.Device.NetworkDeviceID
+      description: Device network device id
+    - contextPath: Verodin.Topolody.Device.IP
+      description: Device ip
+    - contextPath: Verodin.Topolody.Nodes.MgmtIP
+      description: Node mgmt ip
+    - contextPath: Verodin.Topolody.Nodes.Name
+      description: Node name
+    - contextPath: Verodin.Topolody.Nodes.OS
+      description: Node os
+    - contextPath: Verodin.Topolody.Zones.Description
+      description: Zone name
+    - contextPath: Verodin.Topolody.Zones.Name
+      description: Zone description
+    - contextPath: Verodin.Topolody.Zone.Devices.Interfaces.Edges.From
+      description: Edge name
+    - contextPath: Verodin.Topolody.Zone.Devices.Interfaces.To
+      description: Edge to
+    - contextPath: Verodin.Topolody.Zone.Devices.Interfaces.Edges.Type
+      description: Edge type
+    - contextPath: Verodin.Topolody.Zone.Devices.Interfaces.Edges.Through
+      description: Edge through
+    - contextPath: Verodin.Topolody.Zone.Devices.Edges.To
+      description: Edge to
+    - contextPath: Verodin.Topolody.Zone.Devices.Edges.Type
+      description: Edge type
+    - contextPath: Verodin.Topolody.Zone.Devices.Edges.Through
+      description: Edge through
+    - contextPath: Verodin.Topolody.Zone.Devices.Edges.From
+      description: Edge from
+    description: Lists Security Zones, Nodes within those Zones, and their connectivity
+      to other Zones
+  - name: verodin-manage-sims-actions
+    arguments: []
+    outputs:
+    - contextPath: Verodin.Simulations.Actions.ID
+      description: Simulation action id
+    - contextPath: Verodin.Simulations.Actions.Type
+      description: Simulation action type
+    - contextPath: Verodin.Simulations.Actions.Created
+      description: Simulation action created
+    - contextPath: Verodin.Simulations.Actions.Disabled
+      description: Simulation action disabled
+    - contextPath: Verodin.Simulations.Actions.Name
+      description: Simulation action name
+    - contextPath: Verodin.Simulations.Actions.OrganizationID
+      description: Simulation action organization id
+    - contextPath: Verodin.Simulations.Actions.RequireEndpoint
+      description: Simulation action require endpoint
+    - contextPath: Verodin.Simulations.Actions.Updated
+      description: Simulation action updated
+    - contextPath: Verodin.Simulations.Actions.Tags.User
+      description: Simulation action user tags
+    - contextPath: Verodin.Simulations.Actions.Tags.Verodin
+      description: Simulation action verodin tags
+    - contextPath: Verodin.Simulations.Actions.Tags.Vid
+      description: Simulation action vid
+    description: Gets an array of all Actions and their details
+  - name: verodin-manage-sims-actions-run
+    arguments:
+    - name: id
+      required: true
+      description: Action’s ID number
+    - name: attack_node_id_1
+      description: ID number of source Node
+    - name: target_node_id_1
+      description: ID number of destination Node
+    outputs:
+    - contextPath: Verodin.Jobs.ID
+      description: Job id
+    - contextPath: Verodin.Jobs.Description
+      description: Job description
+    - contextPath: Verodin.Jobs.Created
+      description: Job created
+    - contextPath: Verodin.Jobs.Name
+      description: Job name
+    - contextPath: Verodin.Jobs.OrganizationID
+      description: Job organization id
+    - contextPath: Verodin.Jobs.Updated
+      description: Job updated
+    - contextPath: Verodin.Jobs.NodeActionQueueID
+      description: Job node action queue id
+    - contextPath: Verodin.Jobs.PlanID
+      description: Job plan id
+    - contextPath: Verodin.Jobs.Tags.Verodin
+      description: Job verodin tags
+    - contextPath: Verodin.Jobs.Progress
+      description: Job progress
+    - contextPath: Verodin.Jobs.SimulationID
+      description: Job simulation id
+    - contextPath: Verodin.Jobs.Status
+      description: Job status
+    - contextPath: Verodin.Jobs.UserID
+      description: Job user id
+    description: Executes the specified Action
+  - name: verodin-get-security-zones
+    arguments: []
+    outputs:
+    - contextPath: Verodin.Zones.ID
+      description: Zone id
+    - contextPath: Verodin.Zones.Description
+      description: Zone description
+    - contextPath: Verodin.Zones.Created
+      description: Zone created
+    - contextPath: Verodin.Zones.Disabled
+      description: Zone disabled
+    - contextPath: Verodin.Zones.Name
+      description: Zone name
+    - contextPath: Verodin.Zones.OrganizationID
+      description: Zone organization ID
+    - contextPath: Verodin.Zones.Updated
+      description: Zone updated
+    description: Returns an array of all Security Zones and their details
+  - name: verodin-get-security-zone
+    arguments:
+    - name: id
+      required: true
+      description: Security Zone ID number
+    outputs:
+    - contextPath: Verodin.Zones.ID
+      description: Zone id
+    - contextPath: Verodin.Zones.Description
+      description: Zone description
+    - contextPath: Verodin.Zones.Created
+      description: Zone created
+    - contextPath: Verodin.Zones.Disabled
+      description: Zone disabled
+    - contextPath: Verodin.Zones.Name
+      description: Zone name
+    - contextPath: Verodin.Zones.OrganizationID
+      description: Zone organization ID
+    - contextPath: Verodin.Zones.Updated
+      description: Zone updated
+    description: Gets details on the specified Security Zone
+  - name: verodin-delete-security-zone
+    arguments:
+    - name: id
+      required: true
+      description: Security Zone ID number
+    description: Deletes the specified Security Zone
+  - name: verodin-get-sims-of-type
+    arguments:
+    - name: sim_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - sequence
+      - eval
+      description: Simulation type
+    outputs:
+    - contextPath: Verodin.Simulations.ID
+      description: Simulation id
+    - contextPath: Verodin.Simulations.Type
+      description: Simulation type
+    - contextPath: Verodin.Simulations.Created
+      description: Simulation created
+    - contextPath: Verodin.Simulations.Disabled
+      description: Simulation disabled
+    - contextPath: Verodin.Simulations.Name
+      description: Simulation name
+    - contextPath: Verodin.Simulations.OrganizationID
+      description: Simulation organization id
+    - contextPath: Verodin.Simulations.RequireEndpoint
+      description: Simulation require endpoint
+    - contextPath: Verodin.Simulations.Updated
+      description: Simulation updated
+    - contextPath: Verodin.Simulations.Tags.User
+      description: Simulation user tags
+    - contextPath: Verodin.Simulations.Tags.Verodin
+      description: Simulation verodin tags
+    - contextPath: Verodin.Simulations.Vid
+      description: Simulation vid
+    - contextPath: Verodin.Simulations.StopOnError
+      description: Simulation stop on error
+    description: Gets an array of all Sequences or Evaluations
+  - name: verodin-get-sim
+    arguments:
+    - name: id
+      required: true
+      description: Job ID number
+    outputs:
+    - contextPath: Verodin.Simulations.ID
+      description: Simulation id
+    - contextPath: Verodin.Simulations.Type
+      description: Simulation type
+    - contextPath: Verodin.Simulations.Created
+      description: Simulation created
+    - contextPath: Verodin.Simulations.Disabled
+      description: Simulation disabled
+    - contextPath: Verodin.Simulations.Name
+      description: Simulation name
+    - contextPath: Verodin.Simulations.OrganizationID
+      description: Simulation organization id
+    - contextPath: Verodin.Simulations.StopOnError
+      description: Simulation stop on error
+    - contextPath: Verodin.Simulations.Updated
+      description: Simulation updated
+    - contextPath: Verodin.Simulations.Actions
+      description: Simulation actions
+    - contextPath: Verodin.Simulations.Tags.User
+      description: Simulation user tags
+    - contextPath: Verodin.Simulations.Tags.Verodin
+      description: Simulation verodin tags
+    - contextPath: Verodin.Simulations.Vid
+      description: Simulation vid
+    - contextPath: Verodin.Simulations.Step.Order
+      description: Simulation step Order
+    - contextPath: Verodin.Simulations.Step.Name
+      description: Simulation step name
+    - contextPath: Verodin.Simulations.Step.Created
+      description: Simulation step created
+    - contextPath: Verodin.Simulations.Step.Updated
+      description: Simulation step updated
+    - contextPath: Verodin.Simulations.Step.Action.IDs
+      description: Simulation step actions ids
+    description: Gets details regarding the specified Job
+  - name: verodin-delete-sim
+    arguments:
+    - name: id
+      required: true
+      description: Job ID number
+    description: Deletes the specified Job
+  - name: verodin-get-jobs
+    arguments: []
+    outputs:
+    - contextPath: Verodin.Jobs.ID
+      description: Job id
+    - contextPath: Verodin.Jobs.Description
+      description: Job description
+    - contextPath: Verodin.Jobs.Created
+      description: Job created
+    - contextPath: Verodin.Jobs.Name
+      description: Job name
+    - contextPath: Verodin.Jobs.OrganizationID
+      description: Job organization id
+    - contextPath: Verodin.Jobs.Updated
+      description: Job updated
+    - contextPath: Verodin.Jobs.NodeActionQueueID
+      description: Job node action queue id
+    - contextPath: Verodin.Jobs.PlanID
+      description: Job plan id
+    - contextPath: Verodin.Jobs.Tags.Verodin
+      description: Job verodin tags
+    - contextPath: Verodin.Jobs.Progress
+      description: Job progress
+    - contextPath: Verodin.Jobs.SimulationID
+      description: Job simulation id
+    - contextPath: Verodin.Jobs.Status
+      description: Job status
+    - contextPath: Verodin.Jobs.UserID
+      description: Job user id
+    description: Gets an array of all Jobs and their statuses
+  - name: verodin-get-job
+    arguments:
+    - name: id
+      description: "Job id"
+      required: true
+    outputs:
+    - contextPath: Verodin.Jobs.ID
+      description: Job id
+    - contextPath: Verodin.Jobs.Description
+      description: Job description
+    - contextPath: Verodin.Jobs.Created
+      description: Job created
+    - contextPath: Verodin.Jobs.Name
+      description: Job name
+    - contextPath: Verodin.Jobs.OrganizationID
+      description: Job organization id
+    - contextPath: Verodin.Jobs.Updated
+      description: Job updated
+    - contextPath: Verodin.Jobs.NodeActionQueueID
+      description: Job node action queue id
+    - contextPath: Verodin.Jobs.PlanID
+      description: Job plan id
+    - contextPath: Verodin.Jobs.Tags.Verodin
+      description: Job verodin tags
+    - contextPath: Verodin.Jobs.Progress
+      description: Job progress
+    - contextPath: Verodin.Jobs.SimulationID
+      description: Job simulation id
+    - contextPath: Verodin.Jobs.Status
+      description: Job status
+    - contextPath: Verodin.Jobs.UserID
+      description: Job user id
+    description: Gets details on the specified Job and its status
+  - name: verodin-run-job-again
+    arguments:
+    - name: id
+      required: true
+      description: ID number of previously-run Job
+    description: Gets a new Job object with a new Job ID
+  - name: verodin-get-job-sim-actions
+    arguments:
+    - name: id
+      required: true
+      description: 'ID number of previously-run Job '
+    outputs:
+    - contextPath: Verodin.Jobs.ID
+      description: Job id
+    - contextPath: Verodin.Jobs.Actions.Label
+      description: Job action label
+    - contextPath: Verodin.Jobs.Actions.Value
+      description: Job action value
+    description: Gets summary of sim_action results from the specified job, including
+      aggregate of individual Action passes and fails
+  - name: verodin-job-cancel
+    arguments:
+    - name: id
+      required: true
+      description: 'ID number of previously-run Job '
+    description: Cancels the job specified by the Job ID
+  isfetch: true
+hidden: false
+tests:
+- no test
+fromversion: 5.0.0
