@@ -7,19 +7,19 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Gmail
 * PhishUp
+* Gmail
 
 ### Scripts
 * IncreaseIncidentSeverity
 
 ### Commands
-* phishup-evaluate-response
+* closeInvestigation
+* phishup-get-chosen-action
 * url
 * extractIndicators
-* closeInvestigation
+* phishup-evaluate-response
 * gmail-delete-mail
-* phishup-get-chosen-action
 * gmail-move-mail
 
 ## Playbook Inputs
@@ -29,6 +29,8 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- | --- |
 | EmailBodyHtml | Email Mail Body for extracting URLs. Default Value is "$\{incident.emailbodyhtml\}" | ${incident.emailbodyhtml} | Required |
 | ShouldPhishUpActionWork | If you do not want actions such as deleting mail and moving to spam in PhishUp playbook, you should set the value False. Default value is True | True | Required |
+| GmailMessageID | Identify mail for deleting and moving funcitons. Defaultly it comes from incident which is setted from PhishUp Gmail Mapper | ${incident.emailmessageid} | Required |
+| GmailUserID | Identify user for deleting and moving funcitons. Defaultly it comes from incident which is setted from PhishUp Gmail Mapper | ${incident.emailto} | Required |
 
 ## Playbook Outputs
 ---
