@@ -2,7 +2,7 @@
     "id": "incident_timestamp",
     "version": -1,
     "modified": "2022-01-26T08:35:14.314902015Z",
-	"description": "The date and time when the alert was triggered. Right-click to Show rows 30 days prior or 30 days after the selected timestamp field value",
+    "description": "The date and time when the alert was triggered. Right-click to Show rows 30 days prior or 30 days after the selected timestamp field value",
     "name": "Timestamp",
     "ownerOnly": false,
     "cliName": "timestamp",
@@ -24,5 +24,102 @@
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.5.0",
-	"x2_fields": "source_insert_ts"
+    "x2_fields": "source_insert_ts",
+    "Aliases": [
+        {
+            "cliName": "alertattacktime",
+            "type": "shortText",
+            "name": "Alert Attack Time"
+        },
+        {
+            "cliName": "azureactivedirectoryidentityandaccessdetecteddatetime",
+            "type": "shortText",
+            "name": "Azure Active Directory Identity and Access Detected Date Time"
+        },
+        {
+            "cliName": "bmcremedyforcecreateddate",
+            "type": "date",
+            "name": "Bmc Remedyforce Created Date"
+        },
+        {
+            "cliName": "carbonblackesfirsteventtime",
+            "type": "date",
+            "name": "Carbon Black ES First Event Time"
+        },
+        {
+            "cliName": "chronicledetectiontime",
+            "type": "date",
+            "name": "Chronicle Detection Time"
+        },
+        {
+            "cliName": "chronicledetectionwindowstarttime",
+            "type": "date",
+            "name": "Chronicle Detection Window Start Time"
+        },
+        {
+            "cliName": "chroniclefirstseen",
+            "type": "date",
+            "name": "Chronicle First Seen"
+        },
+        {
+            "cliName": "code42alerttimestamp",
+            "type": "date",
+            "name": "Code42 SecurityAlert Timestamp"
+        },
+        {
+            "cliName": "createdtime",
+            "type": "shortText",
+            "name": "Created Time"
+        },
+        {
+            "cliName": "cyberintcreateddate",
+            "type": "shortText",
+            "name": "CyberInt Created date"
+        },
+        {
+            "cliName": "datetimeofthebreach",
+            "type": "date",
+            "name": "Date/time of the breach"
+        },
+        {
+            "cliName": "detectionupdatetime",
+            "type": "date",
+            "name": "Detection Update Time"
+        },
+        {
+            "cliName": "googlecloudsccfindingcreatetime",
+            "type": "date",
+            "name": "GoogleCloudSCC Finding CreateTime"
+        },
+        {
+            "cliName": "googlecloudsccfindingeventtime",
+            "type": "date",
+            "name": "GoogleCloudSCC Finding EventTime"
+        },
+        {
+            "cliName": "gracaseopendate",
+            "type": "shortText",
+            "name": "GRA Case Open Date"
+        },
+        {
+            "cliName": "irondefensefirsteventcreated",
+            "type": "date",
+            "name": "IronDefense First Event Created"
+        },
+        {
+            "cliName": "logpointdetectiontimestamp",
+            "type": "number",
+            "name": "LogPoint Detection Timestamp"
+        },
+        {
+            "cliName": "servicenowopeneddate",
+            "type": "date",
+            "name": "ServiceNow Opened Date"
+        },
+        {
+            "cliName": "ticketopeneddate",
+            "type": "date",
+            "name": "Ticket Opened Date"
+        }
+    ]
 }

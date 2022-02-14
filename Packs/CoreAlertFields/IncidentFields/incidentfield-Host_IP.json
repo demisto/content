@@ -1,0 +1,84 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "hostip",
+    "closeForm": false,
+    "content": true,
+    "description": "IP address of the endpoint or server on which this alert triggered.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_hostip",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Host IP",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "agent_ip_addresses",
+    "Aliases": [
+        {
+            "cliName": "digitalguardiansourceaddress",
+            "type": "shortText",
+            "name": "Digital Guardian Source Address"
+        },
+        {
+            "cliName": "digitalguardiansourceip",
+            "type": "shortText",
+            "name": "Digital Guardian Source IP"
+        },
+        {
+            "cliName": "irondefensesrcip",
+            "type": "shortText",
+            "name": "IronDefense Src IP"
+        },
+        {
+            "cliName": "detectedips",
+            "type": "shortText",
+            "name": "Detected IPs"
+        },
+        {
+            "cliName": "entityipaddress",
+            "type": "shortText",
+            "name": "Entity IP Address"
+        },
+        {
+            "cliName": "expanseip",
+            "type": "shortText",
+            "name": "Expanse IP"
+        },
+        {
+            "cliName": "f5silverlinebackendserverip",
+            "type": "shortText",
+            "name": "F5 Silverline Backend Server IP"
+        },
+        {
+            "cliName": "shadowitip",
+            "type": "shortText",
+            "name": "Shadow IT IP"
+        },
+        {
+            "cliName": "sourceip",
+            "type": "shortText",
+            "name": "Source IP"
+        },
+        {
+            "cliName": "sourceips",
+            "type": "shortText",
+            "name": "Source IPs"
+        }
+    ]
+}

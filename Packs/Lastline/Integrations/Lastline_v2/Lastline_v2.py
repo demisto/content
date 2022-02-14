@@ -94,11 +94,28 @@ class Client(BaseClient):
         entry_id = self.command_params.get('EntryID')
         self.command_params['push_to_portal'] = True
         file_params = demisto.getFilePath(entry_id)
+        file_type = os.path.splitext(file_params['name'])[1]
         self.command_params['md5'] = file_hash(file_params.get('path'))
-        result = self.http_request('/analysis/submit/file',
-                                   file_to_upload=file_params.get('path'))
+        # csv files requires different approach
+        if file_type == '.csv':
+            result = self.handle_csv(file_params)
+        else:
+            result = self.http_request('/analysis/submit/file',
+                                       file_to_upload=file_params.get('path'))
+
         human_readable, context_entry = report_generator(result, self.threshold)
         return human_readable, context_entry, result
+
+    def handle_csv(self, file_params):
+        self._session.post(self._base_url + '/papi/login', data=self.credentials, verify=self._verify)
+        with open(file_params['path'], 'rb') as file_:
+            result = self._session.post(self._base_url + '/papi/analysis/submit_file',
+                                        data={'filename': file_params['name']},
+                                        files={'file': (file_params.get('path'), file_.read())},
+                                        verify=self._verify).json()
+
+        lastline_exception_handler(result)
+        return result
 
     def upload_url(self):
         result = self.http_request('/analysis/submit/url')

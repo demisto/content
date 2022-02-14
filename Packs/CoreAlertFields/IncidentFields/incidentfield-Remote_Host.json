@@ -4,7 +4,7 @@
     "cliName": "remotehost",
     "closeForm": false,
     "content": true,
-	"description": "If the alert triggered on network activity (the Event Type is Network Connection) this is the the remote host name that triggered the alert. If not, then N/A.",
+    "description": "If the alert triggered on network activity (the Event Type is Network Connection) this is the the remote host name that triggered the alert. If not, then N/A.",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -28,5 +28,17 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "action_external_hostname"
+    "x2_fields": "action_external_hostname",
+    "Aliases": [
+        {
+            "cliName": "desthostname",
+            "type": "shortText",
+            "name": "Dest Hostname"
+        },
+        {
+            "cliName": "detectedexternalhosts",
+            "type": "shortText",
+            "name": "Detected External Hosts"
+        }
+    ]
 }

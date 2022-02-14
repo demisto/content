@@ -9,7 +9,7 @@ import sys
 import uuid
 import zipfile
 from datetime import datetime
-from distutils.version import LooseVersion
+from packaging.version import Version
 from enum import IntEnum
 from pprint import pformat
 from threading import Thread
@@ -271,7 +271,7 @@ def check_test_version_compatible_with_server(test, server_version):
     test_to_version = format_version(test.get('toversion', '99.99.99'))
     server_version = format_version(server_version)
 
-    if not LooseVersion(test_from_version) <= LooseVersion(server_version) <= LooseVersion(test_to_version):
+    if not Version(test_from_version) <= Version(server_version) <= Version(test_to_version):
         playbook_id = test.get('playbookID')
         logging.debug(
             f'Test Playbook: {playbook_id} was ignored in the content installation test due to version mismatch '
@@ -363,7 +363,7 @@ def get_new_and_modified_integration_files(branch_name):
     # get changed yaml files (filter only added and modified files)
     file_validator = ValidateManager(skip_dependencies=True)
     file_validator.branch_name = branch_name
-    modified_files, added_files, _, _ = file_validator.get_changed_files_from_git()
+    modified_files, added_files, _, _, _ = file_validator.get_changed_files_from_git()
 
     new_integration_files = [
         file_path for file_path in added_files if
@@ -1335,7 +1335,7 @@ def update_content_on_servers(build: Build) -> bool:
         both before that update and after the update.
     """
     installed_content_packs_successfully = True
-    if LooseVersion(build.server_numeric_version) < LooseVersion('6.0.0'):
+    if Version(build.server_numeric_version) < Version('6.0.0'):
         update_content_till_v6(build)
     elif not build.is_nightly:
         set_marketplace_url(build.servers, build.branch_name, build.ci_build_number)
@@ -1379,7 +1379,7 @@ def install_packs_pre_update(build: Build) -> bool:
         A boolean that indicates whether the installation was successful or not
     """
     installed_content_packs_successfully = False
-    if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
+    if Version(build.server_numeric_version) >= Version('6.0.0'):
         if build.is_nightly:
             install_nightly_pack(build)
             installed_content_packs_successfully = True

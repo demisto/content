@@ -67,6 +67,7 @@ NoneType
 CreateIncidents
 EML
 LastSeen
+Lastline
 IntelGraph
 Accenture
 CTI
@@ -79,3 +80,10 @@ Qualys
 Attivo
 Botsink
 QRadar
+AdditionalPollingCommandName
+FireEye
+FormatURL
+Gitlab
+GitHub
+TAXII
+DomainTools
