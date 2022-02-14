@@ -1,0 +1,1003 @@
+commonfields:
+  id: Salesforce
+  version: -1
+name: Salesforce
+display: Salesforce
+category: Case Management
+description: CRM Services
+configuration:
+- display: Instance URL
+  name: InstanceURL
+  defaultvalue: https://login.salesforce.com
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Consumer Key
+  name: clientID
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Consumer Secret
+  name: clientSecret
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: 'Fetch type: cases/comments (Only fetch comments when using the SalesforceAskUser
+    automation)'
+  name: fetchType
+  defaultvalue: cases
+  type: 0
+  required: false
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: salesforce-search
+    arguments:
+    - name: pattern
+      required: true
+      description: The string or number to search.
+    outputs:
+    - contextPath: SalesForce.Case.ID
+      description: The ID of the case object.
+      type: string
+    - contextPath: SalesForce.Case.CaseNumber
+      description: The case number.
+      type: string
+    - contextPath: SalesForce.Case.Subject
+      description: The subject of the case.
+      type: string
+    - contextPath: SalesForce.Case.Description
+      description: The description of the case.
+      type: string
+    - contextPath: SalesForce.Case.CreateDate
+      description: The creation date the case.
+      type: date
+    - contextPath: SalesForce.Case.ClosedDate
+      description: The closure date of the case.
+      type: date
+    - contextPath: SalesForce.Case.Owner
+      description: The owner of the case.
+      type: string
+    - contextPath: SalesForce.Case.Priority
+      description: 'The priority of the Case. Can be: "Low", "Medium", or "High".'
+      type: string
+    - contextPath: SalesForce.Case.Origin
+      description: 'The origin of the case. Can be: "Web", "Phone", or "Email".'
+      type: string
+    - contextPath: SalesForce.Case.Status
+      description: 'The status of the case. Cam be: "New", "Escalated", "On Hold",
+        or "Closed".'
+      type: string
+    - contextPath: SalesForce.Case.Reason
+      description: The reason for the case creation.
+      type: string
+    - contextPath: SalesForce.Contact.ID
+      description: ID of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Name
+      description: The name of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Account
+      description: The account associated with the Contact information.
+      type: string
+    - contextPath: SalesForce.Contact.Title
+      description: The title of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Phone
+      description: The phone number of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.MobliePhone
+      description: The mobile number of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Email
+      description: The email of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Owner
+      description: The owner of the contact.
+      type: string
+    - contextPath: SalesForce.Lead.ID
+      description: The Lead ID.
+      type: string
+    - contextPath: SalesForce.Lead.Name
+      description: The Lead name.
+      type: string
+    - contextPath: SalesForce.Lead.Title
+      description: The title of the lead.
+      type: string
+    - contextPath: SalesForce.Lead.Company
+      description: The Lead company.
+      type: string
+    - contextPath: SalesForce.Lead.Phone
+      description: The Lead phone number.
+      type: string
+    - contextPath: SalesForce.Lead.Mobile
+      description: The Lead Mobile Number.
+      type: string
+    - contextPath: SalesForce.Lead.Email
+      description: The Lead email.
+      type: string
+    - contextPath: SalesForce.Lead.Owner
+      description: The Lead owner.
+      type: string
+    - contextPath: SalesForce.Lead.Status
+      description: 'The lead status. Can be: "New", "Nurturing", "Working", "Qualified",
+        or "Unqualified".'
+      type: string
+    - contextPath: SalesForce.Task.ID
+      description: The ID of the task.
+      type: string
+    - contextPath: SalesForce.Task.Subject
+      description: The subject of the task.
+      type: string
+    - contextPath: SalesForce.Task.Lead
+      description: The leader of the task.
+      type: string
+    - contextPath: SalesForce.Task.RelatedTo
+      description: The relevant account.
+      type: string
+    - contextPath: SalesForce.Task.DueDate
+      description: The due date of the task.
+      type: date
+    - contextPath: SalesForce.User.ID
+      description: The ID of the user.
+      type: string
+    - contextPath: SalesForce.User.Name
+      description: The name of the user.
+      type: string
+    - contextPath: SalesForce.User.Title
+      description: The title of the user.
+      type: string
+    - contextPath: SalesForce.User.Phone
+      description: The phone number of the user.
+      type: string
+    - contextPath: SalesForce.User.Email
+      description: The email of the user.
+      type: string
+    - contextPath: SalesForce.Case.IsEscalated
+      description: Is Escalated for Case
+      type: boolean
+    - contextPath: SalesForce.Case.SuppliedPhone
+      description: Case Supplied Phone
+      type: string
+    - contextPath: SalesForce.Case.SuppliedCompany
+      description: Case Supplied Company
+      type: string
+    - contextPath: SalesForce.Case.ContactEmail
+      description: Case contact Email
+      type: string
+    - contextPath: SalesForce.Case.ContactId
+      description: Case contact Id
+      type: string
+    - contextPath: SalesForce.Case.AccountId
+      description: Case account ID
+      type: string
+    description: Search records that contain values with pattern
+  - name: salesforce-query
+    arguments:
+    - name: query
+      required: true
+      description: 'Query in SOQL format: "SELECT name from Account".'
+    description: Queries Salesforce in SOQL format.
+    execution: true
+  - name: salesforce-get-object
+    arguments:
+    - name: path
+      required: true
+      description: 'The object path. For example, "Case/5000Y000001EjzRQAS" for Object
+        "Case" with ID "5000Y000001EjzRQAS".'
+    outputs:
+    - contextPath: SalesForce.Case.ID
+      description: The Object ID of the case.
+      type: string
+    - contextPath: SalesForce.Case.CaseNumber
+      description: The case number.
+      type: string
+    - contextPath: SalesForce.Case.Subject
+      description: The subject of the case.
+      type: string
+    - contextPath: SalesForce.Case.Description
+      description: The description of the case.
+      type: string
+    - contextPath: SalesForce.Case.CreateDate
+      description: The creation date of the case.
+      type: date
+    - contextPath: SalesForce.Case.ClosedDate
+      description: The closure date of the case.
+      type: date
+    - contextPath: SalesForce.Case.Owner
+      description: The owner of the case.
+      type: string
+    - contextPath: SalesForce.Case.Priority
+      description: 'The priority of the case. Can be: "Low", "Medium", or "High".'
+      type: string
+    - contextPath: SalesForce.Case.Origin
+      description: 'Origin of the case. Can be: "Web", "Phone", or "Email".'
+      type: string
+    - contextPath: SalesForce.Case.Status
+      description: 'The status of the case. Can be: "New", "Escalated", "On Hold",
+        or "Closed".'
+      type: string
+    - contextPath: SalesForce.Case.Reason
+      description: The reason for the case creation.
+      type: string
+    - contextPath: SalesForce.Contact.ID
+      description: The ID of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Name
+      description: The name of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Account
+      description: The account associated with the Contact information.
+      type: string
+    - contextPath: SalesForce.Contact.Title
+      description: The title of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Phone
+      description: The phone number of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.MobliePhone
+      description: The mobile number of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Email
+      description: The email of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Owner
+      description: The owner of the contact.
+      type: string
+    - contextPath: SalesForce.Lead.ID
+      description: The Lead ID.
+      type: string
+    - contextPath: SalesForce.Lead.Name
+      description: The Lead name.
+      type: string
+    - contextPath: SalesForce.Lead.Title
+      description: The Lead title.
+      type: string
+    - contextPath: SalesForce.Lead.Company
+      description: The Lead company.
+      type: string
+    - contextPath: SalesForce.Lead.Phone
+      description: The Lead phone number.
+      type: string
+    - contextPath: SalesForce.Lead.Mobile
+      description: The Lead mobile number.
+      type: string
+    - contextPath: SalesForce.Lead.Email
+      description: The Lead email.
+      type: string
+    - contextPath: SalesForce.Lead.Owner
+      description: The Lead owner.
+      type: string
+    - contextPath: SalesForce.Lead.Status
+      description: 'The Lead status. Can be: "New", "Nurturing", "Working", "Qualified",
+        or "Unqualified".'
+      type: string
+    - contextPath: SalesForce.Task.ID
+      description: The ID of the task.
+      type: string
+    - contextPath: SalesForce.Task.Subject
+      description: The subject of the task.
+      type: string
+    - contextPath: SalesForce.Task.Lead
+      description: The leader of the task.
+      type: string
+    - contextPath: SalesForce.Task.RelatedTo
+      description: The relevant account of the task.
+      type: string
+    - contextPath: SalesForce.Task.DueDate
+      description: The due date of the task.
+      type: date
+    - contextPath: SalesForce.User.ID
+      description: The ID of the user.
+      type: string
+    - contextPath: SalesForce.User.Name
+      description: The name of the user.
+      type: string
+    - contextPath: SalesForce.User.Title
+      description: The title of the user.
+      type: string
+    - contextPath: SalesForce.User.Phone
+      description: The phone number of the user.
+      type: string
+    - contextPath: SalesForce.User.Email
+      description: The email of the user.
+      type: string
+    description: Returns an object by its path.
+  - name: salesforce-update-object
+    arguments:
+    - name: path
+      required: true
+      description: 'The object path. For example, "Case/5000Y000001EjzRQAS" for Object
+        "Case" with ID "5000Y000001EjzRQAS".'
+    - name: json
+      required: true
+      description: The JSON file with fields and values of the object to be updated.
+    outputs:
+    - contextPath: SalesForce.Case.ID
+      description: The object ID of the case.
+      type: string
+    - contextPath: SalesForce.Case.CaseNumber
+      description: The case number.
+      type: string
+    - contextPath: SalesForce.Case.Subject
+      description: The subject of the case.
+      type: string
+    - contextPath: SalesForce.Case.Description
+      description: The description of the case.
+      type: string
+    - contextPath: SalesForce.Case.CreateDate
+      description: The creation date of the case.
+      type: date
+    - contextPath: SalesForce.Case.ClosedDate
+      description: The closure time of the case.
+      type: date
+    - contextPath: SalesForce.Case.Owner
+      description: The owner of the case.
+      type: string
+    - contextPath: SalesForce.Case.Priority
+      description: 'The priority of the case. Can be: "Low", "Medium", or "High".'
+      type: string
+    - contextPath: SalesForce.Case.Origin
+      description: 'The origin of the Case. Can be: "Web", "Phone", or "Email".'
+      type: string
+    - contextPath: SalesForce.Case.Status
+      description: 'The status of the case. Can be: "New", "Escalated", "On Hold"
+        ,or "Closed".'
+      type: string
+    - contextPath: SalesForce.Case.Reason
+      description: The reason for the case creation.
+      type: string
+    - contextPath: SalesForce.Contact.ID
+      description: The ID of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Name
+      description: The name of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Account
+      description: The account associated with the Contact information.
+      type: string
+    - contextPath: SalesForce.Contact.Title
+      description: The title of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Phone
+      description: The phone number of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.MobliePhone
+      description: The mobile number of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Email
+      description: The email of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Owner
+      description: The owner of the contact.
+      type: string
+    - contextPath: SalesForce.Lead.ID
+      description: The Lead ID.
+      type: string
+    - contextPath: SalesForce.Lead.Name
+      description: The Lead name.
+      type: string
+    - contextPath: SalesForce.Lead.Title
+      description: The Lead title.
+      type: string
+    - contextPath: SalesForce.Lead.Company
+      description: The Lead company.
+      type: string
+    - contextPath: SalesForce.Lead.Phone
+      description: The Lead phone number.
+      type: string
+    - contextPath: SalesForce.Lead.Mobile
+      description: The Lead mobile number.
+      type: string
+    - contextPath: SalesForce.Lead.Email
+      description: The Lead email.
+      type: string
+    - contextPath: SalesForce.Lead.Owner
+      description: The Lead owner.
+      type: string
+    - contextPath: SalesForce.Lead.Status
+      description: 'The Lead Status. Can be: "New", "Nurturing", "Working", "Qualified",
+        or "Unqualified".'
+      type: string
+    - contextPath: SalesForce.Task.ID
+      description: The ID of the task.
+      type: string
+    - contextPath: SalesForce.Task.Subject
+      description: The subject of the task.
+      type: string
+    - contextPath: SalesForce.Task.Lead
+      description: The leader of the task.
+      type: string
+    - contextPath: SalesForce.Task.RelatedTo
+      description: The relevant account.
+      type: string
+    - contextPath: SalesForce.Task.DueDate
+      description: The due date of the task.
+      type: date
+    - contextPath: SalesForce.User.ID
+      description: The ID of the user.
+      type: string
+    - contextPath: SalesForce.User.Name
+      description: The name of the user.
+      type: string
+    - contextPath: SalesForce.User.Title
+      description: The title of the user.
+      type: string
+    - contextPath: SalesForce.User.Phone
+      description: The phone number of the user.
+      type: string
+    - contextPath: SalesForce.User.Email
+      description: The email of the user.
+      type: string
+    description: Updates object fields.
+    execution: true
+  - name: salesforce-create-object
+    arguments:
+    - name: path
+      required: true
+      description: 'The object path. For example, "Case" for Object "Case".'
+    - name: json
+      required: true
+      description: The JSON file with fields and values of the object to be created.
+    outputs:
+    - contextPath: SalesForce.Case.ID
+      description: The Object ID of the case.
+      type: string
+    - contextPath: SalesForce.Case.CaseNumber
+      description: The case number.
+      type: string
+    - contextPath: SalesForce.Case.Subject
+      description: The subject of the case.
+      type: string
+    - contextPath: SalesForce.Case.Description
+      description: The description of the case.
+      type: string
+    - contextPath: SalesForce.Case.CreateDate
+      description: The creation date of the case.
+      type: date
+    - contextPath: SalesForce.Case.ClosedDate
+      description: The closure date of the case.
+      type: date
+    - contextPath: SalesForce.Case.Owner
+      description: The owner of the case.
+      type: string
+    - contextPath: SalesForce.Case.Priority
+      description: 'The priority of the case. Can be: "Low", "Medium", "High".'
+      type: string
+    - contextPath: SalesForce.Case.Origin
+      description: 'Origin of the Case. Can be: "Web", "Phone", or "Email".'
+      type: string
+    - contextPath: SalesForce.Case.Status
+      description: 'The status of the case. Can be: "New", "Escalated", "On Hold",
+        or "Closed".'
+      type: string
+    - contextPath: SalesForce.Case.Reason
+      description: The reason for the case creation.
+      type: string
+    - contextPath: SalesForce.Contact.ID
+      description: The ID of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Name
+      description: The name of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Account
+      description: The account associated with the Contact information.
+      type: string
+    - contextPath: SalesForce.Contact.Title
+      description: The title of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Phone
+      description: The phone number of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.MobliePhone
+      description: The mobile number of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Email
+      description: The email of the contact.
+      type: string
+    - contextPath: SalesForce.Contact.Owner
+      description: The owner of the contact.
+      type: string
+    - contextPath: SalesForce.Lead.ID
+      description: The Lead ID.
+      type: string
+    - contextPath: SalesForce.Lead.Name
+      description: The Lead name.
+      type: string
+    - contextPath: SalesForce.Lead.Title
+      description: The Lead title.
+      type: string
+    - contextPath: SalesForce.Lead.Company
+      description: The Lead company.
+      type: string
+    - contextPath: SalesForce.Lead.Phone
+      description: The Lead phone number.
+      type: string
+    - contextPath: SalesForce.Lead.Mobile
+      description: The Lead mobile number.
+      type: string
+    - contextPath: SalesForce.Lead.Email
+      description: The Lead email.
+      type: string
+    - contextPath: SalesForce.Lead.Owner
+      description: The Lead owner.
+      type: string
+    - contextPath: SalesForce.Lead.Status
+      description: 'The Lead status. Can be: "New", "Nurturing", "Working", "Qualified",
+        or "Unqualified".'
+      type: string
+    - contextPath: SalesForce.Task.ID
+      description: The ID of the task.
+      type: string
+    - contextPath: SalesForce.Task.Subject
+      description: The subject of the task.
+      type: string
+    - contextPath: SalesForce.Task.Lead
+      description: The leader of the task.
+      type: string
+    - contextPath: SalesForce.Task.RelatedTo
+      description: The relevant account of the task.
+      type: string
+    - contextPath: SalesForce.Task.DueDate
+      description: The due date of the task.
+      type: date
+    - contextPath: SalesForce.User.ID
+      description: The ID of the user.
+      type: string
+    - contextPath: SalesForce.User.Name
+      description: The name of the user.
+      type: string
+    - contextPath: SalesForce.User.Title
+      description: The title of the user.
+      type: string
+    - contextPath: SalesForce.User.Phone
+      description: The phone number of the user.
+      type: string
+    - contextPath: SalesForce.User.Email
+      description: The email of the user.
+      type: string
+    description: Creates a new object.
+    execution: true
+  - name: salesforce-push-comment
+    arguments:
+    - name: oid
+      required: true
+      description: The Object ID of subject.
+    - name: text
+      required: true
+      description: Chat text
+    - name: link
+      description: Adds a link to the message.
+    outputs:
+    - contextPath: SalesForce.Comment.Body
+      description: The body of the comment.
+      type: string
+    - contextPath: SalesForce.Comment.CreatedDate
+      description: The created date of the comment.
+      type: date
+    - contextPath: SalesForce.Comment.Title
+      description: The title of the comment.
+      type: string
+    - contextPath: SalesForce.Comment.ParentType
+      description: The parent type of the comment.
+      type: string
+    - contextPath: SalesForce.Comment.ParentName
+      description: The parent name of the comment.
+      type: string
+    - contextPath: SalesForce.Comment.URL
+      description: The URL link of the comment.
+      type: string
+    - contextPath: SalesForce.Comment.Visibility
+      description: The visibility of the comment.
+      type: string
+    description: Adds a comment to Chatter.
+  - name: salesforce-get-case
+    arguments:
+    - name: oid
+      description: The Object ID of the case.
+    - name: caseNumber
+      description: Case number of case
+    outputs:
+    - contextPath: SalesForce.Case.ID
+      description: The Object ID of the case.
+      type: string
+    - contextPath: SalesForce.Case.CaseNumber
+      description: The case number.
+      type: string
+    - contextPath: SalesForce.Case.Subject
+      description: The subject of the case.
+      type: string
+    - contextPath: SalesForce.Case.Description
+      description: The description of the case.
+      type: string
+    - contextPath: SalesForce.Case.CreateDate
+      description: The creation date of the case.
+      type: date
+    - contextPath: SalesForce.Case.ClosedDate
+      description: The closure date of the case.
+      type: date
+    - contextPath: SalesForce.Case.Owner
+      description: The owner of the case.
+      type: string
+    - contextPath: SalesForce.Case.Priority
+      description: 'The priority of the case. Can be: "Low", "Medium", or "High".'
+      type: string
+    - contextPath: SalesForce.Case.Origin
+      description: 'The origin of the case. Can be: "Web", "Phone", or "Email".'
+      type: string
+    - contextPath: SalesForce.Case.Status
+      description: 'The status of the case. Can be: "New", "Escalated", "On Hold",
+        or "Closed".'
+      type: string
+    - contextPath: SalesForce.Case.Reason
+      description: The reason for the case creation.
+      type: string
+    description: Returns information on a case. All arguments are optional, but you
+      must specify at least one for the command to execute successfully.
+  - name: salesforce-create-case
+    arguments:
+    - name: subject
+      required: true
+      default: true
+      description: The case subject.
+    - name: description
+      description: The case description.
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - New
+      - On Hold
+      - Closed
+      - Escalated
+      description: 'The Case Status. Can be: "New", "On Hold", "Closed", or "Escalated".
+        Default is New.'
+      defaultValue: New
+    - name: origin
+      auto: PREDEFINED
+      predefined:
+      - Email
+      - Phone
+      - Web
+      description: 'The case origin. Can be: "Email", "Phone", or "Web".'
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      description: 'The case priority. Can be: "Low", "Medium", or "High".'
+      defaultValue: Low
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - Question
+      - Problem
+      - Feature Request
+      description: 'The case type. Can be: "Question", "Problem", or "Feature Request".'
+    outputs:
+    - contextPath: SalesForce.Case.ID
+      description: The Object ID of the case.
+      type: string
+    - contextPath: SalesForce.Case.CaseNumber
+      description: The case number.
+      type: string
+    - contextPath: SalesForce.Case.Subject
+      description: The subject of the case.
+      type: string
+    - contextPath: SalesForce.Case.Description
+      description: The description of the case.
+      type: string
+    - contextPath: SalesForce.Case.CreateDate
+      description: The creation date of the case.
+      type: date
+    - contextPath: SalesForce.Case.ClosedDate
+      description: The closure date of the case.
+      type: date
+    - contextPath: SalesForce.Case.Owner
+      description: The owner of the case.
+      type: string
+    - contextPath: SalesForce.Case.Priority
+      description: 'The priority of the case. Can be: "Low", "Medium", or "High".'
+      type: string
+    - contextPath: SalesForce.Case.Origin
+      description: 'The origin of the case. Can be: "Web", "Phone", or "Email".'
+      type: string
+    - contextPath: SalesForce.Case.Status
+      description: 'The status of the case. Can be: "New", "Escalated", "On Hold",
+        or "Closed".'
+      type: string
+    - contextPath: SalesForce.Case.Reason
+      description: The reason for the case creation.
+      type: string
+    description: Creates a new case.
+  - name: salesforce-update-case
+    arguments:
+    - name: oid
+      description: The Object ID of the case.
+    - name: caseNumber
+      description: The case number.
+    - name: subject
+      description: The case subject.
+    - name: description
+      description: The case description.
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - New
+      - On Hold
+      - Closed
+      - Escalated
+      description: 'The case status. Can be: "New", "On Hold", "Closed", or "Escalated".'
+    - name: origin
+      auto: PREDEFINED
+      predefined:
+      - Email
+      - Phone
+      - Web
+      description: 'The case origin. Can be: "Email", "Phone", or "Web".'
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      description: 'The case priority. Can be: "Low", "Medium", or "High".'
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - Question
+      - Problem
+      - Feature Request
+      description: 'The case type. Can be: "Question", "Problem", or "Feature Request".'
+    outputs:
+    - contextPath: SalesForce.Case.ID
+      description: The Object ID of the case.
+      type: string
+    - contextPath: SalesForce.Case.CaseNumber
+      description: The number of the case.
+      type: string
+    - contextPath: SalesForce.Case.Subject
+      description: The subject of the case.
+      type: string
+    - contextPath: SalesForce.Case.Description
+      description: The description of the case.
+      type: string
+    - contextPath: SalesForce.Case.CreateDate
+      description: The creation date of the case.
+      type: date
+    - contextPath: SalesForce.Case.ClosedDate
+      description: The closure date of the case.
+      type: date
+    - contextPath: SalesForce.Case.Owner
+      description: The owner of the case.
+      type: string
+    - contextPath: SalesForce.Case.Priority
+      description: 'The priority of the case. Can be: "Low", "Medium", or "High".'
+      type: string
+    - contextPath: SalesForce.Case.Origin
+      description: 'Origin of the Case. Can be: "Web", "Phone", or "Email".'
+      type: string
+    - contextPath: SalesForce.Case.Status
+      description: 'The status of the case. Can be: "New, "Escalated", "On Hold",
+        or "Closed".'
+      type: string
+    - contextPath: SalesForce.Case.Reason
+      description: Reason for the case creation.
+      type: string
+    description: Updates case fields.
+  - name: salesforce-get-cases
+    arguments: []
+    description: Returns all cases.
+  - name: salesforce-close-case
+    arguments:
+    - name: oid
+      description: The case Object ID.
+    - name: caseNumber
+      description: The case number.
+    outputs:
+    - contextPath: SalesForce.Case.ID
+      description: The Object ID of the case.
+      type: string
+    - contextPath: SalesForce.Case.CaseNumber
+      description: The case number.
+      type: string
+    - contextPath: SalesForce.Case.Subject
+      description: The subject of the case.
+      type: string
+    - contextPath: SalesForce.Case.Description
+      description: Case Description
+      type: string
+    - contextPath: SalesForce.Case.CreateDate
+      description: Creation Time of Case
+      type: date
+    - contextPath: SalesForce.Case.ClosedDate
+      description: Closure Time of Case
+      type: date
+    - contextPath: SalesForce.Case.Owner
+      description: Case Owner
+      type: string
+    - contextPath: SalesForce.Case.Priority
+      description: Priority of the Case. one of Low, Medium, High.
+      type: string
+    - contextPath: SalesForce.Case.Origin
+      description: Origin of the Case. one of Web, Phone, Email.
+      type: string
+    - contextPath: SalesForce.Case.Status
+      description: 'Case Status. one of the following: New, Escalated, On Hold or
+        Closed.'
+      type: string
+    - contextPath: SalesForce.Case.Reason
+      description: Reason for case creation
+      type: string
+    important:
+    - contextPath: SalesForce.Case.Status
+      description: Case Status. Will be 'Closed'.
+      related: ""
+    description: Close a case
+  - name: salesforce-push-comment-threads
+    arguments:
+    - name: id
+      required: true
+      description: The Chatter comment Thread ID
+    - name: text
+      required: true
+      description: The comment text
+    outputs:
+    - contextPath: SalesForce.Comment.Reply.Body
+      description: Reply body
+      type: string
+    - contextPath: SalesForce.Comment.Reply.CreatedDate
+      description: Reply created date
+      type: date
+    - contextPath: SalesForce.Comment.Reply.URL
+      description: Reply URL link
+      type: string
+    description: Add the comment to the chatter thread. Use this command only after
+      salesforce-push-comment
+  - name: salesforce-delete-case
+    arguments:
+    - name: oid
+      description: The Object ID of the case.
+    - name: caseNumber
+      description: The case number.
+    description: Deletes a case.
+  - name: salesforce-get-casecomment
+    arguments:
+    - name: oid
+      description: Returns information of a case.
+    - name: caseNumber
+      description: The case number of the case.
+    outputs:
+    - contextPath: ID
+      description: The ID of the case.
+      type: string
+    - contextPath: ParentId
+      description: The ID of the parent case of the case comment. Required.
+      type: string
+    - contextPath: IsPublished
+      description: Whether the case comment is visible to customers in the Self-Service
+        portal (true). The label is published. This is the only CaseComment field
+        that can be updated through the API.
+      type: boolean
+    - contextPath: CommentBody
+      description: The text of the case body. Maximum size is 4,000 bytes. The label
+        is Body.
+      type: string
+    - contextPath: CreatedById
+      description: 'The created date by ID.'
+    - contextPath: CreatedDate
+      description: The created date.
+      type: string
+    - contextPath: SystemModstamp
+      description: 'The SystemMod stamp.'
+      type: string
+    - contextPath: LastModifiedDate
+      description: 'The last modified date. '
+      type: string
+    - contextPath: LastModifiedById
+      description: 'The last modified date by ID.'
+      type: string
+    - contextPath: IsDeleted
+      description: Whether the object has been moved to the Recycle Bin (true). Label
+        is Deleted.
+      type: boolean
+    description: Returns a comment through the case number.
+  - name: salesforce-post-casecomment
+    arguments:
+    - name: oid
+      description: The Object ID of the case.
+    - name: caseNumber
+      description: The case number of the case.
+    - name: text
+      description: Added Text to context
+    description: The post comment through the case number.
+  - name: salesforce-get-user
+    arguments:
+    - name: oid
+      description: The Object ID of the case.
+    - name: caseNumber
+      description: The case number of the case.
+    outputs:
+    - contextPath: ID
+      description: The ID of the case.
+      type: string
+    - contextPath: Alias
+      description: The user’s alias. Required. For example, jsmith.
+      type: string
+    - contextPath: CommunityNickname
+      description: The name used to identify the user in the Community application,
+        which includes the ideas and answers features.
+      type: string
+    - contextPath: CreatedById
+      description: 'Created by the ID.'
+      type: string
+    - contextPath: Email
+      description: The user’s email address. Required.
+      type: string
+    - contextPath: LastLoginDate
+      description: The time and date when the user last successfully logged in. This
+        value is updated if 60 seconds have elapsed since the user’s last login.
+      type: string
+    - contextPath: LastModifiedDate
+      description: The last modified date.
+      type: string
+    - contextPath: LastName
+      description: The user’s last name. Required.
+      type: string
+    - contextPath: Name
+      description: Concatenation of FirstName and LastName. Limited to 121 characters.
+      type: string
+    - contextPath: Username
+      description: Contains the name that a user enters to log in to the API or the
+        user interface. Required. Must be in the form of an email address, all characters
+        should be lowercase, and unique across all organizations. Each added user
+        counts as a license. Every organization has a maximum number of licenses.
+        If you attempt to exceed the maximum number of licenses by inserting user
+        records, the attempt to create a user is rejected.
+      type: string
+    - contextPath: UserRoleId
+      description: The ID of the user’s UserRole. Label is Role ID.
+      type: string
+    description: Returns the UserName through the case number.
+  - name: salesforce-get-org
+    arguments:
+    - name: caseNumber
+      description: The case number of the case.
+    outputs:
+    - contextPath: ID
+      description: The unique ID of the case.
+      type: string
+    - contextPath: Name
+      description: 'Name of the account. Required. Label is Account Name. Maximum
+        size is 255 characters. If the account has a record type of Person Account,
+        this value is the concatenation of the FirstName, MiddleName, LastName, and
+        Suffix of the associated person contact. You cannot modify this value.'
+      type: string
+    description: 'Returns organization details from the case number. '
+  isfetch: true
+  runonce: false
+fromversion: 5.0.0
