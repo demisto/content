@@ -287,10 +287,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 344f1e3c-19fe-47ef-8dca-cd8ced179d65
+    taskid: 818df99f-ee44-4d6a-8c5c-d7b8dc7aac76
     type: regular
     task:
-      id: 344f1e3c-19fe-47ef-8dca-cd8ced179d65
+      id: 818df99f-ee44-4d6a-8c5c-d7b8dc7aac76
       version: -1
       name: Gmail Delete Mail
       description: Deletes an email in the user's mailbox.
@@ -303,11 +303,11 @@ tasks:
       - "19"
     scriptarguments:
       message-id:
-        simple: ${incident.emailmessageid}
+        simple: ${inputs.GmailMessageID}
       permanent:
         simple: "False"
       user-id:
-        simple: ${incident.emailto}
+        simple: ${inputs.GmailUserID}
     separatecontext: false
     view: |-
       {
@@ -325,10 +325,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 520cb2df-1a4b-4864-811c-49d5a90512be
+    taskid: d5ca6712-b8ea-45ea-8db0-f6bb6bd49990
     type: condition
     task:
-      id: 520cb2df-1a4b-4864-811c-49d5a90512be
+      id: d5ca6712-b8ea-45ea-8db0-f6bb6bd49990
       version: -1
       name: Is Any URL found?
       description: Checking if mail has any url in body?
@@ -347,7 +347,9 @@ tasks:
       - - operator: isEmpty
           left:
             value:
-              simple: ExtractedIndicators
+              complex:
+                root: ExtractedIndicators
+                accessor: URL
             iscontext: true
     view: |-
       {
@@ -506,10 +508,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 59a07f93-1155-4a7f-8fe0-b7e041c32c43
+    taskid: c1a66707-91ed-405e-8ded-992b7f5cc935
     type: regular
     task:
-      id: 59a07f93-1155-4a7f-8fe0-b7e041c32c43
+      id: c1a66707-91ed-405e-8ded-992b7f5cc935
       version: -1
       name: Move Mail to Spam Folder
       description: Moves an email to a different folder.
@@ -524,11 +526,11 @@ tasks:
       add-labels:
         simple: SPAM
       message-id:
-        simple: ${incident.emailmessageid}
+        simple: ${inputs.GmailMessageID}
       remove-labels:
         simple: INBOX
       user-id:
-        simple: ${incident.emailto}
+        simple: ${inputs.GmailUserID}
     separatecontext: false
     view: |-
       {
@@ -780,6 +782,20 @@ inputs:
   required: true
   description: If you do not want actions such as deleting mail and moving to spam
     in PhishUp playbook, you should set the value False. Default value is True
+  playbookInputQuery: null
+- key: GmailMessageID
+  value:
+    simple: ${incident.emailmessageid}
+  required: true
+  description: Identify mail for deleting and moving funcitons. Defaultly it comes
+    from incident which is setted from PhishUp Gmail Mapper
+  playbookInputQuery: null
+- key: GmailUserID
+  value:
+    simple: ${incident.emailto}
+  required: true
+  description: Identify user for deleting and moving funcitons. Defaultly it comes
+    from incident which is setted from PhishUp Gmail Mapper
   playbookInputQuery: null
 outputs:
 - contextPath: PhishUp.Evaluation
