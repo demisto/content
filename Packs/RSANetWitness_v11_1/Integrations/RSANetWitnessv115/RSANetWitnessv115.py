@@ -1181,7 +1181,7 @@ def main() -> None:
         elif command in commands:
             return_results(commands[command](client, args))
         else:
-            raise NotImplementedError(f'{command} command is not implemented.')
+            raise NotImplementedError(f'{command} command is not implemented .')
 
     except Exception as e:
         return_error(str(e))
@@ -1189,4 +1189,3 @@ def main() -> None:
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
-
