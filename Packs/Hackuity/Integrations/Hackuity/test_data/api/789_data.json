@@ -1,0 +1,11 @@
+{
+  "~~~NOTE~~~": "unknown data should be ignored",
+  "kind": "hy#widgetData",
+  "payload": {
+    "assetsOverview": {
+      "currentNbAssets": 456,
+      "previousNbAssets": 123
+    }
+  },
+  "type": "ASSETS_OVERVIEW"
+}
