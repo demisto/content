@@ -8890,7 +8890,7 @@ def shorten_string_for_printing(source_string, max_length=64):
         return ret_value
 
 
-def calculate_fetch_run_time_with_look_back(last_run={}, look_back=0, first_fetch='', timezone=0):
+def get_fetch_run_time_with_look_back(last_run={}, look_back=0, first_fetch='', timezone=0):
     last_run_time = last_run and 'time' in last_run and last_run['time']
     now = datetime.utcnow() + timedelta(hours=timezone)
     if not last_run_time:
@@ -8911,18 +8911,61 @@ def look_for_incidents_in_last_run(last_run, fetch_limit):
         if len(incidents) == fetch_limit:
             last_run['incidents'] = last_run['incidents'][fetch_limit:]
         else:
-            set_next_run()
+            last_run['incidents'] = []
     
     return incidents
 
 
-def set_next_fetch_run(last_run, incidents, fetch_limit, now, id_field='id'):
-    incident_ids = [incident[id_field] for incident in incidents]
-    if len(incidents) == 0:
-        new_last_run = {'time': now, 'incidents': [], 'found_incident_ids': last_run['found_incident_ids']}
-    elif len(incidents) < fetch_limit:
-        new_last_run = {'time': now, 'incidents': [], 'found_incident_ids': last_run['found_incident_ids']}
+def get_incidents_from_response(incidents_res, last_run, id_field='id'):
+    found_incidents = last_run.get('found_incident_ids', {})
 
+    incidents = []
+    for incident in incidents_res:
+        if incident[id_field] not in found_incidents:
+            incident.append(incident)
+
+    return incidents
+
+
+def get_latest_incident_time(incidents, created_time_field, date_format='%Y-%m-%dT%H:%M:%S'):
+    latest_incident_time = datetime.strptime(incidents[0][created_time_field], date_format)
+
+    for incident in incidents:
+        if datetime.strptime(incident[created_time_field], date_format) > latest_incident_time:
+            latest_incident_time = datetime.strptime(incident[created_time_field], date_format)
+
+    return latest_incident_time
+
+
+def remove_old_incident_ids(found_incidents_ids, current_time, look_back):
+    new_found_incidents_ids = {}
+    for inc_id, addition_time in found_incidents_ids.items():
+        look_back_in_seconds = look_back * 60
+        deletion_threshold_in_seconds = look_back_in_seconds * 2
+        if current_time - addition_time < deletion_threshold_in_seconds:
+            new_found_incidents_ids[inc_id] = addition_time
+
+    return new_found_incidents_ids
+
+
+def set_next_fetch_run(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back, created_time_field, id_field='id', date_format='%Y-%m-%dT%H:%M:%S'):        
+    found_incidents = last_run.get('found_incident_ids', {})
+    current_time = int(time.time())
+
+    for incident in incidents:
+        found_incidents[incident[id_field]] = current_time
+
+    found_incidents = remove_old_incident_ids(found_incidents, current_time, look_back)
+
+    new_last_run = {}
+    if len(incidents) == 0:
+        new_last_run = {'time': end_fetch_time, 'incidents': [], 'found_incident_ids': found_incidents}
+    elif len(incidents) < fetch_limit:
+        new_last_run = {'time': end_fetch_time, 'incidents': [], 'found_incident_ids': found_incidents}
+    else:
+        new_last_run = {'time': start_fetch_time, 'incidents': incidents[:fetch_limit], 'found_incident_ids': found_incidents}
+
+    return new_last_run
 
 
 ###########################################
