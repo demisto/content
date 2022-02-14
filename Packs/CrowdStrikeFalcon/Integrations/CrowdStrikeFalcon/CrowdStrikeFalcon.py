@@ -602,6 +602,7 @@ def run_single_read_cmd(host_id: str, command_type: str, full_command: str) -> D
         'command_string': full_command,
         'session_id': session_id
     })
+    print(body)
     response = http_request('POST', endpoint_url, data=body)
     return response
 
@@ -616,16 +617,12 @@ def run_single_write_cmd(host_id: str, command_type: str, full_command: str) -> 
     """
     endpoint_url = '/real-time-response/entities/active-responder-command/v1'
     session_id = init_rtr_single_session(host_id)
-    print(session_id)
     body = json.dumps({
         'base_command': command_type,
         'command_string': full_command,
         'session_id': session_id
     })
-    print(endpoint_url)
-    print(body)
     response = http_request('POST', endpoint_url, data=body)
-    print(response)
     return response
 
 
@@ -3028,7 +3025,7 @@ def parse_command_response(response, host_ids, process_id=None) -> list:
                 current_error = errors[0].get('message', '')
             elif stderr:
                 current_error = stderr
-        outputs_data = {'HostID': host_id, 'Error': current_error if current_error else "Success",}
+        outputs_data = {'HostID': host_id, 'Error': current_error if current_error else "Success", }
         if process_id:
             outputs_data.update({'ProcessID': process_id})
 
@@ -3079,6 +3076,35 @@ def execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command,
     finally:
         timer.cancel()
     return response
+
+
+def rtr_general_command_on_single_host(args: dict, command: str) -> CommandResults:
+    host_id = args.get('host_id')
+    host_ids = [host_id]
+    batch_id = init_rtr_batch_session(host_ids)
+    response = execute_run_batch_write_cmd_with_timer(batch_id, command_type=command, full_command=command,
+                                                      host_ids=host_ids)
+    resources: dict = response.get('combined', {}).get('resources', {})
+    output = {}
+
+    for _, resource in resources.items():
+        current_error = ""
+        errors = resource.get('errors')
+        stderr = resource.get('stderr')
+        command_failed_with_error = errors or stderr
+        if command_failed_with_error:
+            if errors:
+                current_error = errors[0].get('message', '')
+            elif stderr:
+                current_error = stderr
+            return_error(current_error)
+        output = {'Stdout': resource.get('stdout')}
+
+    human_readable = tableToMarkdown(
+        f'{INTEGRATION_NAME} {command} command on host {host_ids[0]}:', output)
+
+    # todo add a file entry
+    return CommandResults(raw_response=response, readable_output=human_readable)
 
 
 def add_error_message(failed_devices):
@@ -3217,6 +3243,13 @@ def main():
 
         elif command == 'cs-falcon-rtr-remove-file':
             return_results(rtr_remove_file_command(args))
+
+        elif command == 'cs-falcon-rtr-list-processes':
+            return_results(rtr_general_command_on_single_host(args, "ps"))
+
+        elif command == 'cs-falcon-rtr-list-network-stats':
+            return_results(rtr_general_command_on_single_host(args, "netstat"))
+
 
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
