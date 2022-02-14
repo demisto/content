@@ -6,7 +6,7 @@ updates:
       interval: "daily"
 
   - package-ecosystem: "npm"
-    directory: "/client"
+    directory: "/"
     schedule:
       interval: "daily"
 
