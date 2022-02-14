@@ -1,0 +1,22 @@
+args:
+- description: Incident ID to get
+  name: id
+commonfields:
+  id: getIncidentByID
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+name: getIncidentByID
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,60 @@
+args:
+- description: SoftwareVersion table of current images
+  isArray: true
+  name: installed_images
+  required: true
+- description: Complete list of available images for the given platform
+  isArray: true
+  name: available_images
+  required: true
+comment: Given a table containing installed ("current") PAN-OS Software images, compare
+  with available to determine
+commonfields:
+  id: FilterAvailableSoftwareImages
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.9.8.24399
+name: FilterAvailableSoftwareImages
+outputs:
+- contextPath: FilteredSoftwareVersions.Result.hostid
+  description: Host ID
+  type: Unknown
+- contextPath: FilteredSoftwareVersions.Result.version
+  description: software version in Major.Minor.Maint format
+  type: Unknown
+- contextPath: FilteredSoftwareVersions.Result.filename
+  description: Software version filename
+  type: Unknown
+- contextPath: FilteredSoftwareVersions.Result.size
+  description: Size of software in MB
+  type: Unknown
+- contextPath: FilteredSoftwareVersions.Result.size_kb
+  description: Size of software in KB
+  type: Unknown
+- contextPath: FilteredSoftwareVersions.Result.release_notes
+  description: Link to version release notes on PAN knowledge base
+  type: Unknown
+- contextPath: FilteredSoftwareVersions.Result.downloaded
+  description: True if the software version is present on the system
+  type: Unknown
+- contextPath: FilteredSoftwareVersions.Result.current
+  description: True if this is the currently installed software on the system
+  type: Unknown
+- contextPath: FilteredSoftwareVersions.Result.latest
+  description: True if this is the most recently released software for this platform
+  type: Unknown
+- contextPath: FilteredSoftwareVersions.Result.uploaded
+  description: True if the software version has been uploaded to the system
+  type: Unknown
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

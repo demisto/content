@@ -1,0 +1,23 @@
+args:
+- description: The custom grid field to count.
+  name: custom_field
+commonfields:
+  id: CountHygieneIssues
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+name: CountHygieneIssues
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

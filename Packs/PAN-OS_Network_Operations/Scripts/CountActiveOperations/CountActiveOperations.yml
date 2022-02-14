@@ -1,0 +1,22 @@
+comment: Used as a dynamic field, retrieves all the currently active operations for
+  a given firewall.
+commonfields:
+  id: CountActiveOperations
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+name: CountActiveOperations
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

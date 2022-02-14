@@ -1,0 +1,28 @@
+args:
+- description: Target firewall to create incident based off
+  name: target
+  required: true
+commonfields:
+  id: CreateOrUpdateDeviceIncident
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.7.3.286
+enabled: true
+name: CreateOrUpdateDeviceIncident
+outputs:
+- contextPath: DeviceIncidents.device_incident_id
+  description: 'The Incident ID of the created or existing incident. '
+- contextPath: DeviceIncidents.device_incident_link
+  description: A link to the associated device incident.
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

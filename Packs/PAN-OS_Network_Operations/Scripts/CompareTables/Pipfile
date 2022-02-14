@@ -1,0 +1,42 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+pytest = "*"
+pytest-mock = "*"
+requests-mock = "*"
+pytest-asyncio = "*"
+pytest-xdist = "*"
+pytest-datadir-ng = "*"
+freezegun = "*"
+pytest-json = "*"
+vcrpy = "*"
+pytest-cov = "*"
+hypothesis = "*"
+flake8 = "*"
+
+[packages]
+certifi = "==2021.5.30"
+charset-normalizer = "==2.0.1"
+dateparser = "==1.0.0"
+filelock = "==3.0.12"
+funcy = "==1.16"
+idna = "==3.2"
+olefile = "==0.46"
+pysocks = "==1.7.1"
+python-dateutil = "==2.8.2"
+pytz = "==2021.1"
+regex = "==2021.7.6"
+requests = "==2.26.0"
+requests-file = "==1.5.1"
+six = "==1.16.0"
+tldextract = "==3.1.0"
+tzlocal = "==2.1"
+urllib3 = "==1.26.6"
+PyYAML = "==5.4.1"
+
+[requires]
+python_version = "3.9"

@@ -1,21 +1,21 @@
-args:
-- description: Incident ID to get
-  name: id
+comment: Duration widget tracking the last time this incident was refreshed using
+  the occurred time.
 commonfields:
-  id: getIncidentByID
+  id: LastRefresh
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.1.25933
 enabled: true
-name: getIncidentByID
+name: LastRefresh
 runas: DBotWeakRole
 runonce: false
-script: 'return_results(demisto.executeCommand("getIncidents", {"id": demisto.args().get("id")}))'
+script: ''
 scripttarget: 0
 subtype: python3
-tags: []
+tags:
+- dynamic-section
 type: python
 fromversion: 5.5.0
 tests:

@@ -1,0 +1,50 @@
+args:
+- description: Left table
+  isArray: true
+  name: left
+  required: true
+- description: Right table
+  isArray: true
+  name: right
+  required: true
+- defaultValue: id
+  description: Key to use as index
+  name: index_key
+- description: Keys in table dictionary to ignore in comparison
+  isArray: true
+  name: ignore_keys
+- defaultValue: compare
+  description: The string identifier for the table - appears in output
+  name: table_id
+comment: Given two tables, compare by keys to look for difference and return the result.
+commonfields:
+  id: CompareTables
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.9.8.24399
+name: CompareTables
+outputs:
+- contextPath: CompareTables.Result.table_id
+  description: ID of table
+  type: Unknown
+- contextPath: CompareTables.Result.key
+  description: Key with difference
+  type: Unknown
+- contextPath: CompareTables.Result.value
+  description: Value difference
+  type: Unknown
+- contextPath: CompareTables.Result.description
+  description: Human readable description of difference
+  type: Unknown
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
