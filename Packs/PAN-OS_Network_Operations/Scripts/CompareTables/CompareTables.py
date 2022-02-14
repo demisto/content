@@ -10,8 +10,10 @@ from typing import List
 # -- This is a way to get around trimming commonserverpython on import
 try:
     demisto.args()
+    pass
 except:
     from CommonServerPython import *
+    pass
 
 
 @dataclass
