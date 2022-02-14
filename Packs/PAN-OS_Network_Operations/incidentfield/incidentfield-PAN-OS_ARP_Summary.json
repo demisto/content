@@ -4,7 +4,7 @@
         "PAN-OS Network Operations - System Information"
     ],
     "caseInsensitive": true,
-    "cliName": "panosarpsummary",
+    "cliName": "panosnetworkoperationsarpsummary",
     "closeForm": false,
     "columns": [
         {
@@ -78,10 +78,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panosarpsummary",
+    "id": "incident_panosnetworkoperationsarpsummary",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS ARP Summary",
+    "name": "PAN-OS Network Operations - ARP Summary",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

@@ -9,3 +9,5 @@ ignore=IF113
 ignore=IF113
 [file:incidentfield-High_Availability_Peer.json]
 ignore=IF113
+[file:incidentfield-Threat_Content_Release_Date.json]
+ignore=IF113

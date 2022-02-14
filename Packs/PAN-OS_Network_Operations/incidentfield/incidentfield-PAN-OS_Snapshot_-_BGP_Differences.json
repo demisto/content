@@ -4,7 +4,7 @@
         "PAN-OS Snapshot Comparison"
     ],
     "caseInsensitive": true,
-    "cliName": "panossnapshotbgpdifferences",
+    "cliName": "panosnetworkoperationssnapshotbgpdifferences",
     "closeForm": false,
     "columns": [
         {
@@ -54,10 +54,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panossnapshotbgpdifferences",
+    "id": "incident_panosnetworkoperationssnapshotbgpdifferences",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS Snapshot - BGP Differences",
+    "name": "PAN-OS Network Operations  - Snapshot BGP Differences",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

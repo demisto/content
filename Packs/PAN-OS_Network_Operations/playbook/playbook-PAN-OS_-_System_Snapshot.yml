@@ -857,7 +857,7 @@ tasks:
       }
   "30":
     fieldMapping:
-    - incidentfield: PAN-OS Snapshot - BGP Differences
+    - incidentfield: PAN-OS Network Operations  - Snapshot BGP Differences
       output:
         complex:
           filters:

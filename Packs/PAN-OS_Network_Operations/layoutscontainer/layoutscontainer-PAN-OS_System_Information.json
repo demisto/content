@@ -479,7 +479,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 3,
-                                "fieldId": "panosarpsummary",
+                                "fieldId": "panosnetworkoperationsarpsummary",
                                 "height": 106,
                                 "id": "db4dace0-7978-11ec-82bf-ef1561a42901",
                                 "index": 0,

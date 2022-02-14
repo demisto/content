@@ -224,7 +224,7 @@
                             },
                             {
                                 "endCol": 6,
-                                "fieldId": "panossnapshotbgpdifferences",
+                                "fieldId": "panosnetworkoperationssnapshotbgpdifferences",
                                 "height": 106,
                                 "id": "55ffc850-4c25-11ec-b02c-cdb794c31374",
                                 "index": 2,

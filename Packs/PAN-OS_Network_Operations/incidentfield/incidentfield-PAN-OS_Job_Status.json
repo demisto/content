@@ -1,7 +1,7 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "panosjobstatus",
+    "cliName": "panosnetworkoperationsjobstatus",
     "closeForm": false,
     "columns": [
         {
@@ -157,10 +157,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panosjobstatus",
+    "id": "incident_panosnetworkoperationsjobstatus",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS Job Status",
+    "name": "PAN-OS Network Operations - Job Status",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

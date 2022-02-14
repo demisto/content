@@ -123,7 +123,7 @@ tasks:
     view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 60\n  }\n}"
   '3':
     fieldMapping:
-    - incidentfield: PAN-OS ARP Summary
+    - incidentfield: PAN-OS Network Operations - ARP Summary
       output:
         simple: ${PANOS.ShowArp.Summary}
     - incidentfield: PAN-OS ARP Table Result
