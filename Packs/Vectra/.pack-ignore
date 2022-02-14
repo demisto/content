@@ -1,5 +1,5 @@
 [file:Vectra_v2.yml]
 ignore=IN126,BA108,BA109,IN145
 
-[file:integration-Vectra.yml]
+[file:Vectra.yml]
 ignore=IN126
