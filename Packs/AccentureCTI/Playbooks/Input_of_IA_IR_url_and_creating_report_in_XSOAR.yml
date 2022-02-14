@@ -1,0 +1,388 @@
+id: 7bfbb87d-0f89-4b5c-840a-98250c46c3a7
+version: 37
+vcShouldKeepItemLegacyProdMachine: false
+name: 'Input of IA/IR url and creating report in XSOAR'
+description: Fetches content for a queried IA/IR url and creates a report which can
+  be viewed under "Threat Intel Reports" tab of "Threat Intel" investigation section
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2baee0ef-ec33-4f54-8ba6-712ae00ec996
+    type: start
+    task:
+      id: 2baee0ef-ec33-4f54-8ba6-712ae00ec996
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: e166aeea-a51b-459a-8359-271c1fa61e8d
+    type: collection
+    task:
+      id: e166aeea-a51b-459a-8359-271c1fa61e8d
+      version: -1
+      name: User Input of IA/IR url
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Enter the Intelligence Alert/Intelligence Report URL :'
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: 'Enter here the url mentioned in ACTI Indicator Query results '
+        tooltip: Enter the Intelligence Alert/Intelligence Report URL which is provided
+          in ACTI Indicator Query
+        readonly: false
+      title: IAIR
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: caa690ce-e7f7-41b8-8aea-54d2b1724229
+    type: regular
+    task:
+      id: caa690ce-e7f7-41b8-8aea-54d2b1724229
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 53aa478e-fd9e-4798-8c0e-91072ee86024
+    type: regular
+    task:
+      id: 53aa478e-fd9e-4798-8c0e-91072ee86024
+      version: -1
+      name: acti-getThreatIntelReport
+      description: Fetches Intelligence Alerts & Intelligence Reports.
+      script: ACTI Threat Intelligence Report|||acti-getThreatIntelReport
+      type: regular
+      iscommand: true
+      brand: ACTI Threat Intelligence Report
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      url:
+        simple: ${IAIR.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: b0665a18-03fe-4ab9-83c8-21690a4eff96
+    type: title
+    task:
+      id: b0665a18-03fe-4ab9-83c8-21690a4eff96
+      version: -1
+      name: End of the threat report creation algorithm
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 46adfc20-d3c1-4300-830a-734b6925b44d
+    type: regular
+    task:
+      id: 46adfc20-d3c1-4300-830a-734b6925b44d
+      version: -1
+      name: createThreatIntelReport
+      script: Builtin|||createThreatIntelReport
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      bodyexecutivebrief:
+        simple: |-
+          # TITLE
+          ${Report.title}
+
+          # ABSTRACT
+          ${Report.abstract}
+
+          # ANALYSIS
+          ${Report.analysis}
+
+          # MITIGATION
+          ${Report.mitigation}
+
+          # SEVERITY
+          ${Report.severity}
+
+          # THREAT TYPES
+          ${Report.threat_types}
+
+          # ATTACHMENT LINKS
+          ${Report.attachment_links}
+      creator:
+        simple: ACTI IntelGraph
+      description:
+        simple: ${Report.analysis}
+      modified:
+        simple: ${Report.last_modified}
+      name:
+        simple: ${Report.display_text}
+      published:
+        simple: ${Report.last_published}
+      reportstatus:
+        simple: Published
+      tags:
+        simple: Intelligence Alert
+      type:
+        simple: Executive Brief
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b988af9a-6fe8-432c-8311-59660465c825
+    type: regular
+    task:
+      id: b988af9a-6fe8-432c-8311-59660465c825
+      version: -1
+      name: createThreatIntelReport
+      script: Builtin|||createThreatIntelReport
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      bodyexecutivebrief:
+        simple: |-
+          # TITLE
+          ${Report.title}
+
+          # ANALYSIS
+          ${Report.analysis}
+
+          # SUMMARY
+          ${Report.summary}
+
+          # THREAT TYPES
+          ${Report.threat_types}
+
+          # CONCLUSION
+          ${Report.conclusion}
+      creator:
+        simple: ACTI IntelGraph
+      description:
+        simple: ${Report.analysis}
+      modified:
+        simple: ${Report.last_modified}
+      name:
+        simple: ${Report.display_text}
+      published:
+        simple: ${Report.last_published}
+      reportstatus:
+        simple: Published
+      tags:
+        simple: Intelligence Report
+      type:
+        simple: Executive Brief
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 5e87b300-6dfc-4934-8305-ad1f8d72c307
+    type: condition
+    task:
+      id: 5e87b300-6dfc-4934-8305-ad1f8d72c307
+      version: -1
+      name: Is Intelligence Alert?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Report.type}
+            iscontext: true
+          right:
+            value:
+              simple: intelligence_alert
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 1260,
+        "x": 0,
+        "y": -40
+      }
+    }
+  }
+inputs: []
+outputs: []
