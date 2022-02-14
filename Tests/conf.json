@@ -5224,7 +5224,8 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
-        "SentinelOne V2": "License expired issue #24933"
+        "SentinelOne V2": "License expired issue #24933",
+        "LogRhythm": "The integration is deprecated",
     },
     "nightly_integrations": [
         "Laline v2",
