@@ -407,7 +407,7 @@ def run_queries_command(client: Client, args: Dict, optional_args=None):
     target = args.get('target')
     node = {'id': args.get('id')}
     if target:
-        node['target'] = {'ids': args.get('target')}
+        node['target'] = {'ids': [args.get('target')]}
     res = client.call_api(route=optional_args['route'], rules=node, pagination=False)
     if res:
         command_results = CommandResults(
