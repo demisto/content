@@ -1730,7 +1730,8 @@
         {
             "integrations": "McAfee Web Gateway",
             "playbookID": "McAfeeWebGatewayTest",
-            "timeout": 500
+            "timeout": 500,
+            "is_mockable": false
         },
         {
             "integrations": "TCPIPUtils",
