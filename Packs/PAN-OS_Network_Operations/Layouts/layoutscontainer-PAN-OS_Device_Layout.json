@@ -333,10 +333,10 @@
                                         "simple": "${incident.id}"
                                     },
                                     "panosnetworkoperationsupgradetargetdevice": {
-                                        "simple": "${incidentpanosnetworkoperationstarget"
+                                        "simple": "${incident.panosnetworkoperationstarget}"
                                     },
-                                    panosnetworkoperationstarget: {
-                                        "simple": "${incidentpanosnetworkoperationstarget"
+                                    "panosnetworkoperationstarget": {
+                                        "simple": "${incident.panosnetworkoperationstarget}"
                                     },
                                     "type": {
                                         "simple": "PAN-OS Network Operations - Device Upgrade"
@@ -391,13 +391,13 @@
                             {
                                 "args": {
                                     "name": {
-                                        "simple": "${incidentpanosnetworkoperationstarget - Visibility Hygiene"
+                                        "simple": "${incident.panosnetworkoperationstarget} - Visibility Hygiene"
                                     },
                                     "panosnetworkoperationsparentincidentid": {
                                         "simple": "${incident.id}"
                                     },
-                                    panosnetworkoperationstarget: {
-                                        "simple": "${incidentpanosnetworkoperationstarget"
+                                    "panosnetworkoperationstarget": {
+                                        "simple": "${incident.panosnetworkoperationstarget}"
                                     },
                                     "type": {
                                         "simple": "PAN-OS Visibility Hygiene"
@@ -435,7 +435,7 @@
                             {
                                 "args": {
                                     "hostid": {
-                                        "simple": "${incidentpanosnetworkoperationstarget"
+                                        "simple": "${incident.panosnetworkoperationstarget}"
                                     },
                                     "state": {
                                         "simple": "functional"
@@ -457,7 +457,7 @@
                             {
                                 "args": {
                                     "hostid": {
-                                        "simple": "${incidentpanosnetworkoperationstarget"
+                                        "simple": "${incident.target}"
                                     },
                                     "state": {
                                         "simple": "suspend"

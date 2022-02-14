@@ -55,7 +55,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       hostid:
-        simple: ${inputspanosnetworkoperationstarget}
+        simple: ${inputs.panosnetworkoperationstarget}
     separatecontext: false
     skipunavailable: false
     task:
@@ -113,7 +113,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       Ids:
-        simple: ${inputspanosnetworkoperationstarget}
+        simple: ${inputs.panosnetworkoperationstarget}
       Interval:
         simple: '1'
       PollingCommandArgName:
@@ -177,7 +177,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputspanosnetworkoperationstarget}
+        simple: ${inputs.panosnetworkoperationstarget}
     separatecontext: false
     skipunavailable: false
     task:
@@ -297,7 +297,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputspanosnetworkoperationstarget
+        simple: ${inputs.panosnetworkoperationstarget}
     separatecontext: false
     skipunavailable: false
     task:
@@ -371,7 +371,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       hostid:
-        simple: ${inputspanosnetworkoperationstarget
+        simple: ${inputs.panosnetworkoperationstarget}
     separatecontext: false
     skipunavailable: false
     task:
@@ -399,7 +399,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputspanosnetworkoperationstarget
+        simple: ${inputs.panosnetworkoperationstarget}
     separatecontext: false
     skipunavailable: false
     task:
@@ -571,7 +571,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       target:
-        simple: ${inputspanosnetworkoperationstarget
+        simple: ${inputs.panosnetworkoperationstarget}
       target_version:
         simple: ${BaseImage}
     separatecontext: true
@@ -606,7 +606,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       target:
-        simple: ${inputspanosnetworkoperationstarget
+        simple: ${inputs.panosnetworkoperationstarget}
       target_version:
         simple: ${inputs.target_version}
     separatecontext: true
@@ -641,7 +641,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       target:
-        simple: ${inputspanosnetworkoperationstarget
+        simple: ${inputs.panosnetworkoperationstarget}
       target_version:
         simple: ${inputs.target_version}
     separatecontext: true

@@ -13,7 +13,7 @@ runas: DBotWeakRole
 runonce: false
 script: |+
   incident = demisto.incidents()[0]
-  target = incident.get('CustomFields', {}).get('target')
+  target = incident.get('CustomFields', {}).get('panosnetworkoperationstarget')
   res = demisto.executeCommand("GetIncidentsByQuery", {
       "query": f"-status:closed -category:job target:{target} -type:\"PAN-OS Device\""
   })

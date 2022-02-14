@@ -9,7 +9,7 @@ inputs:
   playbookInputQuery:
   required: false
   value:
-    simple: ${incidentpanosnetworkoperationstarget
+    simple: ${incident.panosnetworkoperationstarget}
 name: PAN-OS - Device Information
 outputs: []
 starttaskid: '0'
@@ -174,7 +174,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${incidentpanosnetworkoperationstarget
+        simple: ${incident.panosnetworkoperationstarget}
     separatecontext: false
     skipunavailable: false
     task:

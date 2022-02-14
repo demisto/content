@@ -893,7 +893,7 @@ tasks:
       auto_push:
         simple: ${inputs.auto_commit}
       device_filter_string:
-        simple: ${incidentpanosnetworkoperationstarget
+        simple: ${incident.panosnetworkoperationstarget}
     separatecontext: true
     skipunavailable: false
     task:

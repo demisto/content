@@ -33,7 +33,7 @@ script: |+
   if is_error(res):
       return_error(get_error(res))
 
-  new_target = demisto.args().get(panosnetworkoperationstarget)
+  new_target = demisto.args().get("target")
 
   incidents = json.loads(res[0]['Contents'])
   device_incident_found = False
@@ -45,7 +45,7 @@ script: |+
   human_readable_result = ""
 
   for incident in incidents:
-      target = incident.get('CustomFields', {}).get('target')
+      target = incident.get('CustomFields', {}).get('panosnetworkoperationstarget')
       if target == new_target:
           # If the incident already exists, simply update it by re-running the default playbook
           incident_id = incident.get("id")
@@ -63,7 +63,7 @@ script: |+
       res = demisto.executeCommand("createNewIncident", {
           "name": new_target,
           "type": "PAN-OS Device",
-          panosnetworkoperationstarget: new_target,
+          "panosnetworkoperationstarget": new_target,
           "panosnetworkoperationsparentincidentid": current_incident_id
       })
       created_incident = res[0]

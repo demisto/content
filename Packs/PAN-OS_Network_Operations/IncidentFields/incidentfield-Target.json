@@ -12,7 +12,7 @@
     "cliName": "panosnetworkoperationstarget",
     "closeForm": false,
     "content": true,
-    "description": "Incident panosnetworkoperationstarget device.",
+    "description": "Incident target device.",
     "editForm": true,
     "group": 0,
     "hidden": false,
