@@ -450,7 +450,7 @@
                                 "index": 0,
                                 "listId": "caseinfoid-374783e0-6cef-11ec-8b99-fd211975954b",
                                 "name": "Make Device Functional",
-                                "scriptId": "PANOS_Network Operations|||pan-netops-update-ha-state",
+                                "scriptId": "pan-netops-update-ha-state",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -470,7 +470,7 @@
                                 "id": "4b4ea980-6cf0-11ec-8b99-fd211975954b",
                                 "index": 1,
                                 "name": "Suspend Device",
-                                "scriptId": "PANOS_Network Operations|||pan-netops-update-ha-state",
+                                "scriptId": "pan-netops-update-ha-state",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             }
