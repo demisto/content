@@ -62,7 +62,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.panosnetworkoperationstarget}
+        simple: ${inputs.target}
       version:
         simple: ${inputs.target_version}
     separatecontext: false

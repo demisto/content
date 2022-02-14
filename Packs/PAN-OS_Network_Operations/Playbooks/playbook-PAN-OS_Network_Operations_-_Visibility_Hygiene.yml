@@ -154,7 +154,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.panosnetworkoperationstarget}
+        simple: ${inputs.target}
     separatecontext: false
     skipunavailable: false
     task:
@@ -180,7 +180,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.panosnetworkoperationstarget}
+        simple: ${inputs.target}
     separatecontext: false
     skipunavailable: false
     task:
@@ -206,7 +206,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.panosnetworkoperationstarget}
+        simple: ${inputs.target}
     separatecontext: false
     skipunavailable: false
     task:
@@ -257,7 +257,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.panosnetworkoperationstarget}
+        simple: ${inputs.target}
     separatecontext: false
     skipunavailable: false
     task:
@@ -284,7 +284,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.panosnetworkoperationstarget}
+        simple: ${inputs.target}
     separatecontext: false
     skipunavailable: false
     task:
@@ -420,7 +420,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.panosnetworkoperationstarget}
+        simple: ${inputs.target}
     separatecontext: false
     skipunavailable: false
     task:

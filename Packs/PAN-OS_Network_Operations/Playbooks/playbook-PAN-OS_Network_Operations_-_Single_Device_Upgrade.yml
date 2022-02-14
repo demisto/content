@@ -55,7 +55,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       hostid:
-        simple: ${inputs.panosnetworkoperationstarget}
+        simple: ${inputs.target}
     separatecontext: false
     skipunavailable: false
     task:
@@ -113,7 +113,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       Ids:
-        simple: ${inputs.panosnetworkoperationstarget}
+        simple: ${inputs.target}
       Interval:
         simple: '1'
       PollingCommandArgName:
@@ -177,7 +177,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.panosnetworkoperationstarget}
+        simple: ${inputs.target}
     separatecontext: false
     skipunavailable: false
     task:
@@ -297,7 +297,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.panosnetworkoperationstarget}
+        simple: ${inputs.target}
     separatecontext: false
     skipunavailable: false
     task:
@@ -371,7 +371,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       hostid:
-        simple: ${inputs.panosnetworkoperationstarget}
+        simple: ${inputs.target}
     separatecontext: false
     skipunavailable: false
     task:
@@ -399,7 +399,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.panosnetworkoperationstarget}
+        simple: ${inputs.target}
     separatecontext: false
     skipunavailable: false
     task:
@@ -571,7 +571,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       target:
-        simple: ${inputs.panosnetworkoperationstarget}
+        simple: ${inputs.target}
       target_version:
         simple: ${BaseImage}
     separatecontext: true
@@ -606,7 +606,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       target:
-        simple: ${inputs.panosnetworkoperationstarget}
+        simple: ${inputs.target}
       target_version:
         simple: ${inputs.target_version}
     separatecontext: true
@@ -641,7 +641,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       target:
-        simple: ${inputs.panosnetworkoperationstarget}
+        simple: ${inputs.target}
       target_version:
         simple: ${inputs.target_version}
     separatecontext: true
