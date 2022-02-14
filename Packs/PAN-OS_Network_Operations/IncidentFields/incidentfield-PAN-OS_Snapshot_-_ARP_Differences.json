@@ -81,7 +81,7 @@
     "threshold": 72,
     "type": "grid",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "5.5.0"
