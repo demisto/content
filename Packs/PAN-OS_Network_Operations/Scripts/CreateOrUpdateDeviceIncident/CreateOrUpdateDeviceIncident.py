@@ -11,7 +11,7 @@ except:
 
 current_incident_id = demisto.incidents()[0].get("id")
 res = demisto.executeCommand("GetIncidentsByQuery", {
-    "query": f"-status:closed -category:job type:\"PAN-OS Network Operations - Device Information\""
+    "query": f"-status:closed -category:job type:\"PAN-OS Network Operations - Device\""
 })
 if is_error(res):
     return_error(get_error(res))
@@ -45,7 +45,7 @@ for incident in incidents:
 if not device_incident_found:
     res = demisto.executeCommand("createNewIncident", {
         "name": new_target,
-        "type": "PAN-OS Network Operations - Device Information",
+        "type": "PAN-OS Network Operations - Device",
         "panosnetworkoperationstarget": new_target,
         "panosnetworkoperationsparentincidentid": current_incident_id
     })
