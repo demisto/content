@@ -87,6 +87,7 @@ switch (command) {
         var lock, version;
 
         do{
+            logDebug('timeout is : ' + lockTimeout + ' time is ' + time);
             [lock, version] = getLock();
             if (lock.guid === guid) {
                 break;

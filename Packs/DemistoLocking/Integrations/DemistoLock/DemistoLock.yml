@@ -1,8 +1,8 @@
 commonfields:
-  id: Demisto Lock
+  id: Demisto Lock_dev
   version: -1
-name: Demisto Lock
-display: Demisto Lock
+name: Demisto Lock_dev
+display: Demisto Lock_dev
 category: Utilities
 description: Locking mechanism that prevents concurrent execution of different tasks
 configuration:
