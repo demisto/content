@@ -1,6 +1,5 @@
 import os
 import re
-from typing import Optional
 from demisto_sdk.commands.test_content.execute_test_content import _add_pr_comment
 from demisto_sdk.commands.test_content.execute_test_content import ParallelLoggingManager
 
