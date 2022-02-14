@@ -60,7 +60,7 @@ def get_failing_ut():
 
 def get_failing_validations():
     # TODO check the file name
-    failed_validations = get_artifact_data(ARTIFACTS_FOLDER, 'failed_validations.txt')
+    failed_validations = get_artifact_data(ARTIFACTS_FOLDER, 'failed_validations_file.txt')
     if failed_validations:
         summary = 'There are some failing unit tests. here is a list of them\n'
         failed_validations_list = failed_validations.split('\n')
