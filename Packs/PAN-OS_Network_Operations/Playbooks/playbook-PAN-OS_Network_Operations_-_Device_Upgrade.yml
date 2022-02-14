@@ -1143,8 +1143,8 @@ tasks:
       format: ''
       methods: []
       replyOptions:
-      - Yes
-      - No
+      - 'Yes'
+      - 'No'
       subject:
       timings:
         completeafterreplies: 1
@@ -1152,9 +1152,9 @@ tasks:
         retriesinterval: 360
       to:
     nexttasks:
-      No:
+      "No":
       - '47'
-      Yes:
+      "Yes":
       - '15'
     note: false
     quietmode: 0
