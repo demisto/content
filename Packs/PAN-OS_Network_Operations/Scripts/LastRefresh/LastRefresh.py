@@ -7,6 +7,7 @@ import datetime
 
 try:
     demisto.args()
+    pass
 except:
     from CommonServerPython import *
 
