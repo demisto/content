@@ -1362,6 +1362,7 @@ def main() -> None:
 
     params = demisto.params()
     args = demisto.args()
+    command = demisto.command()
 
     api_key = params.get('api_key', {}).get('password')
 
@@ -1393,7 +1394,7 @@ def main() -> None:
     # level on the server configuration
     # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {command}')
     try:
         headers = {
             'Authorization': f'Bearer {api_key}'
@@ -1404,12 +1405,12 @@ def main() -> None:
             headers=headers,
             proxy=proxy)
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client, first_fetch_timestamp)
             return_results(result)
 
-        elif demisto.command() == 'fetch-alerts':
+        elif command == 'fetch-alerts':
             # Set and define the fetch alerts command to run after activated via integration settings.
             alert_status = params.get('alert_status', None)
             alert_type = params.get('alert_type', None)
@@ -1440,39 +1441,39 @@ def main() -> None:
             # of alerts to create
             demisto.alerts(alerts)
 
-        elif demisto.command() == 'ip':
+        elif command == 'ip':
             default_threshold_ip = int(params.get('threshold_ip', '65'))
             return_results(ip_reputation_command(client, args, default_threshold_ip))
 
-        elif demisto.command() == 'domain':
+        elif command == 'domain':
             default_threshold_domain = int(params.get('threshold_domain', '65'))
             return_results(domain_reputation_command(client, args, default_threshold_domain))
 
-        elif demisto.command() == 'helloworld-say-hello':
+        elif command == 'helloworld-say-hello':
             return_results(say_hello_command(client, args))
 
-        elif demisto.command() == 'helloworld-search-alerts':
+        elif command == 'helloworld-search-alerts':
             return_results(search_alerts_command(client, args))
 
-        elif demisto.command() == 'helloworld-get-alert':
+        elif command == 'helloworld-get-alert':
             return_results(get_alert_command(client, args))
 
-        elif demisto.command() == 'helloworld-update-alert-status':
+        elif command == 'helloworld-update-alert-status':
             return_results(update_alert_status_command(client, args))
 
-        elif demisto.command() == 'helloworld-scan-start':
+        elif command == 'helloworld-scan-start':
             return_results(scan_start_command(client, args))
 
-        elif demisto.command() == 'helloworld-scan-status':
+        elif command == 'helloworld-scan-status':
             return_results(scan_status_command(client, args))
 
-        elif demisto.command() == 'helloworld-scan-results':
+        elif command == 'helloworld-scan-results':
             return_results(scan_results_command(client, args))
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
