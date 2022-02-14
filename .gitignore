@@ -48,4 +48,3 @@ Packs/**/__init__.py
 /coverage_report
 .coverage
 .demisto-sdk-report
-Packs/PhishUp/git_pull_master_into_fork.sh
