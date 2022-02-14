@@ -19,7 +19,3 @@ ignore=IF113
 ignore=IF113
 [file:incidentfield-Running_Wildfire_Version.json]
 ignore=IF113
-[file:incidentfield-App_Content_Release_Date.json]
-ignore=IF113
-[file:incidentfield-Device_Upgrade_Timer.json]
-ignore=IF113
