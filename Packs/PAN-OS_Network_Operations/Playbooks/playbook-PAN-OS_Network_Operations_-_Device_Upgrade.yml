@@ -1167,8 +1167,7 @@ tasks:
       name: Confirm upgrade when no passive firewall is UP
       type: condition
       version: -1
-      description: "In the case where a HA pair's peer device is down, confirm that
-       the upgrade should continue anyway."
+      description: "Confirm thatthe upgrade should continue if peer device down.."
     taskid: b3fa3907-19f8-4cb4-8281-beac5d4e18c7
     timertriggers: []
     type: condition
