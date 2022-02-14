@@ -429,6 +429,9 @@ script:
     - contextPath: 'csfalconx.resource.uploaded_id'
       description: Analysis ID received after uploading the file.
       type: String
+    - contextPath: csfalconx.resource.file_name
+      description: 'Name of the uploaded file. '
+      type: String
     - contextPath: csfalconx.resource.tags
       description: Analysis tags.
       type: String
@@ -661,6 +664,9 @@ script:
     outputs:
     - contextPath: csfalconx.resource.tags
       description: Analysis tags.
+      type: String
+    - contextPath: csfalconx.resource.file_name
+      description: 'Name of the uploaded file. '
       type: String
     - contextPath: resource.sandbox.http_requests.header
       description: The header of the http request.
@@ -926,6 +932,9 @@ script:
     outputs:
     - contextPath: csfalconx.resource.id
       description: Analysis ID.
+      type: String
+    - contextPath: csfalconx.resource.tag
+      description: Analysis tags.
       type: String
     - contextPath: csfalconx.resource.tags
       description: Analysis tags.
@@ -1266,6 +1275,9 @@ script:
     outputs:
     - contextPath: csfalconx.resource.submitted_id
       description: Analysis ID received after submitting the file.
+      type: String
+    - contextPath: csfalconx.resource.file_name
+      description: Analysis file_name.
       type: String
     - contextPath: csfalconx.resource.tags
       description: Analysis tags.

@@ -443,6 +443,7 @@ Gets a short summary version of a sandbox report.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| csfalconx.resource.tags | String | Analysis tags. |
 | csfalconx.resource.tag | String | Analysis tags. |
 | csfalconx.resource.id | String | Analysis ID. | 
 | csfalconx.resource.verdict | String | Analysis verdict. | 
