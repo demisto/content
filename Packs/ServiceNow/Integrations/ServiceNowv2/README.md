@@ -5,7 +5,7 @@ IT service management. Cortex XSOAR interfaces with ServiceNow to help streamlin
 - Query ServiceNow data with the ServiceNow query syntax.
 - Manage Security Incident Response (SIR) tickets with Cortex XSOAR, update tickets and enrich them with data.
 
-Please refer to ServiceNow documentation for additional information. We especially recommend the [Operators available for filters and queries](https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html) page.
+Please refer to ServiceNow documentation for additional information. We especially recommend the [Operators available for filters and queries](https://docs.servicenow.com/bundle/sandiego-platform-user-interface/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html?cshalt=yes) page.
 
 This integration was integrated and tested with the Orlando version of ServiceNow.
 
