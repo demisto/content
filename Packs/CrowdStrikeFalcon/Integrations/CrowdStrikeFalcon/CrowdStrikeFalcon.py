@@ -3078,7 +3078,7 @@ def execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command,
     return response
 
 
-def rtr_general_command_on_single_host(args: dict, command: str) -> CommandResults:
+def rtr_general_command_on_single_host(args: dict, command: str) -> list[CommandResults, dict]:
     host_id = args.get('host_id')
     host_ids = [host_id]
     batch_id = init_rtr_batch_session(host_ids)
@@ -3086,6 +3086,7 @@ def rtr_general_command_on_single_host(args: dict, command: str) -> CommandResul
                                                       host_ids=host_ids)
     resources: dict = response.get('combined', {}).get('resources', {})
     output = {}
+    file = {}
 
     for _, resource in resources.items():
         current_error = ""
@@ -3099,12 +3100,11 @@ def rtr_general_command_on_single_host(args: dict, command: str) -> CommandResul
                 current_error = stderr
             return_error(current_error)
         output = {'Stdout': resource.get('stdout')}
+        file = fileResult(f"{command}-{host_id}", resource.get('stdout'))
 
     human_readable = tableToMarkdown(
         f'{INTEGRATION_NAME} {command} command on host {host_ids[0]}:', output)
-
-    # todo add a file entry
-    return CommandResults(raw_response=response, readable_output=human_readable)
+    return [CommandResults(raw_response=response, readable_output=human_readable), file]
 
 
 def add_error_message(failed_devices):
@@ -3249,7 +3249,6 @@ def main():
 
         elif command == 'cs-falcon-rtr-list-network-stats':
             return_results(rtr_general_command_on_single_host(args, "netstat"))
-
 
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
