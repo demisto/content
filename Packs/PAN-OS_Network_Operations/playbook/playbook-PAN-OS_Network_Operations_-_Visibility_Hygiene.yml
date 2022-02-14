@@ -84,6 +84,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: 'True if this incident was created by another incident.'
       brand: ''
       id: 70b236f2-cc81-49b9-82db-633499f03095
       iscommand: false
@@ -158,6 +159,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
+      description: "checks for issues in the log forwarding configuration."
       id: 2e08c8b9-1e95-4fe1-89c3-f922efb4e8f9
       iscommand: true
       name: Check Log Forwarding

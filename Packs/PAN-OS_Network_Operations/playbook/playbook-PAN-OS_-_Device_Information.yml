@@ -64,7 +64,7 @@ tasks:
               suffix: {}
             operator: concat
           - operator: FirstArrayElement
-    - incidentfield: System Uptime
+    - incidentfield: PAN-OS Network Operations - System Uptime
       output:
         complex:
           accessor: uptime
@@ -212,6 +212,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: 'True if this incident has been created by another incident.'
       brand: ''
       id: 87b81270-140c-4125-8db5-46ae2364f803
       iscommand: false

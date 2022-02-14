@@ -55,14 +55,14 @@ tasks:
     view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": -380\n  }\n}"
   '1':
     fieldMapping:
-    - incidentfield: PAN-OS System Info
+    - incidentfield: PAN-OS Network Operations - System Info
       output:
         complex:
           accessor: Summary
           root: PANOS.ShowSystemInfo
           transformers:
           - operator: ConvertKeysToTableFieldFormat
-    - incidentfield: PAN-OS System Info Result
+    - incidentfield: PAN-OS Network Operations - System Info Result
       output:
         complex:
           accessor: Result
@@ -453,6 +453,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: 'Creates, or updates existing device incidents.'
       brand: Builtin
       id: 7e1a5a36-ed8b-4227-85ed-66926c53124e
       iscommand: false

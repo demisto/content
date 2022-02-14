@@ -1,7 +1,7 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "panosobjects",
+    "cliName": "panosnetworkoperationsobjects",
     "closeForm": false,
     "columns": [
         {
@@ -61,10 +61,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panosobjects",
+    "id": "incident_panosnetworkoperationsobjects",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS Objects",
+    "name": "PAN-OS Network Operations - Objects",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

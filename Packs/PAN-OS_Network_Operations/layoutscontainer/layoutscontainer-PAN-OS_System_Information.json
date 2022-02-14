@@ -108,7 +108,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "panossysteminfo",
+                                "fieldId": "panosnetworkoperationssysteminfo",
                                 "height": 106,
                                 "id": "892fb170-45c9-11ec-80ca-3b8865052ace",
                                 "index": 0,
@@ -569,7 +569,7 @@
                         "items": [
                             {
                                 "endCol": 6,
-                                "fieldId": "panossysteminforesult",
+                                "fieldId": "panosnetworkoperationssysteminforesult",
                                 "height": 106,
                                 "id": "e7942c80-4b2a-11ec-9fa6-397da0e728c4",
                                 "index": 0,
@@ -711,8 +711,8 @@
         ]
     },
     "group": "incident",
-    "id": "PAN-OS System Information",
-    "name": "PAN-OS System Information",
+    "id": "PAN-OS Network Operations - System Information",
+    "name": "PAN-OS Network Operations - System Information",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

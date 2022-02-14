@@ -118,6 +118,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: 'Chefcks if the incident callback needs to run.'
       id: 8a65f04d-fc58-492b-8b69-aa5761df794d
       iscommand: false
       name: Do we have a parent task to mark complete?

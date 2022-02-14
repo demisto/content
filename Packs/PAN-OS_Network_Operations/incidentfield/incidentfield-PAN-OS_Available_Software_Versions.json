@@ -7,7 +7,7 @@
         "PAN-OS Network Operations - Device Upgrade"
     ],
     "caseInsensitive": true,
-    "cliName": "panosavailablesoftwareversions",
+    "cliName": "panosnetworkoperationsavailablesoftwareversions",
     "closeForm": false,
     "columns": [
         {
@@ -139,10 +139,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panosavailablesoftwareversions",
+    "id": "incident_panosnetworkoperationsavailablesoftwareversions",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS Available Software Versions",
+    "name": "PAN-OS Network Operations - Available Software Versions",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

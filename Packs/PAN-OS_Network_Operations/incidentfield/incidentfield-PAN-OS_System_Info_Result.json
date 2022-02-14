@@ -4,7 +4,7 @@
         "PAN-OS Network Operations - System Information"
     ],
     "caseInsensitive": true,
-    "cliName": "panossysteminforesult",
+    "cliName": "panosnetworkoperationssysteminforesult",
     "closeForm": false,
     "columns": [
         {
@@ -256,10 +256,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panossysteminforesult",
+    "id": "incident_panosnetworkoperationssysteminforesult",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS System Info Result",
+    "name": "PAN-OS Network Operations - System Info Result",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

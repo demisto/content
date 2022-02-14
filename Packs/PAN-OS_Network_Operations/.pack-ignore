@@ -15,3 +15,9 @@ ignore=IF113
 ignore=IF113
 [file:incidentfield-Management_Default_Gateway.json]
 ignore=IF113
+[file:incidentfield-Running_Antivirus_Version.json]
+ignore=IF113
+[file:incidentfield-Management_URL.json]
+ignore=IF113
+[file:incidentfield-App_Content_Release_Date.json]
+ignore=IF113
