@@ -1,5 +1,6 @@
 import asyncio
 import concurrent
+import datetime
 import json
 import ssl
 import threading
@@ -79,6 +80,9 @@ PERMITTED_NOTIFICATION_TYPES: List[str]
 COMMON_CHANNELS: dict
 DISABLE_CACHING: bool
 CHANNEL_NOT_FOUND_ERROR_MSG: str
+BOT_ID: str
+PREFILTER: dict
+CACHE_EXPIRY: float
 
 ''' HELPER FUNCTIONS '''
 
@@ -1194,39 +1198,33 @@ async def get_bot_id_async() -> str:
 
 async def log_and_reset_module_health(event_type):
     # Reset module health
+    # TODO Document this stuff
     demisto.updateModuleHealth("")
     demisto.info(f"SlackV3 - {event_type} Event handled successfully.")
 
 
-async def process_dm(slack_event) -> bool:
-    if slack_event.channel and slack_event.channel[0] == 'D' and ENABLE_DM:
-        # DM
-        await handle_dm(slack_event.user, slack_event.text, ASYNC_CLIENT)  # type: ignore
+def is_dm(slack_event) -> bool:
+    return True if slack_event.channel and slack_event.channel[0] == 'D' and ENABLE_DM else False
+
+
+async def process_dm(slack_event):
+    await handle_dm(slack_event.user, slack_event.text, ASYNC_CLIENT)  # type: ignore
+
+
+def is_bot_message(slack_event) -> bool:
+    if slack_event.subtype == 'bot_message' or slack_event.message_bot_id or slack_event.message.get(
+            'subtype') == 'bot_message' or slack_event.event.get('bot_id', None):
+        return True
+    elif slack_event.event.get('subtype') == 'bot_message':
+        return True
+    elif slack_event.event.get('bot_id', '') == BOT_ID:
         return True
     else:
         return False
 
 
-async def process_bot_message(slack_event) -> bool:
-    if slack_event.subtype == 'bot_message' or slack_event.message_bot_id or slack_event.message.get('subtype') == 'bot_message' \
-            or \
-            slack_event.event.get('bot_id', None):
-        integration_context = get_integration_context(SYNC_CONTEXT)
-        if integration_context.get('bot_user_id'):
-            bot_id = integration_context['bot_user_id']
-            if bot_id == 'null' or bot_id is None:
-                # In some cases the bot_id can be stored as a string 'null', this handles this edge case.
-                bot_id = await get_bot_id_async()
-                set_to_integration_context_with_retries({'bot_user_id': bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-        else:
-            bot_id = await get_bot_id_async()
-            set_to_integration_context_with_retries({'bot_user_id': bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-        if slack_event.event.get('subtype') == 'bot_message':
-            return True
-        if slack_event.event.get('bot_id', '') == bot_id:
-            return True
-    else:
-        return False
+def is_action_reply(slack_event) -> bool:
+    return True if len(slack_event.actions) > 0 else False
 
 
 async def process_actions(slack_event):
@@ -1256,7 +1254,7 @@ async def process_entitlement_reply(entitlement_reply, user_id, action_text, cha
 
 async def process_mirror(slack_event):
     channel_id = slack_event.channel
-
+    slack_event.fetch_context()
     if not slack_event.integration_context or 'mirrors' not in slack_event.integration_context:
         return
 
@@ -1313,10 +1311,7 @@ class IncomingEvent:
         self.actions = data.get('actions', [])
         self.message_ts = self.message.get('ts', '')
         self.integration_context = None
-        if self.user_id == '':
-            self.user = await ASYNC_CLIENT.users_info(user=self.user_id)
-        else:
-            self.user = None
+        self.user = await ASYNC_CLIENT.users_info(user=self.user_id)
 
         data_type: str = req.type
         if data_type == 'error':
@@ -1334,8 +1329,37 @@ class IncomingEvent:
             demisto.handleEntitlementForUser(incident_id, guid, self.user.get('profile', {}).get('email'), content, task_id)
             self.entitlement_reply = 'Thank you for your response.'
 
+        if CACHE_EXPIRY <= int(datetime.now(timezone.utc).timestamp() * 1000):
+            self.build_prefilter()
+        else:
+            self.context_prefilter = PREFILTER
+
     def fetch_context(self):
         self.integration_context = get_integration_context(SYNC_CONTEXT)
+
+    def build_prefilter(self):
+        self.fetch_context()
+        thread_prefilter = []
+        # each question contains a thread ID, we build a list so we can quickly check if a response belongs to an
+        # expected thread
+        questions = self.integration_context.get('questions', [])
+        for question in questions:
+            thread = question.get('thread')
+            thread_prefilter.append(thread)
+
+        channel_id_prefilter = []
+        # each mirror contains a channel ID, we build a list so we can check if a message is from a mirrored channel
+        mirrors = self.integration_context.get('mirrors', [])
+        for mirror in mirrors:
+            channel_id = mirror.get('channel_id')
+            channel_id_prefilter.append(channel_id)
+        CACHE_EXPIRY = int(datetime.now(timezone.utc).timestamp() * 1000) + 30000
+        global PREFILTER
+        PREFILTER = {
+            'ts': CACHE_EXPIRY,
+            'channel_id_prefilter': channel_id_prefilter,
+            'thread_prefilter': thread_prefilter
+        }
 
 
 async def listen(client: SocketModeClient, req: SocketModeRequest):
@@ -1351,11 +1375,12 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             demisto.debug("Slash command event received. Ignoring.")
             return
 
-        if await process_dm(slack_event):
+        if is_dm(slack_event=slack_event):
+            await process_dm(slack_event=slack_event)
             await log_and_reset_module_health("DM")
             return
 
-        if await process_bot_message(slack_event):
+        if is_bot_message(slack_event=slack_event):
             await log_and_reset_module_health("Bot Message")
             return
 
@@ -1363,20 +1388,21 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             await log_and_reset_module_health("Message Changed")
             return
 
-        if len(slack_event.actions) > 0:
+        if is_action_reply(slack_event=slack_event):
+            # if is_action (for all these cases)
             await process_actions(slack_event)
             await log_and_reset_module_health("Action")
             return
 
         # by this point we will probably need the context
-        slack_event.fetch_context()
-        if slack_event.user_id != '':
+        if slack_event.user_id != '' and slack_event.thread in PREFILTER.get('thread_prefilter'):
             # User ID is returned as an empty string
             slack_event.entitlement_reply = await check_and_handle_entitlement(slack_event)  # type: ignore
             await process_entitlement_reply(slack_event.entitlement_reply, slack_event.user_id, slack_event.action_text,
                                             slack_event.channel, slack_event.message_ts)
         else:
-            await process_mirror(slack_event)
+            if slack_event.channel in PREFILTER.get('channel_prefilter'):
+                await process_mirror(slack_event)
         return
     except Exception as e:
         await handle_listen_error(f'Error occurred while listening to Slack: {e}')
@@ -1430,7 +1456,7 @@ async def check_and_handle_entitlement(slack_event) -> str:
     Returns:
         If the message contains entitlement, return a reply.
     """
-
+    slack_event.fetch_context()
     questions = slack_event.integration_context.get('questions', [])
     if questions and slack_event.thread_id:
         questions = json.loads(questions)
@@ -2366,9 +2392,9 @@ def init_globals(command_name: str = ''):
     Initializes global variables according to the integration parameters
     """
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT
-    global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM
+    global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM, CACHE_EXPIRY, PREFILTER
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
-    global PERMITTED_NOTIFICATION_TYPES, COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG
+    global PERMITTED_NOTIFICATION_TYPES, COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, BOT_ID
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -2378,12 +2404,6 @@ def init_globals(command_name: str = ''):
     else:
         # Use default SSL context
         SSL_CONTEXT = None
-
-    if command_name == 'long-running-execution':
-        loop = asyncio.get_event_loop()
-        if not loop._default_executor:  # type: ignore[attr-defined]
-            demisto.info(f'setting _default_executor on loop: {loop} id: {id(loop)}')
-            loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=4))
 
     BOT_TOKEN = demisto.params().get('bot_token', {}).get('password', '')
     APP_TOKEN = demisto.params().get('app_token', {}).get('password', '')
@@ -2420,6 +2440,28 @@ def init_globals(command_name: str = ''):
         error_str += '. Either the Slack app is not a member of the channel, or the slack app does not have permission' \
                      ' to find the channel.'
     CHANNEL_NOT_FOUND_ERROR_MSG = error_str
+
+    CACHE_EXPIRY = 0
+    PREFILTER = {}
+    # Handle Long-Running Specific Globals
+    if command_name == 'long-running-execution':
+        # Start event loop for long running
+        loop = asyncio.get_event_loop()
+        if not loop._default_executor:  # type: ignore[attr-defined]
+            demisto.info(f'setting _default_executor on loop: {loop} id: {id(loop)}')
+            loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=4))
+
+        # Bot identification
+        integration_context = get_integration_context(SYNC_CONTEXT)
+        if integration_context.get('bot_user_id'):
+            BOT_ID = integration_context['bot_user_id']
+            if BOT_ID == 'null' or BOT_ID is None:
+                # In some cases the bot_id can be stored as a string 'null', this handles this edge case.
+                BOT_ID = await get_bot_id_async()
+                set_to_integration_context_with_retries({'bot_user_id': BOT_ID}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        else:
+            BOT_ID = await get_bot_id_async()
+            set_to_integration_context_with_retries({'bot_user_id': BOT_ID}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
 def print_thread_dump():
