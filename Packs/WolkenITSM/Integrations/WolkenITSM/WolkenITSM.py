@@ -325,7 +325,7 @@ def add_internal_notes_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 def get_access_token_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     params: Dict[str, Any] = demisto.params()
-    Authorization = params.get('credentials')
+    Authorization = params.get('credentials', {}).get('password')
     domain = params.get('Domain')
     grant_type = str(args.get('grant_type', 'refresh_token'))
     refresh_token = params.get('Refresh Token')
@@ -564,7 +564,7 @@ def main() -> None:
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     headers = {}
-    headers['Authorization'] = params['credentials']
+    headers['Authorization'] = params.get('credentials', {}).get('password')
     headers['clientId'] = clientId
     headers['serviceAccount'] = serviceAccount
     headers['domain'] = domain
