@@ -1,6 +1,6 @@
 commonfields:
   id: SendEmailReply
-  version: 89
+  version: 98
 contentitemexportablefields:
   contentitemfields:
     packID: EmailCommunication
@@ -9,14 +9,33 @@ contentitemexportablefields:
     toServerVersion: ""
 vcShouldKeepItemLegacyProdMachine: false
 name: SendEmailReply
-script: |2
-
+script: |
   import json
   import random
+  import re
   from datetime import datetime as dt
 
   ERROR_TEMPLATE = 'ERROR: PreprocessEmail - {function_name}: {reason}'
   FAIL_STATUS_MSG = "Command send-mail in module EWS Mail Sender requires argument to that is missing (7)"
+
+
+  def append_email_signature(html_body):
+      """
+          Retrieve the user defined email signature to include on new messages, if present.
+      Args: (string) html_body
+      Returns: (string) Original HTML body with HTML formatted email signature appended, if present
+      """
+      email_signature = demisto.executeCommand('getList', {'listName': 'XSOAR - Email Communication Signature'}
+                                               )[0]['Contents']
+      if is_error(email_signature):
+          demisto.debug('Error occurred while trying to load the `XSOAR - Email Communication Signature` list. No '
+                        'signature added to email')
+      else:
+          # Find the position of the closing </html> tag and insert the signature there
+          if re.search('(?i)</body>', html_body):
+              html_body = re.sub('(?i)</body>', f'\r\n{email_signature}\r\n</body>', html_body)
+
+      return html_body
 
 
   def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, email_bcc, reply_html_body,
@@ -36,6 +55,9 @@ script: |2
           email_code: The random code that was generated when the incident was created.
           mail_sender_instance: The name of the mail sender integration instance
       """
+      # Get the custom email signature, if set, and append it to the message to be sent
+      reply_html_body = append_email_signature(reply_html_body)
+
       email_reply = send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc,
                                       email_bcc, reply_html_body, entry_id_list, email_latest_message, email_code,
                                       mail_sender_instance)
@@ -176,6 +198,9 @@ script: |2
           mail_sender_instance: The name of the mail sender integration instance
           attachment_names: List of attachment file names
       """
+      # Get the custom email signature, if set, and append it to the message to be sent
+      email_html_body = append_email_signature(email_html_body)
+
       email_result = send_new_mail_request(incident_id, email_subject, email_to, email_body, service_mail, email_cc,
                                            email_bcc, email_html_body, entry_id_list, attachment_names, email_code,
                                            mail_sender_instance)
@@ -569,6 +594,19 @@ script: |2
       elif new_thread == 'true':
           # Use New Thread Incident fields to construct & send email reply
           # This action is used by the "Email Threads" layout
+
+          # Ensure that Recipient, Subject and Body fields have been set
+          if not (new_email_subject and new_email_recipients and new_email_body):
+              missing_fields = []
+              if not new_email_subject:
+                  missing_fields.append('New Email Subject')
+              if not new_email_recipients:
+                  missing_fields.append('New Email Recipients')
+              if not new_email_body:
+                  missing_fields.append('New Email Body')
+              return_error(f'The following required fields have not been set.  Please set them and try again. '
+                           f'{missing_fields}')
+
           thread_code = get_unique_code()
 
           # If there are already other values in 'emailgeneratedcodes', append the new code as a comma-separated list
@@ -597,6 +635,11 @@ script: |2
 
       elif new_thread == 'false':
           # This action is used by the "Email Threads" layout
+
+          # Ensure that the Body field has been set
+          if not new_email_body:
+              return_error('The \'New Email Body\' field has not been set. Please set it and try again')
+
           try:
               incident_email_threads = get_email_threads(incident_id)
               if not incident_email_threads:
@@ -645,7 +688,13 @@ script: |2
                           reply_code = thread_entry['EmailCommsThreadId']
                           reply_subject = thread_entry['EmailSubject']
 
-                          # Create recipient list based on all 'EmailFrom' values
+                          # Create recipient list based on all 'EmailTo' and 'EmailFrom' values
+                          if thread_entry['EmailTo'] not in reply_recipients:
+                              if len(reply_recipients) == 0:
+                                  reply_recipients = thread_entry['EmailTo']
+                              else:
+                                  reply_recipients += f", {thread_entry['EmailTo']}"
+
                           if thread_entry['EmailFrom'] not in reply_recipients:
                               if len(reply_recipients) == 0:
                                   reply_recipients = thread_entry['EmailFrom']

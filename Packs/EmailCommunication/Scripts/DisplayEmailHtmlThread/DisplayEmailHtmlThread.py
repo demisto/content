@@ -40,14 +40,9 @@ def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, em
         str. Email reply.
     """
 
-    single_reply = f"""
-    <b>From:</b> {email_from}
-    <b>To:</b> {email_to}
-    <b>CC:</b> {email_cc}
-    <b>Subject:</b> {email_subject}
-    <b>Email Time:</b> {email_time}
-    <b>Attachments:</b> {attachment_names}
-    """
+    single_reply = f'<html><body><b>From:</b> {email_from}<br><b>To:</b> {email_to}<br><b>CC:</b> {email_cc}<br>' \
+                   f'<b>Subject:</b> {email_subject}<br><b>Email Time:</b> {email_time}<br>' \
+                   f'<b>Attachments:</b> {attachment_names}</body></html>'
     if attachments:
         attachment_names = [attachment.get('name', '') for attachment in attachments]
         single_reply += f'Attachments: {attachment_names}\n'
