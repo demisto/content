@@ -30,7 +30,7 @@ def test_params(mocker, params, expected_result):
       - Case 2: Should return "ID must be provided.".
       - Case 3: Should return "Token must be provided.".
     """
-
+    
     mocker.patch.object(demisto, 'params', return_value=params)
 
     with pytest.raises(Exception) as e:
@@ -61,10 +61,8 @@ def test_params_working(mocker, params):
     """
 
     mocker.patch.object(demisto, 'params', return_value=params)
-    try:
-        main()
-    except Exception as e:
-        pytest.fail(f'Encountered an unexpected exception: {e}')
+    main()
+    demisto.results.assert_called_with()
 
 
 def test_build_mail_object():
