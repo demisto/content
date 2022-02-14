@@ -86,4 +86,5 @@ FormatURL
 Gitlab
 GitHub
 TAXII
+Syslog
 DomainTools
