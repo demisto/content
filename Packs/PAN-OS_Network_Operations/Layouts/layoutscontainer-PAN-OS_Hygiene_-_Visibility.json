@@ -391,7 +391,7 @@
                         "minW": 2,
                         "moved": false,
                         "name": "Hygiene Issue Count",
-                        "query": "416fa993-9d19-41ee-858a-e9725f052c51",
+                        "query": "CountHygieneIssues",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
