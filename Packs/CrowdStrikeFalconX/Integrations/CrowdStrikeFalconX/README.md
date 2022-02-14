@@ -54,7 +54,7 @@ Notice that the file identifier (SHA) can be changed as shown in the example bel
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. | 
-| csfalconx.resource.file_name | String | Name of the uploaded file.  | 
+| csfalconx.resource.file_name | String | Name of the uploaded file. | 
 | csfalconx.resource.tags | String | Analysis tags. | 
 | resource.sandbox.http_requests.header | String | The header of the http request. | 
 | resource.sandbox.http_requests.Accept | String | The accept of the http request. | 
@@ -121,7 +121,6 @@ Notice that the file identifier (SHA) can be changed as shown in the example bel
 | csfalconx.resource.sandbox.signatures.origin | String | The sndbox signatures origin. | 
 | csfalconx.resource.intel.malware_families | Unknown | The malware families of the resource. | 
 | csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. | 
-| csfalconx.resource.file_name | String | Name of the uploaded file.  | 
 
 
 #### Command Example
@@ -250,7 +249,7 @@ Notice that the file identifiers, SHA and ID are not the same.
 | csfalconx.resource.sandbox.signatures.origin | String | The sndbox signatures origin. | 
 | csfalconx.resource.intel.malware_families | Unknown | The malware families of the resource. | 
 | csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. | 
-| csfalconx.resource.file_name | String | Name of the uploaded file.  | 
+| csfalconx.resource.file_name | String | Name of the uploaded file. | 
 
 
 #### Command Example
@@ -384,7 +383,7 @@ Gets a full version of a sandbox report.
 | csfalconx.resource.sandbox.signatures.origin | String | The sndbox signatures origin. | 
 | csfalconx.resource.intel.malware_families | Unknown | The malware families of the resource. | 
 | csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. | 
-| csfalconx.resource.file_name | String | Name of the uploaded file.  | 
+| csfalconx.resource.file_name | String | Name of the uploaded file. | 
 
 
 #### Command Example
@@ -444,6 +443,7 @@ Gets a short summary version of a sandbox report.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| csfalconx.resource.tag | String | Analysis tags. |
 | csfalconx.resource.id | String | Analysis ID. | 
 | csfalconx.resource.verdict | String | Analysis verdict. | 
 | csfalconx.resource.created_timpestamp | String | Analysis start time. | 
@@ -822,7 +822,7 @@ Submits a URL or FTP for sandbox analysis.
 | csfalconx.resource.sandbox.signatures.origin | String | The sndbox signatures origin. | 
 | csfalconx.resource.intel.malware_families | Unknown | The malware families of the resource. | 
 | csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. | 
-| csfalconx.resource.file_name | String | Name of the uploaded file.  | 
+| csfalconx.resource.file_name | String | Name of the uploaded file. | 
 
 
 #### Command Example
