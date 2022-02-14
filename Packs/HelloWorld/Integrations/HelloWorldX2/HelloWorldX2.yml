@@ -21,10 +21,11 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- display: API Key
+- displaypassword: API Key
+  hiddenusername: true
   name: apikey
   required: true
-  type: 4
+  type: 9
 - defaultvalue: '65'
   display: Score threshold for IP reputation command
   additionalinfo: Set this to determine the HelloWorld score that will determine if an IP is malicious (0-100)
