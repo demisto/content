@@ -105,11 +105,31 @@ incident_context = {'name': 'Incident ID: inc:afb5d1512a00480f53e9ad91dc3e4b55:1
                         'Techniques: External Remote Services. Involved hosts and end users: SFO-M-Y81WHJ.", '
                         '"tags": ["Objective/Keep Access"], "fine_score": 38}'}
 
+IOCS_JSON_LIST = json.dumps([{'type': 'ipv4', 'value': '4.4.4.4', 'source': 'cortex xsoar', 'action': 'no_action',
+                              'severity': 'informational', 'description': 'lala', 'platforms': ['linux'],
+                              'tags': ['test'], 'expiration': '2022-02-15T15:55:09Z', 'applied_globally': True,
+                              'host_groups': []}, {'type': 'ipv4', 'value': '5.5.5.5', 'source': 'cortex xsoar',
+                                                   'action': 'no_action', 'severity': 'informational',
+                                                   'description': 'lala',
+                                                   'platforms': ['linux'], 'tags': ['test'],
+                                                   'expiration': '2022-02-15T15:55:09Z', 'applied_globally': True,
+                                                   'host_groups': []}])
+
 
 def test_incident_to_incident_context():
     from CrowdStrikeFalcon import incident_to_incident_context
     res = incident_to_incident_context(response_incident)
     assert res == incident_context
+
+
+def test_create_json_iocs_list():
+    from CrowdStrikeFalcon import create_json_iocs_list
+
+    res = create_json_iocs_list(ioc_type='ipv4', iocs_value=['4.4.4.4', '5.5.5.5'], action='no_action',
+                                platforms=['linux'], severity='informational', source='cortex xsoar',
+                                description='lala', expiration='2022-02-15T15:55:09Z', applied_globally=True,
+                                host_groups=[], tags=['test'])
+    assert res == IOCS_JSON_LIST
 
 
 def test_timestamp_length_equalization():
@@ -2648,7 +2668,7 @@ def test_search_custom_iocs_command_exists(requests_mock):
     )
     results = search_custom_iocs_command()
     assert '| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-01T09:09:04Z | high | md5 | testmd5 |' \
-        in results["HumanReadable"]
+           in results["HumanReadable"]
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
 
@@ -2702,7 +2722,8 @@ def test_search_custom_iocs_command_filter(requests_mock):
         }]
     }
     requests_mock.get(
-        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27%5D&limit=50',  # noqa: E501
+        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27%5D&limit=50',
+        # noqa: E501
         json=ioc_response,
         status_code=200
     )
@@ -2710,7 +2731,8 @@ def test_search_custom_iocs_command_filter(requests_mock):
         types=ioc_type,
         values=ioc_value,
     )
-    assert f'| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-01T09:09:04Z | high | {ioc_type} | {ioc_value} |' in results["HumanReadable"]  # noqa: E501
+    assert f'| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-01T09:09:04Z | high | {ioc_type} | {ioc_value} |' in \
+           results["HumanReadable"]  # noqa: E501
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == ioc_value
 
 
@@ -2743,7 +2765,8 @@ def test_get_custom_ioc_command_exists(requests_mock):
     }
 
     requests_mock.get(
-        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27%5D&limit=50',  # noqa: E501
+        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27%5D&limit=50',
+        # noqa: E501
         json=ioc_response,
         status_code=200,
     )
@@ -2845,9 +2868,67 @@ def test_upload_custom_ioc_command_successful(requests_mock):
         severity='high',
         platforms='mac,linux',
     )
-    assert '| 2020-10-01T09:09:04Z | Eicar file | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r |' \
-        in results["HumanReadable"]
-    assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
+    assert '| 2020-10-01T09:09:04Z | Eicar file | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | ' \
+           '2020-10-01T09:09:04Z | high | md5 | testmd5 |' in results[0]["HumanReadable"]
+    assert results[0]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
+
+
+def test_upload_custom_ioc_command_multiple_values_successful(requests_mock):
+    """
+    Test cs-falcon-upload-custom-ioc when an upload of multiple values is successful
+
+    Given:
+     - The user tries to create multiple IOCs
+    When:
+     - The server creates IOCs
+    Then:
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right values
+    """
+    from CrowdStrikeFalcon import upload_custom_ioc_command
+    ioc_response = {
+        'resources': [{
+            'id': '4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r',
+            'type': 'md5',
+            'value': 'testmd5',
+            'action': 'prevent',
+            'severity': 'high',
+            'description': 'Eicar file',
+            'created_on': '2020-10-01T09:09:04Z',
+            'modified_on': '2020-10-01T09:09:04Z',
+        },
+            {
+                'id': '123c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r',
+                'type': 'md5',
+                'value': 'test',
+                'action': 'prevent',
+                'severity': 'high',
+                'description': 'Eicar file',
+                'created_on': '2020-10-01T09:09:04Z',
+                'modified_on': '2020-10-01T09:09:04Z',
+            }
+        ]
+    }
+    requests_mock.post(
+        f'{SERVER_URL}/iocs/entities/indicators/v1',
+        json=ioc_response,
+        status_code=200,
+    )
+    results = upload_custom_ioc_command(
+        ioc_type='md5',
+        value='testmd5,test',
+        action='prevent',
+        severity='high',
+        platforms='mac,linux',
+    )
+    assert '| 2020-10-01T09:09:04Z | Eicar file | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | ' \
+           '2020-10-01T09:09:04Z | high | md5 | testmd5 |' in results[0]["HumanReadable"]
+
+    assert '| 2020-10-01T09:09:04Z | Eicar file | 123c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | ' \
+           '2020-10-01T09:09:04Z | high | md5 | test |' in results[1]["HumanReadable"]
+
+    assert results[0]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
+    assert results[1]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'test'
 
 
 def test_upload_custom_ioc_command_fail(requests_mock):
@@ -2911,7 +2992,7 @@ def test_upload_custom_ioc_command_duplicate(requests_mock, mocker):
         'resources': [{
             'row': 1,
             'value':
-            'test2.com',
+                'test2.com',
             'type': 'domain',
             'message_type': 'warning',
             'message': f"Warning: Duplicate type: '{ioc_type}' and value: '{ioc_value}' combination."
@@ -2970,6 +3051,7 @@ def test_update_custom_ioc_command(requests_mock):
             'indicators': [{'id': ioc_id, 'severity': updated_severity}]
         }:
             return True
+
     requests_mock.patch(
         f'{SERVER_URL}/iocs/entities/indicators/v1',
         json=ioc_response,
@@ -3362,6 +3444,53 @@ def test_list_host_group_members(requests_mock):
     expected_results = load_json('test_data/expected_list_hostgroup_members_results.json')
     for expected_results, ectual_results in zip(expected_results, command_results.outputs):
         assert expected_results == ectual_results
+
+
+def test_upload_batch_custom_ioc_command(requests_mock):
+    """
+    Test cs-falcon-batch-upload-custom-ioc when an upload of iocs batch is successful
+
+    Given:
+     - The user tries to create multiple IOCs
+    When:
+     - The server creates IOCs
+    Then:
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right values
+    """
+    from CrowdStrikeFalcon import upload_batch_custom_ioc_command
+    ioc_response = {
+        'meta': {'query_time': 0.132378491, 'pagination': {'limit': 0, 'total': 2}, 'powered_by': 'ioc-manager',
+                 'trace_id': '121f377b-016a-4e34-bca7-992cec821ab3'}, 'errors': None, 'resources': [
+            {'id': '1196afeae04528228e782d4efc0c1d8257554dcd99552e1151ca3a3d2eed03f1', 'type': 'ipv4',
+             'value': '8.9.6.8', 'source': 'Cortex XSOAR', 'action': 'no_action', 'mobile_action': 'no_action',
+             'severity': 'informational', 'platforms': ['linux'], 'expiration': '2022-02-16T11:41:01Z',
+             'expired': False, 'deleted': False, 'applied_globally': True, 'from_parent': False,
+             'created_on': '2022-02-15T11:42:17.397548307Z', 'created_by': '2bf188d347e44e08946f2e61ef590c24',
+             'modified_on': '2022-02-15T11:42:17.397548307Z', 'modified_by': '2bf188d347e44e08946f2e61ef590c24'},
+            {'id': '1156f19c5a384117e7e6023f467ed3b58412ddd5d0591872f3a111335fae79a5', 'type': 'ipv4',
+             'value': '4.5.8.6', 'source': 'Cortex XSOAR', 'action': 'no_action', 'mobile_action': 'no_action',
+             'severity': 'informational', 'platforms': ['linux'], 'expiration': '2022-02-16T11:40:47Z',
+             'expired': False, 'deleted': False, 'applied_globally': True, 'from_parent': False,
+             'created_on': '2022-02-15T11:42:17.397548307Z', 'created_by': '2bf188d347e44e08946f2e61ef590c24',
+             'modified_on': '2022-02-15T11:42:17.397548307Z', 'modified_by': '2bf188d347e44e08946f2e61ef590c24'}]}
+
+    requests_mock.post(
+        f'{SERVER_URL}/iocs/entities/indicators/v1',
+        json=ioc_response,
+        status_code=200,
+    )
+    results = upload_batch_custom_ioc_command(IOCS_JSON_LIST)
+    assert '2022-02-16T11:41:01Z | 1196afeae04528228e782d4efc0c1d8257554dcd99552e1151ca3a3d2eed03f1 | ' \
+           '2bf188d347e44e08946f2e61ef590c24 | 2022-02-15T11:42:17.397548307Z | linux | informational | Cortex XSOAR ' \
+           '| ipv4 | 8.9.6.8 |' in results[0]["HumanReadable"]
+
+    assert '2022-02-16T11:40:47Z | 1156f19c5a384117e7e6023f467ed3b58412ddd5d0591872f3a111335fae79a5 | ' \
+           '2bf188d347e44e08946f2e61ef590c24 | 2022-02-15T11:42:17.397548307Z | linux | informational | Cortex XSOAR ' \
+           '| ipv4 | 4.5.8.6 |' in results[1]["HumanReadable"]
+
+    assert results[0]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == '8.9.6.8'
+    assert results[1]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == '4.5.8.6'
 
 
 @pytest.mark.parametrize('endpoint_status, status, is_isolated',
