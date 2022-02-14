@@ -10,6 +10,7 @@ name: PAN-OS Network Operations - Visibility Hygiene - Security Rule Visibility
 outputs:
 - contextPath: PANOS.ConfigurationHygieneFix
   type: unknown
+  description: "Configuration Hygiene Fixes."
 starttaskid: "0"
 tasks:
   "0":
@@ -103,6 +104,7 @@ tasks:
       name: BP-V-8
       type: condition
       version: -1
+      description: "True if BP-V-8 issues present."
     taskid: 90254757-e2cc-4a4b-8710-b3220d723840
     timertriggers: []
     type: condition
@@ -231,6 +233,7 @@ tasks:
       name: Confirm Fixes for BP-V-8/BP-V-9
       type: collection
       version: -1
+      description: "Confirm the automatic fixes."
     taskid: b085613d-d2a0-4c85-8e57-6bd48c1951fc
     timertriggers: []
     type: collection
@@ -271,6 +274,7 @@ tasks:
       name: Accepted?
       type: condition
       version: -1
+      description: "Confirm the fixes are accepted."
     taskid: 83ef912e-513d-4d0c-89c2-69ba7747f45c
     timertriggers: []
     type: condition
@@ -425,6 +429,7 @@ tasks:
       name: BP-V-9
       type: condition
       version: -1
+      description: "True if BP-V-9 issues present."
     taskid: 1be5b785-0219-49c2-825c-ac146f92a7e1
     timertriggers: []
     type: condition
@@ -505,6 +510,7 @@ tasks:
       name: BP-V-10
       type: condition
       version: -1
+      description: "True if BP-V-10 issues present."
     taskid: c9cd59b1-3dc9-4c95-8752-63af548679e2
     timertriggers: []
     type: condition
@@ -667,6 +673,7 @@ tasks:
       name: Confirm Fixes for BP-V-10
       type: collection
       version: -1
+      description: "Confirm the fixes for BP-V-10."
     taskid: e18c6c5c-9f42-490e-8345-409bf7c7415e
     timertriggers: []
     type: collection

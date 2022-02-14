@@ -828,9 +828,9 @@ tasks:
       index_key:
         simple: destination
       left:
-        simple: ${firstIncidentData.CustomFields.panosroutesresult}
+        simple: ${firstIncidentData.CustomFields.panosnetworkoperationsroutesresult}
       right:
-        simple: ${secondIncidentData.CustomFields.panosroutesresult}
+        simple: ${secondIncidentData.CustomFields.panosnetworkoperationsroutesresult}
       table_id:
         simple: route
     separatecontext: false

@@ -240,7 +240,7 @@ tasks:
           root: PANOS.ShowRoute
           transformers:
           - operator: ConvertKeysToTableFieldFormat
-    - incidentfield: PAN-OS Routes Result
+    - incidentfield: PAN-OS Network Operations - Routes Result
       output:
         complex:
           accessor: Result

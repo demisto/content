@@ -70,6 +70,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
+      description: "True if the device belongs to a HA Pair"
       id: 43103f59-52be-420c-85f3-ffcf660b29e2
       iscommand: false
       name: Is this a HA Pair?
@@ -334,6 +335,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
+      description: "True if the device is correctly Passive after the upgrade process has concluded."
       id: 02fa55ba-fc31-40bb-88b3-0c6081b0c349
       iscommand: false
       name: Is device passive after upgrade?
@@ -529,6 +531,7 @@ tasks:
       name: Is device passive after upgrade?
       type: condition
       version: -1
+      description: "True if the device is correctly Passive after the upgrade process has concluded."
     taskid: 9a2be13a-75fc-4602-847e-aaf011e85d36
     timertriggers: []
     type: condition
@@ -946,6 +949,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
+      description: "True if this incident was created by another incident."
       id: f99cfe4b-1492-43e0-85da-d2368139b360
       iscommand: false
       name: Do we have a parent incident?
@@ -1002,6 +1006,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: "True if this incident has been provided a target version."
       brand: ''
       id: c6e910d6-85ca-4b50-822f-5894fcd632c8
       iscommand: false
@@ -1057,6 +1062,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
+      description: "If a target version wasn't given, ask the user for the version to upgrade to."
       id: b2194eda-2425-4681-8adc-66b8a31e16d7
       iscommand: false
       name: Collect Target Version
@@ -1115,6 +1121,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
+      description: "Checks the HA peer is back up."
       id: ed4fa000-af7b-4895-8ff4-3ce37b509bf9
       iscommand: false
       name: Is the HA peer up/Reachable?
@@ -1160,6 +1167,8 @@ tasks:
       name: Confirm upgrade when no passive firewall is UP
       type: condition
       version: -1
+      description: "In the case where a HA pair's peer device is down, confirm that
+       the upgrade should continue anyway."
     taskid: b3fa3907-19f8-4cb4-8281-beac5d4e18c7
     timertriggers: []
     type: condition
