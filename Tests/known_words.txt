@@ -67,6 +67,7 @@ NoneType
 CreateIncidents
 EML
 LastSeen
+Lastline
 IntelGraph
 Accenture
 CTI
@@ -84,4 +85,5 @@ FireEye
 FormatURL
 Gitlab
 GitHub
+TAXII
 DomainTools
