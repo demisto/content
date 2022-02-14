@@ -2220,7 +2220,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 8800
+          "y": 9720
         }
       }
     note: false
@@ -2596,15 +2596,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 0f6a971e-0857-4e20-89d9-75a1fed33e33
+    taskid: 25602b8d-e31c-42f6-880b-84f628deea42
     type: regular
     task:
-      id: 0f6a971e-0857-4e20-89d9-75a1fed33e33
+      id: 25602b8d-e31c-42f6-880b-84f628deea42
       version: -1
       name: DeleteContext
-      script: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
@@ -2643,7 +2643,7 @@ tasks:
       brand: FireEyeHX v2
     nexttasks:
       '#none#':
-      - "64"
+      - "67"
     scriptarguments:
       hostsNames:
         simple: WIN10X64
@@ -2668,12 +2668,160 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "64":
-    id: "64"
-    taskid: 5ab31c03-4acb-4765-8c77-89f2b192098e
+  "65":
+    id: "65"
+    taskid: dde03f16-1bb6-40ce-8660-837da7c1307a
+    type: regular
+    task:
+      id: dde03f16-1bb6-40ce-8660-837da7c1307a
+      version: -1
+      name: fireeye-hx-search-list
+      description: Fetches all enterprise searches.
+      script: FireEyeHX v2|||fireeye-hx-search-list
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      limit:
+        simple: "1"
+      state:
+        simple: RUNNING
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: ed0315cc-f9a1-4bae-8fa6-ce4ac6382c8d
+    type: regular
+    task:
+      id: ed0315cc-f9a1-4bae-8fa6-ce4ac6382c8d
+      version: -1
+      name: fireeye-hx-search-delete
+      description: Delete the search, by ID.
+      script: FireEyeHX v2|||fireeye-hx-search-delete
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      searchId:
+        simple: ${FireEyeHX.Search._id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 89368a4f-bf60-4fec-8c03-fb1e00df61d3
+    type: regular
+    task:
+      id: 89368a4f-bf60-4fec-8c03-fb1e00df61d3
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 43188182-9f0b-490d-808d-1a947c99e232
+    type: regular
+    task:
+      id: 43188182-9f0b-490d-808d-1a947c99e232
+      version: -1
+      name: fireeye-hx-search
+      description: Search endpoints to check all hosts or a subset of hosts for a
+        specific file or indicator.
+      script: FireEyeHX v2|||fireeye-hx-search
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      hostsNames:
+        simple: WIN10X64
+      ipAddress:
+        simple: 8.8.8.8
+      ipAddressOperator:
+        simple: equals
+      limit:
+        simple: "1"
+      polling:
+        simple: "true"
+      stopSearch:
+        simple: stopAndDelete
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 5f49fcba-79a7-483e-8619-2f421618d3e6
     type: condition
     task:
-      id: 5ab31c03-4acb-4765-8c77-89f2b192098e
+      id: 5f49fcba-79a7-483e-8619-2f421618d3e6
       version: -1
       name: Verify Outputs
       type: condition
@@ -2689,23 +2837,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeHX.Search.host._id
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeHX.Search.host.hostname
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FireEyeHX.Search.host.url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: FireEyeHX.Search.results.id
             iscontext: true
       - - operator: isNotEmpty
@@ -2716,13 +2847,23 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: FireEyeHX.Search.results.data
+              simple: FireEyeHX.Search.host._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.host.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Search.host.url
             iscontext: true
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 8625
+          "y": 9460
         }
       }
     note: false
@@ -2747,7 +2888,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 8815,
+        "height": 9735,
         "width": 1782.5,
         "x": 50,
         "y": 50
@@ -2756,4 +2897,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
+fromversion: 5.5.0

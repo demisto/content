@@ -776,6 +776,16 @@ script:
       predefined:
       - equals
       - not equals
+    - auto: PREDEFINED
+      default: false
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
+      isArray: false
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     - description: A 32-character MD5 hash value to search for
       name: fileMD5Hash
       isArray: true
@@ -1170,6 +1180,13 @@ script:
       domain names and IP addresses.
     name: fireeye-hx-append-conditions
   - arguments:
+    - description: The search ID.
+      name: searchId
+      required: true
+      isArray: true
+    description: Delete the search, by ID.
+    name: fireeye-hx-search-delete
+  - arguments:
     - description: The acquisition ID.
       name: acquisitionId
       required: true
@@ -1242,6 +1259,16 @@ script:
     - description: ""
       name: acquisition_id
       deprecated: true
+    - auto: PREDEFINED
+      default: false
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
+      isArray: false
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     description: Start a data acquisition process to gather artifacts from the system
       disk and memory. (The data is fetched as mans file)
     name: fireeye-hx-data-acquisition
@@ -1393,9 +1420,20 @@ script:
     - description: The host that holds the file. If the agentId is not specified,
         hostName must be specified.
       name: hostName
+    - auto: PREDEFINED
+      default: false
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
+      isArray: false
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     description: Aquire a specific file as a password protected zip file. The password
       for unlocking the zip file is 'unzip-me'.
     name: fireeye-hx-file-acquisition
+    polling: true
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Files._id
       description: The acquisition unique ID.
@@ -1497,6 +1535,17 @@ script:
     - contextPath: FireEyeHX.Indicators.update_actor.username
       description: Update actor name
       type: string
+  - arguments:
+    - description: The Host Set Id.
+      name: hostSetId
+      required: true
+      isArray: false
+    - description: The Policy Id.
+      name: policyId
+      required: true
+      isArray: false
+    description: Delete a Host Set Policy.
+    name: fireeye-hx-delete-host-set-policy
   isfetch: true
   runonce: false
   script: "-"
