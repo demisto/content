@@ -37,6 +37,7 @@ tasks:
       iscommand: false
       name: ''
       version: -1
+      description: ''
     taskid: 5f851366-dfd1-45a6-8846-2c8aeb33d125
     timertriggers: []
     type: start
@@ -653,6 +654,7 @@ tasks:
       playbookId: PAN-OS Network Operations - Install Software
       type: playbook
       version: -1
+      description: "Run the installation subplaybook."
     taskid: 686ebf99-307e-424a-87db-ed1b1b52ff5d
     timertriggers: []
     type: playbook
