@@ -499,21 +499,26 @@ def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str) -> D
     return response
 
 
-def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str) -> Dict:
+def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, optional_hosts: list = None) -> Dict:
     """
         Sends RTR command scope with write access
         :param batch_id:  Batch ID to execute the command on.
         :param command_type: Read-only command type we are going to execute, for example: ls or cd.
         :param full_command: Full command string for the command.
+        :param optional_hosts: The hosts ids to run the command on.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-active-responder-command/v1'
 
-    body = json.dumps({
+    default_body = {
         'base_command': command_type,
         'batch_id': batch_id,
         'command_string': full_command
-    })
+    }
+    if optional_hosts:
+        default_body.update({'optional_hosts': optional_hosts})
+
+    body = json.dumps(default_body)
     response = http_request('POST', endpoint_url, data=body)
     return response
 
@@ -2983,48 +2988,101 @@ def test_module():
     return 'ok'
 
 
+def remove_duplicates_from_list_arg(args: dict, field: str):
+    convert_to_list = argToList(args.get(field))
+    return list(set(convert_to_list))
+
+
 def rtr_kill_process_command(args: dict) -> CommandResults:
     host_id = args.get('host_id')
-    process_ids = list(dict.fromkeys(argToList(args.get('process_id'))))  # remove duplicates
+    process_ids = remove_duplicates_from_list_arg(args, 'process_id')
     command_type = "kill"
-    failed_process = {}
-    success_process = []
-
     raw_response = []
     host_ids = [host_id]
     batch_id = init_rtr_batch_session(host_ids)
     outputs = []
 
     for process_id in process_ids:
-        timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
-        timer.start()
-        try:
-            response = run_batch_write_cmd(batch_id, command_type=command_type, full_command=f"{command_type} "
-                                                                                             f"{process_id}")
-        finally:
-            timer.cancel()
-
-        resources: dict = response.get('combined', {}).get('resources', {})
-        for _, resource in resources.items():
-            error = resource.get('stderr', '')
-            if error:
-                failed_process[process_id] = error
-            else:
-                success_process.append(process_id)
-            outputs.append({
-                'ProcessID': process_id,
-                'Stderr': error,
-            })
+        full_command = f"{command_type} {process_id}"
+        response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command)
+        outputs.extend(parse_command_response(response, host_ids, process_id=process_id))
         raw_response.append(response)
 
-    human_readable = f'{INTEGRATION_NAME} on host {host_id}: {command_type} command over the processes: ' \
-                     f'{success_process} was successful. \n'
-    human_readable += add_error_message(failed_process)
+    human_readable = tableToMarkdown(
+        f'{INTEGRATION_NAME} {command_type} command on host {host_id}:', outputs, headers=["Error", "ProcessID"])
     return CommandResults(raw_response=raw_response, readable_output=human_readable, outputs=outputs,
                           outputs_prefix="CrowdStrike.Command", outputs_key_field="ProcessID")
 
 
+def parse_command_response(response, host_ids, process_id=None) -> list:
+    outputs = []
+    resources: dict = response.get('combined', {}).get('resources', {})
+
+    for host_id, host_data in resources.items():
+        current_error = ""
+        errors = host_data.get('errors')
+        stderr = host_data.get('stderr')
+        command_failed_with_error = errors or stderr
+        if command_failed_with_error:
+            if errors:
+                current_error = errors[0].get('message', '')
+            elif stderr:
+                current_error = stderr
+        outputs_data = {'HostID': host_id, 'Error': current_error if current_error else "Success",}
+        if process_id:
+            outputs_data.update({'ProcessID': process_id})
+
+        outputs.append(outputs_data)
+
+    found_host_ids = {host.get('HostID') for host in outputs}
+    not_found_host_ids = set(host_ids) - found_host_ids
+
+    for not_found_host in not_found_host_ids:
+        outputs.append({
+            'HostID': not_found_host,
+            'Error': "The host ID was not found.",
+        })
+    return outputs
+
+
+def match_remove_command_for_os(operating_system, file_path):
+    if operating_system == 'Windows':
+        return f'rm {file_path} --force'
+    elif operating_system == 'Linux' or operating_system == 'Mac':
+        return f'rm {file_path} -r -d'
+    else:
+        return None
+
+
+def rtr_remove_file_command(args: dict) -> CommandResults:
+    file_path = args.get('file_path')
+    host_ids = remove_duplicates_from_list_arg(args, 'host_ids')
+    operating_system = args.get('os')
+    full_command = match_remove_command_for_os(operating_system, file_path)
+    command_type = "rm"
+
+    batch_id = init_rtr_batch_session(host_ids)
+    response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids)
+    outputs = parse_command_response(response, host_ids)
+    human_readable = tableToMarkdown(
+        f'{INTEGRATION_NAME} {command_type} over the file: {file_path}', outputs)
+    return CommandResults(raw_response=response, readable_output=human_readable, outputs=outputs,
+                          outputs_prefix="CrowdStrike.Command", outputs_key_field="HostID")
+
+
+def execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids=None):
+    timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
+    timer.start()
+    try:
+        response = run_batch_write_cmd(batch_id, command_type=command_type, full_command=full_command,
+                                       optional_hosts=host_ids)
+    finally:
+        timer.cancel()
+    return response
+
+
 def add_error_message(failed_devices):
+    # todo delete if not in use
     human_readable = ""
     if failed_devices:
         human_readable = "Note: you don't see the following IDs in the results as the request was failed " \
@@ -3158,7 +3216,7 @@ def main():
             return_results(rtr_kill_process_command(args))
 
         elif command == 'cs-falcon-rtr-remove-file':
-            pass
+            return_results(rtr_remove_file_command(args))
 
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '

@@ -2952,18 +2952,18 @@ script:
     execution: false
     name: cs-falcon-resolve-incident
   - arguments:
-      - default: false
-        description: The host ID in which you would like to kill the given process.
-        isArray: false
-        name: host_id
-        required: true
-        secret: false
-      - default: false
-        description: A comma-separated list of process IDs to kill.
-        isArray: true
-        name: process_id
-        required: true
-        secret: false
+    - default: false
+      description: The host ID in which you would like to kill the given process.
+      isArray: false
+      name: host_id
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of process IDs to kill.
+      isArray: true
+      name: process_id
+      required: true
+      secret: false
     deprecated: false
     description: Execute an active responder kill command on a single host.
     execution: false
@@ -2972,31 +2972,48 @@ script:
     - contextPath: CrowdStrike.Command.ProcessID
       description: The process ID that was killed.
       type: String
-    - contextPath: CrowdStrike.Command.Stderr
+    - contextPath: CrowdStrike.Command.Error
       description: The error message raised if the command was failed.
       type: string
+    - contextPath: CrowdStrike.Command.HostID
+      description: The host ID.
+      type: String
   - arguments:
-      - default: false
-        description: A comma-separated list of the hosts IDs in which you would like to remove the file.
-        isArray: true
-        name: host_ids
-        required: true
-        secret: false
-      - default: false
-        description: The path to a file or a directoty that you would like to remove.
-        isArray: false
-        name: file_path
-        required: true
-        secret: false
+    - default: false
+      description: A comma-separated list of the hosts IDs in which you would like
+        to remove the file.
+      isArray: true
+      name: host_ids
+      required: true
+      secret: false
+    - default: false
+      description: The path to a file or a directoty that you would like to remove.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The operatin system of the hosts given. As the revome command is
+        different in each operatin system, you can choose only one operating system.
+      isArray: false
+      name: os
+      predefined:
+      - Windows
+      - Linux
+      - Mac
+      required: true
+      secret: false
     deprecated: false
-    description: Batch executes a RTR active-responder remove file across the hosts mapped to the given batch ID.
+    description: Batch executes a RTR active-responder remove file across the hosts
+      mapped to the given batch ID.
     execution: false
     name: cs-falcon-rtr-remove-file
     outputs:
-    - contextPath: CrowdStrike.Command.ProcessID
-      description: The process ID that was killed.
+    - contextPath: CrowdStrike.Command.HostID
+      description: The host ID.
       type: String
-    - contextPath: CrowdStrike.Command.Stderr
+    - contextPath: CrowdStrike.Command.Error
       description: The error message raised if the command was failed.
       type: string
   dockerimage: demisto/python3:3.10.1.25933

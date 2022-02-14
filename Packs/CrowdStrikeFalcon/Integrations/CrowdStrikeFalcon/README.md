@@ -3360,3 +3360,111 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Custom IOC 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r was successfully deleted.
+
+
+### cs-falcon-rtr-kill-process
+***
+Execute an active responder kill command on a single host.
+
+
+#### Base Command
+
+`cs-falcon-rtr-kill-process`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | The host ID in which you would like to kill the given process. | Required | 
+| process_id | A comma-separated list of process IDs to kill. | Required | 
+
+
+#### Context Output
+
+| **Path**                      | **Type** | **Description**                                    |
+|-------------------------------| --- |----------------------------------------------------|
+| CrowdStrike.Command.ProcessID | String | The process ID that was killed.                    | 
+| CrowdStrike.Command.Error     | string | The error message raised if the command was failed. | 
+| CrowdStrike.Command.HostID | String | The host ID.                        | 
+
+#### Command example
+```!cs-falcon-rtr-kill-process host_id=15dbb9d8f06b45fe9f61eb46e829d986 process_id=12345,4220,712```
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "Command": [
+            {
+                "Error": "Cannot find a process with the process identifier 12345.",
+                "HostID": "15dbb9d8f06b45fe9f61eb46e829d986",
+                "ProcessID": "12345"
+            },
+            {
+                "Error": "Cannot stop process \"csrss (4220)\" because of the following error: Access is denied",
+                "HostID": "15dbb9d8f06b45fe9f61eb46e829d986",
+                "ProcessID": "4220"
+            },
+            {
+                "Error": "Cannot find a process with the process identifier 712.",
+                "HostID": "15dbb9d8f06b45fe9f61eb46e829d986",
+                "ProcessID": "712"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon kill command on host 15dbb9d8f06b45fe9f61eb46e829d986:
+>|Error|ProcessID|
+>|---|---|
+>| Cannot find a process with the process identifier 12345. | 12345 |
+>| Cannot stop process "csrss (4220)" because of the following error: Access is denied | 4220 |
+>| Cannot find a process with the process identifier 712. | 712 |
+
+
+### cs-falcon-rtr-remove-file
+***
+Batch executes a RTR active-responder remove file across the hosts mapped to the given batch ID.
+
+
+#### Base Command
+
+`cs-falcon-rtr-remove-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_ids | A comma-separated list of the hosts IDs in which you would like to remove the file. | Required | 
+| file_path | The path to a file or a directoty that you would like to remove. | Required | 
+| os | The operatin system of the hosts given. As the revome command is different in each operatin system, you can choose only one operating system. Possible values are: Windows, Linux, Mac. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description**                           |
+| --- | --- |-------------------------------------------|
+| CrowdStrike.Command.HostID | String | The host ID.                        | 
+| CrowdStrike.Command.Error | string | The error message raised if the command was failed. | 
+
+#### Command example
+```!cs-falcon-rtr-remove-file file_path="c:\\tests" host_ids=15dbb9d8f06b45fe9f61eb46e829d986 os=Windows```
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "Command": {
+            "Error": "Success",
+            "HostID": "15dbb9d8f06b45fe9f61eb46e829d986",
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon rm over the file: c:\tests
+>|Error|HostID|
+>|---|---|
+>| Success | 15dbb9d8f06b45fe9f61eb46e829d986 |
+

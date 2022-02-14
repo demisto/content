@@ -1,0 +1,2 @@
+cs-falcon-rtr-kill-process host_id=15dbb9d8f06b45fe9f61eb46e829d986 process_id=12345,4220,712
+cs-falcon-rtr-remove-file file_path="c:\\tests" host_ids=15dbb9d8f06b45fe9f61eb46e829d986 os=Windows
