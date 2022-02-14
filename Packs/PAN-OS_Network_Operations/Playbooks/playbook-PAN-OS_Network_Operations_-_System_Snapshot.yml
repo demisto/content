@@ -421,9 +421,9 @@ tasks:
       index_key:
         simple: mac
       left:
-        simple: ${firstIncidentData.CustomFields.panosarptableresult}
+        simple: ${firstIncidentData.CustomFields.panosnetworkoperationsarptableresult}
       right:
-        simple: ${secondIncidentData.CustomFields.panosarptableresult}
+        simple: ${secondIncidentData.CustomFields.panosnetworkoperationsarptableresult}
       table_id:
         simple: arp
     separatecontext: false

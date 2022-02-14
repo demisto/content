@@ -126,7 +126,7 @@ tasks:
     - incidentfield: PAN-OS Network Operations - ARP Summary
       output:
         simple: ${PANOS.ShowArp.Summary}
-    - incidentfield: PAN-OS ARP Table Result
+    - incidentfield: PAN-OS Network Operations - ARP Table Result
       output:
         simple: ${PANOS.ShowArp.Result}
     id: '3'
@@ -352,7 +352,7 @@ tasks:
     view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": -90\n  }\n}"
   '12':
     fieldMapping:
-    - incidentfield: PAN-OS BGP Peers
+    - incidentfield: PAN-OS Network Operations - BGP Peers
       output:
         complex:
           accessor: Summary

@@ -37,21 +37,21 @@ tasks:
     view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -550\n  }\n}"
   '1':
     fieldMapping:
-    - incidentfield: Management IP
+    - incidentfield: PAN-OS Network Operations - Management IP
       output:
         complex:
           accessor: ip_address
           root: PANOS.ShowSystemInfo.Summary
           transformers:
           - operator: FirstArrayElement
-    - incidentfield: Management Netmask
+    - incidentfield: PAN-OS Network Operations - Management Netmask
       output:
         complex:
           accessor: netmask
           root: PANOS.ShowSystemInfo.Result
           transformers:
           - operator: FirstArrayElement
-    - incidentfield: Management URL
+    - incidentfield: PAN-OS Network Operations - Management URL
       output:
         complex:
           accessor: ip_address
@@ -71,14 +71,14 @@ tasks:
           root: PANOS.ShowSystemInfo.Result
           transformers:
           - operator: FirstArrayElement
-    - incidentfield: Running Software Version
+    - incidentfield: PAN-OS Network Operations - Running Software Version
       output:
         complex:
           accessor: sw_version
           root: PANOS.ShowSystemInfo.Summary
           transformers:
           - operator: FirstArrayElement
-    - incidentfield: Running Antivirus Version
+    - incidentfield: PAN-OS Network Operations - Running Antivirus Version
       output:
         complex:
           accessor: av_version
@@ -92,35 +92,35 @@ tasks:
           root: PANOS.ShowSystemInfo.Result
           transformers:
           - operator: FirstArrayElement
-    - incidentfield: Running  Threat Version
+    - incidentfield: PAN-OS Network Operations - Running Threat Version
       output:
         complex:
           accessor: threat_version
           root: PANOS.ShowSystemInfo.Result
           transformers:
           - operator: FirstArrayElement
-    - incidentfield: Threat Content Release Date
+    - incidentfield: PAN-OS Network Operations - Threat Content Release Date
       output:
         complex:
           accessor: threat_release_date
           root: PANOS.ShowSystemInfo.Result
           transformers:
           - operator: FirstArrayElement
-    - incidentfield: Running App Version
+    - incidentfield: PAN-OS Network Operations - Running App Version
       output:
         complex:
           accessor: app_version
           root: PANOS.ShowSystemInfo.Result
           transformers:
           - operator: FirstArrayElement
-    - incidentfield: App Content Release Date
+    - incidentfield: PAN-OS Network Operations - App Content Release Date
       output:
         complex:
           accessor: app_release_date
           root: PANOS.ShowSystemInfo.Result
           transformers:
           - operator: FirstArrayElement
-    - incidentfield: Running Wildfire Version
+    - incidentfield: PAN-OS Network Operations - Running Wildfire Version
       output:
         complex:
           accessor: wildfire_version
@@ -154,14 +154,14 @@ tasks:
     view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 420\n  }\n}"
   '2':
     fieldMapping:
-    - incidentfield: High Availability State
+    - incidentfield: PAN-OS Network Operations - High Availability State
       output:
         complex:
           accessor: status
           root: PANOS.HAState
           transformers:
           - operator: FirstArrayElement
-    - incidentfield: High Availability Peer
+    - incidentfield: PAN-OS Network Operations - High Availability Peer
       output:
         complex:
           accessor: peer

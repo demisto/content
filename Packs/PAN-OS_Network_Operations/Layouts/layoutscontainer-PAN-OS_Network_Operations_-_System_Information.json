@@ -506,7 +506,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "panosbgppeers",
+                                "fieldId": "panosnetworkoperationsbgppeers",
                                 "height": 22,
                                 "id": "ebc5fbe0-7978-11ec-82bf-ef1561a42901",
                                 "index": 0,
@@ -597,7 +597,7 @@
                         "items": [
                             {
                                 "endCol": 6,
-                                "fieldId": "panosarptableresult",
+                                "fieldId": "panosnetworkoperationsarptableresult",
                                 "height": 106,
                                 "id": "40648850-4b2b-11ec-9fa6-397da0e728c4",
                                 "index": 0,

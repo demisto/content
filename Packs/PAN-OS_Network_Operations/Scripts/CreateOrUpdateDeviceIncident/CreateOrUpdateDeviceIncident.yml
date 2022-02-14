@@ -2,6 +2,7 @@ args:
 - description: Target firewall to create incident based off
   name: target
   required: true
+comment: Given a target device, creates or updates an existing PAN-OS Network Operations - Device incident.
 commonfields:
   id: CreateOrUpdateDeviceIncident
   version: -1

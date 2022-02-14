@@ -138,7 +138,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "managementip",
+                                "fieldId": "panosnetworkoperationsmanagementip",
                                 "height": 53,
                                 "id": "223fdf30-6ce3-11ec-b785-f9c6d12419ba",
                                 "index": 0,
@@ -148,7 +148,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "managementnetmask",
+                                "fieldId": "panosnetworkoperationsmanagementnetmask",
                                 "height": 53,
                                 "id": "282bae10-6ce3-11ec-b785-f9c6d12419ba",
                                 "index": 1,
@@ -159,7 +159,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "managementdefaultgateway",
+                                "fieldId": "panosnetworkoperationsmanagementdefaultgateway",
                                 "height": 53,
                                 "id": "2abd0750-6ce3-11ec-b785-f9c6d12419ba",
                                 "index": 2,
@@ -169,7 +169,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "managementurl",
+                                "fieldId": "panosnetworkoperationsmanagementurl",
                                 "height": 53,
                                 "id": "243b6110-6ce3-11ec-b785-f9c6d12419ba",
                                 "index": 3,
@@ -206,7 +206,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "runningsoftwareversion",
+                                "fieldId": "panosnetworkoperationsrunningsoftwareversion",
                                 "height": 22,
                                 "id": "5aec62e0-6ce3-11ec-b785-f9c6d12419ba",
                                 "index": 0,
@@ -216,7 +216,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "runningantivirusversion",
+                                "fieldId": "panosnetworkoperationsrunningantivirusversion",
                                 "height": 22,
                                 "id": "59bf2d80-6ce3-11ec-b785-f9c6d12419ba",
                                 "index": 1,
@@ -225,7 +225,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "runningthreatversion",
+                                "fieldId": "panosnetworkoperationsrunningthreatversion",
                                 "height": 22,
                                 "id": "99769590-6cec-11ec-8b99-fd211975954b",
                                 "index": 2,
@@ -234,7 +234,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "threatcontentreleasedate",
+                                "fieldId": "panosnetworkoperationsthreatcontentreleasedate",
                                 "height": 22,
                                 "id": "a5217e00-6cec-11ec-8b99-fd211975954b",
                                 "index": 3,
@@ -243,7 +243,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "runningappversion",
+                                "fieldId": "panosnetworkoperationsrunningappversion",
                                 "height": 22,
                                 "id": "9d3412c0-6cec-11ec-8b99-fd211975954b",
                                 "index": 4,
@@ -253,7 +253,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "appcontentreleasedate",
+                                "fieldId": "panosnetworkoperationsappcontentreleasedate",
                                 "height": 22,
                                 "id": "a2e91a30-6cec-11ec-8b99-fd211975954b",
                                 "index": 5,
@@ -263,7 +263,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "runningwildfireversion",
+                                "fieldId": "panosnetworkoperationsrunningwildfireversion",
                                 "height": 22,
                                 "id": "9f4df210-6cec-11ec-8b99-fd211975954b",
                                 "index": 6,
@@ -290,7 +290,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "highavailabilitypeer",
+                                "fieldId": "panosnetworkoperationshighavailabilitypeer",
                                 "height": 22,
                                 "id": "0a6382c0-6cef-11ec-8b99-fd211975954b",
                                 "index": 0,
@@ -299,7 +299,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "highavailabilitystate",
+                                "fieldId": "panosnetworkoperationshighavailabilitystate",
                                 "height": 22,
                                 "id": "0c598660-6cef-11ec-8b99-fd211975954b",
                                 "index": 1,

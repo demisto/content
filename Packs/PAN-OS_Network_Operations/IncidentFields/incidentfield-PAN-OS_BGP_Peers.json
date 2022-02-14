@@ -4,7 +4,7 @@
         "PAN-OS Network Operations - System Information"
     ],
     "caseInsensitive": true,
-    "cliName": "panosbgppeers",
+    "cliName": "panosnetworkoperationsbgppeers",
     "closeForm": false,
     "columns": [
         {
@@ -64,10 +64,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panosbgppeers",
+    "id": "incident_panosnetworkoperationsbgppeers",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS BGP Peers",
+    "name": "PAN-OS Network Operations - BGP Peers",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

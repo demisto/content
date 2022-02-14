@@ -4,7 +4,7 @@
         "PAN-OS Network Operations - System Information"
     ],
     "caseInsensitive": true,
-    "cliName": "panosarptable",
+    "cliName": "panosnetworkoperationsarptable",
     "closeForm": false,
     "columns": [
         {
@@ -76,10 +76,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panosarptable",
+    "id": "incident_panosnetworkoperationsarptable",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS ARP Table",
+    "name": "PAN-OS Network Operations - ARP Table",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

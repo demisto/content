@@ -11,7 +11,7 @@
     "id": "incident_deviceupgradetimer",
     "isReadOnly": true,
     "locked": false,
-    "name": "Device Upgrade Timer",
+    "name": "PAN-OS Network Operations - Device Upgrade Timer",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

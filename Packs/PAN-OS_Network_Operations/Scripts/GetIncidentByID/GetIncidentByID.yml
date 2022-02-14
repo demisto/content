@@ -1,6 +1,7 @@
 args:
 - description: Incident ID to get
   name: id
+comment: Returns the JSON data of a given incident ID.
 commonfields:
   id: getIncidentByID
   version: -1

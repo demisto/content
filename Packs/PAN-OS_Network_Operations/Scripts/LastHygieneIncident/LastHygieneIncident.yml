@@ -1,6 +1,7 @@
 commonfields:
   id: LastHygieneIncident
   version: -1
+comment: The data of the last hygiene incident ran.
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
