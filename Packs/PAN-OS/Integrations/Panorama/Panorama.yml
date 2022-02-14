@@ -2008,7 +2008,7 @@ script:
       name: to_port
     - description: Action for the query.
       name: action
-    description: Deprecated. Use the panorama-query-logs command instead.
+    description: Deprecated. Use the pan-os-query-logs command instead.
     deprecated: true
     name: panorama-query-traffic-logs
     outputs:
@@ -2022,7 +2022,7 @@ script:
     - description: Job ID of the query.
       name: job_id
       required: true
-    description: Deprecated. Use the panorama-check-logs-status command instead.
+    description: Deprecated. Use the pan-os-check-logs-status command instead.
     deprecated: true
     name: panorama-check-traffic-logs-status
     outputs:
@@ -2036,7 +2036,7 @@ script:
     - description: Job ID of the query.
       name: job_id
       required: true
-    description: Deprecated. Use the panorama-get-logs command instead.
+    description: Deprecated. Use the pan-os-get-logs command instead.
     deprecated: true
     name: panorama-get-traffic-logs
     outputs:
@@ -5443,7 +5443,7 @@ script:
     - description: Action for the query.
       name: action
     deprecated: true
-    description: Deprecated. Use the panorama-query-logs command instead.
+    description: Deprecated. Use the pan-os-query-logs command instead.
     name: pan-os-query-traffic-logs
     outputs:
     - contextPath: Panorama.TrafficLogs.JobID
@@ -5457,7 +5457,7 @@ script:
       name: job_id
       required: true
     deprecated: true
-    description: Deprecated. Use the panorama-check-logs-status command instead.
+    description: Deprecated. Use the pan-os-check-logs-status command instead.
     name: pan-os-check-traffic-logs-status
     outputs:
     - contextPath: Panorama.TrafficLogs.JobID
@@ -5471,7 +5471,7 @@ script:
       name: job_id
       required: true
     deprecated: true
-    description: Deprecated. Use the panorama-get-logs command instead.
+    description: Deprecated. Use the pan-os-get-logs command instead.
     name: pan-os-get-traffic-logs
     outputs:
     - contextPath: Panorama.TrafficLogs.JobID
