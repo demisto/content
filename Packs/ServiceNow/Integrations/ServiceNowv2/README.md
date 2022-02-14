@@ -986,6 +986,7 @@ Queries the specified table in ServiceNow.
 
 #### Command Example
 ```!servicenow-query-table table_name=alm_asset fields=asset_tag,sys_updated_by,display_name query=display_nameCONTAINSMacBook limit=4```
+```!servicenow-query-table table_name=sys_journal_field query=element_id=<SYS_ID>^ORDERBYsys_created_on limit=10 fields=value,name,element,sys_created_by,sys_created_on```
 
 #### Context Example
 ```
