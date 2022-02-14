@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 Counts the number of open FW Change requests for the platform, if the change management pack is in use.
 """
 res = demisto.executeCommand("GetIncidentsByQuery", {
-    "query": f"-status:closed -category:job type:\"PAN-OS Visibility Hygiene\""
+    "query": f"-status:closed -category:job type:\"PAN-OS Network Operations - Visibility Hygiene\""
 })
 if is_error(res):
     return_error(get_error(res))

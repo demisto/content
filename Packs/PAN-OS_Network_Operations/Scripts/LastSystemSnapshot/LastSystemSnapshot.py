@@ -12,7 +12,7 @@ except:
 
 current_incident_id = demisto.incidents()[0].get("id")
 res = demisto.executeCommand("GetIncidentsByQuery", {
-    "query": f"-category:job type:\"PAN-OS Snapshot Comparison\" linkedIncidents:{current_incident_id}"
+    "query": f"-category:job type:\"PAN-OS Network Operations - Snapshot Comparison\" linkedIncidents:{current_incident_id}"
 })
 if is_error(res):
     return_error(get_error(res))

@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 incident = demisto.incidents()[0]
 target = incident.get('CustomFields', {}).get('panosnetworkoperationstarget')
 res = demisto.executeCommand("GetIncidentsByQuery", {
-    "query": f"-status:closed -category:job target:{target} -type:\"PAN-OS Device\""
+    "query": f"-status:closed -category:job target:{target} -type:\"PAN-OS Network Operations - Device\""
 })
 if is_error(res):
     return_error(get_error(res))
