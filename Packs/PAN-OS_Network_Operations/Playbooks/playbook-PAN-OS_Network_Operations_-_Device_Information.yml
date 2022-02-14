@@ -2,7 +2,7 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-id: PAN-OS - Device Information
+id: PAN-OS Network Operations - Device Information
 inputs:
 - description: ''
   key: device
@@ -10,7 +10,7 @@ inputs:
   required: false
   value:
     simple: ${incident.panosnetworkoperationstarget}
-name: PAN-OS - Device Information
+name: PAN-OS Network Operations - Device Information
 outputs: []
 starttaskid: '0'
 tasks:

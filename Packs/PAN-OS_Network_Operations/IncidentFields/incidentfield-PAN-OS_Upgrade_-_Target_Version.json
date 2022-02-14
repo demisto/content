@@ -2,7 +2,7 @@
     "associatedToAll": false,
     "associatedTypes": [
         "PAN-OS Network Operations - Device Upgrade",
-        "PAN-OS Platform Upgrade"
+        "PAN-OS Network Operations - Platform Upgrade"
     ],
     "caseInsensitive": true,
     "cliName": "panosnetworkoperationsupgradetargetversion",

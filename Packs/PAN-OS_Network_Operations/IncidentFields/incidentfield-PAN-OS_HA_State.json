@@ -3,7 +3,7 @@
     "associatedTypes": [
         "PAN-OS Network Operations - System Information",
         "PAN-OS Network Operations - Device Upgrade",
-        "PAN-OS Device"
+        "PAN-OS Network Operations - Device"
     ],
     "caseInsensitive": true,
     "cliName": "panosnetworkoperationshastate",

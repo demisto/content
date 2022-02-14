@@ -829,7 +829,7 @@ tasks:
       name:
         simple: PAN-OS Upgrade Snapshot Comparision - ${inputs.target_device}
       type:
-        simple: PAN-OS Snapshot Comparison
+        simple: PAN-OS Network Operations - Snapshot Comparison
     separatecontext: false
     skipunavailable: false
     task:

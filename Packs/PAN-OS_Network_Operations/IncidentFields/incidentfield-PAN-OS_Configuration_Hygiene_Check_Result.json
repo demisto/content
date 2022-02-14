@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "PAN-OS Visibility Hygiene"
+        "PAN-OS Network Operations - Visibility Hygiene"
     ],
     "caseInsensitive": true,
     "cliName": "panosnetworkoperationsconfigurationhygienecheckresult",

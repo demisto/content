@@ -2,7 +2,7 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-id: PAN-OS - System Snapshot
+id: PAN-OS Network Operations - System Snapshot
 inputs:
 - description: Default change threshold. Greater or equal than the number equals a
     medium severity, greater or equal to double the number is high, and 5x the number
@@ -12,7 +12,7 @@ inputs:
   required: false
   value:
     simple: "2"
-name: PAN-OS - System Snapshot
+name: PAN-OS Network Operations - System Snapshot
 outputs: []
 starttaskid: "0"
 tasks:
@@ -872,7 +872,7 @@ tasks:
           root: CompareTables.Result
           transformers:
           - operator: ConvertKeysToTableFieldFormat
-    - incidentfield: PAN-OS Snapshot - BGP Difference Count
+    - incidentfield: PAN-OS Network Operations - Snapshot BGP Difference Count
       output:
         complex:
           filters:
@@ -1008,7 +1008,7 @@ tasks:
     scriptarguments:
       panosnetworkoperationsincidentdescription:
         simple: |-
-          <h4>PAN-OS Snapshot Comparison</h4>
+          <h4>PAN-OS Network Operations - Snapshot Comparison</h4>
 
           The snapshot comparison runs two "snapshots" of the platform runtime information at two different points in time. The first snapshot is then compared to the second to check for changes and alert on any possible issues. This process is often run automatically by other playbooks such as Platform Upgrades.
 

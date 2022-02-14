@@ -347,7 +347,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       panosnetworkoperationsincidentdescription:
-        simple: "<h4>PAN-OS Visibility Hygiene</h4>\nThis incident type checks all\
+        simple: "<h4>PAN-OS Network Operations - Visibility Hygiene</h4>\nThis incident type checks all\
           \ PAN-OS configuration settings for issues that would limit visibility of\
           \ threats in the environment. "
     separatecontext: false

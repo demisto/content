@@ -125,7 +125,7 @@
                                         "simple": "${incident.id}"
                                     },
                                     "type": {
-                                        "simple": "PAN-OS Platform Upgrade"
+                                        "simple": "PAN-OS Network Operations - Platform Upgrade"
                                     }
                                 },
                                 "buttonClass": "error",
@@ -151,7 +151,7 @@
                                         "simple": "False"
                                     },
                                     "type": {
-                                        "simple": "PAN-OS Platform Upgrade"
+                                        "simple": "PAN-OS Network Operations - Platform Upgrade"
                                     }
                                 },
                                 "buttonClass": "warning",
@@ -177,7 +177,7 @@
                                         "simple": "False"
                                     },
                                     "type": {
-                                        "simple": "PAN-OS Platform Upgrade"
+                                        "simple": "PAN-OS Network Operations - Platform Upgrade"
                                     }
                                 },
                                 "buttonClass": "warning",
@@ -202,7 +202,7 @@
                                         "simple": "${incident.id}"
                                     },
                                     "type": {
-                                        "simple": "PAN-OS Visibility Hygiene"
+                                        "simple": "PAN-OS Network Operations - Visibility Hygiene"
                                     }
                                 },
                                 "buttonClass": "success",
@@ -225,7 +225,7 @@
                                         "simple": "${incident.id}"
                                     },
                                     "type": {
-                                        "simple": "PAN-OS Snapshot Comparison"
+                                        "simple": "PAN-OS Network Operations - Snapshot Comparison"
                                     }
                                 },
                                 "buttonClass": "success",

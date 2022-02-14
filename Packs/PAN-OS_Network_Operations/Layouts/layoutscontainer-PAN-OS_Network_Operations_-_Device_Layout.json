@@ -374,7 +374,7 @@
                             {
                                 "args": {
                                     "name": {
-                                        "simple": "PAN-OS - Device Information"
+                                        "simple": "PAN-OS Network Operations - Device Information"
                                     }
                                 },
                                 "buttonClass": "success",
@@ -400,7 +400,7 @@
                                         "simple": "${incident.panosnetworkoperationstarget}"
                                     },
                                     "type": {
-                                        "simple": "PAN-OS Visibility Hygiene"
+                                        "simple": "PAN-OS Network Operations - Visibility Hygiene"
                                     }
                                 },
                                 "buttonClass": "primary",
@@ -593,8 +593,8 @@
         ]
     },
     "group": "incident",
-    "id": "PAN-OS Device Layout",
-    "name": "PAN-OS Device Layout",
+    "id": "PAN-OS Network Operations - Device Layout",
+    "name": "PAN-OS Network Operations - Device Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

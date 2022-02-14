@@ -2,8 +2,8 @@
     "associatedToAll": false,
     "associatedTypes": [
         "PAN-OS Network Operations - System Information",
-        "PAN-OS Platform Upgrade",
-        "PAN-OS Device",
+        "PAN-OS Network Operations - Platform Upgrade",
+        "PAN-OS Network Operations - Device",
         "PAN-OS Network Operations - Device Upgrade"
     ],
     "caseInsensitive": true,

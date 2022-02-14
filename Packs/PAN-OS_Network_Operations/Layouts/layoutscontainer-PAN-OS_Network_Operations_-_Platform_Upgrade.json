@@ -304,8 +304,8 @@
         ]
     },
     "group": "incident",
-    "id": "PAN-OS Platform Upgrade",
-    "name": "PAN-OS Platform Upgrade",
+    "id": "PAN-OS Network Operations - Platform Upgrade",
+    "name": "PAN-OS Network Operations - Platform Upgrade",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

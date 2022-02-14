@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "PAN-OS Snapshot Comparison"
+        "PAN-OS Network Operations - Snapshot Comparison"
     ],
     "caseInsensitive": true,
     "cliName": "panosnetworkoperationssnapshotroutedifferencecount",
