@@ -89,7 +89,7 @@ tasks:
             value:
               simple: incident.panosnetworkoperationsparentincidentid
           operator: isNotEmpty
-      label: true
+      label: "yes"
     id: '2'
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -97,7 +97,7 @@ tasks:
     nexttasks:
       '#default#':
       - '4'
-      true:
+      "yes":
       - '3'
     note: false
     quietmode: 0
@@ -303,7 +303,7 @@ tasks:
                         simple: BP-V-3
                 root: incident.panosnetworkoperationsconfigurationhygieneissues
           operator: isExists
-      label: true
+      label: "yes"
     id: '8'
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -311,7 +311,7 @@ tasks:
     nexttasks:
       '#default#':
       - '6'
-      true:
+      "yes":
       - '10'
       Yes - Auto Remediate:
       - '5'
@@ -352,7 +352,7 @@ tasks:
                 transformers:
                 - operator: uniq
           operator: isExists
-      label: true
+      label: "yes"
     id: '9'
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -360,7 +360,7 @@ tasks:
     nexttasks:
       '#default#':
       - '6'
-      true:
+      "yes":
       - '12'
     note: false
     quietmode: 0
@@ -449,7 +449,7 @@ tasks:
           right:
             value:
               simple: true
-      label: true
+      label: "yes"
     id: '11'
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -457,7 +457,7 @@ tasks:
     nexttasks:
       '#default#':
       - '6'
-      true:
+      "yes":
       - '5'
     note: false
     quietmode: 0
@@ -595,7 +595,7 @@ tasks:
                         simple: BP-V-7
                 root: incident.panosnetworkoperationsconfigurationhygieneissues
           operator: isExists
-      label: true
+      label: "yes"
     id: '13'
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -603,7 +603,7 @@ tasks:
     nexttasks:
       '#default#':
       - '6'
-      true:
+      "yes":
       - '14'
     note: false
     quietmode: 0
@@ -737,7 +737,7 @@ tasks:
           right:
             value:
               simple: true
-      label: true
+      label: "yes"
     id: '15'
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -745,7 +745,7 @@ tasks:
     nexttasks:
       '#default#':
       - '6'
-      true:
+      "yes":
       - '16'
     note: false
     quietmode: 0
@@ -962,7 +962,7 @@ tasks:
             value:
               simple: PANOS.ConfigurationHygieneFix
           operator: isNotEmpty
-      label: true
+      label: "yes"
     id: '22'
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -970,7 +970,7 @@ tasks:
     nexttasks:
       '#default#':
       - '7'
-      true:
+      "yes":
       - '19'
     note: false
     quietmode: 0
