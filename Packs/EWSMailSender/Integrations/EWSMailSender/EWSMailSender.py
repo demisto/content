@@ -58,7 +58,7 @@ from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter  # noqa: E402
 from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, \
     EXCHANGE_2016  # noqa: E402
 from exchangelib import HTMLBody, Message, FileAttachment, Account, IMPERSONATION, Credentials, Configuration, NTLM, \
-    BASIC, DIGEST, Version, DELEGATE  # noqa: E402
+    BASIC, DIGEST, Version, DELEGATE, FaultTolerance  # noqa: E402
 from exchangelib.errors import ErrorItemNotFound     # noqa: E402
 
 IS_TEST_MODULE = False
@@ -315,6 +315,7 @@ def prepare():
     config_args = {
         'credentials': credentials,
         'auth_type': get_auth_method(AUTH_METHOD_STR),
+        'retry_policy': FaultTolerance(max_wait=3600),
         'version': version
     }
     if 'http' in EWS_SERVER.lower():
