@@ -56,7 +56,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.target}
+        simple: ${inputspanosnetworkoperationstarget
       version:
         simple: ${inputs.target_version}
     separatecontext: false
@@ -91,7 +91,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.target}
+        simple: ${inputspanosnetworkoperationstarget
       job_type:
         simple: SWInstall
     separatecontext: false
@@ -271,7 +271,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.target}
+        simple: ${inputspanosnetworkoperationstarget
       id:
         complex:
           accessor: id

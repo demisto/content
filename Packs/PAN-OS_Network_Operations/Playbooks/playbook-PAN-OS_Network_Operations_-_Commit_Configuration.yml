@@ -13,7 +13,7 @@ inputs:
   playbookInputQuery:
   required: false
   value:
-    simple: ${incident.target}
+    simple: ${incidentpanosnetworkoperationstarget
 - description: 'Panorama Only: If required, a csv list of device-groups to push. If
     not specified, all device groups will be pushed after a commit.'
   key: device_group_filter
