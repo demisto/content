@@ -1,4 +1,4 @@
-[file:integration-trendMicroDsm.yml]
+[file:TrendMicro.yml]
 ignore=IN126
 
 [file:README.md]
