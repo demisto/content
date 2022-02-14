@@ -242,7 +242,7 @@
                             {
                                 "args": {
                                     "name": {
-                                        "simple": "PAN-OS Network Operations - System Information"
+                                        "simple": "PAN-OS Network Operations - Platform Management"
                                     }
                                 },
                                 "buttonClass": "success",
