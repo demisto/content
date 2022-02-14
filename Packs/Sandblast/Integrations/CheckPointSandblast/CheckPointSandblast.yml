@@ -1,0 +1,289 @@
+commonfields:
+  id: Check Point Sandblast
+  version: -1
+name: Check Point Sandblast
+display: Check Point Sandblast Cloud Services
+category: Forensics & Malware Analysis
+description: Query, upload and download data using Check Point Sandblast on cloud.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: https://te.checkpoint.com
+  type: 0
+  required: true
+- display: Version
+  name: version
+  defaultvalue: v1
+  type: 0
+  required: true
+- display: Use API Key
+  name: useApiKey
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: API key
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: sb-query
+    deprecated: true
+    arguments:
+    - name: md5
+      description: The md5 to query
+    - name: sha1
+      description: The sha1 to query
+    - name: sha256
+      description: The sha256 to query
+    - name: file_type
+      description: File extension (although the service identifies the type)
+    - name: features
+      auto: PREDEFINED
+      predefined:
+      - te
+      - av
+      - extraction
+      - all
+      description: Available features - default is te and av
+    - name: images
+      description: Array of objects with id and revision of available OS images
+    - name: reports
+      description: Array of supported report formats of - pdf | xml | tar
+    - name: benign_reports
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: By default, reports are returned only for malicious files - you
+        can mark this as true and get benign reports
+    - name: quota
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, response delivers the quota data (for cloud services only)
+    - name: file_name
+      description: File name - service calculates the file name from the part name
+    description: Use the Query API to have a client application look for either the
+      analysis report of a specific file on the Check Point Threat Prevention service
+      databases or the status of a file, uploaded for analysis
+  - name: sandblast-query
+    arguments:
+    - name: md5
+      description: The md5 to query
+    - name: sha1
+      description: The sha1 to query
+    - name: sha256
+      description: The sha256 to query
+    - name: file_type
+      description: File extension (although the service identifies the type)
+    - name: features
+      auto: PREDEFINED
+      predefined:
+      - te
+      - av
+      - extraction
+      - all
+      description: Available features - default is te and av
+    - name: images
+      description: Array of objects with id and revision of available OS images
+    - name: reports
+      description: Array of supported report formats of - pdf | xml | tar
+    - name: benign_reports
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: By default, reports are returned only for malicious files - you
+        can mark this as true and get benign reports
+    - name: quota
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, response delivers the quota data (for cloud services only)
+    - name: file_name
+      description: File name - service calculates the file name from the part name
+    outputs:
+    - contextPath: File.Malicious.Vendor
+      description: The vendor which found the file as malicious
+    - contextPath: File.Malicious.Description
+      description: A description of the file as malicious
+    - contextPath: File.Malicious.Confidence
+      description: Level of confidence that the file is malicious
+    - contextPath: File.Malicious.MalwareFamily
+      description: The family of malware this file belong to
+    - contextPath: File.Malicious.MalwareType
+      description: The type of this malware
+    - contextPath: File.Malicious.Severity
+      description: The severity of this malware
+    - contextPath: File.Malicious.SignatureName
+      description: The file signature name
+    - contextPath: File.MD5
+      description: The file md5
+    - contextPath: File.SHA1
+      description: The file sha1
+    - contextPath: File.SHA256
+      description: The file sha256
+    description: Use the Query API to have a client application look for either the
+      analysis report of a specific file on the Check Point Threat Prevention service
+      databases or the status of a file, uploaded for analysis
+  - name: sb-upload
+    deprecated: true
+    arguments:
+    - name: file_name
+      required: true
+      default: true
+      description: File name - service calculates the file name from the part name
+    - name: md5
+      description: The md5 to upload
+    - name: sha1
+      description: The sha1 to upload
+    - name: sha256
+      description: The sha256 to upload
+    - name: file_type
+      description: File extension (although the service identifies the type)
+    - name: features
+      auto: PREDEFINED
+      predefined:
+      - te
+      - av
+      - extraction
+      - all
+      description: Available features - default is te and av
+    - name: images
+      description: Array of objects with id and revision of available OS images
+    - name: reports
+      description: Array of supported report formats of - pdf | xml | tar
+    - name: benign_reports
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: By default, reports are returned only for malicious files - you
+        can mark this as true and get benign reports
+    - name: file_id
+      required: true
+      description: The file id
+    description: Use the Upload API to have a client application request that Check
+      Point Threat Prevention modules scan and analyze a file. When you upload a file
+      to the service, the file is encrypted. It is un-encrypted during analysis, and
+      then deleted
+  - name: sandblast-upload
+    arguments:
+    - name: file_name
+      required: true
+      default: true
+      description: File name - service calculates the file name from the part name
+    - name: md5
+      description: The md5 to upload
+    - name: sha1
+      description: The sha1 to upload
+    - name: sha256
+      description: The sha256 to upload
+    - name: file_type
+      description: File extension (although the service identifies the type)
+    - name: features
+      auto: PREDEFINED
+      predefined:
+      - te
+      - av
+      - extraction
+      - all
+      description: Available features - default is te and av
+    - name: images
+      description: Array of objects with id and revision of available OS images
+    - name: reports
+      description: Array of supported report formats of - pdf | xml | tar
+    - name: benign_reports
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: By default, reports are returned only for malicious files - you
+        can mark this as true and get benign reports
+    - name: file_id
+      required: true
+      description: The file id
+    outputs:
+    - contextPath: File.Malicious.Vendor
+      description: The vendor which found the file as malicious
+    - contextPath: File.Malicious.Description
+      description: A description of the file as malicious
+    - contextPath: File.Malicious.Confidence
+      description: Level of confidence that the file is malicious
+    - contextPath: File.Malicious.MalwareFamily
+      description: The family of malware this file belong to
+    - contextPath: File.Malicious.MalwareType
+      description: The type of this malware
+    - contextPath: File.Malicious.Severity
+      description: The severity of this malware
+    - contextPath: File.Malicious.SignatureName
+      description: The file signature name
+    - contextPath: File.MD5
+      description: The file md5
+    - contextPath: File.SHA1
+      description: The file sha1
+    - contextPath: File.SHA256
+      description: The file sha256
+    description: Use the Upload API to have a client application request that Check
+      Point Threat Prevention modules scan and analyze a file. When you upload a file
+      to the service, the file is encrypted. It is un-encrypted during analysis, and
+      then deleted
+  - name: sb-download
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: File id to download
+    description: 'Use the Download API to have a client application download files
+      generated by the Check Point Threat Prevention service: analysis reports, Threat
+      Emulation sandbox outputs, and more. The request must have the ID of the file
+      to download'
+  - name: sandblast-download
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: File id to download
+    outputs:
+    - contextPath: File.MD5
+      description: The file md5
+    - contextPath: File.SHA1
+      description: The file sha1
+    - contextPath: File.SHA256
+      description: The file sha256
+    - contextPath: File.Name
+      description: The file name
+    description: 'Use the Download API to have a client application download files
+      generated by the Check Point Threat Prevention service: analysis reports, Threat
+      Emulation sandbox outputs, and more. The request must have the ID of the file
+      to download'
+  - name: sb-quota
+    deprecated: true
+    arguments: []
+    description: Use the Quote API to have a client application get the current license
+      and quota status of the API Key that you use
+  - name: sandblast-quota
+    arguments: []
+    description: Use the Quote API to have a client application get the current license
+      and quota status of the API Key that you use
+hidden: false
+fromversion: 5.0.0
+tests:
+- Sandblast_malicious_test
