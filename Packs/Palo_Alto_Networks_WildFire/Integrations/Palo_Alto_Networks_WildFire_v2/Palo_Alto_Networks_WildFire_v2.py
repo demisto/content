@@ -16,8 +16,7 @@ if not TOKEN and is_demisto_version_ge('6.5.0'):
         TOKEN = demisto.getLicenseCustomField('WildFire-Reports.token')
     except Exception as e:
         TOKEN = None
-if not TOKEN:
-    return_error("Error: Missing credentials information which is critical for usability.")
+
 USE_SSL = not PARAMS.get('insecure', False)
 FILE_TYPE_SUPPRESS_ERROR = PARAMS.get('suppress_file_type_error')
 RELIABILITY = PARAMS.get('integrationReliability', DBotScoreReliability.B) or DBotScoreReliability.B
@@ -333,6 +332,8 @@ def hash_list_to_file(hash_list):
 
 
 def test_module():
+    if not TOKEN:
+        return_error("Error: Missing credentials information which is critical for usability.")
     if wildfire_upload_url('https://www.demisto.com')[1]:
         demisto.results('ok')
 
