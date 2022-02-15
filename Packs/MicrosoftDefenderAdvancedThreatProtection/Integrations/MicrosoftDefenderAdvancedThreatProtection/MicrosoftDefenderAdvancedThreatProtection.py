@@ -3092,6 +3092,8 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
     """
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = int(args.get('interval_in_seconds', 10))
+    timeout_in_seconds = int(args.get('timeout_in_seconds', 600))
+
     # distinguish between the initial run, which is the upload run, and the results run
     is_first_run = 'machine_action_id' not in args
     demisto.debug(f'polling args: {args}')
@@ -3109,7 +3111,7 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
             command=cmd,
             next_run_in_seconds=interval_in_secs,
             args=polling_args,
-            timeout_in_seconds=args.get('timeout_in_seconds', 600))
+            timeout_in_seconds=timeout_in_seconds)
         command_results.scheduled_command = scheduled_command
         return command_results
 
@@ -3133,7 +3135,8 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
             command=cmd,
             next_run_in_seconds=interval_in_secs,
             args=polling_args,
-            timeout_in_seconds=600)
+            timeout_in_seconds=timeout_in_seconds
+        )
 
         command_result = CommandResults(scheduled_command=scheduled_command)
         return command_result
