@@ -85,7 +85,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to extend the dataor not.
+      description: Whether to extend the data or not.
       isArray: false
       name: extended_data
       predefined:

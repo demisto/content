@@ -41,7 +41,7 @@ Initiate search process on events. The events will be retrieved according to a c
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The query for filtering the relevant events. For example: 'eventId=9071234812319593968 AND eventType=type'. You can retrieve the attributes names  by the naming of the filtering arguments of the command, or by naming the attributes of the event that returned in the context output. | Optional | 
-| extended_data | Whether to extend the dataor not. Possible values are: false, true. Default is true. | Optional | 
+| extended_data | Whether to extend the data or not. Possible values are: false, true. Default is true. | Optional | 
 | polling | Use Cortex XSOAR built-in polling to retrieve the result when it's ready. Possible values are: true, false. Default is false. | Optional | 
 | search_id | The ID of the search query to retrieve it's results. Intended for use by the Polling process and does not need to be provided by the user. | Optional | 
 | limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
