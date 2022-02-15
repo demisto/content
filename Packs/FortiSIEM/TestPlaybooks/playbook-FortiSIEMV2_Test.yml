@@ -1,6 +1,5 @@
 id: playbook-FortiSIEMV2_Test
-version: 22
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: playbook-FortiSIEMV2_Test
 fromversion: 6.0.0
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -802,6 +802,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1140,3 +1141,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: Test Playbook for FortiSIEMV2 integration.
