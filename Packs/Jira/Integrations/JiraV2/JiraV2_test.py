@@ -1282,3 +1282,23 @@ def test_get_custom_field_names(mocker, requests_mock):
     requests_mock.get('https://localhost/rest/api/latest/field', json=FIELDS_RESPONSE)
     res = get_custom_field_names()
     assert res == EXPECTED_RESP
+
+
+def test_get_issue_attachment_url(mocker, requests_mock):
+    """
+    Given:
+        - The issue ID.
+    When
+        - Running the get issue command.
+    Then
+        - Ensure the outputs as expected
+    """
+    from JiraV2 import get_issue
+    from test_data.raw_response import GET_ISSUE_WITH_ATTACHMENT_RESPONSE, MD_AND_CONTEXT_OUTPUT
+
+    mocker.patch.object(demisto, "params", return_value=integration_params)
+    mocker.patch('JiraV2.generate_md_context_get_issue', return_value=MD_AND_CONTEXT_OUTPUT)
+    requests_mock.get('https://localhost/rest/api/latest/issue/VIK-267', json=GET_ISSUE_WITH_ATTACHMENT_RESPONSE)
+    requests_mock.get('https://localhost/rest/api/2/attachment/content/16188', json={})
+
+    get_issue("VIK-267", get_attachments="true")  # the command will fail if not doing a request with the proper url
