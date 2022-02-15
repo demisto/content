@@ -1,5 +1,5 @@
-URLhaus has the goal of sharing malicious URLs that are being used for malware distribution.
-This integration was integrated and tested with version v1 of URLhaus
+URLhaus shares malicious URLs that are being used for malware distribution.
+This integration was integrated and tested with version v1 of URLhaus.
 
 ## Configure URLhaus on Cortex XSOAR
 
@@ -35,7 +35,7 @@ Retrieves URL information from URLhaus.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | URL to query. | Required | 
+| url | A comma-separated list of URLs to query. | Required | 
 
 
 #### Context Output
@@ -144,7 +144,7 @@ Retrieves URL information from URLhaus.
 >### URLhaus reputation for http:<span>//</span>example.com/anklet/WQG1/?i=1
 >|Date added|Description|Status|Threat|URLhaus ID|URLhaus link|
 >|---|---|---|---|---|---|
->| 2022-01-20T14:11:09 | The URL is inadctive (offline) and serving no payload | offline | malware_download | 1992762 | https:<span>//</span>urlhaus.abuse.ch/url/1992762/ |
+>| 2022-01-20T14:11:09 | The URL is inactive (offline) and serving no payload | offline | malware_download | 1992762 | https:<span>//</span>urlhaus.abuse.ch/url/1992762/ |
 
 
 ### domain
@@ -159,7 +159,7 @@ Retrieves domain information from URLhaus.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Domain to query. | Required | 
+| domain | A comma-separated list of domains to query. | Required | 
 
 
 #### Context Output
@@ -260,7 +260,7 @@ Retrieves file information from URLhaus.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | MD5 hash or SHA256 hash of the file to query. | Required | 
+| file | A comma-separated list of MD5 or SHA256 hashes of the file to query. | Required | 
 
 
 #### Context Output
@@ -270,8 +270,8 @@ Retrieves file information from URLhaus.
 | File.Size | Number | File size \(in bytes\). | 
 | File.MD5 | String | MD5 hash of the file. | 
 | File.SHA256 | String | SHA256 hash of the file. | 
-| File.SSDeep | string | SSDeep of the file. | 
-| File.Type | stringd | Type of the file. | 
+| File.SSDeep | String | SSDeep of the file. | 
+| File.Type | String | Type of the file. | 
 | File.Relationships.EntityA | String | The source of the relationship. | 
 | File.Relationships.EntityB | String | The destination of the relationship. | 
 | File.Relationships.Relationship | String | The name of the relationship. | 
