@@ -10,4 +10,4 @@ https://localhost/?state=lulubalulu&code=MCTNCsN1gJIjA2cEJ72nczpXzcLVVQxJ
 6. Run box_initiate command with access_code argument in the CLI in this form:
 !box_initiate access_code=ACCESS_CODE
 For additional info you may watch https://www.youtube.com/watch?v=ha26tN8amI0
-Or read about box oauth2 process at https://docs.box.com/docs/oauth-20
+Or read about box oauth2 process at https://developer.box.com/guides/authentication/oauth2
