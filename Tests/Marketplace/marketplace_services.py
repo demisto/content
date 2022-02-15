@@ -1967,7 +1967,7 @@ class Pack(object):
         is_missing_dependencies = False
 
         try:
-            self.set_pack_dependencies(packs_dependencies_mapping, packs_dict, marketplace)
+            self.set_pack_dependencies(packs_dependencies_mapping, packs_dict, marketplace=marketplace)
 
             logging.info(f"Loading pack dependencies metadata for {self._pack_name} pack")
             dependencies_metadata_dict, is_missing_dependencies = self._load_pack_dependencies_metadata(
