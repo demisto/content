@@ -583,11 +583,6 @@ def main():
     new_email_body = custom_fields.get('emailnewbody')
     email_selected_thread = custom_fields.get('emailselectedthread')
 
-    if attachments:
-        attachment_names = [attachment.get('name', '') for attachment in attachments]
-    else:
-        attachment_names = ["None"]
-
     if new_email_attachments:
         new_attachment_names = [attachment.get('name', '') for attachment in new_email_attachments]
     else:
