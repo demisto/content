@@ -1,0 +1,13 @@
+!cs-falcon-sandbox-get-environments
+!cs-falcon-sandbox-submit-url url=example.com environmentID=300
+!cs-falcon-sandbox-submit-sample entryId=32@79b78cc9-bcb2-4809-83d9-af37b51872bc environmentID=100 polling=true
+!cs-falcon-sandbox-result JobID=61e7bb4a7b5a2c0e1f2a62dd file-type=misp
+!cs-falcon-sandbox-report-state file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 environmentID=300
+!cs-falcon-sandbox-search filename=sample.pdf
+!cs-falcon-sandbox-scan file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51,9745bd652c50ac081e28981b96f41230c1ed2f84724c1e5b0f0d407a90aefe22
+!cs-falcon-sandbox-get-screenshots file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 environmentID=100
+!cs-falcon-sandbox-sample-download file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51
+!cs-falcon-sandbox-analysis-overview file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51
+!cs-falcon-sandbox-analysis-overview-summary file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51
+!cs-falcon-sandbox-analysis-overview-refresh file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51
+!file file=8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51
