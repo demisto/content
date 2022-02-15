@@ -67,6 +67,7 @@ configuration:
   type: 0
 - defaultvalue: '400'
   display: Timeout
+  additionalinfo: Request timeout value, in seconds. Default is 400.
   hidden: false
   name: timeout
   required: false

@@ -274,20 +274,19 @@ class Client(BaseClient):
         self.password = password
         self.instance_name = instance_name
         self.domain = domain
-        self.timeout = timeout
-        super(Client, self).__init__(base_url=base_url, headers=REQUEST_HEADERS, **kwargs)
+        super(Client, self).__init__(base_url=base_url, headers=REQUEST_HEADERS, timeout=timeout, **kwargs)
 
     def do_request(self, method, url_suffix, data=None, params=None):
         if not REQUEST_HEADERS.get('Authorization'):
             self.update_session()
 
         res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data, params=params,
-                                 resp_type='response', ok_codes=(200, 401), timeout=self.timeout)
+                                 resp_type='response', ok_codes=(200, 401))
 
         if res.status_code == 401:
             self.update_session()
             res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data,
-                                     resp_type='response', ok_codes=(200, 401), timeout=self.timeout)
+                                     resp_type='response', ok_codes=(200, 401))
 
         return res.json()
 
@@ -299,7 +298,7 @@ class Client(BaseClient):
             'Password': self.password
         }
         try:
-            res = self._http_request('POST', f'{API_ENDPOINT}/core/security/login', json_data=body, timeout=self.timeout)
+            res = self._http_request('POST', f'{API_ENDPOINT}/core/security/login', json_data=body)
         except DemistoException as e:
             if '<html>' in str(e):
                 raise DemistoException(f"Check the given URL, it can be a redirect issue. Failed with error: {str(e)}")
