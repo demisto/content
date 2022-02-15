@@ -541,13 +541,6 @@ script:
       name: password
       required: true
       secret: true
-    - default: false
-      description: Whether the user is on-premise.
-      isArray: false
-      name: on_premise
-      required: false
-      secret: false
-      defaultValue: 'false'
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
@@ -576,6 +569,24 @@ script:
       Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)
     execution: true
     name: msgraph-user-change-password
+  - arguments:
+    - default: false
+      description: User ID or userPrincipalName to update password for.
+      isArray: false
+      name: user
+      required: true
+      secret: false
+    - default: false
+      description: The new password.
+      isArray: false
+      name: password
+      required: true
+      secret: true
+    deprecated: false
+    description: |-
+      Changes the password of an on-premise user. Requires the UserAuthenticationMethod.Read.All permission.
+    execution: true
+    name: msgraph-user-change-password-on-premise
   - deprecated: false
     description: Tests connectivity to Microsoft Graph User.
     execution: false

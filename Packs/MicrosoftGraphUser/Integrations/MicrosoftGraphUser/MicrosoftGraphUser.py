@@ -117,18 +117,10 @@ class MsGraphClient:
             json_data=body,
             resp_type="text")
 
-    def password_change_user(self, user: str, password: str, force_change_password_next_sign_in: bool,
-                             force_change_password_with_mfa: bool, on_prem: bool = False):
-        if on_prem:
-            return self._password_change_on_prem(user=user, password=password)
-
-        else:
-            self._password_change_cloud(user=user, password=password,
-                                        force_change_password_next_sign_in=force_change_password_next_sign_in,
-                                        force_change_password_with_mfa=force_change_password_with_mfa)
-
-    def _password_change_cloud(self, user: str, password: str, force_change_password_next_sign_in: bool,
-                               force_change_password_with_mfa: bool):
+    #  If successful, this method returns 204 No Content response code.
+    #  Using resp_type=text to avoid parsing error.
+    def password_change_user_saas(self, user: str, password: str, force_change_password_next_sign_in: bool,
+                                  force_change_password_with_mfa: bool):
         body = {
             "passwordProfile":
                 {
@@ -137,26 +129,31 @@ class MsGraphClient:
                     "password": password
                 }
         }
-        #  If successful, this method returns 204 No Content response code.
-        #  Using resp_type=text to avoid parsing error.
         self.ms_client.http_request(
             method='PATCH',
             url_suffix=f'users/{quote(user)}',
             json_data=body,
             resp_type="text")
 
-    def _password_change_on_prem(self, user: str, password: str):
-        password_id = self.ms_client.http_request(
-            method='GET',
-            url_suffix=f'users/{quote(user)}/authentication/passwordMethods'
-        ).get('value', [])[0]['id']
+    def password_change_user_on_premise(self, user: str, password: str):
+        password_id_response = None
+        try:
+            password_id_response = self.ms_client.http_request(
+                method='GET',
+                url_suffix=f'users/{quote(user)}/authentication/passwordMethods'
+            )
+            password_id = password_id_response.get('value', [])[0]['id']
+        except (IndexError, KeyError) as e:
+            raise DemistoException("Failed getting passwordMethod id", exception=e, res=password_id_response)
 
-        return self.ms_client.http_request(
+        json_data = {"newPassword": password} if password else None
+
+        password_change_response = self.ms_client.http_request(
             method='POST',
             url_suffix=f'users/{quote(user)}/authentication/passwordMethods/{password_id}/resetPassword',
-            ok_codes=(202,),
-            json_data={"newPassword": password}
-        ).json()['Location']
+            ok_codes=(202,), json_data=json_data
+        )
+        return password_change_response
 
     def get_delta(self, properties):
         users = self.ms_client.http_request(
@@ -313,10 +310,23 @@ def change_password_user_command(client: MsGraphClient, args: Dict):
     password = str(args.get('password'))
     force_change_password_next_sign_in = args.get('force_change_password_next_sign_in', 'true') == 'true'
     force_change_password_with_mfa = args.get('force_change_password_with_mfa', False) == 'true'
-    on_prem = argToBoolean(args.get('on_prem', False))
-    client.password_change_user(user, password, force_change_password_next_sign_in, force_change_password_with_mfa,
-                                on_prem)
+
+    client.password_change_user_saas(user, password, force_change_password_next_sign_in, force_change_password_with_mfa)
     human_readable = f'User {user} password was changed successfully.'
+    return human_readable, {}, {}
+
+
+def change_password_user_on_premise(client: MsGraphClient, args: Dict):
+    user = str(args.get('user'))
+    password = str(args.get('password'))
+
+    res = client.password_change_user_on_premise(user, password)
+    if location := res.get('Location'):
+        human_readable = f'The password of user {user} has been changed to an auto-generated one. ' \
+                         f'Check the change status on {location}'
+    else:
+        human_readable = f"The password of user {user} has been changed successfully."
+
     return human_readable, {}, {}
 
 
