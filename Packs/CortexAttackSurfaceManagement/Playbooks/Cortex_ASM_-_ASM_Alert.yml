@@ -1,6 +1,5 @@
 id: ec207144-8396-41d7-8564-f7bea45307cd
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Cortex ASM - ASM Alert
 description: This playbook aims to provide enrichment of ASM alerts by searching for mentions of associated IP addresses within
   other security and IT tools.
@@ -15,6 +14,7 @@ tasks:
       version: -1
       name: ""
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -46,6 +46,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "2"
@@ -122,6 +123,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "4"
@@ -161,6 +163,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -188,6 +191,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "4"
@@ -228,3 +232,6 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests
+fromversion: 6.5.0

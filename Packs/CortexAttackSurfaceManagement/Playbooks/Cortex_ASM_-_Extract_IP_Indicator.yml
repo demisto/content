@@ -1,6 +1,5 @@
 id: 645e003a-1111-4538-8c8e-55dc39f40848
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Cortex ASM - Extract IP Indicator
 description: Identifies IPv4 Address associated with Alert and creates a new Indicator.
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "2"
@@ -207,6 +207,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -243,3 +244,6 @@ inputs:
 outputs:
 - contextPath: ExtractedIndicators
   description: outputs.extractindicators
+tests:
+- No tests
+fromversion: 6.5.0
