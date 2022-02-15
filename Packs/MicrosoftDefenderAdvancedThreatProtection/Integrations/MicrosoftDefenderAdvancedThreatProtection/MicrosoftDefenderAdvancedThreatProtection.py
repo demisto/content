@@ -969,7 +969,7 @@ class MsClient:
         return response
 
     def cancel_action(self, action_id, request_body):
-        cmd_url = f'https://api.securitycenter.microsoft.com/api/machineactions/{action_id}/cancel'
+        cmd_url = f'machineactions/{action_id}/cancel'
         response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=request_body)
         return response
 
@@ -3118,9 +3118,9 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
     command_result = results_function(client, args)
     action_status = command_result.outputs.get("status")
     command_status = command_result.outputs.get("commands", [{}])[0].get("commandStatus")
-    if action_status == 'Failed' or command_status == 'Failed':
+    if action_status in ['Failed', 'Cancelled'] or command_status == 'Failed':
         raise Exception(
-            f'Command failed to get results. {command_result.outputs.get("commands", [{}])[0].get("errors")}')
+            f'Command {action_status}. Additional info: {command_result.outputs.get("commands", [{}])[0].get("errors")}')
     elif command_status != 'Completed' or action_status == 'InProgress':
         # schedule next poll
         polling_args = {
