@@ -450,7 +450,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: Comma seperated list of devices IP addresses.
+      description: Comma separate list of devices IP addresses.
       isArray: false
       name: ip_address
       required: true
@@ -636,13 +636,13 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Comma seperated list of watchlist group ID.
+      description: Comma separate list of watchlist group ID.
       isArray: false
       name: watchlist_id
       required: false
       secret: false
     - default: false
-      description: Comma seperated list of entry ID that resides in the watchlist.
+      description: Comma separate list of entry ID that resides in the watchlist.
       isArray: false
       name: entry_id
       required: false
@@ -790,8 +790,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The triggering rules that assoiciate with the entry. Should be
-        a comma seperated of rule names.
+      description: The triggering rules that associate with the entry. Should be
+        a comma separate of rule names.
       isArray: false
       name: entry_trigger_rules
       required: false
@@ -862,8 +862,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The triggering rules that assoiciate with the entry. Should be
-        a comma seperated of rules names.
+      description: The triggering rules that associate with the entry. Should be
+        a comma separate of rules names.
       isArray: true
       name: triggering_rules
       required: false
@@ -943,8 +943,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The triggering rules that assoiciate with the entry. Should be
-        a comma seperated of rules names.
+      description: The triggering rules that associate with the entry. Should be
+        a comma separate of rules names.
       isArray: false
       name: triggering_rules
       required: false
@@ -1023,7 +1023,7 @@ script:
       description: The number of times the entry was seen.
       type: Number
     - contextPath: FortiSIEM.WatchlistEntry.triggeringRules
-      description: The triggering rules that assoiciate with the entry.
+      description: The triggering rules that associate with the entry.
       type: String
     - contextPath: FortiSIEM.WatchlistEntry.description
       description: Entry description.
@@ -1045,7 +1045,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Comma seperated list of Entries ID to delete.
+      description: Comma separate list of Entries ID to delete.
       isArray: false
       name: entry_id
       required: true
@@ -1056,7 +1056,7 @@ script:
     name: fortisiem-watchlist-entry-delete
   - arguments:
     - default: false
-      description: Comma seperated list of Watchlists ID to delete.
+      description: Comma separate list of Watchlists ID to delete.
       isArray: false
       name: watchlist_id
       required: true
@@ -1067,7 +1067,7 @@ script:
     name: fortisiem-watchlist-delete
   - arguments:
     - default: false
-      description: Comma seperated list of entry ID.
+      description: Comma separate list of entry ID.
       isArray: true
       name: entry_id
       required: true
@@ -1093,7 +1093,7 @@ script:
       description: The number of times the entry was seen.
       type: Number
     - contextPath: FortiSIEM.WatchlistEntry.triggeringRules
-      description: The triggering rules that assoiciate with the entry.
+      description: The triggering rules that associate with the entry.
       type: String
     - contextPath: FortiSIEM.WatchlistEntry.description
       description: Entry description.

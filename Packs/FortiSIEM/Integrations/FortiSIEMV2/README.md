@@ -293,7 +293,7 @@ Retrieve full information of the specified Devices.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_address | Comma seperated list of devices IP addresses. | Required | 
+| ip_address | Comma separated list of devices IP addresses. | Required | 
 
 
 #### Context Output
@@ -450,12 +450,12 @@ List events by the specified incident ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiSIEM.Event.eventType | String | FortiSIEM event type. | 
-| FortiSIEM.Event.id | Number | Event ID. | 
-| FortiSIEM.Event.receiveTime | Date | The date when the event was recieved to FortiSIEM. | 
+| FortiSIEM.Event.id | String | Event ID. | 
+| FortiSIEM.Event.receiveTime | Date | The date when the event was received to FortiSIEM. | 
 | FortiSIEM.Event.attributes | Unknown | Additional attributes of the event. | 
 | FortiSIEM.Event.nid | String | Event natural ID. | 
 | FortiSIEM.Event.index | Number | Event index in the list. | 
-| FortiSIEM.Event.custId | Number | The customer ID that the event is realted to. | 
+| FortiSIEM.Event.custId | Number | The customer ID that the event is related to. | 
 
 
 #### Command Example
@@ -511,6 +511,7 @@ List events by the specified incident ID.
 
 >### List Events Of incident: 102 
 >Showing page 1 out of others that may exist. Current page size: 1.
+> 
 >|Id|Cust Id|Index|Event Type|Receive Time|
 >|---|---|---|---|---|
 >| 9071234812238930440 | 1 | 0 | ASA-Built-Conn | 2021-12-21T11:12:32 |
@@ -615,8 +616,8 @@ Get watchlist by the specified watchlist or entry ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| watchlist_id | Comma seperated list of watchlist group ID. | Optional | 
-| entry_id | Comma seperated list of entry ID that resides in the watchlist. | Optional | 
+| watchlist_id | Comma separated list of watchlist group ID. | Optional | 
+| entry_id | Comma separated list of entry ID that resides in the watchlist. | Optional | 
 
 
 #### Context Output
@@ -780,7 +781,7 @@ Add a watchlist group. you can also add an entry to the watchlist.
 | entry_count | Entry count. | Optional | 
 | entry_first_seen | The first time the entry was seen (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Optional | 
 | entry_last_seen | The last time the entry was seen. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10". | Optional | 
-| entry_trigger_rules | The triggering rules that assoiciate with the entry. Should be a comma seperated of rule names. | Optional | 
+| entry_trigger_rules | The triggering rules that associate with the entry. Should be a comma separated of rule names. | Optional | 
 
 
 #### Context Output
@@ -850,7 +851,7 @@ Add watch list entry to one or more watch list groups.
 | watchlist_id | The watchlist ID to add the entry to. | Required | 
 | inclusive | Whether or not the entry is active. Possible values are: false, true. Default is true. | Optional | 
 | count | Entry count. | Optional | 
-| triggering_rules | The triggering rules that assoiciate with the entry. Should be a comma seperated of rules names. | Optional | 
+| triggering_rules | The triggering rules that associate with the entry. Should be a comma separated of rules names. | Optional | 
 | value | The entry value. | Required | 
 | age_out | The time period in which the entry will expire from the Watchlist group if there is no activity for that time. For example, "3 days ago","in 2 weeks", "1 month". | Optional | 
 | last_seen | The last time the entry was seen. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10". | Optional | 
@@ -885,7 +886,7 @@ Update watchlist entry. This command overrides all existing values in the entry?
 | data_creation_type | By which entity the data was created by. Possible values are: USER, SYSTEM. Default is USER. | Optional | 
 | first_seen | The first time the entry was seen. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10". | Optional | 
 | count | Entry count. | Optional | 
-| triggering_rules | The triggering rules that assoiciate with the entry. Should be a comma seperated of rules names. | Optional | 
+| triggering_rules | The triggering rules that associate with the entry. Should be a comma separated of rules names. | Optional | 
 | description | Entry description. | Optional | 
 | entry_id | The ID of the entry to update. | Required | 
 | inclusive | whether the entry is active. Possible values are: false, true. Default is true. | Optional | 
@@ -904,7 +905,7 @@ Update watchlist entry. This command overrides all existing values in the entry?
 | FortiSIEM.WatchlistEntry.dataCreationType | String | Entry data creation type. | 
 | FortiSIEM.WatchlistEntry.firstSeen | Date | The first time the entry was first seen. | 
 | FortiSIEM.WatchlistEntry.count | Number | The number of times the entry was seen. | 
-| FortiSIEM.WatchlistEntry.triggeringRules | String | The triggering rules that assoiciate with the entry. | 
+| FortiSIEM.WatchlistEntry.triggeringRules | String | The triggering rules that associate with the entry. | 
 | FortiSIEM.WatchlistEntry.description | String | Entry description. | 
 | FortiSIEM.WatchlistEntry.id | Number | Entry ID. | 
 | FortiSIEM.WatchlistEntry.state | String | Entry state. | 
@@ -959,7 +960,7 @@ Delete entry of watchlist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | Comma seperated list of Entries ID to delete. | Required | 
+| entry_id | Comma separated list of Entries ID to delete. | Required | 
 
 
 #### Context Output
@@ -985,7 +986,7 @@ Delete watchlist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| watchlist_id | Comma seperated list of Watchlists ID to delete. | Required | 
+| watchlist_id | Comma separated list of Watchlists ID to delete. | Required | 
 
 
 #### Context Output
@@ -1011,7 +1012,7 @@ Get entry by the specified entry ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | Comma seperated list of entry ID. | Required | 
+| entry_id | Comma separated list of entry ID. | Required | 
 
 
 #### Context Output
@@ -1023,7 +1024,7 @@ Get entry by the specified entry ID.
 | FortiSIEM.WatchlistEntry.dataCreationType | String | Entry data creation type. | 
 | FortiSIEM.WatchlistEntry.firstSeen | Date | The first time the entry was first seen. | 
 | FortiSIEM.WatchlistEntry.count | Number | The number of times the entry was seen. | 
-| FortiSIEM.WatchlistEntry.triggeringRules | String | The triggering rules that assoiciate with the entry. | 
+| FortiSIEM.WatchlistEntry.triggeringRules | String | The triggering rules that associate with the entry. | 
 | FortiSIEM.WatchlistEntry.description | String | Entry description. | 
 | FortiSIEM.WatchlistEntry.id | Number | Entry ID. | 
 | FortiSIEM.WatchlistEntry.state | String | Entry state. | 
