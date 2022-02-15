@@ -3304,11 +3304,10 @@ def get_file_get_successfull_action_results(client, res):
         'Creation time': res.get('creationDateTimeUtc'),
         'Commands': res.get('commands')
     }
-
     return [fileResult('Response Result.gz', f_data.content), CommandResults(
         outputs_prefix='MicrosoftATP.LiveResponseAction',
         outputs=res,
-        readable_output=tableToMarkdown('Machine Action:', md_results)
+        readable_output=tableToMarkdown('Machine Action:', md_results,  is_auto_json_transform=True)
 
     )]
 
@@ -3353,11 +3352,11 @@ def put_file_get_successful_action_results(client, res):
         'Creation time': res.get('creationDateTimeUtc'),
         'Commands': res.get('commands')
     }
-
+    print(tableToMarkdown('Machine Action:', md_results, is_auto_json_transform=True))
     return CommandResults(
         outputs_prefix='MicrosoftATP.LiveResponseAction',
         outputs=res,
-        readable_output=tableToMarkdown('Machine Action:', md_results)
+        readable_output=tableToMarkdown('Machine Action:', md_results, is_auto_json_transform=True)
     )
 
 
