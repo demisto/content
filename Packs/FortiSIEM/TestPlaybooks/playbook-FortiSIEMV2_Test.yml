@@ -1,0 +1,1142 @@
+id: playbook-FortiSIEMV2_Test
+version: 22
+vcShouldKeepItemLegacyProdMachine: false
+name: playbook-FortiSIEMV2_Test
+fromversion: 6.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 675bdcd5-49b1-48fa-8a4a-2b61d6fdfb94
+    type: start
+    task:
+      id: 675bdcd5-49b1-48fa-8a4a-2b61d6fdfb94
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 0089eded-2ce9-42c9-83a9-44235145a8d3
+    type: regular
+    task:
+      id: 0089eded-2ce9-42c9-83a9-44235145a8d3
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f1b510a6-c786-4390-88f2-b169baaff6c8
+    type: regular
+    task:
+      id: f1b510a6-c786-4390-88f2-b169baaff6c8
+      version: -1
+      name: fortisiem-cmdb-devices-list
+      script: FortiSIEMV2|||fortisiem-cmdb-devices-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 9f72d1b1-ace7-48b4-89ee-e4fa54bbe908
+    type: condition
+    task:
+      id: 9f72d1b1-ace7-48b4-89ee-e4fa54bbe908
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Device.accessIp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Device.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Device.naturalId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Device.approved
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Device.unmanaged
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Device.deviceType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: efac87e4-c29d-4134-8012-9ffec3e49ab5
+    type: regular
+    task:
+      id: efac87e4-c29d-4134-8012-9ffec3e49ab5
+      version: -1
+      name: fortisiem-cmdb-device-get
+      script: FortiSIEMV2|||fortisiem-cmdb-device-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip_address:
+        simple: ${FortiSIEM.Device.accessIp}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: fb64d35a-52e1-4a58-82aa-c2557d2e2f14
+    type: condition
+    task:
+      id: fb64d35a-52e1-4a58-82aa-c2557d2e2f14
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Device.accessIp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Device.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Device.naturalId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Device.approved
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Device.unmanaged
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Device.deviceType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Device.discoverMethod
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Device.discoverTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Device.unmanaged
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Device.updateMethod
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: a9342f93-0875-482f-82ac-22c487e7a072
+    type: regular
+    task:
+      id: a9342f93-0875-482f-82ac-22c487e7a072
+      version: -1
+      name: fortisiem-monitored-organizations-list
+      script: FortiSIEMV2|||fortisiem-monitored-organizations-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 51381f1c-6e09-4020-8393-5b0679059e49
+    type: condition
+    task:
+      id: 51381f1c-6e09-4020-8393-5b0679059e49
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Organization.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Organization.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Organization.disabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Organization.domainId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Organization.initialized
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 04cfffcc-b514-4535-8f2d-24e86e3647bb
+    type: regular
+    task:
+      id: 04cfffcc-b514-4535-8f2d-24e86e3647bb
+      version: -1
+      name: fortisiem-watchlist-list
+      script: FortiSIEMV2|||fortisiem-watchlist-list
+      type: regular
+      iscommand: true
+      brand: FortiSIEMV2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      entry_value: {}
+      limit:
+        simple: "1"
+      page: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 2b582b58-3539-4a41-8bd1-44ac56f7872c
+    type: condition
+    task:
+      id: 2b582b58-3539-4a41-8bd1-44ac56f7872c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.isCaseSensitive
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.naturalId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.displayName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.description
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.ageOut
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.entries
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.valueType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.custId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 163822a2-30c9-46ff-8e83-678dc0646547
+    type: regular
+    task:
+      id: 163822a2-30c9-46ff-8e83-678dc0646547
+      version: -1
+      name: fortisiem-watchlist-add
+      script: FortiSIEMV2|||fortisiem-watchlist-add
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      data_creation_type:
+        simple: SYSTEM
+      description:
+        simple: '"demo-watchlist"'
+      display_name:
+        simple: playbook-demo
+      value_type:
+        simple: IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 2b3957e6-fcda-4b8e-8aea-fd18f23d84c8
+    type: regular
+    task:
+      id: 2b3957e6-fcda-4b8e-8aea-fd18f23d84c8
+      version: -1
+      name: fortisiem-watchlist-entry-add
+      script: FortiSIEMV2|||fortisiem-watchlist-entry-add
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      count:
+        simple: "2"
+      description:
+        simple: test-add-entry
+      first_seen:
+        simple: "2022-01-01"
+      last_seen:
+        simple: "2022-01-10"
+      value:
+        simple: 5.5.5.5
+      watchlist_id:
+        simple: ${FortiSIEM.Watchlist.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 4c2300a1-0d3e-4ee2-8bc1-ef4fd367035c
+    type: regular
+    task:
+      id: 4c2300a1-0d3e-4ee2-8bc1-ef4fd367035c
+      version: -1
+      name: fortisiem-watchlist-get
+      script: FortiSIEMV2|||fortisiem-watchlist-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      watchlist_id:
+        simple: ${FortiSIEM.Watchlist.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 521bbc61-83ab-4f30-8faf-7de91bee4b49
+    type: regular
+    task:
+      id: 521bbc61-83ab-4f30-8faf-7de91bee4b49
+      version: -1
+      name: fortisiem-watchlist-entry-get
+      script: FortiSIEMV2|||fortisiem-watchlist-entry-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      entry_id:
+        simple: ${FortiSIEM.Watchlist.entries.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 7f966c32-df6a-4b47-8a3c-c2907f8c33df
+    type: condition
+    task:
+      id: 7f966c32-df6a-4b47-8a3c-c2907f8c33df
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.WatchlistEntry.naturalId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.WatchlistEntry.dataCreationType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.WatchlistEntry.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.WatchlistEntry.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.WatchlistEntry.entryValue
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: f1b101c4-3223-4558-864b-0c47b92943e5
+    type: regular
+    task:
+      id: f1b101c4-3223-4558-864b-0c47b92943e5
+      version: -1
+      name: fortisiem-watchlist-entry-update
+      script: FortiSIEMV2|||fortisiem-watchlist-entry-update
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      count:
+        simple: "5"
+      entry_id:
+        simple: ${FortiSIEM.WatchlistEntry.id}
+      value:
+        simple: 5.5.5.6
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 57eb2813-d2a0-41b8-8622-591ec8243ac7
+    type: regular
+    task:
+      id: 57eb2813-d2a0-41b8-8622-591ec8243ac7
+      version: -1
+      name: fortisiem-watchlist-entry-delete
+      script: FortiSIEMV2|||fortisiem-watchlist-entry-delete
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      entry_id:
+        simple: ${FortiSIEM.WatchlistEntry.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: c3f7eb3d-9214-41cc-8bff-066a65fe46f4
+    type: regular
+    task:
+      id: c3f7eb3d-9214-41cc-8bff-066a65fe46f4
+      version: -1
+      name: fortisiem-watchlist-delete
+      script: FortiSIEMV2|||fortisiem-watchlist-delete
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      watchlist_id:
+        simple: ${FortiSIEM.Watchlist.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: b6037121-d932-4b41-87e6-354fb2ea271a
+    type: regular
+    task:
+      id: b6037121-d932-4b41-87e6-354fb2ea271a
+      version: -1
+      name: fortisiem-incident-update
+      script: FortiSIEMV2|||fortisiem-incident-update
+      type: regular
+      iscommand: true
+      brand: FortiSIEMV2
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      comment:
+        simple: demo-comment
+      external_assigned_user: {}
+      external_ticket_id: {}
+      external_ticket_state: {}
+      external_ticket_type: {}
+      incident_id:
+        simple: "208"
+      status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: b0a12a9b-fb5b-4ffa-818c-8c9ece1c1e77
+    type: title
+    task:
+      id: b0a12a9b-fb5b-4ffa-818c-8c9ece1c1e77
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 4d893c6f-29d6-46e4-8cbc-2fb12e169de0
+    type: regular
+    task:
+      id: 4d893c6f-29d6-46e4-8cbc-2fb12e169de0
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: bda4d69b-3482-4de2-89e9-2ca8dfba5cd8
+    type: condition
+    task:
+      id: bda4d69b-3482-4de2-89e9-2ca8dfba5cd8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.isCaseSensitive
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.naturalId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.displayName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.custId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: b3f36728-e101-419b-82dc-fde0fa97aa58
+    type: condition
+    task:
+      id: b3f36728-e101-419b-82dc-fde0fa97aa58
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.isCaseSensitive
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.naturalId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.displayName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.custId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Watchlist.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: b1e33c06-4d93-4d6c-826f-4552f4242784
+    type: condition
+    task:
+      id: b1e33c06-4d93-4d6c-826f-4552f4242784
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.WatchlistEntry.naturalId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.WatchlistEntry.dataCreationType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.WatchlistEntry.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.WatchlistEntry.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.WatchlistEntry.entryValue
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 42a5d23d-0627-4c0e-8acf-9b035e84b87e
+    type: regular
+    task:
+      id: 42a5d23d-0627-4c0e-8acf-9b035e84b87e
+      version: -1
+      name: fortisiem-event-list-by-incident
+      description: List events by the specified incident ID.
+      script: FortiSIEMV2|||fortisiem-event-list-by-incident
+      type: regular
+      iscommand: true
+      brand: FortiSIEMV2
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      incident_id:
+        simple: "488"
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 024956dd-de44-4f6b-89f7-7cfb87935e89
+    type: condition
+    task:
+      id: 024956dd-de44-4f6b-89f7-7cfb87935e89
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Event.nid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Event.custId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Event.receiveTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Event.eventType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Event.attributes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Event.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSIEM.Event.index
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5075,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
