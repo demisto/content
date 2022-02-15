@@ -69,7 +69,7 @@ script:
   - arguments:
     - default: true
       description: URL to query.
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -162,7 +162,7 @@ script:
   - arguments:
     - default: true
       description: Domain to query.
-      isArray: false
+      isArray: true
       name: domain
       required: true
       secret: false
@@ -228,7 +228,7 @@ script:
   - arguments:
     - default: true
       description: MD5 hash or SHA256 hash of the file to query.
-      isArray: false
+      isArray: true
       name: file
       required: true
       secret: false

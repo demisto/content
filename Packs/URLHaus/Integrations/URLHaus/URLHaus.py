@@ -417,7 +417,7 @@ def url_command(params: dict):
             params (dict): The integration params.
     """
     urls = demisto.args().get('url', '')
-    for url in urls.split(','):
+    for url in argToList(urls):
         return_results(results=run_url_command(url, params))
 
 
@@ -458,8 +458,7 @@ def domain_add_tags(bl_status: str, tags: List[str]) -> None:
 
     """
     if bl_status:
-        tag_to_add = bl_status.replace('_domain', '') if bl_status.endswith('domain') else \
-            bl_status if bl_status.startswith('abused') else ''
+        tag_to_add = bl_status.replace('_domain', '') if bl_status.endswith('domain') else bl_status
         if tag_to_add:
             tags.append(tag_to_add)
 
@@ -557,7 +556,7 @@ def domain_command(params: dict):
 
     """
     domains = demisto.args().get('domain', '')
-    for domain in domains.split(','):
+    for domain in argToList(domains):
         return_results(results=run_domain_command(domain, params))
 
 
@@ -701,7 +700,7 @@ def file_command(params: dict):
 
     """
     files = demisto.args().get('file', '')
-    for file in files.split(','):
+    for file in argToList(files):
         return_results(results=run_file_command(file, params))
 
 
