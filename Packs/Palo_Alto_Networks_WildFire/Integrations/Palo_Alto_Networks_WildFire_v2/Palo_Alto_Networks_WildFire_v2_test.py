@@ -7,7 +7,7 @@ import demistomock as demisto
 from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
     create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
     file_args_handler, wildfire_get_sample_command, wildfire_get_report_command, run_polling_command, \
-    wildfire_upload_url_command, prettify_url_verdict, create_dbot_score_from_url_verdict
+    wildfire_upload_url_command, prettify_url_verdict, create_dbot_score_from_url_verdict, parse_file_report
 
 
 def test_will_return_ok():
@@ -303,3 +303,71 @@ def test_running_polling_command_new_search(mocker):
                         'Status': 'Pending', 'URL': 'https://www.demisto.com'}
     assert command_results[0].outputs == expected_outputs
     assert command_results[0].scheduled_command is not None
+
+
+def test_parse_file_report_network():
+    """
+    Given:
+        - A report json from a WildFire response of the 'wildfire-report' command, that includes Network details.
+    When:
+        - Running 'parse_file_report' function.
+    Then:
+        - Verify that the Network details (TCP, UDP, DNS) are parsed correctly.
+    """
+    report = {
+        "evidence":
+            {
+                "file": None,
+                "mutex": None,
+                "process": None,
+                "registry": None
+            },
+        "malware": "yes",
+        "md5": "test",
+        "network":
+            {
+                "TCP":
+                    [
+                        {
+                            "@country": "US",
+                            "@ip": "1.1.1.1",
+                            "@ja3": "test",
+                            "@ja3s": "test",
+                            "@port": "443"
+                        },
+                        {
+                            "@country": "US",
+                            "@ip": "1.0.1.0",
+                            "@ja3": "test",
+                            "@ja3s": "",
+                            "@port": "80"
+                        }
+                    ],
+                "UDP":
+                    {
+                        "@country": "US",
+                        "@ip": "1.1.1.1",
+                        "@ja3": "test",
+                        "@ja3s": "test",
+                        "@port": "55"
+                    },
+                "dns":
+                    {
+                        "@query": "test.com",
+                        "@response": "1.1.1.1.",
+                        "@type": "A"
+                    },
+                "url":
+                    {
+                        "@host": "test1.com",
+                        "@method": "GET",
+                        "@uri": "/test/72t0jjhmv7takwvisfnz_eejvf_h6v2ix/",
+                        "@user_agent": ""
+                    }
+            }
+    }
+    expected_outputs_network = {'TCP': {'IP': ['1.1.1.1', '1.0.1.0'], 'Port': ['443', '80']},
+                                'UDP': {'IP': ['1.1.1.1'], 'Port': ['55']},
+                                'DNS': {'Query': ['test.com'], 'Response': ['1.1.1.1.']}}
+    outputs, feed_related_indicators, behavior = parse_file_report(reports=report, file_info={})
+    assert expected_outputs_network == outputs.get('Network')

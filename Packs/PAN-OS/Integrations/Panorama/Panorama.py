@@ -4003,7 +4003,7 @@ def build_traffic_logs_query(source: str, destination: Optional[str], receive_ti
     if destination and len(destination) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(addr.dst in ' + source + ')'
+        query += '(addr.dst in ' + destination + ')'
     if receive_time and len(receive_time) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '

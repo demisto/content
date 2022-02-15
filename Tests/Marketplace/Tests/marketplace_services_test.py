@@ -10,7 +10,7 @@ import glob
 from unittest.mock import mock_open
 from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
-from distutils.version import LooseVersion
+from packaging.version import Version
 from freezegun import freeze_time
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple, Any
@@ -1627,7 +1627,7 @@ class TestReleaseNotes:
         mocker.patch('os.path.exists', return_value=True)
         changelog, changelog_latest_rn_version, changelog_latest_rn = dummy_pack.get_changelog_latest_rn('fake_path')
         assert changelog == original_changelog_dict
-        assert changelog_latest_rn_version == LooseVersion('2.0.0')
+        assert changelog_latest_rn_version == Version('2.0.0')
         assert changelog_latest_rn == "Second release notes"
 
     def test_create_local_changelog(self, mocker, dummy_pack):
@@ -1679,7 +1679,7 @@ class TestReleaseNotes:
         open_mocker['rn_dir_fake_path/2_0_0.md'].read_data = rn_two
         mocker.patch('builtins.open', open_mocker)
         rn_lines, latest_rn, new_versions = \
-            dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.0'), '')
+            dummy_pack.get_release_notes_lines('rn_dir_fake_path', Version('1.0.0'), '')
         assert latest_rn == '2.0.0'
         assert rn_lines == aggregated_rn
         assert new_versions == ['1.1.0', '2.0.0']
@@ -1701,7 +1701,7 @@ class TestReleaseNotes:
         mocker.patch('builtins.open', mock_open(read_data=rn))
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
         rn_lines, latest_rn, new_versions = \
-            dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'), rn)
+            dummy_pack.get_release_notes_lines('rn_dir_fake_path', Version('1.0.1'), rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == rn
         assert new_versions == []
@@ -1724,31 +1724,31 @@ class TestReleaseNotes:
 
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
         rn_lines, latest_rn, new_versions = \
-            dummy_pack.get_release_notes_lines('wow', LooseVersion('1.0.1'), changelog_latest_rn)
+            dummy_pack.get_release_notes_lines('wow', Version('1.0.1'), changelog_latest_rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == changelog_latest_rn
         assert new_versions == []
 
-    CHANGELOG_ENTRY_CONTAINS_BC_VERSION_INPUTS = [(LooseVersion('0.0.0'), LooseVersion('1.0.0'), [], dict(), dict()),
+    CHANGELOG_ENTRY_CONTAINS_BC_VERSION_INPUTS = [(Version('0.0.0'), Version('1.0.0'), [], dict(), dict()),
                                                   (
-                                                      LooseVersion('0.0.0'), LooseVersion('1.0.0'),
-                                                      [LooseVersion('1.0.1')], {'1.0.1': 'BC text'}, dict()),
+                                                      Version('0.0.0'), Version('1.0.0'),
+                                                      [Version('1.0.1')], {'1.0.1': 'BC text'}, dict()),
                                                   (
-                                                      LooseVersion('0.0.0'), LooseVersion('1.0.0'),
-                                                      [LooseVersion('1.0.0')], {'1.0.0': None},
+                                                      Version('0.0.0'), Version('1.0.0'),
+                                                      [Version('1.0.0')], {'1.0.0': None},
                                                       {'1.0.0': None}),
                                                   (
-                                                      LooseVersion('2.3.1'), LooseVersion('2.4.0'),
-                                                      [LooseVersion('2.3.1')], {'2.3.1': 'BC text'},
+                                                      Version('2.3.1'), Version('2.4.0'),
+                                                      [Version('2.3.1')], {'2.3.1': 'BC text'},
                                                       dict()),
-                                                  (LooseVersion('2.3.1'), LooseVersion('2.4.0'),
-                                                   [LooseVersion('2.3.1'), LooseVersion('2.3.2')],
+                                                  (Version('2.3.1'), Version('2.4.0'),
+                                                   [Version('2.3.1'), Version('2.3.2')],
                                                    {'2.3.1': None, '2.3.2': 'BC Text 232'}, {'2.3.2': 'BC Text 232'})]
 
     @pytest.mark.parametrize('predecessor_version, rn_version, bc_versions_list,bc_version_to_text, expected',
                              CHANGELOG_ENTRY_CONTAINS_BC_VERSION_INPUTS)
-    def test_changelog_entry_contains_bc_version(self, predecessor_version: LooseVersion, rn_version: LooseVersion,
-                                                 bc_versions_list: List[LooseVersion], bc_version_to_text, expected):
+    def test_changelog_entry_contains_bc_version(self, predecessor_version: Version, rn_version: Version,
+                                                 bc_versions_list: List[Version], bc_version_to_text, expected):
         """
            Given:
            - predecessor_version: Predecessor version of the changelog entry.
