@@ -696,7 +696,8 @@ def events_list_command(client: FortiSIEMClient, args: Dict[str, Any]) -> Comman
     outputs = format_list_events_output(response, incident_id, page, limit)
     readable_output = tableToMarkdown(
         format_readable_output_header(f'List Events Of incident: {incident_id}', limit, page),
-        outputs, headers=["id", "custId", "index", "eventType", "receiveTime"],
+        get_list_events_readable_output(outputs),
+        headers=["eventID", "receiveTime", "EventName", "rawMessage", "ReportingDevice", "rawEventLog"],
         headerTransform=pascalToSpace)
 
     command_results = CommandResults(
