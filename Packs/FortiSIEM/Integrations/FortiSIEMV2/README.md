@@ -30,7 +30,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fortisiem-event-search
 ***
-Initiate search process on events. The events will be retrieve according to a constraint which will be determined either by the query argument or by the filtering arguments. When using filtering arguments, an 'AND' operator will be used between them. If the query argument is filled, it will override the values in the filtering arguments.
+Initiate search process on events. The events will be retrieved according to a constraint which will be determined either by the query argument or by the filtering arguments. When using filtering arguments, an 'AND' operator will be used between them. If the query argument is filled, it will override the values in the filtering arguments.
 
 
 #### Base Command
