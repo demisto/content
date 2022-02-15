@@ -920,8 +920,8 @@ def sign_and_zip_pack(pack, signature_key, delete_test_playbooks=False):
     return task_status
 
 
-def upload_packs_with_dependencies_zip(signature_key, storage_bucket, storage_base_path,
-                                       packs_for_current_marketplace_dict):
+def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
+                                       packs_for_current_marketplace):
     """
     Uploads packs with mandatory dependencies zip for all packs
     Args:
