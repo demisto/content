@@ -98,13 +98,13 @@ class FortiSIEMClient(BaseClient):
         response = self._http_request('GET', f'query/progress/{search_id}', resp_type='text')
         return response
 
-    def events_search_results_request(self, search_id, start_index: int, last_index: int):
+    def events_search_results_request(self, search_id: str, start_index: int, last_index: int):
         """
         Get the results of an executed query by the specified search_id.
         Args:
-            search_id (list): The ID of the search to fetch the results.
+            search_id (str): The ID of the search to fetch the results.
             start_index (int): The first record to retrieve.
-            last_index(int): The last record to retrive.
+            last_index(int): The last record to retrieve.
         Returns:
             Dict[str,Any]: API response from FortiSIEM.
         """
@@ -209,7 +209,7 @@ class FortiSIEMClient(BaseClient):
                                       params=params)
         return response
 
-    def watchlist_list_by_entry_value_request(self, entry_value):
+    def watchlist_list_by_entry_value_request(self, entry_value: str):
         """
         List Watchlist by the specified entry value.
         Args:
@@ -392,7 +392,8 @@ class FortiSIEMClient(BaseClient):
         return response
 
 
-def search_events_with_polling_command(client: FortiSIEMClient, args: Dict[str, Any], cmd, search_command: Callable,
+def search_events_with_polling_command(client: FortiSIEMClient, args: Dict[str, Any], cmd: str,
+                                       search_command: Callable,
                                        status_command: Callable, results_command: Callable) -> CommandResults:
     """
        Initiate events search in FortiSIEM.
@@ -472,7 +473,7 @@ def events_search_init_command(client: FortiSIEMClient, args: Dict[str, Any]) ->
     if "<?xml" in response:  # invalid query argument
         raise ValueError("The query argument is invalid. Please use another query.")
     outputs = {"search_id": response}
-    readable_output = tableToMarkdown(f"Successfully Initiated search query", outputs, headers=["search_id"],
+    readable_output = tableToMarkdown(f"Successfully Initiated search query {response}", outputs, headers=["search_id"],
                                       headerTransform=string_to_table_header)
     command_results = CommandResults(
         outputs_prefix='FortiSIEM.EventsSearchInit',
@@ -761,7 +762,7 @@ def watchlist_get_command(client: FortiSIEMClient, args: Dict[str, Any]) -> List
                                                         headers=['id', 'name', 'displayName', 'description',
                                                                  'valueType'],
                                                         headerTransform=pascalToSpace)
-            entry_readable_output = tableToMarkdown(f"Watchlist Entries", outputs[0]['entries'],
+            entry_readable_output = tableToMarkdown("Watchlist Entries", outputs[0]['entries'],
                                                     headers=['id', 'state', 'entryValue',
                                                              'triggeringRules', 'count', 'firstSeen', 'lastSeen'],
                                                     headerTransform=pascalToSpace)
@@ -791,7 +792,7 @@ def watchlist_get_command(client: FortiSIEMClient, args: Dict[str, Any]) -> List
                                                                  'valueType'],
                                                         headerTransform=pascalToSpace)
 
-            entry_readable_output = tableToMarkdown(f"Watchlist Entries", outputs[0]['entries'],
+            entry_readable_output = tableToMarkdown("Watchlist Entries", outputs[0]['entries'],
                                                     headers=['id', 'state', 'entryValue',
                                                              'triggeringRules', 'count', 'firstSeen', 'lastSeen'],
                                                     headerTransform=pascalToSpace)
@@ -1305,24 +1306,13 @@ def format_list_commands_output(response: Dict[str, Any], default_dict_keys: Lis
     return output_entities[from_index:to_index], total_pages
 
 
-def format_list_devices_output(response: Dict[str, Any], limit: int) -> Tuple[list, int]:
-    formatted_devices = []
-    devices, total_device_number = format_list_commands_output(response, ['devices', 'device'], limit)
-    for device in devices:
-        formatted_device = copy.deepcopy(device)
-        formatted_device.pop('organization')
-        formatted_device['organizationId'] = dict_safe_get(device, ['organization', '@id'])
-        formatted_device['organizationName'] = dict_safe_get(device, ['organization', '@name'])
-        formatted_devices.append(formatted_device)
-    return formatted_devices, total_device_number
-
-
 def format_organizations_output(response: Dict[str, Any], page_number: int, limit: int) -> Tuple[list, int]:
     """
     Formatting list organizations command outputs.
     Args:
         response (Dict[str,Any): The response from the API call.
         limit (int): Maximum number of results to return.
+        page_number(int): The Page number to retrieve.
     Returns:
         Tuple[list,int]: Formatted command output and total results.
      """
@@ -1582,7 +1572,7 @@ def format_nested_incident_attribute(attribute_value: str) -> tuple:
         if attribute_value:
             attribute_parts = attribute_value.split(":")
             return attribute_parts[0], attribute_parts[1]
-    except Exception as error:
+    except Exception:
         return None, None
 
 
@@ -1670,7 +1660,7 @@ def validate_fetch_params(max_fetch: int, max_events_fetch: int, fetch_events: b
         status_filter_list (list): list of status filters for incidents.
     """
     if not first_fetch:
-        return_error(f"Please provide First fetch timestamp.")
+        return_error("Please provide First fetch timestamp.")
     else:
         arg_to_datetime(first_fetch)  # verify that it is a date.
 

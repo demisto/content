@@ -124,11 +124,13 @@ def test_monitored_organizations_list(requests_mock):
     assert outputs[0]['id'] == '500003'
 
 
-@pytest.mark.parametrize("command_arguments,expected_response,expected_msg", [
-    ({
-         "incident_id": "123", "comment": "test-success"
-     }, "OK", "successfully updated")
-])
+@pytest.mark.parametrize(
+    "command_arguments,expected_response,expected_msg",
+    [
+        ({
+             "incident_id": "123", "comment": "test-success"
+         }, "OK", "successfully updated")
+    ])
 def test_update_incident(command_arguments, expected_response, expected_msg, requests_mock):
     """
     Scenario: Update incident.
@@ -179,7 +181,8 @@ def test_list_events_by_incident(requests_mock):
 
 
 @pytest.mark.parametrize(
-    "command_arguments,response_file,suffix_url,watchlist_number,watchlist_id,watchlist_display_name", [
+    "command_arguments,response_file,suffix_url,watchlist_number,watchlist_id,watchlist_display_name",
+    [
         ({
              "limit": "2",
          }, 'list_watchlist.json', 'watchlist/all', 2, 111, "Accounts Locked"),
@@ -213,7 +216,8 @@ def test_list_watchlist(command_arguments, response_file, suffix_url, watchlist_
 
 
 @pytest.mark.parametrize(
-    "command_arguments,response_file,suffix_url,watchlist_id,watchlist_display_name", [
+    "command_arguments,response_file,suffix_url,watchlist_id,watchlist_display_name",
+    [
         ({
              "watchlist_id": "111",
          }, 'get_watchlist.json', 'watchlist/111', 111, "Accounts Locked"),
