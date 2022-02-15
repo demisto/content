@@ -679,11 +679,11 @@ class Client(BaseClient):
 
     def __init__(self, base_url, verify=True, proxy=False, auth=None):
 
-        headers = {'X-FeApi-Token': self.get_token_request(base_url, auth)}
+        headers = {'X-FeApi-Token': self.get_token_request(base_url, verify, auth)}
 
-        super().__init__(base_url, verify=False, proxy=proxy, ok_codes=range(200, 205), headers=headers, auth=auth)
+        super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=range(200, 205), headers=headers, auth=auth)
 
-    def get_token_request(self, base_url, auth):
+    def get_token_request(self, base_url, verify, auth):
         """
         returns a token on successful request
         """
@@ -696,7 +696,7 @@ class Client(BaseClient):
                 'GET',
                 url,
                 headers={'Accept': 'application/json'},
-                verify=False,
+                verify=verify,
                 auth=auth
             )
         except Exception:
@@ -946,12 +946,15 @@ class Client(BaseClient):
             params["condition._id"] = condition_id
 
         if filterQuery:
+            demisto.debug(f"QUERY = {filterQuery} BEFORE _http_request with filterQuery")
             response = self._http_request(
                 'GET',
                 url_suffix=f"alerts?filterQuery={filterQuery}",
                 params=params,
                 headers=self._headers
             )
+            demisto.debug(f"QUERY = {filterQuery} AFTER _http_request with filterQuery")
+
         else:
             response = self._http_request(
                 'GET',
@@ -1394,8 +1397,9 @@ def condition_entry(condition: Dict):
     return indicator_entry
 
 
-def get_all_indicators(client: Client, category=None, search=None, share_mode=None,
-    sort=None, created_by=None, alerted=None, limit=None):
+def get_all_indicators(client: Client, category=None, search=None,
+                       share_mode=None, sort=None, created_by=None,
+                       alerted=None, limit=None):
 
     max_records = limit or float('inf')
     indicators = []   # type: List[Dict[str, str]]
@@ -1473,7 +1477,7 @@ def get_indicator_conditions(client: Client, args: Dict[str, Any]) -> CommandRes
 """helper fetch-incidents"""
 
 
-def organize_reportedAt(reported_at):
+def organize_reported_at(reported_at):
 
     milisecond = int(reported_at[-4:-1]) + 1
     if milisecond == 1000:
@@ -1481,10 +1485,15 @@ def organize_reportedAt(reported_at):
         reported_at = timestamp_to_datestring(reported_at, date_format="%Y-%m-%dT%H:%M:%S") + ".000Z"
     else:
         if milisecond < 10:
+            demisto.debug(f"{milisecond} BEFORE MANIPULATION")
             reported_at = reported_at[:-4] + '00' + str(milisecond) + reported_at[-1]
-        if milisecond < 100:
+            demisto.debug(f"{reported_at} AFTER MANIPULATION")
+        elif milisecond < 100:
+            demisto.debug(f"{milisecond} BEFORE MANIPULATION")
             reported_at = reported_at[:-4] + '0' + str(milisecond) + reported_at[-1]
-        reported_at = reported_at[:-4] + str(milisecond) + reported_at[-1]
+            demisto.debug(f"{milisecond} BEFORE MANIPULATION")
+        else:
+            reported_at = reported_at[:-4] + str(milisecond) + reported_at[-1]
 
     return reported_at
 
@@ -1531,6 +1540,16 @@ def parse_alert_to_incident(alert: Dict) -> Dict:
         'rawJSON': json.dumps(alert)
     }
     return incident
+
+
+def run_commands_without_polling(client: Client, args: Dict[str, Any]):
+
+    if args.get('cmd') == 'fireeye-hx-search':
+        return start_search_command(client, args)[0]
+    if args.get('cmd') == 'fireeye-hx-data-acquisition':
+        return data_acquisition_command(client, args)[0]
+    if args.get('cmd') == 'fireeye-hx-file-acquisition':
+        return file_acquisition_command(client, args)[0]
 
 
 ''' COMMAND FUNCTIONS '''
@@ -1672,15 +1691,21 @@ HOST INFORMAITION
 
 def get_all_hosts_information_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    offset = 0
+    offset = int(args.get('offset', 0))
     hosts = []
+    limit = int(args.get('limit', 1000))
+    if limit > 1000:
+        limit = 1000
 
     while True:
-        hosts_partial = client.get_hosts_request(offset=offset, limit=1000)
+        hosts_partial = client.get_hosts_request(offset=offset, limit=limit)
         if not hosts_partial["data"]["entries"]:
             break
         hosts.extend(hosts_partial["data"]["entries"])
         offset = len(hosts)
+
+    if len(hosts) > limit:
+        hosts[int(limit) - 1: -1] = []
 
     outputs = []
     for host in hosts:
@@ -1874,7 +1899,8 @@ def host_containment_command(client: Client, args: Dict[str, Any]) -> List[Comma
         message = "Containment request for the host was sent and approved successfully"
     except Exception as e:
         if '422' in str(e):
-            message = "You do not have the required permissions for containment approve\nThe containment request sent, but it is not approve."
+            message = "You do not have the required permissions for containment approve\n"\
+                "The containment request sent, but it is not approve."
         elif '409' in str(e):
             message = "This host may already in containment"
         else:
@@ -1882,8 +1908,11 @@ def host_containment_command(client: Client, args: Dict[str, Any]) -> List[Comma
 
     host = client.get_hosts_by_agentId_request(agentId)
 
-    return [CommandResults(outputs_prefix="FireEyeHX.Hosts", outputs=host, readable_output=message),
-            CommandResults(outputs_prefix="Endpoint", outputs=collect_endpoint_contxt(host["data"]))]
+    return [CommandResults(
+        outputs_prefix="FireEyeHX.Hosts",
+        outputs_key_field="_id",
+        outputs=host['data'],
+        readable_output=message), CommandResults(outputs_prefix="Endpoint", outputs=collect_endpoint_contxt(host["data"]))]
 
 
 def approve_containment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -2426,7 +2455,8 @@ def start_search_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandR
         listOfArgs = ['dnsHostname', 'fileFullPath', 'fileMD5Hash', 'ipAddress', 'fieldSearchName']
         argForQuery = oneFromList(listOfArgs=listOfArgs, **args)
         if argForQuery is False:
-            raise ValueError("One of the following arguments is required -> [dnsHostname, fileFullPath, fileMD5Hash, ipAddress, fieldSearchName]")
+            raise ValueError("One of the following arguments is required ->"
+                             " [dnsHostname, fileFullPath, fileMD5Hash, ipAddress, fieldSearchName]")
 
         # this function organize the query of the request body, and returns list of queries
         body["query"] = organize_search_body_query(argForQuery, **args)
@@ -2639,7 +2669,7 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> List:
     if last_run and last_run.get('reported_at'):
 
         # Design the filterQuery argument with last reported_at, and convert it to urlEncoding
-        query = query_fetch(reported_at=organize_reportedAt(last_run.get('reported_at')))
+        query = query_fetch(reported_at=organize_reported_at(last_run.get('reported_at')))
         args["filterQuery"] = urllib.parse.quote_plus(query)
 
         # Get all alerts with reported_at greater than last reported_at
@@ -2685,7 +2715,7 @@ def run_polling_command(client, args, cmd, post_func, get_func, t):
             command=cmd,
             next_run_in_seconds=60,
             args=args,
-            timeout_in_seconds=1800)
+            timeout_in_seconds=600)
         # result with scheduled_command only - no update to the war room
         return CommandResults(readable_output=readable_output, scheduled_command=scheduled_command)
 
@@ -2715,7 +2745,7 @@ def main() -> None:
         "fireeye-hx-host-containment": host_containment_command,
         "fireeye-hx-cancel-containment": cancel_containment_command,
         "fireeye-hx-get-host-set-information": get_host_set_information_command,
-        "fireeye-hx-search": start_search_command,
+        "fireeye-hx-search": run_commands_without_polling,
         "fireeye-hx-search-list": get_search_list_command,
         "fireeye-hx-search-stop": search_stop_command,
         "fireeye-hx-search-result-get": search_result_get_command,
@@ -2724,9 +2754,9 @@ def main() -> None:
         "fireeye-hx-get-indicators": get_indicators_command,
         "fireeye-hx-get-indicator": get_indicator_command,
         "fireeye-hx-create-indicator": create_indicator_command,
-        "fireeye-hx-data-acquisition": data_acquisition_command,
+        "fireeye-hx-data-acquisition": run_commands_without_polling,
         "fireeye-hx-delete-data-acquisition": delete_data_acquisition_command,
-        "fireeye-hx-file-acquisition": file_acquisition_command,
+        "fireeye-hx-file-acquisition": run_commands_without_polling,
         "fireeye-hx-delete-file-acquisition": delete_file_acquisition_command,
         "fireeye-hx-get-data-acquisition": get_data_acquisition_command,
         "fireeye-hx-initiate-data-acquisition": initiate_data_acquisition_command,
@@ -2780,10 +2810,9 @@ def main() -> None:
         elif args.get('polling', 'false') == 'true':
             result = polling_commands[command](client, args)
             return_results(result)
-        elif command in ["fireeye-hx-search", "fireeye-hx-data-acquisition", "fireeye-hx-file-acquisition"]:
-            result, _, _ = commands[command](client, args)
-            return_results(result)
         else:
+            if command in ["fireeye-hx-search", "fireeye-hx-data-acquisition", "fireeye-hx-file-acquisition"]:
+                args['cmd'] = command
             result = commands[command](client, args)
             return_results(result)
 
@@ -2796,5 +2825,4 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-
     main()

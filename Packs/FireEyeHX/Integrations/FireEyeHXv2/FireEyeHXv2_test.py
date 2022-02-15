@@ -1151,6 +1151,14 @@ UPSERT_COMMAND_DATA_CASES_REPORTED_AT = [
     (
         "1990-06-24T22:16:26.999Z",
         "1990-06-24T22:16:27.000Z"
+    ),
+    (
+        "1990-06-24T22:16:26.004Z",
+        "1990-06-24T22:16:26.005Z"
+    ),
+    (
+        "1990-06-24T22:16:26.065Z",
+        "1990-06-24T22:16:26.066Z"
     )
 ]
 
@@ -1158,9 +1166,9 @@ UPSERT_COMMAND_DATA_CASES_REPORTED_AT = [
 @pytest.mark.parametrize('reported_at, expected_results', UPSERT_COMMAND_DATA_CASES_REPORTED_AT)
 def test_organize_reported_at(reported_at, expected_results):
 
-    from FireEyeHXv2 import organize_reportedAt
+    from FireEyeHXv2 import organize_reported_at
 
-    result = organize_reportedAt(reported_at)
+    result = organize_reported_at(reported_at)
 
     assert result == expected_results
 
@@ -1229,3 +1237,67 @@ def test_general_context_from_event(args, expected_results):
         assert result == expected_results
     else:
         assert isinstance(result, expected_results)
+
+
+UPSERT_COMMAND_DATA_CASES_QUERY_FETCH = [
+
+    (
+        {"reported_at": "1990-06-24T22:16:26.865Z", "first_fetch": "1990-06-23T22:16:26.865Z"},
+        "1990-06-24T22:16:26.865Z"
+    ),
+    (
+        {"reported_at": None, "first_fetch": "1990-06-23T22:16:26.865Z"},
+        "1990-06-23T22:16:26.865Z"
+    )
+]
+
+
+@pytest.mark.parametrize('args, expected_results', UPSERT_COMMAND_DATA_CASES_QUERY_FETCH)
+def test_query_fetch(mocker, args, expected_results):
+
+    from FireEyeHXv2 import query_fetch
+
+    mocker.patch("FireEyeHXv2.parse_date_range", return_value=["test", "test"])
+    mocker.patch("FireEyeHXv2.timestamp_to_datestring", return_value="1990-06-23T22:16:26.865Z")
+    result = query_fetch(reported_at=args.get("reported_at"), first_fetch=args.get("first_fetch"))
+
+    assert expected_results in result
+
+
+UPSERT_COMMAND_DATA_CASES_FETCH_INCIDENTS = [
+
+    (
+        {"reported_at": "1990-06-24T22:16:26.865Z"},
+        [{"reported_at": "test"}, {"reported_at": "test"}],
+        {"parse_alert": 2, "reported_at": 1, "setLastRun": 1}
+
+    ),
+    (
+        {},
+        [{"reported_at": "test"}, {"reported_at": "test"}],
+        {"parse_alert": 2, "reported_at": 0, "setLastRun": 1}
+    ),
+    (
+        {},
+        [],
+        {"parse_alert": 0, "reported_at": 0, "setLastRun": 0}
+    )
+]
+
+
+@pytest.mark.parametrize('demisto_args, alerts_return, call_count', UPSERT_COMMAND_DATA_CASES_FETCH_INCIDENTS)
+def test_fetch_incidents(mocker, demisto_args, alerts_return, call_count):
+
+    from FireEyeHXv2 import fetch_incidents, Client
+
+    mocker.patch("FireEyeHXv2.demisto.getLastRun", return_value=demisto_args)
+    setLastRun = mocker.patch("FireEyeHXv2.demisto.setLastRun", return_value=demisto_args.get('last_run'))
+    mocker.patch("FireEyeHXv2.query_fetch", return_value="test")
+    reported_at = mocker.patch("FireEyeHXv2.organize_reported_at", return_value="test")
+    mocker.patch("FireEyeHXv2.get_alerts", return_value=alerts_return)
+    parse_alert = mocker.patch("FireEyeHXv2.parse_alert_to_incident", return_value="test")
+    fetch_incidents(Client, demisto_args)
+
+    assert parse_alert.call_count == call_count["parse_alert"]
+    assert reported_at.call_count == call_count["reported_at"]
+    assert setLastRun.call_count == call_count["setLastRun"]
