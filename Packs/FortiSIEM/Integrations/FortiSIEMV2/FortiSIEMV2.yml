@@ -1,0 +1,1124 @@
+category: Analytics & SIEM
+commonfields:
+  id: FortiSIEMV2
+  version: -1
+configuration:
+- additionalinfo: 'For example: https://192.168.1.1'
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Fetch incidents
+  hidden: false
+  name: isFetch
+  required: false
+  type: 8
+- additionalinfo: Default is 50. Maximum is 200.
+  defaultvalue: '50'
+  display: Maximum incidents per fetch.
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: All
+  display: Filter incidents by status.
+  hidden: false
+  name: status
+  options:
+  - All
+  - Active
+  - Auto Cleared
+  - Manually Cleared
+  - System Cleared
+  required: false
+  type: 16
+- defaultvalue: Fetch Without Events
+  display: Fetch Mode
+  hidden: false
+  name: fetch_mode
+  options:
+  - Fetch With Events
+  - Fetch Without Events
+  required: false
+  type: 15
+- additionalinfo: Default is 20. Maximum is 50.
+  defaultvalue: '20'
+  display: Maximum events to fetch per incident.
+  hidden: false
+  name: max_events_fetch
+  required: false
+  type: 0
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate
+  name: insecure
+  required: false
+  type: 8
+description: Use FortiSIEM v2 to fetch and update incidents, search events and manage
+  watchlists of FortiSIEM.
+display: FortiSIEM v2
+name: FortiSIEMV2
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: 'The query for filtering the relevant events. For example: ''eventId=9071234812319593968
+        AND eventType=type''. You can retrieve the attributes names  by the naming
+        of the filtering arguments of the command, or by naming the attributes of
+        the event that returned in the context output.'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether to extend the dataor not.
+      isArray: false
+      name: extended_data
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Use Cortex XSOAR built-in polling to retrieve the result when it's
+        ready.
+      isArray: false
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the search query to retrieve it's results. Intended for
+        use by the Polling process and does not need to be provided by the user.
+      isArray: false
+      name: search_id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The number of results to retrieve. Minimum value is 1.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: 'The page number of the results to retrieve. Minimum value is 1. '
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Indicates how long to wait between command executions (in seconds)
+        when 'polling' argument is true. Minimum value is 10 seconds. Default is 10.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Indicates the time in seconds until the polling sequence timeouts.
+        Default is 60.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: From which event receive time filter the events. For example, "3
+        days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".
+      isArray: false
+      name: from_time
+      required: true
+      secret: false
+    - default: false
+      description: Until which event receive time  filter the events. For example,
+        "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".
+      isArray: false
+      name: to_time
+      required: true
+      secret: false
+    - default: false
+      description: 'Event ID. Filtering argument. '
+      isArray: false
+      name: eventId
+      required: false
+      secret: false
+    - default: false
+      description: 'Event type. Filtering argument. '
+      isArray: false
+      name: eventType
+      required: false
+      secret: false
+    - default: false
+      description: 'Reporting IP address. Filtering argument. '
+      isArray: false
+      name: reptDevIpAddr
+      required: false
+      secret: false
+    - default: false
+      description: Destination action. Filtering argument.
+      isArray: false
+      name: destAction
+      required: false
+      secret: false
+    - default: false
+      description: 'Destination domain. Filtering argument. '
+      isArray: false
+      name: destDomain
+      required: false
+      secret: false
+    - default: false
+      description: Destination IP address.
+      isArray: false
+      name: destIpAddr
+      required: false
+      secret: false
+    - default: false
+      description: 'Destination user. Filtering argument. '
+      isArray: false
+      name: destUser
+      required: false
+      secret: false
+    - default: false
+      description: 'Source domain. Filtering argument. '
+      isArray: false
+      name: srcDomain
+      required: false
+      secret: false
+    - default: false
+      description: 'Source geo country. Filtering argument. '
+      isArray: false
+      name: srcGeoCountry
+      required: false
+      secret: false
+    - default: false
+      description: 'Source IP address. '
+      isArray: false
+      name: srcIpAddr
+      required: false
+      secret: false
+    - default: false
+      description: 'The involved user in the event. Filtering argument. '
+      isArray: false
+      name: user
+      required: false
+      secret: false
+    - default: false
+      description: Destination MAC address. Filtering argument.
+      isArray: false
+      name: destMACAddr
+      required: false
+      secret: false
+    - default: false
+      description: Source MAC address
+      isArray: false
+      name: srcMACAddr
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiate search process on events. The events will be retrieve according
+      to a constraint which will be determined either by the query argument or by
+      the filtering arguments. When using filtering arguments, an 'AND' operator will
+      be used between them. If the query argument is filled, it will override the
+      values in the filtering arguments.
+    execution: false
+    polling: true
+    name: fortisiem-event-search
+    outputs:
+    - contextPath: FortiSIEM.EventsSearchInit.search_id
+      description: 'The ID of the search query that executed against the events. '
+      type: String
+  - arguments:
+    - default: false
+      description: 'The search ID to check it''s status. '
+      isArray: false
+      name: search_id
+      required: false
+      secret: false
+    deprecated: false
+    description: The Status of the specified search ID.
+    execution: false
+    name: fortisiem-event-search-status
+    outputs:
+    - contextPath: FortiSIEM.EventsSearchStatus.percentage_status
+      description: ' A number between 0 to 100 which represents the percentage status
+        of the search query. '
+      type: Number
+    - contextPath: FortiSIEM.EventsSearchStatus.search_id
+      description: 'The search ID which the percentage status refers to. '
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the search query to retrieve it's results.
+      isArray: false
+      name: search_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page number to retrieve.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: The results of the specified search ID.
+    execution: false
+    name: fortisiem-event-search-results
+    outputs:
+    - contextPath: FortiSIEM.Event.custId
+      description: 'The customer ID which the event related on. '
+      type: Number
+    - contextPath: FortiSIEM.Event.index
+      description: 'The position number of the event in the results. '
+      type: Number
+    - contextPath: FortiSIEM.Event.id
+      description: 'Event ID. '
+      type: String
+    - contextPath: FortiSIEM.Event.eventType
+      description: The event type.
+      type: String
+    - contextPath: FortiSIEM.Event.receiveTime
+      description: 'When the event was received in UTC time. '
+      type: Date
+    - contextPath: FortiSIEM.Event.nid
+      description: The event ID.
+      type: String
+    - contextPath: FortiSIEM.Event.attributes
+      description: Additional attributes of the event.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ID of the incident to update.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: Override incident's comment.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Update incident status. '
+      isArray: false
+      name: status
+      predefined:
+      - Active
+      - Auto Cleared
+      - Manually Cleared
+      - System Cleared
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type assigned to the incident ticket in an external ticket-handling
+        system.
+      isArray: false
+      name: external_ticket_type
+      predefined:
+      - Low
+      - Medium
+      - High
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the incident in an external ticket-handling system.
+      isArray: false
+      name: external_ticket_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The state of the incident ticket in an external ticket-handling
+        system.
+      isArray: false
+      name: external_ticket_state
+      predefined:
+      - New
+      - Assigned
+      - In Progress
+      - Closed
+      required: false
+      secret: false
+    - default: false
+      description: 'The user that the external ticket is assigned to. '
+      isArray: false
+      name: external_assigned_user
+      required: false
+      secret: false
+    deprecated: false
+    description: Update attributes of the specified incident. Only the provided attributes
+      will be overriden.
+    execution: false
+    name: fortisiem-incident-update
+  - arguments:
+    - default: false
+      description: 'Comma-separated list of IP addresses to include. For example:
+        1.1.1.1,2.2.2.2.'
+      isArray: true
+      name: include_ip
+      required: false
+      secret: false
+    - default: false
+      description: 'Comma-separated list of IP addresses to exclude. For example:
+        1.1.1.1,2.2.2.2. '
+      isArray: true
+      name: exclude_ip
+      required: false
+      secret: false
+    - default: false
+      description: 'Range of IP addresses to include. For example: 1.1.1.1-1.1.1.255.'
+      isArray: false
+      name: include_ip_range
+      required: false
+      secret: false
+    - default: false
+      description: 'Range of IP addresses to exclude.  For example: 1.1.1.1-1.1.1.255.'
+      isArray: false
+      name: exclude_ip_rage
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: he number of results to retrieve. Minimum value is 1.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page number of the results to retrieve. Minimum value is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: List CMDB (Centralized Management Database) devices with short information
+      for each device.If you provide one of the exclude arguments, their values will
+      be excluded from the provided include arguments. For example, if you want to
+      list all devices in the range 192.168.20.1-192.168.20.100, but want to exclude
+      192.168.20.20, 192.168.20.25, then use include_ip_range='192.168.20.1-192.168.20.100'
+      and exclude_ip='192.168.20.20, 192.168.20.25'. If not any argument is provided,
+      the command will retrieve all devices.
+    execution: false
+    name: fortisiem-cmdb-devices-list
+    outputs:
+    - contextPath: FortiSIEM.Device.accessIp
+      description: Device Access IP.
+      type: String
+    - contextPath: FortiSIEM.Device.name
+      description: Device name.
+      type: String
+    - contextPath: FortiSIEM.Device.naturalId
+      description: Device unique ID.
+      type: String
+    - contextPath: FortiSIEM.Device.approved
+      description: Whether or not the device is approved.
+      type: Unknown
+    - contextPath: FortiSIEM.Device.unmanaged
+      description: Whether or not the device is unmanaged.
+      type: Unknown
+    - contextPath: FortiSIEM.Device.deviceType
+      description: Device type.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Comma seperated list of devices IP addresses.
+      isArray: false
+      name: ip_address
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve full information of the specified Devices.
+    execution: false
+    name: fortisiem-cmdb-device-get
+    outputs:
+    - contextPath: FortiSIEM.Device.accessIp
+      description: Device access IP.
+      type: String
+    - contextPath: FortiSIEM.Device.name
+      description: Device name.
+      type: String
+    - contextPath: FortiSIEM.Device.naturalId
+      description: Device uinque ID.
+      type: String
+    - contextPath: FortiSIEM.Device.approved
+      description: Whether or not the device is approved.
+      type: Unknown
+    - contextPath: FortiSIEM.Device.unmanaged
+      description: Whether or not the device is unmanaged.
+      type: Unknown
+    - contextPath: FortiSIEM.Device.deviceType
+      description: Device type.
+      type: Unknown
+    - contextPath: FortiSIEM.Device.discoverMethod
+      description: Device discover method.
+      type: String
+    - contextPath: FortiSIEM.Device.discoverTime
+      description: When the device was discovered.
+      type: Date
+    - contextPath: FortiSIEM.Device.unmanaged
+      description: Whether or not the device is unmanaged.
+      type: Unknown
+    - contextPath: FortiSIEM.Device.updateMethod
+      description: The update method of the device.
+      type: Unknown
+  - arguments:
+    - default: true
+      defaultValue: '50'
+      description: The maximum number of organizations to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page number of the results to retrieve. Minimum value is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: List of monitored organizations in service provider deployments.
+    execution: false
+    name: fortisiem-monitored-organizations-list
+    outputs:
+    - contextPath: FortiSIEM.Organization.id
+      description: Organization ID.
+      type: String
+    - contextPath: FortiSIEM.Organization.name
+      description: Organization name.
+      type: String
+    - contextPath: FortiSIEM.Organization.disabled
+      description: Whether or not the organization is disabled.
+      type: String
+    - contextPath: FortiSIEM.Organization.domainId
+      description: Domain ID of the organization.
+      type: String
+    - contextPath: FortiSIEM.Organization.initialized
+      description: Whether or not the organization is initialized.
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The number of results to retrieve. Minimum value is 1.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The incident ID from which the events were triggered.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page number of the results to retrieve. Minimum value is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: List events by the specified incident ID.
+    execution: false
+    name: fortisiem-event-list-by-incident
+    outputs:
+    - contextPath: FortiSIEM.Event.eventType
+      description: FortiSIEM event type.
+      type: String
+    - contextPath: FortiSIEM.Event.id
+      description: Event ID.
+      type: Number
+    - contextPath: FortiSIEM.Event.receiveTime
+      description: The date when the event was recieved to FortiSIEM.
+      type: Date
+    - contextPath: FortiSIEM.Event.attributes
+      description: Additional attributes of the event.
+      type: Unknown
+    - contextPath: FortiSIEM.Event.nid
+      description: Event natural ID.
+      type: String
+    - contextPath: FortiSIEM.Event.index
+      description: Event index in the list.
+      type: Number
+    - contextPath: FortiSIEM.Event.custId
+      description: The customer ID that the event is realted to.
+      type: Number
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of watchlists to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: 'The entry value. For example, IP address, username, Url .etc. '
+      isArray: false
+      name: entry_value
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: 'The page number of the results to retrieve. Minimum value is 1. '
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: List all watchlists from Fortisiem database.
+    execution: false
+    name: fortisiem-watchlist-list
+    outputs:
+    - contextPath: FortiSIEM.Watchlist.isCaseSensitive
+      description: Whether or not the watchlist consider case sensitive to it's entries.
+      type: Boolean
+    - contextPath: FortiSIEM.Watchlist.naturalId
+      description: Watchlist unique ID.
+      type: String
+    - contextPath: FortiSIEM.Watchlist.displayName
+      description: Display name.
+      type: String
+    - contextPath: FortiSIEM.Watchlist.description
+      description: Watchlist description.
+      type: String
+    - contextPath: FortiSIEM.Watchlist.valuePattern
+      description: 'the value pattern of the Watchlist. '
+      type: String
+    - contextPath: FortiSIEM.Watchlist.ageOut
+      description: Watchlist expiration time.
+      type: Date
+    - contextPath: FortiSIEM.Watchlist.topGroup
+      description: Whether or not the Watchlist is top group.
+      type: Boolean
+    - contextPath: FortiSIEM.Watchlist.entries
+      description: The entries which reside in the watchlist group.
+      type: Unknown
+    - contextPath: FortiSIEM.Watchlist.dataCreationType
+      description: 'Watchlist data creation type. '
+      type: String
+    - contextPath: FortiSIEM.Watchlist.valueType
+      description: 'The type of the values of the entries that reside in the watchlist. '
+      type: String
+    - contextPath: FortiSIEM.Watchlist.name
+      description: Watchlist name.
+      type: String
+    - contextPath: FortiSIEM.Watchlist.id
+      description: Watchlist ID.
+      type: Number
+  - arguments:
+    - default: false
+      description: Comma seperated list of watchlist group ID.
+      isArray: false
+      name: watchlist_id
+      required: false
+      secret: false
+    - default: false
+      description: Comma seperated list of entry ID that resides in the watchlist.
+      isArray: false
+      name: entry_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get watchlist by the specified watchlist or entry ID.
+    execution: false
+    name: fortisiem-watchlist-get
+    outputs:
+    - contextPath: FortiSIEM.Watchlist.isCaseSensitive
+      description: Whether or not watchlist consider case sensitive.
+      type: Boolean
+    - contextPath: FortiSIEM.Watchlist.naturalId
+      description: Watchlist unique ID.
+      type: String
+    - contextPath: FortiSIEM.Watchlist.displayName
+      description: Watchlist display name.
+      type: String
+    - contextPath: FortiSIEM.Watchlist.description
+      description: Watchlist description.
+      type: String
+    - contextPath: FortiSIEM.Watchlist.valuePattern
+      description: Watchlist entries value pattern.
+      type: Unknown
+    - contextPath: FortiSIEM.Watchlist.ageOut
+      description: Watchlist Expiration date.
+      type: Date
+    - contextPath: FortiSIEM.Watchlist.topGroup
+      description: Whether or not the watchlist is top group.
+      type: Boolean
+    - contextPath: FortiSIEM.Watchlist.entries
+      description: Watchlist entries.
+      type: Unknown
+    - contextPath: FortiSIEM.Watchlist.dataCreationType
+      description: Data creation type of watchlist.
+      type: Unknown
+    - contextPath: FortiSIEM.Watchlist.valueType
+      description: Watchlist entries value type.
+      type: String
+    - contextPath: FortiSIEM.Watchlist.name
+      description: Watchlist name.
+      type: String
+    - contextPath: FortiSIEM.Watchlist.id
+      description: Watchlist ID.
+      type: Number
+  - arguments:
+    - default: false
+      description: Watchlist description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Display name for watchlist group.
+      isArray: false
+      name: display_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: 'Whether to consider case sensitive on entry values. '
+      isArray: false
+      name: is_case_sensitive
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: USER
+      description: By which entity the data was created by.
+      isArray: false
+      name: data_creation_type
+      predefined:
+      - USER
+      - SYSTEM
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: STRING
+      description: Entries value type.
+      isArray: false
+      name: value_type
+      predefined:
+      - STRING
+      - IP
+      - NUMBER
+      - DATE
+      required: false
+      secret: false
+    - default: false
+      description: The time period in which the items will expire from the Watchlist
+        group if there is no activity for that time. For example, "3 days ago","in
+        2 weeks", "1 month".
+      isArray: false
+      name: age_out
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Weather if the entry is active or not.
+      isArray: false
+      name: entry_inclusive
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    - default: false
+      description: Entry value.
+      isArray: false
+      name: entry_value
+      required: false
+      secret: false
+    - default: false
+      description: The time period in which the entry will expire from the Watchlist
+        group if there is no activity for that time. For example, "3 days ago","in
+        2 weeks", "1 month".
+      isArray: false
+      name: entry_age_out
+      required: false
+      secret: false
+    - default: false
+      description: Entry count.
+      isArray: false
+      name: entry_count
+      required: false
+      secret: false
+    - default: false
+      description: The first time the entry was seen (<number> <time unit>, e.g.,
+        12 hours, 7 days).
+      isArray: false
+      name: entry_first_seen
+      required: false
+      secret: false
+    - default: false
+      description: The last time the entry was seen. For example, "3 days ago", "1
+        month", "2019-10-10T12:22:00", "2019-10-10".
+      isArray: false
+      name: entry_last_seen
+      required: false
+      secret: false
+    - default: false
+      description: The triggering rules that assoiciate with the entry. Should be
+        a comma seperated of rule names.
+      isArray: false
+      name: entry_trigger_rules
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a watchlist group. you can also add an entry to the watchlist.
+    execution: false
+    name: fortisiem-watchlist-add
+    outputs:
+    - contextPath: FortiSIEM.Watchlist.isCaseSensitive
+      description: Whether or not watchlist consider case sensitive.
+      type: Boolean
+    - contextPath: FortiSIEM.Watchlist.naturalId
+      description: Watchlist unique ID.
+      type: String
+    - contextPath: FortiSIEM.Watchlist.displayName
+      description: Watchlist display name.
+      type: String
+    - contextPath: FortiSIEM.Watchlist.description
+      description: Watchlist description.
+      type: String
+    - contextPath: FortiSIEM.Watchlist.valuePattern
+      description: Entries value pattern.
+      type: String
+    - contextPath: FortiSIEM.Watchlist.ageOut
+      description: Watchlist expiration date.
+      type: String
+    - contextPath: FortiSIEM.Watchlist.topGroup
+      description: 'Whether or not the watchlist is top group. '
+      type: Boolean
+    - contextPath: FortiSIEM.Watchlist.entries
+      description: Watchlist entries.
+      type: Unknown
+    - contextPath: FortiSIEM.Watchlist.dataCreationType
+      description: The entity who created the watchlist.
+      type: String
+    - contextPath: FortiSIEM.Watchlist.valueType
+      description: The value type of the entries that reside in the watchlist.
+      type: String
+    - contextPath: FortiSIEM.Watchlist.name
+      description: Watchlist name.
+      type: String
+    - contextPath: FortiSIEM.Watchlist.id
+      description: Watchlist ID.
+      type: Number
+  - arguments:
+    - default: false
+      description: The watchlist ID to add the entry to.
+      isArray: false
+      name: watchlist_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether or not the entry is active.
+      isArray: false
+      name: inclusive
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    - default: false
+      description: Entry count.
+      isArray: false
+      name: count
+      required: false
+      secret: false
+    - default: false
+      description: The triggering rules that assoiciate with the entry. Should be
+        a comma seperated of rules names.
+      isArray: true
+      name: triggering_rules
+      required: false
+      secret: false
+    - default: false
+      description: The entry value.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: The time period in which the entry will expire from the Watchlist
+        group if there is no activity for that time. For example, "3 days ago","in
+        2 weeks", "1 month".
+      isArray: false
+      name: age_out
+      required: false
+      secret: false
+    - default: false
+      description: The last time the entry was seen. For example, "3 days ago", "1
+        month", "2019-10-10T12:22:00", "2019-10-10".
+      isArray: false
+      name: last_seen
+      required: false
+      secret: false
+    - default: false
+      description: The first time the entry was seen. For example, "3 days ago", "1
+        month", "2019-10-10T12:22:00", "2019-10-10".
+      isArray: false
+      name: first_seen
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: USER
+      description: By which entity the data was created by.
+      isArray: false
+      name: data_creation_type
+      predefined:
+      - USER
+      - SYSTEM
+      required: false
+      secret: false
+    - default: false
+      description: 'Entry description. '
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Add watch list entry to one or more watch list groups.
+    execution: false
+    name: fortisiem-watchlist-entry-add
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: USER
+      description: By which entity the data was created by.
+      isArray: false
+      name: data_creation_type
+      predefined:
+      - USER
+      - SYSTEM
+      required: false
+      secret: false
+    - default: false
+      description: The first time the entry was seen. For example, "3 days ago", "1
+        month", "2019-10-10T12:22:00", "2019-10-10".
+      isArray: false
+      name: first_seen
+      required: false
+      secret: false
+    - default: false
+      description: Entry count.
+      isArray: false
+      name: count
+      required: false
+      secret: false
+    - default: false
+      description: The triggering rules that assoiciate with the entry. Should be
+        a comma seperated of rules names.
+      isArray: false
+      name: triggering_rules
+      required: false
+      secret: false
+    - default: false
+      description: Entry description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the entry to update.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: whether the entry is active.
+      isArray: false
+      name: inclusive
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    - default: false
+      description: The entry value.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: When the entry was expired (<number> <time unit>, e.g., 12 hours,
+        7 days).
+      isArray: false
+      name: expired_time
+      required: false
+      secret: false
+    - default: false
+      description: The time period in which the entry will expire from the Watchlist
+        group if there is no activity for that time. For example, "3 days ago","in
+        2 weeks", "1 month".
+      isArray: false
+      name: age_out
+      required: false
+      secret: false
+    - default: false
+      description: The first time the entry was seen. For example, "3 days ago", "1
+        month", "2019-10-10T12:22:00", "2019-10-10".
+      isArray: false
+      name: last_seen
+      required: false
+      secret: false
+    deprecated: false
+    description: Update watchlist entry. This command overrides all existing values
+      in the entry?s attribute. Please fill all relevant arguments to avoid deletion
+      of data.
+    execution: false
+    name: fortisiem-watchlist-entry-update
+    outputs:
+    - contextPath: FortiSIEM.WatchlistEntry.lastSeen
+      description: The last time the entry was seen.
+      type: Date
+    - contextPath: FortiSIEM.WatchlistEntry.naturalId
+      description: Entry unique ID.
+      type: String
+    - contextPath: FortiSIEM.WatchlistEntry.dataCreationType
+      description: Entry data creation type.
+      type: String
+    - contextPath: FortiSIEM.WatchlistEntry.firstSeen
+      description: The first time the entry was first seen.
+      type: Date
+    - contextPath: FortiSIEM.WatchlistEntry.count
+      description: The number of times the entry was seen.
+      type: Number
+    - contextPath: FortiSIEM.WatchlistEntry.triggeringRules
+      description: The triggering rules that assoiciate with the entry.
+      type: String
+    - contextPath: FortiSIEM.WatchlistEntry.description
+      description: Entry description.
+      type: String
+    - contextPath: FortiSIEM.WatchlistEntry.id
+      description: Entry ID.
+      type: Number
+    - contextPath: FortiSIEM.WatchlistEntry.state
+      description: Entry state.
+      type: String
+    - contextPath: FortiSIEM.WatchlistEntry.entryValue
+      description: Entry value.
+      type: String
+    - contextPath: FortiSIEM.WatchlistEntry.expiredTime
+      description: When the entry was expired.
+      type: Date
+    - contextPath: FortiSIEM.WatchlistEntry.ageOut
+      description: Expiration date of the Entry.
+      type: String
+  - arguments:
+    - default: false
+      description: Comma seperated list of Entries ID to delete.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete entry of watchlist.
+    execution: false
+    name: fortisiem-watchlist-entry-delete
+  - arguments:
+    - default: false
+      description: Comma seperated list of Watchlists ID to delete.
+      isArray: false
+      name: watchlist_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete watchlist.
+    execution: false
+    name: fortisiem-watchlist-delete
+  - arguments:
+    - default: false
+      description: Comma seperated list of entry ID.
+      isArray: true
+      name: entry_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get entry by the specified entry ID.
+    execution: false
+    name: fortisiem-watchlist-entry-get
+    outputs:
+    - contextPath: FortiSIEM.WatchlistEntry.lastSeen
+      description: The last time the entry was seen.
+      type: Date
+    - contextPath: FortiSIEM.WatchlistEntry.naturalId
+      description: Entry unique ID.
+      type: String
+    - contextPath: FortiSIEM.WatchlistEntry.dataCreationType
+      description: Entry data creation type.
+      type: String
+    - contextPath: FortiSIEM.WatchlistEntry.firstSeen
+      description: The first time the entry was first seen.
+      type: Date
+    - contextPath: FortiSIEM.WatchlistEntry.count
+      description: The number of times the entry was seen.
+      type: Number
+    - contextPath: FortiSIEM.WatchlistEntry.triggeringRules
+      description: The triggering rules that assoiciate with the entry.
+      type: String
+    - contextPath: FortiSIEM.WatchlistEntry.description
+      description: Entry description.
+      type: String
+    - contextPath: FortiSIEM.WatchlistEntry.id
+      description: Entry ID.
+      type: Number
+    - contextPath: FortiSIEM.WatchlistEntry.state
+      description: Entry state.
+      type: String
+    - contextPath: FortiSIEM.WatchlistEntry.entryValue
+      description: Entry value.
+      type: String
+    - contextPath: FortiSIEM.WatchlistEntry.expiredTime
+      description: When the entry was expired.
+      type: Date
+    - contextPath: FortiSIEM.WatchlistEntry.ageOut
+      description: Expiration date of the Entry.
+      type: String
+  dockerimage: demisto/python3:3.9.8.24399
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
