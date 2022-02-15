@@ -1,0 +1,245 @@
+id: 645e003a-1111-4538-8c8e-55dc39f40848
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Cortex ASM - Extract IP Indicator
+description: Identifies IPv4 Address associated with Alert and creates a new Indicator.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8297590d-ca7b-4a19-8265-612ad432343b
+    type: start
+    task:
+      id: 8297590d-ca7b-4a19-8265-612ad432343b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 177a6eff-19ca-47b3-87e6-2962876fb8d7
+    type: regular
+    task:
+      id: 177a6eff-19ca-47b3-87e6-2962876fb8d7
+      version: -1
+      name: Extract Indicators From Alert
+      description: Extract all indicators according to server indicators configuration
+      tags:
+      - ASM
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      text:
+        simple: ${inputs.AlertName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7deeb316-2e78-475f-8e86-95eb25925c7e
+    type: regular
+    task:
+      id: 7deeb316-2e78-475f-8e86-95eb25925c7e
+      version: -1
+      name: Create New Indicator
+      description: Change the properties of an indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      tags:
+        simple: ASM - Reported
+      type:
+        simple: IP
+      value:
+        complex:
+          root: ${ExtractedIndicators.IP}
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ${ExtractedIndicators.IP}
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: ca985cec-83d9-4a95-8f7d-f51e5a0aafc8
+    type: condition
+    task:
+      id: ca985cec-83d9-4a95-8f7d-f51e5a0aafc8
+      version: -1
+      name: IP Indicator Found
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "6"
+      "yes":
+      - "3"
+    scriptarguments:
+      value:
+        complex:
+          root: ${ExtractedIndicators
+          accessor: IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e7c4ae9f-5b10-4620-8b1d-43d15e2adc6f
+    type: regular
+    task:
+      id: e7c4ae9f-5b10-4620-8b1d-43d15e2adc6f
+      version: -1
+      name: Associate IP Indicator To Alert
+      description: Associate an indicator to a given alert, you can find the indicator
+        to connect either by it's value or it's id
+      script: Builtin|||associateIndicatorToAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      alertId:
+        simple: ${alert.id}
+      id:
+        complex:
+          root: ${CreatedIndicator
+          accessor: ID}
+      value:
+        complex:
+          root: ${CreatedIndicator
+          accessor: Value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: b1ebedc2-2060-490f-8809-638d1e1245aa
+    type: title
+    task:
+      id: b1ebedc2-2060-490f-8809-638d1e1245aa
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1075,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: AlertName
+  value: {}
+  required: false
+  description: The formatted name of the alert
+  playbookInputQuery: null
+outputs:
+- contextPath: ExtractedIndicators
+  description: outputs.extractindicators

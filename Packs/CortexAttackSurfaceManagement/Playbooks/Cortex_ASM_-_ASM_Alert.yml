@@ -1,0 +1,230 @@
+id: ec207144-8396-41d7-8564-f7bea45307cd
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Cortex ASM - ASM Alert
+description: This playbook aims to provide enrichment of ASM alerts by searching for mentions of associated IP addresses within
+  other security and IT tools.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6a0198d3-c158-47f4-8377-1f8eddd76ada
+    type: start
+    task:
+      id: 6a0198d3-c158-47f4-8377-1f8eddd76ada
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 3ceaba2d-c24f-4fa8-8558-1e992a3ed86b
+    type: playbook
+    task:
+      id: 3ceaba2d-c24f-4fa8-8558-1e992a3ed86b
+      version: -1
+      name: Cortex ASM - Extract IP Indicator
+      playbookName: Cortex ASM - Extract IP Indicator
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AlertName:
+        simple: ${alert.name}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 8687767a-dd8c-4a2c-814d-2c4ff6bfa1f5
+    type: condition
+    task:
+      id: 8687767a-dd8c-4a2c-814d-2c4ff6bfa1f5
+      version: -1
+      name: IP exists for Alert?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "3"
+      - "5"
+    scriptarguments:
+      value:
+        simple: ${ExtractedIndicators.IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 79a1f65f-7744-43df-8b6a-01b236ae5e5a
+    type: playbook
+    task:
+      id: 79a1f65f-7744-43df-8b6a-01b236ae5e5a
+      version: -1
+      name: Cortex ASM - ServiceNow CMDB Enrichment
+      playbookName: Cortex ASM - ServiceNow CMDB Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      IP:
+        simple: ${ExtractedIndicators.IP}
+      modules:
+        simple: ${ConfiguredModules}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7cd0c434-7c4d-4ca6-8e67-865bd8e46d83
+    type: title
+    task:
+      id: 7cd0c434-7c4d-4ca6-8e67-865bd8e46d83
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 8a88cb41-e41b-46cd-81fb-1b5bf22aa9fe
+    type: playbook
+    task:
+      id: 8a88cb41-e41b-46cd-81fb-1b5bf22aa9fe
+      version: -1
+      name: Cortex ASM - Vulnerability Management Enrichment
+      playbookName: Cortex ASM - Vulnerability Management Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      IP:
+        simple: ${ExtractedIndicators.IP}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1065,
+        "width": 1080,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

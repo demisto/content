@@ -1,0 +1,529 @@
+id: 2b659e9c-bf01-4280-8e8f-29e58a9f3175
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Cortex ASM - ServiceNow CMDB Enrichment
+description: This playbook will look up a CI in ServiceNow CMDB by IP.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cec1c14f-e743-4b59-8848-36053fcbf443
+    type: start
+    task:
+      id: cec1c14f-e743-4b59-8848-36053fcbf443
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 8b5a7a61-6d72-4871-8d2e-a5efa815969c
+    type: condition
+    task:
+      id: 8b5a7a61-6d72-4871-8d2e-a5efa815969c
+      version: -1
+      name: Is ServiceNow CMDB Enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ServiceNow CMDB
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: bf570d47-7df4-4589-83a7-6189ed1ab303
+    type: title
+    task:
+      id: bf570d47-7df4-4589-83a7-6189ed1ab303
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: b9e7869f-8cee-43f4-86d3-fd8cbad86ffd
+    type: condition
+    task:
+      id: b9e7869f-8cee-43f4-86d3-fd8cbad86ffd
+      version: -1
+      name: IP address Exists?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "4"
+    scriptarguments:
+      value:
+        simple: ${inputs.IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 8d028d31-f3a0-43d0-8b41-2cf1c81202f0
+    type: regular
+    task:
+      id: 8d028d31-f3a0-43d0-8b41-2cf1c81202f0
+      version: -1
+      name: ServiceNow Search by IP
+      description: Query records for a CMDB class.
+      script: ServiceNow CMDB|||servicenow-cmdb-records-list
+      type: regular
+      iscommand: true
+      brand: ServiceNow CMDB
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      class:
+        simple: cmdb_ci_ip_address
+      query:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: FirstArrayElement
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ip_address=
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e8cf71d2-26e2-40da-88a0-c88aaa2320c6
+    type: condition
+    task:
+      id: e8cf71d2-26e2-40da-88a0-c88aaa2320c6
+      version: -1
+      name: Were search results found?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "8"
+    scriptarguments:
+      value:
+        simple: ${ServiceNowCMDB.Records}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c5a3a636-4c26-4533-8cb0-ebe468ad1b83
+    type: regular
+    task:
+      id: c5a3a636-4c26-4533-8cb0-ebe468ad1b83
+      version: -1
+      name: ServiceNow Get IP address CI by ID
+      description: Query attributes and relationship information for a specific record.
+      script: ServiceNow CMDB|||servicenow-cmdb-record-get-by-id
+      type: regular
+      iscommand: true
+      brand: ServiceNow CMDB
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      class:
+        simple: cmdb_ci_ip_address
+      sys_id:
+        simple: ${ServiceNowCMDB.Records.sys_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: c5291e8b-29d3-42de-839b-a4a0d1e08570
+    type: title
+    task:
+      id: c5291e8b-29d3-42de-839b-a4a0d1e08570
+      version: -1
+      name: Add CMDB Record
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -880,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: fe030616-653d-4728-8b9a-1946edb756b2
+    type: title
+    task:
+      id: fe030616-653d-4728-8b9a-1946edb756b2
+      version: -1
+      name: Fetch CMDB Record
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 49d88a89-9b8a-4c2f-8768-08d6b584d039
+    type: regular
+    task:
+      id: 49d88a89-9b8a-4c2f-8768-08d6b584d039
+      version: -1
+      name: Fetch Related CMDB CI by ID
+      description: Query attributes and relationship information for a specific record.
+      script: ServiceNow CMDB|||servicenow-cmdb-record-get-by-id
+      type: regular
+      iscommand: true
+      brand: ServiceNow CMDB
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      class:
+        simple: cmdb_ci
+      sys_id:
+        simple: ${ServiceNowCMDB.Record.Attributes.cmdb_ci.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: fb51a5ef-1c13-43eb-83dd-5b9b32e32067
+    type: regular
+    task:
+      id: fb51a5ef-1c13-43eb-83dd-5b9b32e32067
+      version: -1
+      name: Save ServiceNow CMDB CI to Notes
+      description: Convert an array to a nice table display. Usually, from the context.
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      columns:
+        simple: name,sys_class_name,sys_id,asset.display_value,asset.link,asset.value
+      data:
+        simple: |2-
+
+          ${ServiceNowCMDB.Record.Attributes}
+      title:
+        simple: Fetched ServiceNow CMDB Record
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 1835
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 18a57423-b04b-478f-8a39-6871b60d977d
+    type: condition
+    task:
+      id: 18a57423-b04b-478f-8a39-6871b60d977d
+      version: -1
+      name: Related SysID Exists?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "14"
+      "yes":
+      - "9"
+    scriptarguments:
+      value:
+        simple: ${ServiceNowCMDB.Record.Attributes.cmdb_ci.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 3a00bc4d-d500-4f84-869a-f9cda6e8afcc
+    type: regular
+    task:
+      id: 3a00bc4d-d500-4f84-869a-f9cda6e8afcc
+      version: -1
+      name: Print Notification of missing Sys_id
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: cmdb_ci_network_adapter record for ${inputs.IP} found without associated
+          CI attributes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1835
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 108336d7-11a1-4417-84bb-e04a59d81f42
+    type: regular
+    task:
+      id: 108336d7-11a1-4417-84bb-e04a59d81f42
+      version: -1
+      name: Add Record in ServiceNow
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -880,
+          "y": 1835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2335,
+        "width": 1660,
+        "x": -880,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IP
+  value: {}
+  required: true
+  description: IP address to search in ServiceNow
+  playbookInputQuery: null
+outputs: []
