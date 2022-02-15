@@ -28,11 +28,12 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "agent_file_path",
+    "x2_fields": "action_file_path",
     "Aliases": [
         {
-        "cliName": "filepaths",
-        "type": "multiSelect"
+            "cliName": "filepaths",
+            "type": "multiSelect",
+            "name": ""
         }
     ]
 }

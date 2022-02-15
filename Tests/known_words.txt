@@ -67,6 +67,7 @@ NoneType
 CreateIncidents
 EML
 LastSeen
+Lastline
 IntelGraph
 Accenture
 CTI
@@ -85,5 +86,6 @@ FormatURL
 Gitlab
 GitHub
 TAXII
+Syslog
 DomainTools
 replyTo
