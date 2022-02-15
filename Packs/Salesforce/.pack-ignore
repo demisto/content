@@ -1,4 +1,4 @@
-[file:integration-Salesforce.yml]
+[file:Salesforce.yml]
 ignore=IN126,IN145
 
 [file:classifier-User_Profile_-_Salesforce_(Incoming).json]
