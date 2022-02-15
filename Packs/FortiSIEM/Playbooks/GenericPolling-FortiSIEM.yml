@@ -1,9 +1,9 @@
 id: e9f4ac34-76d6-4d2e-825b-5542722755cf
 inputs:
 - description: 'The query for filtering the relevant events. For example: ''eventId=9071234812319593968
-    AND eventType=type''. You can retrieve the attributes names  by the naming of
-    the filtering arguments of the command, or by naming the attributes of the event
-    that returned in the context output.'
+        AND eventType=type''. You can retrieve the attributes names  by the naming
+        of the filtering arguments of the command, or by naming the attributes of
+        the event that returned in the context output.'
   key: query
   playbookInputQuery: null
   required: false
