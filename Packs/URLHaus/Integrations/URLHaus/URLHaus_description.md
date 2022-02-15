@@ -8,7 +8,6 @@ Determined by the status of the URL.
 | --- | --- |
 | online | Malicious |
 | offline | Suspicious |
-| offline | Suspicious |
 | unknown | Unknown |
 
 ### Domain
