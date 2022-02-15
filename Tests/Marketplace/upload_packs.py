@@ -937,8 +937,8 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
         for pack_name, pack in packs_for_current_marketplace_dict.items():
             logging.info(f"Collecting dependencies of {pack_name}")
             pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
-            zip_with_deps_path = os.path.join(pack.path, pack_name + "_with_dependencies.zip")
-            upload_path = os.path.join(storage_base_path, pack_name, pack_name + "_with_dependencies.zip")
+            zip_with_deps_path = os.path.join(pack.path, f"{pack_name}_with_dependencies.zip")
+            upload_path = os.path.join(storage_base_path, pack_name, f"{pack_name}_with_dependencies.zip")
             Path(pack_with_dep_path).mkdir(parents=True, exist_ok=True)
             if not (pack.zip_path and os.path.isfile(pack.zip_path)):
                 task_status = sign_and_zip_pack(pack, signature_key)
