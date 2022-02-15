@@ -698,12 +698,11 @@ def events_list_command(client: FortiSIEMClient, args: Dict[str, Any]) -> Comman
         format_readable_output_header(f'List Events Of incident: {incident_id}', limit, page),
         outputs, headers=["id", "custId", "index", "eventType", "receiveTime"],
         headerTransform=pascalToSpace)
-    print(outputs[0]['attributes'])
+
     command_results = CommandResults(
         outputs_prefix='FortiSIEM.Event',
-        outputs_key_field='nid',
+        outputs_key_field='id',
         outputs=outputs,
-        raw_response=response,
         readable_output=readable_output
     )
     return command_results
@@ -1027,10 +1026,7 @@ def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, s
     incidents = []
     for incident in formatted_incidents:
         if fetch_with_events:
-            incident_id = incident['incidentId']
-            events_list_response = client.events_list_request(max_events_fetch,
-                                                              incident_id)
-            events = format_outputs_time_attributes_to_iso([event.get('attributes') for event in events_list_response])
+            events = get_related_events_for_fetch_command(incident['incidentId'], max_events_fetch, client)
         else:
             events = []
         incident['events'] = events
@@ -1045,6 +1041,26 @@ def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, s
              'create_time': last_incident.get('incidentFirstSeen')
              })
     demisto.incidents(incidents)
+
+
+def get_related_events_for_fetch_command(incident_id: str, max_events_fetch: int,
+                                         client: FortiSIEMClient) -> List[dict]:
+    """
+    Get triggered events of the specified incident ID, in a convenient format for fetch layout.
+    Args:
+        client (FortiSIEMClient): FortiSIEM client.
+        incident_id (int): The incident ID of the related event.
+        max_events_fetch (str): The Maximum number of events to retrieve.
+    Returns:
+       None
+    """
+    events_list_response = client.events_list_request(max_events_fetch,
+                                                      incident_id)
+    formatted_events = format_outputs_time_attributes_to_iso(
+        [event.get('attributes') for event in events_list_response])
+    for event in formatted_events:
+        event['Event ID'] = str(event['Event ID'])  # To avoid overridden by XSOAR since it's a huge number.
+    return formatted_events
 
 
 def watchlist_entry_get_command(client: FortiSIEMClient, args: Dict[str, Any]) -> List[CommandResults]:
@@ -1713,6 +1729,9 @@ def format_list_events_output(response: Dict[str, Any], incident_id: str, page: 
     formatted_events, _ = format_list_commands_output(response, [], page, limit)
     for event in formatted_events:
         event['incidentId'] = incident_id
+        # To avoid overridden by XSOAR since it's a huge number.
+        event['id'] = str(event['id'])
+        event['attributes']['Event ID'] = str(dict_safe_get(event, ['attributes', 'Event ID']))
     return formatted_events
 
 
