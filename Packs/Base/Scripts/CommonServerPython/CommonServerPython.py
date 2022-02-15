@@ -8922,7 +8922,8 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
     Commands that use this decorator must have a Polling argument, polling: true in yaml,
     and a hidden hide_polling_output argument.
     Commands that use this decorator should return a PollResult.
-    ----------
+    Will raise an DemistoException if the server version doesn't support Scheduled Commands (< 6.2.0)
+
     :type name: ``str``
     :param name: The name of the command
 
@@ -8937,10 +8938,6 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
 
     :type requires_polling_arg: ``bool``
     :param requires_polling_arg: Whether a polling argument should be expected as one of the demisto args
-    Raises
-    ------
-    DemistoException
-        If the server version doesn't support Scheduled Commands (< 6.2.0)
     """
 
     def dec(func):

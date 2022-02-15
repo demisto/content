@@ -217,7 +217,7 @@ script:
           isArray: true
           defaultValue: ""
         - name: polling
-          deprecated: true
+          deprecated: false
           description: "Whether to poll until there is at least one result"
           required: false
           isArray: false
