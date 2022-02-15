@@ -1,8 +1,6 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-from typing import Dict
 from urllib.parse import quote
+
+from CommonServerPython import *
 
 # disable insecure warnings
 
@@ -119,10 +117,18 @@ class MsGraphClient:
             json_data=body,
             resp_type="text")
 
-    #  If successful, this method returns 204 No Content response code.
-    #  Using resp_type=text to avoid parsing error.
     def password_change_user(self, user: str, password: str, force_change_password_next_sign_in: bool,
-                             force_change_password_with_mfa: bool):
+                             force_change_password_with_mfa: bool, on_prem: bool = False):
+        if on_prem:
+            return self._password_change_on_prem(user=user, password=password)
+
+        else:
+            self._password_change_cloud(user=user, password=password,
+                                        force_change_password_next_sign_in=force_change_password_next_sign_in,
+                                        force_change_password_with_mfa=force_change_password_with_mfa)
+
+    def _password_change_cloud(self, user: str, password: str, force_change_password_next_sign_in: bool,
+                               force_change_password_with_mfa: bool):
         body = {
             "passwordProfile":
                 {
@@ -131,11 +137,26 @@ class MsGraphClient:
                     "password": password
                 }
         }
+        #  If successful, this method returns 204 No Content response code.
+        #  Using resp_type=text to avoid parsing error.
         self.ms_client.http_request(
             method='PATCH',
             url_suffix=f'users/{quote(user)}',
             json_data=body,
             resp_type="text")
+
+    def _password_change_on_prem(self, user: str, password: str):
+        password_id = self.ms_client.http_request(
+            method='GET',
+            url_suffix=f'users/{quote(user)}/authentication/passwordMethods'
+        ).get('value', [])[0]['id']
+
+        return self.ms_client.http_request(
+            method='POST',
+            url_suffix=f'users/{quote(user)}/authentication/passwordMethods/{password_id}/resetPassword',
+            ok_codes=(202,),
+            json_data={"newPassword": password}
+        ).json()['Location']
 
     def get_delta(self, properties):
         users = self.ms_client.http_request(
