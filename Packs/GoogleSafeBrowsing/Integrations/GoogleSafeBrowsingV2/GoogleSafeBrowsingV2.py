@@ -178,7 +178,7 @@ def url_command(client: Client, args: Dict[str, Any]) -> Union[List[CommandResul
                 next_run_in_seconds=5,
                 args=args,
                 timeout_in_seconds=600)
-            return CommandResults(scheduled_command=scheduled_command, rate_limited=True)
+            return CommandResults(scheduled_command=scheduled_command, rate_limited=True, )
         else:
             handle_errors(result)
 

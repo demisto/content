@@ -6144,8 +6144,15 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
         return_entry["Contents"] = outputs
     demisto.results(return_entry)
 
+class ErrorType:
+    RateLimit  = 'RateLimited'
+    AuthError  = 'Authentication'
+    General    = 'General'
+    Timeout    = 'Timeout'
+    Connection = 'Connection'
 
-def return_error(message, error='', outputs=None):
+
+def return_error(message, error='', outputs=None, error_type=None):
     """
         Returns error entry with given message and exits the script
 
@@ -6184,12 +6191,15 @@ def return_error(message, error='', outputs=None):
     if is_server_handled:
         raise Exception(message)
     else:
-        demisto.results({
+        error_result = {
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
             'Contents': message,
             'EntryContext': outputs
-        })
+        }
+        if error_type and isinstance(error_type, ErrorType):
+            error_result.update({'ErrorType': error_type})
+        demisto.results(error_result)
         sys.exit(0)
 
 
