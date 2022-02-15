@@ -49,6 +49,9 @@ script:
       default: true
       description: URL of the IA/IR there in the ACTI Indicator Query. 
       isArray: false
+    - name: setLastId
+      default: true
+      description: It is used to set 'id' to Report ID of the last report generated in Threat Intel Report section. It's also very important to run this so that redundant reports could be tracked.
     outputs:
     description: Fetches Intelligence Alerts & Intelligence Reports.
 
