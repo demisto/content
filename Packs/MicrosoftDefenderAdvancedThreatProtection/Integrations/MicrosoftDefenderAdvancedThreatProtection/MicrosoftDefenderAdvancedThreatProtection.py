@@ -2598,7 +2598,7 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
 
     """
     ScheduledCommand.raise_error_if_not_supported()
-    interval_in_secs = int(args.get('interval_in_seconds', 5))
+    interval_in_secs = int(args.get('interval_in_seconds', 10))
     # distinguish between the initial run, which is the upload run, and the results run
     is_first_run = 'machine_action_id' not in args
     demisto.debug(f'polling args: {args}')
@@ -2616,7 +2616,7 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
             command=cmd,
             next_run_in_seconds=interval_in_secs,
             args=polling_args,
-            timeout_in_seconds=600)
+            timeout_in_seconds=args.get('timeout_in_seconds', 600))
         command_results.scheduled_command = scheduled_command
         return command_results
 
@@ -2624,9 +2624,10 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
 
     command_result = results_function(client, args)
     action_status = command_result.outputs.get("status")
-    command_status = command_result.outputs.get("commands", [])[0].get("commandStatus")
+    command_status = command_result.outputs.get("commands", [{}])[0].get("commandStatus")
     if action_status == 'Failed' or command_status == 'Failed':
-        raise Exception(f'Command failed to get results. {command_result.outputs.get("commands", [])[0].get("errors")}')
+        raise Exception(
+            f'Command failed to get results. {command_result.outputs.get("commands", [{}])[0].get("errors")}')
     elif command_status != 'Completed' or action_status == 'InProgress':
         # schedule next poll
         polling_args = {
@@ -2662,13 +2663,11 @@ def get_live_response_result_command(client, args):
     except Exception:
         outputs = {'value': file_link}
 
-    demisto.results(fileResult('Response Result', f_data.content))
-
-    return CommandResults(
+    return [fileResult('Response Result', f_data.content), CommandResults(
         outputs_prefix='MicrosoftATP.LiveResponseResult',
         outputs=outputs,
         readable_output=f'file_link: {file_link}'
-    )
+    )]
 
 
 def get_machine_action_command(client, args):
@@ -2677,6 +2676,7 @@ def get_machine_action_command(client, args):
 
     return CommandResults(
         outputs_prefix='MicrosoftATP.MachineAction',
+        outputs_key_field='action_id',
         outputs=res
     )
 
@@ -2728,14 +2728,15 @@ def get_successfull_action_results_as_info(client, res):
     f_data = client.download_file(file_link)
     try:
         script_result = f_data.json()
-    except Exception:
+    except Exception as e:
+        demisto.debug(f'Failed download script results from link {file_link}. Error: {str(e)}')
         script_result = None
     return [
         CommandResults(
             outputs_prefix='MicrosoftATP.LiveResponseAction',
             outputs=script_result if script_result else res,
-            readable_output=tableToMarkdown('Script Results:',
-                                            script_result) if script_result else 'Could not retrieve script results.'
+            readable_output=tableToMarkdown('Script Results:', script_result, is_auto_json_transform=True)
+            if script_result else 'Could not retrieve script results.'
         ),
         fileResult('Response Result', f_data.content, file_type=EntryType.ENTRY_INFO_FILE)]
 

@@ -4543,6 +4543,20 @@ script:
         required: false
         secret: false
         deprecated: true
+      - default: false
+        description: interval between polling. Default is 10 seconds. Must be higher than 10.
+        isArray: false
+        name: interval_in_seconds
+        required: false
+        secret: false
+        deprecated: false
+      - default: false
+        description: Timeout for polling. Default is 600 seconds.
+        isArray: false
+        name: timeout_in_seconds
+        required: false
+        secret: false
+        deprecated: false
     deprecated: false
     description: 'Collect file from a device. NOTE: Backslashes in path must be escaped.'
     execution: true
@@ -4662,6 +4676,20 @@ script:
       required: false
       secret: false
       deprecated: true
+    - default: false
+      description: interval between polling. Default is 10 seconds. Must be higher than 10.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      deprecated: false
+    - default: false
+      description: Timeout for polling. Default is 600 seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+      deprecated: false
     deprecated: false
     description: |-
       Runs a script from the library on a device. The Args parameter is passed to your script. Timeouts after 10 minutes.
@@ -4707,6 +4735,20 @@ script:
         required: false
         secret: false
         deprecated: true
+      - default: false
+        description: interval between polling. Default is 10 seconds. Must be higher than 10.
+        isArray: false
+        name: interval_in_seconds
+        required: false
+        secret: false
+        deprecated: false
+      - default: false
+        description: Timeout for polling. Default is 600 seconds.
+        isArray: false
+        name: timeout_in_seconds
+        required: false
+        secret: false
+        deprecated: false
     deprecated: false
     description: Puts a file from the library to the device. Files are saved in a
       working folder and are deleted when the device restarts by default.
