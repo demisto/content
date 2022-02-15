@@ -468,7 +468,6 @@ def events_search_init_command(client: FortiSIEMClient, args: Dict[str, Any]) ->
     extend_data = argToBoolean(args.get('extended_data'))
     events_constraint = query or build_constraint_from_args(copy.deepcopy(args))
     payload = build_query_xml(events_constraint, from_time, to_time, extend_data)
-    print(payload.decode('utf-8'))
     response = client.events_search_init_request(payload.decode('utf-8'))
     if "<?xml" in response:  # invalid query argument
         raise ValueError("The query argument is invalid. Please use another query.")
@@ -693,7 +692,6 @@ def events_list_command(client: FortiSIEMClient, args: Dict[str, Any]) -> Comman
     incident_id = args['incident_id']
     response = client.events_list_request(limit * page, incident_id)
     outputs = format_list_events_output(response, incident_id, page, limit)
-    print(outputs)
     readable_output = tableToMarkdown(
         format_readable_output_header(f'List Events Of incident: {incident_id}', limit, page),
         outputs, headers=["id", "custId", "index", "eventType", "receiveTime"],
@@ -1430,7 +1428,6 @@ def format_message_delete_watchlist(watchlist_id: int, response: Dict[str, Any])
     status = response.get('status')
     message = response.get('response')
     if status == 'Success':
-        # print(message)
         deleted_count = int(message.split(": ")[1])
         if deleted_count >= 1:
             return f'The watchlist {watchlist_id} was deleted successfully.'
