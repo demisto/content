@@ -556,7 +556,7 @@ script:
       type: String
     - contextPath: FortiSIEM.Event.id
       description: Event ID.
-      type: Number
+      type: String
     - contextPath: FortiSIEM.Event.receiveTime
       description: The date when the event was recieved to FortiSIEM.
       type: Date
