@@ -31,9 +31,9 @@
     "x2_fields": "module_id",
     "Aliases": [
         {
-          "cliName": "cymulatemodule",
-          "type": "shortText"
+            "cliName": "cymulatemodule",
+            "type": "shortText",
+            "name": "Cymulate Module"
         }
-      
     ]
 }
