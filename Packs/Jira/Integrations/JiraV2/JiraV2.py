@@ -673,8 +673,7 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
     if get_attachments and attachments:
         attachment_urls = [attachment['content'] for attachment in attachments]
         for attachment_url in attachment_urls:
-            attachment = attachment_url.split('/secure')[-1]
-            attachment = attachment.lstrip("https://demistodev.atlassian.net/")
+            attachment = f"rest{attachment_url.split('/rest')[-1]}"
             filename = attachment.split("/")[-1]
             attachments_zip = jira_req(method='GET', resource_url=attachment).content
             demisto.results(fileResult(filename=filename, data=attachments_zip))
