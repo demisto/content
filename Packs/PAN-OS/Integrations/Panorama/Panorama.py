@@ -8946,7 +8946,8 @@ class FirewallCommand:
 -- XSOAR Specific Code Starts below --
 """
 
-def test_module(topology: Topology, device_filter_string: str = None):
+
+def test_topology(topology: Topology):
     """To get to the test-module command we must connect to the devices, thus no further test is required."""
     if len(topology.firewall_objects) + len(topology.panorama_objects) == 0:
         raise ConnectionError("No firewalls or panorama instances could be connected.")
@@ -9229,9 +9230,23 @@ def convert_params_to_object(params: dict) -> DemistoParameters:
     )
 
 
+def run_test_command(func: Callable):
+    demisto_params = convert_params_to_object(demisto.params())
+    topology = Topology.build_from_string(
+        demisto_params.hostnames,
+        demisto_params.credentials.get("identifier"),
+        demisto_params.credentials.get("password"),
+        api_key=demisto_params.api_key
+    )
+    return_results(func(topology))
+
+
 def run_normal_command(func: Callable,
                        demisto_args: dict) -> CommandResults:
-
+    """
+    Calls normal XSOAR commands that return dataclasses, converts the output into CommandResults and then
+    returns to XSOAR.
+    """
     demisto_params = convert_params_to_object(demisto.params())
     topology = Topology.build_from_string(
         demisto_params.hostnames,
@@ -9299,7 +9314,9 @@ def run_normal_command(func: Callable,
 
 def run_file_command(func: Callable,
                      demisto_args: dict) -> dict:
-
+    """
+    Calls inner functions that return file result objects.
+    """
     demisto_params = convert_params_to_object(demisto.params())
     topology = Topology.build_from_string(
         demisto_params.hostnames,
@@ -9326,6 +9343,8 @@ def main():
 
         if demisto.command() == 'test-module':
             panorama_test()
+            # Test the topology is working as well
+            run_test_command(test_topology)
 
         elif demisto.command() == 'panorama':
             panorama_command(args)
