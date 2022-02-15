@@ -1,4 +1,3 @@
-
 {
     "testTimeout": 160,
     "testInterval": 20,
@@ -8,7 +7,10 @@
             "playbookID": "RSANetWitnessv115-Test"
         },
         {
-            "integrations": ["FeedMandiant", "Demisto REST API"],
+            "integrations": [
+                "FeedMandiant",
+                "Demisto REST API"
+            ],
             "playbookID": "Fetch Indicators Test",
             "fromversion": "6.1.0",
             "is_mockable": false,
@@ -915,11 +917,6 @@
             "nightly": true
         },
         {
-            "integrations": "VxStream",
-            "playbookID": "Detonate File - HybridAnalysis - Test",
-            "timeout": 2400
-        },
-        {
             "integrations": "Awake Security",
             "playbookID": "awake_security_test_pb"
         },
@@ -1715,7 +1712,8 @@
         {
             "integrations": "McAfee Web Gateway",
             "playbookID": "McAfeeWebGatewayTest",
-            "timeout": 500
+            "timeout": 500,
+            "is_mockable": false
         },
         {
             "integrations": "TCPIPUtils",
@@ -2016,12 +2014,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test",
-            "nightly": true,
-            "is_mockable": false
-        },
-        {
             "integrations": "QRadar_v2",
             "playbookID": "test_Qradar_v2",
             "fromversion": "6.0.0",
@@ -2199,11 +2191,6 @@
             "timeout": 700
         },
         {
-            "integrations": "VxStream",
-            "playbookID": "Test-Detonate URL - Crowdstrike",
-            "timeout": 1200
-        },
-        {
             "playbookID": "Detonate File - Generic Test",
             "timeout": 500
         },
@@ -2239,7 +2226,6 @@
             "nightly": true,
             "integrations": [
                 "McAfee Advanced Threat Defense",
-                "VxStream",
                 "Lastline v2"
             ]
         },
@@ -4568,6 +4554,12 @@
             ]
         },
         {
+            "integrations": "CrowdStrike Falcon Sandbox V2",
+            "playbookID": "CrowdstrikeFalconSandboxV2 Test",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "playbookID": "Send Email To Recipients",
             "fromversion": "5.0.0",
             "integrations": [
@@ -4790,7 +4782,8 @@
                 "Demisto REST API"
             ],
             "playbookID": "AutoFocusTagsFeed-test",
-            "timeout": 300
+            "timeout": 1500,
+            "fromversion": "6.5.0"
         },
         {
             "integrations": [
@@ -4798,7 +4791,8 @@
                 "Demisto REST API"
             ],
             "playbookID": "Unit42 Intel Objects Feed - Test",
-            "timeout": 300
+            "timeout": 15000,
+            "fromversion": "6.5.0"
         },
         {
             "playbookID": "Tanium Threat Response V2 Test",
@@ -5082,7 +5076,6 @@
         "RemoteAccessTest": "Issue 44245",
         "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",
         "XsoarPowershellTesting-Test": "Issue 32689",
-        "Unit42 Intel Objects Feed - Test": "Issue 44100",
         "MicrosoftManagementActivity - Test": "Issue 43922",
         "Google-Vault-Generic-Test": "Issue 24347",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
@@ -5102,7 +5095,22 @@
         "LogRhythm REST test": "Issue 40654",
         "Process Email - Generic - Test - Actual Incident": "Issue 45227",
         "Jira-v2-Test": "Issue 33313",
-        "Tanium Threat Response V2 Test": "Issue 44201"
+        "Tanium Threat Response V2 Test": "Issue 44201",
+        "AzureADTest": "Issue 40131",
+        "whois_test": "Issue 25648",
+        "Autoextract - Test": "Issue 45293",
+        "LogRhythm-Test-Playbook": "Issue 27164",
+        "Azure WAF - Test": "Issue 33741",
+        "GSuiteAdmin-Test": "Issue 34784",
+        "Microsoft_365_Defender-Test": "Issue 39390",
+        "Tanium Threat Response - Request File Download v2 - Test": "Issue 46326",
+        "test_AssignToNextShiftOOO": "Issue 44198",
+        "EWS_O365_send_mail_test": "Issue 44200",
+        "Phishing Investigation - Generic v2 - Campaign Test": "Issue 44740",
+        "Cisco Umbrella Test": "Issue 24338",
+        "Archer v2 - Test": "Issue 31653",
+        "Azure NSG - Test": "Issue 33217",
+        "Unit42 Intel Objects Feed - Test": "Issue 44100"
     },
     "skipped_integrations": {
         
@@ -5222,7 +5230,8 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
-        "SentinelOne V2": "License expired issue #24933"
+        "SentinelOne V2": "License expired issue #24933",
+        "LogRhythm": "The integration is deprecated"
     },
     "nightly_integrations": [
         "Laline v2",

@@ -28,91 +28,112 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "agent_hostname",
+    "x2_fields": "agent_hostname",
     "Aliases": [
         {
-        "cliName": "sourcehostname",
-        "type": "multiSelect"
+            "cliName": "sourcehostname",
+            "type": "multiSelect",
+            "name": "Source Hostname"
         },
         {
-        "cliName": "hostname",
-        "type": "shortText"
+            "cliName": "hostname",
+            "type": "shortText",
+            "name": "Host Name"
         },
         {
-        "cliName": "illusivenetworkshostname",
-        "type": "shortText"
+            "cliName": "illusivenetworkshostname",
+            "type": "shortText",
+            "name": "Illusive Networks Host Name"
         },
         {
-        "cliName": "infectedhostnames",
-        "type": "shortText"
+            "cliName": "infectedhostnames",
+            "type": "shortText",
+            "name": "Infected Hostnames"
         },
         {
-        "cliName": "infinipointhostname",
-        "type": "shortText"
+            "cliName": "infinipointhostname",
+            "type": "shortText",
+            "name": "Infinipoint hostname"
         },
         {
-        "cliName": "prismacloudcomputehost",
-        "type": "shortText"
+            "cliName": "prismacloudcomputehost",
+            "type": "shortText",
+            "name": "Prisma Cloud Compute Host"
         },
         {
-        "cliName": "shadowitfqdn",
-        "type": "shortText"
+            "cliName": "shadowitfqdn",
+            "type": "shortText",
+            "name": "Shadow IT FQDN"
         },
         {
-        "cliName": "sourcehostname",
-        "type": "shortText"
+            "cliName": "sourcehostname",
+            "type": "shortText",
+            "name": "Source Hostname"
         },
         {
-        "cliName": "srchostname",
-        "type": "shortText"
+            "cliName": "srchostname",
+            "type": "shortText",
+            "name": "Src Hostname"
         },
         {
-        "cliName": "threathuntingdetectedhostnames",
-        "type": "multiSelect"
+            "cliName": "threathuntingdetectedhostnames",
+            "type": "multiSelect",
+            "name": "Threat Hunting Detected Hostnames"
         },
         {
-        "cliName": "tidyhost",
-        "type": "shortText"
+            "cliName": "tidyhost",
+            "type": "shortText",
+            "name": "TidyHost"
         },
         {
-        "cliName": "bitsightassets",
-        "type": "longText"
+            "cliName": "bitsightassets",
+            "type": "longText",
+            "name": "BitSight Assets"
         },
         {
-        "cliName": "bmcremedyforceclientname",
-        "type": "shortText"
+            "cliName": "bmcremedyforceclientname",
+            "type": "shortText",
+            "name": "Bmc Remedyforce Client Name"
         },
         {
-        "cliName": "darktracedevicehostname",
-        "type": "shortText"
+            "cliName": "darktracedevicehostname",
+            "type": "shortText",
+            "name": "Darktrace Device Hostname"
         },
         {
-        "cliName": "digitalguardiancomputername",
-        "type": "shortText"
+            "cliName": "digitalguardiancomputername",
+            "type": "shortText",
+            "name": "Digital Guardian Computer Name "
         },
         {
-        "cliName": "dnsname",
-        "type": "multiSelect"
+            "cliName": "dnsname",
+            "type": "multiSelect",
+            "name": "DNS Name"
         },
         {
-        "cliName": "extrahophostname",
-        "type": "shortText"
+            "cliName": "extrahophostname",
+            "type": "shortText",
+            "name": "ExtraHop Hostname"
         },
         {
-        "cliName": "googlecloudsccfindingsourcepropertieshostname",
-        "type": "shortText"
+            "cliName": "googlecloudsccfindingsourcepropertieshostname",
+            "type": "shortText",
+            "name": "GoogleCloudSCC Finding SourceProperties HostName"
         },
         {
             "cliName": "desthostname",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Dest Hostname"
         },
         {
             "cliName": "destinationhostname",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Destination Hostname"
         },
         {
             "cliName": "hostnames",
-            "type": "multiSelect"
+            "type": "multiSelect",
+            "name": "Hostnames"
         }
     ]
 }
