@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import re
 
 
 def get_entry_id_list(attachments, files):
@@ -53,6 +54,25 @@ def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, em
     return single_reply
 
 
+def html_cleanup(full_thread_html):
+    """
+        Moves various HTML tags so the final output is a single HTML document
+    Args:
+        full_thread_html (string): The concatenated string of all email HTML
+    Returns:
+        str. Full email thread HTML
+    """
+    # Remove HTML tags within the string that should only occur once
+    full_thread_html = re.sub('(?i)<!DOCTYPE html>', '', full_thread_html)
+    full_thread_html = re.sub('(?i)<.?html>', '', full_thread_html)
+    full_thread_html = re.sub('(?i)<.?body>', '', full_thread_html)
+
+    # Place needed HTML tags in their appropriate locations
+    final_html_result = f'<!DOCTYPE html>\n<html>\n<body>\n{full_thread_html}\n</body>\n</html>'
+
+    return final_html_result
+
+
 def main():
     incident = demisto.incident()
     custom_fields = incident.get('CustomFields')
@@ -96,10 +116,12 @@ def main():
                                           attachments, thread['email_attachments'])
             full_thread_html += email_reply
 
+        final_html_result = html_cleanup(full_thread_html
+                                         )
         return_results({
             'ContentsFormat': EntryFormat.HTML,
             'Type': EntryType.NOTE,
-            'Contents': full_thread_html
+            'Contents': final_html_result
         })
     else:
         return_error(f"An email thread of {thread_number} was not found. Please make sure this thread number is correct.")

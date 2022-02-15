@@ -1,6 +1,6 @@
 commonfields:
   id: PreprocessEmail
-  version: 80
+  version: 81
 contentitemexportablefields:
   contentitemfields:
     packID: EmailCommunication

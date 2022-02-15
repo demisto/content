@@ -110,7 +110,7 @@ def get_email_threads(incident_id):
 
 def create_thread_context(email_code, email_cc, email_bcc, email_text, email_from, email_html,
                           email_latest_message, email_received, email_replyto, email_subject, email_to,
-                          incident_id, attachment_names):
+                          incident_id, new_attachment_names):
     thread_number = str()
     thread_found = False
     try:
@@ -155,7 +155,7 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
             'EmailReplyTo': email_replyto,
             'EmailSubject': email_subject,
             'EmailTo': email_to,
-            'EmailAttachments': f'{attachment_names}',
+            'EmailAttachments': f'{new_attachment_names}',
             'MessageDirection': 'outbound',
             'MessageTime': dt.utcnow().strftime("%Y-%m-%dT%H:%M:%SUTC")
         }
@@ -171,7 +171,7 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
 
 
 def send_new_email(incident_id, email_subject, email_to, email_body, service_mail, email_cc, email_bcc, email_html_body,
-                   entry_id_list, email_code, mail_sender_instance, attachment_names):
+                   entry_id_list, email_code, mail_sender_instance, new_attachment_names):
     """Send new email.-
     Args:
         incident_id: The incident ID.
@@ -185,13 +185,13 @@ def send_new_email(incident_id, email_subject, email_to, email_body, service_mai
         entry_id_list: The files entry ids list.
         email_code: The random code that was generated when the incident was created.
         mail_sender_instance: The name of the mail sender integration instance
-        attachment_names: List of attachment file names
+        new_attachment_names: List of attachment file names
     """
     # Get the custom email signature, if set, and append it to the message to be sent
     email_html_body = append_email_signature(email_html_body)
 
     email_result = send_new_mail_request(incident_id, email_subject, email_to, email_body, service_mail, email_cc,
-                                         email_bcc, email_html_body, entry_id_list, attachment_names, email_code,
+                                         email_bcc, email_html_body, entry_id_list, new_attachment_names, email_code,
                                          mail_sender_instance)
 
     status = email_result[0].get('Contents', '')
@@ -206,7 +206,7 @@ def send_new_email(incident_id, email_subject, email_to, email_body, service_mai
 
 
 def send_new_mail_request(incident_id, email_subject, email_to, email_body, service_mail, email_cc, email_bcc,
-                          email_html_body, entry_id_list, attachment_names, email_code, mail_sender_instance):
+                          email_html_body, entry_id_list, new_attachment_names, email_code, mail_sender_instance):
     """
             Use message details from the selected thread to construct a new mail message, since resending a first-contact
             email does not have a Message ID to reply to.
@@ -219,7 +219,7 @@ def send_new_mail_request(incident_id, email_subject, email_to, email_body, serv
             email_bcc: The email bcc
             email_html_body: The email html body
             entry_id_list: The files entry ids list
-            attachment_names: List of attachment file names
+            new_attachment_names: List of attachment file names
             email_code: The random code that was generated when the incident was created
             mail_sender_instance: The service email (sender address)
             service_mail: Address the email is sent from
@@ -246,7 +246,7 @@ def send_new_mail_request(incident_id, email_subject, email_to, email_body, serv
 
     # Store message details in context entry
     create_thread_context(email_code, email_cc, email_bcc, email_body, service_mail, email_html_body,
-                          "", "", service_mail, subject_with_id, email_to, incident_id, attachment_names)
+                          "", "", service_mail, subject_with_id, email_to, incident_id, new_attachment_names)
 
     return email_result
 
@@ -270,20 +270,30 @@ def get_email_cc(current_cc=None, additional_cc=None):
     return ''
 
 
-def get_entry_id_list(incident_id, attachments, files):
+def get_entry_id_list(incident_id, attachments, new_email_attachments, files):
     """Get the email attachments and create entry id list.
     Args:
         incident_id (str): The incident id.
-        attachments (list): The attachments of the email.
+        attachments (list): The attachments of the original incident email.
+        new_email_attachments (list): Attachments to send on new emails
         files (list): The uploaded files in the context.
     Returns:
         list. Attachments entries ids list.
     """
     entry_id_list = []
-    if attachments and files:
-        for attachment in attachments:
+    if attachments:
+        attachment_list = attachments
+        field_name = 'attachment'
+    elif new_email_attachments:
+        attachment_list = new_email_attachments
+        field_name = 'emailnewattachment'
+    else:
+        attachment_list = False
+
+    if attachment_list and files:
+        for attachment in attachment_list:
             attachment_name = attachment.get('name', '')
-            file_data = create_file_data_json(attachment)
+            file_data = create_file_data_json(attachment, field_name)
             demisto.executeCommand("demisto-api-post", {"uri": f"/incident/remove/{incident_id}", "body": file_data})
             if not isinstance(files, list):
                 files = [files]
@@ -294,10 +304,11 @@ def get_entry_id_list(incident_id, attachments, files):
     return entry_id_list
 
 
-def create_file_data_json(attachment):
+def create_file_data_json(attachment, field_name):
     """Get attachment and create a json with its data.
     Args:
         attachment (dict): The attachments of the email.
+        field_name (string): The name of the attachment field to process
     Returns:
         dict. Attachment data.
     """
@@ -307,7 +318,7 @@ def create_file_data_json(attachment):
     attachment_media_file = attachment['showMediaFile']
     attachment_description = attachment['description']
     file_data = {
-        "fieldName": "attachment",
+        "fieldName": field_name,
         "files": {
             attachment_path: {
                 "description": "", "name": attachment_name, "path": attachment_path,
@@ -484,8 +495,8 @@ def reset_fields():
                                            'emailnewbody': '', 'addcctoemail': '', 'addbcctoemail': ''})
 
 
-def resend_first_contact(email_selected_thread, email_thread, incident_id, attachments, files, new_email_body,
-                         add_cc, add_bcc, service_mail, mail_sender_instance, attachment_names):
+def resend_first_contact(email_selected_thread, email_thread, incident_id, new_email_attachments, files, new_email_body,
+                         add_cc, add_bcc, service_mail, mail_sender_instance, new_attachment_names):
     """
         Use message details from the selected thread to construct a new mail message, since resending a first-contact
         email does not have a Message ID to reply to.
@@ -493,14 +504,14 @@ def resend_first_contact(email_selected_thread, email_thread, incident_id, attac
         email_selected_thread: Selected thread number to re-send
         email_thread: Dict containing the thread details
         incident_id: ID of the current incident
-        attachments: Dict of attachment details
+        new_email_attachments: Dict of attachment details
         files: Incident files
         new_email_body: The email body
         add_cc: The email CC list
         add_bcc: The email BCC list
         service_mail: Address the email is sent from
         mail_sender_instance: The service email (sender address)
-        attachment_names: List of attachment file names
+        new_attachment_names: List of attachment file names
     Returns: Results from send_new_email function
     """
     # Verify the selected thread ID matches this dict
@@ -510,21 +521,36 @@ def resend_first_contact(email_selected_thread, email_thread, incident_id, attac
         thread_bcc = email_thread['EmailBCC']
         reply_subject = email_thread['EmailSubject']
         reply_code = email_thread['EmailCommsThreadId']
-        entry_id_list = get_entry_id_list(incident_id, attachments, files)
+        entry_id_list = get_entry_id_list(incident_id, [], new_email_attachments, files)
 
-        res = demisto.executeCommand("mdToHtml", {"text": new_email_body})
-        html_body = res[0]['Contents']
+        html_body = format_body(new_email_body)
 
         final_email_cc = get_email_cc(thread_cc, add_cc)
         final_email_bcc = get_email_cc(thread_bcc, add_bcc)
         result = send_new_email(incident_id, reply_subject, new_email_recipients, new_email_body,
                                 service_mail, final_email_cc, final_email_bcc, html_body, entry_id_list,
-                                reply_code, mail_sender_instance, attachment_names)
+                                reply_code, mail_sender_instance, new_attachment_names)
 
         return result
     else:
         return_error(f'The selected Thread Number to respond to ({email_selected_thread}) '
                      f'does not exist.  Please choose a valid Thread Number and re-try.')
+
+
+def format_body(new_email_body):
+    """
+        Converts markdown included in the email body to HTML
+    Args:
+        new_email_body (str): Email body text with or without markdown formatting included
+    Returns: (str) HTML email body
+    """
+    # Replace newlines with <br> element to preserve line breaks
+    new_email_body = new_email_body.replace('\n', '<br>')
+
+    res = demisto.executeCommand("mdToHtml", {"text": new_email_body})
+    html_body = res[0]['Contents']
+
+    return html_body
 
 
 def main():
@@ -548,6 +574,7 @@ def main():
     email_to_str = get_email_recipients(email_to, email_from, service_mail, mailbox)
     files = args.get('files', {})
     attachments = args.get('attachment', {})
+    new_email_attachments = custom_fields.get('emailnewattachment', {})
     notes = demisto.executeCommand("getEntries", {'filter': {'categories': ['notes']}})
     mail_sender_instance = args.get('mail_sender_instance')
     new_thread = args.get('new_thread')
@@ -561,6 +588,11 @@ def main():
     else:
         attachment_names = ["None"]
 
+    if new_email_attachments:
+        new_attachment_names = [attachment.get('name', '') for attachment in new_email_attachments]
+    else:
+        new_attachment_names = ["None"]
+
     if new_thread == 'n/a':
         # Default action - Use Incident fields to construct & send email reply.
         # This action is used by the "Email Communication" layout
@@ -572,7 +604,7 @@ def main():
         try:
             final_email_cc = get_email_cc(email_cc, add_cc)
             reply_body, reply_html_body = get_reply_body(notes, incident_id, attachments)
-            entry_id_list = get_entry_id_list(incident_id, attachments, files)
+            entry_id_list = get_entry_id_list(incident_id, attachments, [], files)
             result = send_reply(incident_id, email_subject, email_to_str, reply_body, service_mail, final_email_cc, '',
                                 reply_html_body, entry_id_list, email_latest_message, email_code, mail_sender_instance)
             return_results(result)
@@ -608,12 +640,13 @@ def main():
                                    {'id': incident.get('id'),
                                     'customFields': {'emailgeneratedcodes': f"{thread_code}"}})
         try:
-            entry_id_list = get_entry_id_list(incident_id, attachments, files)
-            res = demisto.executeCommand("mdToHtml", {"text": new_email_body})
-            html_body = res[0]['Contents']
+            entry_id_list = get_entry_id_list(incident_id, [], new_email_attachments, files)
+
+            html_body = format_body(new_email_body)
+
             result = send_new_email(incident_id, new_email_subject, new_email_recipients, new_email_body,
                                     service_mail, add_cc, add_bcc, html_body, entry_id_list,
-                                    thread_code, mail_sender_instance, attachment_names)
+                                    thread_code, mail_sender_instance, new_attachment_names)
             return_results(result)
 
             # Clear fields for re-use
@@ -652,9 +685,12 @@ def main():
                 this was an 'outbound' message, as it is not possible for an an initial incoming message
                 to be stored as a thread without an existing incident to link to.
                 """
-                result = resend_first_contact(email_selected_thread, incident_email_threads, incident_id, attachments,
+                # Format any markdown in the email body as HTML
+                new_email_body = format_body(new_email_body)
+
+                result = resend_first_contact(email_selected_thread, incident_email_threads, incident_id, new_email_attachments,
                                               files, new_email_body, add_cc, add_bcc, service_mail,
-                                              mail_sender_instance, attachment_names)
+                                              mail_sender_instance, new_attachment_names)
 
                 # Clear fields for re-use
                 reset_fields()
@@ -723,9 +759,13 @@ def main():
                 if outbound_only is True:
                     # If this thread does not contain any inbound messages, then this is an update to the original
                     # first-contact message and must be sent as a new email message.
+
+                    # Format any markdown in the email body as HTML
+                    new_email_body = format(new_email_body)
+
                     result = resend_first_contact(email_selected_thread, incident_email_threads[last_thread_processed],
-                                                  incident_id, attachments, files, new_email_body, add_cc, add_bcc,
-                                                  service_mail, mail_sender_instance, attachment_names)
+                                                  incident_id, new_email_attachments, files, new_email_body, add_cc,
+                                                  add_bcc, service_mail, mail_sender_instance, new_attachment_names)
 
                     # Clear fields for re-use
                     reset_fields()
@@ -747,11 +787,10 @@ def main():
                 final_email_bcc = get_email_cc(thread_bcc, add_bcc)
 
                 # Get a list of entry ID's for attachments that were fetched as files
-                entry_id_list = get_entry_id_list(incident_id, attachments, files)
+                entry_id_list = get_entry_id_list(incident_id, [], new_email_attachments, files)
 
                 # Format any markdown in the email body as HTML
-                res = demisto.executeCommand("mdToHtml", {"text": new_email_body})
-                reply_html_body = res[0]['Contents']
+                reply_html_body = format(new_email_body)
 
                 # Trim "Re:" from subject since the reply-mail command in both EWS and Gmail adds it again
                 reply_subject = reply_subject.lstrip("Re: ")
@@ -770,7 +809,7 @@ def main():
                 # Store message details in context entry
                 create_thread_context(reply_code, final_email_cc, final_email_bcc, new_email_body, service_mail,
                                       reply_html_body, '', '', service_mail, subject_with_id, final_reply_recipients,
-                                      incident_id, attachment_names)
+                                      incident_id, new_attachment_names)
 
                 # Clear fields for re-use
                 reset_fields()

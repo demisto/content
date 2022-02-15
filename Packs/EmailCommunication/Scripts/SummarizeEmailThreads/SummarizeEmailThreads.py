@@ -14,15 +14,15 @@ def fetch_email_threads(incident_id):
     # Get current email threads from context if any are present
     try:
         incident_context = demisto.executeCommand("getContext", {'id': incident_id})
-        incident_email_threads = dict_safe_get(incident_context[0], ['Contents', 'context', 'EmailThreads'])
+        threads = dict_safe_get(incident_context[0], ['Contents', 'context', 'EmailThreads'])
 
-        if not incident_email_threads:
+        if not threads:
             return None
 
         # Return a list of dicts, even if there is only one thread entry and the context item is a list
-        if isinstance(incident_email_threads, dict):
-            incident_email_threads = [incident_email_threads]
-        return incident_email_threads
+        threads = [threads] if isinstance(threads, dict) else threads
+
+        return threads
 
     except Exception as e:
         print(f'Exception in fetch_email_threads: {e}')

@@ -17,7 +17,7 @@
 				"name": "Email Threads",
 				"sections": [
 					{
-						"description": "Fill out boxes from top to bottom to construct and send email messages.\nUse the \"New Thread\" workflow to start a new email communication thread.\nUse the \"Existing Thread\" workflow to respond to an existing  email communication thread.",
+						"description": "Fill out boxes from top to bottom to construct and send email messages.  You must enable the \"Show Empty Fields\" checkbox to see all needed fields.\nUse the \"New Thread\" workflow to start a new email communication thread.\nUse the \"Existing Thread\" workflow to respond to an existing  email communication thread.",
 						"displayType": "ROW",
 						"h": 1,
 						"hideName": false,
@@ -261,7 +261,27 @@
 										"simple": "EmailThreadUpdate"
 									},
 									"value": {
-										"simple": "${incident.emailselectedthread}"
+										"complex": {
+											"accessor": "emailselectedthread",
+											"filters": [],
+											"root": "incident",
+											"transformers": [
+												{
+													"args": {
+														"applyIfEmpty": {
+															"isContext": false
+														},
+														"defaultValue": {
+															"isContext": false,
+															"value": {
+																"simple": "0"
+															}
+														}
+													},
+													"operator": "SetIfEmpty"
+												}
+											]
+										}
 									}
 								},
 								"buttonClass": "warning",
@@ -314,14 +334,11 @@
 						"i": "es2ik6qpfh-edsrfgt5ii-87317e70-7d56-11ec-b8c5-4554d2e91d33",
 						"items": [
 							{
-								"dropEffect": "move",
 								"endCol": 4,
-								"fieldId": "incident_attachment",
+								"fieldId": "emailnewattachment",
 								"height": 53,
-								"id": "87265ae1-7d56-11ec-b8c5-4554d2e91d33",
+								"id": "3142f6f0-8e9b-11ec-9c10-c3ee7e81d062",
 								"index": 0,
-								"isVisible": true,
-								"listId": "es2ik6qpfh-edsrfgt5ii-87317e70-7d56-11ec-b8c5-4554d2e91d33",
 								"sectionItemType": "field",
 								"startCol": 0
 							}
