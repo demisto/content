@@ -1,0 +1,20 @@
+commonfields:
+  id: NexposeVulnExtractor
+  version: -1
+name: NexposeVulnExtractor
+script: ''
+type: javascript
+tags:
+- nexpose
+comment: Parse a specific server nexpose response in to a table of vulnerabilities.
+system: true
+args:
+- name: report
+  description: Full XML contents of the Nexpose report. If not provided, it will be
+    taken from the Incident Details.
+scripttarget: 0
+dependson:
+  must:
+  - nexpose
+timeout: 0s
+fromversion: 5.0.0
