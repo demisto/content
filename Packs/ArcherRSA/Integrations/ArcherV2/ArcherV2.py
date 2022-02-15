@@ -269,11 +269,12 @@ def get_occurred_time(fields: Union[List[dict], dict], field_id: str) -> str:
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, username, password, instance_name, domain, **kwargs):
+    def __init__(self, base_url, username, password, instance_name, domain, timeout, **kwargs):
         self.username = username
         self.password = password
         self.instance_name = instance_name
         self.domain = domain
+        self.timeout = timeout
         super(Client, self).__init__(base_url=base_url, headers=REQUEST_HEADERS, **kwargs)
 
     def do_request(self, method, url_suffix, data=None, params=None):
@@ -281,12 +282,12 @@ class Client(BaseClient):
             self.update_session()
 
         res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data, params=params,
-                                 resp_type='response', ok_codes=(200, 401), timeout=200)
+                                 resp_type='response', ok_codes=(200, 401), timeout=self.timeout)
 
         if res.status_code == 401:
             self.update_session()
             res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data,
-                                     resp_type='response', ok_codes=(200, 401), timeout=200)
+                                     resp_type='response', ok_codes=(200, 401), timeout=self.timeout)
 
         return res.json()
 
@@ -298,7 +299,7 @@ class Client(BaseClient):
             'Password': self.password
         }
         try:
-            res = self._http_request('POST', f'{API_ENDPOINT}/core/security/login', json_data=body, timeout=200)
+            res = self._http_request('POST', f'{API_ENDPOINT}/core/security/login', json_data=body, timeout=self.timeout)
         except DemistoException as e:
             if '<html>' in str(e):
                 raise DemistoException(f"Check the given URL, it can be a redirect issue. Failed with error: {str(e)}")
@@ -1286,6 +1287,7 @@ def main():
         params.get('userDomain'),
         verify=not params.get('insecure', False),
         proxy=params.get('proxy', False),
+        timeout=int(params.get('timeout', 400))
     )
     commands = {
         'archer-search-applications': search_applications_command,
