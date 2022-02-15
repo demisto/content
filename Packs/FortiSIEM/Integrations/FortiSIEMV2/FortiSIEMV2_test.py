@@ -122,7 +122,6 @@ def test_monitored_organizations_list(requests_mock):
     assert len(outputs) == 1
     assert outputs[0]['custId'] == '0'
     assert outputs[0]['id'] == '500003'
-    assert outputs[0]['creationTime'] == '2021-11-23T08:58:49'
 
 
 @pytest.mark.parametrize("command_arguments,expected_response,expected_msg", [
@@ -173,7 +172,7 @@ def test_list_events_by_incident(requests_mock):
     })
     outputs = result.outputs
     assert len(outputs) == 2
-    assert outputs[0]['id'] == 1111
+    assert outputs[0]['id'] == "1111"
     assert outputs[0]['attributes']['Reporting IP'] == '192.168.1.1'
     assert outputs[1]['id'] == 9071234812007542512
     assert outputs[1]['attributes']['Reporting IP'] == '192.168.1.2'
