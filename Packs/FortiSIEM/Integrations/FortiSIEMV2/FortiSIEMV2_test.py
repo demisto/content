@@ -174,7 +174,7 @@ def test_list_events_by_incident(requests_mock):
     assert len(outputs) == 2
     assert outputs[0]['id'] == "1111"
     assert outputs[0]['attributes']['Reporting IP'] == '192.168.1.1'
-    assert outputs[1]['id'] == 9071234812007542512
+    assert outputs[1]['id'] == "9071234812007542512"
     assert outputs[1]['attributes']['Reporting IP'] == '192.168.1.2'
 
 
