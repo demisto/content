@@ -8890,6 +8890,93 @@ def shorten_string_for_printing(source_string, max_length=64):
         return ret_value
 
 
+class PollResult:
+    """The response object for polling functions. This object contains information about whether to run again, and what
+    the CommandResults are in case of success, or failure.
+
+    :return: PollResult
+    :rtype: ``PollResult``
+
+    """
+    def __init__(self, response, continue_to_poll=False, args_for_next_run=None, partial_result=None):
+        """
+        Constructor for PollResult
+
+        :type response: ``Any``
+        :param response: The response of the command in the event of success,
+        or in case of failure but Polling is false
+
+        :type continue_to_poll: ``Union[bool, Callable]``
+        :param continue_to_poll: An iterable of relevant keys list from the json. Notice we save it as a set in the class
+
+        :type args_for_next_run: ``Dict``
+        :param args_for_next_run: The arguments to use in the next iteration. Will use the input args in case of None
+
+        :type partial_result: ``CommandResults``
+        :param partial_result: CommandResults to return, even though we will poll again
+
+        """
+        self.response = response
+        self.continue_to_poll = continue_to_poll
+        self.args_for_next_run = args_for_next_run
+        self.partial_result = partial_result
+
+
+def polling_function(name, interval=30, timeout=600, poll_message='Fetching Results:', polling_arg_name="polling",
+                     requires_polling_arg=True):
+    """
+    To use on a function that should rerun itself
+    Commands that use this decorator must have a Polling argument, polling: true in yaml,
+    and a hidden hide_polling_output argument.
+    Commands that use this decorator should return a PollResult.
+    Will raise an DemistoException if the server version doesn't support Scheduled Commands (< 6.2.0)
+
+    :type name: ``str``
+    :param name: The name of the command
+
+    :type interval: ``int``
+    :param interval: How many seconds until the next run
+
+    :type timeout: ``int``
+    :param timeout: How long
+
+    :type poll_message: ``str``
+    :param poll_message: The message to display in the war room while polling
+
+    :type requires_polling_arg: ``bool``
+    :param requires_polling_arg: Whether a polling argument should be expected as one of the demisto args
+
+    :return: Decorator for polling functions
+    :rtype: ``Function``
+    """
+
+    def dec(func):
+        def inner(client, args):
+            if not requires_polling_arg or args.get(polling_arg_name):
+                ScheduledCommand.raise_error_if_not_supported()
+                poll_result = func(client, args)
+
+                should_poll = poll_result.continue_to_poll if isinstance(poll_result.continue_to_poll, bool) \
+                    else poll_result.continue_to_poll()
+                if not should_poll:
+                    return poll_result.response
+
+                readable_output = poll_message if not args.get('hide_polling_output') else None
+                poll_args = poll_result.args_for_next_run or args
+                poll_args['hide_polling_output'] = True
+
+                poll_response = poll_result.partial_result or CommandResults(readable_output=readable_output)
+                poll_response.scheduled_command = ScheduledCommand(command=name, next_run_in_seconds=interval,
+                                                                   args=poll_args, timeout_in_seconds=timeout)
+                return poll_response
+            else:
+                return func(client, args).response
+
+        return inner
+
+    return dec
+
+
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
 ###########################################
