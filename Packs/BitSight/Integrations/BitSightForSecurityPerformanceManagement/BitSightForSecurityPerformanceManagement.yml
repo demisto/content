@@ -1,83 +1,84 @@
+category: Utilities
 commonfields:
   id: BitSight for Security Performance Management
   version: -1
-name: BitSight for Security Performance Management
-display: BitSight for Security Performance Management
-category: Utilities
-description: 'BitSight Integration to get company guid, deatils, findings and to create
-  Incidents. '
 configuration:
 - display: Server URL (e.g. https://test.com)
   name: url
-  type: 0
   required: true
+  type: 0
 - display: API Key
   name: apikey
-  type: 4
   required: true
+  type: 4
 - display: Company's GUID
   name: guid
-  type: 0
   required: false
-- display: First fetch time in days
-  name: first_fetch
-  defaultvalue: "3"
   type: 0
-  required: false
-  additionalinfo: 'Enter the  number in days. When the fetch incident run for first
+- additionalinfo: 'Enter the  number in days. When the fetch incident run for first
     time, incident will be fetched for given number of days '
-- display: Incident Daily Fetch time
-  name: fetch_time
-  defaultvalue: "00:01"
-  type: 0
+  defaultvalue: '3'
+  display: First fetch time in days
+  name: first_fetch
   required: false
-  additionalinfo: Please provide Incident fetch time in day in 24 hours format ('HH:MM').
+  type: 0
+- additionalinfo: Please provide Incident fetch time in day in 24 hours format ('HH:MM').
     Fetch incident will run once a day if execution time greater than the given time
     here.
-- display: Max Fetch
-  name: max_fetch
-  defaultvalue: "100"
+  defaultvalue: 00:01
+  display: Incident Daily Fetch time
+  name: fetch_time
+  required: false
   type: 0
+- additionalinfo: Maximum Number of records to fetch
+  defaultvalue: '100'
+  display: Max Fetch
+  name: max_fetch
   required: false
-  additionalinfo: Maximum Number of records to fetch
-- display: Minimum Severity for Findings
+  type: 0
+- defaultvalue: Material
+  display: Minimum Severity for Findings
   name: findings_min_severity
-  defaultvalue: Material
-  type: 15
-  required: false
   options:
   - Minor
   - Moderate
   - Material
   - Severe
-- display: Findings minimum asset category
-  name: findings_asset_category
-  defaultvalue: High
-  type: 15
   required: false
+  type: 15
+- additionalinfo: Filter by the asset category (critical, high, medium, low)
+  defaultvalue: High
+  display: Findings minimum asset category
+  name: findings_asset_category
   options:
   - Low
   - Medium
   - High
   - Critical
-  additionalinfo: Filter by the asset category (critical, high, medium, low)
-- display: Findings Grade
-  name: findings_grade
-  defaultvalue: WARN,BAD
-  type: 16
   required: false
+  type: 15
+- additionalinfo: Filter the result by the value of grade.
+  defaultvalue: WARN,BAD
+  display: Findings Grade
+  name: findings_grade
   options:
   - GOOD
   - FAIR
   - WARN
   - BAD
   - NEUTRAL
-  additionalinfo: Filter the result by the value of grade.
-- display: Risk Vector ('All' has been selected by default)
-  name: risk_vector
-  defaultvalue: All
-  type: 16
   required: false
+  type: 16
+- additionalinfo: This parameter comma separated list of values. By default 'All'
+    will be selected, if you need only particular values you can unselect 'All' and
+    select the required values. List of values are Web Application Headers, Botnet
+    Infections, Breaches, Desktop Software, DKIM, DNSSEC, File Sharing, Insecure Systems,
+    Malware Servers, Mobile App Publications, Mobile Application Security, Mobile
+    Software, Open Ports, Patching Cadence, Potentially Exploited, Server Software,
+    Spam Propagation, SPF, SSL Certificates, SSL Configurations, Unsolicited Communications.
+  defaultvalue: All
+  display: Risk Vector ('All' has been selected by default)
+  name: risk_vector
   options:
   - Web Application Headers
   - Botnet Infections
@@ -101,38 +102,41 @@ configuration:
   - SSL Configurations
   - Unsolicited Communications
   - All
-  additionalinfo: This parameter comma separated list of values. By default 'All'
-    will be selected, if you need only particular values you can unselect 'All' and
-    select the required values. List of values are Web Application Headers, Botnet
-    Infections, Breaches, Desktop Software, DKIM, DNSSEC, File Sharing, Insecure Systems,
-    Malware Servers, Mobile App Publications, Mobile Application Security, Mobile
-    Software, Open Ports, Patching Cadence, Potentially Exploited, Server Software,
-    Spam Propagation, SPF, SSL Certificates, SSL Configurations, Unsolicited Communications.
+  required: false
+  type: 16
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
+  type: 13
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: 'BitSight Integration to get company guid, deatils, findings and to create
+  Incidents. '
+display: BitSight for Security Performance Management
+name: BitSight for Security Performance Management
 script:
-  script: ''
-  type: python
   commands:
-  - name: bitsight-get-company-details
-    arguments:
-    - name: guid
+  - arguments:
+    - description: GUID of the company to fetch its details
+      name: guid
       required: true
-      description: GUID of the company to fetch its details
+    description: BitSight command - to get comany details based on guid.
+    name: bitsight-get-company-details
     outputs:
     - contextPath: BitSight.Company.errorCode
       description: Error code number when API fails
@@ -251,49 +255,49 @@ script:
     - contextPath: BitSight.Company.companyFeatures
       description: companyFeatures
       type: string
-    description: BitSight command - to get comany details based on guid.
-  - name: bitsight-get-company-findings
-    arguments:
-    - name: guid
+  - arguments:
+    - description: Guid of the company
+      name: guid
       required: true
-      description: Guid of the company
-    - name: first_seen
-      required: true
-      description: 'First seen date of the findings, Date format is YYYY-MM-DD, Example:
+    - description: 'First seen date of the findings, Date format is YYYY-MM-DD, Example:
         2021-01-01'
-    - name: last_seen
+      name: first_seen
       required: true
-      description: 'Last seen date of the findings, Date format is YYYY-MM-DD, Example:
+    - description: 'Last seen date of the findings, Date format is YYYY-MM-DD, Example:
         2021-01-01'
-    - name: severity
-      auto: PREDEFINED
+      name: last_seen
+      required: true
+    - auto: PREDEFINED
+      description: Minimum Severity of the findings
+      name: severity
       predefined:
       - minor
       - moderate
       - material
       - severe
-      description: Minimum Severity of the findings
-    - name: grade
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Grade of the findings. This can be a comma-separated list. Select
+        the values from list of pre defined values good,fair,warn,bad,neutral.
+      isArray: true
+      name: grade
       predefined:
       - good
       - fair
       - warn
       - bad
       - neutral
-      description: Grade of the findings. This can be a comma-separated list. Select
-        the values from list of pre defined values good,fair,warn,bad,neutral.
-      isArray: true
-    - name: asset_category
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Asset Category of the findings
+      name: asset_category
       predefined:
       - low
       - medium
       - high
       - critical
-      description: Asset Category of the findings
-    - name: risk_vector_label
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Risk category of the findings
+      isArray: true
+      name: risk_vector_label
       predefined:
       - Web Application Headers
       - Botnet Infections
@@ -316,8 +320,8 @@ script:
       - SSL Certificates
       - SSL Configurations
       - Unsolicited Communications
-      description: Risk category of the findings
-      isArray: true
+    description: BitSight command to get company findings
+    name: bitsight-get-company-findings
     outputs:
     - contextPath: BitSight.Finding.errorCode
       description: Error code number when API fails
@@ -377,9 +381,9 @@ script:
     - contextPath: BitSight.Finding.remainingDecay
       description: remaining decay
       type: string
-    description: BitSight command to get company findings
-  - name: bitsight-get-companies-guid
-    arguments: []
+  - arguments: []
+    description: BitSight command to get list of companies and GUID
+    name: bitsight-get-companies-guid
     outputs:
     - contextPath: BitSight.Guid.companyName
       description: Name of the company
@@ -396,12 +400,13 @@ script:
     - contextPath: BitSight.Guid.errorMessage
       description: Error Message in case API fails
       type: String
-    description: BitSight command to get list of companies and GUID
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
+  isFetchSamples: true
   isfetch: true
   runonce: false
+  script: ''
   subtype: python3
-  isFetchSamples: true
+  type: python
 fromversion: 6.0.0
 tests:
 - No tests
