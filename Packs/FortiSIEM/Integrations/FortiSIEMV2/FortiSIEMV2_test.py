@@ -43,16 +43,17 @@ def mock_client():
     return FortiSIEMClient(SERVER_URL, True, False, {}, (USERNAME, PASSWORD))
 
 
-@pytest.mark.parametrize("mock_response_file,command_arguments,expected_devices_number,expected_device_name", [
-    ('list_devices_1.xml', {
-        'include_ip_list': f'{IP_ADDRESS_1},{IP_ADDRESS_2}'
-    }, 2, 'DEVICE_1'),
-    ('list_devices_1.xml', {}, 2, 'DEVICE_1'),
-    ('list_devices_2.xml', {
-        'include_ip_list': f'{IP_ADDRESS_1}-{IP_ADDRESS_2}',
-        'exclude_ip_list': f'{IP_ADDRESS_1}'
-    }, 1, 'DEVICE_2')
-])
+@pytest.mark.parametrize("mock_response_file,command_arguments,expected_devices_number,expected_device_name",
+                         [
+                             ('list_devices_1.xml', {
+                                 'include_ip_list': f'{IP_ADDRESS_1},{IP_ADDRESS_2}'
+                             }, 2, 'DEVICE_1'),
+                             ('list_devices_1.xml', {}, 2, 'DEVICE_1'),
+                             ('list_devices_2.xml', {
+                                 'include_ip_list': f'{IP_ADDRESS_1}-{IP_ADDRESS_2}',
+                                 'exclude_ip_list': f'{IP_ADDRESS_1}'
+                             }, 1, 'DEVICE_2')
+                         ])
 def test_cmdb_devices_list(mock_response_file, command_arguments, expected_devices_number, expected_device_name,
                            requests_mock):
     """
@@ -124,13 +125,10 @@ def test_monitored_organizations_list(requests_mock):
     assert outputs[0]['id'] == '500003'
 
 
-@pytest.mark.parametrize(
-    "command_arguments,expected_response,expected_msg",
-    [
-        ({
-             "incident_id": "123", "comment": "test-success"
-         }, "OK", "successfully updated")
-    ])
+@pytest.mark.parametrize("command_arguments,expected_response,expected_msg",
+                         [({"incident_id": "123", "comment": "test-success"},
+                           "OK", "successfully updated")
+                          ])
 def test_update_incident(command_arguments, expected_response, expected_msg, requests_mock):
     """
     Scenario: Update incident.
@@ -182,14 +180,11 @@ def test_list_events_by_incident(requests_mock):
 
 @pytest.mark.parametrize(
     "command_arguments,response_file,suffix_url,watchlist_number,watchlist_id,watchlist_display_name",
-    [
-        ({
-             "limit": "2",
-         }, 'list_watchlist.json', 'watchlist/all', 2, 111, "Accounts Locked"),
-        ({
-             "entry_value": "192.168.1.1"
-         }, 'list_watchlist2.json', 'watchlist/value', 1, 112, "Port Scanners")
-    ])
+    [({"limit": "2"},
+      'list_watchlist.json', 'watchlist/all', 2, 111, "Accounts Locked"),
+     ({"entry_value": "192.168.1.1"},
+      'list_watchlist2.json', 'watchlist/value', 1, 112, "Port Scanners")
+     ])
 def test_list_watchlist(command_arguments, response_file, suffix_url, watchlist_number, watchlist_id,
                         watchlist_display_name, requests_mock):
     """
@@ -215,18 +210,13 @@ def test_list_watchlist(command_arguments, response_file, suffix_url, watchlist_
     assert outputs[0]['displayName'] == watchlist_display_name
 
 
-@pytest.mark.parametrize(
-    "command_arguments,response_file,suffix_url,watchlist_id,watchlist_display_name",
-    [
-        ({
-             "watchlist_id": "111",
-         }, 'get_watchlist.json', 'watchlist/111', 111, "Accounts Locked"),
-        ({
-             "entry_id": "55555"
-         }, 'list_watchlist2.json', 'watchlist/byEntry/55555', 112, "Port Scanners")
-    ])
-def test_get_watchlist(command_arguments, response_file, suffix_url, watchlist_id,
-                       watchlist_display_name, requests_mock):
+@pytest.mark.parametrize("command_arguments,response_file,suffix_url,watchlist_id,watchlist_display_name",
+                         [({"watchlist_id": "111"},
+                           'get_watchlist.json', 'watchlist/111', 111, "Accounts Locked"),
+                          ({"entry_id": "55555"},
+                           'list_watchlist2.json', 'watchlist/byEntry/55555', 112, "Port Scanners")])
+def test_get_watchlist(command_arguments, response_file, suffix_url, watchlist_id, watchlist_display_name,
+                       requests_mock):
     """
         Scenario: Get Watchlist group.
         Given:
