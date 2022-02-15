@@ -11,6 +11,13 @@ requests.packages.urllib3.disable_warnings()
 PARAMS = demisto.params()
 URL = PARAMS.get('server')
 TOKEN = PARAMS.get('token') or (PARAMS.get('credentials') or {}).get('password')
+if not TOKEN and is_demisto_version_ge('6.5.0'):
+    try:
+        TOKEN = demisto.getLicenseCustomField('WildFire-Reports.token')
+    except Exception as e:
+        TOKEN = None
+if not TOKEN:
+    return_error("Error: Missing credentials information which is critical for usability.")
 USE_SSL = not PARAMS.get('insecure', False)
 FILE_TYPE_SUPPRESS_ERROR = PARAMS.get('suppress_file_type_error')
 RELIABILITY = PARAMS.get('integrationReliability', DBotScoreReliability.B) or DBotScoreReliability.B
