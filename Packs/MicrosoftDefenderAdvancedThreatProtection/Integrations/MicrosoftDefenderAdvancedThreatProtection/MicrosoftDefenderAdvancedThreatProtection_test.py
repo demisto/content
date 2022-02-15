@@ -966,12 +966,12 @@ LAST_RUN = {'arguments': "''", 'comment': 'testing',
             'machine_action_id': 'action_id_example',
             'machine_id': 'machine_id_example', 'scriptName': 'test_script.ps1'}
 POLLING_CASES = [
-    (FIRST_RUN, '', 'PollingArgs', {'machine_action_id': 'action_id_example', 'interval_in_seconds': 5,
+    (FIRST_RUN, '', 'PollingArgs', {'machine_action_id': 'action_id_example', 'interval_in_seconds': 10,
                                     'polling': True, 'arguments': "''", 'comment': 'testing',
                                     'machine_id': 'machine_id_example',
                                     'scriptName': 'test_script.ps1'}),
     (SECOND_RUN, 'InProgress', 'PollingArgs',
-     {'interval_in_seconds': 5, 'polling': True, 'arguments': "''", 'comment': 'testing',
+     {'interval_in_seconds': 10, 'polling': True, 'arguments': "''", 'comment': 'testing',
       'machine_action_id': 'action_id_example', 'machine_id': 'machine_id_example',
       'scriptName': 'test_script.ps1'}),
     (LAST_RUN, 'Succeeded', 'Contents', {'example_outputs': 'outputs'})

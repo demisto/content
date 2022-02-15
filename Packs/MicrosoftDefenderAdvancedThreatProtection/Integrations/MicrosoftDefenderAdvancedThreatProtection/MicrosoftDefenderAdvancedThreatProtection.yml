@@ -5252,6 +5252,24 @@ script:
     - contextPath: MicrosoftATP.LiveResponseAction
       description: The machine action ID.
       type: String
+  - arguments:
+      - default: true
+        description: Action ID to retrieve status and data for.
+        isArray: false
+        name: machine_action_id
+        required: true
+        secret: false
+      - default: false
+        description: A comment to associate with the action.
+        isArray: false
+        name: comment
+        required: true
+        secret: false
+    deprecated: false
+    description: Cancel an action with an unfinished status.
+    execution: true
+    name: microsoft-atp-live-response-cancel-action
+    outputs: []
   dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true

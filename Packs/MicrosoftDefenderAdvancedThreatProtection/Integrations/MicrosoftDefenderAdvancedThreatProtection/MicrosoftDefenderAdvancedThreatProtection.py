@@ -968,6 +968,11 @@ class MsClient:
             raise Exception(f'Could not download file. {url_link=}. error: {str(e)}')
         return response
 
+    def cancel_action(self, action_id, request_body):
+        cmd_url = f'https://api.securitycenter.microsoft.com/api/machineactions/{action_id}/cancel'
+        response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=request_body)
+        return response
+
 
 ''' Commands '''
 
@@ -3169,6 +3174,25 @@ def get_machine_action_command(client, args):
     )
 
 
+def cancel_action_command(client, args):
+    action_id = args['machine_action_id']
+    comment = args['comment']
+    body = {
+        "Comment": comment
+    }
+    # cancel action should return either 200 or 404.
+    try:
+        client.cancel_action(action_id, body)
+    except Exception as e:
+        if '404' in str(e):
+            raise Exception(f'Action ID {action_id} could not be found. Make sure you entered the correct ID.')
+        raise
+
+    return CommandResults(
+        readable_output='Action was cancelled successfully.'
+    )
+
+
 # -------------- Run Script ---------------
 
 def run_live_response_script_with_polling(client, args):
@@ -3502,6 +3526,8 @@ def main():
             return_results(get_live_response_file_with_polling(client, args))
         elif command == 'microsoft-atp-live-response-run-script':
             return_results(run_live_response_script_with_polling(client, args))
+        elif command == 'microsoft-atp-live-response-cancel-action':
+            return_results(cancel_action_command(client, args))
         elif command == 'microsoft-atp-live-response-result':
             return_results(get_live_response_result_command(client, args))
     except Exception as err:
