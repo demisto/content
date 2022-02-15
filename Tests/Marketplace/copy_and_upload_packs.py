@@ -365,7 +365,7 @@ def main():
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
-    packs_for_current_marketplace_dict = {}
+    packs_for_current_marketplace = []
 
     for pack in packs_list:
         task_status = pack.load_user_metadata()
@@ -379,11 +379,11 @@ def main():
             pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name
             pack.cleanup()
             continue
-        else:
-            packs_for_current_marketplace_dict[pack.name] = pack
+
+        packs_for_current_marketplace.append(pack)
 
     # Starting iteration over packs
-    for pack_name, pack in packs_for_current_marketplace_dict.items():
+    for pack in packs_for_current_marketplace:
         # Indicates whether a pack has failed to upload on Prepare Content step
         task_status, pack_status = pack.is_failed_to_upload(pc_failed_packs_dict)
         if task_status:
