@@ -467,7 +467,7 @@ def events_search_init_command(client: FortiSIEMClient, args: Dict[str, Any]) ->
     from_time = convert_date_to_timestamp(arg_to_datetime(args['from_time']))
     to_time = convert_date_to_timestamp(arg_to_datetime(args['to_time']))
     query = args.get('query')
-    extend_data = argToBoolean(args.get('extended_data'))
+    extend_data = argToBoolean(args.get('extended_data', False))
     events_constraint = query or build_constraint_from_args(copy.deepcopy(args))
     payload = build_query_xml(events_constraint, from_time, to_time, extend_data)
     response = client.events_search_init_request(payload.decode('utf-8'))
