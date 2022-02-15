@@ -1758,8 +1758,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The element to change (“url”, “recurring”, “certificate_profile”,
-        “description”).
+      description: "The element to change (\u201Curl\u201D, \u201Crecurring\u201D\
+        , \u201Ccertificate_profile\u201D, \u201Cdescription\u201D)."
       isArray: false
       name: element_to_change
       predefined:
@@ -2711,9 +2711,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: backward
-      description: |-
-        Whether logs are shown oldest first (forward) or newest
-        first (backward). Default is backward.
+      description: 'Whether logs are shown oldest first (forward) or newest
+
+        first (backward). Default is backward.'
       isArray: false
       name: direction
       predefined:
@@ -2951,9 +2951,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        The time that the log was generated from the timestamp and prior to it.
-        e.g "2019/08/11 01:10:44".
+      description: 'The time that the log was generated from the timestamp and prior
+        to it.
+
+        e.g "2019/08/11 01:10:44".'
       isArray: false
       name: time-generated
       required: false
@@ -3087,9 +3088,10 @@ script:
       description: Application associated with the session.
       type: String
     - contextPath: Panorama.Monitor.Logs.Category
-      description: The URL category of the URL subtype. For WildFire subtype, it is
-        the verdict on the file, and can be either "malicious", "phishing", "grayware"’,
-        or "benign". For other subtypes, the value is "any".
+      description: "The URL category of the URL subtype. For WildFire subtype, it\
+        \ is the verdict on the file, and can be either \"malicious\", \"phishing\"\
+        , \"grayware\"\u2019, or \"benign\". For other subtypes, the value is \"any\"\
+        ."
       type: String
     - contextPath: Panorama.Monitor.Logs.DeviceName
       description: The hostname of the firewall on which the session was logged.
@@ -3113,28 +3115,35 @@ script:
         analyzed by the WildFire service.
       type: String
     - contextPath: Panorama.Monitor.Logs.FileName
-      description: |-
-        File name or file type when the subtype is file.
+      description: 'File name or file type when the subtype is file.
+
         File name when the subtype is virus.
+
         File name when the subtype is wildfire-virus.
-        File name when the subtype is wildfire.
+
+        File name when the subtype is wildfire.'
       type: String
     - contextPath: Panorama.Monitor.Logs.FileType
-      description: |-
-        Only for the WildFire subtype, all other types do not use this field.
-        Specifies the type of file that the firewall forwarded for WildFire analysis.
+      description: 'Only for the WildFire subtype, all other types do not use this
+        field.
+
+        Specifies the type of file that the firewall forwarded for WildFire analysis.'
       type: String
     - contextPath: Panorama.Monitor.Logs.FromZone
       description: The zone from which the session was sourced.
       type: String
     - contextPath: Panorama.Monitor.Logs.URLOrFilename
-      description: |-
-        The actual URL when the subtype is url.
+      description: 'The actual URL when the subtype is url.
+
         File name or file type when the subtype is file.
+
         File name when the subtype is virus.
+
         File name when the subtype is wildfire-virus.
+
         File name when the subtype is wildfire.
-        URL or file name when the subtype is vulnerability (if applicable).
+
+        URL or file name when the subtype is vulnerability (if applicable).'
       type: String
     - contextPath: Panorama.Monitor.Logs.NATDestinationIP
       description: If destination NAT performed, the post-NAT destination IP address.
@@ -3149,19 +3158,23 @@ script:
       description: Post-NAT source port.
       type: String
     - contextPath: Panorama.Monitor.Logs.PCAPid
-      description: |-
-        The packet capture (pcap) ID is a 64 bit unsigned integral denoting
+      description: 'The packet capture (pcap) ID is a 64 bit unsigned integral denoting
+
         an ID to correlate threat pcap files with extended pcaps taken as a part of
+
         that flow. All threat logs will contain either a pcap_id of 0 (no associated
-        pcap), or an ID referencing the extended pcap file.
+
+        pcap), or an ID referencing the extended pcap file.'
       type: String
     - contextPath: Panorama.Monitor.Logs.IPProtocol
       description: IP protocol associated with the session.
       type: String
     - contextPath: Panorama.Monitor.Logs.Recipient
-      description: |-
-        Only for the WildFire subtype, all other types do not use this field.
-        Specifies the name of the receiver of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+      description: 'Only for the WildFire subtype, all other types do not use this
+        field.
+
+        Specifies the name of the receiver of an email that WildFire determined to
+        be malicious when analyzing an email link forwarded by the firewall.'
       type: String
     - contextPath: Panorama.Monitor.Logs.Rule
       description: Name of the rule that the session matched.
@@ -3173,9 +3186,11 @@ script:
       description: Time the log was received at the management plane.
       type: String
     - contextPath: Panorama.Monitor.Logs.Sender
-      description: |-
-        Only for the WildFire subtype; all other types do not use this field.
-        Specifies the name of the sender of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+      description: 'Only for the WildFire subtype; all other types do not use this
+        field.
+
+        Specifies the name of the sender of an email that WildFire determined to be
+        malicious when analyzing an email link forwarded by the firewall.'
       type: String
     - contextPath: Panorama.Monitor.Logs.SessionID
       description: An internal numerical identifier applied to each session.
@@ -3184,17 +3199,17 @@ script:
       description: The serial number of the firewall on which the session was logged.
       type: String
     - contextPath: Panorama.Monitor.Logs.Severity
-      description: |-
-        Severity associated with the threat. Can be "informational", "low",
-        "medium", "high", or "critical".
+      description: 'Severity associated with the threat. Can be "informational", "low",
+
+        "medium", "high", or "critical".'
       type: String
     - contextPath: Panorama.Monitor.Logs.SourceAddress
       description: Original session source IP address.
       type: String
     - contextPath: Panorama.Monitor.Logs.SourceCountry
-      description: |-
-        Source country or internal region for private addresses. Maximum
-        length is 32 bytes.
+      description: 'Source country or internal region for private addresses. Maximum
+
+        length is 32 bytes.'
       type: String
     - contextPath: Panorama.Monitor.Logs.SourceUser
       description: Username of the user who initiated the session.
@@ -3203,14 +3218,14 @@ script:
       description: Source port utilized by the session.
       type: String
     - contextPath: Panorama.Monitor.Logs.ThreatCategory
-      description: |-
-        Describes threat categories used to classify different types of
-        threat signatures.
+      description: 'Describes threat categories used to classify different types of
+
+        threat signatures.'
       type: String
     - contextPath: Panorama.Monitor.Logs.Name
-      description: |-
-        Palo Alto Networks identifier for the threat. It is a description
-        string followed by a 64-bit numerical identifier
+      description: 'Palo Alto Networks identifier for the threat. It is a description
+
+        string followed by a 64-bit numerical identifier'
       type: String
     - contextPath: Panorama.Monitor.Logs.ID
       description: Palo Alto Networks ID for the threat.
@@ -3222,9 +3237,10 @@ script:
       description: Time that the log was generated on the dataplane.
       type: String
     - contextPath: Panorama.Monitor.Logs.URLCategoryList
-      description: |-
-        A list of the URL filtering categories that the firewall used to
-        enforce the policy.
+      description: 'A list of the URL filtering categories that the firewall used
+        to
+
+        enforce the policy.'
       type: String
     - contextPath: Panorama.Monitor.Logs.Bytes
       description: Total log bytes.
@@ -4564,19 +4580,20 @@ script:
     - contextPath: Panorama.UserIDAgents.Disabled
       description: Whether the user-ID agent is disbaled.
       type: String
-  - name: panorama-upload-content-update-file
-    arguments:
-    - name: entryID
+  - arguments:
+    - description: Entry ID of the file to upload.
+      name: entryID
       required: true
-      description: Entry ID of the file to upload.
-    - name: category
-      required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The category of the content.
+      name: category
       predefined:
       - wildfire
       - anti-virus
       - content
-      description: The category of the content.
+      required: true
+    description: Uploads a content file to Panorama.
+    name: panorama-upload-content-update-file
     outputs:
     - contextPath: Panorama.Content.Upload.Status
       description: Content upload status.
@@ -4584,29 +4601,29 @@ script:
     - contextPath: Panorama.Content.Upload.Message
       description: Content upload message.
       type: string
-    description: Uploads a content file to Panorama.
-  - name: panorama-install-file-content-update
-    arguments:
-    - name: version_name
+  - arguments:
+    - description: Update file name to be installed on PAN-OS.
+      name: version_name
       required: true
-      description: Update file name to be installed on PAN-OS.
-    - name: category
-      required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The category of the content.
+      name: category
       predefined:
       - wildfire
       - anti-virus
       - content
-      description: The category of the content.
-    - name: skip_validity_check
       required: true
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
+    - auto: PREDEFINED
+      defaultValue: 'no'
       description: Skips file validity check with PAN-OS update server. Use this option
         for air-gapped networks and only if you trust the content file.
-      defaultValue: "no"
+      name: skip_validity_check
+      predefined:
+      - 'yes'
+      - 'no'
+      required: true
+    description: Installs specific content update file.
+    name: panorama-install-file-content-update
     outputs:
     - contextPath: Panorama.Content.Install.JobID
       description: JobID of the installation.
@@ -4614,8 +4631,651 @@ script:
     - contextPath: Panorama.Content.Install.Status
       description: Installation status.
       type: string
-    description: Installs specific content update file.
-  dockerimage: demisto/python3:3.9.5.20070
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only show specific hostnames or serial numbers.
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets all arp tables from all firewalls in the topology.
+    name: pan-os-platform-get-arp-tables
+    outputs:
+    - contextPath: PANOS.ShowArp.Summary.hostid
+      type: Unknown
+    - contextPath: PANOS.ShowArp.Summary.max
+      description: Maximum supported ARP Entries
+      type: Unknown
+    - contextPath: PANOS.ShowArp.Summary.total
+      description: Total current arp entries
+      type: Unknown
+    - contextPath: PANOS.ShowArp.Summary.timeout
+      description: ARP entry timeout
+      type: Unknown
+    - contextPath: PANOS.ShowArp.Summary.dp
+      description: Firewall dataplane associated with Entry
+      type: Unknown
+    - contextPath: PANOS.ShowArp.Result.hostid
+      type: Unknown
+    - contextPath: PANOS.ShowArp.Result.interface
+      description: Network interface learnt ARP entry
+      type: Unknown
+    - contextPath: PANOS.ShowArp.Result.ip
+      description: layer 3 address
+      type: Unknown
+    - contextPath: PANOS.ShowArp.Result.mac
+      description: Layer 2 address
+      type: Unknown
+    - contextPath: PANOS.ShowArp.Result.port
+      description: Network interface matching entry
+      type: Unknown
+    - contextPath: PANOS.ShowArp.Result.status
+      description: ARP Entry status
+      type: Unknown
+    - contextPath: PANOS.ShowArp.Result.ttl
+      description: Time to Live
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only show specific hostnames or serial numbers.
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    deprecated: false
+    description: Pulls all route summary information from the topology
+    name: pan-os-platform-get-route-summary
+    outputs:
+    - contextPath: PANOS.ShowRouteSummary.Summary.hostid
+      type: Unknown
+    - contextPath: PANOS.ShowRouteSummary.Summary.total
+      description: Total routes
+      type: Unknown
+    - contextPath: PANOS.ShowRouteSummary.Summary.limit
+      description: Maximum routes for platform
+      type: Unknown
+    - contextPath: PANOS.ShowRouteSummary.Summary.active
+      description: Active routes in routing table
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only show specific hostnames or serial numbers.
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    deprecated: false
+    description: Pulls all route summary information from the topology
+    name: pan-os-platform-get-routes
+    outputs:
+    - contextPath: PANOS.ShowRoute.Summary.hostid
+      type: Unknown
+    - contextPath: PANOS.ShowRoute.Summary.interface
+      description: Next hop interface
+      type: Unknown
+    - contextPath: PANOS.ShowRoute.Summary.route_count
+      description: Total routes seen on virtual router interface
+      type: Unknown
+    - contextPath: PANOS.ShowRoute.Result.hostid
+      type: Unknown
+    - contextPath: PANOS.ShowRoute.Result.virtual_router
+      description: Virtual router this route belongs to
+      type: Unknown
+    - contextPath: PANOS.ShowRoute.Result.destination
+      description: Network destination of route
+      type: Unknown
+    - contextPath: PANOS.ShowRoute.Result.nexthop
+      description: Next hop to destination
+      type: Unknown
+    - contextPath: PANOS.ShowRoute.Result.metric
+      description: Route metric
+      type: Unknown
+    - contextPath: PANOS.ShowRoute.Result.flags
+      description: Route flags
+      type: Unknown
+    - contextPath: PANOS.ShowRoute.Result.age
+      type: Unknown
+    - contextPath: PANOS.ShowRoute.Result.interface
+      description: Next hop interface
+      type: Unknown
+    - contextPath: PANOS.ShowRoute.Result.route_table
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only show specific hostnames or serial numbers.
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets information from all PAN-OS systems in the topology.
+    name: pan-os-platform-get-system-info
+    outputs:
+    - contextPath: PANOS.ShowSystemInfo.Summary.hostid
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Summary.ip_address
+      description: Management IP Address
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Summary.sw_version
+      description: System software version
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Summary.family
+      description: Platform family
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Summary.model
+      description: Platform model
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Summary.uptime
+      description: Total System uptime
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Summary.hostname
+      description: System Hostname
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.hostid
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.ip_address
+      description: Management IP Address
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.netmask
+      description: Management Netmask
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.mac_address
+      description: Management MAC address
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.uptime
+      description: Total System uptime
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.family
+      description: Platform family
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.model
+      description: Platform model
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.sw_version
+      description: System software version
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.operational_mode
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.ipv6_address
+      description: Management IPv6 address
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.default_gateway
+      description: Management Default Gateway
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.public_ip_address
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.hostname
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.av_version
+      description: System anti-virus version
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.av_release_date
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.app_version
+      description: App content version
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.app_release_date
+      description: Release date of application content
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.threat_version
+      description: Threat content version
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.threat_release_date
+      description: Release date of threat content
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.wildfire_version
+      description: Wildfire content version
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.wildfire_release_date
+      description: Wildfire release date
+      type: Unknown
+    - contextPath: PANOS.ShowSystemInfo.Result.url_filtering_version
+      description: URL Filtering content version
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only show specific hostnames or serial numbers.
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the operational information of the device groups in the topology.
+    name: pan-os-platform-get-device-groups
+    outputs:
+    - contextPath: PANOS.DeviceGroupOp.hostid
+      type: Unknown
+    - contextPath: PANOS.DeviceGroupOp.serial
+      description: Serial number of firewall
+      type: Unknown
+    - contextPath: PANOS.DeviceGroupOp.connected
+      description: Whether the firewall is currently connected
+      type: Unknown
+    - contextPath: PANOS.DeviceGroupOp.hostname
+      description: Firewall hostname
+      type: Unknown
+    - contextPath: PANOS.DeviceGroupOp.last_commit_all_state_sp
+      description: Text state of last commit
+      type: Unknown
+    - contextPath: PANOS.DeviceGroupOp.name
+      description: Device group Name
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only show specific hostnames or serial numbers.
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the operational information of the template-stacks in the topology.
+    name: pan-os-platform-get-template-stacks
+    outputs:
+    - contextPath: PANOS.TemplateStackOp.hostid
+      type: Unknown
+    - contextPath: PANOS.TemplateStackOp.serial
+      description: Serial number of firewall
+      type: Unknown
+    - contextPath: PANOS.TemplateStackOp.connected
+      description: Whether the firewall is currently connected
+      type: Unknown
+    - contextPath: PANOS.TemplateStackOp.hostname
+      description: Firewall hostname
+      type: Unknown
+    - contextPath: PANOS.TemplateStackOp.last_commit_all_state_tpl
+      description: Text state of last commit
+      type: Unknown
+    - contextPath: PANOS.TemplateStackOp.name
+      description: Template Stack Name
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only show specific hostnames or serial numbers.
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets global counter information from all the PAN-OS firewalls in
+      the topology
+    name: pan-os-platform-get-global-counters
+    outputs:
+    - contextPath: PANOS.ShowCounters.Summary.hostid
+      type: Unknown
+    - contextPath: PANOS.ShowCounters.Summary.name
+      description: Human readable counter name
+      type: Unknown
+    - contextPath: PANOS.ShowCounters.Summary.value
+      description: Current counter value
+      type: Unknown
+    - contextPath: PANOS.ShowCounters.Summary.rate
+      description: Packets per second rate
+      type: Unknown
+    - contextPath: PANOS.ShowCounters.Summary.desc
+      description: Human readable counter description
+      type: Unknown
+    - contextPath: PANOS.ShowCounters.Result.hostid
+      type: Unknown
+    - contextPath: PANOS.ShowCounters.Result.category
+      description: The counter category
+      type: Unknown
+    - contextPath: PANOS.ShowCounters.Result.name
+      description: Human readable counter name
+      type: Unknown
+    - contextPath: PANOS.ShowCounters.Result.value
+      description: Current counter value
+      type: Unknown
+    - contextPath: PANOS.ShowCounters.Result.rate
+      description: Packets per second rate
+      type: Unknown
+    - contextPath: PANOS.ShowCounters.Result.aspect
+      description: PANOS Aspect
+      type: Unknown
+    - contextPath: PANOS.ShowCounters.Result.desc
+      description: Human readable counter description
+      type: Unknown
+    - contextPath: PANOS.ShowCounters.Result.id
+      description: Counter ID
+      type: Unknown
+    - contextPath: PANOS.ShowCounters.Result.severity
+      description: Counter severity
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only show specific hostnames or serial numbers.
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves all BGP peer information from the PAN-OS firewalls in the
+      topology.
+    name: pan-os-platform-get-bgp-peers
+    outputs:
+    - contextPath: PANOS.ShowBGPPeers.Summary.hostid
+      type: Unknown
+    - contextPath: PANOS.ShowBGPPeers.Summary.peer
+      description: Name of BGP peer
+      type: Unknown
+    - contextPath: PANOS.ShowBGPPeers.Summary.status
+      description: Peer connection status
+      type: Unknown
+    - contextPath: PANOS.ShowBGPPeers.Summary.incoming_accepted
+      description: Total accepted routes from peer
+      type: Unknown
+    - contextPath: PANOS.ShowBGPPeers.Result.hostid
+      type: Unknown
+    - contextPath: PANOS.ShowBGPPeers.Result.peer
+      description: Name of BGP peer
+      type: Unknown
+    - contextPath: PANOS.ShowBGPPeers.Result.vr
+      description: Virtual router peer resides in
+      type: Unknown
+    - contextPath: PANOS.ShowBGPPeers.Result.remote_as
+      description: Remote AS (Autonomous System) of Peer
+      type: Unknown
+    - contextPath: PANOS.ShowBGPPeers.Result.status
+      description: Peer connection status
+      type: Unknown
+    - contextPath: PANOS.ShowBGPPeers.Result.peer_address
+      description: IP address and port of peer
+      type: Unknown
+    - contextPath: PANOS.ShowBGPPeers.Result.local_address
+      description: Local router address and port
+      type: Unknown
+    - contextPath: PANOS.ShowBGPPeers.Result.incoming_total
+      description: Total incoming routes from peer
+      type: Unknown
+    - contextPath: PANOS.ShowBGPPeers.Result.incoming_accepted
+      description: Total accepted routes from peer
+      type: Unknown
+    - contextPath: PANOS.ShowBGPPeers.Result.incoming_rejected
+      description: Total rejected routes from peer
+      type: Unknown
+    - contextPath: PANOS.ShowBGPPeers.Result.policy_rejected
+      description: Total routes rejected by peer by policy
+      type: Unknown
+    - contextPath: PANOS.ShowBGPPeers.Result.outgoing_total
+      description: Total routes advertised to peer
+      type: Unknown
+    - contextPath: PANOS.ShowBGPPeers.Result.outgoing_advertised
+      description: Count of advertised routes to peer
+      type: Unknown
+  - arguments:
+    - default: false
+      description: ID (serial or hostname) of host to search for.
+      isArray: false
+      name: hostid
+      required: true
+      secret: false
+    deprecated: false
+    description: Search the topology for a given hostid. If it's not found, the device
+      is not connected or unreachable.
+    name: pan-os-platform-get-device-connectivity
+    outputs:
+    - contextPath: PANOS.DeviceConnectivity.summary_data
+      type: Unknown
+    - contextPath: PANOS.DeviceConnectivity.result_data
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only show specific hostnames or serial numbers.
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    deprecated: false
+    description: Check the devices for software that is available to be installed.
+    name: pan-os-platform-get-available-software
+    outputs:
+    - contextPath: PANOS.SoftwareVersions.Summary.hostid
+      type: Unknown
+    - contextPath: PANOS.SoftwareVersions.Summary.version
+      description: software version in Major.Minor.Maint format
+      type: Unknown
+    - contextPath: PANOS.SoftwareVersions.Summary.filename
+      description: Software version filename
+      type: Unknown
+    - contextPath: PANOS.SoftwareVersions.Summary.size
+      description: Size of software in MB
+      type: Unknown
+    - contextPath: PANOS.SoftwareVersions.Summary.size_kb
+      description: Size of software in KB
+      type: Unknown
+    - contextPath: PANOS.SoftwareVersions.Summary.release_notes
+      description: Link to version release notes on PAN knowledge base
+      type: Unknown
+    - contextPath: PANOS.SoftwareVersions.Summary.downloaded
+      description: True if the software version is present on the system
+      type: Unknown
+    - contextPath: PANOS.SoftwareVersions.Summary.current
+      description: True if this is the currently installed software on the system
+      type: Unknown
+    - contextPath: PANOS.SoftwareVersions.Summary.latest
+      description: True if this is the most recently released software for this platform
+      type: Unknown
+    - contextPath: PANOS.SoftwareVersions.Summary.uploaded
+      description: True if the software version has been uploaded to the system
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only show specific hostnames or serial numbers.
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the HA state and assocaited details from the given device and
+      any other details.
+    name: pan-os-platform-get-ha-state
+    outputs:
+    - contextPath: PANOS.HAState.hostid
+      type: Unknown
+    - contextPath: PANOS.HAState.active
+      description: Whether this is the active firewall in a pair or not. True if standalone
+        as well
+      type: Unknown
+    - contextPath: PANOS.HAState.status
+      description: String HA status
+      type: Unknown
+    - contextPath: PANOS.HAState.peer
+      description: HA Peer
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only show specific hostnames or serial numbers.
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    - default: false
+      defaultValue: null
+      description: Filter returned jobs by status
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      defaultValue: null
+      description: Filter returned jobs by type
+      isArray: false
+      name: job_type
+      required: false
+      secret: false
+    - default: false
+      defaultValue: null
+      description: Filter by ID
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get all the jobs from the devices in the environment, or a single
+      job when ID is specified.
+    name: pan-os-platform-get-jobs
+    outputs:
+    - contextPath: PANOS.JobStatus.hostid
+      type: Unknown
+    - contextPath: PANOS.JobStatus.id
+      description: ID of job
+      type: Unknown
+    - contextPath: PANOS.JobStatus.type
+      description: Job type
+      type: Unknown
+    - contextPath: PANOS.JobStatus.tfin
+      description: Time finished
+      type: Unknown
+    - contextPath: PANOS.JobStatus.status
+      description: Status of job
+      type: Unknown
+    - contextPath: PANOS.JobStatus.result
+      type: Unknown
+    - contextPath: PANOS.JobStatus.user
+      type: Unknown
+    - contextPath: PANOS.JobStatus.tenq
+      type: Unknown
+    - contextPath: PANOS.JobStatus.stoppable
+      type: Unknown
+    - contextPath: PANOS.JobStatus.description
+      type: Unknown
+    - contextPath: PANOS.JobStatus.positionInQ
+      type: Unknown
+    - contextPath: PANOS.JobStatus.progress
+      type: Unknown
+  - arguments:
+    - default: false
+      description: software version to upgrade to, ex. 9.1.2
+      isArray: false
+      name: version
+      required: true
+      secret: false
+    - default: false
+      defaultValue: null
+      description: String to filter to only install to sepecific devices or serial
+        numbers
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    - default: false
+      defaultValue: false
+      description: If provided, runs the download synchronously - make sure 'execution-timeout'
+        is increased.
+      isArray: false
+      name: sync
+      required: false
+      secret: false
+    deprecated: false
+    description: Download The provided software version onto the device.
+    name: pan-os-platform-download-software
+    outputs:
+    - contextPath: PANOS.DownloadStatus.Summary.hostid
+      type: Unknown
+    - contextPath: PANOS.DownloadStatus.Summary.started
+      description: Whether download process has started.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: software version to upgrade to, ex. 9.1.2
+      isArray: false
+      name: version
+      required: true
+      secret: false
+    - default: false
+      defaultValue: null
+      description: String to filter to only install to specific devices or serial
+        numbers
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    - default: false
+      defaultValue: false
+      description: If provided, runs the download synchronously - make sure 'execution-timeout'
+        is increased.
+      isArray: false
+      name: sync
+      required: false
+      secret: false
+    deprecated: false
+    description: Install the given software version onto the device. Download the
+      software first with
+    name: pan-os-platform-install-software
+    outputs:
+    - contextPath: PANOS.InstallStatus.Summary.hostid
+      type: Unknown
+    - contextPath: PANOS.InstallStatus.Summary.started
+      description: Whether download process has started.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: ID of host (serial or hostname) to reboot
+      isArray: false
+      name: hostid
+      required: true
+      secret: false
+    deprecated: false
+    description: Reboot the given host.
+    name: pan-os-platform-reboot
+    outputs:
+    - contextPath: PANOS.RestartStatus.Summary.hostid
+      type: Unknown
+    - contextPath: PANOS.RestartStatus.Summary.started
+      description: Whether download process has started.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: ID of host (serial or hostname) to check.
+      isArray: false
+      name: hostid
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks the status of the given device, checking whether it's up or
+      down and the operational mode normal
+    name: pan-os-platform-get-system-status
+    outputs:
+    - contextPath: PANOS.SystemStatus.hostid
+      type: Unknown
+    - contextPath: PANOS.SystemStatus.up
+      description: Whether the host device is up or still unavailable.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: ID of host (serial or hostname) to update the state.
+      isArray: false
+      name: hostid
+      required: true
+      secret: false
+    - default: false
+      description: New state.
+      isArray: false
+      name: state
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks the status of the given device, checking whether it's up or
+      down and the operational mode normal
+    name: pan-os-platform-update-ha-state
+    outputs:
+    - contextPath: PANOS.HAStateUpdate.hostid
+      type: Unknown
+    - contextPath: PANOS.HAStateUpdate.state
+      description: New HA State
+      type: Unknown
+  dockerimage: demisto/pan-os-python
   feed: false
   isfetch: false
   longRunning: false
@@ -4627,4 +5287,3 @@ script:
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
-fromversion: 5.0.0
