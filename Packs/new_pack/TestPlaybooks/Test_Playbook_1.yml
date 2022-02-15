@@ -1,0 +1,143 @@
+id: 00c62180-9a0d-46b6-8f3e-ff9118a357e4
+inputs: []
+name: Test Playbook 1
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 88f5cfaf-493d-4bb6-8c77-eaf512043d00
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 88f5cfaf-493d-4bb6-8c77-eaf512043d00
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: sdfsdf
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 30b4da30-7bc5-4fc8-8e2f-b7c790c2a6ae
+      iscommand: false
+      name: Untitled Task
+      script: Print
+      type: regular
+      version: -1
+    taskid: 30b4da30-7bc5-4fc8-8e2f-b7c790c2a6ae
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d67fdfa4-2a32-44c0-83b1-358b035e6ad7
+      iscommand: false
+      name: Manual Task
+      type: regular
+      version: -1
+    taskid: d67fdfa4-2a32-44c0-83b1-358b035e6ad7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 490
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: random1
+      value:
+        simple: test1
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 65d945bd-cfbf-4c50-8bdf-333dfe6b1e21
+      iscommand: false
+      name: set
+      script: Set
+      type: regular
+      version: -1
+    taskid: 65d945bd-cfbf-4c50-8bdf-333dfe6b1e21
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 310
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 535,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }

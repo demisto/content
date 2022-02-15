@@ -1,0 +1,109 @@
+id: c80aad2a-b828-4fa2-8553-2447bcbe76c3
+inputs: []
+name: SNOW Keep Alive
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 97f98f97-ffe3-4da0-8282-b027d696bdbb
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 97f98f97-ffe3-4da0-8282-b027d696bdbb
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      table_name:
+        simple: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Lists API fields for the specified ServiceNow table.
+      id: a8c8a184-3848-4082-808d-267125ebaede
+      iscommand: true
+      name: Untitled Task
+      script: '|||servicenow-list-table-fields'
+      type: regular
+      version: -1
+    taskid: a8c8a184-3848-4082-808d-267125ebaede
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: d0014706-f735-4d4f-86b7-fa0a77f26d60
+      iscommand: true
+      name: Close
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: d0014706-f735-4d4f-86b7-fa0a77f26d60
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 405,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
