@@ -8946,147 +8946,6 @@ class FirewallCommand:
 -- XSOAR Specific Code Starts below --
 """
 
-
-class CommandRegister:
-    commands: dict[str, Callable] = {}
-    file_commands: dict[str, Callable] = {}
-
-    def command(self, command_name: str):
-        """
-        Register a normal Command for this Integration. Commands always return CommandResults.
-
-        :param command_name: The XSOAR integration command
-        """
-
-        def _decorator(func):
-            self.commands[command_name] = func
-
-            def _wrapper(topology, demisto_args=None):
-                return func(topology, demisto_args)
-
-            return _wrapper
-
-        return _decorator
-
-    def file_command(self, command_name: str):
-        """
-        Register a file command. file commands always return FileResults.
-
-        :param command_name: The XSOAR integration command
-        """
-
-        def _decorator(func):
-            self.file_commands[command_name] = func
-
-            def _wrapper(topology, demisto_args=None):
-                return func(topology, demisto_args)
-
-            return _wrapper
-
-        return _decorator
-
-    def run_command_result_command(self, command_name: str, func: Callable, topology: Topology,
-                                   demisto_args: dict) -> CommandResults:
-        result = func(topology, **demisto_args)
-        if command_name == "test-module":
-            return_results(result)
-
-        if not result:
-            command_result = CommandResults(
-                readable_output="No results.",
-            )
-            return_results(command_result)
-            return commanrund_result
-
-        # Convert the dataclasses into dicts
-        outputs: Union[list, dict] = {}
-        summary_list = []
-        title = ""
-        output_prefix = ""
-
-        if not hasattr(result, "summary_data"):
-            # If this isn't a regular summary/result return, but instead, is just one object or a list of flat
-            # objects
-            if type(result) is list:
-                outputs = [vars(x) for x in result]
-                summary_list = [vars(x) for x in result]
-                # This is a bit controversial
-                title = result[0]._title
-                output_prefix = result[0]._output_prefix
-            else:
-                outputs = vars(result)
-                summary_list = [vars(result)]
-                title = result._title
-                output_prefix = result._output_prefix
-        else:
-            if result.summary_data:
-                summary_list = [vars(x) for x in result.summary_data if hasattr(x, "__dict__")]
-                outputs = {
-                    "Summary": summary_list,
-                }
-
-            if result.result_data:
-                outputs["Result"] = [vars(x) for x in result.result_data if
-                                     hasattr(x, "__dict__")]  # type: ignore
-
-            title = result._title
-            output_prefix = result._output_prefix
-
-        extra_args = {}
-        if hasattr(result, "_outputs_key_field"):
-            extra_args["outputs_key_field"] = getattr(result, "_outputs_key_field")
-
-        readable_output = tableToMarkdown(title, summary_list)
-        command_result = CommandResults(
-            outputs_prefix=output_prefix,
-            outputs=outputs,
-            readable_output=readable_output,
-            **extra_args
-        )
-        return_results(command_result)
-        return command_result
-
-    def run_file_command(self, func: Callable, topology: Topology,
-                         demisto_args: dict) -> dict:
-
-        file_result: dict = func(topology, **demisto_args)
-        return_results(file_result)
-        return file_result
-
-    def is_command(self, command_name: str) -> bool:
-        if command_name in self.commands or command_name in self.file_commands:
-            return True
-
-        return False
-
-    def run_command(
-            self,
-            command_name: str,
-            topology: Topology,
-            demisto_args: dict
-    ) -> Union[CommandResults, dict]:
-        """
-        Runs the given XSOAR command.
-        :param command_name: The name of the decorated XSOAR command.
-        :param topology: `Topology` instance
-        :param demisto_args: Result of demisto.args()
-        """
-        if command_name in self.commands:
-            func = self.commands.get(command_name)
-            return self.run_command_result_command(command_name, func, topology, demisto_args)  # type: ignore
-
-        if command_name in self.file_commands:
-            func = self.file_commands.get(command_name)
-            return self.run_file_command(func, topology, demisto_args)  # type: ignore
-
-        raise DemistoException("Command not found.")
-
-
-# This is the store of all the commands available to this integration
-COMMANDS = CommandRegister()
-
-
-@COMMANDS.command("test-module")
 def test_module(topology: Topology, device_filter_string: str = None):
     """To get to the test-module command we must connect to the devices, thus no further test is required."""
     if len(topology.firewall_objects) + len(topology.panorama_objects) == 0:
@@ -9095,7 +8954,6 @@ def test_module(topology: Topology, device_filter_string: str = None):
     return "ok"
 
 
-@COMMANDS.command("pan-os-platform-get-arp-tables")
 def get_arp_tables(topology: Topology, device_filter_string: str = None) -> ShowArpCommandResult:
     """
     Gets all arp tables from all firewalls in the topology.
@@ -9106,7 +8964,6 @@ def get_arp_tables(topology: Topology, device_filter_string: str = None) -> Show
     return result
 
 
-@COMMANDS.command("pan-os-platform-get-route-summary")
 def get_route_summaries(topology: Topology,
                         device_filter_string: str = None) -> ShowRouteSummaryCommandResult:
     """
@@ -9119,7 +8976,6 @@ def get_route_summaries(topology: Topology,
     return result
 
 
-@COMMANDS.command("pan-os-platform-get-routes")
 def get_routes(topology: Topology,
                device_filter_string: str = None) -> ShowRoutingRouteCommandResult:
     """
@@ -9132,7 +8988,6 @@ def get_routes(topology: Topology,
     return result
 
 
-@COMMANDS.command("pan-os-platform-get-system-info")
 def get_system_info(topology: Topology,
                     device_filter_string: str = None) -> ShowSystemInfoCommandResult:
     """
@@ -9145,7 +9000,6 @@ def get_system_info(topology: Topology,
     return result
 
 
-@COMMANDS.command("pan-os-platform-get-device-groups")
 def get_device_groups(topology: Topology, device_filter_string: str = None) -> list[DeviceGroupInformation]:
     """
     Gets the operational information of the device groups in the topology.
@@ -9156,7 +9010,6 @@ def get_device_groups(topology: Topology, device_filter_string: str = None) -> l
     return result
 
 
-@COMMANDS.command("pan-os-platform-get-template-stacks")
 def get_template_stacks(topology: Topology, device_filter_string: str = None) -> list[
     TemplateStackInformation]:
     """
@@ -9169,7 +9022,6 @@ def get_template_stacks(topology: Topology, device_filter_string: str = None) ->
     return result
 
 
-@COMMANDS.command("pan-os-platform-get-global-counters")
 def get_global_counters(topology: Topology,
                         device_filter_string: str = None) -> ShowCounterGlobalCommmandResult:
     """
@@ -9182,7 +9034,6 @@ def get_global_counters(topology: Topology,
     return result
 
 
-@COMMANDS.command("pan-os-platform-get-bgp-peers")
 def get_bgp_peers(topology: Topology,
                   device_filter_string: str = None) -> ShowRoutingProtocolBGPCommandResult:
     """
@@ -9195,7 +9046,6 @@ def get_bgp_peers(topology: Topology,
     return result
 
 
-@COMMANDS.command("pan-os-platform-get-device-connectivity")
 def get_device_connectivity(topology: Topology, hostid: str) -> GetDeviceConnectivityCommandResult:
     """
     Search the topology for a given hostid. If it's not found, the device is not connected or unreachable.
@@ -9217,7 +9067,6 @@ def get_device_connectivity(topology: Topology, hostid: str) -> GetDeviceConnect
         return GetDeviceConnectivityCommandResult(summary_data=[result])
 
 
-@COMMANDS.command("pan-os-platform-get-available-software")
 def get_available_software(topology: Topology,
                            device_filter_string: str = None) -> SoftwareVersionCommandResult:
     """
@@ -9230,7 +9079,6 @@ def get_available_software(topology: Topology,
     return result
 
 
-@COMMANDS.file_command("pan-os-platform-get-device-state")
 def get_device_state(topology: Topology, hostid: str) -> FileInfoResult:
     """
     Get the device state from the provided device.
@@ -9245,7 +9093,6 @@ def get_device_state(topology: Topology, hostid: str) -> FileInfoResult:
     )
 
 
-@COMMANDS.command("pan-os-platform-get-ha-state")
 def get_ha_state(topology: Topology, device_filter_string: str = None) -> list[ShowHAState]:
     """
     Get the HA state and assocaited details from the given device and any other details.
@@ -9256,7 +9103,6 @@ def get_ha_state(topology: Topology, device_filter_string: str = None) -> list[S
     return result
 
 
-@COMMANDS.command("pan-os-platform-get-jobs")
 def get_jobs(topology: Topology, device_filter_string: str = None, status: str = None, job_type: str = None,
              id: int = None) -> list[ShowJobsAllResultData]:
     """
@@ -9282,7 +9128,6 @@ def get_jobs(topology: Topology, device_filter_string: str = None, status: str =
     return result
 
 
-@COMMANDS.command("pan-os-platform-download-software")
 def download_software(topology: Topology, version: str,
                       device_filter_string: str = None, sync: bool = False) -> DownloadSoftwareCommandResult:
     """
@@ -9302,7 +9147,6 @@ def download_software(topology: Topology, version: str,
     return result
 
 
-@COMMANDS.command("pan-os-platform-install-software")
 def install_software(topology: Topology, version: str,
                      device_filter_string: str = None, sync: bool = False) -> InstallSoftwareCommandResult:
     """
@@ -9323,7 +9167,6 @@ def install_software(topology: Topology, version: str,
     return result
 
 
-@COMMANDS.command("pan-os-platform-reboot")
 def reboot(topology: Topology, hostid: str) -> RestartSystemCommandResult:
     """
     Reboot the given host.
@@ -9336,7 +9179,6 @@ def reboot(topology: Topology, hostid: str) -> RestartSystemCommandResult:
     return result
 
 
-@COMMANDS.command("pan-os-platform-get-system-status")
 def system_status(topology: Topology, hostid: str) -> CheckSystemStatus:
     """
     Checks the status of the given device, checking whether it's up or down and the operational mode normal
@@ -9349,7 +9191,6 @@ def system_status(topology: Topology, hostid: str) -> CheckSystemStatus:
     return result
 
 
-@COMMANDS.command("pan-os-platform-update-ha-state")
 def update_ha_state(topology: Topology, hostid: str, state: str) -> HighAvailabilityStateStatus:
     """
     Checks the status of the given device, checking whether it's up or down and the operational mode normal
