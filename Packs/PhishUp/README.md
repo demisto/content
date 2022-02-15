@@ -1,4 +1,3 @@
-PhishUp prevents phishing attacks, protects your staff and your brand with AI.
 This integration was integrated and tested with version 1.0 of PhishUp
 
 ## AI Based Real-Time URL Security
