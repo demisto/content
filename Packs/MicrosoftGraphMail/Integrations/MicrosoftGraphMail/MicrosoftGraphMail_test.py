@@ -30,7 +30,7 @@ def test_params(mocker, params, expected_result):
       - Case 2: Should return "ID must be provided.".
       - Case 3: Should return "Token must be provided.".
     """
-    
+
     mocker.patch.object(demisto, 'params', return_value=params)
 
     with pytest.raises(Exception) as e:
@@ -39,13 +39,13 @@ def test_params(mocker, params, expected_result):
     assert expected_result in str(e.value)
 
 
-@pytest.mark.parametrize('params', [
-    ({'creds_tenant_id': {'password': '1234'}, 'creds_auth_id': {'password': '1234'},
-      'credentials': {'password': '1234'}}),
-    ({'tenant_id': '1234', 'enc_key': '1234', 'auth_id': '1234'}),
-    ({'_tenant_id': '1234', 'credentials': {'password': '1234'}, '_auth_id': '1234'})
+@pytest.mark.parametrize('params, expected_results', [
+    ({'creds_tenant_id': {'password': '1234'}, 'creds_auth_id': {'password': '3124'},
+      'credentials': {'password': '2412'}}, ['1234', '3124', '2412']),
+    ({'tenant_id': '5678', 'enc_key': '8142', 'auth_id': '5678'}, ['5678', '5678', '8142']),
+    ({'_tenant_id': '1267', 'credentials': {'password': '1234'}, '_auth_id': '8888'}, ['1267', '8888', '1234'])
 ])
-def test_params_working(mocker, params):
+def test_params_working(mocker, params, expected_results):
     """
     Given:
       - Case 1: tenant id, auth id and key where all three are part of the credentials.
@@ -54,15 +54,20 @@ def test_params_working(mocker, params):
     When:
       - Setting an instance
     Then:
-      - Ensure that the instance can Co-op with previous versions params names and that no exception is thrown.
-      - Case 1: Shouldn't throw an exception.
-      - Case 2: Shouldn't throw an exception.
-      - Case 3: Shouldn't throw an exception.
+      - Ensure that the instance can Co-op with previous versions params names and that MsGraphClient.__init__
+      was called with the right tenant id, auth id and key.
+      - Case 1: MsGraphClient.__init__ Should be called with tenant id, auth id and key extracted from credentials type params.
+      - Case 2: MsGraphClient.__init__ Should be called with tenant id, auth id and key
+      not extracted from credentials type params.
+      - Case 3: MsGraphClient.__init__ Should be called with only key param extracted from credentials type params.
     """
 
     mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(MsGraphClient, '__init__', return_value=None)
     main()
-    demisto.results.assert_called_with()
+    MsGraphClient.__init__.assert_called_with(False, expected_results[0], expected_results[1], expected_results[2],
+                                              'ms-graph-mail', '/v1.0', True, False, (200, 201, 202, 204), '', 'Inbox',
+                                              '15 minutes', 50, 10, 'com')
 
 
 def test_build_mail_object():
