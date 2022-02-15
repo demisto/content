@@ -8827,7 +8827,7 @@ def signal_handler_profiling_dump(_sig, _frame):
 
 def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
     """
-    Function that registers the threads and memory dump signal listener
+    Function that registers the threads and memory dump signal listener modify
 
     :type profiling_dump_rows_limit: ``int``
     :param profiling_dump_rows_limit: The max number of profiling related rows to print to the log
