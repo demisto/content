@@ -178,11 +178,43 @@
                         }
                     ]
                     },
-        "fields": {"tags": {}, "region": {"id": 1, "slug": "hostel", "value": "hostel"},
-                   "geocountry": [{"id": 1, "slug": "apartment", "value": "apartment"}],
-                   "stixdescription": "hello", "stixaliases": "aaa",
-                   "creationdate": 1487960014, "stixprimarymotivation": [{"id": 1, "slug": "food", "value": "food"}],
-                   "updateddate": 1595568692, "stixid": 1, "trafficlightprotocol": "AMBER"}
+      "fields": {
+        "tags": {},
+        "region": {
+          "id": 1,
+          "slug": "hostel",
+          "value": "hostel"
+        },
+        "geocountry": [
+          {
+            "id": 1,
+            "slug": "apartment",
+            "value": "apartment"
+          }
+        ],
+        "description": "hello",
+        "aliases": "aaa",
+        "primarymotivation": [
+          {
+            "id": 1,
+            "slug": "food",
+            "value": "food"
+          }
+        ],
+        "stixdescription": "hello",
+        "stixaliases": "aaa",
+        "stixprimarymotivation": [
+          {
+            "id": 1,
+            "slug": "food",
+            "value": "food"
+          }
+        ],
+        "creationdate": 1487960014,
+        "updateddate": 1595568692,
+        "stixid": 1,
+        "trafficlightprotocol": "AMBER"
+      }
     },
     {
         "type": "STIX Threat Actor",
@@ -242,12 +274,43 @@
                         }
                     ]
                     },
-        "fields": {"tags": {}, "region": {"id": 2, "slug": "home", "value": "home"},
-                    "geocountry":
-                   [{"id": 2, "slug": "house", "value": "house"}],
-                   "stixdescription": "hello world", "stixaliases": "bbb",
-                   "creationdate": 1589572143, "stixprimarymotivation": [{"id": 2, "slug": "sports", "value": "sports"}],
-                   "updateddate": 1595627719, "stixid": 2, "trafficlightprotocol": "AMBER"}
+      "fields": {
+        "tags": {},
+        "region": {
+          "id": 2,
+          "slug": "home",
+          "value": "home"
+        },
+        "geocountry": [
+          {
+            "id": 2,
+            "slug": "house",
+            "value": "house"
+          }
+        ],
+        "description": "hello world",
+        "aliases": "bbb",
+        "primarymotivation": [
+          {
+            "id": 2,
+            "slug": "sports",
+            "value": "sports"
+          }
+        ],
+        "stixdescription": "hello world",
+        "stixaliases": "bbb",
+        "stixprimarymotivation": [
+          {
+            "id": 2,
+            "slug": "sports",
+            "value": "sports"
+          }
+        ],
+        "creationdate": 1589572143,
+        "updateddate": 1595627719,
+        "stixid": 2,
+        "trafficlightprotocol": "AMBER"
+      }
     }
   ]
 }

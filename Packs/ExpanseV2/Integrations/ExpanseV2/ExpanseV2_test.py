@@ -7,6 +7,7 @@ import io
 import copy
 import demistomock as demisto
 import pytest
+from ExpanseV2 import DEPRECATED_COMMANDS, DeprecatedCommandException
 
 INTEGRATION_NAME = 'ExpanseV2'
 
@@ -1993,59 +1994,24 @@ def test_cidr(requests_mock):
     assert result[0].indicator.dbot_score.indicator_type == DBotScoreType.CIDR
 
 
-def test_expanse_get_risky_flows(requests_mock):
+@pytest.mark.parametrize('command', DEPRECATED_COMMANDS)
+def test_expanse_list_risk_rules(mocker, command):
     """
     Given:
         - an Expanse client
-        - arguments (ip, limit)
     When
-        - running !expanse-get-risky-flows
+        - running a deprecated command
     Then
-        - the Risky Flows for the IP from Behavior are retrieved and returned to the context
+        - a matching error is raised
     """
-    from ExpanseV2 import Client, get_risky_flows_command
-
-    MOCK_LIMIT = "2"
-    MOCK_IP = "203.0.113.102"
-    mock_risky_flows = util_load_json("test_data/expanse_get_risky_flows.json")
-    mock_risky_flows["data"] = [d for d in mock_risky_flows["data"] if d["internalAddress"] == MOCK_IP]
-
-    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
-
-    requests_mock.get(
-        f"https://example.com/api/v1/behavior/risky-flows?page[limit]={MOCK_LIMIT}&filter[internal-ip-range]={MOCK_IP}",
-        json=mock_risky_flows
-    )
-    result = get_risky_flows_command(client, {"limit": MOCK_LIMIT, "internal_ip_range": MOCK_IP})
-
-    assert result.outputs_prefix == "Expanse.RiskyFlow"
-    assert result.outputs_key_field == "id"
-    assert result.outputs == mock_risky_flows["data"][:int(MOCK_LIMIT)]
-
-
-def test_expanse_list_risk_rules(requests_mock):
-    """
-    Given:
-        - an Expanse client
-        - arguments (limit)
-    When
-        - running !expanse-list-risk-rules
-    Then
-        - the risk rules are retrieved and returned to the context
-    """
-    from ExpanseV2 import Client, list_risk_rules_command
-
-    MOCK_LIMIT = "2"
-    mock_risk_rules = util_load_json("test_data/expanse_list_risk_rules.json")
-
-    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
-
-    requests_mock.get(f"https://example.com/api/v1/behavior/risk-rules?page[limit]={MOCK_LIMIT}", json=mock_risk_rules)
-    result = list_risk_rules_command(client, {"limit": MOCK_LIMIT})
-
-    assert result.outputs_prefix == "Expanse.RiskRule"
-    assert result.outputs_key_field == "id"
-    assert result.outputs == mock_risk_rules["data"][:int(MOCK_LIMIT)]
+    from ExpanseV2 import main, Client
+    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(Client, '__init__', return_value=None)
+    mocker.patch.object(Client, 'authenticate', return_value=None)
+    mocker.patch.object(demisto, 'params', return_value={})
+    mocker.patch.object(demisto, 'command', return_value=command)
+    with pytest.raises(DeprecatedCommandException):
+        main()
 
 
 def test_domains_by_certificate(requests_mock):

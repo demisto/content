@@ -1,0 +1,52 @@
+{
+    "@name": "dc_c_dce_prd_13",
+    "@uuid": "05be4520-c0dc-408a-af6b-8c478e1c6915",
+    "@loc": "enterprise_zone_c",
+    "profile-setting": {
+        "group": {
+            "member": "spg_alert"
+        }
+    },
+    "target": {
+        "negate": "no"
+    },
+    "to": {
+        "member": "dc_c_nprd_bztalk_app"
+    },
+    "from": {
+        "member": "dc_c_gen_app_p"
+    },
+    "source": {
+        "member": [
+            "azure_ir_nodes_nprd_grp_shrd",
+            "azure_ir_nodes_prd_grp_shrd"
+        ]
+    },
+    "destination": {
+        "member": [
+            "destination_example",
+            "destination_example"
+        ]
+    },
+    "source-user": {
+        "member": "any"
+    },
+    "category": {
+        "member": "url_azure_scm_repos_shrd"
+    },
+    "application": {
+        "member": "ms-ds-smb"
+    },
+    "service": {
+        "member": "application-default"
+    },
+    "hip-profiles": {
+        "member": "any"
+    },
+    "action": "allow",
+    "rule-type": "universal",
+    "description": "1/30/18 - DNF - CHG0088948\nSDB - 03/21/2018 - CHG0093638",
+    "log-setting": "panorama_syslog_security_logging",
+    "tag": null,
+    "group-tag": "Unused"
+}

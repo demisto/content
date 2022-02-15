@@ -1,5 +1,8 @@
 from copy import deepcopy
 import pytest
+from splunklib import client
+from splunklib.binding import AuthenticationError
+
 import SplunkPyPreRelease as splunk
 import demistomock as demisto
 from CommonServerPython import *
@@ -185,6 +188,53 @@ def test_raw_to_dict():
     assert POSITIVE == character_check
     assert splunk.rawToDict(RAW_JSON) == RAW_JSON_AND_STANDARD_OUTPUT
     assert splunk.rawToDict(RAW_STANDARD) == RAW_JSON_AND_STANDARD_OUTPUT
+
+
+@pytest.mark.parametrize('text, output', [
+    ('', ['']),
+    ('"",', ['"",']),
+    #   a value shouldn't do anything special
+    ('woopwoop', ['woopwoop']),
+    #  a normal key value without quotes
+    ('abc=123', ['abc="123"']),
+    #  add a comma at the end
+    ('abc=123,', ['abc="123"']),
+    #  a normal key value with quotes
+    ('cbd="123"', ['cbd="123"']),
+    #  check all wrapped with quotes removed
+    ('"abc="123""', ['abc="123"']),
+    #   we need to remove 111 at the start.
+    ('111, cbd="123"', ['cbd="123"']),
+    # Testing with/without quotes and/or spaces:
+    ('abc=123,cbd=123', ['abc="123"', 'cbd="123"']),
+    ('abc=123,cbd="123"', ['abc="123"', 'cbd="123"']),
+    ('abc="123",cbd=123', ['abc="123"', 'cbd="123"']),
+    ('abc="123",cbd="123"', ['abc="123"', 'cbd="123"']),
+    ('abc=123, cbd=123', ['abc="123"', 'cbd="123"']),
+    ('abc=123, cbd="123"', ['abc="123"', 'cbd="123"']),
+    ('cbd="123", abc=123', ['abc="123"', 'cbd="123"']),
+    ('cbd="123",abc=123', ['abc="123"', 'cbd="123"']),
+    # Continue testing quotes with more values:
+    ('xyz=321,cbd=123,abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    ('xyz=321,cbd="123",abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    ('xyz="321",cbd="123",abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    ('xyz="321",cbd="123",abc="123"', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    # Testing nested quotes (the main reason for quote_group):
+    #   Try to remove the start 111.
+    ('111, cbd="a="123""', ['cbd="a="123""']),
+    ('cbd="a="123""', ['cbd="a="123""']),
+    ('cbd="a="123", b=321"', ['cbd="a="123", b="321""']),
+    ('cbd="a=123, b=321"', ['cbd="a="123", b="321""']),
+    ('cbd="a=123, b="321""', ['cbd="a="123", b="321""']),
+    ('cbd="a="123", b="321""', ['cbd="a="123", b="321""']),
+    ('cbd="a=123, b=321"', ['cbd="a="123", b="321""']),
+    ('xyz=123, cbd="a="123", b=321"', ['xyz="123"', 'cbd="a="123", b="321""']),
+    ('xyz="123", cbd="a="123", b="321""', ['xyz="123"', 'cbd="a="123", b="321""']),
+    ('xyz="123", cbd="a="123", b="321"", qqq=2', ['xyz="123"', 'cbd="a="123", b="321""', 'qqq="2"']),
+    ('xyz="123", cbd="a="123", b="321"", qqq="2"', ['xyz="123"', 'cbd="a="123", b="321""', 'qqq="2"']),
+])
+def test_quote_group(text, output):
+    assert sorted(splunk.quote_group(text)) == sorted(output)
 
 
 data_test_replace_keys = [
@@ -1343,3 +1393,93 @@ def test_fetch_incidents_incident_next_run_calculation(mocker):
     next_run_time = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
 
     assert next_run_time == found_incident_time
+
+
+@pytest.mark.parametrize(
+    argnames='credentials',
+    argvalues=[{'username': 'test', 'password': 'test'}, {'splunkToken': 'token', 'password': 'test'}]
+)
+def test_module_test(mocker, credentials):
+    """
+    Given:
+        - Credentials for connecting Splunk
+
+    When:
+        - Run test-module command
+
+    Then:
+        - Validate the info method was called
+    """
+
+    # prepare
+    mocker.patch.object(client.Service, 'info')
+    mocker.patch.object(client.Service, 'login')
+    service = client.Service(**credentials)
+    # run
+
+    splunk.test_module(service)
+
+    # validate
+    assert service.info.call_count == 1
+
+
+@pytest.mark.parametrize(
+    argnames='credentials',
+    argvalues=[{'username': 'test', 'password': 'test'}, {'splunkToken': 'token', 'password': 'test'}]
+)
+def test_module__exception_raised(mocker, credentials):
+    """
+    Given:
+        - AuthenticationError was occurred
+
+    When:
+        - Run test-module command
+
+    Then:
+        - Validate the expected message was returned
+    """
+
+    # prepare
+    def exception_raiser():
+        raise AuthenticationError()
+
+    mocker.patch.object(AuthenticationError, '__init__', return_value=None)
+    mocker.patch.object(client.Service, 'info', side_effect=exception_raiser)
+    mocker.patch.object(client.Service, 'login')
+
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    service = client.Service(**credentials)
+    # run
+
+    splunk.test_module(service)
+
+    # validate
+    assert return_error_mock.call_args[0][0] == 'Authentication error, please validate your credentials.'
+
+
+def test_module_hec_url(mocker):
+    """
+    Given:
+        - hec_url was is in params
+
+    When:
+        - Run test-module command
+
+    Then:
+        - Validate taht the request.get was called with the expected args
+    """
+
+    # prepare
+
+    mocker.patch.object(demisto, 'params', return_value={'hec_url': 'test_hec_url'})
+    mocker.patch.object(client.Service, 'info')
+    mocker.patch.object(client.Service, 'login')
+    mocker.patch.object(requests, 'get')
+
+    service = client.Service(username='test', password='test')
+    # run
+
+    splunk.test_module(service)
+
+    # validate
+    assert requests.get.call_args[0][0] == 'test_hec_url/services/collector/health'

@@ -1,10 +1,10 @@
 {
-    "description": "Classifies SafeNet Trusted Access alerts.",
+    "description": "Deprecated - Please use SafeNet Trusted Access – Alert Classifier instead.",
     "feed": false,
     "id": "SafeNet Trusted Access – Push Reject Alert Classifier",
     "keyTypeMap": {
         "Fwd: SafeNet Authentication Service Push Notification Rejection Alert": "STA - Email Alert",
-        "Push Notification Rejection Alert": "SafeNet Trusted Access Alert",
+        "Push Notification Rejection Alert": "SafeNet Trusted Access Push Reject Alert",
         "Re: SafeNet Authentication Service Push Notification Rejection Alert": "STA - Email Alert"
     },
     "name": "SafeNet Trusted Access – Push Reject Alert Classifier",

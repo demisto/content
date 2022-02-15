@@ -5,7 +5,6 @@ from Okta_IAM import Client, get_user_command, create_user_command, update_user_
 from IAMApiModule import *
 from CommonServerPython import EntryType
 
-
 OKTA_USER_OUTPUT = {
     "id": "mock_id",
     "status": "PROVISIONED",
@@ -16,7 +15,6 @@ OKTA_USER_OUTPUT = {
         "email": "testdemisto2@paloaltonetworks.com"
     }
 }
-
 
 OKTA_DISABLED_USER_OUTPUT = {
     "id": "mock_id",
@@ -29,9 +27,11 @@ OKTA_DISABLED_USER_OUTPUT = {
     }
 }
 
+BASE_URL = 'https://test.com'
+
 
 def mock_client():
-    client = Client(base_url='https://test.com')
+    client = Client(base_url=BASE_URL)
     return client
 
 
@@ -41,7 +41,18 @@ def get_outputs_from_user_profile(user_profile):
     return outputs
 
 
-def test_get_user_command__existing_user(mocker):
+@pytest.mark.parametrize('args, mock_url', [({'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}},
+                                             f'{BASE_URL}/users?filter='
+                                             'profile.email eq "testdemisto2@paloaltonetworks.com"'),
+                                            ({'user-profile': {'email': 'testdemisto2@paloaltonetworks.com',
+                                                               'login': 'testdemisto2@paloaltonetworks.com'}},
+                                             f'{BASE_URL}/users?filter='
+                                             'profile.login eq "testdemisto2@paloaltonetworks.com"'),
+                                            ({'user-profile': {'email': 'testdemisto2@paloaltonetworks.com',
+                                                               'login': 'testdemisto2@paloaltonetworks.com',
+                                                               'id': 'mock_id'}},
+                                             f'{BASE_URL}/users?filter=id eq "mock_id"')])
+def test_get_user_command__existing_user(mocker, requests_mock, args, mock_url):
     """
     Given:
         - An Okta IAM client object
@@ -53,12 +64,11 @@ def test_get_user_command__existing_user(mocker):
         - Ensure the resulted User Profile object holds the correct user details
     """
     client = mock_client()
-    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
-    mocker.patch.object(client, 'get_user', return_value=OKTA_USER_OUTPUT)
+    requests_mock.get(mock_url, json=[OKTA_USER_OUTPUT])
     mocker.patch.object(IAMUserProfile, 'update_with_app_data', return_value={})
 
-    user_profile = get_user_command(client, args, 'mapper_in')
+    user_profile = get_user_command(client, args, 'mapper_in', 'mapper_out')
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.GET_USER
@@ -86,7 +96,7 @@ def test_get_user_command__non_existing_user(mocker):
 
     mocker.patch.object(client, 'get_user', return_value=None)
 
-    user_profile = get_user_command(client, args, 'mapper_in')
+    user_profile = get_user_command(client, args, 'mapper_in', 'mapper_out')
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.GET_USER
@@ -121,7 +131,7 @@ def test_get_user_command__bad_response(mocker):
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(Session, 'request', return_value=bad_response)
 
-    user_profile = get_user_command(client, args, 'mapper_in')
+    user_profile = get_user_command(client, args, 'mapper_in', 'mapper_out')
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.GET_USER
@@ -144,7 +154,6 @@ def test_create_user_command__success(mocker):
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
     mocker.patch.object(client, 'get_user', return_value=None)
-    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'create_user', return_value=OKTA_USER_OUTPUT)
     mocker.patch.object(client, 'activate_user', return_value=None)
 
@@ -178,7 +187,6 @@ def test_update_user_command__allow_enable(mocker):
             'allow-enable': 'true'}
 
     mocker.patch.object(client, 'get_user', return_value=OKTA_DISABLED_USER_OUTPUT)
-    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'activate_user', return_value=None)
 
     user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True, is_enable_enabled=True,
@@ -212,7 +220,6 @@ def test_update_user_command__non_existing_user(mocker):
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
 
     mocker.patch.object(client, 'get_user', return_value=None)
-    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'create_user', return_value=OKTA_USER_OUTPUT)
     mocker.patch.object(client, 'activate_user', return_value=None)
 
@@ -319,7 +326,7 @@ def test_disable_user_command__user_is_already_disabled(mocker):
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(Session, 'request', return_value=bad_response)
 
-    user_profile = disable_user_command(client, args, is_command_enabled=True)
+    user_profile = disable_user_command(client, args, is_command_enabled=True, mapper_out='mapper_out')
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.DISABLE_USER
@@ -494,7 +501,8 @@ SHOULD_DROP_EVENT_ARGS = [
     ({'target': [{'type': 'Group', 'alternateId': 'testGroupId'}]}, {'test@example.com': {'username': 'test'}}, False),
 
     # user email in both log entry and in xsoar - do not drop event
-    ({'target': [{'type': 'User', 'alternateId': 'test@example.com'}]}, {'test@example.com': {'username': 'test'}}, False),
+    ({'target': [{'type': 'User', 'alternateId': 'test@example.com'}]}, {'test@example.com': {'username': 'test'}},
+     False),
 
     # user email in log entry but not in xsoar - drop event
     ({'target': [{'type': 'User', 'alternateId': 'test@example.com'}]}, {}, True)

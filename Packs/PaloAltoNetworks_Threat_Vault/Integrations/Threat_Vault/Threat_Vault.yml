@@ -197,6 +197,7 @@ script:
       type: String
   - arguments:
     - default: true
+      isArray: true
       name: ip
       required: false
       description: IP address to query, e.g., !ip 1.1.1.1
@@ -372,7 +373,7 @@ script:
     - contextPath: ThreatVault.Searchf.signatures
       description: A list of all the signatures found for this specific search.
       type: Unknown
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.1.25933
   isfetch: false
   longRunning: false
   longRunningPort: false

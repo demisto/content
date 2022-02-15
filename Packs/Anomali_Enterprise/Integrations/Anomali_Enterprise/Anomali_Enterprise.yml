@@ -176,7 +176,7 @@ script:
     - contextPath: Domain.Malicious.Description
       description: A description of the malicious domain.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
   longRunning: false

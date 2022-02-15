@@ -11,19 +11,15 @@ Please make sure you look at the integration source code and comments.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Server URL \(e.g. `https://soar.monstersofhack.com`\) | True |
-| isFetch | Fetch incidents | False |
-| incidentType | Incident type | False |
-| max_fetch | Maximum number of incidents per fetch | False |
-| fetch_incident_cases | Fetch Incident Cases | False |
 | apikey | API Key | True |
-| threshold_ip | Score threshold for ip reputation command \(0\-100\) | False |
-| threshold_domain | Score threshold for domain reputation command \(0\-100\) | False |
-| alert_status | Fetch alerts with status \(ACTIVE, CLOSED\) | False |
-| alert_type | Fetch alerts with type | False |
-| min_severity | Minimum severity of alerts to fetch | True |
-| first_fetch | First fetch time | False |
+| isFetch | Fetch incidents | False |
+| Classifier| Classifier for incident|False|
+| IncidentType | Incident type | False |
+| Mapper | Mapping incoming data|False|
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
+| first_fetch | First fetch time | False |
+| max_fetch | Maximum number of incidents per fetch | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -1021,6 +1017,62 @@ Retrieve detailed anomaly summary of specified anomaly name.
     "anomaly6": 1
   },
   "entitiesFlagged": 0
+}
+```
+
+#### Human Readable Output
+
+
+### gra-analytical-features-entity-value
+***
+Retrieve analytical features for specified entity value and model name.
+
+#### Base Command
+
+`gra-analytical-features-entity-value`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entityValue | Entity Value | Required | 
+| modelName | Model Name | Required | 
+| fromDate | From Date ( yyyy-MM-dd ) | Optional | 
+| toDate | To Date ( yyyy-MM-dd ) | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Analytical.Features.Entity.Value.analyticalFeatures | String | Analytical Features  | 
+| Gra.Analytical.Features.Entity.Value.analyticalFeatureValues | String | Analytical Feature Values | 
+
+
+#### Command Example
+```!gra-analytical-features-entity-value entityValue=EntityValue```
+
+#### Context Example
+```
+{
+    "analyticalFeatures": {
+        "analyticalFeature1": 7,
+        "analyticalFeature2": 1,
+        "analyticalFeature3": 0
+    },
+    "analyticalFeatureValues": {
+        "analyticalFeature1": {
+            "analyticalFeature1a": 2,
+            "analyticalFeature1b": 1,
+            "analyticalFeature1c": 1
+        },
+        "analyticalFeature2": {
+            "analyticalFeature2a": 6
+        },
+        "analyticalFeature3": {
+            "analyticalFeature3a": 13,
+            "analyticalFeature3b": 6
+        }
+    }
 }
 ```
 

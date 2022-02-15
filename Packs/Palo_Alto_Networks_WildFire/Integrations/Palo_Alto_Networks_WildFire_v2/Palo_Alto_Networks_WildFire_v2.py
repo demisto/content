@@ -1,7 +1,8 @@
 import shutil
 from typing import Callable, Tuple
 
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -9,7 +10,7 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
 URL = PARAMS.get('server')
-TOKEN = PARAMS.get('token')
+TOKEN = PARAMS.get('token') or (PARAMS.get('credentials') or {}).get('password')
 USE_SSL = not PARAMS.get('insecure', False)
 FILE_TYPE_SUPPRESS_ERROR = PARAMS.get('suppress_file_type_error')
 RELIABILITY = PARAMS.get('integrationReliability', DBotScoreReliability.B) or DBotScoreReliability.B
@@ -176,6 +177,18 @@ def prettify_verdict(verdict_data):
     return pretty_verdict
 
 
+def prettify_url_verdict(verdict_data: Dict) -> Dict:
+    pretty_verdict = {
+        'URL': verdict_data.get('url'),
+        'Verdict': verdict_data.get('verdict'),
+        'VerdictDescription': VERDICTS_DICT[verdict_data.get('verdict', '')],
+        'Valid': verdict_data.get('valid'),
+        'AnalysisTime': verdict_data.get('analysis_time')
+    }
+
+    return pretty_verdict
+
+
 def create_dbot_score_from_verdict(pretty_verdict):
     if 'SHA256' not in pretty_verdict and 'MD5' not in pretty_verdict:
         raise Exception('Hash is missing in WildFire verdict.')
@@ -197,6 +210,28 @@ def create_dbot_score_from_verdict(pretty_verdict):
          'Reliability': RELIABILITY
          }
     ]
+    return dbot_score
+
+
+def create_dbot_score_from_url_verdict(pretty_verdict: Dict) -> List:
+    if pretty_verdict.get('Verdict') not in VERDICTS_TO_DBOTSCORE:
+        dbot_score = [
+            {'Indicator': pretty_verdict.get('URL'),
+             'Type': 'url',
+             'Vendor': 'WildFire',
+             'Score': 0,
+             'Reliability': RELIABILITY
+             }
+        ]
+    else:
+        dbot_score = [
+            {'Indicator': pretty_verdict.get('URL'),
+             'Type': 'url',
+             'Vendor': 'WildFire',
+             'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict['Verdict']],
+             'Reliability': RELIABILITY
+             }
+        ]
     return dbot_score
 
 
@@ -526,9 +561,12 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
 
 
 @logger
-def wildfire_get_verdict(file_hash: str):
+def wildfire_get_verdict(file_hash: Optional[str] = None, url: Optional[str] = None) -> Tuple[dict, dict]:
     get_verdict_uri = URL + URL_DICT["verdict"]
-    body = 'apikey=' + TOKEN + '&hash=' + file_hash
+    if file_hash:
+        body = 'apikey=' + TOKEN + '&hash=' + file_hash  # type: ignore[operator]
+    else:
+        body = 'apikey=' + TOKEN + '&url=' + url  # type: ignore[operator]
 
     result = http_request(get_verdict_uri, 'POST', headers=DEFAULT_HEADERS, body=body)
     verdict_data = result["wildfire"]["get-verdict-info"]
@@ -537,27 +575,52 @@ def wildfire_get_verdict(file_hash: str):
 
 
 def wildfire_get_verdict_command():
-    inputs = hash_args_handler(demisto.args().get('hash'))
-    for element in inputs:
-        result, verdict_data = wildfire_get_verdict(element)
+    file_hashes = hash_args_handler(demisto.args().get('hash', ''))
+    urls = argToList(demisto.args().get('url', ''))
+    if not urls and not file_hashes:
+        raise Exception('Either hash or url must be provided.')
+    if file_hashes:
+        for file_hash in file_hashes:
+            result, verdict_data = wildfire_get_verdict(file_hash=file_hash)
 
-        pretty_verdict = prettify_verdict(verdict_data)
-        human_readable = tableToMarkdown('WildFire Verdict', pretty_verdict, removeNull=True)
+            pretty_verdict = prettify_verdict(verdict_data)
+            human_readable = tableToMarkdown('WildFire Verdict', pretty_verdict, removeNull=True)
 
-        dbot_score_list = create_dbot_score_from_verdict(pretty_verdict)
-        entry_context = {
-            "WildFire.Verdicts(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5)":
-                pretty_verdict,
-            "DBotScore": dbot_score_list
-        }
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': result,
-            'ContentsFormat': formats['json'],
-            'HumanReadable': human_readable,
-            'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': entry_context
-        })
+            dbot_score_list = create_dbot_score_from_verdict(pretty_verdict)
+            entry_context = {
+                "WildFire.Verdicts(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5)":
+                    pretty_verdict,
+                "DBotScore": dbot_score_list
+            }
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': result,
+                'ContentsFormat': formats['json'],
+                'HumanReadable': human_readable,
+                'ReadableContentsFormat': formats['markdown'],
+                'EntryContext': entry_context
+            })
+    else:
+        for url in urls:
+            result, verdict_data = wildfire_get_verdict(url=url)
+            pretty_verdict = prettify_url_verdict(verdict_data)
+            human_readable = tableToMarkdown('WildFire URL Verdict', pretty_verdict, removeNull=True)
+
+            dbot_score_list = create_dbot_score_from_url_verdict(pretty_verdict)
+            entry_context = {
+                "WildFire.Verdicts(val.url && val.url == obj.url)":
+                    pretty_verdict,
+                "DBotScore": dbot_score_list
+            }
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': result,
+                'ContentsFormat': formats['json'],
+                'HumanReadable': human_readable,
+                'ReadableContentsFormat': formats['markdown'],
+                'EntryContext': entry_context
+            })
 
 
 @logger
@@ -672,25 +735,34 @@ def parse_file_report(reports, file_info):
     for report in reports:
         if 'network' in report and report["network"]:
             if 'UDP' in report["network"]:
-                for udp_obj in report["network"]["UDP"]:
-                    if '-ip' in udp_obj:
-                        udp_ip.append(udp_obj["-ip"])
-                        feed_related_indicators.append({'value': udp_obj["-ip"], 'type': 'IP'})
-                    if '-port' in udp_obj:
-                        udp_port.append(udp_obj["-port"])
+                udp_objects = report["network"]["UDP"]
+                if not isinstance(udp_objects, list):
+                    udp_objects = [udp_objects]
+                for udp_obj in udp_objects:
+                    if '@ip' in udp_obj:
+                        udp_ip.append(udp_obj["@ip"])
+                        feed_related_indicators.append({'value': udp_obj["@ip"], 'type': 'IP'})
+                    if '@port' in udp_obj:
+                        udp_port.append(udp_obj["@port"])
             if 'TCP' in report["network"]:
-                for tcp_obj in report["network"]["TCP"]:
-                    if '-ip' in tcp_obj:
-                        tcp_ip.append(tcp_obj["-ip"])
-                        feed_related_indicators.append({'value': tcp_obj["-ip"], 'type': 'IP'})
-                    if '-port' in tcp_obj:
-                        tcp_port.append(tcp_obj['-port'])
+                tcp_objects = report["network"]["TCP"]
+                if not isinstance(tcp_objects, list):
+                    tcp_objects = [tcp_objects]
+                for tcp_obj in tcp_objects:
+                    if '@ip' in tcp_obj:
+                        tcp_ip.append(tcp_obj["@ip"])
+                        feed_related_indicators.append({'value': tcp_obj["@ip"], 'type': 'IP'})
+                    if '@port' in tcp_obj:
+                        tcp_port.append(tcp_obj['@port'])
             if 'dns' in report["network"]:
-                for dns_obj in report["network"]["dns"]:
-                    if '-query' in dns_obj:
-                        dns_query.append(dns_obj['-query'])
-                    if '-response' in dns_obj:
-                        dns_response.append(dns_obj['-response'])
+                dns_objects = report["network"]["dns"]
+                if not isinstance(dns_objects, list):
+                    dns_objects = [dns_objects]
+                for dns_obj in dns_objects:
+                    if '@query' in dns_obj:
+                        dns_query.append(dns_obj['@query'])
+                    if '@response' in dns_obj:
+                        dns_response.append(dns_obj['@response'])
             if 'url' in report["network"]:
                 url = ''
                 if '@host' in report["network"]["url"]:
@@ -703,29 +775,45 @@ def parse_file_report(reports, file_info):
         if 'evidence' in report and report["evidence"]:
             if 'file' in report["evidence"]:
                 if isinstance(report["evidence"]["file"], dict) and 'entry' in report["evidence"]["file"]:
-                    if '-md5' in report["evidence"]["file"]["entry"]:
-                        evidence_md5.append(report["evidence"]["file"]["entry"]["-md5"])
-                    if '-text' in report["evidence"]["file"]["entry"]:
-                        evidence_text.append(report["evidence"]["file"]["entry"]["-text"])
+                    if '@md5' in report["evidence"]["file"]["entry"]:
+                        evidence_md5.append(report["evidence"]["file"]["entry"]["@md5"])
+                    if '@text' in report["evidence"]["file"]["entry"]:
+                        evidence_text.append(report["evidence"]["file"]["entry"]["@text"])
 
         if 'elf_info' in report and report["elf_info"]:
             if 'Domains' in report["elf_info"]:
                 if isinstance(report["elf_info"]["Domains"], dict) and 'entry' in report["elf_info"]["Domains"]:
-                    for domain in report["elf_info"]["Domains"]["entry"]:
+                    entry = report["elf_info"]["Domains"]["entry"]
+                    # when there is only one entry, it is returned as a single string not a list
+                    if not isinstance(entry, list):
+                        entry = [entry]
+                    for domain in entry:
                         feed_related_indicators.append({'value': domain, 'type': 'Domain'})
             if 'IP_Addresses' in report["elf_info"]:
-                if isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in\
+                if isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in \
                         report["elf_info"]["IP_Addresses"]:
-                    for ip in report["elf_info"]["IP_Addresses"]["entry"]:
+                    entry = report["elf_info"]["IP_Addresses"]["entry"]
+                    # when there is only one entry, it is returned as a single string not a list
+                    if not isinstance(entry, list):
+                        entry = [entry]
+                    for ip in entry:
                         feed_related_indicators.append({'value': ip, 'type': 'IP'})
             if 'suspicious' in report["elf_info"]:
-                if 'entry' in report["elf_info"]['suspicious']:
-                    for entry_obj in report["elf_info"]['suspicious']['entry']:
+                if isinstance(report["elf_info"]["suspicious"], dict) and 'entry' in report["elf_info"]['suspicious']:
+                    entry = report["elf_info"]["suspicious"]["entry"]
+                    # when there is only one entry, it is returned as a single json not a list
+                    if not isinstance(entry, list):
+                        entry = [entry]
+                    for entry_obj in entry:
                         if '#text' in entry_obj and '@description' in entry_obj:
                             behavior.append({'details': entry_obj['#text'], 'action': entry_obj['@description']})
             if 'URLs' in report["elf_info"]:
-                if 'entry' in report["elf_info"]['URLs']:
-                    for url in report["elf_info"]['URLs']['entry']:
+                if isinstance(report["elf_info"]["URLs"], dict) and 'entry' in report["elf_info"]['URLs']:
+                    entry = report["elf_info"]["URLs"]["entry"]
+                    # when there is only one entry, it is returned as a single string not a list
+                    if not isinstance(entry, list):
+                        entry = [entry]
+                    for url in entry:
                         feed_related_indicators.append({'value': url, 'type': 'URL'})
 
     outputs = {
@@ -747,7 +835,7 @@ def parse_file_report(reports, file_info):
         if len(tcp_ip) > 0 or len(tcp_port) > 0:
             outputs["Network"]["TCP"] = {}
             if len(tcp_ip) > 0:
-                outputs["Network"]["TCP."]["IP"] = tcp_ip
+                outputs["Network"]["TCP"]["IP"] = tcp_ip
             if len(tcp_port) > 0:
                 outputs["Network"]["TCP"]["Port"] = tcp_port
 
@@ -800,7 +888,7 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
     dbot_score = 3 if file_info["malware"] == 'yes' else 1
 
     dbot_score_object = Common.DBotScore(indicator=file_hash, indicator_type=DBotScoreType.FILE,
-                                         integration_name='WildFire', score=dbot_score)
+                                         integration_name='WildFire', score=dbot_score, reliability=RELIABILITY)
     file = Common.File(dbot_score=dbot_score_object, name=file_info.get('filename'),
                        file_type=file_info.get('filetype'), md5=file_info.get('md5'), sha1=file_info.get('sha1'),
                        sha256=file_info.get('sha256'), size=file_info.get('size'),
@@ -962,6 +1050,7 @@ def wildfire_get_report_command(args):
     md5 = args.get('md5')
     inputs = urls if urls else hash_args_handler(sha256, md5)
 
+    status = ''
     for element in inputs:
         command_results, status = wildfire_get_url_report(element) if urls else wildfire_get_file_report(element, args)
         command_results_list.append(command_results)
@@ -1039,6 +1128,8 @@ def main():
     LOG(f'command is {command}')
 
     try:
+        if not TOKEN:
+            raise DemistoException('API Key must be provided.')
         # Remove proxy if not set to true in params
         handle_proxy()
 

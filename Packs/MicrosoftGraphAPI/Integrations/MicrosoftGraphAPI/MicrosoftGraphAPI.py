@@ -47,25 +47,27 @@ class MsGraphClient:
         url_suffix = urljoin(api_version, resource)
         if odata:
             url_suffix += '?' + odata
-        return self.ms_client.http_request(
+        res = self.ms_client.http_request(
             method=http_method,
             url_suffix=url_suffix,
             json_data=request_body,
-            resp_type='content' if http_method == 'DELETE' else 'json',
+            resp_type='resp',
         )
+        if res.content:
+            return res.json()
 
 
-def start_auth(client: MsGraphClient) -> CommandResults:
+def start_auth(client: MsGraphClient) -> CommandResults:  # pragma: no cover
     result = client.ms_client.start_auth('!msgraph-api-auth-complete')
     return CommandResults(readable_output=result)
 
 
-def complete_auth(client: MsGraphClient):
+def complete_auth(client: MsGraphClient):  # pragma: no cover
     client.ms_client.get_access_token()
     return 'Authorization completed successfully.'
 
 
-def test_module(client: MsGraphClient, params: Dict) -> str:
+def test_module(client: MsGraphClient, params: Dict) -> str:  # pragma: no cover
     if params.get('app_secret') and params.get('tenant_id'):
         client.ms_client.get_access_token()
         return 'ok'
@@ -74,37 +76,52 @@ def test_module(client: MsGraphClient, params: Dict) -> str:
                          'run the msgraph-test command instead.')
 
 
-def test_command(client: MsGraphClient) -> CommandResults:
+def test_command(client: MsGraphClient) -> CommandResults:  # pragma: no cover
     client.ms_client.get_access_token()
     return CommandResults(readable_output='```✅ Success!```')
 
 
 def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> CommandResults:
     request_body = args.get('request_body')
+    results: dict
     if request_body and isinstance(request_body, str):
         try:
             request_body = json.loads(request_body)
         except json.decoder.JSONDecodeError as e:
             raise ValueError(f'Invalid request body - {str(e)}')
+    http_method = args.get('http_method', 'GET')
 
     response = client.generic_request(
         resource=args.get('resource', ''),
-        http_method=args.get('http_method', 'GET'),
+        http_method=http_method,
         api_version=args.get('api_version', 'v1.0'),
-        odata=args.get('odata', '$top=10'),
+        odata=args.get('odata', ''),
         request_body=request_body,
     )
 
-    results = {'raw_response': response}
+    if not response:
+        results = {
+            'readable_output': 'The API query ran successfully and returned no content.',
+        }
+    else:
+        results = {'raw_response': response}
 
-    if args.get('populate_context'):
-        results['outputs'] = response.get('value')
-        results['outputs_prefix'] = 'MicrosoftGraph'
+        if argToBoolean(args.get('populate_context', 'true')):
+            results['outputs'] = get_response_outputs(response)
+            results['outputs_prefix'] = 'MicrosoftGraph'
 
-    return CommandResults(**results)
+    return CommandResults(**results)  # type: ignore[arg-type]
 
 
-def main() -> None:
+def get_response_outputs(response: dict) -> Union[dict, list]:
+    if 'value' in response:
+        return response['value']
+    res = dict(response)
+    res.pop('@odata.context', None)
+    return res
+
+
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -113,11 +130,15 @@ def main() -> None:
     if params.get('scope'):
         scope += params.get('scope')
 
+    app_secret = params.get('app_secret') or (params.get('credentials') or {}).get('password')
+    if not app_secret:
+        raise Exception('Application Secret must be provided.')
+
     try:
         client = MsGraphClient(
             app_id=params.get('app_id'),
             scope=scope,
-            app_secret=params.get('app_secret'),
+            app_secret=app_secret,
             tenant_id=params.get('tenant_id'),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),

@@ -304,11 +304,6 @@ tasks:
             value:
               simple: Cherwell.BusinessObjects.TotalTasks
             iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: Cherwell.BusinessObjects.OwnedBy
-            iscontext: true
     view: |-
       {
         "position": {
@@ -570,11 +565,6 @@ tasks:
           right:
             value:
               simple: Example scripts test playbook
-      - - operator: isExists
-          left:
-            value:
-              simple: Cherwell.QueryResults.OwnedBy
-            iscontext: true
       - - operator: containsGeneral
           left:
             value:

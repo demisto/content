@@ -51,6 +51,24 @@ In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
 
 ![Setup Account](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/mceclip2.png)
 
+## Required Scopes
+| Function | API to Authorize |
+| -------- | ---------------- |
+| Authorize the next APIs for the service account | [https://www.googleapis.com/auth/admin.directory.user.readonly](https://www.googleapis.com/auth/admin.directory.user.readonly) |
+| Fetch user roles | [https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly](https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly) |
+| Revoke user roles | [https://www.googleapis.com/auth/admin.directory.rolemanagement](https://www.googleapis.com/auth/admin.directory.rolemanagement) |
+| Search user mailboxes | [https://www.googleapis.com/auth/gmail.readonly](https://www.googleapis.com/auth/gmail.readonly) |
+| Delete emails from user mailbox | [https://mail.google.com](https://mail.google.com), [https://www.googleapis.com/auth/gmail.modify](https://www.googleapis.com/auth/gmail.modify) |
+| Fetch user security tokens | [https://www.googleapis.com/auth/admin.directory.user.security](https://www.googleapis.com/auth/admin.directory.user.security) |
+| Block email addresses | [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic) |
+| Get auto-replay messages from a user | [https://mail.google.com](https://mail.google.com), [https://www.googleapis.com/auth/gmail.modify](https://www.googleapis.com/auth/gmail.modify), [https://www.googleapis.com/auth/gmail.readonly](https://www.googleapis.com/auth/gmail.readonly) and [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic) |
+| Set auto-replay messages | [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic) |
+| Hide users from the global directory | [https://www.googleapis.com/auth/admin.directory.user](https://www.googleapis.com/auth/admin.directory.user) |
+| Delegate a user to a mailbox or remove a delegated mail from a mailbox | [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing) |
+| Set a user's password | [https://www.googleapis.com/auth/admin.directory.user](https://www.googleapis.com/auth/admin.directory.user) |
+| Send mails or reply to a mail | [https://www.googleapis.com/auth/gmail.compose](https://www.googleapis.com/auth/gmail.compose) and [https://www.googleapis.com/auth/gmail.send](https://www.googleapis.com/auth/gmail.send) |
+| Add the send as email ID | [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing)  |
+| Add the forwarding address for the user | [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing) |
 ## Configure Gmail on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -61,7 +79,7 @@ In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
     | --- | --- | --- |
     | adminEmail | Email of user with admin privileges \(the Password refers to the content of the Service Account file\) | True |
     | gappsID | Immutable Google Apps Id -  Only the Cxxxxxxxx, section is needed| False |
-    | query | Events query \(e.g. "from:example@demisto.com"\) The query language follows the Gmail query specification example: "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". For more information, read the [Gmail Query Language documentation](https://support.google.com/mail/answer/7190?hl=en). | False |
+    | query | Events search query \(e.g. "from:example@demisto.com"\) Used for searching emails in the inbox. The query language follows the Gmail query specification example: "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". For more information, read the [Gmail Query Language documentation](https://support.google.com/mail/answer/7190?hl=en). | False |
     | queryUserKey | Events user key \(e.g. example@demisto.com\) Use this to specify the email account to search for messages. By default, the integration uses the email address specified in the admin instance. | False |
     | isFetch | Fetch incidents | False |
     | insecure | Trust any certificate \(not secure\) | False |
@@ -4496,7 +4514,7 @@ Sends mail using Gmail.
 | transientFileContent | Content for the attached file. Multiple files are supported as a comma-separated<br/>        list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test<br/>        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
 | transientFileCID | CID image for an attached file to include within the email body. Multiple files are<br/>        supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"<br/>        transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
 | additionalHeader | A CSV list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
-| templateParams | 'Replaces {varname} variables with values from this parameter. Expected<br/>       values are in the form of a JSON document. For example, {"varname" :{"value" "some<br/>       value", "key": "context key"}}. Each var name can either be provided with<br/>       the value or a context key to retrieve the value.' | Optional | 
+| templateParams | 'Replaces {varname} variables with values from this parameter. Expected<br/>       values are in the form of a JSON document. For example, {"varname" :{"value" "some<br/>       value", "key": "context key"}}. Each var name can either be provided with<br/>       the value or a context key to retrieve the value.<br/> Note that only context data is accessible for this argument, while incident fields are not.' | Optional | 
 
 
 #### Context Output
@@ -4579,7 +4597,7 @@ The *subject* argument should be the same as the subject of the email you are re
 | transientFileContent | Content for the attached file. Multiple files are supported as a comma-separated<br/>        list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test<br/>        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
 | transientFileCID | CID image for an attached file to include within the email body. Multiple files are<br/>        supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"<br/>        transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
 | additionalHeader | A comma-separated list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
-| templateParams | 'Replaces {varname} variables with values from this parameter. Expected<br/>       values are in the form of a JSON document. For example, {"varname" :{"value" "some<br/>       value", "key": "context key"}}. Each var name can either be provided with<br/>       the value or a context key to retrieve the value.' | Optional | 
+| templateParams | 'Replaces {varname} variables with values from this parameter. Expected<br/>       values are in the form of a JSON document. For example, {"varname" :{"value" "some<br/>       value", "key": "context key"}}. Each var name can either be provided with<br/>       the value or a context key to retrieve the value.<br/> Note that only context data is accessible for this argument, while incident fields are not.' | Optional | 
 
 
 #### Context Output

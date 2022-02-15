@@ -1,0 +1,14 @@
+{
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#applications",
+    "value": [
+        {
+            "appId": "00000000-0000-0000-0000-000000000000",
+            "identifierUris": [
+                "http://demisto/"
+            ],
+            "displayName": "My app",
+            "publisherDomain": "contoso.com",
+            "signInAudience": "AzureADMyOrg"
+        }
+    ]
+}

@@ -7,6 +7,10 @@ configuration:
   name: lacework_account
   required: true
   type: 0
+- display: Lacework Subaccount Name (for use with Lacework Organizations)
+  name: lacework_subaccount
+  required: false
+  type: 0
 - display: Lacework API Key
   name: lacework_api_key
   required: true
@@ -1158,7 +1162,7 @@ script:
     - contextPath: Lacework.Vulnerability.Host.summary.last_evaluation_time
       description: The time of the last vulnerability evaluation.
       type: String
-  dockerimage: demisto/lacework:1.0.0.14553
+  dockerimage: demisto/lacework:1.0.0.24154
   feed: false
   isfetch: true
   longRunning: false
@@ -1170,3 +1174,5 @@ script:
 tests:
 - No Tests
 fromversion: 5.0.0
+defaultmapperin: Lacework - Incoming Mapper
+defaultclassifier: Lacework - Classifier

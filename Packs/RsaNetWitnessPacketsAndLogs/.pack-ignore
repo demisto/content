@@ -1,2 +1,5 @@
 [file:RsaNetWitnessPacketsAndLogs]
 ignore=PA116
+
+[file:RSANetWitnessPacketsAndLogs.yml]
+ignore=IN145

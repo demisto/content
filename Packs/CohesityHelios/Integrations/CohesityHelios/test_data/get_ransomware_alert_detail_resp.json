@@ -1,0 +1,65 @@
+{
+	"id": "6595940238747379:1630539139046817",
+	"alertCode": "CE01516011",
+	"firstTimestampUsecs": 1630539139046817,
+	"latestTimestampUsecs": 1630539139046817,
+	"alertCategory": "kSecurity",
+	"alertType": 16011,
+	"severity": "kCritical",
+	"alertState": "kOpen",
+	"propertyList": [{
+		"key": "entityId",
+		"value": "2294"
+	}, {
+		"key": "object",
+		"value": "mock-testing03"
+	}, {
+		"key": "parentId",
+		"value": "118"
+	}, {
+		"key": "source",
+		"value": "sac01-pm-vc70-02.pm.cohesity.com"
+	}, {
+		"key": "cid",
+		"value": "6573823962906680"
+	}, {
+		"key": "clusterIncarnationId",
+		"value": "1617053932191"
+	}, {
+		"key": "cluster",
+		"value": "sac01-pm-haswell2-p1"
+	}, {
+		"key": "jobId",
+		"value": "245242"
+	}, {
+		"key": "jobName",
+		"value": "testSimJobTKD5"
+	}, {
+		"key": "environment",
+		"value": "kVMware"
+	}, {
+		"key": "jobInstanceId",
+		"value": "245294"
+	}, {
+		"key": "jobStartTimeUsecs",
+		"value": "1630538555974701"
+	}, {
+		"key": "anomalyStrength",
+		"value": "64"
+	}, {
+		"key": "clusterPartitionId",
+		"value": "9999"
+	}],
+	"dedupTimestamps": [1630539139046817],
+	"dedupCount": 1,
+	"alertDocument": {
+		"alertName": "DataIngestAnomalyAlert",
+		"alertDescription": "Anomalous change in file system detected on mock-testing03, a symptom of potential ransomware attack on your primary environment",
+		"alertCause": "The recent protection run of Protection Group testSimJobTKD5with job id 245242 has dramatic changes in the composition of files, which is a significant deviation from the previously observed protection runs",
+		"alertHelpText": "Use the latest clean snapshot taken at 01, Sep 2021 11:22 PM to perform Instant Recovery"
+	},
+	"clusterName": "sac01-pm-haswell2-p1",
+	"clusterId": 6573823962906680,
+	"eventSource": "kHelios",
+	"alertTypeBucket": "kSoftware"
+}

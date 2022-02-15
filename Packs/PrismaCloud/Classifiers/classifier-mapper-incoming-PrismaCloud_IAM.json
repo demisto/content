@@ -1,0 +1,32 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps a user data to a User Profile data.",
+	"id": "User Profile - PrismaCloud (Incoming)",
+	"mapping": {
+		"User Profile": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Display Name": {
+					"complex": null,
+					"simple": "displayName"
+				},
+				"Email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"Given Name": {
+					"complex": null,
+					"simple": "firstName"
+				},
+				"Surname": {
+					"complex": null,
+					"simple": "lastName"
+				}
+			}
+		}
+	},
+	"name": "User Profile - PrismaCloud (Incoming)",
+	"type": "mapping-incoming",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

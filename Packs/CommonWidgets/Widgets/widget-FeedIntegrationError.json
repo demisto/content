@@ -1,0 +1,35 @@
+{
+  "dataType": "scripts",
+  "widgetType": "table",
+  "params": {
+    "tableColumns": [
+      {
+        "displayed": true,
+        "key": "Brand",
+        "isDefault": true
+      },
+      {
+        "displayed": true,
+        "key": "Instance",
+        "isDefault": true
+      },
+      {
+        "displayed": true,
+        "key": "Instance Last Modified Time",
+        "isDefault": true
+      },
+      {
+        "displayed": true,
+        "key": "Error Information",
+        "isDefault": true
+      }
+    ]
+  },
+  "name": "Feed Integrations Errors",
+  "query": "FeedIntegrationErrorWidget",
+  "fromVersion": "6.1.0",
+  "isPredefined": true,
+  "version": -1,
+  "id": "Feed Integrations Errors",
+  "description": "Feed integrations indicators fetch errors"
+}

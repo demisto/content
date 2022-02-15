@@ -1,7 +1,7 @@
 import pytest
 import requests_mock
 
-from FeedOffice365 import Client, get_indicators_command, fetch_indicators_command
+from FeedOffice365 import Client, get_indicators_command, fetch_indicators_command, build_region_list, ALL_REGIONS_LIST
 from test_data.feed_data import RESPONSE_DATA
 
 
@@ -67,3 +67,25 @@ class TestFeedTags:
         mocker.patch.object(client, 'build_iterator', return_value=RESPONSE_DATA)
         _, _, raw_json = get_indicators_command(client, {'limit': 2, 'indicator_type': 'IPs'})
         assert tags == raw_json.get('raw_response')[0]['fields']['tags']
+
+
+@pytest.mark.parametrize('config_region_list, response', [
+    (['All'], ALL_REGIONS_LIST),
+    (['All', 'my_region'], ALL_REGIONS_LIST + ['my_region']),
+    (['my_region'], ['my_region'])
+])  # noqa: E124
+def test_build_region_list(config_region_list, response):
+    """
+    Given:
+    - region lists provided by configurations
+    When:
+    - building the region list with build_region_list()
+    Then:
+    - Formatted region list will be returned:
+        in cases 'All' item is in the config list,
+        the returned region list will include 'ALL_REGIONS_LIST', and 'All' will be removed.
+    """
+    region_list = build_region_list(config_region_list)
+    region_list.sort()
+    response.sort()
+    assert region_list == response

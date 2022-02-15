@@ -30,7 +30,7 @@ commonfields:
 enabled: false
 name: SetIfEmpty
 script: '-'
-subtype: python2
+subtype: python3
 system: false
 tags:
 - transformer
@@ -41,4 +41,4 @@ type: python
 fromversion: 5.0.0
 tests:
 - SetIfEmpty - non-ascii chars - Test
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python3:3.9.7.24076

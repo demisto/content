@@ -1,0 +1,29 @@
+args:
+- name: max_fields
+  description: Maximum number of fields to display
+  defaultValue: "50"
+- name: max_value_length
+  description: Maximum number of characters to display per field
+  defaultValue: "512"
+- name: full
+  description: Do not truncate output
+  defaultValue: "0"
+comment: |-
+  Parses ZTAP event fields to display as key/value pairs in
+  a dynamic table.
+commonfields:
+  id: ZTAPParseFields
+  version: -1
+enabled: false
+name: ZTAPParseFields
+script: ''
+subtype: python3
+tags:
+- ztap
+- dynamic-section
+type: python
+runas: DBotWeakRole
+dockerimage: demisto/python3:3.9.7.24076
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

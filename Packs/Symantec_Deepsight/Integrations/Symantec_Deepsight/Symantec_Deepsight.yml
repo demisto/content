@@ -80,7 +80,7 @@ script:
       description: The IP's latitude and longtitude
       type: string
     - contextPath: Deepsight.IP.Whitelisted
-      description: Is the IP whitelisted
+      description: Is the IP on allow list
       type: boolean
     - contextPath: Deepsight.IP.FirstSeen
       description: When was the IP first seen
@@ -203,7 +203,7 @@ script:
       description: The email of the domain's registrant
       type: string
     - contextPath: Deepsight.Domain.Whitelisted
-      description: Indicates whether the domain is whitelisted
+      description: Indicates whether the domain is on allow list
       type: boolean
     - contextPath: Deepsight.Domain.FirstSeen
       description: The time and date that the domain first appeared in the database
@@ -359,7 +359,7 @@ script:
     description: Get API Usage status for current license period
     execution: false
     name: deepsight-get-request-status
-  dockerimage: demisto/python:2.7.18.24066
+  dockerimage: demisto/python:2.7.18.24398
   feed: false
   isfetch: false
   longRunning: false

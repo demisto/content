@@ -5,7 +5,14 @@
         "Carbon Black Endpoint Standard",
         "Guardicore Incident",
         "Azure Active Directory Identity and Access",
-        "Saas Security Incident"
+        "Saas Security Incident",
+        "Tanium TR Incident",
+        "Logrhythm Case",
+        "CrowdStrike Falcon Detection",
+        "CrowdStrike Falcon Incident",
+        "Microsoft Defender For Endpoint",
+        "OpsGenie Incident",
+        "OpsGenie Alert"
     ],
     "breachScript": "",
     "caseInsensitive": true,

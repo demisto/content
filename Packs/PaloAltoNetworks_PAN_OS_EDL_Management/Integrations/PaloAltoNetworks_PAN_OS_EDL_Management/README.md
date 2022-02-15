@@ -1,4 +1,4 @@
-Deprecated. Use the Palo Alto Networks PAN-OS EDL Service integration instead. This integration is still supported however, for customers with over 1000 Firewalls.
+Deprecated. Use the Generic Export Indicators Service integration instead. This integration is still supported however, for customers with over 1000 Firewalls.
 This integration requires root access in order to execute ssh commands. 
 If you've configured the server to run Docker images with a non-root internal user make sure to exclude the demisto/openssh Docker image as documented [here](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/5-5/cortex-xsoar-admin/docker/docker-hardening-guide/run-docker-with-non-root-internal-users.html).
 

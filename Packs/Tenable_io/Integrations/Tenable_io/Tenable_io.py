@@ -288,12 +288,12 @@ def get_scan_error_message(response, scan_id):
 
 # Request/Response methods
 # kwargs: request parameters
-def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_error=False, **kwargs):
+def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_error=False, body=None, **kwargs):
     if endpoint:
         endpoint = '/' + endpoint
     full_url = "{0}scans/{1!s}{2}".format(BASE_URL, scan_id, endpoint)
     try:
-        res = requests.request(method, full_url, headers=AUTH_HEADERS, verify=USE_SSL, params=kwargs)
+        res = requests.request(method, full_url, headers=AUTH_HEADERS, verify=USE_SSL, json=body, params=kwargs)
         res.raise_for_status()
         return res.json()
     except HTTPError:
@@ -387,7 +387,9 @@ def launch_scan_command():
     scan_info = send_scan_request(scan_id)['info']
     if not targets:
         targets = scan_info.get('targets', '')
-    res = send_scan_request(scan_id, 'launch', 'POST', alt_targets=targets)
+    target_list = argToList(targets)
+    body = assign_params(alt_targets=target_list)
+    res = send_scan_request(scan_id, 'launch', 'POST', body=body)
     res.update({
         'id': scan_id,
         'targets': targets,

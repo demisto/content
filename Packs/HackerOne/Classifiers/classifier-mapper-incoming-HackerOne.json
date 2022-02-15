@@ -1,0 +1,190 @@
+{
+  "description": "Incoming mapper for HackerOne Report.",
+  "feed": false,
+  "id": "HackerOne - Incoming Mapper",
+  "mapping": {
+    "HackerOne Report": {
+      "dontMapEventToLabels": true,
+      "internalMapping": {
+        "HackerOne Report Assignee Disabled": {
+          "complex": null,
+          "simple": "relationships.assignee.data.attributes.disabled"
+        },
+        "HackerOne Report Assignee HackerOne Triager": {
+          "complex": null,
+          "simple": "relationships.assignee.data.attributes.hackerone_triager"
+        },
+        "HackerOne Report Assignee ID": {
+          "complex": null,
+          "simple": "relationships.assignee.data.id"
+        },
+        "HackerOne Report Assignee Location": {
+          "complex": null,
+          "simple": "relationships.assignee.data.attributes.location"
+        },
+        "HackerOne Report Assignee Name": {
+          "complex": null,
+          "simple": "relationships.assignee.data.attributes.name"
+        },
+        "HackerOne Report Assignee Reputation": {
+          "complex": null,
+          "simple": "relationships.assignee.data.attributes.reputation"
+        },
+        "HackerOne Report Assignee Username": {
+          "complex": null,
+          "simple": "relationships.assignee.data.attributes.username"
+        },
+        "HackerOne Report Assignee Website": {
+          "complex": null,
+          "simple": "relationships.assignee.data.attributes.website"
+        },
+        "HackerOne Report Attack Complexity": {
+          "complex": null,
+          "simple": "relationships.severity.data.attributes.attack_complexity"
+        },
+        "HackerOne Report Attack Vector": {
+          "complex": null,
+          "simple": "relationships.severity.data.attributes.attack_vector"
+        },
+        "HackerOne Report Disclosed At": {
+          "complex": null,
+          "simple": "attributes.disclosed_at"
+        },
+        "HackerOne Report ID": {
+          "complex": null,
+          "simple": "id"
+        },
+        "HackerOne Report Program Handle": {
+          "complex": null,
+          "simple": "relationships.program.data.attributes.handle"
+        },
+        "HackerOne Report Reporter Disabled": {
+          "complex": null,
+          "simple": "relationships.reporter.data.attributes.disabled"
+        },
+        "HackerOne Report Reporter HackerOne Triager": {
+          "complex": null,
+          "simple": "relationships.reporter.data.attributes.hackerone_triager"
+        },
+        "HackerOne Report Reporter ID": {
+          "complex": null,
+          "simple": "relationships.reporter.data.id"
+        },
+        "HackerOne Report Reporter Location": {
+          "complex": null,
+          "simple": "relationships.reporter.data.attributes.location"
+        },
+        "HackerOne Report Reporter Name": {
+          "complex": null,
+          "simple": "relationships.reporter.data.attributes.name"
+        },
+        "HackerOne Report Reporter Reputation": {
+          "complex": null,
+          "simple": "relationships.reporter.data.attributes.reputation"
+        },
+        "HackerOne Report Reporter Username": {
+          "complex": null,
+          "simple": "relationships.reporter.data.attributes.username"
+        },
+        "HackerOne Report Reporter Website": {
+          "complex": null,
+          "simple": "relationships.reporter.data.attributes.website"
+        },
+        "HackerOne Report Severity ID": {
+          "complex": null,
+          "simple": "relationships.severity.data.id"
+        },
+        "HackerOne Report Vulnerability Information": {
+          "complex": null,
+          "simple": "attributes.vulnerability_information"
+        },
+        "HackerOne Report Vulnerable Component Scope": {
+          "complex": null,
+          "simple": "relationships.severity.data.attributes.scope"
+        },
+        "HackerOne Report Weakness External ID": {
+          "complex": null,
+          "simple": "relationships.weakness.data.attributes.external_id"
+        },
+        "HackerOne Report Weakness ID": {
+          "complex": null,
+          "simple": "relationships.weakness.data.id"
+        },
+        "HackerOne Report Weakness Name": {
+          "complex": null,
+          "simple": "relationships.weakness.data.attributes.name"
+        }
+      }
+    },
+    "dbot_classification_incident_type_all": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "CVSS Availability Requirement": {
+          "complex": null,
+          "simple": "relationships.severity.data.attributes.availability"
+        },
+        "CVSS Confidentiality Requirement": {
+          "complex": null,
+          "simple": "relationships.severity.data.attributes.confidentiality"
+        },
+        "CVSS Integrity Requirement": {
+          "complex": null,
+          "simple": "relationships.severity.data.attributes.integrity"
+        },
+        "Close Time": {
+          "complex": null,
+          "simple": "attributes.closed_at"
+        },
+        "Description": {
+          "complex": null,
+          "simple": "relationships.weakness.data.attributes.description"
+        },
+        "Risk Score": {
+          "complex": null,
+          "simple": "relationships.severity.data.attributes.score"
+        },
+        "State": {
+          "complex": null,
+          "simple": "attributes.state"
+        },
+        "Title": {
+          "complex": null,
+          "simple": "attributes.title"
+        },
+        "severity": {
+          "complex": {
+            "accessor": "rating",
+            "filters": [],
+            "root": "relationships.severity.data.attributes",
+            "transformers": [
+              {
+                "args": {
+                  "input_values": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "none,low,medium,high,critical"
+                    }
+                  },
+                  "mapped_values": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "Unknown,Low,Medium,High,Critical"
+                    }
+                  }
+                },
+                "operator": "MapValuesTransformer"
+              }
+            ]
+          },
+          "simple": ""
+        }
+      }
+    }
+  },
+  "name": "HackerOne - Incoming Mapper",
+  "type": "mapping-incoming",
+  "version": -1,
+  "fromVersion": "6.0.0"
+}

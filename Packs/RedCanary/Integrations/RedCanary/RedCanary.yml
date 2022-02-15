@@ -4,7 +4,9 @@ commonfields:
 name: RedCanary
 display: Red Canary
 category: Endpoint
-description: Red Canary collects endpoint data using Carbon Black Response and CrowdStrike Falcon.  The collected data is standardized into a common schema which allows teams to detect, analyze and respond to security incidents.
+description: Red Canary collects endpoint data using Carbon Black Response and CrowdStrike
+  Falcon.  The collected data is standardized into a common schema which allows teams
+  to detect, analyze and respond to security incidents.
 configuration:
 - display: Domain (for example, https://demisto.my.redcanary.co)
   name: domain
@@ -43,7 +45,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.1.25933
   commands:
   - name: redcanary-acknowledge-detection
     arguments:
@@ -68,7 +70,8 @@ script:
       - not_remediated_unwarranted
       description: The way in which the detection was remediated.
     - name: comment
-      description: Describe the reason why the detection was remediated in this manner. This is ignored for 'remediated' state
+      description: Describe the reason why the detection was remediated in this manner.
+        This is ignored for 'remediated' state
       defaultValue: remediated by Demisto.
     description: Update the remediation state of a detection.
   - name: redcanary-list-detections
@@ -187,9 +190,11 @@ script:
       description: Playbook ID for execution.
     - name: detection-id
       required: true
-      description: Detection to execute the playbook on. Can be retrieve from the context
+      description: Detection to execute the playbook on. Can be retrieve from the
+        context
     - name: playbook-name
-      description: Playbook name for execution. if playbook ID is specify, this is ignored.
+      description: Playbook name for execution. if playbook ID is specify, this is
+        ignored.
     description: Execute a predefined playbook on a detection.
   - name: redcanary-get-endpoint
     arguments:

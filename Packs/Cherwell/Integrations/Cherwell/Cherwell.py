@@ -14,22 +14,19 @@ import os
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-PARAMS = demisto.params()
-FETCHES_INCIDENTS = PARAMS.get('isFetch')
-FETCH_TIME = PARAMS.get('fetch_time')
-FETCH_ATTACHMENTS = PARAMS.get('fetch_attachments')
-OBJECTS_TO_FETCH = PARAMS.get('objects_to_fetch').split(',')
-MAX_RESULT = PARAMS.get('max_results')
-USERNAME = PARAMS.get('credentials').get('identifier')
-PASSWORD = PARAMS.get('credentials').get('password')
-# Remove trailing slash to prevent wrong URL path to service
-SERVER = PARAMS['url'][:-1] if (PARAMS['url'] and PARAMS['url'].endswith('/')) else PARAMS['url']
-SECURED = not PARAMS.get('insecure')
-CLIENT_ID = PARAMS.get('client_id')
-QUERY_STRING = PARAMS.get('query_string')
-DATE_FORMAT = '%m/%d/%Y %I:%M:%S %p'
-# Service base URL
-BASE_URL = SERVER + '/CherwellAPI/'
+FETCHES_INCIDENTS = ''
+FETCH_TIME = ''
+FETCH_ATTACHMENTS = ''
+OBJECTS_TO_FETCH = ''
+MAX_RESULT = ''
+USERNAME = ''
+PASSWORD = ''
+SERVER = ''
+SECURED = False
+CLIENT_ID = ''
+QUERY_STRING = ''
+DATE_FORMAT = ''
+BASE_URL = ''
 
 HTTP_CODES = {
     'unauthorized': 401,
@@ -43,6 +40,8 @@ HEADERS = {
 }
 
 QUERY_OPERATORS = ['eq', 'gt', 'lt', 'contains', 'startwith']
+
+ONE_STEP_ACTION_HEADERS = ['name', 'displayName', 'description', 'id', 'association', 'standInKey']
 
 #######################################################################################################################
 
@@ -182,8 +181,14 @@ def make_request(method, url, payload=None, headers=None, is_fetch=False):
     return response
 
 
-def get_business_object_summary_by_name(name, is_fetch):
+def get_business_object_summary_by_name(name, is_fetch=False):
     url = BASE_URL + f'api/V1/getbusinessobjectsummary/busobname/{name}'
+    response = make_request('GET', url, is_fetch=is_fetch)
+    return parse_response(response, "Could not get business object summary", is_fetch=is_fetch)
+
+
+def get_business_object_summary_by_id(_id, is_fetch=False):
+    url = BASE_URL + f'api/V1/getbusinessobjectsummary/busobid/{_id}'
     response = make_request('GET', url, is_fetch=is_fetch)
     return parse_response(response, "Could not get business object summary", is_fetch=is_fetch)
 
@@ -347,7 +352,7 @@ def attachment_results(attachments):
     for attachment in attachments:
         attachment_content = attachment.get('Content')
         attachment_name = attachment.get('FileName')
-        demisto.results(fileResult(attachment_name, attachment_content))
+        return fileResult(attachment_name, attachment_content)
     return
 
 
@@ -660,7 +665,32 @@ def raise_or_return_error(msg, raise_flag):
         return_error(msg)
 
 
+def get_one_step_actions(bus_id, is_fetch=False):
+    url = BASE_URL + f'api/V1/getonestepactions/association/{bus_id}'
+    response = make_request('GET', url, is_fetch=is_fetch)
+    return parse_response(response, "Could not get one step actions", is_fetch=is_fetch)
+
+
+def get_one_step_actions_recursive(root, actions):
+    if root.get('childItems'):
+        actions_list = []
+        for item in root.get('childItems'):
+            actions_list.append(item)
+        actions[root.get('name')] = actions_list
+
+    for folder in root.get('childFolders', []):
+        get_one_step_actions_recursive(folder, actions)
+    return actions
+
+
+def run_one_step_action(payload):
+    url = BASE_URL + "api/V1/runonestepaction"
+    response = make_request("POST", url, json.dumps(payload))
+    return parse_response(response, "Could not run one step action")
+
 ########################################################################################################################
+
+
 '''
 Commands
 '''
@@ -685,7 +715,7 @@ def create_business_object_command():
     }
     md = tableToMarkdown(f'New {type_name.capitalize()} was created', ids, headerTransform=pascalToSpace)
 
-    demisto.results({
+    return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': result,
@@ -693,7 +723,7 @@ def create_business_object_command():
         'EntryContext': {
             'Cherwell.BusinessObjects(val.RecordId == obj.RecordId)': ids
         }
-    })
+    }
 
 
 def update_business_object_command():
@@ -709,7 +739,7 @@ def update_business_object_command():
     }
     md = tableToMarkdown(f'{type_name.capitalize()} {object_id} was updated', ids, headerTransform=pascalToSpace)
 
-    demisto.results({
+    return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': result,
@@ -717,7 +747,7 @@ def update_business_object_command():
         'EntryContext': {
             'Cherwell.BusinessObjects(val.RecordId == obj.RecordId)': ids
         }
-    })
+    }
 
 
 def get_business_object_command():
@@ -729,7 +759,7 @@ def get_business_object_command():
     md = tableToMarkdown(f'{type_name.capitalize()}: {object_id}', business_object,
                          headerTransform=pascalToSpace)
 
-    demisto.results({
+    return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': results,
@@ -737,7 +767,7 @@ def get_business_object_command():
         'EntryContext': {
             'Cherwell.BusinessObjects(val.RecordId == obj.RecordId)': createContext(business_object)
         }
-    })
+    }
 
 
 def delete_business_object_command():
@@ -748,12 +778,12 @@ def delete_business_object_command():
     results = delete_business_object(type_name, object_id, id_type)
     md = f'### Record {object_id} of type {type_name} was deleted.'
 
-    demisto.results({
+    return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': results,
         'HumanReadable': md
-    })
+    }
 
 
 def fetch_incidents_command():
@@ -783,8 +813,7 @@ def download_attachments_command():
     attachments = download_attachments(id_type, object_id, business_object_type_name=type_name)
     if not attachments:
         return_error(f'No attachments were found for {type_name}:{object_id}')
-    attachment_results(attachments)
-    return
+    return attachment_results(attachments)
 
 
 def upload_attachment_command():
@@ -800,13 +829,13 @@ def upload_attachment_command():
         string_to_context_key(id_type): object_id
     }
     md = f'### Attachment: {attachment_id}, was successfully attached to {type_name} {object_id}'
-    demisto.results({
+    return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': {'attachment_id': attachment_id},
         'EntryContext': {'Cherwell.UploadedAttachments(val.AttachmentId == obj.AttachmentId)': entry_context},
         'HumanReadable': md,
-    })
+    }
 
 
 def remove_attachment_command():
@@ -817,12 +846,12 @@ def remove_attachment_command():
     attachment_id = args.get('attachment_id')
     remove_attachment(id_type, object_id, type_name, attachment_id)
     md = f'### Attachment: {attachment_id}, was successfully removed from {type_name} {object_id}'
-    demisto.results({
+    return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': md,
         'HumanReadable': md,
-    })
+    }
 
 
 def get_attachments_info_command():
@@ -846,7 +875,7 @@ def get_attachments_info_command():
     if attachments_info:
         entry['EntryContext'] = {
             'Cherwell.AttachmentsInfo': attachments_info}
-    demisto.results(entry)
+    return entry
 
 
 def link_business_objects_command():
@@ -861,12 +890,12 @@ def link_business_objects_command():
     message = \
         f'{parent_type.capitalize()} {parent_record_id} and {child_type.capitalize()} {child_record_id} were linked'
     md = f'### {message}'
-    demisto.results({
+    return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': message,
         'HumanReadable': md,
-    })
+    }
 
 
 def unlink_business_objects_command():
@@ -881,12 +910,12 @@ def unlink_business_objects_command():
     message = \
         f'{parent_type.capitalize()} {parent_record_id} and {child_type.capitalize()} {child_record_id} were unlinked'
     md = f'### {message}'
-    demisto.results({
+    return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': message,
         'HumanReadable': md,
-    })
+    }
 
 
 def query_business_object_command():
@@ -896,13 +925,13 @@ def query_business_object_command():
     max_results = args.get('max_results')
     results, raw_response = query_business_object_string(type_name, query_string, max_results)
     md = tableToMarkdown('Query Results', results, headerTransform=pascalToSpace)
-    demisto.results({
+    return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': raw_response,
         'EntryContext': {'Cherwell.QueryResults': results},
         'HumanReadable': md,
-    })
+    }
 
 
 def get_field_info_command():
@@ -911,13 +940,13 @@ def get_field_info_command():
     field_property = args.get('field_property')
     results = get_field_info(type_name, field_property)
     md = tableToMarkdown('Field info:', results, headerTransform=pascalToSpace)
-    demisto.results({
+    return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': results,
         'EntryContext': {'Cherwell.FieldInfo(val.FieldId == obj.FieldId)': results},
         'HumanReadable': md
-    })
+    }
 
 
 def cherwell_run_saved_search_command():
@@ -928,13 +957,13 @@ def cherwell_run_saved_search_command():
     search_name = args.get('search_name')
     results = cherwell_run_saved_search(association_id, scope, scope_owner, search_name)
     md = tableToMarkdown(f'{search_name} results:', results, headerTransform=pascalToSpace)
-    demisto.results({
+    return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': results,
         'EntryContext': {'Cherwell.SearchOperation(val.RecordId == obj.RecordId)': results},
         'HumanReadable': md
-    })
+    }
 
 
 def cherwell_get_business_object_id_command():
@@ -942,80 +971,139 @@ def cherwell_get_business_object_id_command():
     business_object_name = args.get('business_object_name')
     result = cherwell_get_business_object_id(business_object_name)
     md = tableToMarkdown('Business Object Info:', result, headerTransform=pascalToSpace)
-    demisto.results({
+    return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': result,
         'EntryContext': {'Cherwell.BusinessObjectInfo(val.BusinessObjectId == obj.BusinessObjectId)': result},
         'HumanReadable': md
-    })
+    }
 
+
+def cherwell_get_business_object_summary_command():
+    args = demisto.args()
+    business_object_name = args.get('name')
+    business_object_id = args.get('id')
+
+    if not business_object_id and not business_object_name:
+        raise DemistoException('No name or ID were specified. Please specify at least one of them.')
+    elif business_object_id:
+        result = get_business_object_summary_by_id(business_object_id)
+    else:
+        result = get_business_object_summary_by_name(business_object_name)
+
+    md = tableToMarkdown('Business Object Summary:', result, headerTransform=pascalToSpace)
+
+    return CommandResults(outputs=result, readable_output=md, outputs_key_field='busObId',
+                          outputs_prefix='Cherwell.BusinessObjectSummary', raw_response=result)
+
+
+def cherwell_get_one_step_actions_command():
+    args = demisto.args()
+    business_object_id = args.get('busobjectid')
+    result = get_one_step_actions(business_object_id)
+
+    actions: dict = {}
+    ec = {}
+    md = ''
+
+    get_one_step_actions_recursive(result.get('root'), actions)
+
+    if actions:
+        for key, action in actions.items():
+            md += tableToMarkdown(f'{key} one-step actions:', action,
+                                  headerTransform=pascalToSpace, headers=ONE_STEP_ACTION_HEADERS)
+        ec = {'BusinessObjectId': business_object_id, 'Actions': actions}
+    else:
+        md = f'No one-step actions found for business object ID {business_object_id}'
+
+    return CommandResults(outputs=ec, readable_output=md, outputs_key_field='BusinessObjectId',
+                          outputs_prefix='Cherwell.OneStepActions', raw_response=result)
+
+
+def cherwell_run_one_step_action_command():
+    prompt_values = {}
+    args = demisto.args()
+    business_object_id = args.get('busobjectid')
+    rec_id = args.get('busobrecid')
+    stand_in_key = args.get('oneStepAction_StandInKey')
+    prompt_values_arg = args.get('prompt_values')
+
+    if prompt_values_arg:
+        prompt_values = json.loads(prompt_values_arg)
+
+    payload = {'acquireLicense': True, 'busObId': business_object_id, 'busObRecId': rec_id,
+               'oneStepActionStandInKey': stand_in_key, 'promptValues': prompt_values}
+
+    result = run_one_step_action(payload)
+
+    return CommandResults(readable_output='One-Step action has been executed successfully.', raw_response=result)
 
 #######################################################################################################################
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+def main():
+    global FETCHES_INCIDENTS, FETCH_TIME, FETCH_ATTACHMENTS, OBJECTS_TO_FETCH, MAX_RESULT, USERNAME, PASSWORD, SERVER, \
+        SECURED, CLIENT_ID, QUERY_STRING, DATE_FORMAT, BASE_URL
 
-LOG('Command being called is %s' % (demisto.command()))
+    params = demisto.params()
 
-try:
-    handle_proxy()
-    if demisto.command() == 'test-module':
-        test_command()
-        demisto.results('ok')
+    FETCHES_INCIDENTS = params.get('isFetch')
+    FETCH_TIME = params.get('fetch_time')
+    FETCH_ATTACHMENTS = params.get('fetch_attachments')
+    OBJECTS_TO_FETCH = params.get('objects_to_fetch').split(',')
+    MAX_RESULT = params.get('max_results')
+    USERNAME = params.get('credentials').get('identifier')
+    PASSWORD = params.get('credentials').get('password')
+    # Remove trailing slash to prevent wrong URL path to service
+    SERVER = params['url'][:-1] if (params['url'] and params['url'].endswith('/')) else params['url']
+    SECURED = not params.get('insecure')
+    CLIENT_ID = params.get('client_id')
+    QUERY_STRING = params.get('query_string')
+    DATE_FORMAT = '%m/%d/%Y %I:%M:%S %p'
+    # Service base URL
+    BASE_URL = SERVER + '/CherwellAPI/'
 
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents_command()
+    try:
+        handle_proxy()
 
-    elif demisto.command() == 'cherwell-create-business-object':
-        create_business_object_command()
+        command = demisto.command()
+        demisto.debug(f'Command being called is {command}')
 
-    elif demisto.command() == 'cherwell-update-business-object':
-        update_business_object_command()
+        commands = {
+            'cherwell-create-business-object': create_business_object_command,
+            'cherwell-update-business-object': update_business_object_command,
+            'cherwell-get-business-object': get_business_object_command,
+            'cherwell-delete-business-object': delete_business_object_command,
+            'cherwell-download-attachments': download_attachments_command,
+            'cherwell-get-attachments-info': get_attachments_info_command,
+            'cherwell-upload-attachment': upload_attachment_command,
+            'cherwell-remove-attachment': remove_attachment_command,
+            'cherwell-link-business-objects': link_business_objects_command,
+            'cherwell-unlink-business-objects': unlink_business_objects_command,
+            'cherwell-query-business-object': query_business_object_command,
+            'cherwell-get-field-info': get_field_info_command,
+            'cherwell-run-saved-search': cherwell_run_saved_search_command,
+            'cherwell-get-business-object-id': cherwell_get_business_object_id_command,
+            'cherwell-get-business-object-summary': cherwell_get_business_object_summary_command,
+            'cherwell-get-one-step-actions-for-business-object': cherwell_get_one_step_actions_command,
+            'cherwell-run-one-step-action-on-business-object': cherwell_run_one_step_action_command
+        }
+        if command == 'test-module':
+            test_command()
+            demisto.results('ok')
+        elif command == 'fetch-incidents':
+            fetch_incidents_command()
+        elif command in commands:
+            return_results(commands[command]())
+        else:
+            raise NotImplementedError(f'{command} command is not implemented.')
 
-    elif demisto.command() == 'cherwell-get-business-object':
-        get_business_object_command()
-
-    elif demisto.command() == 'cherwell-delete-business-object':
-        delete_business_object_command()
-
-    elif demisto.command() == 'cherwell-download-attachments':
-        download_attachments_command()
-
-    elif demisto.command() == 'cherwell-get-attachments-info':
-        get_attachments_info_command()
-
-    elif demisto.command() == 'cherwell-upload-attachment':
-        upload_attachment_command()
-
-    elif demisto.command() == 'cherwell-remove-attachment':
-        remove_attachment_command()
-
-    elif demisto.command() == 'cherwell-link-business-objects':
-        link_business_objects_command()
-
-    elif demisto.command() == 'cherwell-unlink-business-objects':
-        unlink_business_objects_command()
-
-    elif demisto.command() == 'cherwell-query-business-object':
-        query_business_object_command()
-
-    elif demisto.command() == 'cherwell-get-field-info':
-        get_field_info_command()
-
-    elif demisto.command() == 'cherwell-run-saved-search':
-        cherwell_run_saved_search_command()
-
-    elif demisto.command() == 'cherwell-get-business-object-id':
-        cherwell_get_business_object_id_command()
+    # Log exceptions
+    except Exception as e:
+        message = f'Unexpected error: {e}.'
+        return_error(message, error=traceback.format_exc())
 
 
-# Log exceptions
-except Exception as e:
-    if demisto.command() == 'fetch-incidents':
-        raise Exception(e)
-    message = f'Unexpected error: {e}, traceback: {traceback.format_exc()}'
-    LOG(message)
-    LOG(str(e))
-    LOG.print_log()
-    return_error(message)
+if __name__ in ['__main__', 'builtin', 'builtins']:
+    main()

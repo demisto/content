@@ -1,0 +1,899 @@
+id: Test-AnsibleVMware
+version: -1
+name: Test-AnsibleVMware
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c5beac53-e9ec-4d0c-8d53-da90e723661c
+    type: start
+    task:
+      id: c5beac53-e9ec-4d0c-8d53-da90e723661c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 4739eca8-3a73-4ca8-8cb1-ec1864d38e03
+    type: regular
+    task:
+      id: 4739eca8-3a73-4ca8-8cb1-ec1864d38e03
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 5ba5b744-120b-4ed1-8835-08d2d4e3b538
+    type: title
+    task:
+      id: 5ba5b744-120b-4ed1-8835-08d2d4e3b538
+      version: -1
+      name: Basic Info
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: ee896dac-d23e-4d16-868e-87ce38d3c8ca
+    type: title
+    task:
+      id: ee896dac-d23e-4d16-868e-87ce38d3c8ca
+      version: -1
+      name: Folder
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -45
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 68b71af4-21b2-4898-8003-6e16dd2ae47e
+    type: title
+    task:
+      id: 68b71af4-21b2-4898-8003-6e16dd2ae47e
+      version: -1
+      name: Guest
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 02b147de-a70a-4885-8541-962980a344dd
+    type: regular
+    task:
+      id: 02b147de-a70a-4885-8541-962980a344dd
+      version: -1
+      name: vmware-about-info
+      description: |-
+        Provides information about VMware server to which user is connecting to
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_about_info_module.html
+      script: '|||vmware-about-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 87a75bf9-c03d-429f-8ff6-a21bb557134e
+    type: condition
+    task:
+      id: 87a75bf9-c03d-429f-8ff6-a21bb557134e
+      version: -1
+      name: check vmware-about-info
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: VMware.VmwareAboutInfo.[0].about_info.vendor
+            iscontext: true
+          right:
+            value:
+              simple: VMware, Inc.
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 420a1805-664f-42b7-8103-e2eb487295e7
+    type: title
+    task:
+      id: 420a1805-664f-42b7-8103-e2eb487295e7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: ecdb813d-1164-49b3-8fc8-f9b14fa994f0
+    type: regular
+    task:
+      id: ecdb813d-1164-49b3-8fc8-f9b14fa994f0
+      version: -1
+      name: vmware-datastore-info
+      description: |-
+        Gather info about datastores available in given vCenter
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_datastore_info_module.html
+      script: '|||vmware-datastore-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      cluster: {}
+      datacenter: {}
+      gather_nfs_mount_info: {}
+      gather_vmfs_mount_info: {}
+      name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 052b7775-e072-4af7-8d95-6733659dd884
+    type: condition
+    task:
+      id: 052b7775-e072-4af7-8d95-6733659dd884
+      version: -1
+      name: check vmware-datastore-info
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: VMware.VmwareDatastoreInfo.[0].datastores.[0].capacity
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: ce024f6f-f1ca-48af-8412-f225e0f4485f
+    type: regular
+    task:
+      id: ce024f6f-f1ca-48af-8412-f225e0f4485f
+      version: -1
+      name: vmware-cluster-info
+      description: |-
+        Gather info about clusters available in given vCenter
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_info_module.html
+      script: '|||vmware-cluster-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      cluster_name: {}
+      datacenter:
+        simple: ${inputs.datacenter}
+      show_tag: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: d0a3488e-bc19-4937-8888-1730c90e1a63
+    type: condition
+    task:
+      id: d0a3488e-bc19-4937-8888-1730c90e1a63
+      version: -1
+      name: check vmware-cluster-info
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: VMware.VmwareClusterInfo.[0].status
+            iscontext: true
+          right:
+            value:
+              simple: SUCCESS
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: af7c0274-bb65-42a4-85df-92b7fb8202de
+    type: regular
+    task:
+      id: af7c0274-bb65-42a4-85df-92b7fb8202de
+      version: -1
+      name: vmware-host-facts
+      description: |-
+        Gathers facts about remote ESXi hostsystem
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_facts_module.html
+      script: '|||vmware-host-facts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      esxi_hostname:
+        simple: ${VMware.VmwareClusterInfo.[0].clusters.Cluster.hosts.[0].name}
+      show_tag: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: cf91f915-61e6-429c-839f-11d676de0122
+    type: condition
+    task:
+      id: cf91f915-61e6-429c-839f-11d676de0122
+      version: -1
+      name: check vmware-host-facts
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: VMware.VmwareHostFacts.[0].processor_count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 64a14404-ed8e-4671-8414-a6f57ad3aa93
+    type: regular
+    task:
+      id: 64a14404-ed8e-4671-8414-a6f57ad3aa93
+      version: -1
+      name: vmware-vcenter-folder
+      description: |-
+        Manage folders on given datacenter
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vcenter_folder_module.html
+      script: '|||vmware-vcenter-folder'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      datacenter:
+        simple: ${inputs.datacenter}
+      folder_name:
+        simple: testplaybook
+      folder_type: {}
+      parent_folder: {}
+      state: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: d798c4ef-16e2-4a8d-8a7f-3b81994d166f
+    type: condition
+    task:
+      id: d798c4ef-16e2-4a8d-8a7f-3b81994d166f
+      version: -1
+      name: check vmware-vcenter-folder
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: VMware.VcenterFolder.[0].result.path
+            iscontext: true
+          right:
+            value:
+              simple: /Datacenter/vm/testplaybook
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 43326717-9660-492b-8c84-35c87734a19e
+    type: regular
+    task:
+      id: 43326717-9660-492b-8c84-35c87734a19e
+      version: -1
+      name: vmware-guest
+      description: |-
+        Manages virtual machines in vCenter
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_module.html
+      script: '|||vmware-guest'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      annotation: {}
+      cdrom: {}
+      cluster: {}
+      convert: {}
+      customization: {}
+      customization_spec: {}
+      customvalues: {}
+      datacenter:
+        simple: ${inputs.datacenter}
+      datastore: {}
+      disk:
+        simple: '{{ [{''size_gb'': 1, ''type'': ''thin'', ''datastore'': ''datastore1''}]
+          }}'
+      esxi_hostname: {}
+      folder:
+        simple: ${VMware.VcenterFolder.[0].result.path}
+      force: {}
+      guest_id:
+        simple: centos64Guest
+      hardware:
+        simple: '{{ {''memory_mb'': 512, ''num_cpus'': 1, ''scsi'': ''paravirtual''}
+          }}'
+      is_template: {}
+      linked_clone: {}
+      name:
+        simple: testplaybook-vm
+      name_match: {}
+      networks: {}
+      resource_pool: {}
+      snapshot_src: {}
+      state: {}
+      state_change_timeout: {}
+      template: {}
+      use_instance_uuid: {}
+      uuid: {}
+      vapp_properties: {}
+      wait_for_customization: {}
+      wait_for_ip_address: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 4968a910-d3f9-4572-8927-7ef870ad41df
+    type: condition
+    task:
+      id: 4968a910-d3f9-4572-8927-7ef870ad41df
+      version: -1
+      name: check vmware-guest
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: VMware.VmwareGuest.[0].instance.hw_power_status
+            iscontext: true
+          right:
+            value:
+              simple: poweredOff
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: c272a22f-f987-4bbd-873f-6a1ef031aa36
+    type: regular
+    task:
+      id: c272a22f-f987-4bbd-873f-6a1ef031aa36
+      version: -1
+      name: vmware-guest (absent)
+      description: |-
+        Manages virtual machines in vCenter
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_module.html
+      script: '|||vmware-guest'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      annotation: {}
+      cdrom: {}
+      cluster: {}
+      convert: {}
+      customization: {}
+      customization_spec: {}
+      customvalues: {}
+      datacenter:
+        simple: ${inputs.datacenter}
+      datastore: {}
+      disk:
+        simple: '{{ [{''size_gb'': 1, ''type'': ''thin'', ''datastore'': ''datastore1''}]
+          }}'
+      esxi_hostname: {}
+      folder:
+        simple: ${VMware.VcenterFolder.[0].result.path}
+      force: {}
+      guest_id:
+        simple: centos64Guest
+      hardware:
+        simple: '{{ {''memory_mb'': 512, ''num_cpus'': 1, ''scsi'': ''paravirtual''}
+          }}'
+      is_template: {}
+      linked_clone: {}
+      name:
+        simple: testplaybook-vm
+      name_match: {}
+      networks: {}
+      resource_pool: {}
+      snapshot_src: {}
+      state:
+        simple: absent
+      state_change_timeout: {}
+      template: {}
+      use_instance_uuid: {}
+      uuid: {}
+      vapp_properties: {}
+      wait_for_customization: {}
+      wait_for_ip_address: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: f91ee250-d6c7-4cf1-83de-b66c8cb1f24d
+    type: regular
+    task:
+      id: f91ee250-d6c7-4cf1-83de-b66c8cb1f24d
+      version: -1
+      name: vmware-vcenter-folder (absent)
+      description: |-
+        Manage folders on given datacenter
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vcenter_folder_module.html
+      script: '|||vmware-vcenter-folder'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      datacenter:
+        simple: ${inputs.datacenter}
+      folder_name:
+        simple: testplaybook
+      folder_type: {}
+      parent_folder: {}
+      state:
+        simple: absent
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 1135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: ed469205-94d1-4bbc-8046-477b06834241
+    type: regular
+    task:
+      id: ed469205-94d1-4bbc-8046-477b06834241
+      version: -1
+      name: vmware-guest (absent)
+      description: |-
+        Manages virtual machines in vCenter
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_module.html
+      script: '|||vmware-guest'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      annotation: {}
+      cdrom: {}
+      cluster: {}
+      convert: {}
+      customization: {}
+      customization_spec: {}
+      customvalues: {}
+      datacenter:
+        simple: ${inputs.datacenter}
+      datastore: {}
+      disk:
+        simple: '{{ [{''size_gb'': 1, ''type'': ''thin'', ''datastore'': ''datastore1''}]
+          }}'
+      esxi_hostname: {}
+      folder:
+        simple: ${VMware.VcenterFolder.[0].result.path}
+      force: {}
+      guest_id:
+        simple: centos64Guest
+      hardware:
+        simple: '{{ {''memory_mb'': 512, ''num_cpus'': 1, ''scsi'': ''paravirtual''}
+          }}'
+      is_template: {}
+      linked_clone: {}
+      name:
+        simple: testplaybook-vm
+      name_match: {}
+      networks: {}
+      resource_pool: {}
+      snapshot_src: {}
+      state:
+        simple: absent
+      state_change_timeout: {}
+      template: {}
+      use_instance_uuid: {}
+      uuid: {}
+      vapp_properties: {}
+      wait_for_customization: {}
+      wait_for_ip_address: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: 4ce251e6-3b08-49e3-8b1c-c4a6fe259fd7
+    type: regular
+    task:
+      id: 4ce251e6-3b08-49e3-8b1c-c4a6fe259fd7
+      version: -1
+      name: vmware-vcenter-folder (absent)
+      description: |-
+        Manage folders on given datacenter
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vcenter_folder_module.html
+      script: '|||vmware-vcenter-folder'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      datacenter:
+        simple: ${inputs.datacenter}
+      folder_name:
+        simple: testplaybook
+      folder_type: {}
+      parent_folder: {}
+      state:
+        simple: absent
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2995,
+        "width": 930,
+        "x": 950,
+        "y": -1110
+      }
+    }
+  }
+inputs:
+- key: datacenter
+  value:
+    simple: Datacenter
+  required: true
+  description: datacenter to run tests against
+  playbookInputQuery:
+outputs: []
+sourceplaybookid: 3a6dd8ad-15e6-46c1-8110-8132245ac2eb
+fromversion: 6.0.0
+description: Test playbook for Ansible VMware

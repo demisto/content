@@ -1,0 +1,27 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+pytest = "*"
+pytest-mock = "*"
+requests-mock = "*"
+pytest-xdist = "*"
+pytest-json = "*"
+pytest-cov = "*"
+flake8 = "*"
+
+[packages]
+freezegun = "*"
+certifi = "==2018.10.15"
+chardet = "==3.0.4"
+idna = "==2.7"
+requests = "==2.20.0"
+urllib3 = "==1.24.1"
+virtualenv = "==15.0.3"
+ExifRead = "==2.1.2"
+
+[requires]
+python_version = "3.9"

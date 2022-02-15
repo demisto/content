@@ -10,7 +10,7 @@ comment: Present or analyze workers usage
 commonfields:
   id: HealthCheckWorkers
   version: -1
-dockerimage: demisto/python3:3.9.6.24019
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: HealthCheckWorkers
 outputs:

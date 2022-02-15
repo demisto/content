@@ -54,7 +54,7 @@ script:
   - arguments:
     - default: true
       description: url
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -99,7 +99,7 @@ script:
     - contextPath: GoogleSafeBrowsing.URL.threatEntryType
       description: The URL threat entry type.
       type: string
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
   longRunning: false

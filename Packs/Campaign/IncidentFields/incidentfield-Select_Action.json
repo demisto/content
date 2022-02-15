@@ -16,7 +16,6 @@
     "placeholder": "Select ",
     "required": false,
     "selectValues": [
-        "",
         "Close",
         "Link",
         "Link\u0026Close",

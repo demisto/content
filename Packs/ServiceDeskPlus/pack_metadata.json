@@ -2,7 +2,7 @@
     "name": "Manage Engine Service Desk Plus",
     "description": "IT service management.",
     "support": "xsoar",
-    "currentVersion": "2.0.4",
+    "currentVersion": "2.0.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,5 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

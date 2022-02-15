@@ -1,0 +1,55 @@
+interactions:
+- request:
+    body: '[{"id": "jrhrfx", "status": "no-action"}]'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '41'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.26.0
+      X-RF-User-Agent:
+      - Cortex_XSOAR/2.0 Cortex_XSOAR_unittest_0.1
+      X-RFToken:
+      - XXXXXX
+    method: POST
+    uri: https://api.recordedfuture.com/v2/alert/update
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAH3MsQrCMBgE4FeRmxtIAypmdnFxqoulQ0x/aRQSSP7YQui7m/oArvfdXUHK1lJK
+        0H2BG6HxilN8LmiQ2HCuAB+EseyCr6EPTNAFTAv/iGmXvWOmxJVN5inECtfb47KX80G9azqabQQl
+        VSvkSci2a5WWR63UHWuDSB9H8/lfaWhAMW7P/bB+AST916y1AAAA
+    headers:
+      Cache-Control:
+      - no-cache, no-store, private, must-revalidate, max-age=0, no-transform
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '153'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Wed, 01 Sep 2021 12:07:22 GMT
+      Expires:
+      - Thu, 01 Jan 1970 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - JSESSIONID=node04wycv145bkck1fzp0dqnbf4qy68587.node0; Path=/rfq
+      Strict-Transport-Security:
+      - max-age=86400; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

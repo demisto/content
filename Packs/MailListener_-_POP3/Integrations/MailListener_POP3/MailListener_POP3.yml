@@ -51,7 +51,7 @@ script:
   script: '-'
   type: python
   subtype: python2
-  dockerimage: demisto/python:2.7.18.24019
+  dockerimage: demisto/python:2.7.18.24398
 beta: true
 tests:
 - MailListener-POP3 - Test

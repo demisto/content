@@ -41,9 +41,8 @@ configuration:
   type: 8
 description: Deploy and manage containerized applications with a fully managed Kubernetes
   service.
-display: Azure Kubernetes Services (Beta)
+display: Azure Kubernetes Services
 name: Azure Kubernetes Services
-beta: true
 script:
   commands:
   - deprecated: false
@@ -184,7 +183,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Resource location.
+      description: Resource location, Can be retrieved using
+        the azure-ks-clusters-list command.
       isArray: false
       name: location
       predefined:
@@ -268,7 +268,7 @@ script:
     description: Updates a managed cluster with the specified configuration.
     execution: false
     name: azure-ks-cluster-addon-update
-  dockerimage: demisto/crypto:1.0.0.24037
+  dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: false
   longRunning: false

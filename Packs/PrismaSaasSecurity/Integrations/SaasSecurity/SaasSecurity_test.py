@@ -2,7 +2,7 @@ import io
 from freezegun import freeze_time
 import pytest
 import json
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, EntryType, EntryFormat
 from datetime import datetime
 
 from SaasSecurity import Client
@@ -39,6 +39,7 @@ def demisto_mocker(mocker):
                                                          'state': 'Open',
                                                          'severity': 'High,Low',
                                                          'status': 'Assigned',
+                                                         'mirror_direction': 'Incoming And Outgoing'
                                                          })
     mocker.patch.object(demisto, 'getLastRun', return_value={'last_run_time': '2021-08-25T13:51:03.247Z'})
     mocker.patch.object(demisto, 'incidents')
@@ -130,6 +131,7 @@ def test_convert_to_xsoar_incident_without_occurred():
     assert xsoar_incident == expected
 
 
+@freeze_time("2021-08-24 18:04:00")
 def test_fetch_incidents(mocker, client, requests_mock, demisto_mocker):
     """
     Configures mocker instance, requests_mock, uses the demisto_mocker fixture.
@@ -276,3 +278,120 @@ def test_get_remediation_status_command(client, requests_mock):
 
     assert 'system_quarantine' in req_mocker.last_request.query
     assert remediation_status == result.outputs
+
+
+@pytest.mark.parametrize('close_incident,expected_mirrored_object,expected_entries', [
+    (False, {'category': 'business_justified', 'status': 'Closed-Business Justified', 'resolved_by': 'api',
+             'state': 'closed', 'asset_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+     []),
+    (True, {'category': 'business_justified', 'status': 'Closed-Business Justified', 'resolved_by': 'api',
+            'state': 'closed', 'asset_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}, [
+        {'Type': EntryType.NOTE, 'ContentsFormat': EntryFormat.JSON,
+         'Contents': {'dbotIncidentClose': True, 'closeReason': 'From SaasSecurity: business_justified'}}
+    ])
+])
+def test_get_remote_data_command(client, requests_mock, mocker, close_incident,
+                                 expected_mirrored_object, expected_entries):
+    from SaasSecurity import get_remote_data_command
+
+    args = {
+        'id': 1,
+        'lastUpdate': '2021-08-24T07:44:21.608Z'
+    }
+    incident = util_load_json('test_data/get-incident-by-id.json')
+    requests_mock.get('http://base_url/incident/api/incidents/1', json=incident)
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
+
+    result = get_remote_data_command(client, args)
+
+    assert result.mirrored_object == expected_mirrored_object
+    assert result.entries == expected_entries
+
+
+@pytest.mark.parametrize('close_incident,expected_mirrored_object,expected_entries', [
+    (True, {'category': 'business_justified', 'status': 'Closed-Business Justified', 'resolved_by': 'api',
+            'state': 'Closed', 'asset_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}, [
+        {'Type': EntryType.NOTE, 'ContentsFormat': EntryFormat.JSON,
+         'Contents': {'dbotIncidentClose': True, 'closeReason': 'From SaasSecurity: business_justified'}}
+    ])
+])
+def test_get_remote_data_closed_status_uppercase(client, requests_mock, mocker, close_incident,
+                                                 expected_mirrored_object, expected_entries):
+    from SaasSecurity import get_remote_data_command
+
+    args = {
+        'id': 1,
+        'lastUpdate': '2021-08-24T07:44:21.608Z'
+    }
+    incident = util_load_json('test_data/get-incident-by-id.json')
+    incident['state'] = 'Closed'
+
+    requests_mock.get('http://base_url/incident/api/incidents/1', json=incident)
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
+
+    result = get_remote_data_command(client, args)
+
+    assert result.mirrored_object == expected_mirrored_object
+    assert result.entries == expected_entries
+
+
+def test_get_modified_remote_data_command(client, requests_mock):
+
+    from SaasSecurity import get_modified_remote_data_command
+
+    args = {'lastUpdate': '2020-11-18T13:16:52.005381+02:00'}
+
+    incidents = util_load_json('test_data/get-incidents.json')
+    requests_mock.get('http://base_url/incident/api/incidents/delta', json=incidents)
+
+    result = get_modified_remote_data_command(client, args)
+
+    assert result.modified_incident_ids == ['3', '4', '5', '6', '7', '8', '9', '10']
+
+
+def test_get_mapping_fields_command():
+
+    from SaasSecurity import get_mapping_fields_command
+
+    result = get_mapping_fields_command().extract_mapping()
+
+    assert result == {'Saas Security Incident': {'state': '', 'category': ''}}
+
+
+@pytest.mark.parametrize('args,expected_debug_message', [
+    ({'incidentChanged': True, 'remoteId': '1', 'data': {'state': 'closed', 'category': 'No Reason'}, 'status': 1,
+      'delta': {'category': 'No Reason'}, 'entries': []},
+     'Incident updated successfully. Result: {\'state\': \'closed\', \'category\': \'No Reason\'}'),
+    ({'incidentChanged': False, 'remoteId': '2', 'data': {'state': 'closed', 'category': 'No Reason'}, 'status': 1,
+      'delta': {'category': 'No Reason'}, 'entries': []},
+     'Skipping updating remote incident fields [2] as it is not new nor changed.'),
+    ({'incidentChanged': True, 'remoteId': '2', 'data': {'state': 'closed'}, 'status': 1,
+      'delta': {'category': 'No Reason'}, 'entries': []},
+     'Skipping updating the remote incident since the incident is not closed. '
+     'Could not update the category for open incident due to an API limitation.'),
+    ({'incidentChanged': True, 'remoteId': '2', 'data': {'state': 'open', 'category': 'No Reason'}, 'status': 1,
+      'delta': {'category': 'No Reason'}, 'entries': []},
+     'Skipping updating the remote incident since the incident is not closed. '
+     'Could not update the category for open incident due to an API limitation.'),
+    ({'incidentChanged': True, 'remoteId': '2', 'data': {'state': 'closed', 'category': 'Invalid Category'},
+      'status': 1, 'delta': {'category': 'No Reason'}, 'entries': []},
+     'The value of category Invalid Category is invalid. '
+     'The category can be one of the following [\'no_reason\', \'business_justified\', \'misidentified\'].'),
+    ({'incidentChanged': True, 'remoteId': '2', 'data': {'state': 'closed', 'category': 'No Reason'}, 'status': 1,
+      'delta': {'category': 'No Reason'}, 'entries': []},
+     'Incident updated successfully. Result: {\'state\': \'closed\', \'category\': \'No Reason\'}'),
+    ({'incidentChanged': True, 'remoteId': '2', 'data': {'state': 'open', 'category': 'No Reason'}, 'status': 2,
+      'delta': {'category': 'No Reason'}, 'entries': []},
+     'Incident updated successfully. Result: {\'state\': \'open\', \'category\': \'No Reason\'}')
+])
+def test_update_remote_system_command(requests_mock, mocker, client, args, expected_debug_message):
+
+    from SaasSecurity import update_remote_system_command
+
+    requests_mock.post(f'http://base_url/incident/api/incidents/{args.get("remoteId")}/state', json=args.get('data'))
+    debug_result = mocker.patch.object(demisto, 'debug')
+
+    result = update_remote_system_command(client, args)
+
+    assert result == args.get("remoteId")
+    assert expected_debug_message in debug_result.call_args[0][0]

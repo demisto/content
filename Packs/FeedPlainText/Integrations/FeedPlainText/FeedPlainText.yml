@@ -24,7 +24,8 @@ configuration:
   name: auto_detect_type
   required: false
   type: 8
-- additionalinfo: Type of the indicator in the feed. If auto-detect is checked then the value set as Indicator Type will be ignored.
+- additionalinfo: Type of the indicator in the feed. If auto-detect is checked then
+    the value set as Indicator Type will be ignored. If the "Custom" option is selected, the Custom Indicator Type parameter must be provided.
   display: Indicator Type
   name: indicator_type
   options:
@@ -44,8 +45,16 @@ configuration:
   - Host
   - ssdeep
   - Registry Key
+  - Custom
   required: false
   type: 15
+- additionalinfo: The indicator type to be used in case of 'Custom' option chosen in the 
+    Indicator Type field.
+  display: Custom Indicator Type
+  hidden: false
+  name: custom_indicator_type
+  required: false
+  type: 0
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: feedInstanceReputationNotSet
@@ -71,7 +80,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -173,7 +183,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The indicator type. If the configuration parameter 'Auto detect indicator type' is marked true for the integration instance, then this value will be ignored.
+      description: The indicator type. If the configuration parameter 'Auto detect
+        indicator type' is marked true for the integration instance, then this value
+        will be ignored.
       isArray: false
       name: indicator_type
       required: false
@@ -182,7 +194,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: plaintext-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.23980
+  dockerimage: demisto/py3-tools:0.0.1.26536
   feed: true
   isfetch: false
   longRunning: false

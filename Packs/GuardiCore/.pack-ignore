@@ -1,0 +1,5 @@
+[file:README.md]
+ignore=RM104
+
+[file:GuardiCoreV2.yml]
+ignore=IN144

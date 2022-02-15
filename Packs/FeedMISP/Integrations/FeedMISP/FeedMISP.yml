@@ -1,0 +1,178 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: MISP Feed
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Token
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+- display: Timeout
+  name: timeout
+  defaultvalue: "60"
+  type: 0
+  required: false
+  additionalinfo: The timeout of the HTTP requests sent to the MISP API (in seconds). If no value is provided, the timeout will be set to 60 seconds.
+- display: Fetch indicators
+  name: feed
+  required: false
+  defaultvalue: 'true'
+  type: 8
+- additionalinfo: Incremental feeds pull only new or modified indicators that have
+    been sent from the integration. The determination if the indicator is new or
+    modified happens on the 3rd-party vendor's side and only indicators that are
+    new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified.
+  display: Incremental Feed
+  name: feedIncremental
+  defaultvalue: true
+  required: false
+  type: 8
+  hidden: true
+- display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: Suspicious
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation.
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data.
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ""
+  name: feedExpirationInterval
+  defaultvalue: "20160"
+  type: 1
+  required: false
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "240"
+  type: 19
+  required: false
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  defaultvalue: ""
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+- display: MISP Attribute Tags
+  additionalinfo: Attributes having one of the tags, or being an attribute of an event having one of the tags, will be returned. You can enter a comma-separated list of tags,
+    for example <tag1>,<tag2>,<tag3>. The list of MISP tags can be found in your MISP instance under 'Event Actions'>'List Tags'
+  name: attribute_tags
+  required: false
+  type: 0
+- display: MISP Attribute Types
+  additionalinfo: Attributes of one of these types will be returned. You can enter a comma-separated list of types,
+    for example <type1>,<type2>,<type3>. The list of MISP types can be found in your MISP instance then 'Event Actions'>'Search Attributes'>'Type dropdown list'
+  name: attribute_types
+  required: false
+  type: 0
+- display: Query
+  additionalinfo: JSON query to filter MISP attributes. When the query parameter is used
+    Attribute Types and Attribute Tags parameters are not used. You can find the query syntax in the link provided in the integration documentation.
+  name: query
+  required: false
+  type: 12
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed.
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- name: feedTags
+  display: Tags
+  required: false
+  type: 0
+  additionalinfo: Supports CSV values.
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: 'Indicators feed from MISP'
+display: MISP Feed
+name: MISP Feed
+script:
+  commands:
+  - arguments:
+    - name: limit
+      defaultValue: '10'
+      description: The maximum number of results to return.
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: tags
+      description: Attributes having one of the tags, or being an attribute of an event having one of the tags, will be returned. You can enter a comma-separated list of tags, for example <tag1>,<tag2>,<tag3>. The list of MISP tags can be found in your MISP instance under 'Event Actions'>'List Tags'
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: attribute_type
+      description: Attributes of one of these types will be returned. You can enter a comma-separated list of types, for example <type1>,<type2>,<type3>. The list of MISP types can be found in your MISP instance under 'Event Actions'>'Search Attributes'>'Type dropdown list'
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: query
+      description: JSON query to filter MISP attributes. When the query argument is used,
+        attribute_type and tags arguments are not used. You can check for the correct
+        syntax at https://<Your MISP url>/servers/openapi#operation/restSearchAttributes
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets indicators from the feed.
+    execution: false
+    name: misp-feed-get-indicators
+  isfetch: false
+  feed: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.1.25933
+fromversion: 5.5.0
+tests:
+- MISPfeed Test
+- Fetch Indicators Test

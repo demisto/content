@@ -100,14 +100,14 @@ ignore=RP104
 [file:playbook-Detonate_url_-_Generic_4_9_9.yml]
 ignore=BA101
 
-[file:NonSupported]
-ignore=PA116
+[file:pack_metadata.json]
+ignore=PA116,PA129
 
 [file:integration-SecureWorks_V350.yml]
 ignore=IN126
 
 [file:QRadar_5_4_9.yml]
-ignore=IN126,BA108,BA109
+ignore=IN126,BA108,BA109,IN145
 
 [file:JiraV2_old.yml]
 ignore=IN126
@@ -121,8 +121,8 @@ ignore=IN126
 [file:integration-ProtectWise_3_1_0.yml]
 ignore=IN126
 
-[file:integration-VirusTotal.yml]
-ignore=IN135
+[file:integration-VirusTotal_5_1_0.yml]
+ignore=IN135,IN144,IN145
 
 [file:script-CommonServerUserPowerShell.yml]
 ignore=BA108,BA109

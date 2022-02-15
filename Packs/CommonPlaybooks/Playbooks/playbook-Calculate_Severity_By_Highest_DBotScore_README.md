@@ -3,24 +3,25 @@ Calculates the incident severity level according to the highest indicator DBotSc
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
-## Sub-playbooks
+### Sub-playbooks
 This playbook does not use any sub-playbooks.
 
-## Integrations
+### Integrations
 This playbook does not use any integrations.
 
-## Scripts
+### Scripts
+* GetIndicatorDBotScoreFromCache
 * Set
 
-## Commands
+### Commands
 This playbook does not use any commands.
 
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| DBotScore | The array of all indicators associated with the incident.  | None | DBotScore | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| DBotScore | Array of all indicators associated with the incident.  | DBotScore.None | Optional |
 
 ## Playbook Outputs
 ---
@@ -31,4 +32,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Calculate_Severity_By_Highest_DBotScore](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Calculate_Severity_By_Highest_DBotScore.png)
+![Calculate Severity By Highest DBotScore](../doc_files/Calculate_Severity_By_Highest_DBotScore.png)

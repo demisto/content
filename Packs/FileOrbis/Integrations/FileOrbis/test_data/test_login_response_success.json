@@ -1,0 +1,8 @@
+{
+    "Success": true,
+    "Status": 0,
+    "Message": "Your Operation is Completed Successfully",
+    "Data": {
+        "Token": "test.token"
+    }
+}

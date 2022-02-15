@@ -1,0 +1,71 @@
+commonfields:
+  id: SplitCampaignContext
+  version: -1
+name: SplitCampaignContext
+script: ''
+type: python
+comment: |-
+  Splits incidents in the context data to below and above a similarity threshold.
+  If a low similarity incident was already added to the campaign,
+  then it will also be considered in the higher similarity incidents list.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+tags: []
+enabled: true
+args:
+- name: similarity_threshold
+  required: true
+  defaultValue: "0.8"
+  description: The similarity value on which to split the context campaign data.
+outputs:
+- contextPath: EmailCampaign.incidents.id
+  description: The IDs of the incidents involved in the campaign.
+  type: Number
+- contextPath: EmailCampaign.incidents.similarity
+  description: The textual similarity of the related emails to the current incident.
+  type: Number
+- contextPath: EmailCampaign.incidents.emailfrom
+  description: The senders of the emails involved in the campaign.
+  type: string
+- contextPath: EmailCampaign.incidents.emailfromdomain
+  description: The domains of the email senders involved in the campaign.
+  type: string
+- contextPath: EmailCampaign.incidents.recipients
+  description: A list of email addresses of recipients involved in the campaign. The
+    list is comprised of the following fields, "Email To", "Email CC", "Email BCC".
+  type: string
+- contextPath: EmailCampaign.incidents.recipientsdomain
+  description: A list of the domains of the email addresses of recipients involved
+    in the campaign. The list is comprised of the following fields, "Email To", "Email
+    CC", "Email BCC".
+  type: Unknown
+- contextPath: EmailCampaign.LowerSimilarityIncidents.id
+  description: The IDs of the incidents involved in the campaign.
+  type: Number
+- contextPath: EmailCampaign.LowerSimilarityIncidents.similarity
+  description: The textual similarity of the related emails to the current incident.
+  type: Number
+- contextPath: EmailCampaign.LowerSimilarityIncidents.emailfrom
+  description: The senders of the emails involved in the campaign.
+  type: string
+- contextPath: EmailCampaign.LowerSimilarityIncidents.emailfromdomain
+  description: The domains of the email senders involved in the campaign.
+  type: string
+- contextPath: EmailCampaign.LowerSimilarityIncidents.recipients
+  description: A list of email addresses of recipients involved in the campaign. The
+    list is comprised of the following fields, "Email To", "Email CC", "Email BCC".
+  type: string
+- contextPath: EmailCampaign.LowerSimilarityIncidents.recipientsdomain
+  description: A list of the domains of the email addresses of recipients involved
+    in the campaign. The list is comprised of the following fields, "Email To", "Email
+    CC", "Email BCC".
+  type: Unknown
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.8.24399
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,20 @@
+[
+  {
+    "id": 88256,
+    "name": "RiskIQ, Inc.",
+    "priorities": {
+      "high": {
+        "observationCount": 8,
+        "link": "https://api.pt.net/pt/v2/attack-surface/priority/high"
+      },
+      "medium": {
+        "observationCount": 4,
+        "link": "https://api.pt.net/pt/v2/attack-surface/priority/medium"
+      },
+      "low": {
+        "observationCount": 133,
+        "link": "https://api.pt.net/pt/v2/attack-surface/priority/low"
+      }
+    }
+  }
+]

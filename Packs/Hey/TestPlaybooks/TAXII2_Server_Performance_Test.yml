@@ -1,0 +1,2318 @@
+id: TAXII2 Server Performance Test
+version: -1
+name: TAXII2 Server Performance Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b45aae2d-bbd0-4982-8f06-4c2f82c3fddb
+    type: start
+    task:
+      id: b45aae2d-bbd0-4982-8f06-4c2f82c3fddb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 254907c9-714d-4661-8791-310b5f2e21a2
+    type: regular
+    task:
+      id: 254907c9-714d-4661-8791-310b5f2e21a2
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 0c074418-50f8-48eb-8411-3ebd2663ab33
+    type: title
+    task:
+      id: 0c074418-50f8-48eb-8411-3ebd2663ab33
+      version: -1
+      name: 10,000 Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: b50184a3-4c65-4baf-81b9-6b44af648aae
+    type: playbook
+    task:
+      id: b50184a3-4c65-4baf-81b9-6b44af648aae
+      version: -1
+      name: TAXII2 Performance Test - Concurrency
+      playbookName: TAXII2 Performance Test - Concurrency
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      "n":
+        simple: ${inputs.n}
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000
+      z:
+        simple: ${inputs.z}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: f2b6cfad-2b7f-4108-8ba4-16c3e9c69b70
+    type: playbook
+    task:
+      id: f2b6cfad-2b7f-4108-8ba4-16c3e9c69b70
+      version: -1
+      name: TAXII2 Performance Test - Concurrency
+      playbookName: TAXII2 Performance Test - Concurrency
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: f306fab2-858b-4c9b-8d37-f8d9d1f3b319
+    type: title
+    task:
+      id: f306fab2-858b-4c9b-8d37-f8d9d1f3b319
+      version: -1
+      name: 50,000 Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 148711a5-695b-4116-8cf6-ef5c6390805b
+    type: title
+    task:
+      id: 148711a5-695b-4116-8cf6-ef5c6390805b
+      version: -1
+      name: 100,000 Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: fab7abf3-38f2-4a54-8f73-e9d4027f0abe
+    type: playbook
+    task:
+      id: fab7abf3-38f2-4a54-8f73-e9d4027f0abe
+      version: -1
+      name: TAXII2 Performance Test - Concurrency
+      playbookName: TAXII2 Performance Test - Concurrency
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c381d530-1ad4-4cd7-86af-8add4137522a
+    type: regular
+    task:
+      id: c381d530-1ad4-4cd7-86af-8add4137522a
+      version: -1
+      name: Set Small Outputs
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: EDLHey.Small
+      value:
+        complex:
+          root: HeyConcurrency
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 41e78d11-d223-4ddf-8464-29ebaf17c6f7
+    type: regular
+    task:
+      id: 41e78d11-d223-4ddf-8464-29ebaf17c6f7
+      version: -1
+      name: Clear HeyConcurrency Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: HeyConcurrency
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: b424eddc-095e-4670-8cc2-18ba88c76119
+    type: regular
+    task:
+      id: b424eddc-095e-4670-8cc2-18ba88c76119
+      version: -1
+      name: Set Medium Outputs
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      key:
+        simple: EDLHey.Medium
+      value:
+        simple: ${HeyConcurrency}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 1c77813a-f12c-4719-8ef1-26d5bce38190
+    type: regular
+    task:
+      id: 1c77813a-f12c-4719-8ef1-26d5bce38190
+      version: -1
+      name: Clear HeyConcurrency Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: HeyConcurrency
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 10508047-fdbf-4931-8e1b-a4fb67148d6a
+    type: regular
+    task:
+      id: 10508047-fdbf-4931-8e1b-a4fb67148d6a
+      version: -1
+      name: Set Large Outputs
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      key:
+        simple: EDLHey.Large
+      value:
+        simple: ${HeyConcurrency}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 7a2a12a8-3621-4944-8278-6fadda161b3c
+    type: regular
+    task:
+      id: 7a2a12a8-3621-4944-8278-6fadda161b3c
+      version: -1
+      name: Check IP Is Ready
+      description: Returns, whether there're, are enough indicators in the system.
+      scriptName: VerifyEnoughIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      query:
+        simple: type:IP
+      size:
+        simple: ${inputs.iocs_in_xsoar}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: eeb75ad1-2da0-4001-86a9-1d5e0c1e6d14
+    type: condition
+    task:
+      id: eeb75ad1-2da0-4001-86a9-1d5e0c1e6d14
+      version: -1
+      name: Verify IP Is Ready
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: IndicatorsCheck.ConditionMet
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: caddb313-771d-480b-86ed-eea9586bc1cd
+    type: regular
+    task:
+      id: caddb313-771d-480b-86ed-eea9586bc1cd
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      all:
+        simple: "yes"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 1b2b8bce-2655-4fae-88a0-2c047d84312f
+    type: playbook
+    task:
+      id: 1b2b8bce-2655-4fae-88a0-2c047d84312f
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: size
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.iocs_in_xsoar}
+      Ids:
+        simple: type:IP
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: query
+      PollingCommandName:
+        simple: VerifyEnoughIndicators
+      Timeout:
+        simple: "10"
+      dt:
+        simple: IndicatorsCheck(val.ConditionMet !== true).Query
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 904820df-a19d-4aa2-8aea-b964a9a49329
+    type: regular
+    task:
+      id: 904820df-a19d-4aa2-8aea-b964a9a49329
+      version: -1
+      name: Check Domain Is Ready
+      description: Returns, whether there're, are enough indicators in the system.
+      scriptName: VerifyEnoughIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      query:
+        simple: type:Domain
+      size:
+        simple: ${inputs.iocs_in_xsoar}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: d7d153de-b29c-4584-8d4b-e0b287aa9ad6
+    type: condition
+    task:
+      id: d7d153de-b29c-4584-8d4b-e0b287aa9ad6
+      version: -1
+      name: Verify Domain Is Ready
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: IndicatorsCheck.ConditionMet
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: f24880ba-b2a3-4e8e-8dd6-18fd6e91558b
+    type: regular
+    task:
+      id: f24880ba-b2a3-4e8e-8dd6-18fd6e91558b
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: e9094cca-0907-4b6a-8f9f-9237d9b8527f
+    type: playbook
+    task:
+      id: e9094cca-0907-4b6a-8f9f-9237d9b8527f
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: size
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.iocs_in_xsoar}
+      Ids:
+        simple: type:Domain
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: query
+      PollingCommandName:
+        simple: VerifyEnoughIndicators
+      Timeout:
+        simple: "10"
+      dt:
+        simple: IndicatorsCheck(val.ConditionMet !== true).Query
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: fad1c9eb-a701-406a-80ec-e9b4a3e56f75
+    type: regular
+    task:
+      id: fad1c9eb-a701-406a-80ec-e9b4a3e56f75
+      version: -1
+      name: Check URL Is Ready
+      description: Returns, whether there're, are enough indicators in the system.
+      scriptName: VerifyEnoughIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      query:
+        simple: type:URL
+      size:
+        simple: ${inputs.iocs_in_xsoar}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 216b8d14-ac3d-4081-8eef-e5173e2dda98
+    type: regular
+    task:
+      id: 216b8d14-ac3d-4081-8eef-e5173e2dda98
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      all:
+        simple: "yes"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 330a570e-9e41-49ef-8fbb-15fe7b43db76
+    type: condition
+    task:
+      id: 330a570e-9e41-49ef-8fbb-15fe7b43db76
+      version: -1
+      name: Verify URL Is Ready
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: IndicatorsCheck.ConditionMet
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 8ecce3cf-4216-4bf1-86b0-b9f46146e35d
+    type: playbook
+    task:
+      id: 8ecce3cf-4216-4bf1-86b0-b9f46146e35d
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: size
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.iocs_in_xsoar}
+      Ids:
+        simple: type:URL
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: query
+      PollingCommandName:
+        simple: VerifyEnoughIndicators
+      Timeout:
+        simple: "10"
+      dt:
+        simple: IndicatorsCheck(val.ConditionMet !== true).Query
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 0f59b4b2-c078-439c-8b4f-b96b43e2f90c
+    type: regular
+    task:
+      id: 0f59b4b2-c078-439c-8b4f-b96b43e2f90c
+      version: -1
+      name: Set URL
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: ServerURL
+      value:
+        complex:
+          root: ServerURL
+          accessor: URL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /instance/execute/taxii2server/
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 6665b2a3-4ab4-44ac-8ebc-3cabafd6d906
+    type: regular
+    task:
+      id: 6665b2a3-4ab4-44ac-8ebc-3cabafd6d906
+      version: -1
+      name: Get Server URL
+      description: Get the Server URL.
+      scriptName: GetServerURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 782b55dd-bfb1-49aa-8bc2-851b27ebf8a0
+    type: regular
+    task:
+      id: 782b55dd-bfb1-49aa-8bc2-851b27ebf8a0
+      version: -1
+      name: Send URL Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      headers:
+        simple: Accept:*/*
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000&match[type]=url
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: d18131ea-d675-4aef-8524-f65a7b0755f6
+    type: condition
+    task:
+      id: d18131ea-d675-4aef-8524-f65a7b0755f6
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Taxii2server-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "18"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: c9c48bb4-c477-4535-8c61-dbf0a96c7999
+    type: regular
+    task:
+      id: c9c48bb4-c477-4535-8c61-dbf0a96c7999
+      version: -1
+      name: Send IP Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      headers:
+        simple: Accept:*/*
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000&match[type]=ip
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: eaa7ad89-20e0-482f-8bec-d2005e011bb0
+    type: condition
+    task:
+      id: eaa7ad89-20e0-482f-8bec-d2005e011bb0
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Taxii2server-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "18"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: c33d8935-889c-4cfa-8bd6-c5dd256b1ea6
+    type: regular
+    task:
+      id: c33d8935-889c-4cfa-8bd6-c5dd256b1ea6
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 7941dcd1-f60a-4f01-8f52-f397f9cc8600
+    type: regular
+    task:
+      id: 7941dcd1-f60a-4f01-8f52-f397f9cc8600
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: ded5d2a2-635e-4368-8ba0-53007dc2f79f
+    type: regular
+    task:
+      id: ded5d2a2-635e-4368-8ba0-53007dc2f79f
+      version: -1
+      name: Send Domain Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      headers:
+        simple: Accept:*/*
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000&match[type]=domain-name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 3b896f0d-2367-4ab1-8b59-2435bb4daa0c
+    type: condition
+    task:
+      id: 3b896f0d-2367-4ab1-8b59-2435bb4daa0c
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Taxii2server-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "18"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: a7f0f505-5809-4c57-8d83-6db28858fb4c
+    type: regular
+    task:
+      id: a7f0f505-5809-4c57-8d83-6db28858fb4c
+      version: -1
+      name: Send URL Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      headers:
+        simple: Accept:*/*
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000&match[type]=url
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 49eeaedf-cfdc-411f-83b2-41f88646d5d1
+    type: condition
+    task:
+      id: 49eeaedf-cfdc-411f-83b2-41f88646d5d1
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Taxii2server-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "30"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: b3cf81bc-4fa6-4b41-8b2d-394b3b17aeda
+    type: regular
+    task:
+      id: b3cf81bc-4fa6-4b41-8b2d-394b3b17aeda
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 9c672553-7a77-4af0-814f-45bd0fc25f2f
+    type: regular
+    task:
+      id: 9c672553-7a77-4af0-814f-45bd0fc25f2f
+      version: -1
+      name: Send IP Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      headers:
+        simple: Accept:*/*
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000&match[type]=ip
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 8f720cde-0889-4e10-8898-07e93bd24b41
+    type: condition
+    task:
+      id: 8f720cde-0889-4e10-8898-07e93bd24b41
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Taxii2server-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "30"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 2714b0bf-188c-4d55-8af5-4e817fc27881
+    type: regular
+    task:
+      id: 2714b0bf-188c-4d55-8af5-4e817fc27881
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 79fc7437-280f-4cb7-8e41-888245513f0c
+    type: regular
+    task:
+      id: 79fc7437-280f-4cb7-8e41-888245513f0c
+      version: -1
+      name: Send Domain Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      headers:
+        simple: Accept:*/*
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000&match[type]=domain-name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 0b2de7e2-a900-412f-8394-51d8cda9f88f
+    type: condition
+    task:
+      id: 0b2de7e2-a900-412f-8394-51d8cda9f88f
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Taxii2server-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "30"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: adb30327-7ea3-410e-8f91-ba97157b004c
+    type: regular
+    task:
+      id: adb30327-7ea3-410e-8f91-ba97157b004c
+      version: -1
+      name: Send URL Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      headers:
+        simple: Accept:*/*
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000&match[type]=url
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: b86bedf3-ce5b-475e-8ee5-12f65c5a0762
+    type: condition
+    task:
+      id: b86bedf3-ce5b-475e-8ee5-12f65c5a0762
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Taxii2server-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "90"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: e378869b-ef58-4acf-87d0-13517cf47509
+    type: regular
+    task:
+      id: e378869b-ef58-4acf-87d0-13517cf47509
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 01ac87df-6977-4d0f-8765-017128cf4386
+    type: regular
+    task:
+      id: 01ac87df-6977-4d0f-8765-017128cf4386
+      version: -1
+      name: Send IP Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      headers:
+        simple: Accept:*/*
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000&match[type]=ip
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: bb59d23d-49de-4e53-8442-4e86854561b5
+    type: condition
+    task:
+      id: bb59d23d-49de-4e53-8442-4e86854561b5
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Taxii2server-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "90"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 0d02d804-aec7-4040-86f7-5cd8222fd176
+    type: regular
+    task:
+      id: 0d02d804-aec7-4040-86f7-5cd8222fd176
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 36d0517b-5371-4657-8a4e-c2bba055342e
+    type: regular
+    task:
+      id: 36d0517b-5371-4657-8a4e-c2bba055342e
+      version: -1
+      name: Send Domain Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      headers:
+        simple: Accept:*/*
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000&match[type]=domain-name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 6b01cdec-c8b3-4dde-828f-38ecdb2ec8aa
+    type: condition
+    task:
+      id: 6b01cdec-c8b3-4dde-828f-38ecdb2ec8aa
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Taxii2server-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "90"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 99fbd272-bdf6-4244-8e40-b7ce9198f617
+    type: title
+    task:
+      id: 99fbd272-bdf6-4244-8e40-b7ce9198f617
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 44d6f315-c98c-4136-825c-c514b15357ae
+    type: regular
+    task:
+      id: 44d6f315-c98c-4136-825c-c514b15357ae
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 831d5a5f-949f-4e96-8ac1-cfc7eecb7ade
+    type: regular
+    task:
+      id: 831d5a5f-949f-4e96-8ac1-cfc7eecb7ade
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 4712d789-b03d-40af-8022-3ef5ed0834ad
+    type: regular
+    task:
+      id: 4712d789-b03d-40af-8022-3ef5ed0834ad
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 478ce8d8-6d8e-458b-83c5-504d7371cd8c
+    type: regular
+    task:
+      id: 478ce8d8-6d8e-458b-83c5-504d7371cd8c
+      version: -1
+      name: Clear HeyConcurrency Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: HeyConcurrency
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 9570,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: edl_name
+  value:
+    simple: edl
+  required: false
+  description: EDL instance URL.
+  playbookInputQuery:
+- key: z
+  value: {}
+  required: false
+  description: Duration of application to send requests.
+  playbookInputQuery:
+- key: "n"
+  value: {}
+  required: false
+  description: The number of requests to run. Default is 200.
+  playbookInputQuery:
+- key: iocs_in_xsoar
+  value:
+    simple: "100000"
+  required: false
+  description: Expected number of indicators in the system.
+  playbookInputQuery:
+outputs: []
+fromversion: 6.1.0
+description: ''

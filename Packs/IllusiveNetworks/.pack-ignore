@@ -1,5 +1,5 @@
 [file:IllusiveNetworks.yml]
-ignore=IN126
+ignore=IN126,IN145
 
 [file:classifier-mapper-incoming-IllusiveNetworks.json]
 ignore=BA101

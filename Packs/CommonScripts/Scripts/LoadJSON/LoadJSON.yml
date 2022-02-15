@@ -4,7 +4,7 @@ commonfields:
 name: LoadJSON
 script: ''
 type: python
-subtype: python2
+subtype: python3
 tags:
 - Utility
 comment: Loads a json from string input, and returns a json object result
@@ -22,4 +22,4 @@ runonce: false
 tests:
 - JSONtoCSV-Test
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24019
+dockerimage: demisto/python3:3.9.8.24399

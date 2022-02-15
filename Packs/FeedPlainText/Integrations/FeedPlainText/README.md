@@ -5,7 +5,8 @@ Fetches indicators from a plain text feed. The integration allows a many user co
 ## Configuration
 
 * **Server URL** - URL of the feed.
-* **Indicator Type** - The type of indicators in the feed.
+* **Indicator Type** - The type of indicators in the feed. If the *Custom* option is selected, the *Custom Indicator Type* parameter must be provided.
+* **Custom Indicator Type** - The indicator type to be used in case of *Custom* option chosen in the *Indicator Type* field.
 * **Username + Password** - Credentials to access feeds that require basic authentication. 
 These fields also support the use of API key headers. To use API key headers, specify the header name and value in the following format:
 `_header:<header_name>` in the **Username** field and the header value in the **Password** field.

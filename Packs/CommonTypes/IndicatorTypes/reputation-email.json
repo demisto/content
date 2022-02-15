@@ -7,7 +7,7 @@
   "commitMessage": "",
   "shouldPublish": false,
   "shouldCommit": false,
-  "regex": "\\b[A-Za-z0-9.!#$%&'*+/=?^_`{|}~\\p{L}-]+(@|\\[@\\])[A-Za-z0-9\\p{L}.-]+\\.[A-Za-z]{2,}\\b",
+  "regex": "\\b[A-Za-z0-9.!#$%&'*+/=?^_`{|}~\\p{L}-]{1,64}(@|\\[@\\])[A-Za-z0-9\\p{L}.-]{1,255}\\.[A-Za-z]{2,}\\b",
   "details": "Email",
   "prevDetails": "Email",
   "reputationScriptName": "",

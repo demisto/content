@@ -138,7 +138,7 @@ script:
   - arguments:
     - default: true
       description: URL to query.
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -206,5 +206,5 @@ script:
   script: '-'
   type: python
   subtype: python2
-  dockerimage: demisto/python:2.7.18.24019
+  dockerimage: demisto/python:2.7.18.24398
 fromversion: 5.0.0

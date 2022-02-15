@@ -18,8 +18,7 @@ configuration:
   name: enc_key
   required: false
   type: 4
-- display: Token (received from the authorization step - see Detailed Instructions
-    (?) section)
+- display: Token (received from the authorization step - see Detailed Instructions (?) section)
   name: refresh_token
   required: false
   type: 4
@@ -32,7 +31,7 @@ configuration:
   required: false
   type: 0
 - display: The authentication code you got for the service. For instructions on how
-    to receive it, see the detailed description ('?') section.
+    to receive it, see Detailed Instructions ('?') section.
   name: auth_code
   required: false
   type: 4
@@ -49,13 +48,20 @@ configuration:
   name: first_fetch_delta
   required: false
   type: 0
+- additionalinfo: The default timeout (in seconds) for API calls. Default is 15 seconds.
+  defaultvalue: 15
+  display: Timeout
+  name: timeout
+  required: false
+  type: 0
 - display: Content types to fetch
   name: content_types_to_fetch
   options:
   - Audit.AzureActiveDirectory
   - Audit.Exchange
   - Audit.SharePoint
-  - audit.general
+  - Audit.General
+  - DLP.All
   required: false
   type: 16
 - display: Fetch incidents
@@ -66,26 +72,26 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Record types to fetch (Comma-separated list of the record types you wish
-    to fetch. Content records with a record  type that isn't specified will not be
+- display: Record types to fetch. (Comma-separated list of the record types you wish
+    to fetch. Content records with a record type that isn't specified will not be
     fetched. If this field is left empty, all record types will be fetched.)
   name: record_types_filter
   required: false
   type: 0
-- display: Workloads to fetch (Comma-separated list of the workloads you wish to fetch.
+- display: Workloads to fetch. (Comma-separated list of the workloads you wish to fetch.
     Content records with a workload that isn't specified will not be fetched. If this
     field is left empty, all workloads will be fetched.)
   name: workloads_filter
   required: false
   type: 0
-- display: Operations to (Comma-separated list of the operations you wish to fetch.
+- display: Operations to fetch. (Comma-separated list of the operations you wish to fetch.
     Content records with an operation that isn't specified will not be fetched. If
     this field is left empty, all operations will be fetched.)
   name: operations_filter
   required: false
   type: 0
 description: The Microsoft Management Activity API integration enables you to subscribe
-  or unsubscribe to different audits, receive their content and fetch new content
+  or unsubscribe to different audits, receive their content, and fetch new content
   as incidents.
 display: Microsoft Management Activity API (O365 Azure Events)
 name: Microsoft Management Activity API (O365 Azure Events)
@@ -102,10 +108,11 @@ script:
       - Audit.Exchange
       - Audit.SharePoint
       - Audit.General
+      - DLP.All
       required: true
       secret: false
     deprecated: false
-    description: Starts a subscription to a given content type
+    description: Starts a subscription to a given content type.
     execution: false
     name: ms-management-activity-start-subscription
   - arguments:
@@ -119,19 +126,20 @@ script:
       - Audit.Exchange
       - Audit.SharePoint
       - Audit.General
+      - DLP.All
       required: true
       secret: false
     deprecated: false
-    description: Stops a subscription to a given content type
+    description: Stops a subscription to a given content type.
     execution: false
     name: ms-management-activity-stop-subscription
   - deprecated: false
-    description: List the content types you are currently subscribed to
+    description: List the content types you are currently subscribed to.
     execution: false
     name: ms-management-activity-list-subscriptions
     outputs:
     - contextPath: MicrosoftManagement.Subscription
-      description: List of current subscriptions
+      description: List of current subscriptions.
       type: string
   - arguments:
     - auto: PREDEFINED
@@ -144,6 +152,7 @@ script:
       - Audit.Exchange
       - Audit.SharePoint
       - Audit.General
+      - DLP.All
       required: true
       secret: false
     - default: false
@@ -167,7 +176,7 @@ script:
       secret: false
     - default: false
       description: A comma-separated list of the record types to fetch. Content records
-        with a record  type that isn't specified will not be fetched. If this field
+        with a record type that isn't specified will not be fetched. If this field
         is left empty, all record types will be fetched.
       isArray: false
       name: record_types_filter
@@ -190,7 +199,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The timeout (in seconds) for the content requesting HTTP call. Default is 10 seconds.
+      description: The timeout (in seconds) for the content requesting HTTP call. Default is the value provided as an integration parameter.
       isArray: false
       name: timeout
       required: false
@@ -239,7 +248,7 @@ script:
     - contextPath: MicrosoftManagement.ContentRecord.UserID
       description: The ID of the record's user.
       type: string
-  dockerimage: demisto/pyjwt3:1.0.0.19327
+  dockerimage: demisto/pyjwt3:1.0.0.23674
   feed: false
   isfetch: true
   longRunning: false

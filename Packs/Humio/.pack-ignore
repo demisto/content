@@ -1,5 +1,5 @@
 [file:Humio.yml]
-ignore=IN126,IN136
+ignore=IN126,IN136,IN145
 
 [file:README.md]
 ignore=RM102,RM104

@@ -37,6 +37,12 @@ ARGS = {
     'domain': 'test.com'
 }
 
+invalid_start_time_error_message = 'Invalid start time. Some supported formats are ISO date format and relative time. ' \
+                                   'e.g. 2019-10-17T00:00:00Z, 3 days'
+
+invalid_end_time_error_message = 'Invalid end time. Some supported formats are ISO date format and relative time. ' \
+                                 'e.g. 2019-10-17T00:00:00Z, 3 days'
+
 
 @pytest.fixture
 def client():
@@ -54,9 +60,9 @@ def test_gcb_list_ioc_success(client):
     When valid response comes in gcb-list-iocs command it should respond with result.
     """
     from GoogleChronicleBackstory import gcb_list_iocs_command
-    with open("./TestData/list_ioc_response.txt", "rb") as f:
+    with open("test_data/list_ioc_response.txt", "rb") as f:
         dummy_response = f.read()
-    with open("./TestData/list_ioc_ec.json") as f:
+    with open("test_data/list_ioc_ec.json") as f:
         dummy_ec = json.load(f)
 
     mock_response = (
@@ -78,7 +84,7 @@ def test_gcb_list_ioc_failure_response(client):
     'Failed to parse response.'
     """
     from GoogleChronicleBackstory import gcb_list_iocs_command
-    with open("./TestData/list_ioc_response.txt", "rb") as f:
+    with open("test_data/list_ioc_response.txt", "rb") as f:
         dummy_response = f.read()
 
     mock_response = (
@@ -117,9 +123,9 @@ def test_gcb_ioc_details_command_success(client):
     """
     from GoogleChronicleBackstory import gcb_ioc_details_command
 
-    with open("./TestData/list_ioc_details_response.json", "r") as f:
+    with open("test_data/list_ioc_details_response.json", "r") as f:
         dummy_response = f.read()
-    with open("./TestData/gcb_ioc_details_command_ec.json", "r") as f:
+    with open("test_data/gcb_ioc_details_command_ec.json", "r") as f:
         dummy_ec = json.load(f)
 
     mock_response = (
@@ -404,7 +410,7 @@ def test_gcb_assets_command_success(client):
     """
     from GoogleChronicleBackstory import gcb_assets_command
 
-    with open("./TestData/asset_response.json", encoding='utf-8') as f:
+    with open("test_data/asset_response.json", encoding='utf-8') as f:
         expected_response = json.load(f)
 
     success_mock_response = (
@@ -414,7 +420,7 @@ def test_gcb_assets_command_success(client):
 
     client.http_client.request.return_value = success_mock_response
     hr, ec, response = gcb_assets_command(client, {'artifact_value': SUCCESS_ASSET_NAME})
-    with open("./TestData/asset_ec.json") as f:
+    with open("test_data/asset_ec.json") as f:
         expected_ec = json.load(f)
     assert ec == expected_ec
     assert response == expected_response
@@ -442,7 +448,7 @@ def test_gcb_assets_command_failure_with_uri_empty_response(client):
     """
     from GoogleChronicleBackstory import gcb_assets_command
 
-    with open("./TestData/asset_with_no_response.json", encoding='utf-8') as f:
+    with open("test_data/asset_with_no_response.json", encoding='utf-8') as f:
         expected_response = json.load(f)
 
     failure_mock_response = (
@@ -537,7 +543,7 @@ def test_fetch_incident_run_ioc_domain_matches(mocker, client):
     from GoogleChronicleBackstory import fetch_incidents
     param = {}
 
-    with open("./TestData/list_ioc_response.txt", "rb") as f:
+    with open("test_data/list_ioc_response.txt", "rb") as f:
         dummy_response = f.read()
 
     mock_response = (
@@ -598,7 +604,7 @@ def test_fetch_incident_success_with_param_and_alerts_when_executed_1st_time(moc
         'backstory_alert_type': 'Assets with alerts'
     }
 
-    with open("./TestData/gcb_alerts_response.txt") as f:
+    with open("test_data/gcb_alerts_response.txt") as f:
         gcb_alert_sample = f.read()
 
     mock_response = (
@@ -620,7 +626,7 @@ def test_gcb_fetch_incident_success_with_alerts_with_demisto_last_run(mocker, cl
         'incident_severity': None,
         'backstory_alert_type': 'Assets with alerts'
     }
-    with open("./TestData/gcb_alerts_response.txt") as f:
+    with open("test_data/gcb_alerts_response.txt") as f:
         gcb_alert_sample = f.read()
 
     mock_response = (
@@ -644,7 +650,7 @@ def test_asset_with_multiple_alerts_human_readable(client):
     from GoogleChronicleBackstory import group_infos_by_alert_asset_name, get_gcb_alerts
     from CommonServerPython import datetime
 
-    with open("./TestData/gcb_alerts_human_readable.txt") as f:
+    with open("test_data/gcb_alerts_human_readable.txt") as f:
         gcb_alert_sample = f.read()
 
     mock_response = (
@@ -682,7 +688,7 @@ def test_gcb_list_alert_with_no_arg_supplied_success(mocker, client):
     hr, ec, events = gcb_list_alerts_command(client, param)
     assert hr
     assert ec
-    with open("./TestData/alerts_ec.json") as f:
+    with open("test_data/alerts_ec.json") as f:
         expected_ec = json.load(f)
 
     assert ec == expected_ec
@@ -711,7 +717,7 @@ def test_gcb_list_alert_with_severity_medium_arg_supplied_success(mocker, client
     hr, ec, events = gcb_list_alerts_command(client, param)
     assert hr
     assert ec
-    with open("./TestData/medium_alert_ec.json") as f:
+    with open("test_data/medium_alert_ec.json") as f:
         expected_ec = json.load(f)
 
     assert ec == expected_ec
@@ -740,7 +746,7 @@ def test_gcb_list_alert_with_severity_lowercase_medium_arg_supplied_success(mock
     hr, ec, events = gcb_list_alerts_command(client, param)
     assert hr
     assert ec
-    with open("./TestData/medium_alert_ec.json") as f:
+    with open("test_data/medium_alert_ec.json") as f:
         expected_ec = json.load(f)
 
     assert ec == expected_ec
@@ -749,7 +755,7 @@ def test_gcb_list_alert_with_severity_lowercase_medium_arg_supplied_success(mock
 
 
 def get_hr_gcb_alerts():
-    with open("./TestData/gcb_alerts_human_readable.txt") as f:
+    with open("test_data/gcb_alerts_human_readable.txt") as f:
         gcb_alert_sample = f.read()
     return gcb_alert_sample
 
@@ -808,9 +814,9 @@ def test_ip_command_success(mocker, client):
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
     from GoogleChronicleBackstory import ip_command
 
-    with open("./TestData/list_ioc_details_response.json", "r") as f:
+    with open("test_data/list_ioc_details_response.json", "r") as f:
         dummy_response = f.read()
-    with open("./TestData/ip_command_ec.json", "r") as f:
+    with open("test_data/ip_command_ec.json", "r") as f:
         dummy_ec = json.load(f)
 
     mock_response = (
@@ -833,7 +839,7 @@ def test_ip_command_success(mocker, client):
 def test_ip_command_empty_response_when_uri_empty_response(client):
     from GoogleChronicleBackstory import ip_command
 
-    with open("./TestData/empty_list_ioc_details.json", "r") as f:
+    with open("test_data/empty_list_ioc_details.json", "r") as f:
         dummy_response = f.read()
     expected_hr = '### IP: {} found with Reputation: Unknown\n'.format(ARGS['ip'])
     expected_hr += 'No Records Found'
@@ -939,9 +945,9 @@ def test_domain_command_success(mocker, client):
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
     from GoogleChronicleBackstory import domain_command
 
-    with open("./TestData/list_ioc_details_response.json", "r") as f:
+    with open("test_data/list_ioc_details_response.json", "r") as f:
         dummy_response = f.read()
-    with open("./TestData/domain_command_ec.json", "r") as f:
+    with open("test_data/domain_command_ec.json", "r") as f:
         dummy_ec = json.load(f)
 
     mock_response = (
@@ -963,7 +969,7 @@ def test_domain_command_success(mocker, client):
 def test_domain_command_empty_response(client):
     from GoogleChronicleBackstory import domain_command
 
-    with open("./TestData/empty_list_ioc_details.json", "r") as f:
+    with open("test_data/empty_list_ioc_details.json", "r") as f:
         dummy_response = f.read()
     expected_hr = '### Domain: {} found with Reputation: Unknown\n'.format(ARGS['domain'])
     expected_hr += 'No Records Found'
@@ -2046,10 +2052,10 @@ def test_parse_error_message():
 def test_list_events_command(client):
     from GoogleChronicleBackstory import gcb_list_events_command
 
-    with open("./TestData/list_events_response.json", "r") as f:
+    with open("test_data/list_events_response.json", "r") as f:
         dummy_response = f.read()
 
-    with open("./TestData/list_events_ec.json", "r") as f:
+    with open("test_data/list_events_ec.json", "r") as f:
         dummy_ec = json.load(f)
 
     mock_response = (
@@ -2081,13 +2087,13 @@ def test_list_detections_command(client):
     args = {'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': '2019-10-17T00:00:00Z',
             'detection_end_time': '2 days ago'}
 
-    with open("./TestData/list_detections_response.json", "r") as f:
+    with open("test_data/list_detections_response.json", "r") as f:
         dummy_response = f.read()
 
-    with open("./TestData/list_detections_ec.json", "r") as f:
+    with open("test_data/list_detections_ec.json", "r") as f:
         dummy_ec = json.load(f)
 
-    with open("./TestData/list_detections_hr.md", "r") as f:
+    with open("test_data/list_detections_hr.md", "r") as f:
         dummy_hr = f.read()
 
     mock_response = (
@@ -2113,84 +2119,54 @@ def test_list_detections_command(client):
     assert hr == 'No Detections Found'
 
 
-def test_validate_and_parse_list_detections_args():
+@pytest.mark.parametrize("args, error_msg", [
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'page_size': 'dummy'}, 'Page size must be a non-zero '
+                                                                                   'numeric value'),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'page_size': '100000'}, 'Page size should be in the range '
+                                                                                    'from 1 to 1000.'),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': 'December 2019'},
+     invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': '6'},
+     invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': '-5'},
+     invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': '645.08'},
+     invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': '-325.21'},
+     invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_end_time': 'December 2019'},
+     invalid_end_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_end_time': '6'},
+     invalid_end_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_end_time': '-5'},
+     invalid_end_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_end_time': '645.08'},
+     invalid_end_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_end_time': '-325.21'},
+     invalid_end_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'start_time': 'December 2019'},
+     invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'start_time': '6'}, invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'start_time': '-5'}, invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'start_time': '645.08'}, invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'start_time': '-325.21'}, invalid_start_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'end_time': 'December 2019'},
+     invalid_end_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'end_time': '6'}, invalid_end_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'end_time': '-5'}, invalid_end_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'end_time': '645.08'}, invalid_end_time_error_message),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'end_time': '-325.21'}, invalid_end_time_error_message),
+    ({'detection_for_all_versions': True}, "If \"detection_for_all_versions\" is true, rule id is required."),
+    ({'list_basis': 'CREATED_TIME'}, "To sort detections by \"list_basis\", either \"start_time\" or \"end_time\" "
+                                     "argument is required.")
+])
+def test_validate_and_parse_list_detections_args(args, error_msg):
     from GoogleChronicleBackstory import validate_and_parse_list_detections_args
 
     with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'page_size': 'dummy'})
+        validate_and_parse_list_detections_args(args)
 
-    assert str(e.value) == 'Page size must be a non-zero numeric value'
-
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'page_size': '100000'})
-
-    assert str(e.value) == 'Page size should be in the range from 1 to 1000.'
-
-    invalid_start_time_error_message = 'Invalid start time. Some supported formats are ISO date format and relative' \
-                                       ' time. e.g. 2019-10-17T00:00:00Z, 3 days'
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_start_time': 'December 2019'})
-
-    assert str(e.value) == invalid_start_time_error_message
-
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_start_time': '6'})
-
-    assert str(e.value) == invalid_start_time_error_message
-
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_start_time': '-5'})
-
-    assert str(e.value) == invalid_start_time_error_message
-
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_start_time': '645.08'})
-
-    assert str(e.value) == invalid_start_time_error_message
-
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_start_time': '-325.21'})
-
-    assert str(e.value) == invalid_start_time_error_message
-
-    invalid_end_time_error_message = 'Invalid end time. Some supported formats are ISO date format and relative' \
-                                     ' time. e.g. 2019-10-17T00:00:00Z, 3 days'
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_end_time': 'December 2019'})
-
-    assert str(e.value) == invalid_end_time_error_message
-
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_end_time': '6'})
-
-    assert str(e.value) == invalid_end_time_error_message
-
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_end_time': '-5'})
-
-    assert str(e.value) == invalid_end_time_error_message
-
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_end_time': '645.08'})
-
-    assert str(e.value) == invalid_end_time_error_message
-
-    with pytest.raises(ValueError) as e:
-        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
-                                                      'detection_end_time': '-325.21'})
-
-    assert str(e.value) == invalid_end_time_error_message
+    assert str(e.value) == error_msg
 
 
 def validate_duplicate_incidents(incidents):
@@ -2212,7 +2188,7 @@ def test_gcb_fetch_incident_success_with_alerts_with_incident_identifiers(mocker
         'backstory_alert_type': 'Assets with alerts',
         'time_window': '45'
     }
-    with open("./TestData/gcb_alerts_response.txt") as f:
+    with open("test_data/gcb_alerts_response.txt") as f:
         gcb_alert_sample = f.read()
 
     mock_response = (
@@ -2297,7 +2273,7 @@ def test_fetch_incident_detection_when_1st_sync_n_data_less_thn_max_fetch_and_id
         'fetch_detection_by_ids': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f@v_1602631093_146879000'
     }
 
-    with open("TestData/fetch_detection_size_2.json") as f:
+    with open("test_data/fetch_detection_size_2.json") as f:
         get_detection_json_size_2 = f.read()
 
     mock_response = (
@@ -2362,10 +2338,10 @@ def test_fetch_incident_detection_case_2(client, mocker):
         'fetch_detection_by_ids': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f@v_1602631093_146879000'
     }
 
-    with open("TestData/fetch_detection_size_5_NT.json") as f:
+    with open("test_data/fetch_detection_size_5_NT.json") as f:
         get_detection_json_size_5 = f.read()
 
-    with open("TestData/fetch_detection_size_2.json") as f:
+    with open("test_data/fetch_detection_size_2.json") as f:
         get_detection_json_size_2 = f.read()
 
     mock_response_5 = (
@@ -2446,7 +2422,7 @@ def test_fetch_incident_detection_case_3(client, mocker):
                                   'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f@v_1602631092_146879002'
     }
 
-    with open("TestData/fetch_detection_size_3.json") as f:
+    with open("test_data/fetch_detection_size_3.json") as f:
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
@@ -2454,7 +2430,7 @@ def test_fetch_incident_detection_case_3(client, mocker):
         get_detection_json_size_3
     )
 
-    with open("TestData/fetch_detection_size_2.json") as f:
+    with open("test_data/fetch_detection_size_2.json") as f:
         get_detection_json_size_2 = f.read()
 
     mock_response_size_2 = (
@@ -2492,7 +2468,7 @@ def test_detection_to_pull_is_empty_when_2nd_rule_returns_data_with_no_next_toke
     from GoogleChronicleBackstory import get_max_fetch_detections, get_detections
     import io
 
-    with io.open("TestData/fetch_detection_size_2.json", mode='r', encoding='utf-8') as f:
+    with io.open("test_data/fetch_detection_size_2.json", mode='r', encoding='utf-8') as f:
         get_detection_json_size_2 = json.loads(f.read())
 
     mock_build.return_value = ('p', get_detection_json_size_2)
@@ -2553,7 +2529,7 @@ def test_429_or_500_error_with_max_attempts_60(mock_error, client):
     mock_response_with_500_error = (Response(dict(status=500)),
                                     '{"error": {}}')
 
-    with open("TestData/fetch_detection_size_3.json") as f:
+    with open("test_data/fetch_detection_size_3.json") as f:
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
@@ -2592,7 +2568,7 @@ def test_400_and_404_error(mock_error, client):
     mock_response_with_404_error = (Response(dict(status=404)),
                                     '{"error": {}}')
 
-    with open("TestData/fetch_detection_size_3.json") as f:
+    with open("test_data/fetch_detection_size_3.json") as f:
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
@@ -2648,7 +2624,7 @@ def test_fetch_incident_detection_case_4(client, mocker):
         'fetch_detection_by_ids': '123, 456, 789'
     }
 
-    with open("TestData/fetch_detection_size_3.json") as f:
+    with open("test_data/fetch_detection_size_3.json") as f:
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
@@ -2656,7 +2632,7 @@ def test_fetch_incident_detection_case_4(client, mocker):
         get_detection_json_size_3
     )
 
-    with open("TestData/fetch_detection_size_5_NT.json") as f:
+    with open("test_data/fetch_detection_size_5_NT.json") as f:
         get_detection_json_size_5 = f.read()
 
     mock_response_size_5 = (
@@ -2664,7 +2640,7 @@ def test_fetch_incident_detection_case_4(client, mocker):
         get_detection_json_size_5
     )
 
-    with open("TestData/fetch_detection_size_2.json") as f:
+    with open("test_data/fetch_detection_size_2.json") as f:
         get_detection_json = f.read()
 
     mock_response_size_2 = (
@@ -2727,7 +2703,7 @@ def test_fetch_incident_detection_case_5(client, mocker):
         'backstory_alert_type': 'Detection Alerts'
     }
 
-    with open("TestData/fetch_detection_size_3.json") as f:
+    with open("test_data/fetch_detection_size_3.json") as f:
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
@@ -2735,7 +2711,7 @@ def test_fetch_incident_detection_case_5(client, mocker):
         get_detection_json_size_3
     )
 
-    with open("TestData/fetch_detection_size_5_NT.json") as f:
+    with open("test_data/fetch_detection_size_5_NT.json") as f:
         get_detection_json_size_5 = f.read()
 
     mock_response_size_5 = (
@@ -2743,7 +2719,7 @@ def test_fetch_incident_detection_case_5(client, mocker):
         get_detection_json_size_5
     )
 
-    with open("TestData/fetch_detection_size_2.json") as f:
+    with open("test_data/fetch_detection_size_2.json") as f:
         get_detection_json = f.read()
 
     mock_response_size_2 = (
@@ -2800,7 +2776,7 @@ def test_gcb_fetch_incident_success_with_detections_with_incident_identifiers(mo
         'fetch_detection_by_ids': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f@v_1602631093_146879000'
     }
 
-    with open("TestData/fetch_detection_size_5_NT.json") as f:
+    with open("test_data/fetch_detection_size_5_NT.json") as f:
         get_detection_json_size_5 = f.read()
 
     mock_response = (
@@ -2850,7 +2826,7 @@ def test_fetch_user_alert_incident_success_with_param_and_alerts_when_executed_1
         'backstory_alert_type': 'User alerts'
     }
 
-    with open("./TestData/gcb_alerts_response.txt") as f:
+    with open("test_data/gcb_alerts_response.txt") as f:
         gcb_alert_sample = f.read()
 
     mock_response = (
@@ -2871,7 +2847,7 @@ def test_gcb_user_alert_fetch_incident_success_with_alerts_with_demisto_last_run
         'max_fetch': 20,
         'backstory_alert_type': 'User alerts'
     }
-    with open("./TestData/gcb_alerts_response.txt") as f:
+    with open("test_data/gcb_alerts_response.txt") as f:
         gcb_alert_sample = f.read()
 
     mock_response = (
@@ -2898,7 +2874,7 @@ def test_gcb_fetch_incident_user_alert_success_with_alerts_with_incident_identif
         'backstory_alert_type': 'User alerts',
         'time_window': '45'
     }
-    with open("./TestData/gcb_alerts_response.txt") as f:
+    with open("test_data/gcb_alerts_response.txt") as f:
         gcb_alert_sample = f.read()
 
     mock_response = (
@@ -2935,7 +2911,7 @@ def test_gcb_list_user_alert_with_no_arg_supplied_success(mocker, client):
     hr, ec, events = gcb_list_alerts_command(client, param)
     assert hr
     assert ec
-    with open("./TestData/user_alerts_ec.json") as f:
+    with open("test_data/user_alerts_ec.json") as f:
         expected_ec = json.load(f)
 
     assert ec == expected_ec
@@ -2973,13 +2949,13 @@ def test_list_rules_command(client):
     args = {'page_size': '2',
             'page_token': 'foobar_page_token'}
 
-    with open("./TestData/list_rules_response.json", "r") as f:
+    with open("test_data/list_rules_response.json", "r") as f:
         dummy_response = f.read()
 
-    with open("./TestData/list_rules_ec.json", "r") as f:
+    with open("test_data/list_rules_ec.json", "r") as f:
         dummy_ec = json.load(f)
 
-    with open("./TestData/list_rules_hr.txt", "r") as f:
+    with open("test_data/list_rules_hr.md", "r") as f:
         dummy_hr = f.read()
 
     mock_response = (
@@ -3043,10 +3019,10 @@ def test_gcb_list_rules_live_rule_argument_true(client):
     """
     from GoogleChronicleBackstory import gcb_list_rules_command
 
-    with open("./TestData/list_rules_live_rule_true.json", "r") as f:
+    with open("test_data/list_rules_live_rule_true.json", "r") as f:
         response_true = f.read()
 
-    with open("./TestData/list_rules_live_rule_true_ec.json", "r") as f:
+    with open("test_data/list_rules_live_rule_true_ec.json", "r") as f:
         dummy_ec = json.load(f)
     mock_response = (
         Response(dict(status=200)),
@@ -3066,10 +3042,10 @@ def test_gcb_list_rules_live_rule_argument_false(client):
     """
     from GoogleChronicleBackstory import gcb_list_rules_command
 
-    with open("./TestData/list_rules_live_rule_false.json", "r") as f:
+    with open("test_data/list_rules_live_rule_false.json", "r") as f:
         response_false = f.read()
 
-    with open("./TestData/list_rules_live_rule_false_ec.json", "r") as f:
+    with open("test_data/list_rules_live_rule_false_ec.json", "r") as f:
         dummy_ec = json.load(f)
     mock_response = (
         Response(dict(status=200)),

@@ -6,10 +6,9 @@ import secrets
 import string
 import tempfile
 from datetime import timezone
-from typing import Dict, Optional, List, Tuple, Union
-from dateutil.parser import parse
+from typing import Dict, Optional, List, Tuple, Union, Iterable
+from dateparser import parse
 from urllib3 import disable_warnings
-from math import ceil
 
 
 disable_warnings()
@@ -41,7 +40,9 @@ class Client:
         401: 'Unauthorized access. An issue occurred during authentication. This can indicate an '    # noqa: W504
              + 'incorrect key, id, or other invalid authentication parameters.',
         402: 'Unauthorized access. User does not have the required license type to run this API.',
-        403: 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API.'
+        403: 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API.',
+        404: 'XDR Not found: The provided URL may not be of an active XDR server.',
+        413: 'Request entity too large. Please reach out to the XDR support team.'
     }
 
     def __init__(self, params: Dict):
@@ -50,20 +51,21 @@ class Client:
         self._params = params
         handle_proxy()
 
-    def http_request(self, url_suffix: str, requests_kwargs) -> Dict:
-        url: str = f'{self._base_url}{url_suffix}'
-        res = requests.post(url=url,
+    def http_request(self, url_suffix: str, requests_kwargs=None) -> Dict:
+        if requests_kwargs is None:
+            requests_kwargs = dict()
+
+        res = requests.post(url=self._base_url + url_suffix,
                             verify=self._verify_cert,
                             headers=self._headers,
                             **requests_kwargs)
 
         if res.status_code in self.error_codes:
-            raise DemistoException(f'{self.error_codes[res.status_code]}\t({res.content.decode()})')
+            raise DemistoException(self.error_codes[res.status_code], res=res)
         try:
             return res.json()
-        except json.decoder.JSONDecodeError as error:
-            demisto.error(str(res.content))
-            raise error
+        except json.decoder.JSONDecodeError as e:
+            raise DemistoException(f'Could not parse json out of {res.content.decode()}', exception=e, res=res)
 
     @property
     def _headers(self):
@@ -119,34 +121,27 @@ def prepare_disable_iocs(iocs: str) -> Tuple[str, List]:
 
 
 def create_file_iocs_to_keep(file_path, batch_size: int = 200):
-    with open(file_path, 'a') as _file:
-        total_size: int = get_iocs_size()
-        for i in range(0, ceil(total_size / batch_size)):
-            iocs: List = get_iocs(page=i, size=batch_size)
-            for ios in map(lambda x: x.get('value', ''), iocs):
-                _file.write(ios + '\n')
+    with open(file_path, 'w') as _file:
+        for ios in map(lambda x: x.get('value', ''), get_iocs_generator(size=batch_size)):
+            _file.write(ios + '\n')
 
 
 def create_file_sync(file_path, batch_size: int = 200):
-    with open(file_path, 'a') as _file:
-        total_size: int = get_iocs_size()
-        for i in range(0, ceil(total_size / batch_size)):
-            iocs: List = get_iocs(page=i, size=batch_size)
-            for ioc in map(lambda x: demisto_ioc_to_xdr(x), iocs):
-                if ioc:
-                    _file.write(json.dumps(ioc) + '\n')
+    with open(file_path, 'w') as _file:
+        for ioc in map(lambda x: demisto_ioc_to_xdr(x), get_iocs_generator(size=batch_size)):
+            if ioc:
+                _file.write(json.dumps(ioc) + '\n')
 
 
-def get_iocs_size(query=None) -> int:
-    search_indicators = IndicatorsSearcher()
-    return search_indicators.search_indicators_by_version(query=query if query else Client.query, size=1)\
-        .get('total', 0)
-
-
-def get_iocs(page=0, size=200, query=None) -> List:
-    search_indicators = IndicatorsSearcher(page=page)
-    return search_indicators.search_indicators_by_version(query=query if query else Client.query, size=size)\
-        .get('iocs', [])
+def get_iocs_generator(size=200, query=None) -> Iterable:
+    query = query if query else Client.query
+    query = f'expirationStatus:active AND ({query})'
+    try:
+        for iocs in map(lambda x: x.get('iocs', []), IndicatorsSearcher(size=size, query=query)):
+            for ioc in iocs:
+                yield ioc
+    except StopIteration:
+        pass
 
 
 def demisto_expiration_to_xdr(expiration) -> int:
@@ -229,13 +224,16 @@ def get_temp_file() -> str:
 
 def sync(client: Client):
     temp_file_path: str = get_temp_file()
-    create_file_sync(temp_file_path)
-    requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
-    path: str = 'sync_tim_iocs'
-    client.http_request(path, requests_kwargs)
-    demisto.setIntegrationContext({'ts': int(datetime.now(timezone.utc).timestamp() * 1000),
-                                   'time': datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT),
-                                   'iocs_to_keep_time': create_iocs_to_keep_time()})
+    try:
+        create_file_sync(temp_file_path)
+        requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
+        path: str = 'sync_tim_iocs'
+        client.http_request(path, requests_kwargs)
+    finally:
+        os.remove(temp_file_path)
+    set_integration_context({'ts': int(datetime.now(timezone.utc).timestamp() * 1000),
+                             'time': datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT),
+                             'iocs_to_keep_time': create_iocs_to_keep_time()})
     return_outputs('sync with XDR completed.')
 
 
@@ -243,10 +241,13 @@ def iocs_to_keep(client: Client):
     if not datetime.utcnow().hour in range(1, 3):
         raise DemistoException('iocs_to_keep runs only between 01:00 and 03:00.')
     temp_file_path: str = get_temp_file()
-    create_file_iocs_to_keep(temp_file_path)
-    requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
-    path = 'iocs_to_keep'
-    client.http_request(path, requests_kwargs)
+    try:
+        create_file_iocs_to_keep(temp_file_path)
+        requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
+        path = 'iocs_to_keep'
+        client.http_request(path, requests_kwargs)
+    finally:
+        os.remove(temp_file_path)
     return_outputs('sync with XDR completed.')
 
 
@@ -256,14 +257,11 @@ def create_last_iocs_query(from_date, to_date):
 
 def get_last_iocs(batch_size=200) -> List:
     current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
-    last_run: Dict = demisto.getIntegrationContext()
+    last_run: Dict = get_integration_context()
     query = create_last_iocs_query(from_date=last_run['time'], to_date=current_run)
-    total_size = get_iocs_size(query)
-    iocs: List = []
-    for i in range(0, ceil(total_size / batch_size)):
-        iocs.extend(get_iocs(query=query, page=i, size=batch_size))
+    iocs: List = list(get_iocs_generator(query=query, size=batch_size))
     last_run['time'] = current_run
-    demisto.setIntegrationContext(last_run)
+    set_integration_context(last_run)
     return iocs
 
 
@@ -350,7 +348,7 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
 
 
 def get_changes(client: Client):
-    from_time: Dict = demisto.getIntegrationContext()
+    from_time: Dict = get_integration_context()
     if not from_time:
         raise DemistoException('XDR is not synced.')
     path, requests_kwargs = prepare_get_changes(from_time['ts'])
@@ -358,7 +356,7 @@ def get_changes(client: Client):
     iocs: List = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', [])
     if iocs:
         from_time['ts'] = iocs[-1].get('RULE_MODIFY_TIME', from_time) + 1
-        demisto.setIntegrationContext(from_time)
+        set_integration_context(from_time)
         demisto.createIndicators(list(map(xdr_ioc_to_demisto, iocs)))
 
 
@@ -371,7 +369,7 @@ def module_test(client: Client):
 
 
 def fetch_indicators(client: Client, auto_sync: bool = False):
-    if not demisto.getIntegrationContext() and auto_sync:
+    if not get_integration_context() and auto_sync:
         xdr_iocs_sync_command(client, first_time=True)
     else:
         get_changes(client)
@@ -383,14 +381,14 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
 
 
 def xdr_iocs_sync_command(client: Client, first_time: bool = False):
-    if first_time or not demisto.getIntegrationContext():
+    if first_time or not get_integration_context():
         sync(client)
     else:
         iocs_to_keep(client)
 
 
 def iocs_to_keep_time():
-    hour, minute = demisto.getIntegrationContext().get('iocs_to_keep_time', (0, 0))
+    hour, minute = get_integration_context().get('iocs_to_keep_time', (0, 0))
     time_now = datetime.now(timezone.utc)
     return time_now.hour == hour and time_now.min == minute
 
@@ -432,7 +430,27 @@ def get_indicator_xdr_score(indicator: str, xdr_server: int):
         return xdr_local
 
 
-def main():
+def set_sync_time(time: str):
+    date_time_obj = parse(time, settings={'TIMEZONE': 'UTC'})
+    if not date_time_obj:
+        raise ValueError('invalid time format.')
+    set_integration_context({'ts': int(date_time_obj.timestamp() * 1000),
+                             'time': date_time_obj.strftime(DEMISTO_TIME_FORMAT),
+                             'iocs_to_keep_time': create_iocs_to_keep_time()})
+    return_results(f'set sync time to {time} seccedded.')
+
+
+def get_sync_file():
+    temp_file_path = get_temp_file()
+    try:
+        create_file_sync(temp_file_path)
+        with open(temp_file_path, 'r') as _tmpfile:
+            return_results(fileResult('xdr-sync-file', _tmpfile.read()))
+    finally:
+        os.remove(temp_file_path)
+
+
+def main():   # pragma: no cover
     # """
     # Executes an integration command
     # """
@@ -452,6 +470,10 @@ def main():
     try:
         if command == 'fetch-indicators':
             fetch_indicators(client, params.get('autoSync', False))
+        elif command == 'xdr-iocs-set-sync-time':
+            set_sync_time(demisto.args()['time'])
+        elif command == 'xdr-iocs-create-sync-file':
+            get_sync_file()
         elif command in commands:
             commands[command](client)
         elif command == 'xdr-iocs-sync':

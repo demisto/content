@@ -1,0 +1,124 @@
+[
+  {
+    "Comments": null,
+    "Conditions": [
+      "Microsoft.Exchange.MessagingPolicies.Rules.Tasks.SentToPredicate"
+    ],
+    "Description": "If the message:\r\n\tIs sent to 'XSOAR@Test.com'\r\nTake the following actions:\r\n\tApply safe links policy \"Genish Test\".\r\n",
+    "DistinguishedName": "CN=Genish Test,CN=SafeLinksVersioned,CN=Rules,CN=Transport Settings,CN=Configuration,CN=xsoartest.onmicrosoft.com,CN=ConfigurationUnits,DC=EURPR17A123,DC=PROD,DC=OUTLOOK,DC=COM",
+    "ExceptIfRecipientDomainIs": null,
+    "ExceptIfSentTo": null,
+    "ExceptIfSentToMemberOf": null,
+    "Exceptions": null,
+    "ExchangeVersion": "0.1 (8.0.535.0)",
+    "Guid": "15575604-20fc-433a-bd33-049e4d6513df",
+    "Identity": "Genish Test",
+    "ImmutableId": "15575604-20fc-433a-bd33-049e4d6513df",
+    "IsValid": true,
+    "Name": "Genish Test",
+    "ObjectState": "Unchanged",
+    "OrganizationId": "EURPR17A123.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/xsoartest.onmicrosoft.com - EURPR17A123.PROD.OUTLOOK.COM/ConfigurationUnits/xsoartest.onmicrosoft.com/Configuration",
+    "PSComputerName": "outlook.office365.com",
+    "PSShowComputerName": false,
+    "Priority": 0,
+    "RecipientDomainIs": null,
+    "RuleVersion": {
+      "Build": 0,
+      "Major": 14,
+      "MajorRevision": 0,
+      "Minor": 0,
+      "MinorRevision": 0,
+      "Revision": 0
+    },
+    "RunspaceId": "3ce02132-1e22-4e71-b45a-d6c3ec155cb9",
+    "SafeLinksPolicy": "Genish Test",
+    "SentTo": [
+      "XSOAR@Test.com"
+    ],
+    "SentToMemberOf": null,
+    "State": "Enabled",
+    "WhenChanged": "2021-10-21T12:22:09+00:00"
+  },
+  {
+    "Comments": null,
+    "Conditions": [
+      "Microsoft.Exchange.MessagingPolicies.Rules.Tasks.RecipientDomainIsPredicate"
+    ],
+    "Description": "If the message:\r\n\trecipients's address domain portion belongs to any of these domains: 'xsoartest.onmicrosoft.com'\r\nTake the following actions:\r\n\tApply safe links policy \"testing to track URL click\".\r\n",
+    "DistinguishedName": "CN=testing to track URL click,CN=SafeLinksVersioned,CN=Rules,CN=Transport Settings,CN=Configuration,CN=xsoartest.onmicrosoft.com,CN=ConfigurationUnits,DC=EURPR17A123,DC=PROD,DC=OUTLOOK,DC=COM",
+    "ExceptIfRecipientDomainIs": null,
+    "ExceptIfSentTo": null,
+    "ExceptIfSentToMemberOf": null,
+    "Exceptions": null,
+    "ExchangeVersion": "0.1 (8.0.535.0)",
+    "Guid": "c7085091-a24a-4e00-ad0c-8ecaa09c3e1f",
+    "Identity": "testing to track URL click",
+    "ImmutableId": "c7085091-a24a-4e00-ad0c-8ecaa09c3e1f",
+    "IsValid": true,
+    "Name": "testing to track URL click",
+    "ObjectState": "Unchanged",
+    "OrganizationId": "EURPR17A123.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/xsoartest.onmicrosoft.com - EURPR17A123.PROD.OUTLOOK.COM/ConfigurationUnits/xsoartest.onmicrosoft.com/Configuration",
+    "PSComputerName": "outlook.office365.com",
+    "PSShowComputerName": false,
+    "Priority": 1,
+    "RecipientDomainIs": [
+      "xsoartest.onmicrosoft.com"
+    ],
+    "RuleVersion": {
+      "Build": 5,
+      "Major": 15,
+      "MajorRevision": 0,
+      "Minor": 0,
+      "MinorRevision": 2,
+      "Revision": 2
+    },
+    "RunspaceId": "3ce02132-1e22-4e71-b45a-d6c3ec155cb9",
+    "SafeLinksPolicy": "testing to track URL click",
+    "SentTo": null,
+    "SentToMemberOf": null,
+    "State": "Enabled",
+    "WhenChanged": "2021-10-18T11:06:56+00:00"
+  },
+  {
+    "Comments": null,
+    "Conditions": [
+      "Microsoft.Exchange.MessagingPolicies.Rules.Tasks.SentToPredicate"
+    ],
+    "Description": "If the message:\r\n\tIs sent to 'XSOAR@Test.com'\r\nTake the following actions:\r\n\tApply safe links policy \"Policy2\".\r\n",
+    "DistinguishedName": "CN=Policy2,CN=SafeLinksVersioned,CN=Rules,CN=Transport Settings,CN=Configuration,CN=xsoartest.onmicrosoft.com,CN=ConfigurationUnits,DC=EURPR17A123,DC=PROD,DC=OUTLOOK,DC=COM",
+    "ExceptIfRecipientDomainIs": null,
+    "ExceptIfSentTo": null,
+    "ExceptIfSentToMemberOf": null,
+    "Exceptions": null,
+    "ExchangeVersion": "0.1 (8.0.535.0)",
+    "Guid": "e5764de3-5495-4512-93f5-fe96d579fbd9",
+    "Identity": "Policy2",
+    "ImmutableId": "e5764de3-5495-4512-93f5-fe96d579fbd9",
+    "IsValid": true,
+    "Name": "Policy2",
+    "ObjectState": "Unchanged",
+    "OrganizationId": "EURPR17A123.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/xsoartest.onmicrosoft.com - EURPR17A123.PROD.OUTLOOK.COM/ConfigurationUnits/xsoartest.onmicrosoft.com/Configuration",
+    "PSComputerName": "outlook.office365.com",
+    "PSShowComputerName": false,
+    "Priority": 2,
+    "RecipientDomainIs": null,
+    "RuleVersion": {
+      "Build": 0,
+      "Major": 14,
+      "MajorRevision": 0,
+      "Minor": 0,
+      "MinorRevision": 0,
+      "Revision": 0
+    },
+    "RunspaceId": "3ce02132-1e22-4e71-b45a-d6c3ec155cb9",
+    "SafeLinksPolicy": "Policy2",
+    "SentTo": [
+      "XSOAR@Test.com"
+    ],
+    "SentToMemberOf": null,
+    "State": "Enabled",
+    "WhenChanged": "2021-10-21T12:49:45+00:00"
+  }
+]
+
+

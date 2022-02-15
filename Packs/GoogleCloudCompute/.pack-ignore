@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:playbook-IP_Whitelist_-_GCP_Firewall.yml]
 ignore=PB114,PB115
+
+[file:GoogleCloudCompute.yml]
+ignore=IN145

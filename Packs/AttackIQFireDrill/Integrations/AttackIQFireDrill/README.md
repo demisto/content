@@ -197,7 +197,7 @@ Returns all assessment details by page.
 
 * * *
 
-Activates the assessment by ID, which is required for execution.
+Deprecated, without available replacement. Activates the assessment, which is required for execution.
 
 ##### Base Command
 

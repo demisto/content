@@ -38,6 +38,7 @@ def test_main(mocker):
     demisto.results.assert_called_with('')
 
 
+@pytest.mark.skip(reason="Flaky test, issue #41552")
 @settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
 @given(strategies.ip_addresses(v=6))
 def test_valid_ip_address(mocker, ipv6):

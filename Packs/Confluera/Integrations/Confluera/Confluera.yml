@@ -57,7 +57,7 @@ script:
     - contextPath: Confluera.TrailDetails
       description: Progression Details
     description: Fetches progression details of which provided trailId is a part of.
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   subtype: python3
 fromversion: 6.0.0

@@ -299,6 +299,11 @@ Return IP information and reputation
 | IP.Malicious.Vendor | String | The vendor reporting the IP address as malicious. | 
 | IP.Malicious.Description | String | A description explaining why the IP address was reported as malicious. | 
 | IP.ASN | String | The autonomous system name for the IP address. | 
+| IP.Relationships.EntityA | String |  The source of the relationship. |
+| IP.Relationships.EntityB | String |  The destination of the relationship. |
+| IP.Relationships.Relationship | String |  The name of the relationship. |
+| IP.Relationships.EntityAType | String |  The type of the source of the relationship. |
+| IP.Relationships.EntityBType | String |  The type of the destination of the relationship. |
 
 
 #### Command Example

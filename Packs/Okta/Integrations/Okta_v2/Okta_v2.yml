@@ -398,6 +398,50 @@ script:
       description: Timestamp for when the user's password was last changed.
       type: Date
   - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to return extended user information. Can be "true" or "false". The default is "false".
+      isArray: false
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Lists users in your organization.
+    execution: false
+    name: okta-list-users
+    outputs:
+    - contextPath: Account.ID
+      description: Okta account ID.
+      type: String
+    - contextPath: Account.Email
+      description: Okta account email.
+      type: String
+    - contextPath: Account.Username
+      description: Okta account username.
+      type: String
+    - contextPath: Account.DisplayName
+      description: Okta account display name.
+      type: String
+    - contextPath: Account.Status
+      description: Okta account status.
+      type: String
+    - contextPath: Account.Created
+      description: Timestamp for when the user was created.
+      type: Date
+    - contextPath: Account.Activated
+      description: Timestamp for when the user was activated.
+      type: Date
+    - contextPath: Account.StatusChanged
+      description: Timestamp for when the user's status was last changed.
+      type: Date
+    - contextPath: Account.PasswordChanged
+      description: Timestamp for when the user's password was last changed.
+      type: Date
+  - arguments:
     - default: false
       description: First name of the user (givenName).
       isArray: false
@@ -1840,7 +1884,7 @@ script:
       description: 'Zone type, e.g., IP.'
       type: String
     description: Get a Zone by its ID
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
   longRunning: false

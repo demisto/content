@@ -1,0 +1,2 @@
+!iam-disable-user user-profile=`{"username": "john.doe@example.com"}`
+!iam-get-user user-profile=`{"username": "john.doe@example.com"}`

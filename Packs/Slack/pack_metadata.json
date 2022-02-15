@@ -2,7 +2,7 @@
     "name": "Slack",
     "description": "Send messages and notifications to your Slack team.",
     "support": "xsoar",
-    "currentVersion": "2.1.6",
+    "currentVersion": "2.4.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -32,5 +32,9 @@
             "mandatory": false,
             "display_name": "Active Directory Query"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

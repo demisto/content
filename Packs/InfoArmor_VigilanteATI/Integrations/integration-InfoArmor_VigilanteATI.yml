@@ -1110,7 +1110,7 @@ script:
     arguments: []
     description: Returns the usage data for your account.
   runonce: false
-  dockerimage: demisto/python:2.7.18.24066
+  dockerimage: demisto/python:2.7.18.24398
 tests:
 - InfoArmorVigilanteATITest
 fromversion: 5.0.0

@@ -25,7 +25,7 @@ configuration:
   type: 8
   required: false
 script:
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.8.24399
   type: python
   subtype: python3
   script: '-'
@@ -134,6 +134,91 @@ script:
       description: Time when the IoC was last observed.
       type: date
     description: Looks up a Fully Qualified Domain Name (FQDN) indicator in the SlashNext Threat Intelligence database.
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      description: The url to look up in the SlashNext Threat Intelligence database.
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: URL.Data
+      description: URL reported.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision.
+      type: string
+    - contextPath: SlashNext.URL.Value
+      description: Value of the IoC.
+      type: string
+    - contextPath: SlashNext.URL.Type
+      description: Type of IoC.
+      type: string
+    - contextPath: SlashNext.URL.Verdict
+      description: SlashNext Phishing Incident Response verdict on the IoC.
+      type: string
+    - contextPath: SlashNext.URL.ThreatStatus
+      description: Threat status of the IoC.
+      type: string
+    - contextPath: SlashNext.URL.ThreatName
+      description: Name of the threat posed by the IoC.
+      type: string
+    - contextPath: SlashNext.URL.ThreatType
+      description: Type of threat posed by the IoC.
+      type: string
+    - contextPath: SlashNext.URL.FirstSeen
+      description: Time when the IoC was first observed.
+      type: date
+    - contextPath: SlashNext.URL.LastSeen
+      description: Time when the IoC was last observed.
+      type: date
+    - contextPath: SlashNext.URL.Final.Value
+      description: Final IoC value (in case original IoC is a redirector to the same domain).
+      type: string
+    - contextPath: SlashNext.URL.Final.Type
+      description: Type of the final IoC.
+      type: string
+    - contextPath: SlashNext.URL.Final.Verdict
+      description: SlashNext Phishing Incident Response verdict on the final IoC.
+      type: string
+    - contextPath: SlashNext.URL.Landing.Value
+      description: Landing IoC value (in case original IoC is a redirector to a different domain).
+      type: string
+    - contextPath: SlashNext.URL.Landing.Type
+      description: Type of landing IoC.
+      type: string
+    - contextPath: SlashNext.URL.Landing.Verdict
+      description: SlashNext Phishing Incident Response verdict on the landing IoC.
+      type: string
+    - contextPath: SlashNext.URL.Landing.ThreatStatus
+      description: Threat status of the landing IoC.
+      type: string
+    - contextPath: SlashNext.URL.Landing.ThreatName
+      description: Name of the threat posed by the landing IoC.
+      type: string
+    - contextPath: SlashNext.URL.Landing.ThreatType
+      description: Type of the threat posed by the landing IoC.
+      type: string
+    - contextPath: SlashNext.URL.Landing.FirstSeen
+      description: Time when the landing IoC was first observed.
+      type: date
+    - contextPath: SlashNext.URL.Landing.LastSeen
+      description: Time when the landing IoC was last observed.
+      type: date
+    description: Queries the SlashNext Cloud database and retrieves the reputation of a url.
   - name: slashnext-host-reputation
     arguments:
     - name: host
@@ -398,6 +483,91 @@ script:
       description: Time when the landing IoC was last observed.
       type: date
     description: Queries the SlashNext Cloud database and retrieves a list of all URLs associated with the specified host.
+  - name: slashnext-url-reputation
+    arguments:
+    - name: url
+      required: true
+      description: The url to look up in the SlashNext Threat Intelligence database.
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: URL.Data
+      description: URL reported.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision.
+      type: string
+    - contextPath: SlashNext.URL.Value
+      description: Value of the IoC.
+      type: string
+    - contextPath: SlashNext.URL.Type
+      description: Type of IoC.
+      type: string
+    - contextPath: SlashNext.URL.Verdict
+      description: SlashNext Phishing Incident Response verdict on the IoC.
+      type: string
+    - contextPath: SlashNext.URL.ThreatStatus
+      description: Threat status of the IoC.
+      type: string
+    - contextPath: SlashNext.URL.ThreatName
+      description: Name of the threat posed by the IoC.
+      type: string
+    - contextPath: SlashNext.URL.ThreatType
+      description: Type of threat posed by the IoC.
+      type: string
+    - contextPath: SlashNext.URL.FirstSeen
+      description: Time when the IoC was first observed.
+      type: date
+    - contextPath: SlashNext.URL.LastSeen
+      description: Time when the IoC was last observed.
+      type: date
+    - contextPath: SlashNext.URL.Final.Value
+      description: Final IoC value (in case original IoC is a redirector to the same domain).
+      type: string
+    - contextPath: SlashNext.URL.Final.Type
+      description: Type of the final IoC.
+      type: string
+    - contextPath: SlashNext.URL.Final.Verdict
+      description: SlashNext Phishing Incident Response verdict on the final IoC.
+      type: string
+    - contextPath: SlashNext.URL.Landing.Value
+      description: Landing IoC value (in case original IoC is a redirector to a different domain).
+      type: string
+    - contextPath: SlashNext.URL.Landing.Type
+      description: Type of landing IoC.
+      type: string
+    - contextPath: SlashNext.URL.Landing.Verdict
+      description: SlashNext Phishing Incident Response verdict on the landing IoC.
+      type: string
+    - contextPath: SlashNext.URL.Landing.ThreatStatus
+      description: Threat status of the landing IoC.
+      type: string
+    - contextPath: SlashNext.URL.Landing.ThreatName
+      description: Name of the threat posed by the landing IoC.
+      type: string
+    - contextPath: SlashNext.URL.Landing.ThreatType
+      description: Type of the threat posed by the landing IoC.
+      type: string
+    - contextPath: SlashNext.URL.Landing.FirstSeen
+      description: Time when the landing IoC was first observed.
+      type: date
+    - contextPath: SlashNext.URL.Landing.LastSeen
+      description: Time when the landing IoC was last observed.
+      type: date
+    description: Queries the SlashNext Cloud database and retrieves the reputation of a url.
   - name: slashnext-url-scan
     arguments:
     - name: url

@@ -17,7 +17,7 @@ configuration:
   required: false
   type: 8
 description: Use the HYAS Insight integration to interactively lookup PassiveDNS,
-  DynamicDNS, WHOIS, Malware Information – either as playbook tasks or through API
+  DynamicDNS, WHOIS, Malware and C2 Attribution Information – either as playbook tasks or through API
   calls in the War Room.
 display: HYAS Insight
 name: HYAS Insight
@@ -382,7 +382,70 @@ script:
     - contextPath: HYAS.HASH-DOMAIN.md5
       description: The provided MD5 value
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Indicator Type.
+      isArray: false
+      name: indicator_type
+      predefined:
+      - ip
+      - domain
+      - sha256
+      - email
+      required: true
+      secret: false
+    - default: false
+      description: Indicator Value.
+      isArray: false
+      name: indicator_value
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Return C2 Attribution records for the provided indicator value.
+    execution: false
+    name: hyas-get-c2attribution-records-by-indicator
+    outputs:
+    - contextPath: HYAS.C2_Attribution.actor_ipv4
+      description: The actor ipv4
+      type: String
+    - contextPath: HYAS.C2_Attribution.c2_domain
+      description: The c2 domain
+      type: String
+    - contextPath: HYAS.C2_Attribution.c2_ip
+      description: The c2 ip
+      type: String
+    - contextPath: HYAS.C2_Attribution.c2_url
+      description: The C2 panel url
+      type: String
+    - contextPath: HYAS.C2_Attribution.datetime
+      description: C2 Attribution datetime
+      type: String
+    - contextPath: HYAS.C2_Attribution.email
+      description: The actor email
+      type: String
+    - contextPath: HYAS.C2_Attribution.email_domain
+      description: The email domain
+      type: String
+    - contextPath: HYAS.C2_Attribution.referrer_domain
+      description: The referrer domain
+      type: String
+    - contextPath: HYAS.C2_Attribution.referrer_ipv4
+      description: The referrer ipv4
+      type: String
+    - contextPath: HYAS.C2_Attribution.referrer_url
+      description: The referrer url
+      type: String
+    - contextPath: HYAS.C2_Attribution.sha256
+      description: The sha256 malware hash
+      type: String
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
   longRunning: false

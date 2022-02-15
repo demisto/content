@@ -1,0 +1,22 @@
+[
+  {
+    "name": {
+      "first": {
+        "a": "val"
+      },
+      "second": "b",
+      "not_important": "no"
+    },
+    "value": "val1"
+  },
+  {
+    "name": {
+      "first": {
+        "a": "val2"
+      },
+      "second": "d",
+      "not_important": "no"
+    },
+    "value": "val2"
+  }
+]

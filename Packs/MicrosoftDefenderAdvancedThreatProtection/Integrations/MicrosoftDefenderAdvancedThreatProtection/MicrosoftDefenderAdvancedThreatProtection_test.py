@@ -1,7 +1,12 @@
+from _pytest.python_api import raises
+
 import demistomock as demisto
 import json
 import pytest
-from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output
+
+from CommonServerPython import DemistoException
+from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
+    print_ip_addresses, get_machine_details_command
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 
@@ -202,7 +207,7 @@ def test_get_machine_data(mocker):
     mocker.patch.object(client_mocker, 'get_machine_details', return_value=SINGLE_MACHINE_RESPONSE_API)
     res = get_machine_data(SINGLE_MACHINE_RESPONSE_API)
     assert res['ID'] == '123'
-    assert res['HealthStatus'] == 'Active'
+    assert res['HealthStatus'] in ['Active', 'Inactive']
 
 
 def test_get_ip_alerts_command(mocker):
@@ -222,8 +227,8 @@ def test_run_antivirus_scan_command(mocker):
     from MicrosoftDefenderAdvancedThreatProtection import run_antivirus_scan_command
     mocker.patch.object(client_mocker, 'run_antivirus_scan', return_value=MACHINE_ACTION_API_RESPONSE)
     mocker.patch.object(atp, 'get_machine_action_data', return_value=MACHINE_ACTION_DATA)
-    _, res, _ = run_antivirus_scan_command(client_mocker, {})
-    assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == MACHINE_ACTION_DATA
+    _, res, _ = run_antivirus_scan_command(client_mocker, {'machine_id': "123abc"})
+    assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'][0] == MACHINE_ACTION_DATA
 
 
 def test_check_limit_and_offset_values_no_error():
@@ -607,25 +612,85 @@ MACHINE_RESPONSE_API = {
     }
     ]
 }
+
 SINGLE_MACHINE_RESPONSE_API = {
+    "@odata.context": "https://api-eu.securitycenter.windows.com/api/$metadata#Machines/$entity",
+    "aadDeviceId": None,
+    "agentVersion": "10.7740.19041.1151",
+    "computerDnsName": "test-node",
+    "defenderAvStatus": "Updated",
+    "deviceValue": "Normal",
+    "exposureLevel": "High",
+    "firstSeen": "2021-08-30T20:11:52.7746006Z",
+    "healthStatus": "Inactive",
     "id": "123",
-    "computerDnsName": "test",
-    "firstSeen": "2019-11-03T23:47:16.2288822Z",
-    "lastSeen": "2019-11-03T23:47:51.2966758Z",
+    "ipAddresses": [
+        {
+            "ipAddress": "192.0.2.135",
+            "macAddress": "001122334418",
+            "operationalStatus": "Up",
+            "type": "Ethernet"
+        },
+        {
+            "ipAddress": "fe80::2413:e4aa:a3f4:d5bf",
+            "macAddress": "001122334418",
+            "operationalStatus": "Up",
+            "type": "Ethernet"
+        },
+        {
+            "ipAddress": "192.0.2.10",
+            "macAddress": "001122334436",
+            "operationalStatus": "Up",
+            "type": "Ethernet"
+        },
+        {
+            "ipAddress": "fe80::55b9:7f5a:6e9c:30ed",
+            "macAddress": "001122334436",
+            "operationalStatus": "Up",
+            "type": "Ethernet"
+        },
+        {
+            "ipAddress": "192.0.2.11",
+            "macAddress": "001122334422",
+            "operationalStatus": "Up",
+            "type": "Ethernet"
+        },
+        {
+            "ipAddress": "fe80::c3:b878:f6fd:ae4b",
+            "macAddress": "001122334422",
+            "operationalStatus": "Up",
+            "type": "Ethernet"
+        },
+        {
+            "ipAddress": "192.0.2.12",
+            "macAddress": "00112233442C",
+            "operationalStatus": "Up",
+            "type": "Ethernet"
+        },
+        {
+            "ipAddress": "fe80::65a8:d227:e97b:8220",
+            "macAddress": "00112233442C",
+            "operationalStatus": "Up",
+            "type": "Ethernet"
+        }
+    ],
+    "isAadJoined": False,
+    "lastExternalIpAddress": "2.2.2.2",
+    "lastIpAddress": "192.0.2.12",
+    "lastSeen": "2021-09-12T14:46:04.2458709Z",
+    "machineTags": [],
+    "managedBy": "Unknown",
+    "onboardingStatus": "Onboarded",
+    "osArchitecture": "64-bit",
+    "osBuild": 19043,
     "osPlatform": "Windows10",
-    "version": "1709",
     "osProcessor": "x64",
-    "lastIpAddress": "2.2.2.2",
-    "lastExternalIpAddress": "1.1.1.1",
-    "osBuild": 12345,
-    "healthStatus": "Active",
-    "rbacGroupId": 140,
-    "rbacGroupName": "The-A-Team",
-    "riskScore": "Low",
-    "exposureLevel": "Medium",
-    "isAadJoined": True,
-    "aadDeviceId": "12ab34cd",
-    "machineTags": ["test tag 1", "test tag 2"]
+    "osVersion": None,
+    "rbacGroupId": 0,
+    "rbacGroupName": None,
+    "riskScore": "None",
+    "version": "21H1",
+    "vmMetadata": None
 }
 
 MACHINE_DATA = {
@@ -679,3 +744,213 @@ def test_build_std_output_url():
         "url": url
     }])
     assert res['URL(val.Data && val.Data == obj.Data)'][0]['Data'] == url
+
+
+ip_addresses = [
+    {
+        "ipAddress": "ip1",
+        "macAddress": "MAC1",
+        "operationalStatus": "Up",
+        "type": "Ethernet"
+    },
+    {
+        "ipAddress": "ip2",
+        "macAddress": "MAC2",
+        "operationalStatus": "Up",
+        "type": "Ethernet"
+    },
+    {
+        "ipAddress": "ip3",
+        "macAddress": "MAC1",
+        "operationalStatus": "Up",
+        "type": "Ethernet"
+    }
+]
+ip_addresses_result = [{'MACAddress': 'MAC1', 'IPAddresses': ['ip1', 'ip3'], 'Type': 'Ethernet', 'Status': 'Up'},
+                       {'MACAddress': 'MAC2', 'IPAddresses': ['ip2'], 'Type': 'Ethernet', 'Status': 'Up'}]
+
+print_ip_addresses_result = '1. | MAC : MAC1 | IP Addresses : ip1,ip3 | Type : Ethernet | Status : Up\n' \
+                            '2. | MAC : MAC2 | IP Addresses : ip2     | Type : Ethernet | Status : Up'
+
+
+def test_parse_ip_addresses():
+    assert parse_ip_addresses(ip_addresses) == ip_addresses_result
+
+
+def test_print_ip_addresses():
+    assert print_ip_addresses(ip_addresses_result) == print_ip_addresses_result
+
+
+human_readable_result = '### Microsoft Defender ATP machines [\'123abc\'] details:\n' \
+                        '|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|' \
+                        'ExposureLevel|IPAddresses|\n' \
+                        '|---|---|---|---|---|---|---|---|---|\n' \
+                        '| 123 | test-node | Windows10 | 192.0.2.12 | 2.2.2.2 | Inactive | None | High |' \
+                        ' 1. \\| MAC : 001122334418 \\| IP Addresses : 192.0.2.135,fe80::2413:e4aa:a3f4:d5bf \\|' \
+                        ' Type : Ethernet \\| Status : Up<br>' \
+                        '2. \\| MAC : 001122334436 \\| IP Addresses : 192.0.2.10,fe80::55b9:7f5a:6e9c:30ed  \\|' \
+                        ' Type : Ethernet \\| Status : Up<br>' \
+                        '3. \\| MAC : 001122334422 \\| IP Addresses : 192.0.2.11,fe80::c3:b878:f6fd:ae4b    \\|' \
+                        ' Type : Ethernet \\| Status : Up<br>' \
+                        '4. \\| MAC : 00112233442C \\| IP Addresses : 192.0.2.12,fe80::65a8:d227:e97b:8220  \\|' \
+                        ' Type : Ethernet \\| Status : Up |\n'
+
+outputs_result = """{"ID": "123", "ComputerDNSName": "test-node", "FirstSeen": "2021-08-30T20:11:52.7746006Z",
+                  "LastSeen": "2021-09-12T14:46:04.2458709Z", "OSPlatform": "Windows10", "OSVersion": "21H1",
+                  "OSProcessor": "x64", "LastIPAddress": "192.0.2.12", "LastExternalIPAddress": "2.2.2.2",
+                  "AgentVersion": "10.7740.19041.1151", "OSBuild": 19043, "HealthStatus": "Inactive", "RBACGroupID": 0,
+                  "RiskScore": "None", "ExposureLevel": "High", "IsAADJoined": false, "IPAddresses": [
+        {"ipAddress": "192.0.2.135", "macAddress": "001122334418", "operationalStatus": "Up", "type": "Ethernet"},
+        {"ipAddress": "fe80::2413:e4aa:a3f4:d5bf", "macAddress": "001122334418", "operationalStatus": "Up",
+         "type": "Ethernet"},
+        {"ipAddress": "192.0.2.10", "macAddress": "001122334436", "operationalStatus": "Up", "type": "Ethernet"},
+        {"ipAddress": "fe80::55b9:7f5a:6e9c:30ed", "macAddress": "001122334436", "operationalStatus": "Up",
+         "type": "Ethernet"},
+        {"ipAddress": "192.0.2.11", "macAddress": "001122334422", "operationalStatus": "Up", "type": "Ethernet"},
+        {"ipAddress": "fe80::c3:b878:f6fd:ae4b", "macAddress": "001122334422", "operationalStatus": "Up",
+         "type": "Ethernet"},
+        {"ipAddress": "192.0.2.12", "macAddress": "00112233442C", "operationalStatus": "Up", "type": "Ethernet"},
+        {"ipAddress": "fe80::65a8:d227:e97b:8220", "macAddress": "00112233442C", "operationalStatus": "Up",
+         "type": "Ethernet"}]}"""
+
+
+def test_get_machine_details_command(mocker):
+    mocker.patch.object(client_mocker, 'get_machine_details', return_value=SINGLE_MACHINE_RESPONSE_API)
+    results = get_machine_details_command(client_mocker, {'machine_id': "123abc"})
+    assert results.outputs[0] == json.loads(outputs_result)
+    assert results.readable_output == human_readable_result
+
+
+@pytest.mark.parametrize('fields_to_filter_by, field_key_from_type_list, expected_query', [
+    # field_key_from_type_list does not exist
+    ({'ip': '1.2.3.4', 'host': 'example'}, 'id', "ip eq '1.2.3.4' and host eq 'example'"),
+    # field_key_from_type_list has only one value in the list
+    ({'ip': '1.2.3.4', 'id': ['1'], 'host': 'example'}, 'id', "ip eq '1.2.3.4' and id eq '1' and host eq 'example'"),
+    # field_key_from_type_list has more than one value in the list
+    ({'ip': '1.2.3.4', 'id': ['1', '2']}, 'id', "(ip eq '1.2.3.4' and id eq '1') or (ip eq '1.2.3.4' and id eq '2')"),
+    ({'ip': '1.2.3.4', 'id': ['1', '2'], 'host': 'example'}, 'id',
+     ("(ip eq '1.2.3.4' and host eq 'example' and id eq '1') or "
+      "(ip eq '1.2.3.4' and host eq 'example' and id eq '2')")),
+])
+def test_reformat_filter_with_list_arg(fields_to_filter_by, field_key_from_type_list, expected_query):
+    from MicrosoftDefenderAdvancedThreatProtection import reformat_filter_with_list_arg
+    assert reformat_filter_with_list_arg(fields_to_filter_by, field_key_from_type_list) == expected_query
+
+
+@pytest.mark.parametrize('hostnames, ips, ids, expected_filter', [
+    # only one list is given
+    (['example.com'], [], [], "computerDnsName eq 'example.com'"),
+    (['example.com', 'b.com'], [], [], "computerDnsName eq 'example.com' or computerDnsName eq 'b.com'"),
+    # each list has only one value
+    (['b.com'], ['1.2.3.4'], ['1'], "computerDnsName eq 'b.com' or lastIpAddress eq '1.2.3.4' or id eq '1'"),
+    # each list has more than 1 value
+    (['b.com', 'a.com'], ['1.2.3.4', '1.2.3.5'], ['1', '2'],
+     "computerDnsName eq 'b.com' or computerDnsName eq 'a.com' or "
+     "lastIpAddress eq '1.2.3.4' or "
+     "lastIpAddress eq '1.2.3.5' or "
+     "id eq '1' or "
+     "id eq '2'"),
+
+])
+def test_create_filter_for_endpoint_command(hostnames, ips, ids, expected_filter):
+    from MicrosoftDefenderAdvancedThreatProtection import create_filter_for_endpoint_command
+    assert create_filter_for_endpoint_command(hostnames, ips, ids) == expected_filter
+
+
+@pytest.mark.parametrize('machines_list, expected_list', [
+    ([{'ID': 1, 'CVE': 'CVE-1'}, {'ID': 1, 'CVE': 'CVE-2'}, {'ID': 2, 'CVE': 'CVE-1'}],
+     [{'ID': 1, 'CVE': ['CVE-1', 'CVE-2']}, {'ID': 2, 'CVE': ['CVE-1']}]),
+
+    ([{'ID': 1, 'CVE': 'CVE-1'}, {'ID': 3, 'CVE': 'CVE-3'}, {'ID': 2, 'CVE': 'CVE-1'}],
+     [{'ID': 1, 'CVE': ['CVE-1']}, {'ID': 3, 'CVE': ['CVE-3']}, {'ID': 2, 'CVE': ['CVE-1']}, ]),
+
+    ([], []),
+    ([{'ID': 1, 'CVE': 'CVE-1'}, {'ID': 1, 'CVE': 'CVE-2'}], [{'ID': 1, 'CVE': ['CVE-1', 'CVE-2']}]),
+
+])
+def test_create_related_cve_list_for_machine(machines_list, expected_list):
+    from MicrosoftDefenderAdvancedThreatProtection import create_related_cve_list_for_machine
+    assert create_related_cve_list_for_machine(machines_list) == expected_list
+
+
+@pytest.mark.parametrize('machine, expected_result', [
+    ({'ipAddresses': [], 'lastIpAddress': "1.2.3.4"}, None),
+    ({'ipAddresses': []}, None),
+    ({'ipAddresses': [{'ipAddress': "1.1.1.1", 'macAddress': ""}], 'lastIpAddress': "1.2.3.4"}, None),
+    ({'ipAddresses': [{'ipAddress': "1.2.3.4", 'macAddress': ""}], 'lastIpAddress': "1.2.3.4"}, ""),
+    ({'ipAddresses': [{'ipAddress': "1.2.3.4", 'macAddress': "mac"}], 'lastIpAddress': "1.2.3.4"}, "mac"),
+    ({'ipAddresses': [{'ipAddress': "1.2.3.4", 'macAddress': "mac"}, {'ipAddress': "1.1.1.1", 'macAddress': "mac"}],
+      'lastIpAddress': "1.2.3.4"}, "mac"),
+])
+def test_get_machine_mac_address(machine, expected_result):
+    from MicrosoftDefenderAdvancedThreatProtection import get_machine_mac_address
+    assert get_machine_mac_address(machine) == expected_result
+
+
+@pytest.mark.parametrize('failed_devices, all_requested_devices, expected_result', [
+    ({}, ["id1", "id2"], ""),
+    ({'id1': "some error"}, ["id1", "id2"], "Note: you don't see the following IDs in the results as the request was "
+                                            "failed for them. \nID id1 failed with the error: some error \n"),
+])
+def test_add_error_message(failed_devices, all_requested_devices, expected_result):
+    from MicrosoftDefenderAdvancedThreatProtection import add_error_message
+    assert add_error_message(failed_devices, all_requested_devices) == expected_result
+
+
+@pytest.mark.parametrize('failed_devices, all_requested_devices', [
+    ({'id1': "some error", 'id2': "some error"}, ["id1", "id2"]),
+    ({'id1': "some error1", 'id2': "some error2"}, ["id1", "id2"]),
+])
+def test_add_error_message_raise_error(failed_devices, all_requested_devices):
+    from MicrosoftDefenderAdvancedThreatProtection import add_error_message
+    with raises(DemistoException,
+                match=f'Microsoft Defender ATP The command was failed with the errors: {failed_devices}'):
+        add_error_message(failed_devices, all_requested_devices)
+
+
+@pytest.mark.parametrize('indicators_response, expected_result', [
+    ({'value': []}, []),
+    ({'value': [{"id": '1', "indicator": '2', "isFailed": 'false', "failureReason": "", 'name': "no"}]},
+     [{"ID": '1', "Value": '2', "IsFailed": 'false', "FailureReason": ""}]),
+    ({'value': [{"id": '1', "indicator": '2', "isFailed": 'false', "failureReason": "", 'name': "no"},
+                {"id": '2', "indicator": '4', "isFailed": 'true', "failureReason": "reason", 'name': "no"},
+                {'name': "no"}]},
+     [{"ID": '1', "Value": '2', "IsFailed": 'false', "FailureReason": ""},
+      {"ID": '2', "Value": '4', "IsFailed": 'true', "FailureReason": "reason"},
+      {'FailureReason': None, 'ID': None, 'IsFailed': None, 'Value': None}]),
+])
+def test_parse_indicator_batch_response(indicators_response, expected_result):
+    from MicrosoftDefenderAdvancedThreatProtection import parse_indicator_batch_response
+    assert parse_indicator_batch_response(indicators_response) == expected_result
+
+
+ALERT_JSON = {'id': '1', 'incidentId': 2, 'investigationId': 3, 'assignedTo': 'Automation', 'severity': 'Informational',
+              'status': 'Resolved', 'classification': None, 'determination': None,
+              'investigationState': 'SuccessfullyRemediated',
+              'detectionSource': 'WindowsDefenderAv', 'detectorId': '4',
+              'category': 'Malware', 'threatFamilyName': 'Test_File', 'title': "Test_File",
+              'description': 'Test', 'alertCreationTime': '2022-02-07T10:26:40.05748Z',
+              'firstEventTime': '2022-02-07T10:20:52.2188896Z',
+              'lastEventTime': '2022-02-07T10:20:52.2571395Z', 'lastUpdateTime': '2022-02-07T10:57:13.93Z',
+              'resolvedTime': '2022-02-07T10:57:13.773683Z', 'machineId': '4',
+              'computerDnsName': 'win2016', 'rbacGroupName': None,
+              'aadTenantId': 'ebac1a16-81bf-449b-8d43-5732c3c1d999', 'threatName': 'Test',
+              'mitreTechniques': [], 'relatedUser': None, 'comments': [],
+              'evidence': [{'entityType': 'File', 'evidenceCreationTime': '2022-02-07T10:26:40.24Z',
+                            'sha1': '33', 'sha256': '27', 'fileName': 'test.com',
+                            'filePath': 'Downloads', 'processId': None, 'processCommandLine': None,
+                            'processCreationTime': None, 'parentProcessId': None, 'parentProcessCreationTime': None,
+                            'parentProcessFileName': None, 'parentProcessFilePath': None, 'ipAddress': None,
+                            'url': None,
+                            'registryKey': None, 'registryHive': None, 'registryValueType': None, 'registryValue': None,
+                            'accountName': None, 'domainName': None, 'userSid': None, 'aadUserId': None,
+                            'userPrincipalName': None,
+                            'detectionStatus': 'Prevented'}]}
+
+
+def test_get_alert_by_id_command(mocker):
+    from MicrosoftDefenderAdvancedThreatProtection import get_alert_by_id_command
+    mocker.patch.object(client_mocker, 'get_alert_by_id', return_value=ALERT_JSON)
+    results = get_alert_by_id_command(client_mocker, {'alert_ids': ['1']})
+    assert results.outputs[0]['ID'] == '1'
+    assert len(results.outputs[0]) == len(ALERT_JSON.keys())

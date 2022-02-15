@@ -3,7 +3,7 @@ commonfields:
   id: Cyberpion
   version: -1
 configuration:
-- display: Server URL (e.g. https://api.example.com/security/api)
+- display: Server URL (e.g. https://portal.cyberpion.com/portal/api/)
   name: url
   required: true
   type: 0
@@ -47,11 +47,36 @@ configuration:
   - '10'
   required: true
   type: 15
-- defaultvalue: 7 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+- display: First fetch timestamp (in months)- Optional. If not set, all incidents
+    will be fetched
   name: first_fetch
+  options:
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  - '7'
+  - '8'
+  - '9'
+  - '10'
+  - '11'
+  - '12'
+  - '13'
+  - '14'
+  - '15'
+  - '16'
+  - '17'
+  - '18'
+  - '19'
+  - '20'
+  - '21'
+  - '22'
+  - '23'
+  - '24'
   required: false
-  type: 0
+  type: 15
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -61,8 +86,8 @@ configuration:
   required: false
   type: 13
 - defaultvalue: 'true'
-  display: Show only active issues
-  name: ShowOnlyActive
+  display: Show only open issues
+  name: ShowOnlyOpen
   required: false
   type: 8
 - display: Trust any certificate (not secure)
@@ -75,7 +100,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The Cyberpion integration allows you to seamlessly receive all your Cyberpion security solution Action Items and supportive information to your Cortex XSOAR.
+description: The Cyberpion integration allows you to seamlessly receive all your Cyberpion
+  security solution Action Items and supportive information to your Cortex XSOAR.
 display: Cyberpion
 name: Cyberpion
 script:
@@ -167,7 +193,7 @@ script:
     - contextPath: Cyberpion.DomainState.discovery_date
       description: The Date domain was discovered
       type: Date
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: true
   longRunning: false

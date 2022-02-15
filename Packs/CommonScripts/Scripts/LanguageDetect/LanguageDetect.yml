@@ -1,0 +1,26 @@
+commonfields:
+  id: LanguageDetect
+  version: -1
+name: LanguageDetect
+script: ''
+type: python
+subtype: python3
+tags:
+- Utility
+comment: Language detection based on Google's language-detection.
+enabled: true
+args:
+- name: text
+  required: true
+  default: true
+  description: Text to analyse for language detection
+outputs:
+- contextPath: langDetect.lang
+  description: Language detection
+- contextPath: langDetect.probability
+  description: Probability of language detection
+scripttarget: 0
+dockerimage: demisto/langdetect:1.0.0.24247
+fromversion: 5.0.0
+tests:
+  - LanguageDetect-Test

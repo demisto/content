@@ -7,7 +7,7 @@ import demistomock as demisto
 from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
     create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
     file_args_handler, wildfire_get_sample_command, wildfire_get_report_command, run_polling_command, \
-    wildfire_upload_url_command
+    wildfire_upload_url_command, prettify_url_verdict, create_dbot_score_from_url_verdict, parse_file_report
 
 
 def test_will_return_ok():
@@ -36,6 +36,43 @@ def test_prettify_verdict():
     prettify_verdict_res = prettify_verdict(
         {'md5': "md5_hash", 'sha256': "sha256_hash", 'verdict': "1"})
     assert expected_verdict_dict == prettify_verdict_res
+
+
+def test_prettify_url_verdict():
+    """
+    Given:
+     - The verdict response.
+
+    When:
+     - Running prettify_url_verdict function.
+
+    Then:
+     - Verify that the dictionary is prettified.
+    """
+    expected_verdict_dict = dict({'URL': 'www.some-url.com', 'Verdict': '0', 'VerdictDescription': 'benign',
+                                  'Valid': 'Yes', 'AnalysisTime': '2021-12-13T11:30:55Z'})
+    prettify_verdict_res = prettify_url_verdict(
+        {'url': 'www.some-url.com', 'verdict': '0', 'analysis_time': '2021-12-13T11:30:55Z', 'valid': 'Yes'})
+    assert expected_verdict_dict == prettify_verdict_res
+
+
+def test_create_dbot_score_from_url_verdict():
+    """
+    Given:
+     - A dictionary to create the dbot score from.
+
+    When:
+     - Running create_dbot_score_from_url_verdict function.
+
+    Then:
+     - Verify that the expected dbot score has been returned.
+    """
+    expected_dbot_score = [
+        {'Indicator': 'www.some-url.com', 'Type': 'url', 'Vendor': 'WildFire', 'Score': 1,
+         'Reliability': 'B - Usually reliable'}
+    ]
+    dbot_score_dict = create_dbot_score_from_url_verdict({'URL': "www.some-url.com", 'Verdict': "0"})
+    assert expected_dbot_score == dbot_score_dict
 
 
 def test_create_dbot_score_from_verdict():
@@ -266,3 +303,71 @@ def test_running_polling_command_new_search(mocker):
                         'Status': 'Pending', 'URL': 'https://www.demisto.com'}
     assert command_results[0].outputs == expected_outputs
     assert command_results[0].scheduled_command is not None
+
+
+def test_parse_file_report_network():
+    """
+    Given:
+        - A report json from a WildFire response of the 'wildfire-report' command, that includes Network details.
+    When:
+        - Running 'parse_file_report' function.
+    Then:
+        - Verify that the Network details (TCP, UDP, DNS) are parsed correctly.
+    """
+    report = {
+        "evidence":
+            {
+                "file": None,
+                "mutex": None,
+                "process": None,
+                "registry": None
+            },
+        "malware": "yes",
+        "md5": "test",
+        "network":
+            {
+                "TCP":
+                    [
+                        {
+                            "@country": "US",
+                            "@ip": "1.1.1.1",
+                            "@ja3": "test",
+                            "@ja3s": "test",
+                            "@port": "443"
+                        },
+                        {
+                            "@country": "US",
+                            "@ip": "1.0.1.0",
+                            "@ja3": "test",
+                            "@ja3s": "",
+                            "@port": "80"
+                        }
+                    ],
+                "UDP":
+                    {
+                        "@country": "US",
+                        "@ip": "1.1.1.1",
+                        "@ja3": "test",
+                        "@ja3s": "test",
+                        "@port": "55"
+                    },
+                "dns":
+                    {
+                        "@query": "test.com",
+                        "@response": "1.1.1.1.",
+                        "@type": "A"
+                    },
+                "url":
+                    {
+                        "@host": "test1.com",
+                        "@method": "GET",
+                        "@uri": "/test/72t0jjhmv7takwvisfnz_eejvf_h6v2ix/",
+                        "@user_agent": ""
+                    }
+            }
+    }
+    expected_outputs_network = {'TCP': {'IP': ['1.1.1.1', '1.0.1.0'], 'Port': ['443', '80']},
+                                'UDP': {'IP': ['1.1.1.1'], 'Port': ['55']},
+                                'DNS': {'Query': ['test.com'], 'Response': ['1.1.1.1.']}}
+    outputs, feed_related_indicators, behavior = parse_file_report(reports=report, file_info={})
+    assert expected_outputs_network == outputs.get('Network')

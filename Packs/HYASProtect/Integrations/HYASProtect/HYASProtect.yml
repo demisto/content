@@ -1,0 +1,154 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: HYAS Protect
+  version: -1
+configuration:
+- display: HYAS Protect Api Key
+  name: X-API-Key
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use the HYAS Protect integration to get the verdict information for FQDN,
+  IP Address and NameServer – either as playbook tasks or through API calls in the
+  War Room.
+display: HYAS Protect
+name: HYAS Protect
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Domain value to query
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns verdict information for the provided Domain.
+    execution: false
+    name: hyas-get-domain-verdict
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the indicator score.
+      type: String
+    - contextPath: HYAS.DomainVerdict.verdict
+      description: Verdict for the provided Domain.
+      type: String
+    - contextPath: HYAS.DomainVerdict.reasons
+      description: Verdict Reasons the provided Domain.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: IP value to query.
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns verdict information for the provided IP Address.
+    execution: false
+    name: hyas-get-ip-verdict
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the indicator score.
+      type: String
+    - contextPath: HYAS.IPVerdict.verdict
+      description: Verdict for the provided IP Address.
+      type: String
+    - contextPath: HYAS.IPVerdict.reasons
+      description: Verdict Reasons for the provided IP Address.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: FQDN value to query.
+      isArray: false
+      name: fqdn
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns verdict information for the provided FQDN.
+    execution: false
+    name: hyas-get-fqdn-verdict
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the indicator score.
+      type: String
+    - contextPath: HYAS.FQDNVerdict.verdict
+      description: Verdict for for the provided FQDN.
+      type: String
+    - contextPath: HYAS.FQDNVerdict.reasons
+      description: Verdict Reasons for the provided FQDN.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Nameserver value to query.
+      isArray: false
+      name: nameserver
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns verdict information for the provided Nameserver.
+    execution: false
+    name: hyas-get-nameserver-verdict
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the indicator score.
+      type: String
+    - contextPath: HYAS.NameserverVerdict.verdict
+      description: Verdict for the provided Nameserver.
+      type: String
+    - contextPath: HYAS.NameserverVerdict.reasons
+      description: Verdict Reasons for the provided Nameserver.
+      type: Unknown
+  dockerimage: demisto/python3:3.9.8.24399
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.0.0

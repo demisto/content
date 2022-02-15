@@ -31,9 +31,9 @@ tags:
 - Enrichment
 timeout: '0'
 type: python
-subtype: python2
+subtype: python3
 runonce: false
 fromversion: 5.0.0
 tests:
 - GetIndicatorDBotScore Test
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python3:3.10.1.25933

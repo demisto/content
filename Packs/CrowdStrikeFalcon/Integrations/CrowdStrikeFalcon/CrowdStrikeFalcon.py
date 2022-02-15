@@ -71,12 +71,17 @@ IOC_KEY_MAP = {
     'policy': 'Policy',
     'source': 'Source',
     'share_level': 'ShareLevel',
-    'expiration_timestamp': 'Expiration',
+    'expiration': 'Expiration',
     'description': 'Description',
-    'created_timestamp': 'CreatedTime',
+    'created_on': 'CreatedTime',
     'created_by': 'CreatedBy',
-    'modified_timestamp': 'ModifiedTime',
-    'modified_by': 'ModifiedBy'
+    'modified_on': 'ModifiedTime',
+    'modified_by': 'ModifiedBy',
+    'id': 'ID',
+    'platforms': 'Platforms',
+    'action': 'Action',
+    'severity': 'Severity',
+    'tags': 'Tags',
 }
 
 IOC_DEVICE_COUNT_MAP = {
@@ -222,11 +227,14 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             reason = res.reason
             resources = res_json.get('resources', {})
             if resources:
-                for host_id, resource in resources.items():
-                    errors = resource.get('errors', [])
-                    if errors:
-                        error_message = errors[0].get('message')
-                        reason += f'\nHost ID {host_id} - {error_message}'
+                if isinstance(resources, list):
+                    reason += f'\n{str(resources)}'
+                else:
+                    for host_id, resource in resources.items():
+                        errors = resource.get('errors', [])
+                        if errors:
+                            error_message = errors[0].get('message')
+                            reason += f'\nHost ID {host_id} - {error_message}'
             elif res_json.get('errors'):
                 errors = res_json.get('errors', [])
                 for error in errors:
@@ -1113,6 +1121,118 @@ def delete_ioc(ioc_type, value):
     return http_request('DELETE', '/indicators/entities/iocs/v1', payload)
 
 
+def search_custom_iocs(
+    types: Optional[Union[list, str]] = None,
+    values: Optional[Union[list, str]] = None,
+    sources: Optional[Union[list, str]] = None,
+    expiration: Optional[str] = None,
+    limit: str = '50',
+    sort: Optional[str] = None,
+    offset: Optional[str] = None,
+) -> dict:
+    """
+    :param types: A list of indicator types. Separate multiple types by comma.
+    :param values: Comma-separated list of indicator values
+    :param sources: Comma-separated list of IOC sources
+    :param expiration: The date on which the indicator will become inactive. (YYYY-MM-DD format).
+    :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
+    :param sort: The order of the results. Format
+    :param offset: The offset to begin the list from
+    """
+    filter_list = []
+    if types:
+        filter_list.append(f'type:{types}')
+    if values:
+        filter_list.append(f'value:{values}')
+    if sources:
+        filter_list.append(f'source:{sources}')
+    if expiration:
+        filter_list.append(f'expiration:"{expiration}"')
+
+    params = {
+        'filter': '+'.join(filter_list),
+        'sort': sort,
+        'offset': offset,
+        'limit': limit,
+    }
+
+    return http_request('GET', '/iocs/combined/indicator/v1', params=params)
+
+
+def get_custom_ioc(ioc_id: str) -> dict:
+    params = {'ids': ioc_id}
+    return http_request('GET', '/iocs/entities/indicators/v1', params=params)
+
+
+def upload_custom_ioc(
+    ioc_type: str,
+    value: str,
+    action: str,
+    platforms: str,
+    severity: Optional[str] = None,
+    source: Optional[str] = None,
+    description: Optional[str] = None,
+    expiration: Optional[str] = None,
+    applied_globally: Optional[bool] = None,
+    host_groups: Optional[List[str]] = None,
+) -> dict:
+    """
+    Create a new IOC (or replace an existing one)
+    """
+    payload = {
+        'indicators': [assign_params(
+            type=ioc_type,
+            value=value,
+            action=action,
+            platforms=platforms,
+            severity=severity,
+            source=source,
+            description=description,
+            expiration=expiration,
+            applied_globally=applied_globally,
+            host_groups=host_groups,
+        )]
+    }
+
+    return http_request('POST', '/iocs/entities/indicators/v1', json=payload)
+
+
+def update_custom_ioc(
+    ioc_id: str,
+    action: Optional[str] = None,
+    platforms: Optional[str] = None,
+    severity: Optional[str] = None,
+    source: Optional[str] = None,
+    description: Optional[str] = None,
+    expiration: Optional[str] = None,
+) -> dict:
+    """
+    Update an IOC
+    """
+    payload = {
+        'indicators': [{
+            'id': ioc_id,
+        } | assign_params(
+            action=action,
+            platforms=platforms,
+            severity=severity,
+            source=source,
+            description=description,
+            expiration=expiration,
+        )]
+    }
+
+    return http_request('PATCH', '/iocs/entities/indicators/v1', json=payload)
+
+
+def delete_custom_ioc(ids: str) -> dict:
+    """
+    Delete an IOC
+    """
+    params = {'ids': ids}
+    return http_request('DELETE', '/iocs/entities/indicators/v1', params=params)
+
+
 def get_ioc_device_count(ioc_type, value):
     """
     Gets the devices that encountered the IOC
@@ -1592,6 +1712,174 @@ def delete_ioc_command(ioc_type, value):
     return create_entry_object(contents=raw_res, hr=f"Custom IOC {ids} was successfully deleted.")
 
 
+def search_custom_iocs_command(
+    types: Optional[Union[list, str]] = None,
+    values: Optional[Union[list, str]] = None,
+    sources: Optional[Union[list, str]] = None,
+    expiration: Optional[str] = None,
+    limit: str = '50',
+    sort: Optional[str] = None,
+    offset: Optional[str] = None,
+) -> dict:
+    """
+    :param types: A list of indicator types. Separate multiple types by comma.
+    :param values: Comma-separated list of indicator values
+    :param sources: Comma-separated list of IOC sources
+    :param expiration: The date on which the indicator will become inactive. (YYYY-MM-DD format).
+    :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
+    :param sort: The order of the results. Format
+    :param offset: The offset to begin the list from
+    """
+    raw_res = search_custom_iocs(
+        types=argToList(types),
+        values=argToList(values),
+        sources=argToList(sources),
+        sort=sort,
+        offset=offset,
+        expiration=expiration,
+        limit=limit,
+    )
+    iocs = raw_res.get('resources')
+    if not iocs:
+        return create_entry_object(hr='Could not find any Indicators of Compromise.')
+    handle_response_errors(raw_res)
+    ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
+    return create_entry_object(
+        contents=raw_res,
+        ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+        hr=tableToMarkdown('Indicators of Compromise', ec),
+    )
+
+
+def get_custom_ioc_command(
+    ioc_type: Optional[str] = None,
+    value: Optional[str] = None,
+    ioc_id: Optional[str] = None,
+) -> dict:
+    """
+    :param ioc_type: IOC type
+    :param value: IOC value
+    :param ioc_id: IOC ID
+    """
+
+    if not ioc_id and not (ioc_type and value):
+        raise ValueError('Either ioc_id or ioc_type and value must be provided.')
+
+    if ioc_id:
+        raw_res = get_custom_ioc(ioc_id)
+    else:
+        raw_res = search_custom_iocs(
+            types=argToList(ioc_type),
+            values=argToList(value),
+        )
+
+    iocs = raw_res.get('resources')
+    handle_response_errors(raw_res)
+    if not iocs:
+        return create_entry_object(hr='Could not find any Indicators of Compromise.')
+    ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
+    return create_entry_object(
+        contents=raw_res,
+        ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+        hr=tableToMarkdown('Indicator of Compromise', ec),
+    )
+
+
+def upload_custom_ioc_command(
+    ioc_type: str,
+    value: str,
+    action: str,
+    platforms: str,
+    severity: Optional[str] = None,
+    source: Optional[str] = None,
+    description: Optional[str] = None,
+    expiration: Optional[str] = None,
+    applied_globally: Optional[bool] = None,
+    host_groups: Optional[List[str]] = None,
+) -> dict:
+    """
+    :param ioc_type: The type of the indicator.
+    :param value: The string representation of the indicator.
+    :param action: Action to take when a host observes the custom IOC.
+    :param platforms: The platforms that the indicator applies to.
+    :param severity: The severity level to apply to this indicator.
+    :param source: The source where this indicator originated.
+    :param description: A meaningful description of the indicator.
+    :param expiration: The date on which the indicator will become inactive.
+    :param applied_globally: Whether the indicator is applied globally.
+    :param host_groups: List of host group IDs that the indicator applies to.
+    """
+    if action in {'prevent', 'detect'} and not severity:
+        raise ValueError(f'Severity is required for action {action}.')
+    raw_res = upload_custom_ioc(
+        ioc_type,
+        value,
+        action,
+        argToList(platforms),
+        severity,
+        source,
+        description,
+        expiration,
+        argToBoolean(applied_globally) if applied_globally else None,
+        argToList(host_groups),
+    )
+    handle_response_errors(raw_res)
+    iocs = raw_res.get('resources', [])
+    ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
+    return create_entry_object(
+        contents=raw_res,
+        ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+        hr=tableToMarkdown('Custom IOC was created successfully', ec),
+    )
+
+
+def update_custom_ioc_command(
+    ioc_id: str,
+    action: Optional[str] = None,
+    platforms: Optional[str] = None,
+    severity: Optional[str] = None,
+    source: Optional[str] = None,
+    description: Optional[str] = None,
+    expiration: Optional[str] = None,
+) -> dict:
+    """
+    :param ioc_id: The ID of the indicator to update.
+    :param action: Action to take when a host observes the custom IOC.
+    :param platforms: The platforms that the indicator applies to.
+    :param severity: The severity level to apply to this indicator.
+    :param source: The source where this indicator originated.
+    :param description: A meaningful description of the indicator.
+    :param expiration: The date on which the indicator will become inactive.
+    """
+
+    raw_res = update_custom_ioc(
+        ioc_id,
+        action,
+        argToList(platforms),
+        severity,
+        source,
+        description,
+        expiration,
+    )
+    handle_response_errors(raw_res)
+    iocs = raw_res.get('resources', [])
+    ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
+    return create_entry_object(
+        contents=raw_res,
+        ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+        hr=tableToMarkdown('Custom IOC was updated successfully', ec),
+    )
+
+
+def delete_custom_ioc_command(ioc_id: str) -> dict:
+    """
+    :param ioc_id: The ID of indicator to delete.
+    """
+    raw_res = delete_custom_ioc(ioc_id)
+    handle_response_errors(raw_res, "The server has not confirmed deletion, please manually confirm deletion.")
+    return create_entry_object(contents=raw_res, hr=f"Custom IOC {ioc_id} was successfully deleted.")
+
+
 def get_ioc_device_count_command(ioc_type: str, value: str):
     """
     :param ioc_type: The type of the indicator
@@ -1701,7 +1989,7 @@ def generate_status_fields(endpoint_status):
     status = ''
     is_isolated = ''
 
-    if endpoint_status == 'normal':
+    if endpoint_status.lower() == 'normal':
         status = 'Online'
     elif endpoint_status == 'containment_pending':
         is_isolated = 'Pending isolation'
@@ -1709,7 +1997,8 @@ def generate_status_fields(endpoint_status):
         is_isolated = 'Yes'
     elif endpoint_status == 'lift_containment_pending':
         is_isolated = 'Pending unisolation'
-
+    else:
+        raise DemistoException(f'Error: Unknown endpoint status was given: {endpoint_status}')
     return status, is_isolated
 
 
@@ -1739,7 +2028,7 @@ def get_endpoint_command():
     # handles the search by id or by hostname
     raw_res = search_device()
 
-    if ip := args.get('ip'):
+    if ip := args.get('ip') and raw_res:
         # there is no option to filter by ip in an api call, therefore we would filter the devices in the code
         raw_res = search_device_by_ip(raw_res, ip)
 
@@ -1832,6 +2121,8 @@ def resolve_detection_command():
 
     status = args.get('status')
     show_in_ui = args.get('show_in_ui')
+    if not (username or assigned_to_uuid or comment or status or show_in_ui):
+        raise DemistoException("Please provide at least one argument to resolve the detection with.")
     raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment)
     args.pop('ids')
     hr = "Detection {0} updated\n".format(str(ids)[1:-1])
@@ -2509,9 +2800,13 @@ def detections_to_human_readable(detections):
 
 
 def list_detection_summaries_command():
-    fetch_query = demisto.args().get('fetch_query')
+    args = demisto.args()
+    fetch_query = args.get('fetch_query')
 
-    if fetch_query:
+    args_ids = args.get('ids')
+    if args_ids:
+        detections_ids = argToList(args_ids)
+    elif fetch_query:
         fetch_query = "{query}".format(query=fetch_query)
         detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query), 'resources')
     else:
@@ -2542,9 +2837,13 @@ def incidents_to_human_readable(incidents):
 
 
 def list_incident_summaries_command():
-    fetch_query = demisto.args().get('fetch_query')
+    args = demisto.args()
+    fetch_query = args.get('fetch_query')
 
-    if fetch_query:
+    args_ids = args.get('ids')
+    if args_ids:
+        incidents_ids = argToList(args_ids)
+    elif fetch_query:
         fetch_query = "{query}".format(query=fetch_query)
         incidents_ids = get_incidents_ids(filter_arg=fetch_query)
     else:
@@ -2756,6 +3055,17 @@ def main():
             return_results(update_ioc_command(**args))
         elif command == 'cs-falcon-delete-ioc':
             return_results(delete_ioc_command(ioc_type=args.get('type'), value=args.get('value')))
+        elif command == 'cs-falcon-search-custom-iocs':
+            return_results(search_custom_iocs_command(**args))
+        elif command == 'cs-falcon-get-custom-ioc':
+            return_results(get_custom_ioc_command(
+                ioc_type=args.get('type'), value=args.get('value'), ioc_id=args.get('ioc_id')))
+        elif command == 'cs-falcon-upload-custom-ioc':
+            return_results(upload_custom_ioc_command(**args))
+        elif command == 'cs-falcon-update-custom-ioc':
+            return_results(update_custom_ioc_command(**args))
+        elif command == 'cs-falcon-delete-custom-ioc':
+            return_results(delete_custom_ioc_command(ioc_id=args.get('ioc_id')))
         elif command == 'cs-falcon-device-count-ioc':
             return_results(get_ioc_device_count_command(ioc_type=args.get('type'), value=args.get('value')))
         elif command == 'cs-falcon-process-details':

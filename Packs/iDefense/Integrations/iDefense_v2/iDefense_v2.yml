@@ -8,11 +8,11 @@ configuration:
   defaultvalue: https://api.intelgraph.idefense.com/
   type: 0
   required: true
-- display: API Token
+- displaypassword: API Token
   name: api_token
-  defaultvalue: ""
-  type: 4
+  type: 9
   required: true
+  hiddenusername: true
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -37,8 +37,8 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-description: iDefense provides intelligence regarding security threats and vulnerabilities.
-display: iDefense v2
+description: ACTI provides intelligence regarding security threats and vulnerabilities.
+display: Accenture CTI
 name: iDefense_v2
 script:
   commands:
@@ -60,6 +60,9 @@ script:
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -90,6 +93,9 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
@@ -119,6 +125,9 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
@@ -140,10 +149,10 @@ script:
       description: The IP address.
       type: String
     - contextPath: IP.Malicious.Vendor
-      description: For malicious IPs, the vendor that made the decision.
+      description: For malicious IP addresses, the vendor that made the decision.
       type: String
     - contextPath: IP.Malicious.Description
-      description: For malicious IPs, the reason the vendor made that decision.
+      description: For malicious IP addresses, the reason the vendor made that decision.
       type: String
     - contextPath: Domain.Name
       description: The domain name.
@@ -166,6 +175,9 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
@@ -176,7 +188,8 @@ script:
       description: The actual score.
       type: Number
     description: Get specific indicator reputation
-  dockerimage: demisto/python3:3.9.6.22912
+
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
   longRunning: false

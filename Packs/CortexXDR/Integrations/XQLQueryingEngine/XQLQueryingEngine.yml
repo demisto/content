@@ -41,8 +41,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -75,9 +76,24 @@ script:
       name: query_name
       required: true
       secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
+      secret: false
     deprecated: false
     description: |-
       Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+      When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+      unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
     execution: false
     polling: true
     name: xdr-xql-generic-query
@@ -221,9 +237,24 @@ script:
       required: false
       secret: false
       defaultValue: 20
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
+      secret: false
     deprecated: false
     description: |-
-      Retrieve results of an executed XQL query API.
+      Retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+      When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+      unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
     execution: false
     hidden: false
     polling: true
@@ -357,8 +388,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -391,6 +423,19 @@ script:
       isArray: false
       name: query_name
       required: true
+      secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
       secret: false
     deprecated: false
     description: Query file events by the SHA256 file.
@@ -473,8 +518,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -507,6 +553,19 @@ script:
       isArray: false
       name: query_name
       required: true
+      secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
       secret: false
     deprecated: false
     description: Query process events by the SHA256 process.
@@ -616,8 +675,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -650,6 +710,19 @@ script:
       isArray: false
       name: query_name
       required: true
+      secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
       secret: false
     deprecated: false
     description: Query DLL module events by the SHA256 DLL.
@@ -768,8 +841,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago").The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -802,6 +876,19 @@ script:
       isArray: false
       name: query_name
       required: true
+      secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
       secret: false
     deprecated: false
     description: Query network connections between a source IP, destination IP and
@@ -913,8 +1000,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -947,6 +1035,19 @@ script:
       isArray: false
       name: query_name
       required: true
+      secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
       secret: false
     deprecated: false
     description: Query windows registry by registry key name.
@@ -1049,8 +1150,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -1083,6 +1185,19 @@ script:
       isArray: false
       name: query_name
       required: true
+      secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
       secret: false
     deprecated: false
     description: Query event logs by event ID.
@@ -1183,8 +1298,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -1217,6 +1333,19 @@ script:
       isArray: false
       name: query_name
       required: true
+      secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
       secret: false
     deprecated: false
     description: Query by DNS query or domain name.
@@ -1344,8 +1473,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -1378,6 +1508,19 @@ script:
       isArray: false
       name: query_name
       required: true
+      secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
       secret: false
     deprecated: false
     description: Search for the process that wrote the given file, by its SHA256 or
@@ -1503,8 +1646,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -1537,6 +1681,19 @@ script:
       isArray: false
       name: query_name
       required: true
+      secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
       secret: false
     deprecated: false
     description: Search for network connection created by a given process instance
@@ -1665,8 +1822,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -1699,6 +1857,19 @@ script:
       isArray: false
       name: query_name
       required: true
+      secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
       secret: false
     deprecated: false
     description: Search for network connection created by a given process causality
@@ -1807,7 +1978,7 @@ script:
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._product
       description: The result product.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
   longRunning: false

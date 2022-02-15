@@ -1,8 +1,8 @@
 {
-    "name": "Expanse v2",
+    "name": "Cortex Xpanse",
     "description": "Automate Attack Surface Management to identify Internet assets and quickly remediate misconfigurations with Expanse, a Palo Alto Networks company.",
     "support": "xsoar",
-    "currentVersion": "1.8.3",
+    "currentVersion": "1.10.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -76,5 +76,8 @@
             "mandatory": false,
             "display_name": "ServiceNow"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar"
+    ]
 }

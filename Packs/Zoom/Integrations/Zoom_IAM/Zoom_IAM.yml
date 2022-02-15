@@ -1,0 +1,113 @@
+category: Identity and Access Management
+commonfields:
+  id: Zoom_IAM
+  version: -1
+configuration:
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+- display: API Secret
+  name: api_secret
+  required: true
+  type: 4
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Allow disabling users
+  name: disable-user-enabled
+  required: false
+  type: 8
+- defaultvalue: User Profile - SCIM (Incoming)
+  display: Incoming Mapper
+  name: mapper_in
+  required: true
+  type: 0
+- defaultvalue: User Profile - SCIM (Outgoing)
+  display: Outgoing Mapper
+  name: mapper_out
+  required: true
+  type: 0
+description: An Identity and Access Management integration template.
+display: Zoom_IAM
+name: Zoom_IAM
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    deprecated: false
+    description: Disable an active user.
+    execution: true
+    name: iam-disable-user
+    outputs:
+    - contextPath: IAM.Vendor.active
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
+      type: Boolean
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.details
+      description: Provides the raw data from the 3rd-party integration.
+      type: string
+    - contextPath: IAM.Vendor.email
+      description: The employee's email address.
+      type: String
+    - contextPath: IAM.Vendor.errorCode
+      description: HTTP error response code.
+      type: Number
+    - contextPath: IAM.Vendor.errorMessage
+      description: Reason why the API failed.
+      type: String
+    - contextPath: IAM.Vendor.id
+      description: The employee's user ID in the app.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.success
+      description: When true, indicates that the command was executed successfully.
+      type: Boolean
+    - contextPath: IAM.Vendor.username
+      description: The employee's username in the app.
+      type: String
+  - arguments:
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a single user resource.
+    execution: false
+    name: iam-get-user
+  - deprecated: false
+    description: Retrieves a User Profile schema, which holds all of the user fields
+      within the application. Used for outgoing-mapping through the Get Schema option.
+    execution: false
+    name: get-mapping-fields
+  dockerimage: demisto/pyjwt3:1.0.0.23674
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  ismappable: true
+  isremotesyncout: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests
+fromversion: 6.0.0

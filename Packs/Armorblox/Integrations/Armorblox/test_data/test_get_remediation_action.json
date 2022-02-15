@@ -1,0 +1,66 @@
+{
+    "incident_id": "3875",
+    "date": "2021-10-21T10:26:07Z",
+    "policy_names": [
+        "Impersonation: Employee"
+    ],
+    "remediation_actions": [
+        "ALERT"
+    ],
+    "users": [
+        {
+            "user_name": "Admin",
+            "user_address": "demo@armorblox.dev",
+            "is_vip": false,
+            "department_name": "Engineering",
+            "job_title": "Manager"
+        }
+    ],
+    "events": [
+        {
+            "event_id": "5474",
+            "object_id": "e86960d7175eb03595abe3fbebed75664ed2035d443394c0180bb9d30251d1d0",
+            "from_name": "John Doe",
+            "from_address": "john_doe@patterson.com",
+            "date": "2021-10-21T10:26:07Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "response required: from John",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "demo@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "SPAM",
+            "scl_score": 5,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "n9orMIXBQF6wKtRYpwb0Dg@geopod-ismtpd-4-0"
+        }
+    ],
+    "total_count": "1",
+    "resolutionState": "OPEN_INCIDENT_RESOLUTION_STATE",
+    "tagged": false,
+    "object_type": "CONTENT_MAIL",
+    "remediated_by": "ARMORBLOX",
+    "created_date": "2021-10-21T10:26:13.532201Z",
+    "incident_type": "THREAT_INCIDENT_TYPE",
+    "research_status": "TRUE_POSITIVE",
+    "earliest_subject": "response required: from John",
+    "app_name": "MICROSOFT_OUTLOOK",
+    "senders": [
+        "john_doe@patterson.com"
+    ],
+    "external_senders": [
+        "john_doe@patterson.com"
+    ],
+    "status_counts": {
+        "done_count": "0",
+        "process_count": "0",
+        "error_count": "0"
+    }
+}

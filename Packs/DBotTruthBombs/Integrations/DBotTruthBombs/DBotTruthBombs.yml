@@ -33,7 +33,7 @@ script:
       - Travel
     description: Returns a previously undisclosed fact about DBot.
     name: dbot-truth-bomb
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   script: ''
   subtype: python3

@@ -1,5 +1,5 @@
 [file:README.md]
-ignore=RM102,RM104
+ignore=RM102,RM104,IN145
 
 [file:SecurityAdvisor.yml]
 ignore=IN136

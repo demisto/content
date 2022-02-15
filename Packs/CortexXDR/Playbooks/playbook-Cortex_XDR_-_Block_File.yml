@@ -39,9 +39,9 @@ tasks:
     task:
       id: 1aa731f4-ad09-4978-8271-2160c2ffde04
       version: -1
-      name: Cortex XDR add a file SHA256 to blocklist
-      description: Blacklists requested files which have not already been blacklisted
-        or whitelisted.
+      name: Cortex XDR add a file SHA256 to block list
+      description: Adds requested files to block list if they are not already on block list
+        or allow list.
       script: '|||xdr-blacklist-files'
       type: regular
       iscommand: true
@@ -205,7 +205,7 @@ inputs:
 - key: HashList
   value: {}
   required: false
-  description: List of hashed files you want to blacklist. Must be a valid SHA256
+  description: List of hashed files you want to add to block list. Must be a valid SHA256
     hash.
   playbookInputQuery:
 outputs: []

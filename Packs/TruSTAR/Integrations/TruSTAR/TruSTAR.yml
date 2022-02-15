@@ -367,8 +367,8 @@ script:
     - name: indicators
       required: true
       default: true
-      description: CSV of indicators to whitelist, i.e. evil.com,101.43.52.224
-    description: Whitelist a list of indicator values for the user’s company.
+      description: CSV of indicators to add to allow list, i.e. evil.com,101.43.52.224
+    description: Add to allow list a list of indicator values for the user’s company.
   - name: trustar-remove-from-whitelist
     arguments:
     - name: indicator
@@ -390,7 +390,7 @@ script:
       - CVE
       - REGISTRY_KEY
       description: The type of the indicator to delete.
-    description: Delete an indicator from the user’s company whitelist.
+    description: Delete an indicator from the user’s company allow list.
   - name: trustar-get-enclaves
     arguments: []
     description: Returns the list of all enclaves that the user has access to, as well as whether they can read, create, and update reports in that enclave.
@@ -436,7 +436,7 @@ script:
       description: Indicator value
       type: string
     - contextPath: TruSTAR.File.Whitelisted
-      description: Is the indicator whitelisted
+      description: Is the indicator on allow list
       type: boolean
     - contextPath: TruSTAR.File.Priority
       description: Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH
@@ -483,7 +483,7 @@ script:
       description: Indicator value
       type: string
     - contextPath: TruSTAR.IP.Whitelisted
-      description: Is the indicator whitelisted
+      description: Is the indicator on allow list
       type: boolean
     - contextPath: TruSTAR.IP.Priority
       description: Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH
@@ -527,7 +527,7 @@ script:
       description: Indicator value
       type: string
     - contextPath: TruSTAR.URL.Whitelisted
-      description: Is the indicator whitelisted
+      description: Is the indicator on allow list
       type: boolean
     - contextPath: TruSTAR.URL.Priority
       description: Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH
@@ -572,7 +572,7 @@ script:
       description: Indicator value
       type: string
     - contextPath: TruSTAR.Domain.Whitelisted
-      description: Is the indicator whitelisted
+      description: Is the indicator on allow list
       type: boolean
     - contextPath: TruSTAR.Domain.Priority
       description: Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH

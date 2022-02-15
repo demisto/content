@@ -117,7 +117,7 @@ script:
     - contextPath: WorkdayIAM.ReportEntry.locationregion
       description: Location of the employee in Workday.
       type: String
-  dockerimage: demisto/python3:3.9.6.24019
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: true
   longRunning: false

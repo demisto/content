@@ -57,12 +57,25 @@ script:
       name: user
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: |-
-      Terminates a user's session from all Office 365 applications, and prevents sign in.
-      Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)
+      Deprecated. Use the msgraph-user-account-disable command instead.
     execution: false
     name: msgraph-user-terminate-session
+  - arguments:
+    - default: false
+      description: User ID or userPrincipalName
+      isArray: false
+      name: user
+      required: true
+      secret: false
+    deprecated: false
+    description: |-
+      Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+      but does not terminate an existing session. Supported only in a self deployed app flow with the
+      Permission: Directory.AccessAsUser.All(Delegated)
+    execution: false
+    name: msgraph-user-account-disable
   - arguments:
     - default: false
       description: User ID or userPrincipalName
@@ -560,7 +573,20 @@ script:
     description: Tests connectivity to Microsoft Graph User.
     execution: false
     name: msgraph-user-test
-  dockerimage: demisto/crypto:1.0.0.24037
+  - arguments:
+    - default: false
+      description: User ID or userPrincipalName
+      isArray: false
+      name: user
+      required: true
+      secret: false
+    deprecated: false
+    description: |-
+      Revoke a user session- Invalidates all the refresh tokens issued to applications for a user.
+      Permission: Directory.AccessAsUser.All(Delegated)
+    execution: false
+    name: msgraph-user-session-revoke
+  dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: false
   longRunning: false

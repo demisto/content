@@ -10,14 +10,14 @@ from pytest import raises, mark
 import pytest
 import warnings
 
-from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
+from CommonServerPython import set_to_integration_context_with_retries, xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
+    IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, return_outputs, \
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict
+    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer
 import CommonServerPython
 
 try:
@@ -85,21 +85,21 @@ def toEntry(table):
 
 
 def test_is_ip_valid():
-        valid_ip_v6 = "FE80:0000:0000:0000:0202:B3FF:FE1E:8329"
-        valid_ip_v6_b = "FE80::0202:B3FF:FE1E:8329"
-        invalid_ip_v6 = "KKKK:0000:0000:0000:0202:B3FF:FE1E:8329"
-        valid_ip_v4 = "10.10.10.10"
-        invalid_ip_v4 = "10.10.10.9999"
-        invalid_not_ip_with_ip_structure = "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1"
-        not_ip = "Demisto"
-        assert not is_ip_valid(valid_ip_v6)
-        assert is_ip_valid(valid_ip_v6, True)
-        assert is_ip_valid(valid_ip_v6_b, True)
-        assert not is_ip_valid(invalid_ip_v6, True)
-        assert not is_ip_valid(not_ip, True)
-        assert is_ip_valid(valid_ip_v4)
-        assert not is_ip_valid(invalid_ip_v4)
-        assert not is_ip_valid(invalid_not_ip_with_ip_structure)
+    valid_ip_v6 = "FE80:0000:0000:0000:0202:B3FF:FE1E:8329"
+    valid_ip_v6_b = "FE80::0202:B3FF:FE1E:8329"
+    invalid_ip_v6 = "KKKK:0000:0000:0000:0202:B3FF:FE1E:8329"
+    valid_ip_v4 = "10.10.10.10"
+    invalid_ip_v4 = "10.10.10.9999"
+    invalid_not_ip_with_ip_structure = "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1"
+    not_ip = "Demisto"
+    assert not is_ip_valid(valid_ip_v6)
+    assert is_ip_valid(valid_ip_v6, True)
+    assert is_ip_valid(valid_ip_v6_b, True)
+    assert not is_ip_valid(invalid_ip_v6, True)
+    assert not is_ip_valid(not_ip, True)
+    assert is_ip_valid(valid_ip_v4)
+    assert not is_ip_valid(invalid_ip_v4)
+    assert not is_ip_valid(invalid_not_ip_with_ip_structure)
 
 
 DATA = [
@@ -247,8 +247,7 @@ COMPLEX_DATA_WITH_URLS = [(
 
 class TestTableToMarkdown:
     @pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
-    @staticmethod
-    def test_sanity(data, expected_table):
+    def test_sanity(self, data, expected_table):
         """
         Given:
           - list of objects.
@@ -443,7 +442,7 @@ class TestTableToMarkdown:
         data = copy.deepcopy(DATA)
         data[1]['extra_header'] = 'sample'
         table_extra_header = tableToMarkdown('tableToMarkdown test with extra header', data,
-                                            headers=['header_1', 'header_2', 'extra_header'])
+                                             headers=['header_1', 'header_2', 'extra_header'])
         expected_table_extra_header = (
             '### tableToMarkdown test with extra header\n'
             '|header_1|header_2|extra_header|\n'
@@ -467,7 +466,7 @@ class TestTableToMarkdown:
         """
         # no header
         table_no_headers = tableToMarkdown('tableToMarkdown test with no headers', DATA,
-                                        headers=['no', 'header', 'found'], removeNull=True)
+                                           headers=['no', 'header', 'found'], removeNull=True)
         expected_table_no_headers = (
             '### tableToMarkdown test with no headers\n'
             '**No entries.**\n'
@@ -487,7 +486,7 @@ class TestTableToMarkdown:
         """
         # dict value
         data = copy.deepcopy(DATA)
-        data[1]['extra_header'] = {'sample': 'qwerty', 'sample2': 'asdf'}
+        data[1]['extra_header'] = {'sample': 'qwerty', 'sample2': '`asdf'}
         table_dict_record = tableToMarkdown('tableToMarkdown test with dict record', data,
                                             headers=['header_1', 'header_2', 'extra_header'])
         expected_dict_record = (
@@ -495,7 +494,7 @@ class TestTableToMarkdown:
             '|header_1|header_2|extra_header|\n'
             '|---|---|---|\n'
             '| a1 | b1 |  |\n'
-            '| a2 | b2 | sample: qwerty<br>sample2: asdf |\n'
+            '| a2 | b2 | sample: qwerty<br>sample2: \\`asdf |\n'
             '| a3 | b3 |  |\n'
         )
         assert table_dict_record == expected_dict_record
@@ -535,7 +534,8 @@ class TestTableToMarkdown:
           - return a valid table.
         """
         # list of string values instead of list of dict objects
-        table_string_array = tableToMarkdown('tableToMarkdown test with string array', ['foo', 'bar', 'katz'], ['header_1'])
+        table_string_array = tableToMarkdown('tableToMarkdown test with string array', ['foo', 'bar', 'katz'],
+                                             ['header_1'])
         expected_string_array_tbl = (
             '### tableToMarkdown test with string array\n'
             '|header_1|\n'
@@ -576,7 +576,7 @@ class TestTableToMarkdown:
     def test_single_key_dict():
         # combination: string header + string values list
         table_single_key_dict = tableToMarkdown('tableToMarkdown test with single key dict',
-                                                        {'single': ['Arthur', 'Blob', 'Cactus']})
+                                                {'single': ['Arthur', 'Blob', 'Cactus']})
         expected_single_key_dict_tbl = (
             '### tableToMarkdown test with single key dict\n'
             '|single|\n'
@@ -586,7 +586,6 @@ class TestTableToMarkdown:
             '| Cactus |\n'
         )
         assert table_single_key_dict == expected_single_key_dict_tbl
-
 
     @staticmethod
     def test_dict_with_special_character():
@@ -633,10 +632,8 @@ class TestTableToMarkdown:
         )
         assert table_with_character == expected_string_with_special_character
 
-
     @pytest.mark.parametrize('data, expected_table', DATA_WITH_URLS)
-    @staticmethod
-    def test_clickable_url(data, expected_table):
+    def test_clickable_url(self, data, expected_table):
         """
         Given:
           - list of objects.
@@ -667,6 +664,158 @@ class TestTableToMarkdown:
         table = tableToMarkdown('tableToMarkdown test', data, removeNull=True, headers=headers)
         assert 'header_2' not in table
         assert headers == ['header_1', 'header_2']
+
+    @staticmethod
+    def test_date_fields_param():
+        """
+        Given:
+          - List of objects with date fields in epoch format.
+        When:
+          - Calling tableToMarkdown with the given date fields.
+        Then:
+          - Return the date data in the markdown table in human-readable format.
+        """
+        data = [
+            {
+                "docker_image": "demisto/python3",
+                "create_time": '1631521313466'
+            },
+            {
+                "docker_image": "demisto/python2",
+                "create_time": 1631521521466
+            }
+        ]
+
+        table = tableToMarkdown('tableToMarkdown test', data, headers=["docker_image", "create_time"],
+                                date_fields=['create_time'])
+
+        expected_md_table = '''### tableToMarkdown test
+|docker_image|create_time|
+|---|---|
+| demisto/python3 | 2021-09-13 08:21:53 |
+| demisto/python2 | 2021-09-13 08:25:21 |
+'''
+        assert table == expected_md_table
+
+    @staticmethod
+    def test_with_json_transformers_default():
+        """
+        Given:
+          - Nested json table.
+        When:
+          - Calling tableToMarkdown with `is_auto_transform_json` set to True.
+        Then:
+          - Parse the json table to the default format which supports nesting.
+        """
+        with open('test_data/nested_data_example.json') as f:
+            nested_data_example = json.load(f)
+        table = tableToMarkdown("tableToMarkdown test", nested_data_example,
+                                headers=['name', 'changelog', 'nested'],
+                                is_auto_json_transform=True)
+        if IS_PY3:
+            expected_table = """### tableToMarkdown test
+|name|changelog|nested|
+|---|---|---|
+| Active Directory Query | **1.0.4**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>	***displayName***: 1.0.4 - R124496<br>	***released***: 2020-09-23T17:43:26Z<br>**1.0.5**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>	***displayName***: 1.0.5 - 132259<br>	***released***: 2020-10-01T17:48:31Z<br>**1.0.6**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br><br>	***displayName***: 1.0.6 - 151676<br>	***released***: 2020-10-19T14:35:15Z | **item1**:<br>	***a***: 1<br>	***b***: 2<br>	***c***: 3<br>	***d***: 4 |
+"""
+        else:
+            expected_table = u"""### tableToMarkdown test
+|name|changelog|nested|
+|---|---|---|
+| Active Directory Query | **1.0.4**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>	***displayName***: 1.0.4 - R124496<br>	***released***: 2020-09-23T17:43:26Z<br>**1.0.5**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>	***displayName***: 1.0.5 - 132259<br>	***released***: 2020-10-01T17:48:31Z<br>**1.0.6**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br><br>	***displayName***: 1.0.6 - 151676<br>	***released***: 2020-10-19T14:35:15Z | **item1**:<br>	***a***: 1<br>	***c***: 3<br>	***b***: 2<br>	***d***: 4 |
+"""
+        assert table == expected_table
+
+    @staticmethod
+    def test_with_json_transformer_simple():
+        with open('test_data/simple_data_example.json') as f:
+            simple_data_example = json.load(f)
+        name_transformer = JsonTransformer(keys=['first', 'second'])
+        json_transformer_mapping = {'name': name_transformer}
+        table = tableToMarkdown("tableToMarkdown test", simple_data_example,
+                                json_transform_mapping=json_transformer_mapping)
+        if IS_PY3:
+            expected_table = """### tableToMarkdown test
+|name|value|
+|---|---|
+| **first**:<br>	***a***: val<br><br>***second***: b | val1 |
+| **first**:<br>	***a***: val2<br><br>***second***: d | val2 |
+"""
+        else:
+            expected_table = u"""### tableToMarkdown test
+|name|value|
+|---|---|
+| <br>***second***: b<br>**first**:<br>	***a***: val | val1 |
+| <br>***second***: d<br>**first**:<br>	***a***: val2 | val2 |
+"""
+        assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transformer_nested():
+        """
+        Given:
+          - Nested json table.
+        When:
+          - Calling tableToMarkdown with JsonTransformer with only `keys` given.
+        Then:
+          - The header key which is transformed will parsed with the relevant keys.
+        """
+
+        with open('test_data/nested_data_example.json') as f:
+            nested_data_example = json.load(f)
+        changelog_transformer = JsonTransformer(keys=['releaseNotes', 'released'], is_nested=True)
+        table_json_transformer = {'changelog': changelog_transformer}
+        table = tableToMarkdown("tableToMarkdown test", nested_data_example, headers=['name', 'changelog'],
+                                json_transform_mapping=table_json_transformer)
+        expected_table = """### tableToMarkdown test
+|name|changelog|
+|---|---|
+| Active Directory Query | **1.0.4**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>	***released***: 2020-09-23T17:43:26Z<br>**1.0.5**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>	***released***: 2020-10-01T17:48:31Z<br>**1.0.6**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br><br>	***released***: 2020-10-19T14:35:15Z |
+"""
+        assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transformer_nested_complex():
+        """
+        Given:
+          - Double nested json table.
+        When:
+          - Calling tableToMarkdown with JsonTransformer with only `keys_lst` given and `is_nested` set to True.
+        Then:
+          - The header key which is transformed will parsed with the relevant keys.
+        """
+        with open('test_data/complex_nested_data_example.json') as f:
+            complex_nested_data_example = json.load(f)
+        changelog_transformer = JsonTransformer(keys=['releaseNotes', 'c'], is_nested=True)
+        table_json_transformer = {'changelog': changelog_transformer}
+        table = tableToMarkdown('tableToMarkdown test', complex_nested_data_example, headers=['name', 'changelog'],
+                                json_transform_mapping=table_json_transformer)
+        expected_table = """### tableToMarkdown test
+|name|changelog|
+|---|---|
+| Active Directory Query | **1.0.4**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.4**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>**1.0.5**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.5**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>**1.0.6**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.6**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br> |
+"""
+
+        assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transformer_func():
+
+        def changelog_to_str(json_input):
+            return ', '.join(json_input.keys())
+
+        with open('test_data/nested_data_example.json') as f:
+            nested_data_example = json.load(f)
+        changelog_transformer = JsonTransformer(func=changelog_to_str)
+        table_json_transformer = {'changelog': changelog_transformer}
+        table = tableToMarkdown("tableToMarkdown test", nested_data_example, headers=['name', 'changelog'],
+                                json_transform_mapping=table_json_transformer)
+        expected_table = """### tableToMarkdown test
+|name|changelog|
+|---|---|
+| Active Directory Query | 1.0.4, 1.0.5, 1.0.6 |
+"""
+        assert expected_table == table
 
 
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
@@ -753,18 +902,22 @@ def test_date_to_timestamp():
     assert date_to_timestamp(datetime.strptime('2018-11-06T08:56:41', "%Y-%m-%dT%H:%M:%S")) == 1541494601000
 
 
-def test_pascalToSpace():
-    use_cases = [
-        ('Validate', 'Validate'),
-        ('validate', 'Validate'),
-        ('TCP', 'TCP'),
-        ('eventType', 'Event Type'),
-        ('eventID', 'Event ID'),
-        ('eventId', 'Event Id'),
-        ('IPAddress', 'IP Address'),
-    ]
-    for s, expected in use_cases:
-        assert pascalToSpace(s) == expected, 'Error on {} != {}'.format(pascalToSpace(s), expected)
+PASCAL_TO_SPACE_USE_CASES = [
+    ('Validate', 'Validate'),
+    ('validate', 'Validate'),
+    ('TCP', 'TCP'),
+    ('eventType', 'Event Type'),
+    ('eventID', 'Event ID'),
+    ('eventId', 'Event Id'),
+    ('IPAddress', 'IP Address'),
+    ('isDisabled', 'Is Disabled'),
+    ('device-group', 'Device - Group'),
+]
+
+
+@pytest.mark.parametrize('s, expected', PASCAL_TO_SPACE_USE_CASES)
+def test_pascalToSpace(s, expected):
+    assert pascalToSpace(s) == expected, 'Error on {} != {}'.format(pascalToSpace(s), expected)
 
 
 def test_safe_load_json():
@@ -1007,10 +1160,13 @@ def test_logger_replace_strs(mocker):
         'apikey': 'my_apikey',
     })
     ilog = IntegrationLogger()
-    ilog.add_replace_strs('special_str', '')  # also check that empty string is not added by mistake
+    ilog.add_replace_strs('special_str', 'ZAQ!@#$%&*', '')  # also check that empty string is not added by mistake
     ilog('my_apikey is special_str and b64: ' + b64_encode('my_apikey'))
+    ilog('special chars like ZAQ!@#$%&* should be replaced even when url-encoded like ZAQ%21%40%23%24%25%26%2A')
     assert ('' not in ilog.replace_strs)
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
+    assert ilog.messages[1] == \
+           'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
 
 
 TEST_SSH_KEY_ESC = '-----BEGIN OPENSSH PRIVATE KEY-----\\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
@@ -2237,6 +2393,20 @@ class TestCommandResults:
         assert results.to_context().get('Note') is True
 
 
+def test_http_request_ssl_ciphers_insecure():
+    if IS_PY3 and PY_VER_MINOR >= 10:
+        from CommonServerPython import BaseClient
+
+        client = BaseClient('https://www.google.com', ok_codes=(200, 201), verify=False)
+        adapter = client._session.adapters.get('https://')
+        ssl_context = adapter.poolmanager.connection_pool_kw['ssl_context']
+        ciphers_list = ssl_context.get_ciphers()
+
+        assert len(ciphers_list) == 42
+        assert next(cipher for cipher in ciphers_list if cipher['name'] == 'AES128-GCM-SHA256')
+    else:
+        assert True
+
 class TestBaseClient:
     from CommonServerPython import BaseClient
     text = {"status": "ok"}
@@ -2546,6 +2716,56 @@ class TestBaseClient:
             resp_json = json.loads(e.res.text)
             assert e.res.status_code == 400
             assert resp_json.get('error') == 'additional text'
+
+    def test_http_request_timeout_default(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        self.client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == self.client.REQUESTS_TIMEOUT
+
+    def test_http_request_timeout_given_func(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 120
+        self.client._http_request('get', 'event', timeout=timeout)
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_given_class(self, requests_mock):
+        from CommonServerPython import BaseClient
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 44
+        new_client = BaseClient('http://example.com/api/v2/', timeout=timeout)
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_environ_system(self, requests_mock, mocker):
+        from CommonServerPython import BaseClient
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 10
+        mocker.patch.dict(os.environ, {'REQUESTS_TIMEOUT': str(timeout)})
+        new_client = BaseClient('http://example.com/api/v2/')
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_environ_integration(self, requests_mock, mocker):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 180.1
+        # integration name is set to Test in the fixture handle_calling_context
+        mocker.patch.dict(os.environ, {'REQUESTS_TIMEOUT.Test': str(timeout)})
+        from CommonServerPython import BaseClient
+        new_client = BaseClient('http://example.com/api/v2/')
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_environ_script(self, requests_mock, mocker):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 23.4
+        script_name = 'TestScript'
+        mocker.patch.dict(os.environ, {'REQUESTS_TIMEOUT.' + script_name: str(timeout)})
+        mocker.patch.dict(demisto.callingContext, {'context': {'ScriptName': script_name}})
+        mocker.patch.object(CommonServerPython, 'get_integration_name', return_value='')
+        from CommonServerPython import BaseClient
+        new_client = BaseClient('http://example.com/api/v2/')
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
 
     def test_is_valid_ok_codes_empty(self):
         from requests import Response
@@ -3139,6 +3359,208 @@ def test_auto_detect_indicator_type_tldextract(mocker):
 
         res = tlde.TLDExtract.call_args
         assert 'cache_file' in res[1].keys()
+
+
+VALID_URL_INDICATORS = [
+    '3.21.32.65/path',
+    '19.117.63.253:28/other/path',
+    '19.117.63.253:28/path',
+    '1.1.1.1/7/server/somestring/something.php?fjjasjkfhsjasofds=sjhfhdsfhasld',
+    'flake8.pycqa.org/en/latest',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/path/path',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/32/path/path',
+    'https://google.com/sdlfdshfkle3247239elkxszmcdfdstgk4e5pt0/path/path/oatdsfk/sdfjjdf',
+    'www.123.43.6.89/path',
+    'https://15.12.76.123',
+    'www.google.com/path',
+    'wwW.GooGle.com/path',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/65/path/path',
+    '2001:db8:3333:4444:5555:6666:7777:8888/32/path/path',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/h'
+    '1.1.1.1/7/server',
+    "1.1.1.1/32/path",
+    'http://evil.tld/',
+    'https://evil.tld/evil.html',
+    'ftp://foo.bar/',
+    'www.evil.tld/evil.aspx',
+    'sftp://8.26.75.97:121',
+    'sftp://69.254.57.79:5001/path',
+    'sftp://75.26.0.1/path',
+    'https://www.evil.tld/',
+    'www.evil.tld/resource',
+    'hxxps://google[.]com',
+    'hxxps://google[.]com:443',
+    'hxxps://google[.]com:443/path'
+    'www.1.2.3.4/?user=test%Email=demisto',
+    'www.1.2.3.4:8080/user=test%Email=demisto'
+    'http://xn--e1v2i3l4.tld/evilagain.aspx',
+    'https://www.xn--e1v2i3l4.tld',
+    'https://0330.0072.0307.0116',
+    'https://0563.2437.2623.2222',  # IP as octal number
+    'https://2467.1461.3567.1434:443',
+    'https://3571.3633.2222.3576:443/path',
+    'https://4573.2436.1254.7423:443/p',
+    'https://0563.2437.2623.2222:443/path/path',
+    'hxxps://www.xn--e1v2i3l4.tld',
+    'hxxp://www.xn--e1v2i3l4.tld',
+    'www.evil.tld:443/path/to/resource.html',
+    'WWW.evil.tld:443/path/to/resource.html',
+    'wWw.Evil.tld:443/path/to/resource.html',
+    'Https://wWw.Evil.tld:443/path/to/resource.html',
+    'https://1.2.3.4/path/to/resource.html',
+    'HTTPS://1.2.3.4/path/to/resource.html',
+    '1.2.3.4/path',
+    '1.2.3.4/path/to/resource.html',
+    'http://1.2.3.4:8080/',
+    'http://1.2.3.4:8080/resource.html',
+    'HTTP://1.2.3.4',
+    'HTTP://1.2.3.4:80/path',
+    'ftp://foo.bar/resource',
+    'FTP://foo.bar/resource',
+    'http://test.evil.tld/',
+    'ftps://foo.bar/resource',
+    'ftps://foo.bar/Resource'
+    '5.6.7.8/fdsfs',
+    'https://serverName.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'http://serverName.org/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'https://1.1.1.1/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'https://google.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'www.google.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'www.63.4.6.1/integrations/test-playbooks',
+    'https://xsoar.pan.dev/docs/welcome',
+    '5.6.7.8/user/',
+    'http://www.example.com/and%26here.html',
+    'https://1234',  # IP as integer 1234 = '0.0.4.210'
+    'https://4657624',
+    'https://64123/path',
+    'https://0.0.0.1/path',
+    'https://1',  # same as 0.0.0.1
+    'hXXps://isc.sans[.]edu/',
+    'hXXps://1.1.1.1[.]edu/',
+    'hxxp://0[x]455e8c6f/0s19ef206s18s2f2s567s49a8s91f7s4s19fd61a',  # defanged hexa-decimal IP.
+    'hxxp://0x325e5c7f/34823jdsasjfd/asdsafgf/324',  # hexa-decimal IP.
+    'hxxps://0xAA268BF1:8080/',
+    'hxxps://0xAB268DC1:8080/path',
+    'hxxps://0xAB268DC1/',
+    'hxxps://0xAB268DC1/p',
+    'hxxps://0xAB268DC1/32',
+    'http://www.google.com:8080',
+    'http://www[.]google.com:8080',  # defanged Domain
+    'http://www.google[.]com:8080/path',
+    'http://www[.]google.com:8080/path',
+    'http://www.253.234.73.12:8080/secret.txt',
+    'https://www.10.15.53.95:8080',
+    'www[.]google.com:8080/path',
+    'www.google[.]com:8080/path',
+    'google[.]com/path',
+    'google[.]com:443/path',
+    'hXXps://1.1.1.1[.]edu/path',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/80',
+    '2001:0db8:0001:0000:0000:0ab9:C0A8:0102/resource.html',
+    '2251:dbc:8fa3:8d3:1f19:8a2e:370:7348/80',
+]
+
+
+@pytest.mark.parametrize('indicator_value', VALID_URL_INDICATORS)
+def test_valid_url_indicator_types(indicator_value):
+    """
+    Given
+    - Valid URL indicators.
+    When
+    - Trying to match those indicators with the URL regex.
+    Then
+    - The indicators are classified as URL indicators.
+    """
+    assert re.match(urlRegex, indicator_value)
+
+
+INVALID_URL_INDICATORS = [
+    'test',
+    'httn://bla.com/path',
+    'google.com*',
+    '1.1.1.1',
+    '1.1.1.1/',
+    '1.1.1.1/32',
+    '1.1.1.1/32/',
+    'path/path',
+    '1.1.1.1:8080',
+    '1.1.1.1:8080/',
+    '1.1.1.1:111112243245/path',
+    '3.4.6.92:8080:/test',
+    '1.1.1.1:4lll/',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/64/',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/64',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/32',
+    '2001:db8:3333:4444:5555:6666:7777:8888/',
+    'flake8.pycqa.org',
+    'google.com',
+    'HTTPS://dsdffd.c'  # not valid tld
+    'https://test',
+    'ftp://test',
+    'ftps:test',
+    'a.a.a.a',
+    'b.b.b',
+    'https:/1.1.1.1.1/path',
+    'wwww.test',
+    'help.test.com',
+    'help-test/com'
+    'wwww.path.com/path',
+    'fnvfdsbf/path',
+    '65.23.7.2',
+    'k.f.a.f',
+    'test/test/test/test',
+    'http://www.example.com/ %20here.html',
+    'http ://www.example.com/ %20here.html',
+    'http://www.example .com/%20here.html'
+    'http://wwww.example.com/%20here.html',
+    'FTP://Google.test:',
+    '',
+    'somestring',
+    'dsjfshjdfgkjldsh32423123^^&*#@$#@$@!#4',
+    'aaa/1.1.1.1/path',
+    'domain*com/1.1.1.1/path',
+    'http:1.1.1.1/path',
+    'kfer93420932/path/path',
+    '1.1.1.1.1/24',
+    '2.2.2.2.2/3sad',
+    'http://fdsfesd',
+    'http://fdsfesd:8080',  # no tld
+    'FLAKE8.dds.asdfd/',
+    'FTP://Google.',
+    'https://www.',
+    '1.1.1.1/pa klj'
+    '1.1.1.1.1/path',
+    '2.2.2.2.2/3sad',
+    'HTTPS://1.1.1.1..1.1.1.1/path',
+    'https://1.1.1.1.1.1.1.1.1.1.1/path'
+    '1.1.1.1 .1/path',
+    '123.6.2.2/ path',
+    '   test.com',
+    'test .com.domain'
+    'hxxps://0xAB26:8080/path',  # must be 8 hexa-decimal chars
+    'hxxps://34543645356432234e:8080/path',  # too large integer IP
+    'https://35.12.5677.143423:443',  # invalid IP address
+    'https://4578.2436.1254.7423',  # invalid octal address (must be numbers between 0-7)
+    'https://4578.2436.1254.7423:443/p',
+    'https://www.evil.tld/ https://4578.2436.1254.7423:443/p',
+    'FTP://foo hXXps://1.1.1.1[.]edu/path',
+    'https://216.58.199.78:12345fdsf',
+    'https://www.216.58.199.78:sfsdg'
+]
+
+
+@pytest.mark.parametrize('indicator_value', INVALID_URL_INDICATORS)
+def test_invalid_url_indicator_types(indicator_value):
+    """
+    Given
+    - invalid URL indicators.
+    When
+    - Trying to match those indicators with the URL regex.
+    Then
+    - The indicators are not classified as URL indicators.
+    """
+    assert not re.match(urlRegex, indicator_value)
+
 
 
 def test_handle_proxy(mocker):
@@ -4816,12 +5238,33 @@ class TestIndicatorsSearcher:
             # mock the end of indicators
             searchAfter = None
 
-        if page >= 17:
+        if page and page >= 17:
             # checking a unique case when trying to reach a certain page and not all the indicators
             iocs = []
             searchAfter = None
 
         return {'searchAfter': searchAfter, 'iocs': iocs, 'total': 7}
+
+    def mock_search_indicators_search_after(self, fromDate='', toDate='', query='', size=0, value='', page=0,
+                                            searchAfter=None, populateFields=None):
+        """
+        Mocks search indicators returning different results for searchAfter value:
+          - None: {searchAfter: 0, iocs: [...]}
+          - 0-2: {searchAfter: i+1, iocs: [...]}
+          - 3+: {searchAfter: None, iocs: []}
+
+        total of 4 iocs available
+        """
+        search_after_options = (0, 1, 2)
+        if searchAfter is None:
+            search_after_value = search_after_options[0]
+        else:
+            if searchAfter in search_after_options:
+                search_after_value = searchAfter + 1
+            else:
+                return {'searchAfter': None, 'iocs': []}
+        iocs = [{'value': 'mock{}'.format(search_after_value)}]
+        return {'searchAfter': search_after_value, 'iocs': iocs, 'total': 4}
 
     def test_search_indicators_by_page(self, mocker):
         """
@@ -4895,7 +5338,7 @@ class TestIndicatorsSearcher:
         """
         Given:
           - Searching indicators in a specific page that is not 0
-          - Server version in equal or higher than 6.1.0
+          - Server version in less than 6.1.0
         When:
           - Mocking search indicators in this specific page
           so search_after is None
@@ -4907,45 +5350,56 @@ class TestIndicatorsSearcher:
         mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
 
         search_indicators_obj_search_after = IndicatorsSearcher(page=17)
-        search_indicators_obj_search_after._can_use_search_after = True
+        search_indicators_obj_search_after._can_use_search_after = False
         search_indicators_obj_search_after.search_indicators_by_version()
 
         assert search_indicators_obj_search_after._search_after_param is None
-        assert search_indicators_obj_search_after._page == 17
+        assert search_indicators_obj_search_after._page == 18
 
-    def test_iterator(self, mocker):
+    def test_iterator__pages(self, mocker):
         """
         Given:
-          - Searching indicators from page 10
-          - Total available indicators == 7
+          - Searching indicators from page 1
+          - Total available indicators == 6
         When:
-          - Searching indicators using iterator (whether search_after is supported or not)
-          - Searching indicators a 2nd time using the same search object
+          - Searching indicators using iterator
         Then:
-          - Get 7 indicators
-          - Advance page to 17
-          - _is_search_done returns True when search_after is supported
-          - _is_search_done returns False when search_after is not supported
+          - Get 6 indicators
+          - Advance page to 7
+          - is_search_done returns True
         """
         from CommonServerPython import IndicatorsSearcher
         mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
 
-        search_indicators = IndicatorsSearcher(page=10)
-        search_indicators._can_use_search_after = True
-        results = []
-        for res in search_indicators:
-            results.append(res)
-        assert len(results) == 7
-        assert search_indicators.page == 17
-        assert search_indicators._is_search_done() is True
-
+        search_indicators = IndicatorsSearcher(page=1, size=1)
         search_indicators._can_use_search_after = False
         results = []
         for res in search_indicators:
             results.append(res)
-        assert len(results) == 7
-        assert search_indicators.page == 17
-        assert search_indicators._is_search_done() is True
+        assert len(results) == 6
+        assert search_indicators.page == 7
+        assert search_indicators.is_search_done() is True
+
+    def test_iterator__search_after(self, mocker):
+        """
+        Given:
+          - Searching indicators from first page
+          - Total available indicators == 7
+          - Limit is set to 10
+        When:
+          - Searching indicators using iterator
+          - search_after is supported
+        Then:
+          - Get 7 indicators
+        """
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_indicators_search_after)
+        search_indicators = IndicatorsSearcher(limit=10)
+        search_indicators._can_use_search_after = True
+        results = []
+        for res in search_indicators:
+            results.append(res)
+        assert len(results) == 4
 
     def test_iterator__empty_page(self, mocker):
         """
@@ -4967,39 +5421,24 @@ class TestIndicatorsSearcher:
         for res in search_indicators:
             results.append(res)
         assert len(results) == 0
-        assert search_indicators.page == 18
+        assert search_indicators.page == 19
 
-    def test_iterator__limit(self, mocker):
-        """
-        Given:
-          - Searching indicators from page 10
-          - Total available indicators == 7
-          - Limit is set to 5
-        When:
-          - Searching indicators using iterator (whether search_after is supported or not)
-          - Searching indicators a 2nd time using the same search object
-        Then:
-          - Get 5 indicators
-          - Advance page to 15 when search_after is supported (is_search_done is supported)
-          - Advance page to 15 when search_after is not supported (is_search done is not supported)
-        """
+    def test_iterator__research_flow(self, mocker):
         from CommonServerPython import IndicatorsSearcher
-        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
-
-        search_indicators = IndicatorsSearcher(page=10, limit=5)
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_indicators_search_after)
+        # fetch first 3
+        search_indicators = IndicatorsSearcher(limit=3)
         search_indicators._can_use_search_after = True
         results = []
         for res in search_indicators:
             results.append(res)
-        assert len(results) == 5
-        assert search_indicators.page == 15
-
-        search_indicators._can_use_search_after = False
+        assert len(results) == 3
+        # fetch 1 more (limit set to 2, but only 1 available)
+        search_indicators.limit += 2
         results = []
         for res in search_indicators:
             results.append(res)
-        assert len(results) == 5
-        assert search_indicators.page == 15
+        assert len(results) == 1
 
 
 class TestAutoFocusKeyRetriever:
@@ -5629,3 +6068,285 @@ class TestCustomIndicator:
                 malicious_description='malicious!'
             )
             Common.CustomIndicator('test', None, dbot_score, {'param': 'value'}, 'prefix')
+
+
+@pytest.mark.parametrize(
+    "demistoUrls,expected_result",
+    [({'server': 'https://localhost:8443:/acc_test_tenant'}, 'acc_test_tenant'),
+     ({'server': 'https://localhost:8443'}, '')])
+def test_get_tenant_name(mocker, demistoUrls, expected_result):
+    """
+        Given
+        - demistoUrls dictionary
+        When
+        - Running on multi tenant mode
+        - Running on single tenant mode
+        Then
+        - Return tenant account name if is multi tenant
+    """
+    from CommonServerPython import get_tenant_account_name
+    mocker.patch.object(demisto, 'demistoUrls', return_value=demistoUrls)
+
+    result = get_tenant_account_name()
+    assert result == expected_result
+
+
+IOCS = {'iocs': [{'id': '2323', 'value': 'google.com'},
+                 {'id': '5942', 'value': '1.1.1.1'}]}
+
+
+def test_indicators_value_to_clickable(mocker):
+    from CommonServerPython import indicators_value_to_clickable
+    from CommonServerPython import IndicatorsSearcher
+    mocker.patch.object(IndicatorsSearcher, '__next__', side_effect=[IOCS, StopIteration])
+    result = indicators_value_to_clickable(['1.1.1.1', 'google.com'])
+    assert result.get('1.1.1.1') == '[1.1.1.1](#/indicator/5942)'
+    assert result.get('google.com') == '[google.com](#/indicator/2323)'
+
+
+def test_indicators_value_to_clickable_invalid(mocker):
+    from CommonServerPython import indicators_value_to_clickable
+    from CommonServerPython import IndicatorsSearcher
+    mocker.patch.object(IndicatorsSearcher, '__next__', side_effect=[StopIteration])
+    result = indicators_value_to_clickable(['8.8.8.8', 'abc.com'])
+    assert not result
+    result = indicators_value_to_clickable(None)
+    assert not result
+
+
+def test_arg_to_number():
+    """
+    Test if arg_to_number handles unicode object without failing.
+    """
+    from CommonServerPython import arg_to_number
+    result = arg_to_number(u'1')
+    assert result == 1
+
+
+def test_get_message_threads_dump():
+    from CommonServerPython import get_message_threads_dump
+    result = str(get_message_threads_dump(None, None))
+    assert ' Start Threads Dump ' in result
+    assert ' End Threads Dump ' in result
+    assert 'CommonServerPython.py' in result
+    assert 'get_message_threads_dump' in result
+
+
+def test_get_message_memory_dump():
+    from CommonServerPython import get_message_memory_dump
+    result = str(get_message_memory_dump(None, None))
+    assert ' Start Variables Dump ' in result
+    assert ' Start Local Vars ' in result
+    assert ' End Local Vars ' in result
+    assert ' Start Top ' in result
+    assert ' Globals by Size ' in result
+    assert ' End Top ' in result
+    assert ' End Variables Dump ' in result
+
+
+def test_shorten_string_for_printing():
+    from CommonServerPython import shorten_string_for_printing
+    assert shorten_string_for_printing(None, None) is None
+    assert shorten_string_for_printing('1', 9) == '1'
+    assert shorten_string_for_printing('123456789', 9) == '123456789'
+    assert shorten_string_for_printing('1234567890', 9) == '123...890'
+    assert shorten_string_for_printing('12345678901', 9) == '123...901'
+    assert shorten_string_for_printing('123456789012', 9) == '123...012'
+
+    assert shorten_string_for_printing('1234567890', 10) == '1234567890'
+    assert shorten_string_for_printing('12345678901', 10) == '1234...901'
+    assert shorten_string_for_printing('123456789012', 10) == '1234...012'
+
+
+def test_get_size_of_object():
+    from CommonServerPython import get_size_of_object
+
+    class Object(object):
+        pass
+
+    level_3 = Object()
+    level_3.key3 = 'val3'
+
+    level_2 = Object()
+    level_2.key2 = 'val2'
+    level_2.child = level_3
+
+    level_1 = Object()
+    level_1.key1 = 'val1'
+    level_1.child = level_2
+
+    level_1_sys_size = sys.getsizeof(level_1)
+    level_1_deep_size = get_size_of_object(level_1)
+
+    # 3 levels, so shoulod be at least 3 times as large
+    assert level_1_deep_size > 3 * level_1_sys_size
+
+
+class TestSetAndGetLastMirrorRun:
+
+    def test_get_last_mirror_run_in_6_6(self, mocker):
+        """
+        Given: 6.6.0 environment and getLastMirrorRun returns results
+        When: Execute mirroring run
+        Then: Returning demisto.getLastRun object
+        """
+        import demistomock as demisto
+        from CommonServerPython import get_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.6.0"})
+        mocker.patch.object(demisto, 'getLastMirrorRun', return_value={"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
+        result = get_last_mirror_run()
+        assert result == {"lastMirrorRun": "2018-10-24T14:13:20+00:00"}
+
+    def test_get_last_mirror_run_in_6_6_when_return_empty_results(self, mocker):
+        """
+        Given: 6.6.0 environment and getLastMirrorRun returns empty results
+        When: Execute mirroring run
+        Then: Returning demisto.getLastRun empty object
+        """
+        import demistomock as demisto
+        from CommonServerPython import get_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.6.0"})
+        mocker.patch.object(demisto, 'getLastMirrorRun', return_value={})
+        result = get_last_mirror_run()
+        assert result == {}
+
+    def test_get_last_run_in_6_5(self, mocker):
+        """
+        Given: 6.5.0 environment and getLastMirrorRun returns results
+        When: Execute mirroring run
+        Then: Get a string which represent we can't use this function
+        """
+        import demistomock as demisto
+        from CommonServerPython import get_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
+        get_last_run = mocker.patch.object(demisto, 'getLastMirrorRun')
+        with raises(DemistoException, match='You cannot use getLastMirrorRun as your version is below 6.6.0'):
+            get_last_mirror_run()
+            assert get_last_run.called is False
+
+    def test_set_mirror_last_run_in_6_6(self, mocker):
+        """
+        Given: 6.6.0 environment
+        When: Execute mirroring run
+        Then: Using demisto.setLastMirrorRun to save results
+        """
+        import demistomock as demisto
+        from CommonServerPython import set_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.6.0"})
+        set_last_run = mocker.patch.object(demisto, 'setLastMirrorRun', return_value={})
+        set_last_mirror_run({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
+        set_last_run.assert_called_with({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
+
+    def test_set_mirror_last_run_in_6_5(self, mocker):
+        """
+        Given: 6.5.0 environment
+        When: Execute mirroring run
+        Then: Don't use demisto.setLastMirrorRun
+        """
+        import demistomock as demisto
+        from CommonServerPython import set_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
+        set_last_run = mocker.patch.object(demisto, 'setLastMirrorRun', return_value={})
+        with raises(DemistoException, match='You cannot use setLastMirrorRun as your version is below 6.6.0'):
+            set_last_mirror_run({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
+            assert set_last_run.called is False
+
+
+class TestTracebackLineNumberAdgustment:
+    @staticmethod
+    def test_module_line_number_mapping():
+        from CommonServerPython import _MODULES_LINE_MAPPING
+        assert _MODULES_LINE_MAPPING['CommonServerPython']['start'] == 0
+
+    @staticmethod
+    def test_register_module_line_sanity():
+        """
+        Given:
+            A module with a start and an end boundries.
+        When:
+            registering a module.
+        Then:
+            * module exists in the mapping with valid boundries.
+        """
+        import CommonServerPython
+        CommonServerPython.register_module_line('Sanity', 'start', 5)
+        CommonServerPython.register_module_line('Sanity', 'end', 50)
+        assert CommonServerPython._MODULES_LINE_MAPPING['Sanity'] == {
+            'start': 5,
+            'start_wrapper': 5,
+            'end': 50,
+            'end_wrapper': 50,
+        }
+
+    @staticmethod
+    def test_register_module_line_single_boundry():
+        """
+        Given:
+            * A module with only an end boundry.
+            * A module with only a start boundry.
+        When:
+            registering a module.
+        Then:
+            * both modules exists in the mapping.
+            * the missing boundry is 0 for start and infinity for end.
+        """
+        import CommonServerPython
+        CommonServerPython.register_module_line('NoStart', 'end', 4)
+        CommonServerPython.register_module_line('NoEnd', 'start', 100)
+
+        assert CommonServerPython._MODULES_LINE_MAPPING['NoStart'] == {
+            'start': 0,
+            'start_wrapper': 0,
+            'end': 4,
+            'end_wrapper': 4,
+        }
+        assert CommonServerPython._MODULES_LINE_MAPPING['NoEnd'] == {
+            'start': 100,
+            'start_wrapper': 100,
+            'end': float('inf'),
+            'end_wrapper': float('inf'),
+        }
+
+    @staticmethod
+    def test_register_module_line_invalid_inputs():
+        """
+        Given:
+            * invalid start_end flag.
+            * invalid line number.
+        When:
+            registering a module.
+        Then:
+            function exits quietly
+        """
+        import CommonServerPython
+        CommonServerPython.register_module_line('Cactus', 'statr', 5)
+        CommonServerPython.register_module_line('Cactus', 'start', '5')
+        CommonServerPython.register_module_line('Cactus', 'statr', -5)
+        CommonServerPython.register_module_line('Cactus', 'statr', 0, -1)
+
+
+    @staticmethod
+    def test_fix_traceback_line_numbers():
+        import CommonServerPython
+        CommonServerPython._MODULES_LINE_MAPPING = {
+            'CommonServerPython': {'start': 200, 'end': 865, 'end_wrapper': 900},
+            'TestTracebackLines': {'start': 901, 'end': float('inf'), 'start_wrapper': 901},
+            'TestingApiModule': {'start': 1004, 'end': 1032, 'start_wrapper': 1001, 'end_wrapper': 1033},
+        }
+        traceback = '''Traceback (most recent call last):
+  File "<string>", line 1043, in <module>
+  File "<string>", line 986, in main
+  File "<string>", line 600, in func_wrapper
+  File "<string>", line 1031, in api_module_call_script
+  File "<string>", line 927, in call_func
+Exception: WTF?!!!'''
+        expected_traceback = '''Traceback (most recent call last):
+  File "<TestTracebackLines>", line 110, in <module>
+  File "<TestTracebackLines>", line 85, in main
+  File "<CommonServerPython>", line 400, in func_wrapper
+  File "<TestingApiModule>", line 27, in api_module_call_script
+  File "<TestTracebackLines>", line 26, in call_func
+Exception: WTF?!!!'''
+        result = CommonServerPython.fix_traceback_line_numbers(traceback)
+        assert result == expected_traceback
+

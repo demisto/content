@@ -1,0 +1,21 @@
+comment: |-
+  Cleanup the incidents and indicators created by OnboardingIntegration
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+commonfields:
+  id: OnboardingCleanup
+  version: -1
+name: OnboardingCleanup
+script: ''
+type: python
+tags: []
+enabled: true
+scripttarget: 0
+runonce: false
+dockerimage: demisto/python3:3.9.8.24399
+subtype: python3
+tests:
+- No Tests
+fromversion: 5.0.0

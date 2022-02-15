@@ -159,10 +159,40 @@ script:
     - contextPath: TAXII.Indicator.Type
       description: The indicator type.
       type: String
+    - contextPath: TAXII.Indicator.Title
+      description: The observable title.
+      type: String
+    - contextPath: TAXII.Indicator.Description
+      description: The observable description.
+      type: String
+    - contextPath: TAXII.Indicator.Stixindicatordescription
+      description: The indicator description.
+      type: String
+    - contextPath: TAXII.Indicator.Stixindicatorname
+      description: The indicator title.
+      type: String
+    - contextPath: TAXII.Indicator.Stixttptitle
+      description: The ttp title.
+      type: String
+    - contextPath: TAXII.Indicator.Stixmalwaretypes
+      description: The stix malware type.
+      type: String
+    - contextPath: TAXII.Indicator.Confidence
+      description: The indicator confidence.
+      type: String
+    - contextPath: TAXII.Indicator.Score
+      description: The indicator DBot score.
+      type: String
+    - contextPath: TAXII.Indicator.Relationships
+      description: The indicator relationships.
+      type: String
+    - contextPath: TAXII.Indicator.Fields
+      description: The indicator fields.
+      type: Unknown
     - contextPath: TAXII.Indicator.Rawjson
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/taxii:1.0.0.23209
+  dockerimage: demisto/taxii:1.0.0.25288
   feed: true
   isfetch: false
   longRunning: false

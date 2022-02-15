@@ -1,6 +1,7 @@
 [
-  {
-    "indicator": "FE80::0202:B3FF:FE1E:8329",
-    "type": "IPv6"
-  }
+    {
+        "indicator": "FE80::0202:B3FF:FE1E:8329",
+        "type": "IPv6",
+        "indicator_ref": "example:Observable-1c798262-a4cd-434d-a958-884d6980c459"
+    }
 ]

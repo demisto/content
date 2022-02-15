@@ -102,10 +102,10 @@ def main(args):
 
     if countCPU:
         res.append({"category": "Docker", "severity": "Medium",
-                    "description": DESCRIPTION[2].format(countCPU)})
+                    "description": DESCRIPTION[1].format(countCPU)})
     if countMEM:
         res.append({"category": "Docker", "severity": "Medium",
-                    "description": DESCRIPTION[3].format(countMEM)})
+                    "description": DESCRIPTION[2].format(countMEM)})
 
     res = res + image_analytics(image_array)
     res = res + container_analytics(container_array)

@@ -1,0 +1,437 @@
+id: Email Headers Check - Generic
+version: -1
+name: Email Headers Check - Generic
+description: |-
+  This playbook executes one sub-playbook and one automation to check the email headers:
+  - **Process Microsoft's Anti-Spam Headers** - This playbook stores the SCL, BCL and PCL scores if they exist to the relevant incident fields (Phishing SCL Score, Phishing PCL Score, Phishing BCL Score).
+  - **CheckEmailAuthenticity** - This automation checks email authenticity based on its SPF, DMARC, and DKIM.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8a051d0a-d5f5-4124-8880-075daac9dba2
+    type: start
+    task:
+      id: 8a051d0a-d5f5-4124-8880-075daac9dba2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 092d94ca-e418-4245-88d5-a1f35d256a5e
+    type: condition
+    task:
+      id: 092d94ca-e418-4245-88d5-a1f35d256a5e
+      version: -1
+      name: Should the email be authenticated?
+      description: Whether the email should be authenticated using DKIM, SPF and DMARC.
+        This checks whether "AuthenticateEmail" output is set to "True" and whether
+        there are headers from an email to authenticate.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AuthenticateEmail
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: bfdfc6d8-8402-4e48-8cec-697ff2279d0c
+    type: title
+    task:
+      id: bfdfc6d8-8402-4e48-8cec-697ff2279d0c
+      version: -1
+      name: Email Authenticity Check
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 09550a3e-968f-410f-8da9-a42da68c2bb7
+    type: regular
+    task:
+      id: 09550a3e-968f-410f-8da9-a42da68c2bb7
+      version: -1
+      name: Authenticate email
+      description: Checks the authenticity of an email based on the email's SPF, DMARC,
+        and DKIM.
+      scriptName: CheckEmailAuthenticity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      headers:
+        complex:
+          root: Email
+          accessor: Headers
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: f79d35d3-f80d-4fe2-86d6-dc0c8fa63815
+    type: regular
+    task:
+      id: f79d35d3-f80d-4fe2-86d6-dc0c8fa63815
+      version: -1
+      name: Save authenticity check result to incident field
+      description: Save the verdict regarding the authenticity of the email in an
+        incident field.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      emailauthenticitycheck:
+        complex:
+          root: Email
+          accessor: AuthenticityCheck
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: Undetermined
+              toReplace:
+                value:
+                  simple: undetermined
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: Pass
+              toReplace:
+                value:
+                  simple: pass
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: Fail
+              toReplace:
+                value:
+                  simple: fail
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: Suspicious
+              toReplace:
+                value:
+                  simple: suspicious
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 58182459-633c-410d-864e-3109d4a89a04
+    type: title
+    task:
+      id: 58182459-633c-410d-864e-3109d4a89a04
+      version: -1
+      name: Microsoft's Headers Check
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 692.5,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 9a63beaa-ee45-413f-8709-b6ea855a0a1a
+    type: condition
+    task:
+      id: 9a63beaa-ee45-413f-8709-b6ea855a0a1a
+      version: -1
+      name: Check Microsoft's Headers?
+      description: 'Whether to check for Microsoft headers'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.CheckMicrosoftHeaders
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    view: |-
+      {
+        "position": {
+          "x": 692.5,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 6b3d9368-e148-4eb1-828b-347102b51815
+    type: playbook
+    task:
+      id: 6b3d9368-e148-4eb1-828b-347102b51815
+      version: -1
+      name: Process Microsoft's Anti-Spam Headers
+      description: |-
+        This playbook stores the SCL, BCL and PCL scores (if they exist) to the associated incident fields (Phishing SCL Score, Phishing PCL Score, Phishing BCL Score).
+        It also does the following:
+        1) Sets the email classification to "spam" if the "SCL" score is equal or higher than 5.
+        2) Sets the incident severity according to the playbook inputs (default is: PCL/BCL - Medium, SCL - Low). The severity of the incident is set only when one (or more) of the following occurs:
+        - PCL (Phishing Confidence Level) score is between and including 4-8: The message content is likely to be phishing.
+        - BCL (Bulk complaint level) score is between and including 4-7: The message is from a bulk sender that generates a mixed number of complaints. Between and including 8-9: The message is from a bulk sender that generates a high number of complaints.
+        - SCL (Spam confidence level) score is between and including 5-6: Spam filtering marked the message as Spam. 9: Spam filtering marked the message as High confidence spam)
+
+        For more information on SCL/BCL/PCL, see the following Microsoft documentation:
+
+        https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/spam-confidence-levels?view=o365-worldwide
+
+        https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/bulk-complaint-level-values?view=o365-worldwide
+
+        https://docs.microsoft.com/en-us/exchange/antispam-and-antimalware/antispam-protection/antispam-stamps?view=exchserver-2019
+      playbookName: Process Microsoft's Anti-Spam Headers
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      BCL-Severity:
+        simple: "2"
+      PCL-Severity:
+        simple: "2"
+      SCL-Severity:
+        simple: "1"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 692.5,
+          "y": 845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 12fb0802-bbe5-44be-8c53-2aa07ccf9dc6
+    type: title
+    task:
+      id: 12fb0802-bbe5-44be-8c53-2aa07ccf9dc6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_3_yes": 0.48,
+      "1_8_#default#": 0.33,
+      "6_7_yes": 0.58,
+      "6_8_#default#": 0.32
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1055,
+        "width": 862.5,
+        "x": 210,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: AuthenticateEmail
+  value:
+    simple: "False"
+  required: false
+  description: Whether the authenticity of the email should be verified using SPF,
+    DKIM and DMARC.
+  playbookInputQuery:
+- key: CheckMicrosoftHeaders
+  value:
+    simple: "False"
+  required: false
+  description: Whether to Check Microsoft headers for BCL/PCL/SCL scores and set
+    the "Severity" and "Email Classification" accordingly.
+  playbookInputQuery:
+outputs:
+- contextPath: Email.AuthenticityCheck
+  description: 'Possible values are: Fail / Suspicious / Undetermined / Pass'
+  type: Unknown
+- contextPath: Email.MicrosoftHeadersSeverityCheck
+  description: |
+    Possible Values:
+
+    Medium: PCL or BCL scores are equal to or greater than 4.
+
+    High: BCL score is equal to or greater than 8.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

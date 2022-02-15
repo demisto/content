@@ -23,31 +23,32 @@ class Client(BaseClient):
         res = self._http_request(method='GET', url_suffix=uri)
         return res
 
-    def get_user(self, email):
-        uri = '/Users'
+    def get_user(self, filter_name: str, filter_value: str):
+        uri = f'/Users/{filter_value}' if filter_name == 'id' else '/Users'
         query_params = {
-            'filter': f'email eq {email}'
-        }
-
+            'filter': f'{filter_name} eq {filter_value}'
+        } if filter_name != 'id' else {}
         res = self._http_request(
             method='GET',
             url_suffix=uri,
             params=query_params
         )
-        if res and res.get('totalResults') == 1:
-            user_app_data = res.get('Resources')[0]
+        if res and res.get('totalResults') != 0:
+            user_app_data = res.get('Resources')[0] if 'totalResults' in res and res.get('totalResults') == 1 else res
             user_id = user_app_data.get('id')
             is_active = user_app_data.get('active')
             username = user_app_data.get('userName')
-            return IAMUserAppData(user_id, username, is_active, user_app_data)
+            email = get_first_primary_email_by_scim_schema(user_app_data)
+
+            return IAMUserAppData(user_id, username, is_active, user_app_data, email)
         return None
 
     def create_user(self, user_data):
         uri = '/Users'
         user_data["schemas"] = ["urn:scim:schemas:core:1.0"]  # Mandatory user profile field.
-        if not isinstance(user_data["emails"], list):
+        if user_data.get("emails") and not isinstance(user_data["emails"], list):
             user_data["emails"] = [user_data["emails"]]
-        if not isinstance(user_data["phoneNumbers"], list):
+        if user_data.get("phoneNumbers") and not isinstance(user_data["phoneNumbers"], list):
             user_data["phoneNumbers"] = [user_data["phoneNumbers"]]
         res = self._http_request(
             method='POST',
@@ -58,11 +59,17 @@ class Client(BaseClient):
         user_id = user_app_data.get('id')
         is_active = user_app_data.get('active')
         username = user_app_data.get('userName')
+        email = get_first_primary_email_by_scim_schema(user_app_data)
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+        return IAMUserAppData(user_id, username, is_active, user_app_data, email)
 
     def update_user(self, user_id, user_data):
         uri = f'/Users/{user_id}'
+        if user_data.get("emails") and not isinstance(user_data["emails"], list):
+            user_data["emails"] = [user_data["emails"]]
+        if user_data.get("phoneNumbers") and not isinstance(user_data["phoneNumbers"], list):
+            user_data["phoneNumbers"] = [user_data["phoneNumbers"]]
+
         res = self._http_request(
             method='PATCH',
             url_suffix=uri,
@@ -72,11 +79,16 @@ class Client(BaseClient):
         user_id = user_app_data.get('id')
         is_active = user_app_data.get('active')
         username = user_app_data.get('userName')
+        email = get_first_primary_email_by_scim_schema(user_app_data)
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+        return IAMUserAppData(user_id, username, is_active, user_app_data, email)
 
     def disable_user(self, user_id):
         user_data = {'active': False}
+        return self.update_user(user_id, user_data)
+
+    def enable_user(self, user_id):
+        user_data = {'active': True}
         return self.update_user(user_id, user_data)
 
     def get_app_fields(self):
@@ -119,7 +131,7 @@ class Client(BaseClient):
         user_profile.set_result(action=action,
                                 success=False,
                                 error_code=error_code,
-                                error_message=error_message)
+                                error_message=f'{error_message}\n{traceback.format_exc()}')
 
         demisto.error(traceback.format_exc())
 
@@ -483,7 +495,8 @@ def main():
     create_if_not_exists = demisto.params().get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out)
+                             create_if_not_exists, mapper_in, mapper_out,
+                             get_user_iam_attrs=['id', 'userName', 'emails'])
 
     base_url = 'https://api.slack.com/scim/v1/'
     headers = {

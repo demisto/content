@@ -2,7 +2,7 @@
     "name": "Chronicle",
     "description": "Retrieve Chronicle detections, impacted assets, IOC matches, and 3P alerts to enrich your XSOAR workflows.",
     "support": "partner",
-    "currentVersion": "2.0.5",
+    "currentVersion": "2.0.13",
     "certification": "certified",
     "author": "Chronicle",
     "url": "https://go.chronicle.security/contact",
@@ -360,5 +360,9 @@
         "Spamcop",
         "Pulsedive",
         "PAN-OS"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

@@ -1,0 +1,19 @@
+{
+    "name": "Azure Data Explorer",
+    "description": "Use Azure Data Explorer integration to collect and analyze data inside clusters of Azure Data Explorer and manage search queries.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

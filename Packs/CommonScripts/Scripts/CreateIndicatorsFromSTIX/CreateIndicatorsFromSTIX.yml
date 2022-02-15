@@ -19,7 +19,7 @@ tags:
 - ioc
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.9.8.24399
 tests:
 - CreateIndicatorFromSTIXTest
 fromversion: 5.0.0

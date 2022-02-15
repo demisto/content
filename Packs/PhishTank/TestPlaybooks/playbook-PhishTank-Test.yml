@@ -295,7 +295,7 @@ tasks:
         simple: badURL
       stringify: {}
       value:
-        simple: ${FileData=val.split('\n')[1].split(',')[1]}
+        simple: "hxxp://login.rakuten.co.jp.reise"
     separatecontext: false
     view: |-
       {

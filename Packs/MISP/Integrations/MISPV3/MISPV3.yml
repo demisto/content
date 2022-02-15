@@ -49,7 +49,9 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: This field limits the number of attributes that will be written to the context for every reputation command. Raising the number of attributes may result in high memory and disk usage.
+- additionalinfo: This field limits the number of attributes that will be written
+    to the context for every reputation command. Raising the number of attributes
+    may result in high memory and disk usage.
   defaultvalue: '20'
   display: Maximum attributes to be returned
   hidden: false
@@ -70,14 +72,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Search for events that include the specified attribute value. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs).'
+      description: 'Search for events that include the specified attribute value.
+        For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains),
+        "www.example.com" (and other URLs).'
       isArray: false
       name: value
       required: false
       secret: false
     - default: false
       description: 'Search for events that include the specified attribute category.
-        Use any valid MISP attribute category. For example: "Other", "Person", "Attribution", "Payload type".'
+        Use any valid MISP attribute category. For example: "Other", "Person", "Attribution",
+        "Payload type".'
       isArray: false
       name: category
       required: false
@@ -97,15 +102,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Event search start date in the format yyyy-mm-dd. For example, 2015-02-15. This date refers to the event
-        creation date.
+      description: Event search start date in the format yyyy-mm-dd. For example,
+        2015-02-15. This date refers to the event creation date.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: Event search end date in the format yyyy-mm-dd. For example, 2015-02-15. This date refers to the event
-        creation date.
+      description: Event search end date in the format yyyy-mm-dd. For example, 2015-02-15.
+        This date refers to the event creation date.
       isArray: false
       name: to
       required: false
@@ -131,8 +136,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: If a limit is set, sets the page to be returned. For example, page 3, limit
-        100 will return records 201->300.
+      description: If a limit is set, sets the page to be returned. For example, page
+        3, limit 100 will return records 201->300.
       isArray: false
       defaultValue: '1'
       name: page
@@ -145,10 +150,22 @@ script:
       defaultValue: '50'
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to return the event related feeds. Possible values are
+        "true" and "false". Note, Only if this argument set to "true" the response
+        will include attributes' feed hits values.
+      isArray: false
+      name: include_feed_correlations
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Search for events in MISP. This search command will return only information
-      about the matched events. To get information about attributes,
-      use the misp-search-attributes command.
+      about the matched events. To get information about attributes, use the misp-search-attributes
+      command.
     execution: false
     name: misp-search-events
     outputs:
@@ -253,6 +270,48 @@ script:
       type: Number
     - contextPath: MISP.Event.Object.UUID
       description: UUID of the object.
+      type: String
+    - contextPath: MISP.Event.Feed.ID
+      description: Feed id.
+      type: String
+    - contextPath: MISP.Event.Feed.Name
+      description: Feed name.
+      type: String
+    - contextPath: MISP.Event.Feed.Provider
+      description: Feed provider.
+      type: String
+    - contextPath: MISP.Event.Feed.SourceFormat
+      description: Feed source format (MISP for example).
+      type: String
+    - contextPath: MISP.Event.Feed.URL
+      description: Feed url.
+      type: String
+    - contextPath: MISP.Event.Feed.EventUUIDS
+      description: List of event uuids include the feed.
+      type: Unknown
+    - contextPath: MISP.Event.Attribute.Feed.ID
+      description: Attribute feed id.
+      type: String
+    - contextPath: MISP.Event.Attribute.Feed.Name
+      description: Attribute feed name.
+      type: String
+    - contextPath: MISP.Event.Attribute.Feed.Provider
+      description: Attribute feed provider.
+      type: String
+    - contextPath: MISP.Event.Attribute.Feed.SourceFormat
+      description: Attribute feed source format (MISP for example).
+      type: String
+    - contextPath: MISP.Event.Attribute.Feed.URL
+      description: Attribute feed url.
+      type: String
+    - contextPath: MISP.Event.Attribute.Feed.EventUUIDS
+      description: List of event uuids include the attribute feed.
+      type: Unknown
+    - contextPath: MISP.Event.Attribute.ID
+      description: MISP attribute ID.
+      type: String
+    - contextPath: MISP.Event.Attribute.Value
+      description: MISP attribute value.
       type: String
   - arguments:
     - default: true
@@ -968,14 +1027,16 @@ script:
   - arguments:
     - default: false
       defaultValue: other
-      description: 'Attribute type to be created as part of the new event. For example: "md5", "sha1", "email", "url".'
+      description: 'Attribute type to be created as part of the new event. For example:
+        "md5", "sha1", "email", "url".'
       isArray: false
       name: type
       required: false
       secret: false
     - default: false
       defaultValue: External analysis
-      description: 'Attribute category to be created as part of the new event. For example: "Other", "Person", "Attribution", "Payload type".'
+      description: 'Attribute category to be created as part of the new event. For
+        example: "Other", "Person", "Attribution", "Payload type".'
       isArray: false
       name: category
       required: false
@@ -984,7 +1045,7 @@ script:
       default: false
       defaultValue: 'true'
       description: 'Whether to create the event''s attribute with the Intrusion Detection
-      System flag. Possible values: "true" and "false".'
+        System flag. Possible values: "true" and "false".'
       isArray: false
       name: to_ids
       predefined:
@@ -995,7 +1056,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Your_organization_only
-      description: 'Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "All_communities", and "Inherit_event".'
+      description: 'Where to distribute the event. Possible values: "Your_organization_only",
+        "This_community_only", "Connected_communities", "All_communities", and "Inherit_event".'
       isArray: false
       name: distribution
       predefined:
@@ -1013,7 +1075,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Attribute value to be created as part of the new event. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs).'
+      description: 'Attribute value to be created as part of the new event. For example:
+        "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com"
+        (and other URLs).'
       isArray: false
       name: value
       required: true
@@ -1038,7 +1102,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: High
-      description: 'MISP Threat level ID. Possible values: "High", "Medium", "Low", and "Unknown".'
+      description: 'MISP Threat level ID. Possible values: "High", "Medium", "Low",
+        and "Unknown".'
       isArray: false
       name: threat_level_id
       predefined:
@@ -1051,7 +1116,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: initial
-      description: 'The analysis event level. Possible values: "initial", "ongoing", and "completed".'
+      description: 'The analysis event level. Possible values: "initial", "ongoing",
+        and "completed".'
       isArray: false
       name: analysis
       predefined:
@@ -1183,7 +1249,8 @@ script:
       secret: false
     - default: false
       defaultValue: External analysis
-      description: 'Attribute category. For example: "Other", "Person", "Attribution", "Payload type".'
+      description: 'Attribute category. For example: "Other", "Person", "Attribution",
+        "Payload type".'
       isArray: false
       name: category
       required: false
@@ -1203,7 +1270,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Inherit_event
-      description: 'Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "All_communities", and "Inherit_event".'
+      description: 'Where to distribute the event. Possible values: "Your_organization_only",
+        "This_community_only", "Connected_communities", "All_communities", and "Inherit_event".'
       isArray: false
       name: distribution
       predefined:
@@ -1221,7 +1289,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Attribute value. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs).'
+      description: 'Attribute value. For example: "1.2.3.4" (and other IP addresses),
+        "google.com" (and other domains), "www.example.com" (and other URLs).'
       isArray: false
       name: value
       required: true
@@ -1728,7 +1797,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Type of sighting to add. Possible values: "sighting", "false_positive", and "expiration".'
+      description: 'Type of sighting to add. Possible values: "sighting", "false_positive",
+        and "expiration".'
       isArray: false
       name: type
       predefined:
@@ -1745,8 +1815,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: UUID of the attribute to add sighting to (Must be filled if ID is empty).
-        Can be retrieved from the misp-search commands.
+      description: UUID of the attribute to add sighting to (Must be filled if ID
+        is empty). Can be retrieved from the misp-search commands.
       isArray: false
       name: uuid
       required: false
@@ -1774,8 +1844,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds an OSINT feed. Only feeds in the misp format are allowed. For example
-      have manifest.json.
+    description: Adds an OSINT feed. Only feeds in the misp format are allowed. For
+      example have manifest.json.
     execution: false
     name: misp-add-events-from-feed
     outputs:
@@ -2115,8 +2185,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Attributes. For example, {"description": "Manager Ferrari",
-        "make": "Ferrari", "model": "308 GTS"}'
+      description: 'Attributes. For example, {"description": "Manager Ferrari", "make":
+        "Ferrari", "model": "308 GTS"}'
       isArray: false
       name: attributes
       required: true
@@ -2358,19 +2428,23 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The attribute type. Use any valid MISP attribute type. For example: "md5", "sha1", "email", "url".'
+      description: 'The attribute type. Use any valid MISP attribute type. For example:
+        "md5", "sha1", "email", "url".'
       isArray: false
       name: type
       required: false
       secret: false
     - default: false
-      description: 'Search for the specified value in the attribute''s value field. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs).'
+      description: 'Search for the specified value in the attribute''s value field.
+        For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains),
+        "www.example.com" (and other URLs).'
       isArray: false
       name: value
       required: false
       secret: false
     - default: false
-      description: 'The attribute category. Use any valid MISP attribute category. For example: "Other", "Person", "Attribution", "Payload type".'
+      description: 'The attribute category. Use any valid MISP attribute category.
+        For example: "Other", "Person", "Attribution", "Payload type".'
       isArray: false
       name: category
       required: false
@@ -2385,7 +2459,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Whether to return only the attributes set with the "to_ids" flag.
-        The default is to return all attributes without with and with out to_ids flag. Possible values: "true" and "false".'
+        The default is to return all attributes without with and with out to_ids flag.
+        Possible values: "true" and "false".'
       isArray: false
       name: to_ids
       predefined:
@@ -2395,15 +2470,16 @@ script:
       secret: false
     - default: false
       description: Search attributes of events published within the last "x" amount
-        of time. Valid time values are days, hours, and minutes. For example, "5d", "12h", 
-        "30m". This filter uses the published timestamp of the event.
+        of time. Valid time values are days, hours, and minutes. For example, "5d",
+        "12h", "30m". This filter uses the published timestamp of the event.
       isArray: false
       name: last
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to return the decay score at the attribute level. Possible values: "true" and "false".'
+      description: 'Whether to return the decay score at the attribute level. Possible
+        values: "true" and "false".'
       isArray: false
       name: include_decay_score
       predefined:
@@ -2470,8 +2546,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: If a limit is set, sets the page to be returned. For example, page 3, limit
-        100 will return records 201->300. Default is 1.
+      description: If a limit is set, sets the page to be returned. For example, page
+        3, limit 100 will return records 201->300. Default is 1.
       isArray: false
       defaultValue: '1'
       name: page
@@ -2486,7 +2562,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to return only the values that are not on the warninglists. Possible values: "true" and "false".'
+      description: 'Whether to return only the values that are not on the warninglists.
+        Possible values: "true" and "false".'
       isArray: false
       name: enforceWarninglist
       predefined:
@@ -2496,8 +2573,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to return only the attribute''s values that match the search
-        query. In case you want to get the full attributes data, set this argument to false. Possible values: "true" and "false".'
+      description: 'Whether to return only the attribute''s values that match the
+        search query. In case you want to get the full attributes data, set this argument
+        to false. Possible values: "true" and "false".'
       isArray: false
       defaultValue: 'false'
       name: compact
@@ -2601,7 +2679,116 @@ script:
     - contextPath: MISP.Attribute.Sighting.Type
       description: Sighting type.
       type: String
-  dockerimage: demisto/pymisp2:1.0.0.23423
+  - arguments:
+    - default: false
+      description: UUID of the attribute to be updated.
+      isArray: false
+      name: attribute_uuid
+      required: true
+      secret: false
+    - default: false
+      description: 'Attribute type. For example: "md5", "sha1", "email", "url".'
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
+      description: 'Attribute category. For example: "Other", "Person", "Attribution",
+        "Payload type".'
+      isArray: false
+      name: category
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Where to distribute the event. Possible values: "Your_organization_only",
+        "This_community_only", "Connected_communities", "All_communities", and "Inherit_event".'
+      isArray: false
+      name: distribution
+      predefined:
+      - Your_organization_only
+      - This_community_only
+      - Connected_communities
+      - All_communities
+      - Inherit_event
+      required: false
+      secret: false
+    - default: false
+      description: Comment for the attribute.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: 'Attribute value. For example: "1.2.3.4" (and other IP addresses),
+        "google.com" (and other domains), "www.example.com" (and other URLs).'
+      isArray: false
+      name: value
+      required: false
+      secret: false
+    - default: false
+      description: Updated date when the attribute was first seen. For example, `2019-02-03`.
+      isArray: false
+      name: first_seen
+      required: false
+      secret: false
+    - default: false
+      description: Updated date when the attribute was last seen. For example, `2019-02-03`.
+      isArray: false
+      name: last_seen
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an attribute of an existing MISP event.
+    execution: false
+    name: misp-update-attribute
+    outputs:
+    - contextPath: MISP.Attribute.Distribution
+      description: Attribute distribution.
+      type: string
+    - contextPath: MISP.Attribute.Value
+      description: Attribute value.
+      type: string
+    - contextPath: MISP.Attribute.EventID
+      description: Attribute event ID.
+      type: string
+    - contextPath: MISP.Attribute.last_seen
+      description: Attribute last_seen timestamp.
+      type: string
+    - contextPath: MISP.Attribute.first_seen
+      description: Attribute first_seen timestamp.
+      type: string
+    - contextPath: MISP.Attribute.LastChanged
+      description: Attribute last changed timestamp.
+      type: date
+    - contextPath: MISP.Attribute.Deleted
+      description: Is the attribute deleted.
+      type: boolean
+    - contextPath: MISP.Attribute.DisableCorrelation
+      description: Is attribute correlation disabled.
+      type: boolean
+    - contextPath: MISP.Attribute.Type
+      description: Attribute type.
+      type: string
+    - contextPath: MISP.Attribute.ID
+      description: Attribute ID.
+      type: string
+    - contextPath: MISP.Attribute.UUID
+      description: Attribute UUID.
+      type: string
+    - contextPath: MISP.Attribute.ToIDs
+      description: Is the Intrusion Detection System flag set.
+      type: boolean
+    - contextPath: MISP.Attribute.Category
+      description: Attribute category.
+      type: string
+    - contextPath: MISP.Attribute.SharingGroupID
+      description: Attribute sharing group ID.
+      type: string
+    - contextPath: MISP.Attribute.Comment
+      description: Attribute comment.
+      type: string
+  dockerimage: demisto/pymisp2:1.0.0.25484
   feed: false
   isfetch: false
   longRunning: false

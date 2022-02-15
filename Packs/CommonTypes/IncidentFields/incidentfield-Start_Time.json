@@ -2,7 +2,11 @@
     "associatedToAll": false,
     "associatedTypes": [
         "Qradar Generic",
-        "Guardicore Incident"
+        "Guardicore Incident",
+        "Tanium TR Incident",
+        "CrowdStrike Falcon Detection",
+        "CrowdStrike Falcon Incident",
+        "Microsoft Defender For Endpoint"
     ],
     "breachScript": "",
     "caseInsensitive": true,

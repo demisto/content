@@ -66,5 +66,9 @@
             "mandatory": false,
             "display_name": "Microsoft Graph Mail"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

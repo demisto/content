@@ -53,7 +53,7 @@ class BuildMock:
         self.ci_build_number = '100'
         self.is_nightly = False
         self.ami_env = 'Server Master'
-        self.servers, self.server_numeric_version = ('8.8.8.8', '6.1.0')
+        self.server_numeric_version = '6.1.0'
         self.secret_conf = {}
         self.username = 'TestUser'
         self.password = 'TestPassword'

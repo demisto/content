@@ -1235,7 +1235,7 @@ Prevent execution of a specified md5 hash
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | md5 | The banned hash. | Required | 
-| text | Text description of blacklist. | Required | 
+| text | Text description of block list. | Required | 
 | last_ban_time | The last time the hash was blocked or prevented from being executed. | Optional | 
 | ban_count | Total number of blocks on the banned list. | Optional | 
 | last_ban_host | Last hostname to block this hash. | Optional | 

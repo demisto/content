@@ -13,6 +13,6 @@ The playbooks included in this Pack help automate the remediation of alerts gene
 
 As part of this pack, you will also get out-of-the-box Prisma Cloud incident views, segregated alert layouts and playbooks. All of these are easily customizable to suit the needs of your organization.
 
-_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/articles/prisma-cloud)_
+_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/prisma-cloud)_
 
 ![Prisma_Cloud_Remediation_-_GCP_VPC_Network_Misconfiguration](https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_GCP_VPC_Network_Misconfig.png)

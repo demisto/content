@@ -21,9 +21,17 @@
   - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
   - section_end "Create ID Set"
 
+.create-id-set-mp-v2: &create-id-set-mp-v2
+  - section_start "Create ID Set" --collapsed
+  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "marketplacev2" >> $ARTIFACTS_FOLDER/logs/create_id_set.log
+  - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+  - if [ -f ./all_removed_items_from_id_set.json ]; then cp ./all_removed_items_from_id_set.json $ARTIFACTS_FOLDER/logs; fi
+  - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json $ARTIFACTS_FOLDER/logs; fi
+  - section_end "Create ID Set"
+
 .download-demisto-conf:
   - section_start "Download content-test-conf" --collapsed
-  - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
+  - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/download_demisto_conf.log
   - section_end "Download content-test-conf"
 
 .open-ssh-tunnel:
@@ -32,6 +40,18 @@
   - chmod 700 ~/.ssh/config
   - ./Tests/scripts/open_ssh_tunnel.sh
   - section_end "Open SSH Tunnel"
+
+.check_build_files_are_up_to_date: &check_build_files_are_up_to_date
+  - section_start "Check Build Files Are Up To Date"
+  - |
+    if [[ -n "${DEMISTO_SDK_NIGHTLY}" || -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" ]]; then
+      echo "running nightly or bucket upload, skipping files up-to-date validation"
+    else
+      ./Tests/scripts/is_file_up_to_date.sh .gitlab $CI_COMMIT_BRANCH
+      ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py2.txt $CI_COMMIT_BRANCH
+      ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py3.txt $CI_COMMIT_BRANCH
+    fi
+  - section_end "Check Build Files Are Up To Date"
 
 
 .clone_and_export_variables: &clone_and_export_variables
@@ -46,7 +66,6 @@
       source "$BASH_ENV"
     fi
   - source .circleci/content_release_vars.sh
-  - export PATH="${PWD}/node_modules/.bin:${PATH}"
   - section_start "Granting execute permissions on files" --collapsed
   - chmod +x ./Tests/scripts/*
   - chmod +x ./Tests/Marketplace/*
@@ -69,8 +88,7 @@
       echo "found venv"
     else
       echo "installing venv"
-      NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
-      venv/bin/pip3 install -r .circleci/build-requirements.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+      NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap | tee --append $ARTIFACTS_FOLDER/logs/installations.log
     fi
   - source ./venv/bin/activate
   - |
@@ -89,6 +107,15 @@
   - chmod 700 ~/.ssh
   - section_end "Installing SSH keys"
 
+.install_node_modules: &install_node_modules
+  - section_start "Installing node modules" --collapsed
+  - source $NVM_DIR/nvm.sh
+  - nvm use default
+  - echo "Installing Node Modules" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
+  - npm ci --cache .npm --prefer-offline | tee --append $ARTIFACTS_FOLDER/logs/installations.log
+  - npm link jsdoc-to-markdown@5.0.3 | tee --append $ARTIFACTS_FOLDER/logs/installations.log  # disable-secrets-detection
+  - section_end "Installing node modules"
+
 .default-before-script:
   before_script:
     - *clone_and_export_variables
@@ -96,18 +123,23 @@
     - rm -rf $ARTIFACTS_FOLDER/logs
     - mkdir -p $ARTIFACTS_FOLDER/logs
     - section_end "Creating new clean logs folder"
+    - *install_node_modules
     - *install_venv
     - *get_contribution_pack
     - *install_ssh_keys
     - section_start "Build Parameters"
-    - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL="
-    - $(echo $0) --version
+    - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^OVERRIDE_ALL_PACKS=|^GCS_MARKET_BUCKET=|^GCS_MARKET_V2_BUCKET=|^SLACK_CHANNEL=|^NVM_DIR=|^NODE_VERSION=|^PATH=|^ARTIFACTS_FOLDER=|^ENV_RESULTS_PATH="
     - python --version
+    - python2 --version
     - python3 --version
+    - pip2 --version
+    - pip3 --version
     - node --version
     - npm --version
+    - jsdoc2md --version
     - demisto-sdk --version
     - section_end "Build Parameters"
+    - *check_build_files_are_up_to_date
 
 .default-job-settings:
   extends:
@@ -124,9 +156,13 @@
 
 
 .run-unittests-and-lint:
+  tags:
+    - gce
   needs: []
   stage: unittests-and-validations
   artifacts:
+    reports:
+      cobertura: /builds/xsoar/content/artifacts/coverage_report/coverage.xml
     expire_in: 30 days
     paths:
       - /builds/xsoar/content/unit-tests
@@ -171,12 +207,21 @@
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
-          if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-            python3 Utils/upload_code_coverage_report.py --service_account $GCS_MARKET_KEY --source_file_name $ARTIFACTS_FOLDER/coverage_report/coverage.json --minimal_file_name $ARTIFACTS_FOLDER/coverage_report/coverage_data.json -cov $ARTIFACTS_FOLDER/coverage_report/.coverage
-          fi
+          demisto-sdk lint -p 12 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER
         else
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
+        fi
+        if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
+          if [[ "$CI_PIPELINE_SOURCE" == "schedule" ||  -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
+            demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --allowed-coverage-degradation-percentage 100
+            if [[ -n "${NIGHTLY}" && "$CI_COMMIT_BRANCH" == "master" ]]; then
+              python3 Utils/upload_code_coverage_report.py --service_account $GCS_MARKET_KEY --source_file_name $ARTIFACTS_FOLDER/coverage_report/coverage.json --minimal_file_name $ARTIFACTS_FOLDER/coverage_report/coverage-min.json
+            fi
+          else
+            demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type html,xml --previous-coverage-report-url https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
+            echo "Adding unit tests coverage comment to the pr"
+            python3 ./Tests/scripts/add_pr_comment.py
+          fi
         fi
       fi
     - section_end "Run Unit Testing and Lint"
@@ -224,30 +269,13 @@
       if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
         echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
       else
-        echo "Run flake8 on all excluding Packs (Integrations and Scripts) - they will be handled in linting"
-        ./Tests/scripts/pyflake.sh *.py
-        # do not run pyflake on venv or content-test-conf awsinstancetool
-        find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv -o -path ./Tests \) | xargs ./Tests/scripts/pyflake.sh
-        ./Tests/scripts/pyflake.sh ./Tests/*.py
-        find ./Tests -maxdepth 1 -type d -not \( -path ./Tests -o -path ./Tests/scripts \) | xargs ./Tests/scripts/pyflake.sh
-        ./Tests/scripts/pyflake.sh ./Tests/scripts/*.py
-        find ./Tests/scripts -maxdepth 1 -type d -not \( -path ./Tests/scripts -o -path ./Tests/scripts/awsinstancetool \) | xargs ./Tests/scripts/pyflake.sh
+        ./Tests/scripts/linters_runner.sh
         ./Tests/scripts/validate.sh
       fi
     - section_end "Validate Files and Yaml"
     - section_start "Check Spelling"
     - python3 ./Tests/scripts/circleci_spell_checker.py $CI_COMMIT_BRANCH
     - section_end "Check Spelling"
-    - section_start "Check Build Files Are Up To Date"
-    - |
-      if [[ $$CI_COMMIT_BRANCH =~ pull/[0-9]+ ]]; then
-        echo "Skipping, Should not run on contributor's branch."
-      else
-        ./Tests/scripts/is_file_up_to_date.sh .gitlab-ci.yml
-        ./Tests/scripts/is_file_up_to_date.sh .dev-requirements-py2.txt
-        ./Tests/scripts/is_file_up_to_date.sh .dev-requirements-py3.txt
-      fi
-    - section_end "Check Build Files Are Up To Date"
     - section_start "Validate content-test-conf Branch Merged"
     - |
       if [[ $CI_COMMIT_BRANCH = "master" ]]; then

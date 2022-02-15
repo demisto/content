@@ -3,3 +3,6 @@ ignore=RM104,RM106
 
 [file:classifier-mapper-incoming-TrendMicroCAS.json]
 ignore=BA101
+
+[file:TrendMicroCAS.yml]
+ignore=IN145

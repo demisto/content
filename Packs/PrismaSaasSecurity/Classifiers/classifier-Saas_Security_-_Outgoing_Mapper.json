@@ -1,0 +1,24 @@
+{
+    "description": "Maps outgoing Saas Security incidents fields.",
+    "feed": false,
+    "id": "Saas Security - Outgoing Mapper",
+    "mapping": {
+        "Saas Security Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "state": {
+                    "complex": null,
+                    "simple": "saassecuritystate"
+                },
+                "category": {
+                    "complex": null,
+                    "simple": "saassecuritycategory"
+                }
+            }
+        }
+    },
+    "name": "Saas Security - Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

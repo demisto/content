@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM106
+
+[file:Polygon.yml]
+ignore=IN145

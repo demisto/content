@@ -255,7 +255,7 @@ tasks:
     task:
       id: 79d03966-980c-434c-8fd8-15de576fa3e7
       version: -1
-      name: Verify IP blacklisted
+      name: Verify IP block listed
       type: condition
       iscommand: false
       brand: ""
@@ -316,7 +316,7 @@ tasks:
     task:
       id: 25a4eb7a-dc38-4857-8845-7e7ce71406a5
       version: -1
-      name: Verify domain blacklisted
+      name: Verify domain block listed
       type: condition
       iscommand: false
       brand: ""

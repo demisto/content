@@ -125,13 +125,18 @@ def test_module(client):
     Anything else will fail the test.
     """
     res = client.get_companies_guid()
-    if res.status_code == 200:
+
+    available_guids = {c["guid"] for c in res["companies"]}
+    requested_guid = demisto.params().get("guid", None)
+
+    if requested_guid is None:
+        raise Exception("Must provide a GUID ")
+
+    if requested_guid in available_guids:
         return 'ok', None, None
     else:
-        res_json = res.json()
-        error_response = res_json.get('detail')
-        raise Exception(f"Failed to execute test_module. Error Code: {res.status_code}.Error "
-                        f"Response: {error_response}")
+        raise Exception(f"Failed to execute test_module "
+                        f"Response: {res}")
 
 
 def get_companies_guid_command(client):

@@ -1,4 +1,6 @@
-from typing import Tuple
+import copy
+from json import JSONDecodeError
+from typing import Tuple, List, Dict
 from CommonServerPython import *
 import urllib3
 from dateutil.parser import parse
@@ -46,9 +48,21 @@ INDICATOR_TYPE_TO_DBOT_TYPE = {
     'IpAddress': DBotScoreType.IP,
 }
 
+HEALTH_STATUS_TO_ENDPOINT_STATUS = {
+    "Active": "Online",
+    "Inactive": "Offline",
+    "ImpairedCommunication": "Online",
+    "NoSensorData": "Online",
+    "NoSensorDataImpairedCommunication": "Online",
+    "Unknown": None,
+}
+
 SECURITY_CENTER_RESOURCE = 'https://api.securitycenter.microsoft.com'
 SECURITY_CENTER_INDICATOR_ENDPOINT = 'https://api.securitycenter.microsoft.com/api/indicators'
+SECURITY_CENTER_INDICATOR_ENDPOINT_BATCH = 'https://api.securitycenter.microsoft.com/api/indicators/import'
 GRAPH_INDICATOR_ENDPOINT = 'https://graph.microsoft.com/beta/security/tiIndicators'
+
+INTEGRATION_NAME = 'Microsoft Defender ATP'
 
 
 def file_standard(observable: Dict) -> Common.File:
@@ -281,6 +295,19 @@ class MsClient:
         cmd_url = f'/machines/{machine_id}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
+    def get_list_machines_by_vulnerability(self, cve_id):
+        """Retrieves a list of devices affected by a vulnerability.
+        https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-machines-by-vulnerability?view=o365-worldwide#http-request
+
+        Args:
+            cve_id (str): Vulnerability ID
+
+        Returns:
+            dict. Machine's info
+        """
+        cmd_url = f'/vulnerabilities/{cve_id}/machineReferences'
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+
     def run_antivirus_scan(self, machine_id, comment, scan_type):
         """Initiate Windows Defender Antivirus scan on a machine.
 
@@ -303,14 +330,22 @@ class MsClient:
         }
         return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
 
-    def list_alerts(self, filter_req=None):
+    def list_alerts(self, filter_req=None, limit=None, evidence=False, creation_time=None):
         """Retrieves a collection of Alerts.
 
         Returns:
             dict. Alerts info
         """
         cmd_url = '/alerts'
-        params = {'$filter': filter_req} if filter_req else None
+        params = {}
+        if evidence:
+            params['$expand'] = 'evidence'
+        if filter_req:
+            if creation_time:
+                filter_req += f"and {create_filter_alerts_creation_time(creation_time)}"
+            params['$filter'] = filter_req
+        if limit:
+            params['$top'] = limit
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
     def update_alert(self, alert_id, json_data):
@@ -431,7 +466,7 @@ class MsClient:
         cmd_url = f'/machineactions/{action_id}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def get_machine_actions(self, filter_req):
+    def get_machine_actions(self, filter_req, limit):
         """Retrieves all Machine Actions.
 
         Notes:
@@ -442,7 +477,9 @@ class MsClient:
             dict. Machine Action entity
         """
         cmd_url = '/machineactions'
-        params = {'$filter': filter_req} if filter_req else None
+        params = {'$top': limit}
+        if filter_req:
+            params['$filter'] = filter_req
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
     def get_investigation_package(self, machine_id, comment):
@@ -712,10 +749,11 @@ class MsClient:
         return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=new_tags)
 
     def get_file_data(self, file_hash):
-        """Retrieves a File by identifier SHA1.
-
+        """Retrieves a File by identifier SHA1 or SHA256.
+        For more details, see the docs:
+        https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-file-information?view=o365-worldwide#http-request
         Args:
-            file_hash(str): The file SHA1 hash
+            file_hash(str): The file hash.
 
         Returns:
             dict. File entities
@@ -857,6 +895,14 @@ class MsClient:
                                             url_suffix=None, should_use_security_center=True)
         return assign_params(values_to_ignore=[None], **resp)
 
+    def create_update_indicator_batch_security_center_api(self, body):
+        """
+        https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/import-ti-indicators?view=o365-worldwide
+        """
+        resp = self.indicators_http_request('POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT_BATCH, json_data=body,
+                                            url_suffix=None, should_use_security_center=True)
+        return resp
+
     def update_indicator(
             self, indicator_id: str, expiration_date_time: str,
             description: Optional[str], severity: Optional[int]
@@ -961,19 +1007,28 @@ def isolate_machine_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
-
-    machine_id = args.get('machine_id')
+    machine_ids = remove_duplicates_from_list_arg(args, 'machine_id')
     comment = args.get('comment')
     isolation_type = args.get('isolation_type')
-    machine_action_response = client.isolate_machine(machine_id, comment, isolation_type)
-    machine_action_data = get_machine_action_data(machine_action_response)
-
+    machines_action_data = []
+    raw_response = []
+    failed_machines = {}  # if we got an error, we will return the machine ids that failed
+    for machine_id in machine_ids:
+        try:
+            machine_action_response = client.isolate_machine(machine_id, comment, isolation_type)
+            raw_response.append(machine_action_response)
+            machines_action_data.append(get_machine_action_data(machine_action_response))
+        except Exception as e:
+            # if we got an error for a machine, we want to get result for the other ones
+            failed_machines[machine_id] = e
+            continue
     entry_context = {
-        'MicrosoftATP.MachineAction(val.ID === obj.ID)': machine_action_data
+        'MicrosoftATP.MachineAction(val.ID === obj.ID)': machines_action_data
     }
-    human_readable = tableToMarkdown("The isolation request has been submitted successfully:", machine_action_data,
+    human_readable = tableToMarkdown("The isolation request has been submitted successfully:", machines_action_data,
                                      headers=headers, removeNull=True)
-    return human_readable, entry_context, machine_action_response
+    human_readable += add_error_message(failed_machines, machine_ids)
+    return human_readable, entry_context, raw_response
 
 
 def unisolate_machine_command(client: MsClient, args: dict):
@@ -983,33 +1038,79 @@ def unisolate_machine_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
-    machine_id = args.get('machine_id')
+    machine_ids = remove_duplicates_from_list_arg(args, 'machine_id')
     comment = args.get('comment')
-    machine_action_response = client.unisolate_machine(machine_id, comment)
-    machine_action_data = get_machine_action_data(machine_action_response)
-
+    machines_action_data = []
+    raw_response = []
+    failed_machines = {}  # if we got an error, we will return the machine ids that failed
+    for machine_id in machine_ids:
+        try:
+            machine_action_response = client.unisolate_machine(machine_id, comment)
+            raw_response.append(machine_action_response)
+            machines_action_data.append(get_machine_action_data(machine_action_response))
+        except Exception as e:
+            # if we got an error for a machine, we want to get result for the other ones
+            failed_machines[machine_id] = e
+            continue
     entry_context = {
-        'MicrosoftATP.MachineAction(val.ID === obj.ID)': machine_action_data
+        'MicrosoftATP.MachineAction(val.ID === obj.ID)': machines_action_data
     }
+    human_readable = tableToMarkdown("The request to stop the isolation has been submitted successfully.",
+                                     machines_action_data, headers=headers, removeNull=True)
+    human_readable += add_error_message(failed_machines, machine_ids)
+    return human_readable, entry_context, raw_response
 
-    human_readable = tableToMarkdown("The request to stop the isolation has been submitted successfully:",
-                                     machine_action_data, headers=headers, removeNull=True)
-    return human_readable, entry_context, machine_action_response
+
+def add_error_message(failed_devices, all_requested_devices):
+    human_readable = ""
+    if failed_devices:
+        if len(all_requested_devices) == len(failed_devices):
+            raise DemistoException(f"{INTEGRATION_NAME} The command was failed with the errors: {failed_devices}")
+        human_readable = "Note: you don't see the following IDs in the results as the request was failed " \
+                         "for them. \n"
+        for device_id in failed_devices:
+            human_readable += f'ID {device_id} failed with the error: {failed_devices[device_id]} \n'
+    return human_readable
+
+
+def not_found_message(not_found_devices):
+    human_readable = ""
+    if not_found_devices:
+        human_readable = f"\n You don't see the following IDs in the results as they were not found: " \
+                         f"{not_found_devices}."
+    return human_readable
 
 
 def get_machines_command(client: MsClient, args: dict):
     """Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
+    New: now the hostname and ip args can be from type list, but only one can be given as a list (not both).
 
     Returns:
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
                'RiskScore', 'ExposureLevel']
-    hostname = args.get('hostname', '')
-    ip = args.get('ip', '')
+    hostname = remove_duplicates_from_list_arg(args, 'hostname')
+    ip = remove_duplicates_from_list_arg(args, 'ip')
     risk_score = args.get('risk_score', '')
     health_status = args.get('health_status', '')
     os_platform = args.get('os_platform', '')
+
+    more_than_one_hostname = len(hostname) > 1
+    more_than_one_ip = len(ip) > 1
+    if more_than_one_hostname and more_than_one_ip:
+        raise DemistoException("Error: only hostname or ip can be an array, not both.")
+    if more_than_one_hostname:
+        ip = '' if not ip else ip[0]
+        field_with_multiple_values = 'computerDnsName'
+    elif more_than_one_ip:
+        hostname = '' if not hostname else hostname[0]
+        field_with_multiple_values = 'lastIpAddress'
+    else:
+        # both hostname and ip are not lists (each one is empty or includes only one value)
+        field_with_multiple_values = ''
+        ip = '' if not ip else ip[0]
+        hostname = '' if not hostname else hostname[0]
 
     fields_to_filter_by = {
         'computerDnsName': hostname,
@@ -1018,14 +1119,18 @@ def get_machines_command(client: MsClient, args: dict):
         'healthStatus': health_status,
         'osPlatform': os_platform
     }
-    filter_req = reformat_filter(fields_to_filter_by)
+
+    if field_with_multiple_values:
+        filter_req = reformat_filter_with_list_arg(fields_to_filter_by, field_with_multiple_values)
+    else:
+        filter_req = reformat_filter(fields_to_filter_by)
     machines_response = client.get_machines(filter_req)
     machines_list = get_machines_list(machines_response)
 
     entry_context = {
         'MicrosoftATP.Machine(val.ID === obj.ID)': machines_list
     }
-    human_readable = tableToMarkdown('Microsoft Defender ATP Machines:', machines_list, headers=headers,
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} Machines:', machines_list, headers=headers,
                                      removeNull=True)
     return human_readable, entry_context, machines_response
 
@@ -1046,6 +1151,17 @@ def get_machines_list(machines_response):
     return machines_list
 
 
+def get_machine_mac_address(machine):
+    """
+    return the machine MAC address where “ipAddresses[].ipAddress” = “lastIpAddress”
+    """
+    ip_addresses = machine.get('ipAddresses', [])
+    last_ip_address = machine.get('lastIpAddress', '')
+    for ip_object in ip_addresses:
+        if last_ip_address and ip_object.get('ipAddress') == last_ip_address:
+            return ip_object.get('macAddress', '')
+
+
 def reformat_filter(fields_to_filter_by):
     """Get a dictionary with all of the fields to filter
 
@@ -1060,48 +1176,173 @@ def reformat_filter(fields_to_filter_by):
     return filter_req
 
 
-def get_file_related_machines_command(client: MsClient, args: dict):
+def reformat_filter_with_list_arg(fields_to_filter_by, field_key_from_type_list):
+    """Get a dictionary with all of the fields to filter when one field is a list and create a DNF query.
+
+    Args:
+        fields_to_filter_by (dict): Dictionary with all the fields to filter
+        field_key_from_type_list (str): The arg field name from type list
+
+    Returns:
+        string. Filter to send in the API request
+
+    For example, when we get:
+    fields_to_filter_by: {
+                        'status': 'Succeeded',
+                        'machineId': [100,200] ,
+                        'type': 'RunAntiVirusScan',
+                        'requestor': ''
+                        }
+    and
+    field_key_from_type_list: 'machineId'
+
+    we build a query looks like:
+    " (machineId eq 100 and status eq Succeeded and type eq RunAntiVirusScan and requestor eq '') or
+    (machineId eq 200 and status eq Succeeded and type eq RunAntiVirusScan and requestor eq '') "
+
+    note: we have "or" operator between each clause in order to create a DNF query.
+    """
+    field_value_from_type_list = fields_to_filter_by.get(field_key_from_type_list)
+    if not field_value_from_type_list:
+        fields_to_filter_by[field_key_from_type_list] = ''
+        return reformat_filter(fields_to_filter_by)
+    elif len(field_value_from_type_list) == 1:
+        # in case the list is empty or includes only one item
+        fields_to_filter_by[field_key_from_type_list] = field_value_from_type_list[0]
+        return reformat_filter(fields_to_filter_by)
+
+    filter_conditions = []
+    for item in field_value_from_type_list:
+        current_fields_to_filter = {key: value for (key, value) in fields_to_filter_by.items() if
+                                    key != field_key_from_type_list}
+        current_fields_to_filter.update({field_key_from_type_list: item})
+        filter_conditions.append(reformat_filter(current_fields_to_filter))
+
+    return ' or '.join(f"({condition})" for condition in filter_conditions)
+
+
+def get_file_related_machines_command(client: MsClient, args: dict) -> CommandResults:
     """Retrieves a collection of Machines related to a given file hash.
 
     Returns:
-        (str, dict, dict). Human readable, context, raw response
+       CommandResults. Human readable, context, raw response
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
                'RiskScore', 'ExposureLevel']
-    file = args.get('file_hash')
-    machines_response = client.get_file_related_machines(file)
-    machines_list = get_machines_list(machines_response)
+    files = remove_duplicates_from_list_arg(args, 'file_hash')
+    raw_response = []
+    context_outputs = []
+    all_machines_outputs = []
+    failed_files = {}  # if we got an error, we will return the file that failed
 
-    context_output = {
-        'File': file,
-        'Machines': machines_list
-    }
-    entry_context = {
-        'MicrosoftATP.FileMachine(val.ID === obj.ID)': context_output
-    }
-    human_readable = tableToMarkdown(f'Microsoft Defender ATP machines related to file {file}', machines_list,
+    for file in files:
+        try:
+            machines_response = client.get_file_related_machines(file)
+            raw_response.append(machines_response)
+            for machine in machines_response['value']:
+                all_machines_outputs.append(get_machine_data(machine))
+            context_outputs.append({
+                'File': file,
+                'Machines': get_machines_list(machines_response)
+            })
+        except Exception as e:
+            failed_files[file] = e
+            continue
+
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} machines related to files {files}', all_machines_outputs,
                                      headers=headers, removeNull=True)
-    return human_readable, entry_context, machines_response
+    human_readable += add_error_message(failed_files, files)
+    return CommandResults(readable_output=human_readable,
+                          outputs=context_outputs,
+                          outputs_prefix="MicrosoftATP.FileMachine",
+                          raw_response=raw_response)
 
 
-def get_machine_details_command(client: MsClient, args: dict):
+def parse_ip_addresses(ip_addresses: List[Dict]) -> List[Dict]:
+    """
+    Creates new dict with readable keys and concat all the ip addresses with the same MAC address.
+    Args:
+        ip_addresses (List[Dict]): List of ip addresses dictionaries as recieved from the api.
+
+    Returns:
+        List of dicts
+    """
+    mac_addresses = dict.fromkeys([item.get('macAddress') for item in ip_addresses])
+    for item in ip_addresses:
+        current_mac = item.get('macAddress')
+        if not mac_addresses[current_mac]:
+            mac_addresses[current_mac] = {
+                'MACAddress': item['macAddress'],
+                'IPAddresses': [item['ipAddress']],
+                'Type': item['type'],
+                'Status': item['operationalStatus']
+            }
+        else:
+            mac_addresses[current_mac]['IPAddresses'].append(item['ipAddress'])
+
+    return list(mac_addresses.values())
+
+
+def print_ip_addresses(parsed_ip_addresses: List[Dict]) -> str:
+    """
+    Converts the given list of ip addresses to ascii table.
+    Args:
+        parsed_ip_addresses (List[Dict]):
+
+    Returns:
+        ascii table without headers
+    """
+
+    rows = list()
+    for i, entry in enumerate(parsed_ip_addresses, start=1):
+        rows.append([f"{i}.", f"MAC : {entry['MACAddress']}", f"IP Addresses : {','.join(entry['IPAddresses'])}",
+                     f"Type : {entry['Type']}", f"Status : {entry['Status']}"])
+    max_lengths = [len(max(col, key=lambda x: len(x))) for col in zip(*rows)]  # to make sure the table is pretty
+    string_rows = [' | '.join([cell.ljust(max_len_col) for cell, max_len_col in zip(row, max_lengths)]) for row in rows]
+
+    return '\n'.join(string_rows)
+
+
+def get_machine_details_command(client: MsClient, args: dict) -> CommandResults:
     """Retrieves specific Machine by its machine ID or computer name.
 
     Returns:
-        (str, dict, dict). Human readable, context, raw response
+        CommandResults. Human readable, context, raw response
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
-               'RiskScore', 'ExposureLevel']
-    machine_id = args.get('machine_id')
-    machine_response = client.get_machine_details(machine_id)
-    machine_data = get_machine_data(machine_response)
+               'RiskScore', 'ExposureLevel', 'IPAddresses']
+    machine_ids = remove_duplicates_from_list_arg(args, 'machine_id')
+    raw_response = []
+    machines_outputs = []
+    machines_readable_outputs = []
+    failed_machines = {}  # if we got an error, we will return the machine ids that failed
+    for machine_id in machine_ids:
+        try:
+            machine_response = client.get_machine_details(machine_id)
+            machine_data = get_machine_data(machine_response)
 
-    entry_context = {
-        'MicrosoftATP.Machine(val.ID === obj.ID)': machine_data
-    }
-    human_readable = tableToMarkdown(f'Microsoft Defender ATP machine {machine_id} details:', machine_data,
-                                     headers=headers, removeNull=True)
-    return human_readable, entry_context, machine_response
+            machine_data_to_readable_outputs = copy.deepcopy(machine_data)
+            raw_ip_addresses = machine_data_to_readable_outputs.get('IPAddresses', [])
+            parsed_ip_address = parse_ip_addresses(raw_ip_addresses)
+            human_readable_ip_addresses = print_ip_addresses(parsed_ip_address)
+            machine_data_to_readable_outputs['IPAddresses'] = human_readable_ip_addresses
+
+            machines_outputs.append(machine_data)
+            machines_readable_outputs.append(machine_data_to_readable_outputs)
+            raw_response.append(machine_response)
+        except Exception as e:
+            failed_machines[machine_id] = e
+            continue
+
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} machines {machine_ids} details:',
+                                     machines_readable_outputs, headers=headers, removeNull=True)
+    human_readable += add_error_message(failed_machines, machine_ids)
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.Machine',
+        outputs_key_field='ID',
+        outputs=machines_outputs,
+        readable_output=human_readable,
+        raw_response=raw_response)
 
 
 def run_antivirus_scan_command(client: MsClient, args: dict):
@@ -1111,19 +1352,28 @@ def run_antivirus_scan_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
-    machine_id = args.get('machine_id')
+    machine_ids = remove_duplicates_from_list_arg(args, 'machine_id')
     scan_type = args.get('scan_type')
     comment = args.get('comment')
-
-    machine_action_response = client.run_antivirus_scan(machine_id, comment, scan_type)
-    machine_action_data = get_machine_action_data(machine_action_response)
+    machine_actions_data = []
+    raw_response = []
+    failed_machines = {}  # if we got an error, we will return the machine ids that failed
+    for machine_id in machine_ids:
+        try:
+            machine_action_response = client.run_antivirus_scan(machine_id, comment, scan_type)
+            machine_actions_data.append(get_machine_action_data(machine_action_response))
+            raw_response.append(machine_action_response)
+        except Exception as e:
+            failed_machines[machine_id] = e
+            continue
 
     entry_context = {
-        'MicrosoftATP.MachineAction(val.ID === obj.ID)': machine_action_data
+        'MicrosoftATP.MachineAction(val.ID === obj.ID)': machine_actions_data
     }
-    human_readable = tableToMarkdown('Antivirus scan successfully triggered', machine_action_data, headers=headers,
+    human_readable = tableToMarkdown('Antivirus scan successfully triggered', machine_actions_data, headers=headers,
                                      removeNull=True)
-    return human_readable, entry_context, machine_action_response
+    human_readable += add_error_message(failed_machines, machine_ids)
+    return human_readable, entry_context, raw_response
 
 
 def list_alerts_command(client: MsClient, args: dict):
@@ -1136,18 +1386,21 @@ def list_alerts_command(client: MsClient, args: dict):
                'ThreatFamilyName', 'MachineID']
     severity = args.get('severity')
     status = args.get('status')
+    limit = arg_to_number(args.get('limit', 50))
+    creation_time = arg_to_datetime(args.get('creation_time'), required=False)
     fields_to_filter_by = {
         'severity': severity,
         'status': status
     }
     filter_req = reformat_filter(fields_to_filter_by)
-    alerts_response = client.list_alerts(filter_req)
+    alerts_response = client.list_alerts(filter_req, limit, creation_time=creation_time, evidence=True)
     alerts_list = get_alerts_list(alerts_response)
 
     entry_context = {
         'MicrosoftATP.Alert(val.ID === obj.ID)': alerts_list
     }
-    human_readable = tableToMarkdown('Microsoft Defender ATP alerts:', alerts_list, headers=headers, removeNull=True)
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} alerts with limit of {limit}:', alerts_list,
+                                     headers=headers, removeNull=True)
     return human_readable, entry_context, alerts_response
 
 
@@ -1331,6 +1584,7 @@ def get_file_data(file_response):
     """
     file_data = assign_params(**{
         'Sha1': file_response.get('sha1'),
+        'Size': file_response.get('size'),
         'Sha256': file_response.get('sha256'),
         'Md5': file_response.get('md5'),
         'GlobalPrevalence': file_response.get('globalPrevalence'),
@@ -1412,7 +1666,7 @@ def get_alert_related_domains_command(client: MsClient, args: dict):
 
 
 def get_machine_action_by_id_command(client: MsClient, args: dict):
-    """Returns machine's actions, if machine ID is None, return all actions.
+    """Returns machine's actions, if action ID is None, return all actions.
 
     Returns:
         (str, dict, dict). Human readable, context, raw response
@@ -1420,9 +1674,10 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
     action_id = args.get('id', '')
     status = args.get('status', '')
-    machine_id = args.get('machine_id', '')
+    machine_id = remove_duplicates_from_list_arg(args, 'machine_id')
     type = args.get('type', '')
     requestor = args.get('requestor', '')
+    limit = arg_to_number(args.get('limit', 50))
     if action_id:
         for index in range(3):
             try:
@@ -1447,13 +1702,13 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
             'type': type,
             'requestor': requestor
         }
-        filter_req = reformat_filter(fields_to_filter_by)
-        response = client.get_machine_actions(filter_req)
+        filter_req = reformat_filter_with_list_arg(fields_to_filter_by, "machineId")
+        response = client.get_machine_actions(filter_req, limit)
         machine_actions_list = []
         for machine_action in response['value']:
             machine_actions_list.append(get_machine_action_data(machine_action))
-        human_readable = tableToMarkdown('Machine actions Info:', machine_actions_list, headers=headers,
-                                         removeNull=True)
+        human_readable = tableToMarkdown(f'Machine actions Info with limit of {limit}:',
+                                         machine_actions_list, headers=headers, removeNull=True)
         context_output = machine_actions_list
     entry_context = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': context_output
@@ -1761,9 +2016,13 @@ def get_alert_data(alert_response):
                 "CreatedTime": alert_response.get('createdTime')
             }
         ],
-        "Evidence": alert_response.get('evidence')
+        "Evidence": alert_response.get('evidence'),
+        "DetectorID": alert_response.get('detectorId'),
+        "ThreatName": alert_response.get('threatName'),
+        "RelatedUser": alert_response.get('relatedUser'),
+        "MitreTechniques": alert_response.get('mitreTechniques'),
+        "RBACGroupName": alert_response.get('rbacGroupName'),
     }
-
     return alert_data
 
 
@@ -1817,6 +2076,7 @@ def get_machine_data(machine):
         'AADDeviceID': machine.get('aadDeviceId'),
         'IsAADJoined': machine.get('isAadJoined'),
         'MachineTags': machine.get('machineTags'),
+        'IPAddresses': machine.get('ipAddresses'),
     })
     return machine_data
 
@@ -1958,6 +2218,41 @@ def get_user_alerts_command(client: MsClient, args: dict):
         'MicrosoftATP.UserAlert(val.Username === obj.Username)': context_output
     }
     return human_readable, entry_context, response
+
+
+def get_alert_by_id_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a specific alert by the given ID.
+
+    Returns:
+        CommandResults.
+    """
+    headers = ['ID', 'Title', 'Description', 'IncidentID', 'Severity', 'Status', 'Classification', 'Category',
+               'ThreatFamilyName', 'MachineID']
+    alert_ids = remove_duplicates_from_list_arg(args, 'alert_ids')
+    raw_response = []
+    alert_outputs = []
+    failed_alerts = {}  # if we got an error, we will return the machine ids that failed
+    not_found_ids = []
+
+    for alert in alert_ids:
+        try:
+            alert_response = client.get_alert_by_id(alert)
+            alerts_data = get_alert_data(alert_response)
+            raw_response.append(alert_response)
+            alert_outputs.append(alerts_data)
+        except NotFoundError:  # in case the error is not found alert id, we want to return "No entries"
+            not_found_ids.append(alert)
+            continue
+        except Exception as e:
+            failed_alerts[alert] = e
+            continue
+
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} Alerts Info for IDs {alert_ids}:', alert_outputs,
+                                     headers=headers, removeNull=True)
+    human_readable += add_error_message(failed_alerts, alert_ids)
+    human_readable += not_found_message(not_found_ids)
+    return CommandResults(outputs_prefix="MicrosoftATP.Alert", outputs=alert_outputs, readable_output=human_readable,
+                          raw_response=raw_response, outputs_key_field="ID")
 
 
 def get_user_machine_command(client: MsClient, args: dict):
@@ -2441,6 +2736,46 @@ def sc_create_update_indicator_command(client: MsClient, args: Dict[str, str]) -
         return CommandResults(readable_output=f'Indicator {indicator_value} was NOT updated.')
 
 
+def sc_update_batch_indicators_command(client: MsClient, args: Dict[str, str]):  # -> CommandResults:
+    """Updates batch of indicators. If an indicator exists it will be updated. Otherwise, will create new one
+    Note: CIDR notation for IPs is not supported.
+
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR.
+           Must contains 'indicator_batch' as a JSON file.
+
+    """
+    indicator_batch = args.get('indicator_batch', "")
+    headers = ["ID", "Value", "IsFailed", "FailureReason"]
+    try:
+        batch_json = json.loads(indicator_batch)
+    except JSONDecodeError as e:
+        raise DemistoException(f'{INTEGRATION_NAME}: The `indicator_batch` argument is not a valid json, {e}.')
+
+    all_indicators = client.create_update_indicator_batch_security_center_api({"Indicators": batch_json})
+    outputs = parse_indicator_batch_response(all_indicators)
+    if outputs:
+        human_readable = tableToMarkdown('Indicators updated successfully.', outputs, headers=headers, removeNull=True)
+        return CommandResults(outputs=outputs, readable_output=human_readable, outputs_key_field='id',
+                              outputs_prefix='MicrosoftATP.Indicators')
+    return CommandResults(readable_output='Indicators were not updated.')
+
+
+def parse_indicator_batch_response(indicators_response):
+    parsed_response = []
+    if indicators_response and indicators_response.get('value'):
+        indicators = indicators_response.get('value')
+        for indicator in indicators:
+            parsed_response.append({
+                "ID": indicator.get("id"),
+                "Value": indicator.get("indicator"),
+                "IsFailed": indicator.get("isFailed"),
+                "FailureReason": indicator.get("failureReason"),
+            })
+    return parsed_response
+
+
 def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Union[CommandResults, List[CommandResults]]:
     """
     https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-ti-indicators-collection?view=o365-worldwide
@@ -2458,7 +2793,7 @@ def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Union[
         for indicator in raw_response:
             indicator_value = indicator.get('indicatorValue')
             dbot_indicator = get_indicator_dbot_object(indicator)
-            human_readable = tableToMarkdown(f'Results found in Microsoft Defender ATP SC for value: {indicator_value}',
+            human_readable = tableToMarkdown(f'Results found in {INTEGRATION_NAME} SC for value: {indicator_value}',
                                              indicator, headers=list(SC_INDICATORS_HEADERS), removeNull=True)
             command_results.append(CommandResults(outputs=indicator, indicator=dbot_indicator,
                                                   readable_output=human_readable, outputs_key_field='id',
@@ -2498,15 +2833,228 @@ def get_indicator_dbot_object(indicator):
     return get_dbot_indicator(indicator_type, dbot, indicator_value)
 
 
+def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a list of devices affected by a vulnerability (by the given CVE ID).
+
+    Returns:
+        CommandResults. Human readable, context, raw response
+    """
+    headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'RBACGroupID', 'RBACGroupName', 'CVE']
+    cve_ids = remove_duplicates_from_list_arg(args, 'cve_id')
+    raw_response = []
+    machines_outputs = []
+    failed_cve = {}  # if we got an error, we will return the machine ids that failed
+
+    for cve_id in cve_ids:
+        try:
+            machines_response = client.get_list_machines_by_vulnerability(cve_id)
+            for machine in machines_response['value']:
+                machine_data = get_machine_data(machine)
+                machine_data.update({"CVE": cve_id})
+                machines_outputs.append(machine_data)
+            raw_response.append(machines_response)
+        except Exception as e:
+            failed_cve[cve_id] = e
+            continue
+
+    machines_outputs = create_related_cve_list_for_machine(machines_outputs)
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} machines by vulnerabilities: {cve_ids}',
+                                     machines_outputs, headers=headers, removeNull=True)
+    human_readable += add_error_message(failed_cve, cve_ids)
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.CveMachine',
+        outputs_key_field='ID',
+        outputs=machines_outputs,
+        readable_output=human_readable,
+        raw_response=raw_response)
+
+
+def create_related_cve_list_for_machine(machines):
+    """
+    Parses the machines list to include a CVE list for each machine by ID.
+    For example,
+    machines = [{'ID': 1, 'CVE': 'CVE-1'},{'ID': 1, 'CVE': 'CVE-2'},{'ID': 2, 'CVE': 'CVE-1'}]
+
+    the output after the for loop will be:
+    machines = [{'ID': 1, ['CVE': 'CVE-1','CVE-2']},{'ID': 1, ['CVE': 'CVE-1','CVE-2']},{'ID': 2, 'CVE': ['CVE-1']}]
+
+    and the output after remove duplicates will be:
+    unique_machines = [{'ID': 1, 'CVE': ['CVE-1','CVE-2']},{'ID': 2, 'CVE': ['CVE-1']}]
+    """
+    machine_id_to_cve_list: Dict[str, List[str]] = {}
+    for machine in machines:
+        machine_id = machine.get('ID')
+        cve_id = machine.get('CVE')
+        if not machine_id_to_cve_list.get(machine_id):
+            machine_id_to_cve_list[machine_id] = [cve_id]
+        else:
+            machine_id_to_cve_list[machine_id].append(cve_id)
+        machine.pop('CVE')
+        machine['CVE'] = machine_id_to_cve_list[machine_id]
+
+    # handle duplicates
+    unique_machines = []
+    for machine in machines:
+        if machine not in unique_machines:
+            unique_machines.append(machine)
+    return unique_machines
+
+
+def get_file_context(file_info_response: Dict[str, str], headers: list):
+    return {key.capitalize(): value for (key, value) in file_info_response.items() if key in headers}
+
+
+def get_file_info_command(client: MsClient, args: dict):
+    """ Retrieves file info by a file hash (Sha1 or Sha256).
+
+    Returns:
+        CommandResults. Human readable, context, raw response
+    """
+    headers = ['Sha1', 'Sha256', 'Size', 'FileType', 'Signer', 'IsValidCertificate']
+    file_context_path = 'File(val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || ' \
+                        'val.Type && val.Type == obj.Type || val.Size && val.Size == obj.Size )'
+    file_hashes = remove_duplicates_from_list_arg(args, 'hash')
+    raw_response = []
+    file_outputs = []
+    file_context_outputs = []
+    failed_hashes = {}  # if we got an error, we will return the machine ids that failed
+    sha1_value_in_files = []  # for not adding duplicates machines to the table
+    not_found_ids = []
+
+    for file_hash in file_hashes:
+        try:
+            file_info_response = client.get_file_data(file_hash)
+            file_data = get_file_data(file_info_response)
+            if file_data.get('Sha1', '') not in sha1_value_in_files:
+                file_outputs.append(file_data)
+                sha1_value_in_files.append(file_data.get('Sha1', ''))
+            raw_response.append(file_info_response)
+            file_context_outputs.append(get_file_context(file_info_response, ["sha1", "sha256", "filetype", "size"]))
+        except NotFoundError:  # in case the error is not found hash, we want to return "No entries"
+            not_found_ids.append(file_hash)
+            continue
+        except Exception as e:
+            failed_hashes[file_hash] = e
+            continue
+
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} file info by hashes: {file_hashes}',
+                                     file_outputs, headers=headers, removeNull=True)
+    human_readable += add_error_message(failed_hashes, file_hashes)
+    human_readable += not_found_message(not_found_ids)
+    if file_outputs:
+        context = {
+            'MicrosoftATP.File(val.Sha1 === obj.Sha1)': file_outputs,
+            file_context_path: file_context_outputs
+        }
+        return {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': file_outputs,
+            'EntryContext': context,
+            'HumanReadable': human_readable,
+            'raw_response': raw_response
+        }
+    else:
+        return "No entries."
+
+
+def create_endpoint_verdict(machine: dict):
+    return Common.Endpoint(
+        id=machine.get('ID'),
+        hostname=machine.get('ComputerDNSName'),
+        ip_address=machine.get('LastIPAddress'),
+        mac_address=machine.get('MACAddress'),
+        os=machine.get('OSPlatform'),
+        status=HEALTH_STATUS_TO_ENDPOINT_STATUS[machine.get('HealthStatus', 'Unknown')],
+        vendor=INTEGRATION_NAME,
+        os_version=f"{machine.get('OSVersion')} {machine.get('OSProcessor')} bit",
+    )
+
+
+def create_filter_for_endpoint_command(hostnames, ips, ids):
+    """
+    Creates a filter query for getting the machines according to the given args.
+    The query build is: "or" operator separetes the key and the value between each arg.
+
+    For example,
+    for fields_to_values: {'computerDnsName': ['b.com', 'a.com'], 'lastIpAddress': ['1.2.3.4'], 'id': ['1','2']}
+    the result is: "computerDnsName eq 'b.com' or computerDnsName eq 'a.com' or lastIpAddress eq '1.2.3.4' or
+    id eq '1' or id eq '2'"
+
+    Args:
+        hostnames (list): Comma-separated list of computerDnsName.
+        ips (list): Comma-separated list of lastIpAddress.
+        ids (list): Comma-separated list of id.
+
+    Returns: A string that represents the filter query according the inputs.
+    """
+    fields_to_values = {'computerDnsName': hostnames, 'lastIpAddress': ips, 'id': ids}
+    return ' or '.join(
+        f"{field_key} eq '{field_value}'" for (field_key, field_value_list) in fields_to_values.items() if
+        field_value_list for field_value in field_value_list)
+
+
+def validate_args_endpoint_command(hostnames, ips, ids):
+    no_hostname = len(hostnames) == 0
+    no_ip = len(ips) == 0
+    no_id = len(ids) == 0
+    if no_hostname and no_ip and no_id:
+        raise DemistoException(
+            f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
+
+
+def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
+    """Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
+
+    Returns:
+        CommandResults list.
+    """
+    headers = ['ID', 'Hostname', 'OS', 'OSVersion', 'IPAddress', 'Status', 'MACAddress', 'Vendor']
+    hostnames = argToList(args.get('hostname', ''))
+    ips = argToList(args.get('ip', ''))
+    ids = argToList(args.get('id', ''))
+    validate_args_endpoint_command(hostnames, ips, ids)
+    machines_response = client.get_machines(create_filter_for_endpoint_command(hostnames, ips, ids))
+    machines_outputs = []
+
+    for machine in machines_response.get('value', []):
+        machine_data = get_machine_data(machine)
+        machine_data['MACAddress'] = get_machine_mac_address(machine)
+        endpoint_indicator = create_endpoint_verdict(machine_data)
+        human_readable = tableToMarkdown(f'{INTEGRATION_NAME} Machine:',
+                                         endpoint_indicator.to_context()[Common.Endpoint.CONTEXT_PATH], headers=headers,
+                                         removeNull=True)
+        machines_outputs.append(CommandResults(
+            readable_output=human_readable,
+            outputs_prefix='MicrosoftATP.Machine',
+            raw_response=machines_response,
+            outputs_key_field="ID",
+            outputs=machine_data,
+            indicator=endpoint_indicator,
+        ))
+
+    if not machines_outputs:
+        machines_outputs.append(CommandResults(
+            readable_output=f"{INTEGRATION_NAME} no device found.",
+            raw_response=machines_response,
+        ))
+    return machines_outputs
+
+
+def remove_duplicates_from_list_arg(args: dict, field: str):
+    convert_to_list = argToList(args.get(field))
+    return list(set(convert_to_list))
+
+
 ''' EXECUTION CODE '''
 
 
 def main():
     params: dict = demisto.params()
     base_url: str = params.get('url', '').rstrip('/') + '/api'
-    tenant_id = params.get('tenant_id')
-    auth_id = params.get('auth_id')
-    enc_key = params.get('enc_key')
+    tenant_id = params.get('tenant_id') or params.get('_tenant_id')
+    auth_id = params.get('auth_id') or params.get('_auth_id')
+    enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
@@ -2514,6 +3062,13 @@ def main():
     alert_status_to_fetch = params.get('fetch_status')
     alert_time_to_fetch = params.get('first_fetch_timestamp', '3 days')
     last_run = demisto.getLastRun()
+
+    if not enc_key:
+        raise Exception('Key must be provided.')
+    if not auth_id:
+        raise Exception('Authentication ID must be provided.')
+    if not tenant_id:
+        raise Exception('Tenant ID must be provided.')
 
     command = demisto.command()
     args = demisto.args()
@@ -2539,10 +3094,10 @@ def main():
             return_outputs(*get_machines_command(client, args))
 
         elif command == 'microsoft-atp-get-file-related-machines':
-            return_outputs(*get_file_related_machines_command(client, args))
+            return_results(get_file_related_machines_command(client, args))
 
         elif command == 'microsoft-atp-get-machine-details':
-            return_outputs(*get_machine_details_command(client, args))
+            return_results(get_machine_details_command(client, args))
 
         elif command == 'microsoft-atp-run-antivirus-scan':
             return_outputs(*run_antivirus_scan_command(client, args))
@@ -2619,11 +3174,23 @@ def main():
         elif command == 'microsoft-atp-get-user-alerts':
             return_outputs(*get_user_alerts_command(client, args))
 
+        elif command == 'microsoft-atp-get-alert-by-id':
+            return_results(get_alert_by_id_command(client, args))
+
         elif command == 'microsoft-atp-get-user-machines':
             return_outputs(*get_user_machine_command(client, args))
 
         elif command == 'microsoft-atp-add-remove-machine-tag':
             return_outputs(*add_remove_machine_tag_command(client, args))
+
+        elif command == 'microsoft-atp-list-machines-by-vulnerability':
+            return_results(list_machines_by_vulnerability_command(client, args))
+
+        elif command == 'microsoft-atp-get-file-info':
+            demisto.results(get_file_info_command(client, args))
+
+        elif command == 'endpoint':
+            return_results(endpoint_command(client, args))
 
         elif command in ('microsoft-atp-indicator-list', 'microsoft-atp-indicator-get-by-id'):
             return_outputs(*list_indicators_command(client, args))
@@ -2642,6 +3209,8 @@ def main():
             return_results(sc_create_update_indicator_command(client, args))
         elif command == 'microsoft-atp-sc-indicator-delete':
             return_results(sc_delete_indicator_command(client, args))
+        elif command == 'microsoft-atp-indicator-batch-update':
+            return_results(sc_update_batch_indicators_command(client, args))
     except Exception as err:
         return_error(str(err))
 

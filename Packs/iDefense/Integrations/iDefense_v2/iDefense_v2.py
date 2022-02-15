@@ -1,5 +1,4 @@
 from typing import Union
-
 from CommonServerPython import *
 
 # Disable insecure warnings
@@ -7,12 +6,18 @@ requests.packages.urllib3.disable_warnings()
 
 '''CONSTANTS'''
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+IDEFENSE_URL_TEMPLATE = "https://intelgraph.idefense.com/#/node/{0}/view/{1}"
+
+ENDPOINTS = {
+    'threatindicator': '/rest/threatindicator',
+    'document': '/rest/document',
+    'fundamental': '/rest/fundamental/v0'
+}
 
 
 class Client(BaseClient):
-
-    def __init__(self, input_url: str, api_key: str, verify_certificate: bool, proxy: bool):
-        base_url = urljoin(input_url, '/rest/threatindicator/v0')
+    def __init__(self, input_url: str, api_key: str, verify_certificate: bool, proxy: bool, endpoint="/rest/threatindicator/v0"):
+        base_url = urljoin(input_url, endpoint)
         headers = {
             "Content-Type": "application/json",
             'auth-token': api_key
@@ -95,13 +100,16 @@ def _extract_analysis_info(res: dict, dbot_score_type: str, reliability: DBotSco
                 dbot = Common.DBotScore(indicator_value, dbot_score_type, 'iDefense', dbot_score, desc, reliability)
                 last_published = result_content.get('last_published', '')
                 last_published_format = parse_date_string(last_published, DATE_FORMAT)
+                last_seen = result_content.get('last_seen', '')
+                last_seen_format = parse_date_string(last_seen, DATE_FORMAT)
                 analysis_info = {
                     'Name': result_content.get('display_text', ''),
                     'DbotReputation': dbot_score,
                     'Confidence': result_content.get('confidence', 0),
                     'ThreatTypes': result_content.get('threat_types', ''),
                     'TypeOfUse': result_content.get('last_seen_as', ''),
-                    'LastPublished': str(last_published_format)
+                    'LastPublished': str(last_published_format),
+                    'LastSeen': str(last_seen_format)
                 }
                 analysis_results.append({'analysis_info': analysis_info, 'dbot': dbot})
 
@@ -157,13 +165,13 @@ def test_module(client: Client) -> str:
     """
 
     try:
-        client.threat_indicator_search(url_suffix='')
+        client.threat_indicator_search(url_suffix='/v0')
         return 'ok'
     except Exception as e:
         raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {e}.")
 
 
-def ip_command(client: Client, args: dict, reliability: DBotScoreReliability) -> List[CommandResults]:
+def ip_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client) -> List[CommandResults]:
     """
 
     Args:
@@ -176,7 +184,7 @@ def ip_command(client: Client, args: dict, reliability: DBotScoreReliability) ->
     """
     ips: list = argToList(args.get('ip'))
     _validate_args("IP", ips)
-    res = client.threat_indicator_search(url_suffix='/ip', data={'key.values': ips})
+    res = client.threat_indicator_search(url_suffix='/v0/ip', data={'key.values': ips})
     analysis_results = _extract_analysis_info(res, DBotScoreType.IP, reliability)
     returned_ips = _check_returned_results(res)
     no_match_values = _check_no_match_values(ips, returned_ips)
@@ -184,6 +192,7 @@ def ip_command(client: Client, args: dict, reliability: DBotScoreReliability) ->
 
     for analysis_result in analysis_results:
         analysis_info: dict = analysis_result.get('analysis_info', {})
+        analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
         dbot = analysis_result.get('dbot')
 
         readable_output = tableToMarkdown('Results', analysis_info)
@@ -202,11 +211,11 @@ def ip_command(client: Client, args: dict, reliability: DBotScoreReliability) ->
     return command_results
 
 
-def url_command(client: Client, args: dict, reliability: DBotScoreReliability) -> List[CommandResults]:
+def url_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client) -> List[CommandResults]:
     urls: list = argToList(args.get('url'))
     _validate_args("URL", urls)
 
-    res = client.threat_indicator_search(url_suffix='/url', data={'key.values': urls})
+    res = client.threat_indicator_search(url_suffix='/v0/url', data={'key.values': urls})
     analysis_results = _extract_analysis_info(res, DBotScoreType.URL, reliability)
     returned_urls = _check_returned_results(res)
     no_match_values = _check_no_match_values(urls, returned_urls)
@@ -214,6 +223,7 @@ def url_command(client: Client, args: dict, reliability: DBotScoreReliability) -
 
     for analysis_result in analysis_results:
         analysis_info: dict = analysis_result.get('analysis_info', {})
+        analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
         dbot = analysis_result.get('dbot')
 
         readable_output = tableToMarkdown('Results', analysis_info)
@@ -233,11 +243,11 @@ def url_command(client: Client, args: dict, reliability: DBotScoreReliability) -
     return command_results
 
 
-def domain_command(client: Client, args: dict, reliability: DBotScoreReliability) -> List[CommandResults]:
+def domain_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client) -> List[CommandResults]:
 
     domains: list = argToList(args.get('domain'))
 
-    res = client.threat_indicator_search(url_suffix='/domain', data={'key.values': domains})
+    res = client.threat_indicator_search(url_suffix='/v0/domain', data={'key.values': domains})
     analysis_results = _extract_analysis_info(res, DBotScoreType.DOMAIN, reliability)
     returned_domains = _check_returned_results(res)
     no_match_values = _check_no_match_values(domains, returned_domains)
@@ -245,6 +255,7 @@ def domain_command(client: Client, args: dict, reliability: DBotScoreReliability
 
     for analysis_result in analysis_results:
         analysis_info: dict = analysis_result.get('analysis_info', {})
+        analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
         dbot = analysis_result.get('dbot')
 
         readable_output = tableToMarkdown('Results', analysis_info)
@@ -264,7 +275,7 @@ def domain_command(client: Client, args: dict, reliability: DBotScoreReliability
     return command_results
 
 
-def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability) -> CommandResults:
+def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client) -> CommandResults:
     """
     Search for indicator with the given uuid. When response return, checks which indicator found.
     Args:
@@ -275,14 +286,17 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability) 
         CommandResults containing the indicator, the response and a readable output
     """
     uuid: str = str(args.get('uuid'))
+    res = {}
     try:
-        res = client.threat_indicator_search(url_suffix=f'/{uuid}')
+        res = client.threat_indicator_search(url_suffix=f'/v0/{uuid}')
     except Exception as e:
         if 'Failed to parse json object from response' in e.args[0]:
-            return CommandResults(indicator=None, raw_response={},
-                                  readable_output=f"No results were found for uuid {uuid}")
+            return_results(CommandResults(indicator=None,
+                                          raw_response={},
+                                          readable_output=f"No results were found for uuid: {uuid}"))
         else:
             raise e
+
     indicator: Optional[Union[Common.IP, Common.Domain, Common.URL]] = None
     analysis_info = {}
     if len(res):
@@ -302,22 +316,94 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability) 
             indicator = Common.URL(indicator_value, dbot)
         last_published = res.get('last_published', '')
         last_published_format = parse_date_string(last_published, DATE_FORMAT)
+        last_seen = res.get('last_seen', '')
+        last_seen_format = parse_date_string(last_seen, DATE_FORMAT)
         analysis_info = {
             'Name': res.get('display_text', ''),
             'DbotReputation': dbot_score,
             'Confidence': res.get('confidence', 0),
             'ThreatTypes': res.get('threat_types', ''),
             'TypeOfUse': res.get('last_seen_as', ''),
-            'LastPublished': str(last_published_format)
+            'LastPublished': str(last_published_format),
+            'LastSeen': str(last_seen_format)
         }
+        analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
+
     return CommandResults(indicator=indicator,
                           raw_response=res,
                           readable_output=tableToMarkdown('Results', analysis_info))
 
 
+def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, indicatorTypeHash: bool = False):
+    """
+
+    Adds Intelligence reports and Intelligence alerts information to analysis result for the indicator using given doc search client                                        # noqa: E501
+
+    Args:
+        analysis_result obtained from _extract_analysis_info function call
+        client: ACTI Document search contoller client
+
+    Returns:
+        analysis_result enriched with intelligence alert and intelligence report information if available for the indicator
+
+    """
+
+    indicator = analysis_info['MD5'] if indicatorTypeHash else analysis_info['Name']
+    demisto.debug(f"getting ia for indicator {indicator}")
+
+    alerts, reports = _get_ia_for_indicator(indicator, doc_search_client)
+
+    if alerts is not None:
+        analysis_info['Intelligence Alerts'] = alerts if len(
+            alerts) > 0 else 'No Intelligence Alert has been linked to this indicator'
+    if reports is not None:
+        analysis_info['Intelligence Reports'] = reports if len(
+            reports) > 0 else 'No Intelligence Report has been linked to this indicator'
+
+    return analysis_info
+
+
+def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
+    """
+    Perform document controller api call with given doc search client to get
+    Intelligence Alerts and Intelligence Reports for given indicator
+
+    Args:
+        client: ACTI Document search contoller client
+
+    Returns:
+        intelligence alert and intelligence report dictionaries if api has response else None
+
+    """
+
+    res = {}
+    intelligence_alerts, intelligence_reports = None, None
+
+    try:
+        res = doc_search_client.threat_indicator_search(
+            url_suffix='/v0', data={'type.values': ['intelligence_alert', 'intelligence_report'], 'links.display_text.query': indicator})                                                                       # noqa: E501
+
+        alerts = {item['title']: item['uuid'] for item in res.get('results', []) if item['type'] == 'intelligence_alert'}
+        reports = {item['title']: item['uuid'] for item in res.get('results', []) if item['type'] == 'intelligence_report'}
+        intelligence_alerts = {title: IDEFENSE_URL_TEMPLATE.format('intelligence_alert', uuid) for title, uuid in alerts.items()}
+        intelligence_reports = {title: IDEFENSE_URL_TEMPLATE.format(
+            'intelligence_report', uuid) for title, uuid in reports.items()}
+
+    except Exception as e:
+        if 'Error in API call [403]' in e.args[0]:
+            return_results(f"Intelligence Alert & Intelligence Report enrichment (if present) is not possible! As your API token is not eligible to access Document API.\n Error: {str(e)}")                                               # noqa: E501
+            demisto.debug(e.args[0])
+        else:
+            raise e
+
+    return intelligence_alerts, intelligence_reports
+
+
 def main():
     params = demisto.params()
-    api_key = params.get('api_token', '')
+    api_key = params.get('api_token')
+    if isinstance(api_key, dict):  # integration version >=3.2.0
+        api_key = api_key.get('password')
     base_url = urljoin(params.get('url', ''))
     reliability = params.get('integrationReliability', 'B - Usually reliable')
 
@@ -336,13 +422,14 @@ def main():
     proxy = params.get('use_proxy', False)
 
     try:
-        client = Client(base_url, api_key, verify_certificate, proxy)
         command = demisto.command()
+        client = Client(base_url, api_key, verify_certificate, proxy, endpoint=ENDPOINTS['threatindicator'])
+        document_search_client = Client(base_url, api_key, verify_certificate, proxy, endpoint=ENDPOINTS['document'])
         demisto.debug(f'Command being called is {command}')
         if command == 'test-module':
             return_results(test_module(client))
         elif command in commands:
-            return_results(commands[command](client, demisto.args(), reliability))
+            return_results(commands[command](client, demisto.args(), reliability, document_search_client))
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')

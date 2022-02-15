@@ -198,7 +198,7 @@ script:
       description: ID of endpoint resource to be decommissioned
     description: 'Wipes remotely an infected Endpoint Resource and deletes a quarantined Snapshot. This command remote wipes data from the endpoint. This action cannot be undone.'
     execution: true
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: false
   runonce: false
   subtype: python3

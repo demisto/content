@@ -10,3 +10,15 @@ ignore=IF100
 
 [file:DevSecOps_PR_Head_Open_Issues.json]
 ignore=IF100
+
+[file:LGTM.yml]
+ignore=IN145
+
+[file:GitLab.yml]
+ignore=IN145
+
+[file:MinIO.yml]
+ignore=IN145
+
+[file:DockerEngine.yml]
+ignore=IN145

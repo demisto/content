@@ -1,14 +1,15 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
-
 import copy
+import gzip
 import hashlib
-import requests
-import traceback
 import secrets
 import string
-from typing import Dict, Any, Tuple
+import traceback
+from typing import Any, Dict, Tuple
+
+import requests
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -59,6 +60,8 @@ def wrap_list_items_in_double_quotes(string_of_argument: str):
     example:
         string_of_argument: '12345678, 87654321'
         output: '"12345678","87654321"'
+        string_of_argument: ''
+        output: '""'
 
     Args:
         string_of_argument (str): The string s of_argument to format.
@@ -68,7 +71,7 @@ def wrap_list_items_in_double_quotes(string_of_argument: str):
     """
     if not string_of_argument:
         string_of_argument = ''
-    list_of_args = argToList(string_of_argument)
+    list_of_args = argToList(string_of_argument) if string_of_argument != '' else ['']
     return ','.join(f'"{item}"' for item in list_of_args)
 
 
@@ -147,19 +150,22 @@ def get_network_connection_query(endpoint_ids: str, args: dict) -> str:
     remote_ip_list = args.get('remote_ip', '')
     if not remote_ip_list:
         raise DemistoException('Please provide a remote_ip argument.')
-    local_ip_list = wrap_list_items_in_double_quotes(args.get('local_ip', '*'))
     remote_ip_list = wrap_list_items_in_double_quotes(remote_ip_list)
-    port_list = args.get('port', '*')
-    return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = STORY and
- action_local_ip in({local_ip_list}) and action_remote_ip in({remote_ip_list}) and action_remote_port in({port_list})
- | fields agent_hostname, agent_ip_addresses, agent_id, actor_effective_username, action_local_ip, action_remote_ip,
+    local_ip_filter = ''
+    if args.get('local_ip'):
+        local_ip_list = wrap_list_items_in_double_quotes(args.get('local_ip', ''))
+        local_ip_filter = f'and action_local_ip in({local_ip_list})'
+    port_list = args.get('port')
+    port_list_filter = f'and action_remote_port in({port_list})' if port_list else ''
+    return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = STORY
+ {local_ip_filter} and action_remote_ip in({remote_ip_list}) {port_list_filter}|
+ fields agent_hostname, agent_ip_addresses, agent_id, actor_effective_username, action_local_ip, action_remote_ip,
  action_remote_port, dst_action_external_hostname, action_country, actor_process_image_name, actor_process_image_path,
  actor_process_command_line, actor_process_image_sha256, actor_process_instance_id, actor_process_causality_id'''
 
 
 def get_registry_query(endpoint_ids: str, args: dict) -> str:
     """Create the registry query.
-
 
     Args:
         endpoint_ids (str): The endpoint IDs to use.
@@ -209,10 +215,10 @@ def get_dns_query(endpoint_ids: str, args: dict) -> str:
     """
     if not args.get('external_domain') and not args.get('dns_query'):
         raise DemistoException('Please provide at least one of the external_domain, dns_query arguments.')
-    external_domain_list = wrap_list_items_in_double_quotes(args.get('external_domain', '*'))
-    dns_query_list = wrap_list_items_in_double_quotes(args.get('dns_query', '*'))
-    return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = STORY and
- dst_action_external_hostname in ({external_domain_list}) or dns_query_name in ({dns_query_list})| fields
+    external_domain_list = wrap_list_items_in_double_quotes(args.get('external_domain', ''))
+    dns_query_list = wrap_list_items_in_double_quotes(args.get('dns_query', ''))
+    return f'''dataset = xdr_data | filter (agent_id in ({endpoint_ids}) and event_type = STORY) and
+ (dst_action_external_hostname in ({external_domain_list}) or dns_query_name in ({dns_query_list}))| fields
  agent_hostname, agent_id, agent_ip_addresses, agent_os_type, agent_os_sub_type, action_local_ip, action_remote_ip,
  action_remote_port, dst_action_external_hostname, dns_query_name, action_app_id_transitions, action_total_download,
  action_total_upload, action_country, action_as_data, os_actor_process_image_path, os_actor_process_command_line,
@@ -231,11 +237,11 @@ def get_file_dropper_query(endpoint_ids: str, args: dict) -> str:
     """
     if not args.get('file_path') and not args.get('file_sha256'):
         raise DemistoException('Please provide at least one of the file_path, file_sha256 arguments.')
-    file_path_list = wrap_list_items_in_double_quotes(args.get('file_path', '*'))
-    file_sha256_list = wrap_list_items_in_double_quotes(args.get('file_sha256', '*'))
+    file_path_list = wrap_list_items_in_double_quotes(args.get('file_path', ''))
+    file_sha256_list = wrap_list_items_in_double_quotes(args.get('file_sha256', ''))
 
-    return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = FILE and event_sub_type in (
- FILE_WRITE, FILE_RENAME) and action_file_path in ({file_path_list}) or action_file_sha256 in ({file_sha256_list}) |
+    return f'''dataset = xdr_data | filter (agent_id in ({endpoint_ids}) and event_type = FILE and event_sub_type in (
+ FILE_WRITE, FILE_RENAME)) and (action_file_path in ({file_path_list}) or action_file_sha256 in ({file_sha256_list})) |
  fields agent_hostname, agent_ip_addresses, agent_id, action_file_sha256, action_file_path, actor_process_image_name,
  actor_process_image_path, actor_process_image_path, actor_process_command_line, actor_process_signature_vendor,
  actor_process_signature_product, actor_process_image_sha256, actor_primary_normalized_user,
@@ -292,21 +298,31 @@ def get_process_causality_network_activity_query(endpoint_ids: str, args: dict) 
 # =========================================== Helper Functions ===========================================#
 
 
-def convert_relative_time_to_milliseconds(time_to_convert: str) -> int:
-    """Convert a relative time string to its Unix timestamp representation in milliseconds.
+def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
+    """Convert a timeframe string to a json requred for XQL queries.
 
     Args:
-        time_to_convert (str): The relative time to convert (supports seconds, minutes, hours, days, months, years).
+        time_to_convert (str): The time frame string to convert (supports seconds, minutes, hours, days, months, years, between).
 
     Returns:
-        int: The Unix timestamp representation in milliseconds.
+        dict: The timeframe parameters in JSON.
     """
     try:
-        relative = dateparser.parse(time_to_convert, settings={'TIMEZONE': 'UTC'})
-        return int((datetime.utcnow() - relative).total_seconds()) * 1000
+        time_to_convert_lower = time_to_convert.strip().lower()
+        if time_to_convert_lower.startswith('between '):
+            tokens = time_to_convert_lower[len('between '):].split(' and ')
+            if len(tokens) == 2:
+                time_from = dateparser.parse(tokens[0], settings={'TIMEZONE': 'UTC'})
+                time_to = dateparser.parse(tokens[1], settings={'TIMEZONE': 'UTC'})
+                return {'from': int(time_from.timestamp()) * 1000, 'to': int(time_to.timestamp()) * 1000}
+        else:
+            relative = dateparser.parse(time_to_convert, settings={'TIMEZONE': 'UTC'})
+            return {'relativeTime': int((datetime.utcnow() - relative).total_seconds()) * 1000}
+
+        raise ValueError(f'Invalid timeframe: {time_to_convert}')
     except Exception as exc:
         raise DemistoException(f'Please enter a valid time frame (seconds, minutes, hours, days, weeks, months, '
-                               f'years).\n{str(exc)}')
+                               f'years, between).\n{str(exc)}')
 
 
 def start_xql_query(client: Client, args: Dict[str, Any]) -> str:
@@ -322,11 +338,9 @@ def start_xql_query(client: Client, args: Dict[str, Any]) -> str:
     query = args.get('query', '')
     if not query:
         raise ValueError('query is not specified')
-    if '//' in query:
-        raise DemistoException('Please remove notes (//) from query')
 
     if 'limit' not in query:  # if user did not provide a limit in the query, we will use the default one.
-        query = f'{query} | limit {str(DEFAULT_LIMIT)}'
+        query = f'{query} \n| limit {str(DEFAULT_LIMIT)}'
     data: Dict[str, Any] = {
         'request_data': {
             'query': query,
@@ -334,8 +348,7 @@ def start_xql_query(client: Client, args: Dict[str, Any]) -> str:
     }
     time_frame = args.get('time_frame')
     if time_frame:
-        converted_time = convert_relative_time_to_milliseconds(time_frame)
-        data['request_data']['timeframe'] = {'relativeTime': converted_time}
+        data['request_data']['timeframe'] = convert_timeframe_string_to_json(time_frame)
     tenant_ids = argToList(args.get('tenant_ids'))
     if tenant_ids:
         data['request_data']['tenants'] = tenant_ids
@@ -616,6 +629,7 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     """
     # get the query data either from the integration context (if its not the first run) or from the given args.
     query_id = args.get('query_id', '')
+    parse_result_file_to_context = argToBoolean(args.get('parse_result_file_to_context', 'false'))
     integration_context = get_integration_context()
     command_data = integration_context.get(query_id, args)
     command_name = command_data.get('command_name', demisto.command())
@@ -628,11 +642,17 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     outputs_prefix = get_outputs_prefix(command_name)
     command_results = CommandResults(outputs_prefix=outputs_prefix, outputs_key_field='execution_id', outputs=outputs,
                                      raw_response=copy.deepcopy(outputs))
-    # if there are more then 1000 results - a file is returned
+    # if there are more then 1000 results
     if file_data:
-        file = fileResult(filename="results.gz", data=file_data)
-        remove_query_id_from_integration_context(query_id)
-        return [file, command_results]
+        if not parse_result_file_to_context:
+            #  Extracts the results into a file only
+            file = fileResult(filename="results.gz", data=file_data)
+            remove_query_id_from_integration_context(query_id)
+            return [file, command_results]
+        else:
+            # Parse the results to context:
+            data = gzip.decompress(file_data).decode()
+            outputs['results'] = [json.loads(line) for line in data.split("\n") if len(line) > 0]
 
     # if status is pending, in versions above 6.2.0, the command will be called again in the next run until success.
     if outputs.get('status') == 'PENDING':

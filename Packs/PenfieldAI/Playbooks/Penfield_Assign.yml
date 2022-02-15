@@ -1,0 +1,170 @@
+id: Penfield Assign
+version: -1
+name: Penfield Assign
+description: This playbook invokes PenfieldAI backend to assign incident to an online
+  analyst.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 806edda5-edcf-4bd3-8ce7-1d5ed0a17b29
+    type: start
+    task:
+      id: 806edda5-edcf-4bd3-8ce7-1d5ed0a17b29
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e699e084-2f28-4d3a-84c6-287b5f66f11d
+    type: regular
+    task:
+      id: e699e084-2f28-4d3a-84c6-287b5f66f11d
+      version: -1
+      name: getUsers
+      description: Find all users associated with a role. In addition, you can get
+        all connected users or the user that ran the command.
+      script: Builtin|||getUsers
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      current: {}
+      incidentId: {}
+      onCall: {}
+      online:
+        simple: "true"
+      roles:
+        simple: Analyst
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: c3fbd7f8-c9d3-4962-8ab2-708a51c43208
+    type: regular
+    task:
+      id: c3fbd7f8-c9d3-4962-8ab2-708a51c43208
+      version: -1
+      name: penfield-get-assignee
+      description: Calls the Penfield API and returns the analyst Penfield recommends
+        assigning the incident to. This information is saved in the output, but the
+        incident will not be automatically assigned.
+      script: Penfield|||penfield-get-assignee
+      type: regular
+      iscommand: true
+      brand: Penfield_copy
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      analyst_ids:
+        complex:
+          root: DemistoUsers
+          accessor: name
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      category:
+        simple: ${incident.category}
+      created:
+        simple: ${incident.created}
+      id:
+        simple: ${incident.id}
+      name:
+        simple: ${incident.name}
+      severity:
+        simple: ${incident.severity}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: b9e84cf7-e6b7-4863-8c60-458070919a85
+    type: regular
+    task:
+      id: b9e84cf7-e6b7-4863-8c60-458070919a85
+      version: -1
+      name: setOwner
+      description: Set an incident owner
+      script: Builtin|||setOwner
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      owner:
+        simple: ${Penfield.Recommended}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 635,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

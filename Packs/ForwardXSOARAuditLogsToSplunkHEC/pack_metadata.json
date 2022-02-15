@@ -1,0 +1,31 @@
+{
+    "name": "Forward XSOAR Audit Logs to Splunk HEC",
+    "description": "This automation script takes a timeframe as input fetches the audit logs for the defined period. Then it pushes them to Splunk HEC. ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Harri Ruuttila",
+    "url": "",
+    "email": "",
+    "dependencies": {
+        "SplunkPy": {
+            "mandatory": true,
+            "display_name": "SplunkPy"
+        },
+        "Demisto REST API": {
+            "mandatory": true,
+            "display_name": "Demisto REST API"
+        }
+    },
+    "created": "2021-09-30T11:08:39Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "Hruuttila"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

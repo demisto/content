@@ -18,6 +18,7 @@ This integration was integrated and tested with version v2 of Proofpoint TAP v2
     | Threat status | A string specifying which threat statuses to return. If empty, will return "active" and "cleared" threats. Can be "active", "cleared", or "falsePositive". | False |
     | Events to fetch |  | False |
     | First fetch time range | First fetch time range \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 1 hour, 30 minutes\). Proofpoint supports a maximum 1 week fetch back. | False |
+    | Advanced: Raw message encoding | The character encoding to apply on the message fetched (e.g. latin-1). Advanced configuration to be used only if instructed by XSOAR Support | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
 
@@ -257,7 +258,7 @@ Returns forensics evidence.
 | Proofpoint.Report.Attachment.Display | String | A friendly display string. | 
 | Proofpoint.Report.Attachment.SHA256 | String | The SHA256 hash of the attachment's contents. | 
 | Proofpoint.Report.Attachment.MD5 | String | The MD5 hash of the attachment's contents. | 
-| Proofpoint.Report.Attachment.Blacklisted | Number | Optional. Whether the file was blacklisted. | 
+| Proofpoint.Report.Attachment.Blacklisted | Number | Optional. Whether the file was block listed. | 
 | Proofpoint.Report.Attachment.Offset | Number | Optional. The offset in bytes where the malicious content was found. | 
 | Proofpoint.Report.Attachment.Size | Number | Optional. The size in bytes of the attachment's contents. | 
 | Proofpoint.Report.Attachment.Platform.Name | String | The name of the platform. | 
@@ -353,7 +354,7 @@ Returns forensics evidence.
 | Proofpoint.Report.URL.Malicious | String | Whether the evidence was used to reach a malicious verdict. | 
 | Proofpoint.Report.URL.Display | String | A friendly display string. | 
 | Proofpoint.Report.URL.URL | String | The URL which was observed. | 
-| Proofpoint.Report.URL.Blacklisted | Boolean | Optional. Whether the URL appeared on a blacklist. | 
+| Proofpoint.Report.URL.Blacklisted | Boolean | Optional. Whether the URL appeared on a block list. | 
 | Proofpoint.Report.URL.SHA256 | String | Optional. The SHA256 hash of the file downloaded from the URL. | 
 | Proofpoint.Report.URL.MD5 | String | Optional. The MD5 hash of the file downloaded from the URL. | 
 | Proofpoint.Report.URL.Size | Number | Optional. The size in bytes of the file retrieved from the URL. | 

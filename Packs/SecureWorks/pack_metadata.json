@@ -1,16 +1,20 @@
 {
-  "name": "Dell Secureworks",
-  "description": "Provides access to the Secureworks CTP ticketing system",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Case Management"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "Secureworks",
+    "description": "Provides access to the Secureworks CTP and Taegis XDR systems",
+    "support": "partner",
+    "currentVersion": "2.0.1",
+    "author": "Secureworks",
+    "url": "https://ctpx.secureworks.com",
+    "email": "support@secureworks.com",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

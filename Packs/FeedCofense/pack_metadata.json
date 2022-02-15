@@ -1,19 +1,25 @@
 {
     "name": "Cofense Feed",
-    "description": "Indicators feed from Cofense",
-    "support": "xsoar",
-    "currentVersion": "1.0.13",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "description": "Ingest human-verified phishing indicators from Cofense Intelligence. Cofense Intelligence is reliable, human-verified phishing intelligence for actionable defense and strategic planning. Cofense researchers track emerging trends in phishing, research active threats, and supplement highest-priority investigations.",
+    "support": "partner",
+    "currentVersion": "1.1.1",
+    "author": "Cofense",
+    "url": "https://cofense.com/contact-support/",
+    "email": "support@cofense.com",
     "created": "2020-03-09T16:04:45Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Malware"
+    ],
     "useCases": [],
     "keywords": [
         "Cofense",
         "Feed"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "RaDark"
+    ],
+    "caseInsensitive": true,
+    "cliName": "kelaradarkmonitorid",
+    "closeForm": false,
+    "content": true,
+    "description": "The monitor ID in RaDark.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_kelaradarkmonitorid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "KELA RaDark Monitor ID",
+    "neverSetAsRequired": false,
+    "ownerOnly": true,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

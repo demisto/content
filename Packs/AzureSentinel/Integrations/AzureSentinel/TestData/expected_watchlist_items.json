@@ -1,0 +1,28 @@
+[
+  {
+    "WatchlistAlias": "test_watchlist_id_1",
+    "Name": "test_watchlist_item_name_1",
+    "ID": "test_watchlist_item_id_1",
+    "Created": "2021-08-15T14:14:28Z",
+    "Updated": "2021-08-15T14:14:28Z",
+    "CreatedBy": "User 1",
+    "UpdatedBy": "User 2",
+    "ItemsKeyValue": {
+      "name": "test1",
+      "IP": "1.1.1.1"
+    }
+  },
+  {
+    "WatchlistAlias": "test_watchlist_id_1",
+    "Name": "test_watchlist_item_name_2",
+    "ID": "test_watchlist_item_id_2",
+    "Created": "2021-08-15T14:14:28Z",
+    "Updated": "2021-08-15T14:14:28Z",
+    "CreatedBy": "User 3",
+    "UpdatedBy": "User 4",
+    "ItemsKeyValue": {
+      "name": "test2",
+      "IP": "2.2.2.2"
+    }
+  }
+]

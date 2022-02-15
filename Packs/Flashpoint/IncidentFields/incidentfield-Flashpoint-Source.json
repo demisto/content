@@ -1,0 +1,31 @@
+{
+    "id": "incident_flashpointsource",
+    "version": -1,
+    "modified": "2021-08-06T14:33:51.833438823+05:30",
+    "name": "Flashpoint Source",
+    "ownerOnly": false,
+    "description": "Code repository platform.",
+    "cliName": "flashpointsource",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Flashpoint Alerts"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

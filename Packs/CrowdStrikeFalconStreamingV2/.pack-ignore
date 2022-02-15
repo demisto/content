@@ -1,2 +1,5 @@
 [file:classifier-mapper-incoming-Crowdstrike-Streaming.json]
 ignore=BA101
+
+[file:CrowdStrikeFalconStreamingV2.yml]
+ignore=IN145

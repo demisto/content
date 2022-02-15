@@ -1,0 +1,397 @@
+id: Cloud IDS-IP Blacklist-GCP Firewall_Combine
+version: -1
+name: Cloud IDS-IP Blacklist-GCP Firewall_Combine
+description: Set a list of IP addresses in GCP firewall.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ead23198-fccb-45bb-8220-5ef5ee7dd8be
+    type: start
+    task:
+      id: ead23198-fccb-45bb-8220-5ef5ee7dd8be
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: f1d48043-8e87-402f-8d9a-92901f9e31c7
+    type: regular
+    task:
+      id: f1d48043-8e87-402f-8d9a-92901f9e31c7
+      version: -1
+      name: Close Incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      id:
+        complex:
+          root: incident
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: fa63a6e8-acb5-4473-800f-fd66b6510cba
+    type: regular
+    task:
+      id: fa63a6e8-acb5-4473-800f-fd66b6510cba
+      version: -1
+      name: Get GCP Firewall
+      description: Returns the specified firewall.
+      script: '|||gcp-compute-get-firewall'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      name:
+        simple: ${inputs.GCPFirewallName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 9cff5b68-acce-45c4-8ff4-9f78a8c213e0
+    type: condition
+    task:
+      id: 9cff5b68-acce-45c4-8ff4-9f78a8c213e0
+      version: -1
+      name: Is Google Compute integration enabled?
+      description: Checks if Google Compute Integration is enable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Google Cloud Compute
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Google Cloud Compute
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 7a1e8bf0-88a2-4633-8273-d3722a190768
+    type: title
+    task:
+      id: 7a1e8bf0-88a2-4633-8273-d3722a190768
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: fc0c9231-1c76-4d0b-8f7f-32be1294d9d3
+    type: condition
+    task:
+      id: fc0c9231-1c76-4d0b-8f7f-32be1294d9d3
+      version: -1
+      name: GCP Firewall found?
+      description: Checks if GCP Firewall is found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleCloudCompute.Firewalls.name
+            iscontext: true
+          right:
+            value:
+              simple: inputs.GCPFirewallName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 7b8acbb6-ddb1-4d2c-8421-cae172ba3e4c
+    type: title
+    task:
+      id: 7b8acbb6-ddb1-4d2c-8421-cae172ba3e4c
+      version: -1
+      name: GCP Firewall Name Not Found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 0252869d-02c1-4398-879c-3a71bb5574b5
+    type: regular
+    task:
+      id: 0252869d-02c1-4398-879c-3a71bb5574b5
+      version: -1
+      name: Engineer - Fix Firewall Name and rerun
+      description: Wait for Engineer to fix Firewall Name and rerun
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 4f827db1-c89e-434e-8678-0b2230358740
+    type: playbook
+    task:
+      id: 4f827db1-c89e-434e-8678-0b2230358740
+      version: -1
+      name: Cloud IDS-IP Blacklist-GCP Firewall_Append
+      description: Set a list of IP addresses in GCP firewall.
+      playbookName: Cloud IDS-IP Blacklist-GCP Firewall_Append
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      GCPFirewallName:
+        simple: ${inputs.GCPFirewallName}
+      srcip:
+        simple: ${JsonObject}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 7ad96a08-a5a8-45c8-8f2e-f4aa45cbbc8d
+    type: playbook
+    task:
+      id: 7ad96a08-a5a8-45c8-8f2e-f4aa45cbbc8d
+      version: -1
+      name: Cloud IDS-IP Blacklist-GCP Firewall_Extract
+      playbookName: Cloud IDS-IP Blacklist-GCP Firewall_Extract
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "29_22_yes": 0.3,
+      "29_34_#default#": 0.48,
+      "35_37_#default#": 0.54
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1485,
+        "width": 920,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: Indicators to trigger the playbook
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+- key: GCPFirewallName
+  value: {}
+  required: true
+  description: Name of the GCP Firewall where the playbook should set the IPs
+  playbookInputQuery:
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

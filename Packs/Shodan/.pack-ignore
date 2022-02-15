@@ -1,2 +1,2 @@
 [file:Shodan_v2.yml]
-ignore=BA108,BA109
+ignore=BA108,BA109,IN144,IN145

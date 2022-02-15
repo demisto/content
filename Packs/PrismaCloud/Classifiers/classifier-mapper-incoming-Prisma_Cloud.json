@@ -2,7 +2,7 @@
     "id": "RedLock-mapper",
     "name": "Prisma Cloud - Incoming Mapper",
     "type": "mapping-incoming",
-    "description": "Maps incoming Prisma Cloud event fields.",
+    "description": "Maps incoming Prisma Cloud event fields that are created through the 'fetch incidents' command in the Prisma Cloud integration.",
 	"defaultIncidentType": "Prisma Cloud",
 	"mapping": {
 		"AWS CloudTrail Misconfiguration": {

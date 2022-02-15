@@ -2,7 +2,7 @@
     "name": "Spamhaus Feed",
     "description": "Use the Spamhaus feed integration to fetch indicators from the feed.",
     "support": "xsoar",
-    "currentVersion": "1.1.7",
+    "currentVersion": "1.1.13",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,5 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

@@ -1,11 +1,11 @@
 {
     "name": "VirusTotal",
     "description": "Analyze suspicious hashes, URLs, domains and IP addresses",
-    "support": "xsoar",
-    "currentVersion": "2.1.7",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "support": "partner",
+    "currentVersion": "2.2.0",
+    "author": "VirusTotal",
+    "url": "https://www.virustotal.com",
+    "email": "contact@virustotal.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
@@ -15,5 +15,9 @@
     ],
     "useCases": [],
     "keywords": [],
-    "dependencies": {}
+    "dependencies": {},
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

@@ -63,7 +63,7 @@ script:
   - arguments:
     - default: true
       description: 'The CVE ID. For example: CVE-2014-1234.'
-      isArray: false
+      isArray: true
       name: cve_id
       required: true
       secret: false
@@ -99,7 +99,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor reporting the score of the indicator.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.9.25564
   feed: false
   isfetch: false
   longRunning: false

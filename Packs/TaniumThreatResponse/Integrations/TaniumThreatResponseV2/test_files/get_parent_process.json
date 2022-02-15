@@ -1,0 +1,30 @@
+[
+    {
+        "context": "parent",
+        "children_count": 11422,
+        "process_events_count": 1,
+        "registry_events_count": 0,
+        "file_events_count": 0,
+        "security_events_count": 0,
+        "image_events_count": 0,
+        "driver_events_count": 0,
+        "network_events_count": 0,
+        "dns_events_count": 0,
+        "create_time": "2021-07-06 13:02:01.000",
+        "end_time": "2021-07-18 07:26:56.000",
+        "exit_code": null,
+        "pid": 1,
+        "unique_process_id": "1",
+        "process_path": "<Pruned Process>",
+        "id": "1",
+        "process_table_id": "1",
+        "parent_process_table_id": "0",
+        "user_name": null,
+        "group_name": null,
+        "hash_type_name": null,
+        "process_hash": null,
+        "process_command_line": null,
+        "create_time_raw": 1625576521000,
+        "end_time_raw": 1626593216000
+    }
+]

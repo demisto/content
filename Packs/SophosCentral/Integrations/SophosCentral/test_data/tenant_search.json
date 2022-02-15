@@ -1,0 +1,15 @@
+{
+    "id": "0afef0e6-5df7-4cc0-b8d4-068cfd6820d1",
+    "name": "dummy-tenant",
+    "dataGeography": "IE",
+    "dataRegion": "eu01",
+    "billingType": "term",
+    "partner": {
+        "id": "01a47ea4-02c8-46ae-aeeb-71e17e6d1743"
+    },
+    "organization": {
+        "id": "b7823fd8-84b2-4213-ba05-d9109e08e858"
+    },
+    "apiHost": "dummy_url",
+    "status": "active"
+}

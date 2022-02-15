@@ -1,19 +1,35 @@
 {
-    "name": "Urlscan.io",
-    "description": "Urlscan.io reputation",
-    "support": "xsoar",
-    "currentVersion": "1.1.10",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "name": "URLScan.io",
+    "description": "urlscan.io Web Threat Intelligence",
+    "support": "partner",
+    "currentVersion": "1.1.15",
+    "author": "urlscan GmbH",
+    "url": "https://urlscan.io",
+    "email": "support@urlscan.io",
     "created": "2020-10-15T16:00:00Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Relationship"
+        "Relationship",
+        "Scam",
+        "Spam",
+        "Security",
+        "Threat Intelligence"
     ],
-    "useCases": [],
-    "keywords": [],
-    "dependencies": {}
+    "useCases": [
+        "Phishing",
+        "Hunting",
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "phishing",
+        "web",
+        "brand impersonation"
+    ],
+    "dependencies": {},
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

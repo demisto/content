@@ -14,7 +14,6 @@
  "neverSetAsRequired": false,
  "isReadOnly": false,
  "selectValues": [
-  "",
   "CONFIRMED",
   "CANDIDATE",
   "APPROVED INVENTORY",

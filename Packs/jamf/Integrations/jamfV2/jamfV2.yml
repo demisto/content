@@ -1858,10 +1858,10 @@ script:
       description: The mobile device UDID.
       type: String
     - contextPath: JAMF.MobileDevice.initial_entry_date_epoch
-      description: The mobile device  initial entry date in epoch format.
+      description: The mobile device initial entry date in epoch format.
       type: Date
     - contextPath: JAMF.MobileDevice.initial_entry_date_utc
-      description: The mobile device  initial entry date in UTC format.
+      description: The mobile device initial entry date in UTC format.
       type: Date
     - contextPath: JAMF.MobileDevice.phone_number
       description: The mobile device phone number.
@@ -2630,7 +2630,7 @@ script:
       description: The mobile device home mobile network code.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.network.data_roaming_enabled
-      description: Whether the the mobile device has data roaming enabled.
+      description: Whether the mobile device has data roaming enabled.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.network.roaming
       description: Whether the mobile device has network roaming.
@@ -3051,7 +3051,7 @@ script:
     - contextPath: Endpoint.Vendor
       description: The integration name of the endpoint vendor.
       type: String
-  dockerimage: demisto/btfl-soup:1.0.1.24037
+  dockerimage: demisto/btfl-soup:1.0.1.26429
   feed: false
   isfetch: false
   longRunning: false

@@ -1,0 +1,90 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "LogRhythm Mapper",
+    "mapping": {
+        "Logrhythm Case": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Assigned User": {
+                    "complex": null,
+                    "simple": "owner.name"
+                },
+                "LogRhythm Case Collaborators": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "collaborators",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Description": {
+                    "complex": null,
+                    "simple": "summary"
+                },
+                "Last Update Time": {
+                    "complex": null,
+                    "simple": "dateUpdated"
+                },
+                "LogRhythm Case Updated User": {
+                    "complex": null,
+                    "simple": "lastUpdatedBy.name"
+                },
+                "LogRhythm Status": {
+                    "complex": null,
+                    "simple": "status.name"
+                },
+                "LogRhythm Case Priority": {
+                    "complex": null,
+                    "simple": "priority"
+                },
+                "Tags": {
+                    "complex": null,
+                    "simple": "tags"
+                },
+                "LogRhythm Ticket Due Date": {
+                    "complex": null,
+                    "simple": "dueDate"
+                },
+                "name": {
+                    "complex": null,
+                    "simple": "name"
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "dateCreated"
+                }
+            }
+        },
+        "Logrhythm Alarm": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "LogRhythm Associated Cases": {
+                    "complex": null,
+                    "simple": "associatedCases"
+                },
+                "LogRhythm Entity": {
+                    "complex": null,
+                    "simple": "entityName"
+                },
+                "LogRhythm Status": {
+                    "complex": null,
+                    "simple": "alarmStatus"
+                },
+                "Rule Name": {
+                    "complex": null,
+                    "simple": "alarmRuleName"
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "dateInserted"
+                }
+            }
+        }
+    },
+    "name": "LogRhythm Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

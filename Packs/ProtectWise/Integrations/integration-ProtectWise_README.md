@@ -20,7 +20,7 @@
 <p class="wysiwyg-indent8"><strong>Incident type:</strong> Specify the Cortex XSOAR incident type that will be set for incidents from this integration.</p>
 <p class="wysiwyg-indent8"><strong>Use system proxy settings</strong>: Select whether to communicate via the system proxy server or not.</p>
 <p class="wysiwyg-indent8"><strong>Cortex XSOAR engine:</strong> If relevant, select the engine that acts as a proxy to the server.  </p>
-<p class="wysiwyg-indent8">Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks.<br><br>For more information on Cortex XSOAR engines see:<br><a href="https://support.demisto.com/hc/en-us/articles/226274727-Settings-Integrations-Engines">https://demisto.zendesk.com/hc/en-us/articles/226274727-Settings-Integrations-Engines</a></p>
+<p class="wysiwyg-indent8">Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks.<br><br>For more information on Cortex XSOAR engines see:<br><a href="https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/engines">https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/engines</a></p>
 <ol start="4">
 <li>Press the ‘Test’ button to validate connection.</li>
 <li>After completing the test successfully, press the ‘Done’ button.</li>

@@ -7,15 +7,16 @@ configuration:
   name: server
   required: true
   type: 0
+- displaypassword: API Key
+  name: credentials
+  required: false
+  type: 9
+  hiddenusername: true
 - defaultvalue: '443'
   display: Port (e.g 443)
   name: port
   required: false
   type: 0
-- display: API Key
-  name: key
-  required: true
-  type: 4
 - additionalinfo: Located in the Panorama UI. Go to Panorama, Device Groups and select
     the desired Device Group
   display: Device group - Panorama instances only (write shared for Shared location)
@@ -56,6 +57,12 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: API Key (Deprecated)
+  name: key
+  required: false
+  type: 4
+  hidden: true
+  additionalinfo: Use the "API Key (Recommended)" parameter instead.
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
 display: Palo Alto Networks PAN-OS
@@ -127,6 +134,9 @@ script:
       name: job-id
     - description: Query string.
       name: query
+    - description: The name of the virtual system to be configured. If no vsys is
+        mentioned, this command will not use the vsys parameter.
+      name: vsys
     description: Run any command supported in the API.
     name: panorama
   - arguments:
@@ -173,6 +183,27 @@ script:
   - arguments:
     - description: Commit description.
       name: description
+    - description: To commit admin-level changes on a firewall, include the administrator
+        name in the request.
+      name: admin_name
+    - auto: PREDEFINED
+      description: Force Commit.
+      name: force_commit
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Partial commit while excluding device and network configuration.
+      name: exclude_device_network_configuration
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Partial commit while excluding shared objects.
+      name: exclude_shared_objects
+      predefined:
+      - 'true'
+      - 'false'
     description: Commits a configuration to the Palo Alto firewall or Panorama, but
       does not validate if the commit was successful. Committing to Panorama does
       not push the configuration to the firewalls. To push the configuration, run
@@ -205,7 +236,13 @@ script:
       - 'false'
     - description: Push description.
       name: description
-    description: Pushes configuration from PAN-OS to the configured device group.
+    - description: The serial number for a virtual system commit. If provided, the
+        commit will be a virtual system commit.
+      name: serial_number
+    description: Pushes rules from PAN-OS to the configured device group. In order
+      to push the configuration to Prisma Access managed tenants (single or multi
+      tenancy), use the device group argument with the device group which is associated
+      with the tenant ID.
     name: panorama-push-to-device-group
     outputs:
     - contextPath: Panorama.Push.DeviceGroup
@@ -925,7 +962,7 @@ script:
       description: URL to check.
       isArray: true
       name: url
-      required: false
+      required: true
     description: Gets a URL category from URL filtering.
     execution: false
     name: url
@@ -1074,11 +1111,13 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      description: Element to change. Can be "override_allow_list", or "override_block_list"
+      description: Element to change.
       name: element_to_change
       predefined:
       - override_allow_list
       - override_block_list
+      - allow_categories
+      - block_categories
       - description
       required: true
     - description: Element value. Limited to one value.
@@ -1590,7 +1629,7 @@ script:
     - auto: PREDEFINED
       description: Parameter in the security rule to change. Can be 'source', 'destination',
         'application', 'action', 'category', 'description', 'disabled', 'target',
-        'log-forwarding', 'tag' or 'group_profile'.
+        'log-forwarding', 'tag', 'source-user', 'service' or 'profile-setting'.
       name: element_to_change
       predefined:
       - source
@@ -1604,6 +1643,8 @@ script:
       - log-forwarding
       - tag
       - profile-setting
+      - source-user
+      - service
       required: true
     - description: The new value for the parameter.
       name: element_value
@@ -1867,7 +1908,8 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Timeout value to automatically unregister the IPs. Only applicable to PAN-OS 9.x and higher. Can not be used with persistent as true.
+    - description: Timeout value to automatically unregister the IPs. Only applicable
+        to PAN-OS 9.x and higher. Can not be used with persistent as true.
       name: timeout
     description: Registers IP addresses to a tag.
     name: panorama-register-ip-tag
@@ -2370,6 +2412,10 @@ script:
       name: source-user
     - description: Target number of the firewall. Use only on a Panorama instance.
       name: target
+      isArray: true
+    - description: Target vsys of the firewall. Use only on a Panorama instance.
+      name: vsys
+      isArray: true
     description: Checks whether a session matches a specified security policy. This
       command is only available on Firewall instances.
     name: panorama-security-policy-match
@@ -3414,7 +3460,7 @@ script:
     - contextPath: Panorama.Content.Install.Status
       description: Installation status.
       type: string
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.1.25933
   runonce: false
   script: ''
   subtype: python3
