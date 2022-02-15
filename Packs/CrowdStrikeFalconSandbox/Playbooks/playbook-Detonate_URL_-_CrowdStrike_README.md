@@ -1,4 +1,4 @@
-Detonates one or more files using the CrowdStrike Falcon Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+(Deprecated). Use the command cs-falcon-sandbox-submit-url with polling=true instead.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
