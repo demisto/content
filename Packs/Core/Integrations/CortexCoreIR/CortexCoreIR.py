@@ -1896,8 +1896,6 @@ def remove_blocklist_files_command(client: Client, args: Dict) -> CommandResults
     incident_id = arg_to_number(args.get('incident_id'))
 
     res = client.remove_blocklist_files(hash_list=hash_list, comment=comment, incident_id=incident_id)
-    if isinstance(res, dict) and res.get('err_extra') != "All hashes have already been added to the allow or block list":
-        raise ValueError(res)
     markdown_data = [{'removed_hashes': file_hash} for file_hash in hash_list]
 
     return CommandResults(
@@ -2661,11 +2659,7 @@ def run_script_kill_process_command(client: Client, args: Dict) -> List[CommandR
 
 def add_exclusion_command(client: Client, args: Dict) -> CommandResults:
     name = args.get('name')
-    if not name:
-        raise DemistoException("Didn't get name arg. This arg is required.")
     indicator = args.get('filterObject')
-    if not indicator:
-        raise DemistoException("Didn't get filterObject arg. This arg is required.")
     status = args.get('status', "ENABLED")
     comment = args.get('comment')
 
@@ -2683,9 +2677,6 @@ def add_exclusion_command(client: Client, args: Dict) -> CommandResults:
 
 def delete_exclusion_command(client: Client, args: Dict) -> CommandResults:
     alert_exclusion_id = arg_to_number(args.get('alert_exclusion_id'))
-    if not alert_exclusion_id:
-        raise DemistoException("Didn't get alert_exclusion_id arg. This arg is required.")
-
     res = client.delete_exclusion(alert_exclusion_id=alert_exclusion_id)
 
     return CommandResults(

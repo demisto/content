@@ -26,5 +26,6 @@
   "ipinfo",
   "FeedMitreAttackv2",
   "FeedUnit42v2",
-  "Palo_Alto_Networks_WildFire"
+  "Palo_Alto_Networks_WildFire",
+  "Core"
 ]
