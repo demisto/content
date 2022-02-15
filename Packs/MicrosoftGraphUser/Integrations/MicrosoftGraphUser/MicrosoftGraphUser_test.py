@@ -1,3 +1,4 @@
+import pytest
 
 users_list_mock = [
     {
@@ -110,3 +111,29 @@ def test_get_unsupported_chars_in_user():
     invalid_user = f'demi{invalid_chars}sto'
 
     assert len(get_unsupported_chars_in_user(invalid_user).difference(set(invalid_chars))) == 0
+
+
+RESPONSE_WITH_LOCATION = {'Location': 'https://example.com'}
+
+
+@pytest.mark.parametrize('password,password_response', (('new_password', {}),
+                                                        (None, RESPONSE_WITH_LOCATION),
+                                                        ('', RESPONSE_WITH_LOCATION)
+                                                        )
+                         )
+def test_change_on_premise_password(requests_mock, password, password_response):
+    from MicrosoftGraphUser import (change_password_user_on_premise_command, MsGraphClient)
+
+    requests_mock.post('https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token', json={})
+    requests_mock.get(
+        'https://base_url/users/user/authentication/passwordMethods',
+        json={'value': [{'id': 'the_id'}]}
+    )
+    requests_mock.post(
+        'https://base_url/users/user/authentication/passwordMethods/the_id/resetPassword',
+        json=password_response
+    )
+
+    client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'https://base_url', 'verify', 'proxy',
+                           'self_deployed', 'redirect_uri', 'auth_code')
+    change_password_user_on_premise_command(client=client, args=dict(user='user', password=password))

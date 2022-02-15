@@ -316,7 +316,7 @@ def change_password_user_command(client: MsGraphClient, args: Dict):
     return human_readable, {}, {}
 
 
-def change_password_user_on_premise(client: MsGraphClient, args: Dict):
+def change_password_user_on_premise_command(client: MsGraphClient, args: Dict):
     user = str(args.get('user'))
     password = str(args.get('password'))
 
@@ -452,6 +452,7 @@ def main():
         'msgraph-user-account-disable': disable_user_account_command,
         'msgraph-user-update': update_user_command,
         'msgraph-user-change-password': change_password_user_command,
+        'msgraph-user-change-password-on-premise': change_password_user_on_premise_command,
         'msgraph-user-delete': delete_user_command,
         'msgraph-user-create': create_user_command,
         'msgraph-user-get-delta': get_delta_command,
