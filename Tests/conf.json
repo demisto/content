@@ -1,4 +1,3 @@
-
 {
     "testTimeout": 160,
     "testInterval": 20,
@@ -8,7 +7,10 @@
             "playbookID": "RSANetWitnessv115-Test"
         },
         {
-            "integrations": ["FeedMandiant", "Demisto REST API"],
+            "integrations": [
+                "FeedMandiant",
+                "Demisto REST API"
+            ],
             "playbookID": "Fetch Indicators Test",
             "fromversion": "6.1.0",
             "is_mockable": false,
@@ -5104,7 +5106,22 @@
         "LogRhythm REST test": "Issue 40654",
         "Process Email - Generic - Test - Actual Incident": "Issue 45227",
         "Jira-v2-Test": "Issue 33313",
-        "Tanium Threat Response V2 Test": "Issue 44201"
+        "Tanium Threat Response V2 Test": "Issue 44201",
+        "AzureADTest": "Issue 40131",
+        "whois_test": "Issue 25648",
+        "Autoextract - Test": "Issue 45293",
+        "LogRhythm-Test-Playbook": "Issue 27164",
+        "Azure WAF - Test": "Issue 33741",
+        "GSuiteAdmin-Test": "Issue 34784",
+        "Microsoft_365_Defender-Test": "Issue 39390",
+        "Tanium Threat Response - Request File Download v2 - Test": "Issue 46326",
+        "test_AssignToNextShiftOOO": "Issue 44198",
+        "EWS_O365_send_mail_test": "Issue 44200",
+        "Phishing Investigation - Generic v2 - Campaign Test": "Issue 44740",
+        "Cisco Umbrella Test": "Issue 24338",
+        "Archer v2 - Test": "Issue 31653",
+        "Azure NSG - Test": "Issue 33217",
+        "Unit42 Intel Objects Feed - Test": "Issue 44100"
     },
     "skipped_integrations": {
         
@@ -5224,7 +5241,8 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
-        "SentinelOne V2": "License expired issue #24933"
+        "SentinelOne V2": "License expired issue #24933",
+        "LogRhythm": "The integration is deprecated"
     },
     "nightly_integrations": [
         "Laline v2",
