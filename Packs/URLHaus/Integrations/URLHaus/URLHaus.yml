@@ -68,7 +68,7 @@ script:
   commands:
   - arguments:
     - default: true
-      description: URL to query.
+      description: A comma-separated list of URLs to query.
       isArray: true
       name: url
       required: true
@@ -161,7 +161,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Domain to query.
+      description: A comma-separated list of domains to query.
       isArray: true
       name: domain
       required: true
@@ -175,7 +175,7 @@ script:
       description: The domain name, for example, google.com.
       type: String
     - contextPath: Domain.Tags
-      description: A list of tags associated with the queried malware Domain.
+      description: A list of tags associated with the queried malware domain.
       type: string
     - contextPath: Domain.Relationships.EntityA
       description: The source of the relationship.
@@ -208,7 +208,7 @@ script:
       description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: URLhaus.Domain.FirstSeen
-      description: Date that the IP was seen for the first time (UTC).
+      description: Date that the IP address was seen for the first time (UTC).
       type: Date
     - contextPath: URLhaus.Domain.Blacklist.Name
       description: The status of the domain in different block lists.
@@ -223,11 +223,11 @@ script:
       description: Description of the malicious domain.
       type: String
     - contextPath: URLhaus.Domain.Blacklist.Status
-      description: Status of the URL in the block list.
+      description: Status of the domain in the block list.
       type: String
   - arguments:
     - default: true
-      description: MD5 hash or SHA256 hash of the file to query.
+      description: A comma-separated list of MD5 or SHA256 hashes of the file to query.
       isArray: true
       name: file
       required: true
@@ -248,10 +248,10 @@ script:
       type: String
     - contextPath: File.SSDeep
       description: SSDeep of the file.
-      type: string
+      type: String
     - contextPath: File.Type
       description: Type of the file.
-      type: stringd
+      type: String
     - contextPath: File.Relationships.EntityA
       description: The source of the relationship.
       type: String
