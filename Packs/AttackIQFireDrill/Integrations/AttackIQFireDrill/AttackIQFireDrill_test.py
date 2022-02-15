@@ -37,7 +37,7 @@ def test_build_transformed_dict_list():
 
 def test_activate_assessment_command(mocker):
     mocker.patch.object(requests, 'request', return_value=ResponseMock(ACTIVATE_ASS_RESP))
-    mocker.patch.object(demisto, 'pages_puller')
+    mocker.patch.object(demisto, 'results')
     activate_assessment_command()
     demisto.results.assert_called_with('Successfully activated project c4e352ae-1506-4c74-bd90-853f02dd765a')
 
