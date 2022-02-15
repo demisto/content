@@ -14,7 +14,7 @@ TOKEN = PARAMS.get('token') or (PARAMS.get('credentials') or {}).get('password')
 if not TOKEN and is_demisto_version_ge('6.5.0'):
     try:
         TOKEN = demisto.getLicenseCustomField('WildFire-Reports.token')
-    except Exception as e:
+    except Exception as _:
         TOKEN = None
 
 USE_SSL = not PARAMS.get('insecure', False)
