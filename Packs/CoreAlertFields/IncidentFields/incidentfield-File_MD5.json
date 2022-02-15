@@ -28,7 +28,7 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "agent_file_md5",
+    "x2_fields": "action_file_md5",
     "Aliases": [
         {
             "cliName": "gibinjectmd5",
