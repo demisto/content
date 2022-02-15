@@ -40,6 +40,13 @@
                 "FireEye Matched Time": {
                     "simple": "matched_at"
                 },
+                "Fireeye Event Info": {
+                    "complex": {
+                        "filters": [],
+                        "root": "event_values",
+                        "transformers": []
+                    }
+                },
                 "Fireeye Matched Time": {
                     "simple": "matched_at"
                 },

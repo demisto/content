@@ -1,0 +1,31 @@
+{
+    "id": "incident_fireeyehxagentcontainmentstate",
+    "version": -1,
+    "modified": "2022-02-13T15:45:49.211304Z",
+    "name": "FireEye HX Agent Containment State",
+    "ownerOnly": false,
+    "cliName": "fireeyeagentcontainmentstate",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "FireEye HX Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

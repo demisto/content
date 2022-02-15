@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3cd6d466-35fe-4569-83dd-8e10eddd346b
+    taskid: 3945b9d7-be6f-4cd0-8914-c4dd3b002f4f
     type: start
     task:
-      id: 3cd6d466-35fe-4569-83dd-8e10eddd346b
+      id: 3945b9d7-be6f-4cd0-8914-c4dd3b002f4f
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: c906efcc-8e94-4b42-8b84-c5045800cd23
+    taskid: 1024ae93-9680-4422-8527-f12df57108b4
     type: regular
     task:
-      id: c906efcc-8e94-4b42-8b84-c5045800cd23
+      id: 1024ae93-9680-4422-8527-f12df57108b4
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -68,10 +68,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 6079a615-5c6d-4f18-8e73-2d800531d555
+    taskid: 4f9c8d2e-3bfc-4f69-8524-03e329632c63
     type: regular
     task:
-      id: 6079a615-5c6d-4f18-8e73-2d800531d555
+      id: 4f9c8d2e-3bfc-4f69-8524-03e329632c63
       version: -1
       name: fireeye-hx-get-host-information
       description: Get information on a host associated with an agent.
@@ -102,10 +102,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: a83b12ac-fbf6-4de2-8824-f46f0db7fdbc
+    taskid: 858b5525-3bfd-41a6-8560-21ef289090f3
     type: condition
     task:
-      id: a83b12ac-fbf6-4de2-8824-f46f0db7fdbc
+      id: 858b5525-3bfd-41a6-8560-21ef289090f3
       version: -1
       name: Verify Outputs
       type: condition
@@ -239,10 +239,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: d4744a25-73c0-463f-8615-e02b33834e34
+    taskid: 39545a59-24ab-48cd-8f79-bb4b967044f7
     type: regular
     task:
-      id: d4744a25-73c0-463f-8615-e02b33834e34
+      id: 39545a59-24ab-48cd-8f79-bb4b967044f7
       version: -1
       name: fireeye-hx-get-all-hosts-information
       description: Get information on all hosts.
@@ -270,10 +270,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 6f33a0c6-de43-402c-84e7-c34cef5755e7
+    taskid: 5a9241fd-2931-4eb9-8389-9deaf1e56239
     type: condition
     task:
-      id: 6f33a0c6-de43-402c-84e7-c34cef5755e7
+      id: 5a9241fd-2931-4eb9-8389-9deaf1e56239
       version: -1
       name: Verify Outputs
       type: condition
@@ -342,10 +342,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 7251b669-a6c6-4127-883e-d1fccad393a5
+    taskid: 54da8bf1-beaf-4a7a-8314-234e0e0891d2
     type: regular
     task:
-      id: 7251b669-a6c6-4127-883e-d1fccad393a5
+      id: 54da8bf1-beaf-4a7a-8314-234e0e0891d2
       version: -1
       name: fireeye-hx-host-containment
       description: Apply containment for a specific host, so that it no longer has
@@ -379,10 +379,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: e82bcaee-d3e9-430c-8474-2fe17717f22f
+    taskid: 1585f0f1-948c-4eec-80ec-b82a5d647e50
     type: condition
     task:
-      id: e82bcaee-d3e9-430c-8474-2fe17717f22f
+      id: 1585f0f1-948c-4eec-80ec-b82a5d647e50
       version: -1
       name: Verify Outputs
       type: condition
@@ -456,10 +456,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: b735e4ee-7c65-4e9e-863f-01c09d6e93bc
+    taskid: 9d86ec45-45dc-419d-8c16-720345c2fdec
     type: regular
     task:
-      id: b735e4ee-7c65-4e9e-863f-01c09d6e93bc
+      id: 9d86ec45-45dc-419d-8c16-720345c2fdec
       version: -1
       name: fireeye-hx-cancel-containment
       description: Release a specific host from containment.
@@ -490,10 +490,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 052ee2ce-0037-4a2a-86a7-a10386d944fe
+    taskid: 0cc2b8f3-08e4-4fad-8561-6156cf7a3a61
     type: regular
     task:
-      id: 052ee2ce-0037-4a2a-86a7-a10386d944fe
+      id: 0cc2b8f3-08e4-4fad-8561-6156cf7a3a61
       version: -1
       name: fireeye-hx-initiate-data-acquisition
       description: Initiate a data acquisition process to gather artifacts from the
@@ -527,10 +527,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: fed1aaf0-9fe4-42e4-8bb0-8518742c4813
+    taskid: 6e562fd0-9739-47f9-83a4-6b4d99fa4f7c
     type: condition
     task:
-      id: fed1aaf0-9fe4-42e4-8bb0-8518742c4813
+      id: 6e562fd0-9739-47f9-83a4-6b4d99fa4f7c
       version: -1
       name: Verify Outputs
       type: condition
@@ -586,10 +586,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: e1a0f189-8f03-4fef-8602-4ab22e97384e
+    taskid: 7e8b0a13-6726-4a6e-8fdb-73f57f1ff55e
     type: regular
     task:
-      id: e1a0f189-8f03-4fef-8602-4ab22e97384e
+      id: 7e8b0a13-6726-4a6e-8fdb-73f57f1ff55e
       version: -1
       name: fireeye-hx-get-host-set-information
       description: Get a list of all host sets known to your HX Series appliance.
@@ -617,10 +617,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 85ac96a1-2c5e-4066-895e-c486c56cb103
+    taskid: 12ab9950-fe55-4c61-8cdd-b5228cd2456a
     type: condition
     task:
-      id: 85ac96a1-2c5e-4066-895e-c486c56cb103
+      id: 12ab9950-fe55-4c61-8cdd-b5228cd2456a
       version: -1
       name: Verify Outputs
       type: condition
@@ -674,10 +674,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 72012e4a-a381-42e8-8b81-1ceb33d32c00
+    taskid: 0d88eaec-499b-4792-8c59-cd61f866e7e3
     type: regular
     task:
-      id: 72012e4a-a381-42e8-8b81-1ceb33d32c00
+      id: 0d88eaec-499b-4792-8c59-cd61f866e7e3
       version: -1
       name: fireeye-hx-list-policy
       description: Get a list of all policy.
@@ -705,10 +705,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 1ff1c194-1a6f-4fb1-88ed-b5ede6e8240c
+    taskid: dd60f846-c7b7-4804-8734-1ec6ce39ba70
     type: condition
     task:
-      id: 1ff1c194-1a6f-4fb1-88ed-b5ede6e8240c
+      id: dd60f846-c7b7-4804-8734-1ec6ce39ba70
       version: -1
       name: Verify Outputs
       type: condition
@@ -762,10 +762,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 3bd1a1ea-52dd-45c3-8012-90245462953b
+    taskid: 718ff2b9-5d27-478f-8209-5caf0ad05644
     type: regular
     task:
-      id: 3bd1a1ea-52dd-45c3-8012-90245462953b
+      id: 718ff2b9-5d27-478f-8209-5caf0ad05644
       version: -1
       name: fireeye-hx-list-host-set-policy
       description: Get a list of all policies for all host sets.
@@ -796,10 +796,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 17998399-a18e-44a8-89aa-87efca984200
+    taskid: b979a100-a0dd-49af-8e9c-7ddc311b5f87
     type: condition
     task:
-      id: 17998399-a18e-44a8-89aa-87efca984200
+      id: b979a100-a0dd-49af-8e9c-7ddc311b5f87
       version: -1
       name: Verify Outputs
       type: condition
@@ -838,10 +838,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: e2a15963-7e8d-48ec-8e82-f388f76160a4
+    taskid: 928dfa20-d349-4729-8413-e83d2c6cf048
     type: regular
     task:
-      id: e2a15963-7e8d-48ec-8e82-f388f76160a4
+      id: 928dfa20-d349-4729-8413-e83d2c6cf048
       version: -1
       name: fireeye-hx-list-containment
       description: Fetches all containment states across known hosts.
@@ -869,10 +869,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 869e5d34-02fa-4df8-8c26-c1017c5be38d
+    taskid: 851fe47d-f204-4817-897d-5c2bf75c4a89
     type: condition
     task:
-      id: 869e5d34-02fa-4df8-8c26-c1017c5be38d
+      id: 851fe47d-f204-4817-897d-5c2bf75c4a89
       version: -1
       name: Verify Outputs
       type: condition
@@ -916,10 +916,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: d8b5443e-a8cc-4338-8ae5-08db5e800dda
+    taskid: 816a2f1d-ca04-4be0-81d8-caf4bcbfc83d
     type: regular
     task:
-      id: d8b5443e-a8cc-4338-8ae5-08db5e800dda
+      id: 816a2f1d-ca04-4be0-81d8-caf4bcbfc83d
       version: -1
       name: fireeye-hx-search-list
       description: Fetches all enterprise searches.
@@ -950,10 +950,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: fd879aae-31ea-48fa-821d-dca29ca3bd42
+    taskid: 4ca64e17-4a06-4176-8ec7-f10c32c35016
     type: regular
     task:
-      id: fd879aae-31ea-48fa-821d-dca29ca3bd42
+      id: 4ca64e17-4a06-4176-8ec7-f10c32c35016
       version: -1
       name: fireeye-hx-search-stop
       description: Stops a specific running search.
@@ -984,10 +984,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 3a0b1810-e653-4a46-8505-3c7080ed406c
+    taskid: a53a230e-9bf7-4677-8c2b-8e997288b0e4
     type: condition
     task:
-      id: 3a0b1810-e653-4a46-8505-3c7080ed406c
+      id: a53a230e-9bf7-4677-8c2b-8e997288b0e4
       version: -1
       name: Verify Outputs
       type: condition
@@ -1058,10 +1058,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 7d5d56bd-aa47-4bea-8e62-56c4a6b75432
+    taskid: be7e5bbd-715a-43a5-80e8-b18ce10a6080
     type: regular
     task:
-      id: 7d5d56bd-aa47-4bea-8e62-56c4a6b75432
+      id: be7e5bbd-715a-43a5-80e8-b18ce10a6080
       version: -1
       name: fireeye-hx-search-result-get
       description: Fetches the result for a specific enterprise search.
@@ -1092,10 +1092,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 018563c5-acd6-4a27-83c5-8c5b4151fb02
+    taskid: 6af03782-587d-41e3-8a38-de97e1d65a08
     type: condition
     task:
-      id: 018563c5-acd6-4a27-83c5-8c5b4151fb02
+      id: 6af03782-587d-41e3-8a38-de97e1d65a08
       version: -1
       name: Verify Outputs
       type: condition
@@ -1158,10 +1158,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: f9cd0a52-5781-4f2b-8f72-8b4eccfec412
+    taskid: 18d9ba72-5349-482c-82a9-5936b1468118
     type: regular
     task:
-      id: f9cd0a52-5781-4f2b-8f72-8b4eccfec412
+      id: 18d9ba72-5349-482c-82a9-5936b1468118
       version: -1
       name: fireeye-hx-get-alert
       description: Get details of a specific alert.
@@ -1192,10 +1192,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: e662251b-49d0-4bb8-833a-2fd2ef96cc23
+    taskid: ca007d9d-4ac2-4f66-84db-17cc7a98a668
     type: condition
     task:
-      id: e662251b-49d0-4bb8-833a-2fd2ef96cc23
+      id: ca007d9d-4ac2-4f66-84db-17cc7a98a668
       version: -1
       name: Verify Outputs
       type: condition
@@ -1269,10 +1269,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 4ba8a8af-5413-4825-88a4-4356e1ec9af3
+    taskid: 9b490d04-a44c-4e00-8a9f-19012af2857c
     type: regular
     task:
-      id: 4ba8a8af-5413-4825-88a4-4356e1ec9af3
+      id: 9b490d04-a44c-4e00-8a9f-19012af2857c
       version: -1
       name: fireeye-hx-suppress-alert
       description: Suppress alert by ID.
@@ -1297,10 +1297,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 7e66e508-efb6-4543-83dd-e608b9b65fb7
+    taskid: 1924794f-cd64-4fe9-832f-37db3fbb10b8
     type: regular
     task:
-      id: 7e66e508-efb6-4543-83dd-e608b9b65fb7
+      id: 1924794f-cd64-4fe9-832f-37db3fbb10b8
       version: -1
       name: fireeye-hx-get-indicators
       description: Get a list of indicators.
@@ -1331,10 +1331,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: b74442ba-ca34-4a7a-8285-a3be6deac434
+    taskid: 42f43a7c-4440-495c-804c-b8f0a163159c
     type: condition
     task:
-      id: b74442ba-ca34-4a7a-8285-a3be6deac434
+      id: 42f43a7c-4440-495c-804c-b8f0a163159c
       version: -1
       name: Verify Outputs
       type: condition
@@ -1413,10 +1413,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 82d8001b-771e-4324-849d-ecb85ee581e6
+    taskid: 89f8ef75-8590-475b-862e-b52a5b229610
     type: regular
     task:
-      id: 82d8001b-771e-4324-849d-ecb85ee581e6
+      id: 89f8ef75-8590-475b-862e-b52a5b229610
       version: -1
       name: fireeye-hx-get-indicator
       description: Get a specific indicator details.
@@ -1449,10 +1449,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: b68a2bf2-4024-40c3-8d8c-be9f7ff482b2
+    taskid: a6f22e30-785c-424e-8c44-c47287a3bdb4
     type: condition
     task:
-      id: b68a2bf2-4024-40c3-8d8c-be9f7ff482b2
+      id: a6f22e30-785c-424e-8c44-c47287a3bdb4
       version: -1
       name: Verify Outputs
       type: condition
@@ -1538,10 +1538,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 3952c6e2-362a-4b79-80d5-18d58fd2cbde
+    taskid: 42feb176-8444-457b-8728-e1f9c9752d22
     type: regular
     task:
-      id: 3952c6e2-362a-4b79-80d5-18d58fd2cbde
+      id: 42feb176-8444-457b-8728-e1f9c9752d22
       version: -1
       name: fireeye-hx-append-conditions
       description: Add conditions to an indicator. Conditions can be MD5, hash values,
@@ -1577,10 +1577,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: b6409603-b025-4cda-8a5f-cd6151d23273
+    taskid: 3644374e-2625-48ff-8b94-20a11e61ea30
     type: regular
     task:
-      id: b6409603-b025-4cda-8a5f-cd6151d23273
+      id: 3644374e-2625-48ff-8b94-20a11e61ea30
       version: -1
       name: fireeye-hx-delete-file-acquisition
       description: Delete the file acquisition, by ID.
@@ -1611,10 +1611,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 5566a235-0c2b-4344-8fd9-2bd6429d082f
+    taskid: b8f06af9-1e7b-4dcf-8aaf-0d1b5ac1e86a
     type: regular
     task:
-      id: 5566a235-0c2b-4344-8fd9-2bd6429d082f
+      id: b8f06af9-1e7b-4dcf-8aaf-0d1b5ac1e86a
       version: -1
       name: fireeye-hx-approve-containment
       description: Approve pending containment requests made by other components or
@@ -1646,10 +1646,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 11b8b4d4-e109-4e09-8389-1c8e893efc6b
+    taskid: 1e0aaabf-efa9-4851-8eaf-450fa68dfff2
     type: regular
     task:
-      id: 11b8b4d4-e109-4e09-8389-1c8e893efc6b
+      id: 1e0aaabf-efa9-4851-8eaf-450fa68dfff2
       version: -1
       name: fireeye-hx-assign-host-set-policy
       description: Insert a new host set policy on your Endpoint Security server.
@@ -1682,10 +1682,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 873eed2b-1ccb-4208-8f1e-1aef7ff17bbd
+    taskid: 7c96b51f-d64c-4117-8a49-00c49b1f5469
     type: regular
     task:
-      id: 873eed2b-1ccb-4208-8f1e-1aef7ff17bbd
+      id: 7c96b51f-d64c-4117-8a49-00c49b1f5469
       version: -1
       name: fireeye-hx-get-data-acquisition
       description: Gather artifacts from the system disk and memory for the given
@@ -1717,10 +1717,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: dec32288-6483-4693-8342-0618e73460b2
+    taskid: 1a14c40b-02d4-4cc9-89b9-ed17ec5da355
     type: condition
     task:
-      id: dec32288-6483-4693-8342-0618e73460b2
+      id: 1a14c40b-02d4-4cc9-89b9-ed17ec5da355
       version: -1
       name: Verify Outputs
       type: condition
@@ -1776,10 +1776,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 8bcaa58a-8e1d-4f96-8a4e-27ef82a5de33
+    taskid: c2670911-ff81-4d4a-86dd-1c1e2b492cf0
     type: regular
     task:
-      id: 8bcaa58a-8e1d-4f96-8a4e-27ef82a5de33
+      id: c2670911-ff81-4d4a-86dd-1c1e2b492cf0
       version: -1
       name: fireeye-hx-data-acquisition
       description: Start a data acquisition process to gather artifacts from the system
@@ -1808,10 +1808,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 600df2a4-2de1-46ff-8e33-42d08a482e6a
+    taskid: a1827daf-9576-4348-8bc0-cdf40c84e0e8
     type: condition
     task:
-      id: 600df2a4-2de1-46ff-8e33-42d08a482e6a
+      id: a1827daf-9576-4348-8bc0-cdf40c84e0e8
       version: -1
       name: Verify Outputs
       type: condition
@@ -1862,10 +1862,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 2ea01e4b-f997-4aeb-899e-9a4ade11b13f
+    taskid: f24e1fcf-da47-4d42-86d0-ff3e145d5c61
     type: regular
     task:
-      id: 2ea01e4b-f997-4aeb-899e-9a4ade11b13f
+      id: f24e1fcf-da47-4d42-86d0-ff3e145d5c61
       version: -1
       name: fireeye-hx-get-alerts
       description: Get a list of alerts, use the different arguments to filter the
@@ -1897,10 +1897,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 8459d32f-60c4-4e1a-8ead-a98698c6955f
+    taskid: ad773067-9413-41d2-84bb-ed12c09ea8de
     type: condition
     task:
-      id: 8459d32f-60c4-4e1a-8ead-a98698c6955f
+      id: ad773067-9413-41d2-84bb-ed12c09ea8de
       version: -1
       name: Verify Outputs
       type: condition
@@ -1971,10 +1971,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 5ecaddc9-c8e2-41b6-8917-0afddc352832
+    taskid: c0735192-6e3a-435b-8aa8-0f236559f194
     type: regular
     task:
-      id: 5ecaddc9-c8e2-41b6-8917-0afddc352832
+      id: c0735192-6e3a-435b-8aa8-0f236559f194
       version: -1
       name: fireeye-hx-file-acquisition
       description: Aquire a specific file as a password protected zip file. The password
@@ -2003,10 +2003,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 0f54dab3-f38f-46ce-8d4c-33034910df7d
+    taskid: 5d8a768e-9264-456f-8065-4571951823ba
     type: condition
     task:
-      id: 0f54dab3-f38f-46ce-8d4c-33034910df7d
+      id: 5d8a768e-9264-456f-8065-4571951823ba
       version: -1
       name: Verify Outputs
       type: condition
@@ -2062,10 +2062,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 35be1874-0523-47a0-8cda-a47d5a84f810
+    taskid: a5099b89-5c1c-4b20-8c30-9e9f43583f1a
     type: regular
     task:
-      id: 35be1874-0523-47a0-8cda-a47d5a84f810
+      id: a5099b89-5c1c-4b20-8c30-9e9f43583f1a
       version: -1
       name: fireeye-hx-create-indicator
       description: Create new indicator
@@ -2096,10 +2096,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 59b9383c-02b3-4f9c-8b3b-8354647de489
+    taskid: 5520efa0-9b49-4a68-800f-dc53e04bc2d0
     type: condition
     task:
-      id: 59b9383c-02b3-4f9c-8b3b-8354647de489
+      id: 5520efa0-9b49-4a68-800f-dc53e04bc2d0
       version: -1
       name: Verify Outputs
       type: condition
@@ -2205,10 +2205,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 6e8be774-ffee-4b9a-82af-16ab677de35f
+    taskid: 7a2b4b14-edcf-4d88-8cfe-f60dad2dc493
     type: title
     task:
-      id: 6e8be774-ffee-4b9a-82af-16ab677de35f
+      id: 7a2b4b14-edcf-4d88-8cfe-f60dad2dc493
       version: -1
       name: Test Done
       type: title
@@ -2232,10 +2232,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 6449a20c-3a04-4db0-8398-d0fb580d884e
+    taskid: f8f3ef09-fae3-4247-8fc7-59f0c3558a3b
     type: condition
     task:
-      id: 6449a20c-3a04-4db0-8398-d0fb580d884e
+      id: f8f3ef09-fae3-4247-8fc7-59f0c3558a3b
       version: -1
       name: Verify Outputs
       type: condition
@@ -2306,10 +2306,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 9403b124-c988-4db5-8a49-d5b4eb0fe8fa
+    taskid: 216ffc64-2332-4eaf-88e3-bee565a76949
     type: regular
     task:
-      id: 9403b124-c988-4db5-8a49-d5b4eb0fe8fa
+      id: 216ffc64-2332-4eaf-88e3-bee565a76949
       version: -1
       name: fireeye-hx-cancel-containment
       description: Release a specific host from containment.
@@ -2340,10 +2340,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 7b017a72-cff4-4674-8e44-5ec69050ddf7
+    taskid: 3067f9c2-40e6-4b6c-8efb-c6b12a2ff276
     type: condition
     task:
-      id: 7b017a72-cff4-4674-8e44-5ec69050ddf7
+      id: 3067f9c2-40e6-4b6c-8efb-c6b12a2ff276
       version: -1
       name: Verify Outputs
       type: condition
@@ -2439,10 +2439,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: af73ad27-f683-4873-8a4f-3d732817fb94
+    taskid: f09a8f9b-62f3-4570-86eb-3732e368762c
     type: condition
     task:
-      id: af73ad27-f683-4873-8a4f-3d732817fb94
+      id: f09a8f9b-62f3-4570-86eb-3732e368762c
       version: -1
       name: Is There Search
       type: condition
@@ -2480,10 +2480,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 8880b837-999f-4c4a-8cd8-cc89adc52395
+    taskid: 39552af9-aa2b-40e3-8794-909b4fb0b242
     type: condition
     task:
-      id: 8880b837-999f-4c4a-8cd8-cc89adc52395
+      id: 39552af9-aa2b-40e3-8794-909b4fb0b242
       version: -1
       name: No Results
       type: condition
@@ -2519,10 +2519,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 675b9402-b0ca-4c24-88b5-8e7b0af96fe2
+    taskid: 56797a04-2480-48f2-8f1f-b9a2ec90cc7c
     type: condition
     task:
-      id: 675b9402-b0ca-4c24-88b5-8e7b0af96fe2
+      id: 56797a04-2480-48f2-8f1f-b9a2ec90cc7c
       version: -1
       name: If there is a search in run mode
       type: condition
@@ -2560,10 +2560,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: c72e8156-b6d1-4ba8-865b-203fd8920943
+    taskid: 06fbbe23-57c9-48eb-838d-cc32f04eece5
     type: regular
     task:
-      id: c72e8156-b6d1-4ba8-865b-203fd8920943
+      id: 06fbbe23-57c9-48eb-838d-cc32f04eece5
       version: -1
       name: fireeye-hx-search-list
       description: Fetches all enterprise searches.
@@ -2596,10 +2596,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 25602b8d-e31c-42f6-880b-84f628deea42
+    taskid: b6b48b82-b471-48b3-812d-37bf0dff52f3
     type: regular
     task:
-      id: 25602b8d-e31c-42f6-880b-84f628deea42
+      id: b6b48b82-b471-48b3-812d-37bf0dff52f3
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -2629,10 +2629,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 5bd9ecb4-ad1b-40c0-8ae9-78a52ffd197e
+    taskid: 8194f79f-f86d-4611-8534-6bf595ced926
     type: regular
     task:
-      id: 5bd9ecb4-ad1b-40c0-8ae9-78a52ffd197e
+      id: 8194f79f-f86d-4611-8534-6bf595ced926
       version: -1
       name: fireeye-hx-search
       description: Search endpoints to check all hosts or a subset of hosts for a
@@ -2670,10 +2670,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: dde03f16-1bb6-40ce-8660-837da7c1307a
+    taskid: ddf1182f-c375-4fdd-8c30-dbbeb9b47cad
     type: regular
     task:
-      id: dde03f16-1bb6-40ce-8660-837da7c1307a
+      id: ddf1182f-c375-4fdd-8c30-dbbeb9b47cad
       version: -1
       name: fireeye-hx-search-list
       description: Fetches all enterprise searches.
@@ -2706,10 +2706,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: ed0315cc-f9a1-4bae-8fa6-ce4ac6382c8d
+    taskid: 5f806d62-de9a-4489-8436-29aeab2f6a73
     type: regular
     task:
-      id: ed0315cc-f9a1-4bae-8fa6-ce4ac6382c8d
+      id: 5f806d62-de9a-4489-8436-29aeab2f6a73
       version: -1
       name: fireeye-hx-search-delete
       description: Delete the search, by ID.
@@ -2740,10 +2740,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: 89368a4f-bf60-4fec-8c03-fb1e00df61d3
+    taskid: b7d51f7e-37e4-48d2-84fa-c699c195e412
     type: regular
     task:
-      id: 89368a4f-bf60-4fec-8c03-fb1e00df61d3
+      id: b7d51f7e-37e4-48d2-84fa-c699c195e412
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -2773,10 +2773,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 43188182-9f0b-490d-808d-1a947c99e232
+    taskid: d712643f-16e6-43d0-860f-bc95653bbfc7
     type: regular
     task:
-      id: 43188182-9f0b-490d-808d-1a947c99e232
+      id: d712643f-16e6-43d0-860f-bc95653bbfc7
       version: -1
       name: fireeye-hx-search
       description: Search endpoints to check all hosts or a subset of hosts for a
@@ -2818,10 +2818,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 5f49fcba-79a7-483e-8619-2f421618d3e6
+    taskid: 88ed5dc2-c44b-4b99-8581-4aa4591d5673
     type: condition
     task:
-      id: 5f49fcba-79a7-483e-8619-2f421618d3e6
+      id: 88ed5dc2-c44b-4b99-8581-4aa4591d5673
       version: -1
       name: Verify Outputs
       type: condition

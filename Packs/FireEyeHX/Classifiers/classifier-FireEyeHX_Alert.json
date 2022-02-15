@@ -1,0 +1,38 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "f2f7ad3f-1401-45a7-8574-bf249afe8e1c",
+    "keyTypeMap": {
+        "/hx/api/v3": "FireEye HX Alert"
+    },
+    "name": "FireEye HX Alert",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "filters": [],
+            "root": "url",
+            "transformers": [
+                {
+                    "args": {
+                        "from": {
+                            "value": {
+                                "simple": "0"
+                            }
+                        },
+                        "to": {
+                            "value": {
+                                "simple": "10"
+                            }
+                        }
+                    },
+                    "operator": "substring"
+                }
+            ]
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
