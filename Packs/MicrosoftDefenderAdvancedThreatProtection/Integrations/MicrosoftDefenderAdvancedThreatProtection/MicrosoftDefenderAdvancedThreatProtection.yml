@@ -4532,6 +4532,7 @@ script:
     deprecated: false
     arguments:
     - name: query_purpose
+      auto: PREDEFINED
       description: By selecting a “query_purpose” argument, a designated query template
         will be used. "network_connections" - The network connections initiated by
         the host/file to other internal hosts. "smb_connections" - SMB connections.
@@ -4579,13 +4580,14 @@ script:
       isArray: false
       defaultValue: ""
     - name: query_operation
+      auto: PREDEFINED
       description: Query operator to use with provided arguments.
       required: false
       isArray: false
-      defaultValue: OR
+      defaultValue: or
       predefined:
-      - OR
-      - AND
+      - or
+      - and
     - name: limit
       description: Max number of results to retrieve.
       required: false

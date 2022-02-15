@@ -53,29 +53,66 @@ GRAPH_INDICATOR_ENDPOINT = 'https://graph.microsoft.com/beta/security/tiIndicato
 
 class HuntingQueryBuilder:
     @staticmethod
-    def get_time_range(time_range):
-        parsed_time = parse(time_range)
+    def get_time_range_query(time_range: Optional[str]) -> str:
+        """
+        Given a human readable time_range returns the time_range query
+        """
+        if not time_range:
+            return ''
+        parsed_time = dateparser.parse(time_range)
         if parsed_time:
-            return (datetime.now() - parsed_time).total_seconds() // 60
+            time_in_minutes = int((datetime.now() - parsed_time).total_seconds() // 60)
+            return f'Timestamp > ago({time_in_minutes}m)'
         else:
-            return None
+            return ''
 
     @staticmethod
-    def list_to_filter_values(list_values):
+    def rebuild_query_with_time_range(query: str, time_range: str) -> str:
+        """
+        Given a query and human readable time_range returns the query with a time_range query
+        """
+        time_range_query = HuntingQueryBuilder.get_time_range_query(time_range)
+        insert_pos = query.find('|')
+        if insert_pos == -1:
+            return f'{query} | where {time_range_query}'
+        return f'{query[:insert_pos - 1]} | where {time_range_query} {query[insert_pos:]}'
+
+    @staticmethod
+    def get_filter_values(list_values: Optional[Union[list, str]]) -> Optional[str]:
         """
         creates a string of CSV values wrapped by parenthesis and brackets
-
         """
-        if not list_values:
-            return list_values
+        if isinstance(list_values, str):
+            list_values = argToList(list_values)
+        if not list_values or not isinstance(list_values, list):
+            return None
         return '("' + '","'.join(list_values) + '")'
 
     @staticmethod
     def remove_last_expression(query, expression):
+        """
+        Removes the last expression from the given query
+        """
         return query.rsplit(expression, 1)[0]
 
+    @staticmethod
+    def build_generic_query(query: str, query_dict: dict, query_operation: str, operator: str = 'has_any'):
+        query += ' ('
+        for key, val in query_dict.items():
+            query += f' ({key} {operator} ({val})) {query_operation}'
+        query = HuntingQueryBuilder.remove_last_expression(query, query_operation)
+        query += ')'
+        return query
+
     class LateralMovementEvidence:
-        # TODO: Check whether time_range is required here
+        NETWORK_CONNECTIONS_QUERY = 'DeviceNetworkEvents\n| where (RemoteIP startswith "172.16" or RemoteIP startswith "192.168" or RemoteIP startswith "10.") and'  # noqa: E501
+        SMB_CONNECTIONS_QUERY = 'DeviceNetworkEvents\n| where RemotePort == 445 and InitiatingProcessId !in (0, 4) and'
+        CREDENTIAL_DUMPING_QUERY = '''DeviceProcessEvents
+| where ((FileName has_any ("procdump.exe", "procdump64.exe") and ProcessCommandLine has "lsass") or
+(ProcessCommandLine has "lsass.exe" and (ProcessCommandLine has "-accepteula"or ProcessCommandLine contains "-ma")) ) and'''  # noqa: E501
+        NETWORK_ENUMERATION_QUERY = 'DeviceNetworkEvents\n| where RemotePort == 445 and InitiatingProcessId !in (0, 4) and'  # noqa: E501
+        RDP_ATTEMPTS_QUERY = 'DeviceNetworkEvents\n| where RemotePort in (22,3389,139,135,23,1433) and'
+
         def __init__(self,
                      limit: str,
                      query_operation: str,
@@ -84,7 +121,7 @@ class HuntingQueryBuilder:
                      sha1: Optional[str] = None,
                      sha256: Optional[str] = None,
                      md5: Optional[str] = None,
-                     device_id: Optional[str] = None
+                     device_id: Optional[str] = None,
                      ):
             if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
                 raise DemistoException(
@@ -92,42 +129,26 @@ class HuntingQueryBuilder:
                     '"sha256", "md5" or "device_id".')
             self._limit = limit
             self._query_operation = query_operation
-            self._device_name = argToList(device_name)
-            self._file_name = argToList(file_name)
-            self._sha1 = argToList(sha1)
-            self._sha256 = argToList(sha256)
-            self._md5 = argToList(md5)
-            self._device_id = argToList(device_id)
+            self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
+            self._file_name = HuntingQueryBuilder.get_filter_values(file_name)
+            self._sha1 = HuntingQueryBuilder.get_filter_values(sha1)
+            self._sha256 = HuntingQueryBuilder.get_filter_values(sha256)
+            self._md5 = HuntingQueryBuilder.get_filter_values(md5)
+            self._device_id = HuntingQueryBuilder.get_filter_values(device_id)
 
-        def build_shared_query(self, query):
-            op = self._query_operation
-            if self._file_name:
-                file_names = HuntingQueryBuilder.list_to_filter_values(self._file_name)
-                query += f' InitiatingProcessFileName has_any {file_names} {op}'
-            if self._sha1:
-                sha1_vals = HuntingQueryBuilder.list_to_filter_values(self._sha1)
-                query += f' InitiatingProcessSHA1 has_any {sha1_vals} {op}'
-            if self._sha256:
-                sha256_vals = HuntingQueryBuilder.list_to_filter_values(self._sha256)
-                query += f' InitiatingProcessSHA256 has_any {sha256_vals} {op}'
-            if self._device_name:
-                device_names = HuntingQueryBuilder.list_to_filter_values(self._device_name)
-                query += f'DeviceName has_any {device_names} {op}'
-            if self._md5:
-                md5_vals = HuntingQueryBuilder.list_to_filter_values(self._md5)
-                query += f' InitiatingProcessMD5 has_any {md5_vals} {op}'
-            if self._device_id:
-                device_ids = HuntingQueryBuilder.list_to_filter_values(self._device_id)
-                query += f' DeviceId in {device_ids} )'
-            else:  # remove {op} from end of query
-                query = HuntingQueryBuilder.remove_last_expression(query, f' {op}') + ' )'
-
-            return query
-
-        def network_connections(self):
-            query = self.build_shared_query(
-                'DeviceNetworkEvents\n| where (RemoteIP startswith "172.16" or RemoteIP startswith "192.168" or RemoteIP startswith "10.") and (' # noqa: E501
+        def build_network_connections_query(self):
+            query_dict = assign_params(
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
             )
+            query = HuntingQueryBuilder.build_generic_query(
+                self.NETWORK_CONNECTIONS_QUERY,
+                query_dict,
+                self._query_operation)
             query += f'''
 | summarize TotalConnections = count() by DeviceName, RemoteIP, RemotePort, InitiatingProcessFileName
 | order by TotalConnections
@@ -135,62 +156,78 @@ class HuntingQueryBuilder:
 
             return query
 
-        def smb_connections(self):
-            query = self.build_shared_query(
-                'DeviceNetworkEvents\n| where RemotePort == 445 and InitiatingProcessId !in (0, 4) and ('
+        def build_smb_connections_query(self):
+            query_dict = assign_params(
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
             )
-            query += '\n| summarize RemoteIPCount=dcount(RemoteIP) by DeviceName, InitiatingProcessFileName, InitiatingProcessId, InitiatingProcessCreationTime'  # noqa: E501
-            query += f'\n| limit {self._limit}'
+            query = HuntingQueryBuilder.build_generic_query(
+                self.SMB_CONNECTIONS_QUERY,
+                query_dict,
+                self._query_operation)
+            query += f'\n| summarize RemoteIPCount=dcount(RemoteIP) by DeviceName, InitiatingProcessFileName, InitiatingProcessId, InitiatingProcessCreationTime\n| limit {self._limit}'  # noqa: E501
 
             return query
 
-        def credential_dumping(self):
-            query = '''
-DeviceProcessEvents
-| where ((FileName has_any ("procdump.exe", "procdump64.exe") and ProcessCommandLine has "lsass") or
-(ProcessCommandLine has "lsass.exe" and (ProcessCommandLine has "-accepteula"or ProcessCommandLine contains "-ma")) ) and ('''  # noqa: E501
-            op = self._query_operation
-            if self._file_name:
-                file_names = HuntingQueryBuilder.list_to_filter_values(self._file_name)
-                query += f' FileName has_any {file_names} {op}'
-            if self._sha1:
-                sha1_vals = HuntingQueryBuilder.list_to_filter_values(self._sha1)
-                query += f' SHA1 has_any {sha1_vals} {op}'
-            if self._sha256:
-                sha256_vals = HuntingQueryBuilder.list_to_filter_values(self._sha256)
-                query += f' SHA256 has_any {sha256_vals} {op}'
-            if self._device_name:
-                device_names = HuntingQueryBuilder.list_to_filter_values(self._device_name)
-                query += f'DeviceName has_any {device_names} {op}'
-            if self._md5:
-                md5_vals = HuntingQueryBuilder.list_to_filter_values(self._md5)
-                query += f' MD5 has_any {md5_vals} {op}'
-            if self._device_id:
-                device_ids = HuntingQueryBuilder.list_to_filter_values(self._device_id)
-                query += f' DeviceId in {device_ids} )'
-            else:  # remove {op} from end of query
-                query = HuntingQueryBuilder.remove_last_expression(query, f' {op}') + ' )'
-
-            query += '\n| project Timestamp, DeviceName, ActionType, FileName, ProcessCommandLine, AccountName, InitiatingProcessIntegrityLevel, InitiatingProcessTokenElevation'  # noqa: E501
-            query += f'\n| limit {self._limit}'
+        def build_credential_dumping_query(self):
+            query_dict = assign_params(
+                FileName=self._file_name,
+                SHA1=self._sha1,
+                SHA256=self._sha256,
+                MD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                self.CREDENTIAL_DUMPING_QUERY,
+                query_dict,
+                self._query_operation)
+            query += f'\n| project Timestamp, DeviceName, ActionType, FileName, ProcessCommandLine, AccountName, InitiatingProcessIntegrityLevel, InitiatingProcessTokenElevation\n| limit {self._limit}'  # noqa: E501
 
             return query
 
-        def network_enumeration(self):
-            query = self.build_shared_query(
-                'DeviceNetworkEvents\n| where RemotePort == 445 and InitiatingProcessId !in (0, 4) and (')
+        def build_network_enumeration_query(self):
+            query_dict = assign_params(
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                self.NETWORK_ENUMERATION_QUERY,
+                query_dict,
+                self._query_operation
+            )
             query += f'\n| summarize RemoteIPCount=dcount(RemoteIP) by DeviceName, InitiatingProcessFileName, InitiatingProcessId, InitiatingProcessCreationTime\n| where RemoteIPCount > 1\n| limit {self._limit}'  # noqa: E501
 
             return query
 
-        def rdp_attempts(self):
-            query = self.build_shared_query(
-                'DeviceNetworkEvents\n| where RemotePort in (22,3389,139,135,23,1433) and ('
+        def build_rdp_attempts_query(self):
+            query_dict = assign_params(
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                self.RDP_ATTEMPTS_QUERY,
+                query_dict,
+                self._query_operation
             )
             query += f'''
 | summarize TotalCount=count() by DeviceName,LocalIP,RemoteIP,RemotePort
 | order by TotalCount
 | limit {self._limit}'''
+
+            return query
 
 
 def file_standard(observable: Dict) -> Common.File:
@@ -464,7 +501,7 @@ class MsClient:
         cmd_url = f'/alerts/{alert_id}'
         return self.ms_client.http_request(method='PATCH', url_suffix=cmd_url, json_data=json_data)
 
-    def get_advanced_hunting(self, query: str, timeout: int, time_range: Optional[int] = None) -> dict:
+    def get_advanced_hunting(self, query: str, timeout: int, time_range: Optional[str] = None) -> dict:
         """Retrieves results according to query.
 
         Args:
@@ -477,7 +514,7 @@ class MsClient:
         """
         cmd_url = '/advancedqueries/run'
         if time_range:
-            query += f' | where Timestamp > ago({time_range}m)'
+            query = HuntingQueryBuilder.rebuild_query_with_time_range(query, time_range)
         json_data = {
             'Query': query
         }
@@ -1437,7 +1474,7 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
     """
     query = args.get('query', '')
     timeout = int(args.get('timeout', 10))
-    time_range = HuntingQueryBuilder.get_time_range(args.get('time_range', ''))
+    time_range = args.get('time_range')
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
     if isinstance(results, list) and len(results) == 1:
@@ -2682,11 +2719,11 @@ def sc_lateral_movement_evidence(client, args):
     query_purpose = args.pop('query_purpose')
     query_builder = HuntingQueryBuilder.LateralMovementEvidence(**args)
     query_options = {
-        'network_connections': query_builder.network_connections,
-        'smb_connections': query_builder.smb_connections,
-        'credential_dumping': query_builder.credential_dumping,
-        'network_enumeration': query_builder.network_enumeration,
-        'rdp_attempts': query_builder.rdp_attempts
+        'network_connections': query_builder.build_network_connections_query,
+        'smb_connections': query_builder.build_smb_connections_query,
+        'credential_dumping': query_builder.build_credential_dumping_query,
+        'network_enumeration': query_builder.build_network_enumeration_query,
+        'rdp_attempts': query_builder.build_rdp_attempts_query
     }
     if query_purpose not in query_options:
         raise DemistoException(f'Unsupported query_purpose: {query_purpose}.')

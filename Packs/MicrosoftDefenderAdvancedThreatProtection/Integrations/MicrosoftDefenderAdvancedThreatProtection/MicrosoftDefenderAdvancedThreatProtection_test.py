@@ -2,7 +2,7 @@ import demistomock as demisto
 import json
 import pytest
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
-    print_ip_addresses, get_machine_details_command
+    print_ip_addresses, get_machine_details_command, HuntingQueryBuilder, assign_params
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 
@@ -815,3 +815,232 @@ def test_get_machine_details_command(mocker):
     results = get_machine_details_command(client_mocker, {})
     assert results.outputs == json.loads(outputs_result)
     assert results.readable_output == human_readable_result
+
+
+class TestHuntingQueryBuilder:
+    class TestHelperMethods:
+        def test_get_time_range_query__invalid_and_empty(self):
+            """
+            Tests invalid and empty time_range cases
+
+            Given:
+                - empty / Invalid time_range
+            When:
+                - calling get_time_range_query
+            Then:
+                - return empty str
+            """
+            expected = ""
+            # empty case:
+            assert HuntingQueryBuilder.get_time_range_query(None) == expected
+            assert HuntingQueryBuilder.get_time_range_query('') == expected
+
+            # invalid case:
+            assert HuntingQueryBuilder.get_time_range_query('invalid') == expected
+
+        def test_get_time_range_query__valid(self):
+            """
+            Tests valid time_range
+
+            Given:
+                - time_range of 1 day ago
+            When:
+                - calling get_time_range_query
+            Then:
+                - return a time_query of
+            """
+            expected = 'Timestamp > ago(1440m)'
+            assert HuntingQueryBuilder.get_time_range_query('1 day') == expected
+
+        def test_rebuild_query_with_time_range__table_only(self):
+            """
+            Tests case for table name only
+
+            Given:
+                - query with table name only
+            When:
+                - calling rebuild_query_with_time_range
+            Then:
+                - returns a query with time_range
+            """
+            query = 'tableName'
+            time_range = '2 days'
+            expected = 'tableName | where Timestamp > ago(2880m)'
+            assert HuntingQueryBuilder.rebuild_query_with_time_range(query, time_range) == expected
+
+        def test_rebuild_query_with_time_range__full_query(self):
+            """
+            Tests full query
+
+            Given:
+                - query with table name only
+            When:
+                - calling rebuild_query_with_time_range
+            Then:
+                - returns a query with time_range
+            """
+            query = 'tableName | where a | where b'
+            time_range = '2 days'
+            expected = 'tableName | where Timestamp > ago(2880m) | where a | where b'
+            assert HuntingQueryBuilder.rebuild_query_with_time_range(query, time_range) == expected
+
+        def test_list_to_filter_values__empty(self):
+            """
+            Tests list_to_filter empty case
+
+            Given:
+                - empty list
+            When:
+                - calling list_to_filter_values
+            Then:
+                - return an empty str
+            """
+            assert HuntingQueryBuilder.get_filter_values([]) is None
+
+        def test_list_to_filter_values__invalid(self):
+            """
+            Tests list_to_filter invalid case
+
+            Given:
+                - non list item
+            When:
+                - calling list_to_filter_values
+            Then:
+                - return an empty str
+            """
+            assert HuntingQueryBuilder.get_filter_values(42) is None
+
+        def test_list_to_filter_values__list(self):
+            """
+            Tests list_to_filter empty case
+
+            Given:
+                - list of 1 item
+                - list of 3 items
+            When:
+                - calling list_to_filter_values
+            Then:
+                - return a string representation of the lists
+            """
+            list_input = ['a', 'b', 'c']
+            assert HuntingQueryBuilder.get_filter_values(list_input) == '("a","b","c")'
+            assert HuntingQueryBuilder.get_filter_values(list_input[:1]) == '("a")'
+
+        def test_build_generic_query(self):
+            """
+
+            :return:
+            """
+            query_params = assign_params(
+                a='"1"',
+                b='"1","2"',
+                c='',
+                d=None
+            )
+            actual = HuntingQueryBuilder.build_generic_query('some query', query_params, 'or', 'in')
+            assert len(actual) == 47
+            assert actual[:12] == 'some query ('
+            assert '(a in ("1"))' in actual
+            assert '(b in ("1","2"))' in actual
+            assert 'or' in actual and 'in' in actual
+
+    class TestLateralMovementEvidence:
+        def test_build_network_connections_query(self):
+            """
+            Tests network connection query
+
+            Given:
+                - LateralMovementEvidence inited with sha1
+            When:
+                - calling build_network_connections_query
+            Then:
+                - return a network_connections query
+            """
+            expected = 'DeviceNetworkEvents\n| where (RemoteIP startswith "172.16" or RemoteIP startswith "192.168" or RemoteIP startswith "10.") and ( (InitiatingProcessSHA1 has_any (("1","2"))) )\n| summarize TotalConnections = count() by DeviceName, RemoteIP, RemotePort, InitiatingProcessFileName\n| order by TotalConnections\n| limit 1'  # noqa: E501
+            lme = HuntingQueryBuilder.LateralMovementEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2'
+            )
+            actual = lme.build_network_connections_query()
+            assert actual == expected
+
+        def test_build_smb_connections_query(self):
+            """
+            Tests smb connections query
+
+            Given:
+                - LateralMovementEvidence inited with md5
+            When:
+                - calling build_smb_connections_query
+            Then:
+                - return a network_connections query
+            """
+            expected = 'DeviceNetworkEvents\n| where RemotePort == 445 and InitiatingProcessId !in (0, 4) and ( (InitiatingProcessMD5 has_any (("1","2"))) )\n| summarize RemoteIPCount=dcount(RemoteIP) by DeviceName, InitiatingProcessFileName, InitiatingProcessId, InitiatingProcessCreationTime\n| limit 1'  # noqa: E501
+            lme = HuntingQueryBuilder.LateralMovementEvidence(
+                limit='1',
+                query_operation='and',
+                md5='1,2'
+            )
+            actual = lme.build_smb_connections_query()
+            assert actual == expected
+
+        def test_build_credential_dumping_query(self):
+            """
+            Tests credential dumping query
+
+            Given:
+                - LateralMovementEvidence inited with device_name
+            When:
+                - calling build_credential_dumping_query
+            Then:
+                - return a valid credential dumping query
+            """
+            expected = 'DeviceProcessEvents\n| where ((FileName has_any ("procdump.exe", "procdump64.exe") and ProcessCommandLine has "lsass") or\n(ProcessCommandLine has "lsass.exe" and (ProcessCommandLine has "-accepteula"or ProcessCommandLine contains "-ma")) ) and ( (DeviceName has_any (("1"))) )\n| project Timestamp, DeviceName, ActionType, FileName, ProcessCommandLine, AccountName, InitiatingProcessIntegrityLevel, InitiatingProcessTokenElevation\n| limit 10'  # noqa: E501
+            lme = HuntingQueryBuilder.LateralMovementEvidence(
+                limit=10,
+                query_operation='or',
+                device_name='1'
+            )
+            actual = lme.build_credential_dumping_query()
+            assert actual == expected
+
+        def test_build_network_enumeration_query(self):
+            """
+            Tests build_network_enumeration_query
+
+            Given:
+                - LateralMovementEvidence inited with device_name
+            When:
+                - calling build_network_enumeration_query
+            Then:
+                - return a valid credential network enumeration query
+            """
+            expected = 'DeviceNetworkEvents\n| where RemotePort == 445 and InitiatingProcessId !in (0, 4) and ( (DeviceName has_any (("1"))) )\n| summarize RemoteIPCount=dcount(RemoteIP) by DeviceName, InitiatingProcessFileName, InitiatingProcessId, InitiatingProcessCreationTime\n| where RemoteIPCount > 1\n| limit 10'  # noqa: E501
+            lme = HuntingQueryBuilder.LateralMovementEvidence(
+                limit=10,
+                query_operation='or',
+                device_name='1'
+            )
+            actual = lme.build_network_enumeration_query()
+            assert actual == expected
+
+        def test_build_rdp_attempts_query(self):
+            """
+            Tests build_rdp_attempts_query
+
+            Given:
+                - LateralMovementEvidence inited with device_name
+            When:
+                - calling build_rdp_attempts_query
+            Then:
+                - return a valid rdp attempts query
+            """
+            expected = 'DeviceNetworkEvents\n| where RemotePort in (22,3389,139,135,23,1433) and ( (DeviceName has_any (("1"))) )\n| summarize TotalCount=count() by DeviceName,LocalIP,RemoteIP,RemotePort\n| order by TotalCount\n| limit 10'  # noqa: E501
+            lme = HuntingQueryBuilder.LateralMovementEvidence(
+                limit=10,
+                query_operation='or',
+                device_name='1'
+            )
+            actual = lme.build_rdp_attempts_query()
+            assert actual == expected
