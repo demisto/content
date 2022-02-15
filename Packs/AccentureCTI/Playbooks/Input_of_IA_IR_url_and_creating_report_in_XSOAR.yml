@@ -1,5 +1,5 @@
 id: 7bfbb87d-0f89-4b5c-840a-98250c46c3a7
-version: 37
+version: 48
 vcShouldKeepItemLegacyProdMachine: false
 name: 'Input of IA/IR url and creating report in XSOAR'
 description: Fetches content for a queried IA/IR url and creates a report which can
@@ -187,8 +187,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 1300
+          "x": 480,
+          "y": 1560
         }
       }
     note: false
@@ -256,8 +256,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 1020
+          "x": -190,
+          "y": 1230
         }
       }
     note: false
@@ -319,8 +319,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 880,
-          "y": 1020
+          "x": 1100,
+          "y": 1230
         }
       }
     note: false
@@ -343,9 +343,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "7"
+      - "11"
       "yes":
-      - "6"
+      - "10"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -372,14 +372,234 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 738fea69-e383-4606-8b47-f956ffcb7cd8
+    type: regular
+    task:
+      id: 738fea69-e383-4606-8b47-f956ffcb7cd8
+      version: -1
+      name: setThreatIntelReport
+      script: Builtin|||setThreatIntelReport
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      bodyexecutivebrief:
+        simple: |-
+          # TITLE
+          ${Report.title}
+
+          # ABSTRACT
+          ${Report.abstract}
+
+          # ANALYSIS
+          ${Report.analysis}
+
+          # MITIGATION
+          ${Report.mitigation}
+
+          # SEVERITY
+          ${Report.severity}
+
+          # THREAT TYPES
+          ${Report.threat_types}
+
+          # ATTACHMENT LINKS
+          ${Report.attachment_links}
+      creator:
+        simple: ACTI IntelGraph
+      description:
+        simple: ${Report.analysis}
+      id:
+        simple: ${Report.id}
+      modified:
+        simple: ${Report.last_modified}
+      name:
+        simple: ${Report.display_text}
+      published:
+        simple: ${Report.last_published}
+      reportstatus:
+        simple: Published
+      tags:
+        simple: Intelligence Alert
+      type:
+        simple: Executive Brief
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: e42e5bc4-bb8b-43dd-84d7-585540427e67
+    type: condition
+    task:
+      id: e42e5bc4-bb8b-43dd-84d7-585540427e67
+      version: -1
+      name: Is the intelligence alert already present?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: ${Report.duplicate_flag}
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: f2385f21-6933-44f0-8a86-776ccfd50d63
+    type: condition
+    task:
+      id: f2385f21-6933-44f0-8a86-776ccfd50d63
+      version: -1
+      name: Is the intelligence report already present?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: ${Report.duplicate_flag}
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 80742b70-4912-4fd6-872f-d2382d267d36
+    type: regular
+    task:
+      id: 80742b70-4912-4fd6-872f-d2382d267d36
+      version: -1
+      name: setThreatIntelReport
+      script: Builtin|||setThreatIntelReport
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      bodyexecutivebrief:
+        simple: |-
+          # TITLE
+          ${Report.title}
+
+          # ANALYSIS
+          ${Report.analysis}
+
+          # SUMMARY
+          ${Report.summary}
+
+          # THREAT TYPES
+          ${Report.threat_types}
+
+          # CONCLUSION
+          ${Report.conclusion}
+      creator:
+        simple: ACTI IntelGraph
+      description:
+        simple: ${Report.analysis}
+      id:
+        simple: ${Report.id}
+      modified:
+        simple: ${Report.last_modified}
+      name:
+        simple: ${Report.display_text}
+      published:
+        simple: ${Report.last_published}
+      reportstatus:
+        simple: Published
+      tags:
+        simple: Intelligence Report
+      type:
+        simple: Executive Brief
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1405,
-        "width": 1260,
-        "x": 0,
+        "height": 1665,
+        "width": 1670,
+        "x": -190,
         "y": -40
       }
     }
