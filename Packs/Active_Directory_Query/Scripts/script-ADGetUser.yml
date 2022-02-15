@@ -2,6 +2,7 @@ commonfields:
   id: ADGetUser
   version: -1
 name: ADGetUser
+deprecated: true
 script: >-
   import re
 
@@ -276,7 +277,7 @@ tags:
 - enhancement
 - username
 comment: |-
-  Use Active Directory to retrieve detailed information about a user account. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).
+  Deprecated. Use Active Directory v2, ad-get-user command instead. Use Active Directory to retrieve detailed information about a user account. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).
   If no filter is provided, the result will show all users.
 enabled: true
 args:
@@ -356,10 +357,8 @@ outputs:
 scripttarget: 0
 dependson:
   must:
-  - Active Directory Query v2|||ad-search
+  - activedir|||ad-search
 fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.24398
 runonce: false
 runas: DBotWeakRole
-tests:
-- Test ADGetUser Fails with no instances 'Active Directory Query' (old version)
