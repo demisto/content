@@ -275,3 +275,205 @@ EXPECTED_RESP={
     'resolution': 'Resolution',
     'resolutiondate': 'Resolved'
 }
+
+GET_ISSUE_WITH_ATTACHMENT_RESPONSE = {
+    "expand": "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations,customfield_10022.requestTypePractice",
+    "id": "20852",
+    "self": "https://demistodev.atlassian.net/rest/api/latest/issue/20852",
+    "key": "VIK-267",
+    "fields": {
+        "statuscategorychangedate": "2021-11-17T12:40:09.977+0200",
+        "fixVersions": [],
+        "lastViewed": "2022-02-14T11:58:21.161+0200",
+        "priority": {
+            "self": "https://demistodev.atlassian.net/rest/api/2/priority/3",
+            "iconUrl": "https://demistodev.atlassian.net/images/icons/priorities/medium.svg",
+            "name": "Medium",
+            "id": "3"
+        },
+        "labels": [],
+        "aggregatetimeoriginalestimate": None,
+        "timeestimate": None,
+        "versions": [],
+        "issuelinks": [],
+        "assignee": None,
+        "status": {
+            "self": "https://demistodev.atlassian.net/rest/api/2/status/10000",
+            "description": "",
+            "iconUrl": "https://demistodev.atlassian.net/images/icons/status_generic.gif",
+            "name": "To Do",
+            "id": "10000",
+            "statusCategory": {
+                "self": "https://demistodev.atlassian.net/rest/api/2/statuscategory/2",
+                "id": 2,
+                "key": "new",
+                "colorName": "blue-gray",
+                "name": "To Do"
+            }
+        },
+        "components": [],
+        "creator": {
+            "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=557058%3Afb80ffc0-b374-4260-99a0-ea0c140a4e76",
+            "accountId": "557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76",
+            "emailAddress": "admin@demistodev.com",
+            "avatarUrls": {
+                "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/48",
+                "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/24",
+                "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/16",
+                "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/32"
+            },
+            "displayName": "Tomer Malache",
+            "active": True,
+            "timeZone": "Asia/Jerusalem",
+            "accountType": "atlassian"
+        },
+        "subtasks": [],
+        "reporter": {
+            "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=557058%3Afb80ffc0-b374-4260-99a0-ea0c140a4e76",
+            "accountId": "557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76",
+            "emailAddress": "admin@demistodev.com",
+            "avatarUrls": {
+                "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/48",
+                "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/24",
+                "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/16",
+                "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/32"
+            },
+            "displayName": "Tomer Malache",
+            "active": True,
+            "timeZone": "Asia/Jerusalem",
+            "accountType": "atlassian"
+        },
+        "aggregateprogress": {
+            "progress": 0,
+            "total": 0
+        },
+        "progress": {
+            "progress": 0,
+            "total": 0
+        },
+        "votes": {
+            "self": "https://demistodev.atlassian.net/rest/api/2/issue/VIK-267/votes",
+            "votes": 0,
+            "hasVoted": False
+        },
+        "worklog": {
+            "startAt": 0,
+            "maxResults": 20,
+            "total": 0,
+            "worklogs": []
+        },
+        "issuetype": {
+            "self": "https://demistodev.atlassian.net/rest/api/2/issuetype/10001",
+            "id": "10001",
+            "description": "A task that needs to be done.",
+            "iconUrl": "https://demistodev.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+            "name": "Task",
+            "subtask": False,
+            "avatarId": 10318,
+            "hierarchyLevel": 0
+        },
+        "timespent": None,
+        "project": {
+            "self": "https://demistodev.atlassian.net/rest/api/2/project/10005",
+            "id": "10005",
+            "key": "VIK",
+            "name": "VikTest",
+            "projectTypeKey": "software",
+            "simplified": False,
+            "avatarUrls": {
+                "48x48": "https://demistodev.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10324",
+                "24x24": "https://demistodev.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10324?size=small",
+                "16x16": "https://demistodev.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10324?size=xsmall",
+                "32x32": "https://demistodev.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10324?size=medium"
+            }
+        },
+
+        "workratio": -1,
+        "issuerestriction": {
+            "issuerestrictions": {},
+            "shouldDisplay": False
+        },
+        "watches": {
+            "self": "https://demistodev.atlassian.net/rest/api/2/issue/VIK-267/watchers",
+            "watchCount": 1,
+            "isWatching": True
+        },
+        "created": "2021-11-17T12:40:08.900+0200",
+
+        "customfield_10019": "0|i00i5b:",
+        "updated": "2022-01-04T15:51:01.316+0200",
+        "timeoriginalestimate": None,
+        "description": "galb1 [^test11.py]  [^test] ",
+
+        "customfield_10015": {
+            "hasEpicLinkFieldDependency": False,
+            "showField": False,
+            "nonEditableReason": {
+                "reason": "PLUGIN_LICENSE_ERROR",
+                "message": "The Parent Link is only available to Jira Premium users."
+            }
+        },
+        "timetracking": {},
+        "attachment": [
+            {"self": "https://demistodev.atlassian.net/rest/api/2/attachment/16188",
+             "id": "16188",
+             "filename": "test",
+             "author": {
+                 "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=557058%3Afb80ffc0-b374-4260-99a0-ea0c140a4e76",
+                 "accountId": "557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76",
+                 "emailAddress": "admin@demistodev.com",
+                 "avatarUrls": {
+                     "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/48",
+                     "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/24",
+                     "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/16",
+                     "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/32"
+                 },
+                 "displayName": "Tomer Malache",
+                 "active": True,
+                 "timeZone": "Asia/Jerusalem",
+                 "accountType": "atlassian"
+             },
+             "created": "2021-11-17T12:40:06.700+0200",
+             "size": 4,
+             "mimeType": "binary/octet-stream",
+             "content": "https://demistodev.atlassian.net/rest/api/2/attachment/content/16188"}
+        ]
+        }
+    }
+
+MD_AND_CONTEXT_OUTPUT = {
+    'md': [
+        {'id': '20852',
+         'key': 'VIK-267',
+         'summary': 'o767676',
+         'status': 'To Do',
+         'priority': 'Medium',
+         'project': 'VikTest',
+         'duedate': None,
+         'created': '2021-11-17T12:40:08.900+0200',
+         'assignee': 'null(null)',
+         'creator': 'Tomer Malache(admin@demistodev.com)',
+         'reporter': 'Tomer Malache(admin@demistodev.com)',
+         'issueType': 'A task that needs to be done.',
+         'labels': [],
+         'description': 'galb1 [^test11.py]  [^test] ',
+         'ticket_link': 'https://demistodev.atlassian.net/rest/api/latest/issue/20852',
+         'attachment': 'test,test11.py'}
+        ],
+    'context': [
+        {'Id': '20852',
+         'Key': 'VIK-267',
+         'Summary': 'o767676',
+         'Status': 'To Do',
+         'Priority': 'Medium',
+         'ProjectName': 'VikTest',
+         'DueDate': None,
+         'Created': '2021-11-17T12:40:08.900+0200',
+         'Assignee': 'null(null)',
+         'Creator': 'Tomer Malache(admin@demistodev.com)',
+         'LastSeen': '2022-02-14T11:58:21.161+0200',
+         'LastUpdate': '2022-01-04T15:51:01.316+0200',
+         'attachment': 'test,test11.py'
+         }
+    ]
+}
