@@ -1,216 +1,196 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "9c6c81f6-e756-41ba-8e72-a1e962a65ec1",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 20,
-	"mapping": {
-		"FortiSIEM": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Alert Category": {
-					"complex": null,
-					"simple": "phIncidentCategoryVerbal"
-				},
-				"Alert Severity": {
-					"complex": null,
-					"simple": "eventSeverity"
-				},
-				"Destination Hostname": {
-					"complex": null,
-					"simple": "target_hostName"
-				},
-				"Destination IP": {
-					"complex": null,
-					"simple": "target_destIpAddr"
-				},
-				"Destination Port": {
-					"complex": null,
-					"simple": "target_destIpPort"
-				},
-				"Events": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "events",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"FortiSIEM Attack Tactics": {
-					"complex": null,
-					"simple": "attackTechnique"
-				},
-				"FortiSIEM Event Type": {
-					"complex": null,
-					"simple": "eventType"
-				},
-				"FortiSIEM Events Count": {
-					"complex": null,
-					"simple": "incidentCount"
-				},
-				"FortiSIEM Incident ID": {
-					"complex": null,
-					"simple": "incidentId"
-				},
-				"FortiSIEM Resolution Status": {
-					"complex": null,
-					"simple": "incidentResoVerbal"
-				},
-				"FortiSIEM Status": {
-					"complex": null,
-					"simple": "incidentStatusVerbal"
-				},
-				"FortiSiem Events": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "events",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "88d687c2-a411-4a8e-8fb1-196de418ccc2"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Incident First Seen": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "incidentFirstSeen",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "TimeStampToDate"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Incident Last Seen": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "incidentLastSeen",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "TimeStampToDate"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Incident Report Device Name": {
-					"complex": null,
-					"simple": "incidentRptDevName"
-				},
-				"Incident Reporter IP": {
-					"complex": null,
-					"simple": "incidentRptIp"
-				},
-				"Incident Severity": {
-					"complex": null,
-					"simple": "eventSeverity"
-				},
-				"Source Hostname": {
-					"complex": null,
-					"simple": "source_hostName"
-				},
-				"Source IP": {
-					"complex": null,
-					"simple": "source_ipAddr"
-				},
-				"Source Username": {
-					"complex": null,
-					"simple": "source_user"
-				},
-				"Target Username": {
-					"complex": null,
-					"simple": "target_user"
-				},
-				"Title": {
-					"complex": null,
-					"simple": "incidentTitle"
-				},
-				"name": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "incidentId",
-						"transformers": [
-							{
-								"args": {
-									"prefix": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "FortiSIEM Incident #"
-										}
-									},
-									"suffix": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": " -"
-										}
-									}
-								},
-								"operator": "concat"
-							},
-							{
-								"args": {
-									"prefix": {
-										"isContext": false,
-										"value": null
-									},
-									"suffix": {
-										"isContext": true,
-										"value": {
-											"complex": null,
-											"simple": "eventName"
-										}
-									}
-								},
-								"operator": "concat"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"severity": {
-					"complex": null,
-					"simple": "normalizedEventSeverity"
-				}
-			}
-		},
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {}
-		}
-	},
-	"name": "FortiSIEM v2",
-	"nameRaw": "FortiSIEM v2",
-	"packID": "",
-	"sortValues": null,
-	"sourceClassifierId": "58730615-2c25-47d0-8025-fc7a9f49574d",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "FortiSIEM v2",
+    "mapping": {
+        "FortiSIEM": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Category": {
+                    "complex": null,
+                    "simple": "phIncidentCategoryVerbal"
+                },
+                "Alert Severity": {
+                    "complex": null,
+                    "simple": "eventSeverity"
+                },
+                "Destination Hostname": {
+                    "complex": null,
+                    "simple": "target_hostName"
+                },
+                "Destination IP": {
+                    "complex": null,
+                    "simple": "target_destIpAddr"
+                },
+                "Destination Port": {
+                    "complex": null,
+                    "simple": "target_destIpPort"
+                },
+                "Events": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "FortiSIEM Attack Tactics": {
+                    "complex": null,
+                    "simple": "attackTechnique"
+                },
+                "FortiSIEM Event Type": {
+                    "complex": null,
+                    "simple": "eventType"
+                },
+                "FortiSIEM Events Count": {
+                    "complex": null,
+                    "simple": "incidentCount"
+                },
+                "FortiSIEM Incident ID": {
+                    "complex": null,
+                    "simple": "incidentId"
+                },
+                "FortiSIEM Resolution Status": {
+                    "complex": null,
+                    "simple": "incidentResoVerbal"
+                },
+                "FortiSIEM Status": {
+                    "complex": null,
+                    "simple": "incidentStatusVerbal"
+                },
+                "FortiSiem Events": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "88d687c2-a411-4a8e-8fb1-196de418ccc2"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Incident First Seen": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "incidentFirstSeen",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Incident Last Seen": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "incidentLastSeen",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Incident Report Device Name": {
+                    "complex": null,
+                    "simple": "incidentRptDevName"
+                },
+                "Incident Reporter IP": {
+                    "complex": null,
+                    "simple": "incidentRptIp"
+                },
+                "Incident Severity": {
+                    "complex": null,
+                    "simple": "eventSeverity"
+                },
+                "Source Hostname": {
+                    "complex": null,
+                    "simple": "source_hostName"
+                },
+                "Source IP": {
+                    "complex": null,
+                    "simple": "source_ipAddr"
+                },
+                "Source Username": {
+                    "complex": null,
+                    "simple": "source_user"
+                },
+                "Target Username": {
+                    "complex": null,
+                    "simple": "target_user"
+                },
+                "Title": {
+                    "complex": null,
+                    "simple": "incidentTitle"
+                },
+                "name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "incidentId",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "FortiSIEM Incident #"
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": " -"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "eventName"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "normalizedEventSeverity"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "FortiSIEM v2",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }
