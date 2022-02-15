@@ -8891,6 +8891,13 @@ def shorten_string_for_printing(source_string, max_length=64):
 
 
 class PollResult:
+    """The response object for polling functions. This object contains information about whether to run again, and what
+    the CommandResults are in case of success, or failure.
+
+    :return: PollResult
+    :rtype: ``PollResult``
+
+    """
     def __init__(self, response, continue_to_poll=False, args_for_next_run=None, partial_result=None):
         """
         Constructor for PollResult
@@ -8938,6 +8945,9 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
 
     :type requires_polling_arg: ``bool``
     :param requires_polling_arg: Whether a polling argument should be expected as one of the demisto args
+
+    :return: Decorator for polling functions
+    :rtype: ``Function``
     """
 
     def dec(func):
