@@ -408,7 +408,7 @@ class Pack(object):
         return all_dep_int_imgs
 
     @staticmethod
-    def _get_all_pack_images(pack_integration_images, display_dependencies_images, dependencies_metadata_dict,
+    def _get_all_pack_images(pack_integration_images: List, display_dependencies_images: List, dependencies_metadata: Dict,
                              pack_dependencies_by_download_count):
         """ Returns data of uploaded pack integration images and it's path in gcs. Pack dependencies integration images
         are added to that result as well.
@@ -1967,7 +1967,7 @@ class Pack(object):
         is_missing_dependencies = False
 
         try:
-            self.set_pack_dependencies(packs_dependencies_mapping, packs_dict, marketplace)
+            self.set_pack_dependencies(packs_dependencies_mapping, packs_dict, marketplace=marketplace)
 
             logging.info(f"Loading pack dependencies metadata for {self._pack_name} pack")
             dependencies_metadata_dict, is_missing_dependencies = self._load_pack_dependencies_metadata(
