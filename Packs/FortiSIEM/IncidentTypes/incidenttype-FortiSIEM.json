@@ -8,7 +8,7 @@
     "hours": 0,
     "hoursR": 0,
     "id": "FortiSIEM",
-    "layout": "90c1da28-4366-4933-8b0f-02092c2b9c43",
+    "layout": "FortiSIEM incident Layout",
     "locked": false,
     "name": "FortiSIEM",
     "readonly": false,
@@ -17,5 +17,5 @@
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.0.0"
 }
