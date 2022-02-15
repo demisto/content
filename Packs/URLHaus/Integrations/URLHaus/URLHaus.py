@@ -458,7 +458,8 @@ def domain_add_tags(bl_status: str, tags: List[str]) -> None:
 
     """
     if bl_status:
-        tag_to_add = bl_status.replace('_domain', '') if bl_status.endswith('domain') else bl_status
+        tag_to_add = bl_status.replace('_domain', '') if bl_status.endswith('domain') else \
+            bl_status if bl_status.startswith('abused') else ''
         if tag_to_add:
             tags.append(tag_to_add)
 
