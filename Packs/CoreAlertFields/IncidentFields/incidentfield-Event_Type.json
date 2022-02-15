@@ -4,7 +4,7 @@
     "cliName": "eventtype",
     "closeForm": false,
     "content": true,
-    "description": "The type of event on which the alert was triggered: File Event, Injection Event, Load Image Event, Network Event, Process Execution, Registry Event.",
+    "description": "The type of event on which the alert was triggered: File Event, Injection Event, Load Image Event, Network Event, Process Execution, Registry Event",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -23,44 +23,10 @@
     "system": false,
     "threshold": 72,
     "type": "multiSelect",
-    "unmapped": false,
+    "unmapped": true,
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "event_type",
-    "Aliases": [
-        {
-          "cliName": "qualysfimeventtype",
-          "type": "shortText"
-        },
-        {
-          "cliName": "arguseventtype",
-          "type": "shortText"
-        },
-        {
-          "cliName": "eventtype",
-          "type": "shortText"
-        },
-        {
-          "cliName": "googlecloudsccfindingsourcepropertieseventtype",
-          "type": "shortText"
-        },
-        {
-          "cliName": "laceworkeventtype",
-          "type": "shortText"
-        },
-        {
-          "cliName": "qualysfimeventtype",
-          "type": "shortText"
-        },
-        {
-          "cliName": "solarwindseventtype",
-          "type": "shortText"
-        },
-        {
-          "cliName": "taniumthreatresponsetype",
-          "type": "shortText"
-        }
-    ]
+	"x2_fields": "event_type"
 }

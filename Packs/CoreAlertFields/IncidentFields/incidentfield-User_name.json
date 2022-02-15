@@ -31,88 +31,104 @@
     "x2_fields": "actor_effective_username",
     "Aliases": [
         {
-          "cliName": "illusivenetworkslastseenuser",
-          "type": "shortText"
+            "cliName": "illusivenetworkslastseenuser",
+            "type": "shortText",
+            "name": "Illusive Networks Last Seen User"
         },
         {
-          "cliName": "logpointusername",
-          "type": "shortText"
+            "cliName": "logpointusername",
+            "type": "shortText",
+            "name": "LogPoint Username"
         },
         {
-          "cliName": "prismacloudcomputeuser",
-          "type": "shortText"
+            "cliName": "prismacloudcomputeuser",
+            "type": "shortText",
+            "name": "Prisma Cloud Compute User"
         },
         {
-          "cliName": "safenettrustedaccessusername",
-          "type": "shortText"
+            "cliName": "safenettrustedaccessusername",
+            "type": "shortText",
+            "name": "SafeNet Trusted Access - Username"
         },
         {
-          "cliName": "securityscorecardusername",
-          "type": "shortText"
+            "cliName": "securityscorecardusername",
+            "type": "shortText",
+            "name": "SecurityScorecard Username"
         },
         {
-          "cliName": "sourceusername",
-          "type": "shortText"
+            "cliName": "sourceusername",
+            "type": "shortText",
+            "name": "Source Username"
         },
         {
-          "cliName": "srcuser",
-          "type": "shortText"
+            "cliName": "srcuser",
+            "type": "shortText",
+            "name": "Src User"
         },
         {
-          "cliName": "tidyuser",
-          "type": "shortText"
+            "cliName": "tidyuser",
+            "type": "shortText",
+            "name": "TidyUser"
         },
         {
-          "cliName": "username",
-          "type": "shortText"
+            "cliName": "accountname",
+            "type": "shortText",
+            "name": "Account Name"
         },
         {
-          "cliName": "accountname",
-          "type": "shortText"
+            "cliName": "chronicleuser",
+            "type": "shortText",
+            "name": "Chronicle User"
         },
         {
-          "cliName": "chronicleuser",
-          "type": "shortText"
+            "cliName": "code42username",
+            "type": "shortText",
+            "name": "Code42 Username"
         },
         {
-          "cliName": "code42username",
-          "type": "shortText"
+            "cliName": "deviceusername",
+            "type": "shortText",
+            "name": "Device Username"
         },
         {
-          "cliName": "deviceusername",
-          "type": "shortText"
+            "cliName": "digitalguardianusername",
+            "type": "shortText",
+            "name": "Digital Guardian Username"
         },
         {
-          "cliName": "digitalguardianusername",
-          "type": "shortText"
+            "cliName": "f5silverlinedetectedusernames",
+            "type": "shortText",
+            "name": "F5 Silverline Detected Usernames"
         },
         {
-          "cliName": "f5silverlinedetectedusernames",
-          "type": "shortText"
+            "cliName": "user",
+            "type": "shortText",
+            "name": "User"
         },
         {
-          "cliName": "user",
-          "type": "shortText"
+            "cliName": "usernames",
+            "type": "shortText",
+            "name": "Usernames"
         },
         {
-          "cliName": "usernames",
-          "type": "shortText"
+            "cliName": "users",
+            "type": "shortText",
+            "name": "Users"
         },
         {
-          "cliName": "users",
-          "type": "shortText"
+            "cliName": "detecteduser",
+            "type": "multiSelect",
+            "name": "Detected User"
         },
         {
-          "cliName": "detecteduser",
-          "type": "multiSelect"
+            "cliName": "detectedusers",
+            "type": "shortText",
+            "name": "Detected Users"
         },
         {
-          "cliName": "detectedusers",
-          "type": "shortText"
-        },
-        {
-          "cliName": "deviceusername",
-          "type": "shortText"
+            "cliName": "deviceusername",
+            "type": "shortText",
+            "name": "Device Username"
         }
     ]
 }
