@@ -897,7 +897,7 @@ def sign_and_zip_pack(pack, signature_key, delete_test_playbooks=False):
     Args:
         pack (Pack): Pack to be zipped.
         signature_key (str): Base64 encoded string used to sign the pack.
-        delete_test_playbooks (bool): whether to delete test playbooks folder.
+        delete_test_playbooks (bool): Whether to delete test playbooks folder.
     Returns:
         (bool): Whether the zip was successful
     """
@@ -921,7 +921,7 @@ def sign_and_zip_pack(pack, signature_key, delete_test_playbooks=False):
 
 
 def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
-                                       packs_for_current_marketplace):
+                                       packs_for_current_marketplace_dict):
     """
     Uploads packs with mandatory dependencies zip for all packs
     Args:
@@ -1118,7 +1118,7 @@ def main():
     # 1. we might need the info about this pack if a modified pack is dependent on it.
     # 2. even if the pack is not updated, we still keep some fields in it's metadata updated, such as download count,
     # changelog, etc.
-    for pack_name, pack in packs_for_current_marketplace_dict.items():
+    for pack in list(packs_for_current_marketplace_dict.values()):
         task_status = pack.collect_content_items()
         if not task_status:
             pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
@@ -1149,7 +1149,7 @@ def main():
 
         task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
                                                                     packs_dependencies_mapping, build_number,
-                                                                    current_commit_hash, pack.is_modified,
+                                                                    current_commit_hash,
                                                                     statistics_handler,
                                                                     packs_for_current_marketplace_dict, marketplace)
 
@@ -1164,7 +1164,7 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack.is_modified,
+        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
                                                                     modified_rn_files_paths)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
@@ -1220,7 +1220,7 @@ def main():
     # updating them with the new data for the new packs that were added to the index.zip
     for pack in packs_with_missing_dependencies:
         task_status, _ = pack.format_metadata(index_folder_path, packs_dependencies_mapping,
-                                              build_number, current_commit_hash, False, statistics_handler,
+                                              build_number, current_commit_hash, statistics_handler,
                                               packs_for_current_marketplace_dict, marketplace,
                                               format_dependencies_only=True)
 

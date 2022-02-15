@@ -97,10 +97,9 @@ class TestMetadataParsing:
         dummy_pack._downloads_count = 10
         dummy_pack._displayed_integration_images = []
         dummy_pack._user_metadata = dummy_pack_metadata
-        dummy_pack._enhance_pack_attributes(
-            index_folder_path="", pack_was_modified=False,
-            dependencies_metadata_dict={}, statistics_handler=None
-        )
+        dummy_pack._is_modified = False
+        dummy_pack._enhance_pack_attributes(index_folder_path="", dependencies_metadata_dict={},
+                                            statistics_handler=None)
         parsed_metadata = dummy_pack._parse_pack_metadata(build_number="dummy_build_number", commit_hash="dummy_commit")
 
         assert parsed_metadata['name'] == 'Test Pack Name'
@@ -136,8 +135,9 @@ class TestMetadataParsing:
         """
         dummy_pack._displayed_integration_images = []
         dummy_pack._user_metadata = dummy_pack_metadata
+        dummy_pack._is_modified = False
         dummy_pack._enhance_pack_attributes(
-            index_folder_path="", pack_was_modified=False, dependencies_metadata_dict={}, statistics_handler=None
+            index_folder_path="", dependencies_metadata_dict={}, statistics_handler=None
         )
 
         assert dummy_pack._pack_name == 'Test Pack Name'
@@ -162,8 +162,9 @@ class TestMetadataParsing:
 
         dummy_pack._displayed_integration_images = []
         dummy_pack._user_metadata = {}
+        dummy_pack._is_modified = False
         dummy_pack._enhance_pack_attributes(
-            index_folder_path="", pack_was_modified=False, dependencies_metadata_dict={}, statistics_handler=None
+            index_folder_path="", dependencies_metadata_dict={}, statistics_handler=None
         )
 
         assert dummy_pack._support_type == Metadata.XSOAR_SUPPORT
@@ -851,10 +852,11 @@ This is visible
         release_notes = "dummy release notes"
         version_display_name = "1.2.3"
         build_number = "5555"
+        dummy_pack._is_modified = True
         version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                version_display_name=version_display_name,
                                                                build_number=build_number, new_version=False,
-                                                               pack_was_modified=True)
+                                                               )
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
         assert version_changelog['displayName'] == f'{version_display_name} - R{build_number}'
@@ -890,10 +892,10 @@ This is visible
         release_notes = "dummy release notes"
         version_display_name = "1.0.0"
         build_number = "5555"
+        dummy_pack._is_modified = True
         version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                version_display_name=version_display_name,
-                                                               build_number=build_number, new_version=False,
-                                                               pack_was_modified=True)
+                                                               build_number=build_number, new_version=False)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
         assert version_changelog['displayName'] == f'{version_display_name} - R{build_number}'
@@ -910,10 +912,10 @@ This is visible
         release_notes = "dummy release notes"
         version_display_name = "1.0.0"
         build_number = "5555"
+        dummy_pack._is_modified = False
         version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                version_display_name=version_display_name,
-                                                               build_number=build_number, new_version=False,
-                                                               pack_was_modified=False)
+                                                               build_number=build_number, new_version=False)
 
         assert not version_changelog
 
@@ -1020,7 +1022,8 @@ This is visible
        """
         from Tests.Marketplace.marketplace_services import os
         mocker.patch.object(os.path, 'join', side_effect=self.mock_os_path_join)
-        pack_update_date = dummy_pack._get_pack_update_date(is_changelog_exist, False)
+        dummy_pack._is_modified = False
+        pack_update_date = dummy_pack._get_pack_update_date(is_changelog_exist)
         if is_changelog_exist == 'changelog_new_exist':
             os.remove(os.path.join(os.getcwd(), 'dummy_changelog.json'))
         assert pack_update_date == expected_date

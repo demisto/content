@@ -416,7 +416,7 @@ class Pack(object):
         Args:
              pack_integration_images (list): list of uploaded to gcs integration images and it paths in gcs.
              display_dependencies_images (list): list of pack names of additional dependencies images to display.
-             dependencies_data (dict): all level dependencies data.
+             dependencies_metadata (dict): all level dependencies data.
              pack_dependencies_by_download_count (list): list of pack names that are dependencies of the given pack
             sorted by download count.
 
@@ -425,7 +425,7 @@ class Pack(object):
 
         """
         dependencies_integration_images_dict: dict = {}
-        additional_dependencies_data = {k: v for k, v in dependencies_metadata_dict.items() if k in
+        additional_dependencies_data = {k: v for k, v in dependencies_metadata.items() if k in
                                         display_dependencies_images}
 
         for dependency_data in additional_dependencies_data.values():
@@ -701,7 +701,7 @@ class Pack(object):
 
         return changelog_entry
 
-    def _create_changelog_entry(self, release_notes, version_display_name, build_number, pack_was_modified=False,
+    def _create_changelog_entry(self, release_notes, version_display_name, build_number,
                                 new_version=True, initial_release=False):
         """ Creates dictionary entry for changelog.
 
@@ -709,7 +709,6 @@ class Pack(object):
             release_notes (str): release notes md.
             version_display_name (str): display name version.
             build_number (srt): current build number.
-            pack_was_modified (bool): whether the pack was modified.
             new_version (bool): whether the entry is new or not. If not new, R letter will be appended to build number.
             initial_release (bool): whether the entry is an initial release or not.
         Returns:
@@ -726,7 +725,7 @@ class Pack(object):
                     Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
                     Changelog.RELEASED: self._create_date}
 
-        elif pack_was_modified:
+        elif self.is_modified:
             return {Changelog.RELEASE_NOTES: release_notes,
                     Changelog.DISPLAY_NAME: f'{version_display_name} - R{build_number}',
                     Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
@@ -1391,7 +1390,7 @@ class Pack(object):
                 modified_rn_files.append(modified_file_path_parts[-1])
         return modified_rn_files
 
-    def prepare_release_notes(self, index_folder_path, build_number, pack_was_modified=False,
+    def prepare_release_notes(self, index_folder_path, build_number,
                               modified_rn_files_paths=None):
         """
         Handles the creation and update of the changelog.json files.
@@ -1399,7 +1398,6 @@ class Pack(object):
         Args:
             index_folder_path (str): Path to the unzipped index json.
             build_number (str): circleCI build number.
-            pack_was_modified (bool): whether the pack modified or not.
             modified_rn_files_paths (list): list of paths of the pack's modified file
 
         Returns:
@@ -1443,7 +1441,6 @@ class Pack(object):
                             version_changelog = self._create_changelog_entry(release_notes=release_notes_lines,
                                                                              version_display_name=latest_release_notes,
                                                                              build_number=build_number,
-                                                                             pack_was_modified=pack_was_modified,
                                                                              new_version=False)
 
                         else:
@@ -1869,7 +1866,7 @@ class Pack(object):
 
         return tags
 
-    def _enhance_pack_attributes(self, index_folder_path, pack_was_modified, dependencies_metadata_dict,
+    def _enhance_pack_attributes(self, index_folder_path, dependencies_metadata_dict,
                                  statistics_handler=None, format_dependencies_only=False):
         """ Enhances the pack object with attributes for the metadata file
 
@@ -1899,7 +1896,7 @@ class Pack(object):
             )
             self._legacy = self.user_metadata.get(Metadata.LEGACY, True)
             self._create_date = self._get_pack_creation_date(index_folder_path)
-            self._update_date = self._get_pack_update_date(index_folder_path, pack_was_modified)
+            self._update_date = self._get_pack_update_date(index_folder_path)
             self._use_cases = input_to_list(input_data=self.user_metadata.get(Metadata.USE_CASES), capitalize_input=True)
             self._categories = input_to_list(input_data=self.user_metadata.get(Metadata.CATEGORIES), capitalize_input=True)
             self._keywords = input_to_list(self.user_metadata.get(Metadata.KEY_WORDS))
@@ -1940,7 +1937,7 @@ class Pack(object):
         )
 
     def format_metadata(self, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
-                        pack_was_modified, statistics_handler, packs_dict=None, marketplace='xsoar',
+                        statistics_handler, packs_dict=None, marketplace='xsoar',
                         format_dependencies_only=False):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
@@ -1950,7 +1947,6 @@ class Pack(object):
             packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
             build_number (str): circleCI build number.
             commit_hash (str): current commit hash.
-            pack_was_modified (bool): Indicates whether the pack was modified or not.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
             packs_dict (dict): dict of all packs relevant for current marketplace, as {pack_id: pack_object}.
             marketplace (str): Marketplace of current upload.
@@ -1973,7 +1969,7 @@ class Pack(object):
             dependencies_metadata_dict, is_missing_dependencies = self._load_pack_dependencies_metadata(
                 index_folder_path, packs_dict)
 
-            self._enhance_pack_attributes(index_folder_path, pack_was_modified, dependencies_metadata_dict,
+            self._enhance_pack_attributes(index_folder_path, dependencies_metadata_dict,
                                           statistics_handler, format_dependencies_only)
 
             formatted_metadata = self._parse_pack_metadata(build_number, commit_hash)
@@ -2027,18 +2023,17 @@ class Pack(object):
 
         return created_time
 
-    def _get_pack_update_date(self, index_folder_path, pack_was_modified):
+    def _get_pack_update_date(self, index_folder_path):
         """ Gets the pack update date.
         Args:
             index_folder_path (str): downloaded index folder directory path.
-            pack_was_modified (bool): whether the pack was modified or not.
         Returns:
             datetime: Pack update date.
         """
         latest_changelog_released_date = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
         changelog = load_json(os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON))
 
-        if changelog and not pack_was_modified:
+        if changelog and not self.is_modified:
             packs_latest_release_notes = max(Version(ver) for ver in changelog)
             latest_changelog_version = changelog.get(str(packs_latest_release_notes), {})
             latest_changelog_released_date = latest_changelog_version.get('released')
