@@ -102,6 +102,7 @@ SEVERITY_MAP = {
     'medium': 2,
     'high': 3
 }
+DEFAULT_LIST_BASIS = "CREATED_TIME"
 
 ''' CLIENT CLASS '''
 
@@ -1910,6 +1911,9 @@ def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_t
     pending_rule_or_version_id_with_alert_state: Dict[str, Any] = {}
     detection_identifiers: List = []
     rule_first_fetched_time = None
+    listBasis = params.get('fetch_detection_by_list_basis', DEFAULT_LIST_BASIS)
+    if not listBasis:
+        listBasis = DEFAULT_LIST_BASIS
 
     last_run = demisto.getLastRun()
     incidents = []
@@ -1929,7 +1933,7 @@ def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_t
 
     delayed_start_time = generate_delayed_start_time(time_window, start_time)
     fetch_detection_by_alert_state = pending_rule_or_version_id_with_alert_state.get('alert_state', '')
-    fetch_detection_by_list_basis = pending_rule_or_version_id_with_alert_state.get('listBasis', 'CREATED_TIME')
+
     # giving priority to comma separated detection ids over check box of fetch all live detections
     if not pending_rule_or_version_id_with_alert_state.get("rule_id") and \
             not detection_to_pull and not detection_to_process and not simple_backoff_rules:
@@ -1939,7 +1943,7 @@ def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_t
 
         fetch_detection_by_alert_state = params.get('fetch_detection_by_alert_state',
                                                     fetch_detection_by_alert_state)
-        fetch_detection_by_list_basis = params.get('fetch_detection_by_list_basis', fetch_detection_by_list_basis)
+
         if not fetch_detection_by_ids:
             fetch_detection_by_ids = get_all_live_rules(client_obj, max_live_rules=50)
 
@@ -1949,13 +1953,13 @@ def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_t
         # when detection_to_pull has some rule ids
         pending_rule_or_version_id_with_alert_state.update({'rule_id': fetch_detection_by_ids,
                                                             'alert_state': fetch_detection_by_alert_state,
-                                                            'listBasis': fetch_detection_by_list_basis})
+                                                            })
 
     events, detection_to_process, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules \
         = fetch_detections(client_obj, delayed_start_time, end_time, int(max_fetch), detection_to_process,
                            detection_to_pull, pending_rule_or_version_id_with_alert_state.get('rule_id', ''),
                            pending_rule_or_version_id_with_alert_state.get('alert_state', ''), simple_backoff_rules,
-                           pending_rule_or_version_id_with_alert_state.get('listBasis'))
+                           listBasis)
 
     # The batch processing is in progress i.e. detections for pending rules are yet to be fetched
     # so updating the end_time to the start time when considered for current batch
@@ -1967,7 +1971,7 @@ def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_t
 
     pending_rule_or_version_id_with_alert_state.update({'rule_id': pending_rule_or_version_id,
                                                         'alert_state': fetch_detection_by_alert_state,
-                                                        'listBasis': fetch_detection_by_list_basis})
+                                                        })
 
     detection_identifiers, unique_detections = deduplicate_detections(events, detection_identifiers)
 
