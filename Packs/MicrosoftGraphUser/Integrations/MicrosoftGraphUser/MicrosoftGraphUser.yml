@@ -541,6 +541,13 @@ script:
       name: password
       required: true
       secret: true
+    - default: false
+      description: Whether the user is on-premise.
+      isArray: false
+      name: on_premise
+      required: true
+      secret: false
+      defaultValue: 'false'
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'

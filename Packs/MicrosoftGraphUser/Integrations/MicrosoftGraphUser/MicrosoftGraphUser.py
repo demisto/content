@@ -313,8 +313,9 @@ def change_password_user_command(client: MsGraphClient, args: Dict):
     password = str(args.get('password'))
     force_change_password_next_sign_in = args.get('force_change_password_next_sign_in', 'true') == 'true'
     force_change_password_with_mfa = args.get('force_change_password_with_mfa', False) == 'true'
-
-    client.password_change_user(user, password, force_change_password_next_sign_in, force_change_password_with_mfa)
+    on_prem = argToBoolean(args.get('on_prem'))
+    client.password_change_user(user, password, force_change_password_next_sign_in, force_change_password_with_mfa,
+                                on_prem)
     human_readable = f'User {user} password was changed successfully.'
     return human_readable, {}, {}
 
