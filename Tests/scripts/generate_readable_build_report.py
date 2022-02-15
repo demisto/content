@@ -50,7 +50,7 @@ def get_failing_ut():
     if failed_ut:
         # TODO maybe change to html format
         summary = 'There are some failing unit tests. here is a list of them\n'
-        summary = json.load(failed_ut)
+        summary = failed_ut
         # failed_ut_list = failed_ut.split('\n')
         # for failed_ut in failed_ut_list:
         #     summary += failed_ut + '\n'
