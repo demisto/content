@@ -1,3 +1,4 @@
+import json
 import os
 import re
 from demisto_sdk.commands.test_content.execute_test_content import _add_pr_comment
@@ -45,24 +46,24 @@ def create_pr_comment():
 
 
 def get_failing_ut():
-    failed_ut = get_artifact_data(ARTIFACTS_FOLDER, 'failed_unit_tests.txt')
+    failed_ut = get_artifact_data(ARTIFACTS_FOLDER, 'failed_unit_tests.json')
     if failed_ut:
         # TODO maybe change to html format
         summary = 'There are some failing unit tests. here is a list of them\n'
-        failed_ut_list = failed_ut.split('\n')
-        for failed_ut in failed_ut_list:
-            summary += failed_ut + '\n'
+        summary = json.load(failed_ut)
+        # failed_ut_list = failed_ut.split('\n')
+        # for failed_ut in failed_ut_list:
+        #     summary += failed_ut + '\n'
         with open(summary_file, 'a') as f:
             f.write(summary)
-        return f'you have {len(failed_ut_list)} failed unit test on this push.\n'
+        return f'you have {len(failed_ut)} failed unit test on this push.\n'
     return 'no failing unit tests on this one. nice job!\n'
 
 
 def get_failing_validations():
-    # TODO check the file name
     failed_validations = get_artifact_data(ARTIFACTS_FOLDER, 'failed_validations_file.txt')
     if failed_validations:
-        summary = 'There are some failing unit tests. here is a list of them\n'
+        summary = 'There are some failing sdk validations. here is a list of them\n'
         failed_validations_list = failed_validations.split('\n')
         for failed_validation in failed_validations_list:
             summary += failed_validation + '\n'
