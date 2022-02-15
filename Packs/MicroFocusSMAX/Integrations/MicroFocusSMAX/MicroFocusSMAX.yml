@@ -1,0 +1,545 @@
+category: Case Management
+commonfields:
+  id: MicroFocusSMAX
+  version: -1
+configuration:
+- defaultvalue: Incident
+  display: Object To Fetch
+  hidden: false
+  name: object_to_fetch
+  options:
+  - Incident
+  - Request
+  required: false
+  type: 15
+- defaultvalue: https://us1-smax.saas.microfocus.com
+  display: Your SMAX Management URL
+  name: url
+  required: true
+  type: 0
+- additionalinfo: The tenant ID is the number following TENANTID= in your management
+    URL
+  display: Tenant ID
+  hidden: false
+  name: tenant_id
+  required: false
+  type: 0
+- additionalinfo: The admin credentials used to integration with SMAX
+  display: Username
+  name: credentials
+  required: true
+  type: 9
+- additionalinfo: 'Fetch filter , example:  Status = ''Ready''" for Incident queries,
+    see "REST API collection query protocol" in SMAX documentation to know how to
+    use the filter'
+  display: Fetch Filter
+  hidden: false
+  name: fetch_query_filter
+  required: false
+  type: 0
+- additionalinfo: 'Fields to return, for example: "Priority,Category" for an entity
+    of type "Incident'
+  display: Fields To Fetch
+  hidden: false
+  name: fetch_fields
+  required: false
+  type: 0
+- additionalinfo: The maximum number of incidents to fetch per fetch command
+  defaultvalue: '100'
+  display: Fetch Limit
+  hidden: false
+  name: fetch_limit
+  required: false
+  type: 0
+- additionalinfo: Fetch start in days
+  defaultvalue: '1'
+  display: Fetch Start
+  hidden: false
+  name: fetch_start
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+description: Fetch SMAX cases and automate  differen SMAX case management actions
+display: MicroFocus SMAX
+name: MicroFocusSMAX
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: 'Entity type, for example: "Incident", the type is case-sensitive'
+      isArray: false
+      name: entity_type
+      predefined:
+      - ''
+      required: true
+      secret: false
+    - default: false
+      description: 'Entity Id '
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    - default: false
+      description: 'Fields to return, for example: "Priority,Category" for an entity
+        of type "Incident"'
+      isArray: false
+      name: entity_fields
+      required: false
+      secret: false
+    deprecated: false
+    description: Get any entity details
+    execution: false
+    name: microfocus-smax-get-entity
+    outputs:
+    - contextPath: MicroFocus.SMAX.Entities.properties.Id
+      description: Entity Id
+      type: String
+    - contextPath: MicroFocus.SMAX.Entities.properties.Name
+      description: Entity name
+      type: String
+  - arguments:
+    - default: false
+      description: 'Entity type, for example: "Incident", the type is case-sensitive'
+      isArray: false
+      name: entity_type
+      required: true
+      secret: false
+    - default: false
+      description: 'Query filter , example:  Status = ''Ready''" for Incident queries,
+        see "REST API collection query protocol" in SMAX documentation to know how
+        to use the filter'
+      isArray: false
+      name: query_filter
+      required: false
+      secret: false
+    - default: false
+      description: 'Fields to return, for example: "Priority,Category" for an entity
+        of type "Incident"'
+      isArray: false
+      name: entity_fields
+      required: false
+      secret: false
+    - default: false
+      description: 'The order query parameter specifies the order in which the returned
+        resources are placed, example: "Id desc"'
+      isArray: false
+      name: order_by
+      required: false
+      secret: false
+    - default: false
+      description: Specify the maximum number of resources requested to be returned.
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    - default: false
+      description: Specify how many resources should be skipped by specifying the
+        starting index of the returned result.
+      isArray: false
+      name: skip
+      required: false
+      secret: false
+    deprecated: false
+    description: Query entities' details using a collection query filter
+    execution: false
+    name: microfocus-smax-query-entities
+    outputs:
+    - contextPath: MicroFocus.SMAX.Entities.properties.Id
+      description: Entity Id
+      type: String
+    - contextPath: MicroFocus.SMAX.Entities.properties.Name
+      description: Entity name
+      type: String
+    - contextPath: MicroFocus.SMAX.Query.query_time
+      description: Query time
+      type: String
+    - contextPath: MicroFocus.SMAX.Query.total_count
+      description: Query results total count
+      type: String
+    - contextPath: MicroFocus.SMAX.Query.completion_status
+      description: Query result status
+      type: String
+  - arguments:
+    - default: false
+      description: A list of new entity objects to creates, please review the Bulk
+        API documentation for more information
+      isArray: false
+      name: entities
+      required: true
+      secret: false
+    deprecated: false
+    description: Create new entities
+    execution: false
+    name: microfocus-smax-create-entities
+    outputs:
+    - contextPath: MicroFocus.SMAX.Entities.properties.Id
+      description: Entity Id
+      type: String
+    - contextPath: MicroFocus.SMAX.Entities.properties.Name
+      description: Entity name
+      type: String
+    - contextPath: MicroFocus.SMAX.Entities.properties.completion_status
+      description: Query result status
+      type: String
+  - arguments:
+    - default: false
+      description: A list of updated entity objects, please review the Bulk API documentation
+        for more information
+      isArray: false
+      name: entities
+      required: true
+      secret: false
+    deprecated: false
+    description: Update entities
+    execution: false
+    name: microfocus-smax-update-entities
+    outputs:
+    - contextPath: MicroFocus.SMAX.Entities.properties.Id
+      description: Entity Id
+      type: String
+    - contextPath: MicroFocus.SMAX.Entities.properties.Name
+      description: Entity name
+      type: String
+    - contextPath: MicroFocus.SMAX.Entities.properties.completion_status
+      description: Query result status
+      type: String
+  - arguments:
+    - default: false
+      description: Incident name
+      isArray: false
+      name: incident_name
+      required: true
+      secret: false
+    - default: false
+      description: Incident description
+      isArray: false
+      name: incident_description
+      required: true
+      secret: false
+    - default: false
+      description: Impacted service by the incident, you must provide a service id
+      isArray: false
+      name: impacted_service
+      required: true
+      secret: false
+    - default: false
+      description: Incident requested by, you must provide a user id
+      isArray: false
+      name: requested_by
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Incident urgency level
+      isArray: false
+      name: incident_urgency
+      predefined:
+      - NoDisruption
+      - SlightDisruption
+      - SevereDisruption
+      - TotalLossOfService
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Incident impact scope
+      isArray: false
+      name: impact_scope
+      predefined:
+      - SingleUser
+      - MultipleUsers
+      - SiteOrDepartment
+      - Enterprise
+      required: false
+      secret: false
+    - default: false
+      description: Service desk group, you have to provide a group id
+      isArray: false
+      name: service_desk_group
+      required: false
+      secret: false
+    - default: false
+      description: An object of other properities
+      isArray: false
+      name: other_properities
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new incident
+    execution: false
+    name: microfocus-smax-create-incident
+    outputs:
+    - contextPath: MicroFocus.SMAX.Entities.properties.Id
+      description: Entity Id
+      type: String
+    - contextPath: MicroFocus.SMAX.Entities.properties.Name
+      description: Entity name
+      type: String
+    - contextPath: MicroFocus.SMAX.Entities.properties.completion_status
+      description: Query result status
+      type: String
+  - arguments:
+    - default: false
+      description: Incident Id
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: Incident description
+      isArray: false
+      name: incident_description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Incident urgency level
+      isArray: false
+      name: incident_urgency
+      predefined:
+      - NoDisruption
+      - SlightDisruption
+      - SevereDisruption
+      - TotalLossOfService
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Incident impact scope
+      isArray: false
+      name: impact_scope
+      predefined:
+      - SingleUser
+      - MultipleUsers
+      - SiteOrDepartment
+      - Enterprise
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Incident status
+      isArray: false
+      name: incident_status
+      predefined:
+      - Ready
+      - InProgress
+      - Pending
+      - Suspended
+      - Complete
+      required: false
+      secret: false
+    - default: false
+      description: Incident closure category, you have to provide a category Id
+      isArray: false
+      name: incident_closure_category
+      required: false
+      secret: false
+    - default: false
+      description: Incident completion code
+      isArray: false
+      name: incident_completion_code
+      required: false
+      secret: false
+    - default: false
+      description: Incident solution details
+      isArray: false
+      name: incident_solution
+      required: false
+      secret: false
+    - default: false
+      description: An object of other properities
+      isArray: false
+      name: other_properities
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an incident
+    execution: false
+    name: microfocus-smax-update-incident
+    outputs:
+    - contextPath: MicroFocus.SMAX.Entities.properties.Id
+      description: Entity Id
+      type: String
+    - contextPath: MicroFocus.SMAX.Entities.properties.Name
+      description: Entity name
+      type: String
+    - contextPath: MicroFocus.SMAX.Entities.properties.completion_status
+      description: Query result status
+      type: String
+  - arguments:
+    - default: false
+      description: Request name
+      isArray: false
+      name: request_name
+      required: true
+      secret: false
+    - default: false
+      description: Request description
+      isArray: false
+      name: request_description
+      required: true
+      secret: false
+    - default: false
+      description: Requested by, you must provide a user id
+      isArray: false
+      name: requested_by
+      required: true
+      secret: false
+    - default: false
+      description: Requested for, you must provide a user id
+      isArray: false
+      name: requested_for
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Request urgency level
+      isArray: false
+      name: request_urgency
+      predefined:
+      - NoDisruption
+      - SlightDisruption
+      - SevereDisruption
+      - TotalLossOfService
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Request impact scope
+      isArray: false
+      name: impact_scope
+      predefined:
+      - SingleUser
+      - MultipleUsers
+      - SiteOrDepartment
+      - Enterprise
+      required: false
+      secret: false
+    - default: false
+      description: An object of other properities
+      isArray: false
+      name: other_properities
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new request
+    execution: false
+    name: microfocus-smax-create-request
+    outputs:
+    - contextPath: MicroFocus.SMAX.Entities.properties.Id
+      description: Entity Id
+      type: String
+    - contextPath: MicroFocus.SMAX.Entities.properties.Name
+      description: Entity name
+      type: String
+    - contextPath: MicroFocus.SMAX.Entities.properties.completion_status
+      description: Query result status
+      type: String
+  - arguments:
+    - default: false
+      description: Request Id
+      isArray: false
+      name: request_id
+      required: true
+      secret: false
+    - default: false
+      description: Request description
+      isArray: false
+      name: request_description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Request urgency level
+      isArray: false
+      name: request_urgency
+      predefined:
+      - NoDisruption
+      - SlightDisruption
+      - SevereDisruption
+      - TotalLossOfService
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Incident impact scope
+      isArray: false
+      name: impact_scope
+      predefined:
+      - SingleUser
+      - MultipleUsers
+      - SiteOrDepartment
+      - Enterprise
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Request status
+      isArray: false
+      name: request_status
+      predefined:
+      - RequestStatusReady
+      - RequestStatusInProgress
+      - RequestStatusPending
+      - RequestStatusSuspended
+      - RequestStatusComplete
+      - RequestStatusPendingParent
+      - RequestStatusRejected
+      - RequestStatusPendingVendor
+      - RequestStatusPendingExternalServiceDesk
+      - RequestStatusPendingSpecialOperation
+      required: false
+      secret: false
+    - default: false
+      description: Request update note
+      isArray: false
+      name: request_note
+      required: false
+      secret: false
+    - default: false
+      description: An object of other properities
+      isArray: false
+      name: other_properities
+      required: false
+      secret: false
+    deprecated: false
+    description: Update a request
+    execution: false
+    name: microfocus-smax-update-request
+    outputs:
+    - contextPath: MicroFocus.SMAX.Entities.properties.Id
+      description: Entity Id
+      type: String
+    - contextPath: MicroFocus.SMAX.Entities.properties.Name
+      description: Entity name
+      type: String
+    - contextPath: MicroFocus.SMAX.Entities.properties.completion_status
+      description: Query result status
+      type: String
+  dockerimage: demisto/python3:3.9.8.24399
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

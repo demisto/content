@@ -42,6 +42,7 @@ The EWS integration can be used for the following use cases.
         Note: To use this functionality, your account must have impersonation rights or delegation for the account specified. For more information on impersonation rights see ‘Additional Information’ section below.
     *   **Name of the folder from which to fetch incidents**: Supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing. Please note, if Exchange is configured with an international flavor `Inbox` will be named according to the configured language.
     *   **Public Folder**
+    *   **Access Type**: Run the commands using `Delegate` or `Impersonation` access types.
     *   **Use system proxy settings**
     *   **Trust any certificate (not secure)**  
     *   **Timeout (in seconds) for HTTP requests to Exchange Server**
@@ -1362,9 +1363,11 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 | transientFile | Desired name for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
 | transientFileContent | Content for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
 | transientFileCID | CID for attached file if we want it inline. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
-| templateParams | Replace {varname} variables with values from this argument. Expected values are in the form of a JSON document like {"varname": {"value": "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value from | Optional | 
+| templateParams | Replace {varname} variables with values from this argument. Expected values are in the form of a JSON document like {"varname": {"value": "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value from. Note that only context data is accessible for this argument, while incident fields are not. | Optional | 
 | additionalHeader | A comma-separated list list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
 | raw_message | Raw email message to send. If provided, all other arguments, but to, cc and bcc, will be ignored. | Optional | 
+| from_address | The email address from which to reply. | Optional |
+| replyTo | Email addresses that need to be used to reply to the message. Supports comma-separated values. | Optional |
 
 
 #### Context Output

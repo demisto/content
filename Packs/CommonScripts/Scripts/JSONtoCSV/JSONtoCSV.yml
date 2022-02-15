@@ -37,4 +37,4 @@ runonce: false
 tests:
 - JSONtoCSV-Test
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python:2.7.18.24398

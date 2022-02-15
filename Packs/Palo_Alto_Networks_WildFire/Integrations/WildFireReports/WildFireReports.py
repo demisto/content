@@ -12,11 +12,18 @@ class Client(BaseClient):
         super().__init__(base_url, verify, proxy, ok_codes, headers)
         self.token = token
 
+        LOG.add_replace_strs(token)
+
     def get_file_report(self, file_hash: str):
         return self._http_request(
             'POST',
             url_suffix='/get/report',
-            params={'apikey': self.token, 'format': 'pdf', 'hash': file_hash},
+            params={
+                'apikey': self.token,
+                'agent': 'xsoartim',
+                'format': 'pdf',
+                'hash': file_hash,
+            },
             resp_type='response',
             ok_codes=(200, 401, 404),
         )

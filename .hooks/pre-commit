@@ -35,12 +35,12 @@ if [[ -n "$CONTENT_PRECOMMIT_RUN_DEV_TASKS" ]]; then
     echo "Running content lint tasks (flake8, mypy, bandit, pylint, pytest) as env variable CONTENT_PRECOMMIT_RUN_DEV_TASKS is set."
     SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
     if [[ -n "$SHOULD_LINT_ALL" ]]; then
-        echo -e  "----------\nNote: on circleci build, linting will be run on all files. This is because:\n$SHOULD_LINT_ALL\n----------"
+        echo -e  "----------\nNote: on  gitlab build, linting will be run on all files. This is because:\n$SHOULD_LINT_ALL\n----------"
     fi
     demisto-sdk lint -g
     RES=$(($RES + $?))
     if [[ -f "coverage_report/.coverage" ]]; then
-        demisto-sdk coverage-analyze --no-min-coverage-enforcement
+        demisto-sdk coverage-analyze --no-min-coverage-enforcement --previous-coverage-report-url https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
     fi
     
     RES=$(($RES + $?))

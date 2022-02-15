@@ -2920,7 +2920,7 @@ inputs:
   value:
     simple: Demisto Remediation - Domain EDL
   required: false
-  description: The name of the EDL Domain Blocklist.
+  description: The name of the EDL Domain Block List.
   playbookInputQuery:
 - key: QRadarDomainFieldName
   value:

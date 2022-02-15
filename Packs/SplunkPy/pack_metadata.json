@@ -2,7 +2,7 @@
     "name": "Splunk",
     "description": "Run queries on Splunk servers.",
     "support": "xsoar",
-    "currentVersion": "2.2.2",
+    "currentVersion": "2.3.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -44,5 +44,9 @@
         "Malware",
         "CommonTypes",
         "AccessInvestigation"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

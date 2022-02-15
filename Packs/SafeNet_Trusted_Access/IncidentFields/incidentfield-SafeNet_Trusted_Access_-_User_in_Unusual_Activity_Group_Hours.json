@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "SafeNet Trusted Access Alert"
+        "SafeNet Trusted Access Push Reject Alert"
     ],
     "caseInsensitive": true,
     "cliName": "safenettrustedaccessuserinunusualactivitygrouphours",

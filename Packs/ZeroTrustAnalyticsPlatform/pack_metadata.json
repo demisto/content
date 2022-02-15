@@ -1,0 +1,52 @@
+{
+    "name": "Zero Trust Analytics Platform",
+    "description": "Provides view of raised alerts within ZTAP.",
+    "support": "partner",
+    "currentVersion": "1.0.1",
+    "author": "CriticalStart",
+    "url": "https://support.criticalstart.com/",
+    "email": "support@criticalstart.com",
+    "itemPrefix": [
+        "ZTAP"
+    ],
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "Incident Response"
+    ],
+    "useCases": [
+        "Incident Response"
+    ],
+    "keywords": [
+        "CriticalStart",
+        "ZTAP"
+    ],
+    "devEmail": [
+        "xdr+xsoar@threatanalytics.io"
+    ],
+    "githubUser": [],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        }
+    },
+    "displayedImages": [
+        "CommonTypes",
+        "CommonPlaybooks",
+        "CommonScripts"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

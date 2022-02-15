@@ -1654,7 +1654,7 @@ script:
     - contextPath: URL.Tags
       description: (List) Tags of the URL.
       type: Unknown
-  dockerimage: demisto/emoji:1.0.0.23151
+  dockerimage: demisto/py3-tools:0.0.1.25751
   feed: false
   isfetch: false
   longRunning: false

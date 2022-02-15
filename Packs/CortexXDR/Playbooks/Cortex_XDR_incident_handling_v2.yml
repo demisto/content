@@ -341,7 +341,7 @@ tasks:
       manual_severity: {}
       resolve_comment: {}
       status:
-        simple: RESOLVED_THREAT_HANDLED
+        simple: RESOLVED_TRUE_POSITIVE
       unassign_user: {}
     separatecontext: false
     view: |-

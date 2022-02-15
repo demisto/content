@@ -175,22 +175,33 @@ def test_get_no_update_value(mocker):
 
     Then
     - Ensure that the response is False
+    - Ensure that the last run is saved as expected
     """
     mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'setLastRun')
+
+    expected_last_run = {
+        'lastRun': '2018-10-24T14:13:20+00:00',
+        'feed_name': {
+            'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',
+            'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}
+    }
 
     class MockResponse:
         headers = {'Last-Modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
                    'ETag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
         status_code = 200
-    no_update = get_no_update_value(MockResponse())
+    no_update = get_no_update_value(MockResponse(), 'feed_name')
     assert not no_update
     assert demisto.debug.call_args[0][0] == 'New indicators fetched - the Last-Modified value has been updated,' \
                                             ' createIndicators will be executed with noUpdate=False.'
+    assert demisto.setLastRun.call_args[0][0] == expected_last_run
 
 
 def test_build_iterator_not_modified_header(mocker):
     """
     Given
+    - Last run has etag and last_modified in it
     - response with status code 304(Not Modified)
 
     When
@@ -198,19 +209,56 @@ def test_build_iterator_not_modified_header(mocker):
 
     Then
     - Ensure that the no_update value is True
+    - Request is called with the headers "If-None-Match" and "If-Modified-Since"
     """
+    feed_name = 'mock_feed_name'
     mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'getLastRun', return_value={feed_name: {'etag': '0', 'last_modified': 'now'}})
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
+
     with requests_mock.Mocker() as m:
         m.get('https://api.github.com/meta', status_code=304)
 
         client = Client(
             url='https://api.github.com/meta'
         )
-        result, no_update = client.build_iterator(feed={'url': 'https://api.github.com/meta'})
+        result, no_update = client.build_iterator(feed={'url': 'https://api.github.com/meta'}, feed_name=feed_name)
         assert not result
         assert no_update
         assert demisto.debug.call_args[0][0] == 'No new indicators fetched, ' \
                                                 'createIndicators will be executed with noUpdate=True.'
+        assert 'If-None-Match' in client.headers
+        assert 'If-Modified-Since' in client.headers
+
+
+def test_build_iterator_with_version_6_2_0(mocker):
+    """
+    Given
+    - server version 6.2.0
+
+    When
+    - Running build_iterator method.
+
+    Then
+    - Ensure that the no_update value is True
+    - Request is called without headers "If-None-Match" and "If-Modified-Since"
+    """
+    feed_name = 'mock_feed_name'
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+
+    with requests_mock.Mocker() as m:
+        m.get('https://api.github.com/meta', status_code=304)
+
+        client = Client(
+            url='https://api.github.com/meta',
+            headers={}
+        )
+        result, no_update = client.build_iterator(feed={'url': 'https://api.github.com/meta'}, feed_name=feed_name)
+        assert not result
+        assert no_update
+        assert 'If-None-Match' not in client.headers
+        assert 'If-Modified-Since' not in client.headers
 
 
 def test_get_no_update_value_without_headers(mocker):
@@ -225,11 +273,16 @@ def test_get_no_update_value_without_headers(mocker):
     - Ensure that the response is False.
     """
     mocker.patch.object(demisto, 'debug')
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
 
     class MockResponse:
         headers = {}
         status_code = 200
-    no_update = get_no_update_value(MockResponse())
+    no_update = get_no_update_value(MockResponse(), 'feed_name')
     assert not no_update
     assert demisto.debug.call_args[0][0] == 'Last-Modified and Etag headers are not exists,' \
                                             'createIndicators will be executed with noUpdate=False.'
+
+
+def test_version_6_2_0(mocker):
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})

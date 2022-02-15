@@ -1,7 +1,7 @@
 Microsoft Cloud App Security is a multimode Cloud Access Security Broker (CASB). It provides rich visibility, control over data travel, and sophisticated analytics to identify and combat cyber threats across all your cloud services. Use the integration to view and resolve alerts, view activities, view files, and view user accounts.
 This integration was integrated and tested with version 178 of MicrosoftCloudAppSecurity.
 
-For more details about how to generate a new token, see [Microsoft Cloud App Security - Managing API tokens](https://docs.microsoft.com/en-us/cloud-app-security/api-authentication).
+For more details about how to generate a new token, see [Microsoft Cloud App Security - Managing API tokens](https://docs.microsoft.com/en-us/defender-cloud-apps/api-tokens-legacy).
 
 For more information about which permissions are required for the token owner in Microsoft Cloud App Security, see [Microsoft Cloud App Security - Manage admin access](https://docs.microsoft.com/en-us/cloud-app-security/manage-admins).
 
@@ -23,7 +23,7 @@ For more information about which permissions are required for the token owner in
     | Maximum alerts to fetch |  | False |
     | First fetch time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
     | Incident resolution status |  | False |
-    | Custom Filter | A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. An example of a Custom Filter is: \{"severity":\{"eq":2\}\}. Note that for filtering by "entity.policy", you should use the ID of the policy. For example, for retrieving the policy: \{"policyType": "ANOMALY_DETECTION", "id": "1234", "label": "Impossible travel", "type": "policyRule"\}" please query on \{"entity.policy":\{"eq":1234\}\}. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts\#filters. | False |
+    | Custom Filter | A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. An example of a Custom Filter is: \{"severity":\{"eq":2\}\}. Note that for filtering by "entity.policy", you should use the ID of the policy. For example, for retrieving the policy: \{"policyType": "ANOMALY_DETECTION", "id": "1234", "label": "Impossible travel", "type": "policyRule"\}" please query on \{"entity.policy":\{"eq":1234\}\}. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

@@ -1247,7 +1247,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Text description of blacklist
+      description: Text description of block list
       isArray: false
       name: text
       required: true
@@ -2076,7 +2076,7 @@ script:
     - contextPath: Endpoint.Processor
       description: The model of the processor.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: true
   longRunning: false

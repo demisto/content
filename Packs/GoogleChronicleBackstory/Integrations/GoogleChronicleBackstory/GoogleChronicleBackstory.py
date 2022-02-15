@@ -167,6 +167,7 @@ def validate_response(client, url, method='GET'):
 
     :return: response
     """
+    demisto.info('[CHRONICLE DETECTIONS]: Request URL: ' + url.format(REGIONS[client.region]))
     raw_response = client.http_client.request(url.format(REGIONS[client.region]), method)
     if not raw_response:
         raise ValueError('Technical Error while making API call to Chronicle. Empty response received')
@@ -1153,8 +1154,13 @@ def validate_and_parse_detection_start_end_time(args: Dict[str, Any]) -> Tuple[s
     :return : detection_start_time, detection_end_time: Detection start and end time in the format API accepts
     :rtype : Tuple[str, str]
     """
-    detection_start_time = args.get('detection_start_time')
-    detection_end_time = args.get('detection_end_time')
+    detection_start_time = args.get('start_time') if args.get('start_time') else args.get('detection_start_time')
+    detection_end_time = args.get('end_time') if args.get('end_time') else args.get('detection_end_time')
+
+    list_basis = args.get('list_basis', '')
+    if list_basis and not detection_start_time and not detection_end_time:
+        raise ValueError("To sort detections by \"list_basis\", either \"start_time\" or \"end_time\" argument is "
+                         "required.")
 
     invalid_time_error_message = 'Invalid {} time. Some supported formats are ISO date format and relative time.' \
                                  ' e.g. 2019-10-17T00:00:00Z, 3 days'
@@ -1198,10 +1204,15 @@ def validate_and_parse_list_detections_args(args: Dict[str, Any]) -> Dict[str, A
     if int(page_size) > 1000:
         raise ValueError('Page size should be in the range from 1 to 1000.')
 
+    rule_id = args.get('id', '')
+    detection_for_all_versions = argToBoolean(args.get('detection_for_all_versions', False))
+    if detection_for_all_versions and not rule_id:
+        raise ValueError('If "detection_for_all_versions" is true, rule id is required.')
+
     detection_start_time, detection_end_time = validate_and_parse_detection_start_end_time(args)
 
     valid_args = {'page_size': page_size, 'detection_start_time': detection_start_time,
-                  'detection_end_time': detection_end_time}
+                  'detection_end_time': detection_end_time, 'detection_for_all_versions': detection_for_all_versions}
 
     return valid_args
 
@@ -1294,12 +1305,15 @@ def get_event_list_for_detections_context(result_events: Dict[str, Any]) -> List
     return events
 
 
-def get_list_detections_hr(detections: List[Dict[str, Any]]) -> str:
+def get_list_detections_hr(detections: List[Dict[str, Any]], rule_or_version_id: str) -> str:
     """
     Converts detections response into human readable.
 
     :param detections: list of detections
     :type detections: list
+
+    :type rule_or_version_id: str
+    :param rule_or_version_id: rule_id or version_id to fetch the detections for.
 
     :return: returns human readable string for gcb-list-detections command
     :rtype: str
@@ -1321,8 +1335,11 @@ def get_list_detections_hr(detections: List[Dict[str, Any]]) -> str:
     if rule_uri:
         rule_uri = rule_uri.split('&', maxsplit=2)
         rule_uri = '{}&{}'.format(rule_uri[0], rule_uri[1])
-    hr_title = 'Detection(s) Details For Rule: [{}]({})'. \
-        format(detections[0].get('detection', {})[0].get('ruleName', ''), rule_uri)
+    if rule_or_version_id:
+        hr_title = 'Detection(s) Details For Rule: [{}]({})'.\
+            format(detections[0].get('detection', {})[0].get('ruleName', ''), rule_uri)
+    else:
+        hr_title = 'Detection(s)'
     hr = tableToMarkdown(hr_title, hr_dict, ['Detection ID', 'Detection Type', 'Detection Time', 'Events',
                                              'Alert State'], removeNull=True)
     return hr
@@ -1398,7 +1415,8 @@ def get_context_for_detections(detection_resp: Dict[str, Any]) -> Tuple[List[Dic
 
 
 def get_detections(client_obj, rule_or_version_id: str, page_size: str, detection_start_time: str,
-                   detection_end_time: str, page_token: str, alert_state: str) \
+                   detection_end_time: str, page_token: str, alert_state: str, detection_for_all_versions: bool = False,
+                   list_basis: str = None) \
         -> Tuple[Dict[str, Any], Dict[str, Any]]:
     """
     Returns context data and raw response for gcb-list-detections command.
@@ -1417,27 +1435,39 @@ def get_detections(client_obj, rule_or_version_id: str, page_size: str, detectio
     :param page_token: The token for the page from which the detections should be fetched.
     :type alert_state: str
     :param alert_state: Alert state for the detections to fetch.
+    :type detection_for_all_versions: bool
+    :param detection_for_all_versions: Whether to retrieve detections for all versions of a rule with a given rule
+    identifier.
+    :type list_basis: str
+    :param list_basis: To sort the detections.
 
     :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
     :return: ec, json_data: Context data and raw response for the fetched detections
     """
     # Make a request URL
+    if not rule_or_version_id:
+        rule_or_version_id = "-"
+    if detection_for_all_versions and rule_or_version_id:
+        rule_or_version_id = f"{rule_or_version_id}@-"
+
     request_url = '{}/detect/rules/{}/detections?pageSize={}' \
         .format(BACKSTORY_API_V2_URL, rule_or_version_id, page_size)
 
     # Append parameters if specified
     if detection_start_time:
-        request_url += '&detectionStartTime={}'.format(detection_start_time)
+        request_url += '&startTime={}'.format(detection_start_time)
 
     if detection_end_time:
-        request_url += '&detectionEndTime={}'.format(detection_end_time)
+        request_url += '&endTime={}'.format(detection_end_time)
 
     if alert_state:
         request_url += '&alertState={}'.format(alert_state)
 
+    if list_basis:
+        request_url += '&listBasis={}'.format(list_basis)
+
     if page_token:
         request_url += '&page_token={}'.format(page_token)
-    demisto.info('[CHRONICLE DETECTIONS]: Request URL: ' + request_url)
     # get list of detections from Chronicle Backstory
     json_data = validate_response(client_obj, request_url)
     raw_resp = deepcopy(json_data)
@@ -2664,7 +2694,9 @@ def gcb_list_detections_command(client_obj, args: Dict[str, str]):
 
     ec, json_data = get_detections(client_obj, args.get('id', ''), valid_args.get('page_size', ''),
                                    valid_args.get('detection_start_time', ''), valid_args.get('detection_end_time', ''),
-                                   args.get('page_token', ''), args.get('alert_state', ''))
+                                   args.get('page_token', ''), args.get('alert_state', ''),
+                                   valid_args.get('detection_for_all_versions', False),
+                                   args.get('list_basis', ''))
 
     detections = json_data.get('detections', [])
     if not detections:
@@ -2672,7 +2704,7 @@ def gcb_list_detections_command(client_obj, args: Dict[str, str]):
         return hr, {}, {}
 
     # prepare alerts into human readable
-    hr = get_list_detections_hr(detections)
+    hr = get_list_detections_hr(detections, args.get('id', ''))
     hr += '\nView all detections for this rule in Chronicle by clicking on {} and to view individual detection' \
           ' in Chronicle click on its respective Detection ID.\n\nNote: If a specific version of the rule is provided' \
           ' then detections for that specific version will be fetched.'.format(detections[0].

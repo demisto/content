@@ -311,14 +311,14 @@ def get_all_user_profiles():
     query = 'type:"User Profile"'
     email_to_user_profile = {}
 
-    search_indicators = IndicatorsSearcher()
-    user_profiles = search_indicators.search_indicators_by_version(query=query, size=BATCH_SIZE).get('iocs', [])
-    while user_profiles:
-        for user_profile in user_profiles:
-            user_profile = user_profile.get('CustomFields', {})
-            email_to_user_profile[user_profile.get('email')] = user_profile
+    user_profiles: List[dict] = []
+    search_indicators = IndicatorsSearcher(query=query, size=BATCH_SIZE)
+    for user_profile_res in search_indicators:
+        user_profiles.extend(user_profile_res.get('iocs') or [])
 
-        user_profiles = search_indicators.search_indicators_by_version(query=query, size=BATCH_SIZE).get('iocs', [])
+    for user_profile in user_profiles:
+        user_profile = user_profile.get('CustomFields', {})
+        email_to_user_profile[user_profile.get('email')] = user_profile
 
     return email_to_user_profile
 

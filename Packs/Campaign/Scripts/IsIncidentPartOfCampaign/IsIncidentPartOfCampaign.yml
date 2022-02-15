@@ -16,6 +16,7 @@ args:
   defaultValue: Phishing Campaign
 - name: IncidentIDs
   required: true
+  isArray: true
   description: Comma separated list of incidents ids to search for.
 outputs:
 - contextPath: ExistingCampaignID
@@ -24,7 +25,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.1.25933
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

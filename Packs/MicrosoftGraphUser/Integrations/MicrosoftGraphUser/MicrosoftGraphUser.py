@@ -74,7 +74,7 @@ class MsGraphClient:
 
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
-    def terminate_user_session(self, user):
+    def disable_user_account_session(self, user):
         self.ms_client.http_request(
             method='PATCH',
             url_suffix=f'users/{quote(user)}',
@@ -195,6 +195,15 @@ class MsGraphClient:
             resp_type="text"
         )
 
+    #  If successful, this method returns 204 No Content response code.
+    #  Using resp_type=text to avoid parsing error.
+    def revoke_user_session(self, user):
+        self.ms_client.http_request(
+            method='POST',
+            url_suffix=f'users/{quote(user)}/revokeSignInSessions',
+            resp_type="text"
+        )
+
 
 def test_function(client, _):
     """
@@ -216,10 +225,10 @@ def test_function(client, _):
     return response, None, None
 
 
-def terminate_user_session_command(client: MsGraphClient, args: Dict):
+def disable_user_account_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
-    client.terminate_user_session(user)
-    human_readable = f'user: "{user}" session has been terminated successfully'
+    client.disable_user_account_session(user)
+    human_readable = f'user: "{user}" account has been disabled successfully.'
     return human_readable, None, None
 
 
@@ -234,7 +243,7 @@ def unblock_user_command(client: MsGraphClient, args: Dict):
 def delete_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.delete_user(user)
-    human_readable = f'user: "{user}" was deleted successfully'
+    human_readable = f'user: "{user}" was deleted successfully.'
     return human_readable, None, None
 
 
@@ -384,6 +393,13 @@ def assign_manager_command(client: MsGraphClient, args: Dict):
     return human_readable, None, None
 
 
+def revoke_user_session_command(client: MsGraphClient, args: Dict):
+    user = args.get('user')
+    client.revoke_user_session(user)
+    human_readable = f'User: "{user}" sessions have been revoked successfully.'
+    return human_readable, None, None
+
+
 def main():
     params: dict = demisto.params()
     url = params.get('host', '').rstrip('/') + '/v1.0/'
@@ -400,7 +416,8 @@ def main():
         'msgraph-user-test': test_function,
         'test-module': test_function,
         'msgraph-user-unblock': unblock_user_command,
-        'msgraph-user-terminate-session': terminate_user_session_command,
+        'msgraph-user-terminate-session': disable_user_account_command,
+        'msgraph-user-account-disable': disable_user_account_command,
         'msgraph-user-update': update_user_command,
         'msgraph-user-change-password': change_password_user_command,
         'msgraph-user-delete': delete_user_command,
@@ -410,7 +427,8 @@ def main():
         'msgraph-user-list': list_users_command,
         'msgraph-direct-reports': get_direct_reports_command,
         'msgraph-user-get-manager': get_manager_command,
-        'msgraph-user-assign-manager': assign_manager_command
+        'msgraph-user-assign-manager': assign_manager_command,
+        'msgraph-user-session-revoke': revoke_user_session_command,
     }
     command = demisto.command()
     LOG(f'Command being called is {command}')

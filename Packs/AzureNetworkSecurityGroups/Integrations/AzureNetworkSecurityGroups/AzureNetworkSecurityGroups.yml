@@ -547,7 +547,7 @@ script:
       process.
     execution: false
     name: azure-nsg-auth-reset
-  dockerimage: demisto/crypto:1.0.0.24037
+  dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: false
   longRunning: false

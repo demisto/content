@@ -2,7 +2,7 @@
     "name": "Quest Kace",
     "description": "Use the Comprehensive Quest KACE solution to Provision, manage, secure, and service all network-connected devices.",
     "support": "xsoar",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.0.9",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,5 +12,9 @@
     "tags": [],
     "created": "2020-04-12T11:36:18Z",
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

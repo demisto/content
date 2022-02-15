@@ -1,0 +1,67 @@
+{
+    "name": "Cybersixgill Actionable Alerts",
+    "description": "The integration allow retrieving Cybersixgill's actionable alerts based on organization assets",
+    "support": "partner",
+    "currentVersion": "1.0.1",
+    "author": "Cybersixgill",
+    "url": "https://www.cybersixgill.com/",
+    "email": "getstarted@cybersixgill.com",
+    "created": "2021-11-16T08:37:18Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence",
+        "Forensics & Malware Analysis"
+    ],
+    "tags": [
+        "Threat Intelligence",
+        "Dark Web",
+        "Malware"
+    ],
+    "useCases": [
+        "Threat Intelligence Management",
+        "Incident Response",
+        "Malware",
+        "Hunting"
+    ],
+    "certification": "certified",
+    "keywords": [
+        "sixgill",
+        "darkfeed",
+        "feed",
+        "IOC",
+        "IOCs",
+        "indicators",
+        "threat intelligence",
+        "dark web",
+        "darkweb",
+        "darknet",
+        "dark net",
+        "deep web",
+        "cti",
+        "cyber threat intelligence",
+        "malware",
+        "compromised",
+        "rdp",
+        "Botnet",
+        "virus total",
+        "virustotal",
+        "emotet",
+        "trickbot",
+        "ursnif",
+        "recorded future",
+        "flashpoint",
+        "intel471",
+        "intsights",
+        "digital shadows",
+        "C2",
+        "command and control",
+        "DDoS"
+    ],
+    "itemPrefix": [
+        "Cybersixgill",
+        ""
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

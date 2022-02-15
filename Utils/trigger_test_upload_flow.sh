@@ -7,17 +7,21 @@ if [ "$#" -lt "1" ]; then
   -ct, --ci-token             The ci token.
   [-b, --branch]              The branch name. Default is the current branch.
   [-gb, --bucket]             The name of the bucket to upload the packs to. Default is marketplace-dist-dev.
+  [-gb2, --bucket_v2]         The name of the bucket to upload the marketplace v2 packs to. Default is marketplace-v2-dist-dev.
   [-f, --force]               Whether to trigger the force upload flow.
   [-p, --packs]               CSV list of pack IDs. Mandatory when the --force flag is on.
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
   [-g, --gitlab]              Flag indicating to trigger the flow in GitLab.
-  [-sbp, --storage-base-path] A path to copy from in this current upload, and to be used as a target destination. This path should look like base path should look like upload-flow/builds/branch_name/build_number/content.
+  [-sbp, --storage-base-path] A path to copy from in this current upload, and to be used as a target destination. This path should look like upload-flow/builds/branch_name/build_number/content.
+  [-dz, --create_dependencies_zip] Upload packs with dependencies zip
+  [-o, --override_all_packs]  Whether to override all packs, and not just modified packs.
   "
   exit 1
 fi
 
 _branch="$(git branch  --show-current)"
 _bucket="marketplace-dist-dev"
+_bucket_v2="marketplace-v2-dist-dev"
 _bucket_upload="true"
 _slack_channel="dmst-bucket-upload"
 _storage_base_path=""
@@ -44,6 +48,15 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
+  -gb2|--bucket_v2)
+  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "marketplace-v2-dist" ]; then
+    echo "Only test buckets are allowed to use. Using marketplace-v2-dist-dev instead."
+  else
+    _bucket_v2=$2
+  fi
+    shift
+    shift;;
+
   -f|--force) _force=true
     _bucket_upload=""
     shift;;
@@ -60,8 +73,13 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
+  -o|--override-all-packs) _override_all_packs=true
+    shift;;
+
   -g|--gitlab) _gitlab=true
-    shift
+    shift;;
+
+  -dz|--create_dependencies_zip) _create_dependencies_zip=true
     shift;;
 
   *)    # unknown option.
@@ -84,21 +102,32 @@ if [ -n "$_force" ] && [ -n "$_storage_base_path"]; then
     echo "Can not force upload while using a storage base path."
     exit 1
 fi
-if [[ -n "$_storage_base_path" ]] && [ "$_storage_base_path" != *content ]; then
-  echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content."
-  exit 1
-fi
-
-if [[ -n "$_storage_base_path" ]] && [ "$_storage_base_path" != upload-flow* ]; then
-  echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content."
-  exit 1
-fi
+#if [[ -n "$_storage_base_path" ]] && [ "$_storage_base_path" != *content ]; then
+#  echo "$_storage_base_path"
+#  echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content."
+#  exit 1
+#fi
+#
+#if [[ -n "$_storage_base_path" ]] && [ "$_storage_base_path" != upload-flow* ]; then
+#  echo $_storage_base_path
+#  echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content."
+#  exit 1
+#fi
 
 if [ -n "$_gitlab" ]; then
 
   _variables="variables[BUCKET_UPLOAD]=true"
   if [ -n "$_force" ]; then
     _variables="variables[FORCE_BUCKET_UPLOAD]=true"
+  fi
+
+  if [ -z "$_override_all_packs" ]; then
+    _override_all_packs=false
+  else
+    _override_all_packs=true
+  fi
+  if [ -z "$_create_dependencies_zip" ]; then
+    _create_dependencies_zip=false
   fi
 
   source Utils/gitlab_triggers/trigger_build_url.sh
@@ -110,8 +139,11 @@ if [ -n "$_gitlab" ]; then
     --form "variables[SLACK_CHANNEL]=${_slack_channel}" \
     --form "variables[PACKS_TO_UPLOAD]=${_packs}" \
     --form "variables[GCS_MARKET_BUCKET]=${_bucket}" \
+    --form "variables[GCS_MARKET_V2_BUCKET]=${_bucket_v2}" \
     --form "variables[IFRA_ENV_TYPE]=Bucket-Upload" \
     --form "variables[STORAGE_BASE_PATH]=${_storage_base_path}" \
+    --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
+    --form "variables[CREATE_DEPENDENCIES_ZIP]=${_create_dependencies_zip}" \
     "$BUILD_TRIGGER_URL"
 
 else

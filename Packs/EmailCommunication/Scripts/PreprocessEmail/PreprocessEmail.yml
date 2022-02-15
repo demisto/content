@@ -15,7 +15,8 @@ args:
 comment: |-
   Preprocessing script for email communication layout.
   This script checks if the incoming email contains an Incident ID to link the mail to an existing incident, and tags the email as "email-thread".
-
+  This script runs with elevated permissions. 
+  Cortex XSOAR recommends using the built-in RBAC functionality to limit access to only those users requiring access to this script.
   For more information about the preprocessing rules, refer to: https://demisto.developers.paloaltonetworks.com/docs/incidents/incident-pre-processing
 commonfields:
   id: PreprocessEmail
@@ -30,7 +31,8 @@ tags:
 - preProcessing
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.9.8.24399
+runas: DBotRole
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0

@@ -884,16 +884,20 @@ def list_pr_review_comments_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
-def list_issue_comments(issue_number: Union[int, str]) -> list:
+def list_issue_comments(issue_number: Union[int, str], since_date: Optional[str]) -> list:
     suffix = ISSUE_SUFFIX + f'/{issue_number}/comments'
-    response = http_request('GET', url_suffix=suffix)
+    params = {}
+    if since_date:
+        params = {'since': since_date}
+    response = http_request('GET', url_suffix=suffix, params=params)
     return response
 
 
 def list_issue_comments_command():
     args = demisto.args()
     issue_number = args.get('issue_number')
-    response = list_issue_comments(issue_number)
+    since_date = args.get('since')
+    response = list_issue_comments(issue_number, since_date)
 
     ec_object = [format_comment_outputs(comment, issue_number) for comment in response]
     ec = {
@@ -1021,9 +1025,9 @@ def get_branch_command():
     branch_name = args.get('branch_name')
     response = get_branch(branch_name)
 
-    commit = response.get('commit', {})
-    author = commit.get('author', {})
-    parents = commit.get('parents', [])
+    commit = response.get('commit', {}) or {}
+    author = commit.get('author', {}) or {}
+    parents = commit.get('parents', []) or []
     ec_object = {
         'Name': response.get('name'),
         'CommitSHA': commit.get('sha'),
@@ -1221,7 +1225,6 @@ def get_project_details(project, header):
 
 
 def list_all_projects_command():
-
     project_f = demisto.args().get('project_filter', [])
     limit = demisto.args().get('limit', MAX_FETCH_PAGE_RESULTS)
 
@@ -1248,8 +1251,8 @@ def list_all_projects_command():
         else:
             projects_obj.append(get_project_details(project=proj, header=header))
 
-    human_readable_projects = [{'Name': proj['Name'], 'ID': proj['ID'], 'Number': proj['Number'], 'Columns':
-                                [column for column in proj['Columns']]} for proj in projects_obj]
+    human_readable_projects = [{'Name': proj['Name'], 'ID': proj['ID'], 'Number': proj['Number'],
+                                'Columns': [column for column in proj['Columns']]} for proj in projects_obj]
 
     if projects_obj:
         human_readable = tableToMarkdown('Projects:', t=human_readable_projects, headers=PROJECT_HEADERS,
@@ -1407,7 +1410,6 @@ def search_code_command():
 
 
 def search_issue(query, limit, page=1):
-
     params = {'q': query, 'page': page, 'per_page': MAX_FETCH_PAGE_RESULTS, }
     response = http_request(method='GET',
                             url_suffix='/search/issues',
@@ -1521,7 +1523,8 @@ def list_team_members_command():
         }
         members.append(context_data)
     if members:
-        human_readable = tableToMarkdown(f'Team Member of team {team_slug} in organization {org}', t=members, removeNull=True)
+        human_readable = tableToMarkdown(f'Team Member of team {team_slug} in organization {org}', t=members,
+                                         removeNull=True)
     else:
         human_readable = f'There is no team members under team {team_slug} in organization {org}'
 
@@ -1712,7 +1715,8 @@ def get_github_get_check_run():
 
     check_run_result = []
 
-    check_runs = list_check_runs(owner_name=owner_name, repository_name=repository_name, run_id=run_id, commit_id=commit_id)
+    check_runs = list_check_runs(owner_name=owner_name, repository_name=repository_name, run_id=run_id,
+                                 commit_id=commit_id)
 
     for check_run in check_runs:
         check_run_id = check_run.get('id', '')
@@ -1933,6 +1937,35 @@ def github_releases_list_command():
     return_results(result)
 
 
+def update_comment(comment_id: Union[int, str], msg: str) -> dict:
+    suffix = f'{ISSUE_SUFFIX}/comments/{comment_id}'
+    response = http_request('PATCH', url_suffix=suffix, data={'body': msg})
+    return response
+
+
+def github_update_comment_command():
+    args = demisto.args()
+    comment_id = args.get('comment_id')
+    issue_number = args.get('issue_number')
+    body = args.get('body')
+    response = update_comment(comment_id, body)
+
+    ec_object = format_comment_outputs(response, issue_number)
+    ec = {
+        'GitHub.Comment(val.IssueNumber === obj.IssueNumber && val.ID === obj.ID)': ec_object,
+    }
+    human_readable = tableToMarkdown('Updated Comment', ec_object, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+def github_delete_comment_command():
+    args = demisto.args()
+    comment_id = args.get('comment_id')
+    suffix = f'{ISSUE_SUFFIX}/comments/{comment_id}'
+    http_request('DELETE', url_suffix=suffix)
+    return_results(f'comment with ID {comment_id} was deleted successfully')
+
+
 def fetch_incidents_command():
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
@@ -1990,6 +2023,8 @@ COMMANDS = {
     'GitHub-add-issue-to-project-board': add_issue_to_project_board_command,
     'GitHub-get-path-data': get_path_data,
     'GitHub-releases-list': github_releases_list_command,
+    'GitHub-update-comment': github_update_comment_command,
+    'GitHub-delete-comment': github_delete_comment_command,
 }
 
 

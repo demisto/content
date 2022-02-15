@@ -2,7 +2,7 @@
     "name": "JSON Feed",
     "description": "Indicators feed from a JSON file",
     "support": "xsoar",
-    "currentVersion": "1.1.8",
+    "currentVersion": "1.1.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,5 +15,9 @@
     "keywords": [
         "JSON",
         "Feed"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

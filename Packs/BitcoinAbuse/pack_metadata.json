@@ -3,7 +3,7 @@
     "description": "Use the integration to fetch Bitcoin Cryptocurrency Address indicators from BitcoinAbuse.com feed, a public database of bitcoin addresses used by hackers and criminals.",
     "serverMinVersion": "5.5.0",
     "support": "xsoar",
-    "currentVersion": "1.0.13",
+    "currentVersion": "1.0.18",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -24,5 +24,9 @@
             "mandatory": true,
             "display_name": "Common Types"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

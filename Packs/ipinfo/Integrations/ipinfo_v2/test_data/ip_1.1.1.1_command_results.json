@@ -1,95 +1,5 @@
 [
   {
-    "Type": 1,
-    "ContentsFormat": "json",
-    "Contents": {
-      "ip": "1.1.1.1",
-      "hostname": "one.one.one.one",
-      "anycast": true,
-      "city": "Miami",
-      "region": "Florida",
-      "country": "US",
-      "loc": "25.7867,-80.1800",
-      "org": "AS13335 Cloudflare, Inc.",
-      "postal": "33132",
-      "timezone": "America/New_York",
-      "readme": "https://ipinfo.io/missingauth"
-    },
-    "HumanReadable": "### IPinfo results for 1.1.1.1\n|anycast|city|country|hostname|ip|loc|org|postal|readme|region|timezone|\n|---|---|---|---|---|---|---|---|---|---|---|\n| true | Miami | US | one.one.one.one | 1.1.1.1 | 25.7867,-80.1800 | AS13335 Cloudflare, Inc. | 33132 | https://ipinfo.io/missingauth | Florida | America/New_York |\n",
-    "EntryContext": {
-      "IP(val.Address && val.Address == obj.Address)": [
-        {
-          "Address": "1.1.1.1",
-          "ASN": "AS13335",
-          "Hostname": "one.one.one.one",
-          "Geo": {
-            "Location": "25.7867:-80.18",
-            "Country": "US",
-            "Description": "Miami, Florida, 33132, US"
-          },
-          "FeedRelatedIndicators": [
-            {
-              "value": "one.one.one.one",
-              "type": "URL",
-              "description": "Hostname"
-            }
-          ],
-          "Relationships": [
-            {
-              "Relationship": "resolves-to",
-              "EntityA": "1.1.1.1",
-              "EntityAType": "IP",
-              "EntityB": "one.one.one.one",
-              "EntityBType": "Domain"
-            }
-          ]
-        }
-      ],
-      "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
-        {
-          "Indicator": "1.1.1.1",
-          "Type": "ip",
-          "Vendor": "ipinfo_v2",
-          "Score": 0,
-          "Reliability": "C - Fairly reliable"
-        }
-      ],
-      "IPinfo.IP(val.Address && val.Address == obj.Address)": {
-        "Address": "1.1.1.1",
-        "Hostname": "one.one.one.one",
-        "ASN": "AS13335",
-        "ASOwner": "Cloudflare, Inc.",
-        "Tags": [],
-        "Organization": null,
-        "Geo": {
-          "Location": "25.7867,-80.1800",
-          "Country": "US",
-          "Description": "Miami, Florida, 33132, US"
-        },
-        "Registrar": null
-      }
-    },
-    "IndicatorTimeline": [],
-    "IgnoreAutoExtract": false,
-    "Note": false,
-    "Relationships": [
-      {
-        "name": "resolves-to",
-        "reverseName": "resolved-from",
-        "type": "IndicatorToIndicator",
-        "entityA": "1.1.1.1",
-        "entityAFamily": "Indicator",
-        "entityAType": "IP",
-        "entityB": "one.one.one.one",
-        "entityBFamily": "Indicator",
-        "entityBType": "Domain",
-        "fields": {},
-        "reliability": "C - Fairly reliable",
-        "brand": "ipinfo_v2"
-      }
-    ]
-  },
-  {
     "Type": 15,
     "ContentsFormat": "json",
     "Contents": {
@@ -130,7 +40,7 @@
         {
           "Indicator": "1.1.1.1",
           "Type": "ip",
-          "Vendor": "ipinfo_v2",
+          "Vendor": "IPinfo",
           "Score": 0,
           "Reliability": "C - Fairly reliable"
         }
@@ -140,5 +50,97 @@
     "IgnoreAutoExtract": false,
     "Note": false,
     "Relationships": []
+  },
+  {
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": {
+      "ip": "1.1.1.1",
+      "hostname": "one.one.one.one",
+      "anycast": true,
+      "city": "Miami",
+      "region": "Florida",
+      "country": "US",
+      "loc": "25.7867,-80.1800",
+      "org": "AS13335 Cloudflare, Inc.",
+      "postal": "33132",
+      "timezone": "America/New_York",
+      "readme": "https://ipinfo.io/missingauth",
+      "lat": 25.7867,
+      "lng": -80.18
+    },
+    "HumanReadable": "### IPinfo results for 1.1.1.1\n|anycast|city|country|hostname|ip|lat|lng|loc|org|postal|readme|region|timezone|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| true | Miami | US | one.one.one.one | 1.1.1.1 | 25.7867 | -80.18 | 25.7867,-80.1800 | AS13335 Cloudflare, Inc. | 33132 | https://ipinfo.io/missingauth | Florida | America/New_York |\n",
+    "EntryContext": {
+      "IP(val.Address && val.Address == obj.Address)": [
+        {
+          "Address": "1.1.1.1",
+          "ASN": "AS13335",
+          "Hostname": "one.one.one.one",
+          "Geo": {
+            "Location": "25.7867:-80.18",
+            "Country": "US",
+            "Description": "Miami, Florida, 33132, US"
+          },
+          "FeedRelatedIndicators": [
+            {
+              "value": "one.one.one.one",
+              "type": "URL",
+              "description": "Hostname"
+            }
+          ],
+          "Relationships": [
+            {
+              "Relationship": "resolves-to",
+              "EntityA": "1.1.1.1",
+              "EntityAType": "IP",
+              "EntityB": "one.one.one.one",
+              "EntityBType": "Domain"
+            }
+          ]
+        }
+      ],
+      "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+        {
+          "Indicator": "1.1.1.1",
+          "Type": "ip",
+          "Vendor": "IPinfo",
+          "Score": 0,
+          "Reliability": "C - Fairly reliable"
+        }
+      ],
+      "IPinfo.IP(val.Address && val.Address == obj.Address)": {
+        "Address": "1.1.1.1",
+        "Hostname": "one.one.one.one",
+        "ASN": "AS13335",
+        "ASOwner": "Cloudflare, Inc.",
+        "Tags": [],
+        "Organization": null,
+        "Geo": {
+          "Location": "25.7867,-80.1800",
+          "Country": "US",
+          "Description": "Miami, Florida, 33132, US"
+        },
+        "Registrar": null
+      }
+    },
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": [
+      {
+        "name": "resolves-to",
+        "reverseName": "resolved-from",
+        "type": "IndicatorToIndicator",
+        "entityA": "1.1.1.1",
+        "entityAFamily": "Indicator",
+        "entityAType": "IP",
+        "entityB": "one.one.one.one",
+        "entityBFamily": "Indicator",
+        "entityBType": "Domain",
+        "fields": {},
+        "reliability": "C - Fairly reliable",
+        "brand": "IPinfo"
+      }
+    ]
   }
 ]

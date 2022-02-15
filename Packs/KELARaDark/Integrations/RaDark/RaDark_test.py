@@ -131,3 +131,66 @@ def test_item_purchase_command(requests_mock):
     command_results = integration.item_purchase_command(CLIENT, item_purchase_args)
 
     assert command_results.readable_output == item_purchase_command_results.get('readable_output', '')
+
+
+def test_parse_email_enrichment_markdown_table():
+    mock_data = load_mock_response('helper_functions_info.json').get('PARSE_EMAIL_ENRICHMENT_MARKDOWN_TABLE', {})
+    args = mock_data.get("ARGS", {})
+    return_value = mock_data.get("RETURN_VALUE", [])
+    results = integration.parse_email_enrichment_markdown_table(args.get('DATA', {}))
+
+    assert results == tuple(return_value)
+
+
+def test_parse_leaked_credentials_markdown_table():
+    mock_data = load_mock_response('helper_functions_info.json').get('PARSE_LEAKED_CREDENTIALS_MARKDOWN_TABLE', {})
+    args = mock_data.get("ARGS", {})
+    return_value = mock_data.get("RETURN_VALUE", [])
+    results = integration.parse_leaked_credentials_markdown_table(args.get('ITEMS', {}), args.get('SUB_TYPE', 0))
+
+    assert results == return_value
+
+
+def test_parse_botnets_markdown_table():
+    mock_data = load_mock_response('helper_functions_info.json').get('PARSE_BOTNETS_MARKDOWN_TABLE', {})
+    args = mock_data.get("ARGS", {})
+    return_value = mock_data.get("RETURN_VALUE", [])
+    results = integration.parse_botnets_markdown_table(args.get('ITEMS', {}), args.get('SUB_TYPE', 0))
+
+    assert results == return_value
+
+
+def test_parse_network_vulnerabilities_markdown_table():
+    mock_data = load_mock_response('helper_functions_info.json').get('PARSE_NETWORK_VULNERABILITIES_MARKDOWN_TABLE', {})
+    args = mock_data.get("ARGS", {})
+    return_value = mock_data.get("RETURN_VALUE", [])
+    results = integration.parse_network_vulnerabilities_markdown_table(args.get('ITEMS', {}), args.get('SUB_TYPE', 0))
+
+    assert results == return_value
+
+
+def test_parse_credit_cards_markdown_table():
+    mock_data = load_mock_response('helper_functions_info.json').get('PARSE_CREDIT_CARDS_MARKDOWN_TABLE', {})
+    args = mock_data.get("ARGS", {})
+    return_value = mock_data.get("RETURN_VALUE", [])
+    results = integration.parse_credit_cards_markdown_table(args.get('ITEMS', {}), args.get('SUB_TYPE', 0))
+
+    assert results == return_value
+
+
+def test_parse_hacking_discussions_markdown_table():
+    mock_data = load_mock_response('helper_functions_info.json').get('PARSE_HACKING_DISCUSSIONS_MARKDOWN_TABLE', {})
+    args = mock_data.get("ARGS", {})
+    return_value = mock_data.get("RETURN_VALUE", [])
+    results = integration.parse_hacking_discussions_markdown_table(args.get('ITEMS', {}), args.get('AGGR', {}))
+
+    assert results == return_value
+
+
+def test_extract_available_data_from_item():
+    mock_data = load_mock_response('helper_functions_info.json').get('EXTRACT_AVAILABLE_DATA_FROM_ITEM', {})
+    args = mock_data.get("ARGS", {})
+    return_value = mock_data.get("RETURN_VALUE", [])
+    results = integration.extract_available_data_from_item(args.get('ITEM', {}))
+
+    assert results == tuple(return_value)

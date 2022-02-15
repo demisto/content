@@ -15,5 +15,9 @@
     "keywords": [
         "Zoom",
         "Feed"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

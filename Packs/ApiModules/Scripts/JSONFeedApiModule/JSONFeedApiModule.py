@@ -106,19 +106,21 @@ class Client:
         else:
             return headers
 
-    def build_iterator(self, feed: dict, **kwargs) -> Tuple[List, bool]:
+    def build_iterator(self, feed: dict, feed_name: str, **kwargs) -> Tuple[List, bool]:
         url = feed.get('url', self.url)
 
-        # Set the If-None-Match and If-Modified-Since headers if we have etag or last_modified values in the context.
-        last_run = demisto.getLastRun()
-        etag = last_run.get('etag')
-        last_modified = last_run.get('last_modified')
+        if is_demisto_version_ge('6.5.0'):
+            # Set the If-None-Match and If-Modified-Since headers
+            # if we have etag or last_modified values in the context, with server version higher than 6.5.0.
+            last_run = demisto.getLastRun()
+            etag = demisto.get(last_run, f'{feed_name}.etag')
+            last_modified = demisto.get(last_run, f'{feed_name}.last_modified')
 
-        if etag:
-            self.headers['If-None-Match'] = etag
+            if etag:
+                self.headers['If-None-Match'] = etag
 
-        if last_modified:
-            self.headers['If-Modified-Since'] = last_modified
+            if last_modified:
+                self.headers['If-Modified-Since'] = last_modified
 
         result = []
         if not self.post_data:
@@ -149,11 +151,12 @@ class Client:
 
         except ValueError as VE:
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
+        if is_demisto_version_ge('6.5.0'):
+            return result, get_no_update_value(r, feed_name)
+        return result, True
 
-        return result, get_no_update_value(r)
 
-
-def get_no_update_value(response: requests.Response) -> bool:
+def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
     """
     detect if the feed response has been modified according to the headers etag and last_modified.
     For more information, see this:
@@ -161,6 +164,7 @@ def get_no_update_value(response: requests.Response) -> bool:
     https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag
     Args:
         response: (requests.Response) The feed response.
+        feed_name: (str) the name of the feed.
     Returns:
         boolean with the value for noUpdate argument.
         The value should be False if the response was modified.
@@ -180,8 +184,10 @@ def get_no_update_value(response: requests.Response) -> bool:
         return False
 
     last_run = demisto.getLastRun()
-    last_run['last_modified'] = last_modified
-    last_run['etag'] = etag
+    last_run[feed_name] = {
+        'last_modified': last_modified,
+        'etag': etag
+    }
     demisto.setLastRun(last_run)
 
     demisto.debug('New indicators fetched - the Last-Modified value has been updated,'
@@ -195,7 +201,7 @@ def test_module(client: Client, limit) -> str:
         if custom_build_iterator:
             custom_build_iterator(client, feed, limit)
         else:
-            client.build_iterator(feed)
+            client.build_iterator(feed, feed_name)
     return 'ok'
 
 
@@ -221,7 +227,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
                 raise Exception("Custom function to handle with pagination must return a list type")
             feeds_results[feed_name] = indicators_from_feed
         else:
-            feeds_results[feed_name], no_update = client.build_iterator(feed, **kwargs)
+            feeds_results[feed_name], no_update = client.build_iterator(feed, feed_name, **kwargs)
 
     for service_name, items in feeds_results.items():
         feed_config = client.feed_name_to_config.get(service_name, {})

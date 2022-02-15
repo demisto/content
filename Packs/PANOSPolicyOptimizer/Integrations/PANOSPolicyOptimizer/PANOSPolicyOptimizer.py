@@ -7,7 +7,6 @@ class Client:
     """
     Client to use in the APN-OS Policy Optimizer integration.
     """
-
     def __init__(self, url: str, username: str, password: str, vsys: str, device_group: str, verify: bool, tid: int):
         # The TID is used to track individual commands send to the firewall/Panorama during a PHP session, and
         # is also used to generate the security token (Data String) that is used to validate each command.
@@ -20,7 +19,12 @@ class Client:
         if not device_group and not vsys:
             raise DemistoException('Set vsys for firewall or Device group for Panorama.')
 
-        self.machine = vsys if vsys else device_group
+        if vsys:  # firewall instance
+            self.machine = vsys
+            self.is_cms_selected = False
+        else:
+            self.machine = device_group
+            self.is_cms_selected = True
         self.verify = verify
         handle_proxy()
         # Use Session() in order to maintain cookies for persisting the login PHP session cookie
@@ -159,7 +163,9 @@ class Client:
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
             json_cmd=json_cmd)
 
-    def policy_optimizer_get_rules(self, timeframe: str, usage: str, exclude: bool) -> dict:
+    def policy_optimizer_get_rules(
+        self, timeframe: str, usage: str, exclude: bool, position: str, rule_type: str
+    ) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run",
@@ -168,10 +174,10 @@ class Client:
                 "PoliciesDirect.getPoliciesByUsage",
                 [
                     {
-                        "type": "security",
-                        "position": "main",
+                        "type": rule_type,
+                        "position": position,
                         "vsysName": self.machine,
-                        "isCmsSelected": False,
+                        "isCmsSelected": self.is_cms_selected,
                         "isMultiVsys": False,
                         "showGrouped": False,
                         "usageAttributes": {
@@ -317,33 +323,38 @@ def policy_optimizer_get_unused_apps_command(client: Client) -> CommandResults:
 
 def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandResults:
     """
-    Gets the unused rules Statistics as seen from the User Interface
+    Get rules information from Panorama/Firewall instances.
     """
-    timeframe = str(args.get('timeframe'))
-    usage = str(args.get('usage'))
+    timeframe = args.get('timeframe')
+    usage = args.get('usage')
     exclude = argToBoolean(args.get('exclude'))
+    position = args.get('position') or 'post'
+    rule_type = args.get('rule_type') or 'security'
 
-    raw_response = client.policy_optimizer_get_rules(timeframe, usage, exclude)
-    stats = raw_response['result']
-    if '@status' in stats and stats['@status'] == 'error':
-        raise Exception(f'Operation Failed with: {str(stats)}')
+    position = position if client.is_cms_selected else 'main'  # firewall instance only has position main
 
-    stats = stats['result']
-    if '@count' in stats and stats['@count'] == '0':
-        return CommandResults(readable_output=f'No {usage} rules where found.', raw_response=raw_response)
+    raw_response = client.policy_optimizer_get_rules(
+        timeframe=timeframe, usage=usage, exclude=exclude, position=position, rule_type=rule_type  # type: ignore
+    )
 
-    rules = stats['entry']
-    if not isinstance(rules, list):
-        rules = rules[0]
+    stats = raw_response.get('result') or {}
+    if (stats.get('@status') or '') == 'error':
+        raise Exception(f'Operation Failed with: {stats}')
 
-    headers = ['@name', '@uuid', 'action', 'description', 'source', 'destination']
+    rules = (stats.get('result') or {}).get('entry') or []
+    if rules:
+        headers = ['@name', '@uuid', 'action', 'description', 'source', 'destination']
+        table = tableToMarkdown(
+            name=f'PolicyOptimizer {usage}-{rule_type}-rules:', t=rules, headers=headers, removeNull=True
+        )
+    else:
+        table = f'No {usage} {rule_type} rules were found.'
 
     return CommandResults(
         outputs_prefix=f'PanOS.PolicyOptimizer.{usage}Rules',
         outputs_key_field='@uuid',
         outputs=rules,
-        readable_output=tableToMarkdown(name=f'PolicyOptimizer {usage}Rules:', t=rules, headers=headers,
-                                        removeNull=True),
+        readable_output=table,
         raw_response=raw_response
     )
 
@@ -377,7 +388,7 @@ def policy_optimizer_app_and_usage_command(client: Client, args: dict) -> Comman
 
 def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResults:
     """
-    Gets the DAG
+    Gets the Dynamic Address group.
     """
     dag = str(args.get('dag'))
     raw_response = client.policy_optimizer_get_dag(dag)
@@ -387,8 +398,8 @@ def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResul
 
     try:
         result = result['result']['dyn-addr-grp']['entry'][0]['member-list']['entry']
-    except KeyError:
-        raise Exception(f'Dynamic Address Group: {dag} was not found.')
+    except (KeyError, TypeError, IndexError):
+        return CommandResults(readable_output=f'Dynamic Address Group {dag} was not found.', raw_response=raw_response)
 
     return CommandResults(
         outputs_prefix='PanOS.PolicyOptimizer.DAG',

@@ -56,13 +56,13 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the countries on the outbound blacklist. By default, 10 blacklisted
+    description: Gets the countries on the outbound block list. By default, 10 block listed
       countries are returned.
     execution: false
     name: na-ed-outbound-blacklisted-countries-list
     outputs:
     - contextPath: NetscoutAED.OutboundBlacklistCountry.annotation
-      description: A message associated with each country in the outbound blacklist.
+      description: A message associated with each country in the outbound block list.
       type: String
     - contextPath: NetscoutAED.OutboundBlacklistCountry.country
       description: An ISO standardized country code.
@@ -113,18 +113,18 @@ script:
       secret: false
     - default: false
       description: A message to associate with each country that you add to the outbound
-        blacklist.
+        block list.
       isArray: false
       name: annotation
       required: false
       secret: false
     deprecated: false
-    description: Adds one or more countries to the outbound blacklist.
+    description: Adds one or more countries to the outbound block list.
     execution: false
     name: na-ed-outbound-blacklisted-countries-add
     outputs:
     - contextPath: NetscoutAED.OutboundBlacklistCountry.annotation
-      description: A message associated with each country in the outbound blacklist.
+      description: A message associated with each country in the outbound block list.
       type: String
     - contextPath: NetscoutAED.OutboundBlacklistCountry.country
       description: An ISO standardized country code.
@@ -142,7 +142,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Removes one or more countries from the outbound blacklist.
+    description: Removes one or more countries from the outbound block list.
     execution: false
     name: na-ed-outbound-blacklisted-countries-remove
   - arguments:
@@ -188,15 +188,15 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the inbound blacklisted countries. By default, 10 blacklisted
-      countries are returned. To return blacklisted countries for specific protection
+    description: Gets the inbound block listed countries. By default, 10 block listed
+      countries are returned. To return block listed countries for specific protection
       groups, specify a list of protection group IDs or central configuration IDs.
-      An ID of -1 selects countries that are globally blacklisted.
+      An ID of -1 selects countries that are globally block listed.
     execution: false
     name: na-ed-inbound-blacklisted-countries-list
     outputs:
     - contextPath: NetscoutAED.InboundBlacklistCountry.annotation
-      description: List of messages associated with each country in the inbound blacklist.
+      description: List of messages associated with each country in the inbound block list.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistCountry.cid
       description: List of central configuration IDs
@@ -227,7 +227,7 @@ script:
       secret: false
     - default: false
       description: A message to associate with each country that you add to the inbound
-        blacklist.
+        block list.
       isArray: false
       name: annotation
       required: false
@@ -240,12 +240,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Adds one or more countries to the inbound blacklist by pgid or cid.
+    description: Adds one or more countries to the inbound block list by pgid or cid.
     execution: false
     name: na-ed-inbound-blacklisted-countries-add
     outputs:
     - contextPath: NetscoutAED.InboundBlacklistCountry.annotation
-      description: List of messages associated with each country in the inbound blacklist.
+      description: List of messages associated with each country in the inbound block list.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistCountry.cid
       description: List of central configuration IDs
@@ -282,7 +282,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Removes one or more countries from the blacklist for a specific protection
+    description: Removes one or more countries from the block list for a specific protection
       group or for all protection groups.
     execution: false
     name: na-ed-inbound-blacklisted-countries-remove
@@ -314,7 +314,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the outbound blacklisted hosts. By default, 10 blacklisted hosts
+    description: Gets the outbound block listed hosts. By default, 10 block listed hosts
       are returned.
     execution: false
     name: na-ed-outbound-blacklisted-hosts-list
@@ -345,7 +345,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds one or more hosts to the outbound blacklist.
+    description: Adds one or more hosts to the outbound block list.
     execution: false
     name: na-ed-outbound-blacklisted-hosts-add
     outputs:
@@ -375,7 +375,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Replaces all the hosts on the outbound blacklisted list.
+    description: Replaces all the hosts on the outbound block listed list.
     execution: false
     name: na-ed-outbound-blacklisted-hosts-replace
     outputs:
@@ -397,7 +397,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Removes one or more hosts or CIDRS from the outbound blacklist.
+    description: Removes one or more hosts or CIDRS from the outbound block list.
     execution: false
     name: na-ed-outbound-blacklisted-hosts-remove
   - arguments:
@@ -428,7 +428,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the outbound whitelisted hosts. By default, 10 whitelisted hosts
+    description: Gets the outbound hosts on allow list. By default, 10 hosts on allow list
       are returned.
     execution: false
     name: na-ed-outbound-whitelisted-hosts-list
@@ -489,7 +489,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Replaces all the hosts on the outbound whitelisted list.
+    description: Replaces all the hosts on the outbound allow listed list.
     execution: false
     name: na-ed-outbound-whitelisted-hosts-replace
     outputs:
@@ -767,15 +767,15 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the inbound blacklisted hosts. By default, 10 blacklisted hosts
-      are returned. To return blacklisted hosts for specific protection groups, specify
+    description: Gets the inbound block listed hosts. By default, 10 block listed hosts
+      are returned. To return block listed hosts for specific protection groups, specify
       a list of protection group IDs or central configuration IDs. An ID of -1 selects
-      hosts that are globally blacklisted.
+      hosts that are globally block listed.
     execution: false
     name: na-ed-inbound-blacklisted-hosts-list
     outputs:
     - contextPath: NetscoutAED.InboundBlacklistHost.annotation
-      description: List of messages associated with each host in the inbound blacklist.
+      description: List of messages associated with each host in the inbound block list.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistHost.cid
       description: List of central configuration IDs.
@@ -806,12 +806,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds one or more hosts to the inbound blacklisted list.
+    description: Adds one or more hosts to the inbound block listed list.
     execution: false
     name: na-ed-inbound-blacklisted-hosts-add
     outputs:
     - contextPath: NetscoutAED.InboundBlacklistHost.annotation
-      description: List of messages associated with each host in the inbound blacklist.
+      description: List of messages associated with each host in the inbound block list.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistHost.cid
       description: List of central configuration IDs
@@ -842,12 +842,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Replaces all the hosts on the inbound blacklist.
+    description: Replaces all the hosts on the inbound block list.
     execution: false
     name: na-ed-inbound-blacklisted-hosts-replace
     outputs:
     - contextPath: NetscoutAED.InboundBlacklistHost.annotation
-      description: List of messages associated with each host in the inbound blacklist.
+      description: List of messages associated with each host in the inbound block list.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistHost.cid
       description: List of central configuration IDs
@@ -870,7 +870,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Removes one or more hosts or CIDRs from the blacklist for a specific
+    description: Removes one or more hosts or CIDRs from the block list for a specific
       protection group or for all protection groups.
     execution: false
     name: na-ed-inbound-blacklisted-hosts-remove
@@ -902,15 +902,15 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get the whitelisted hosts. By default, 10 whitelisted hosts are returned.
-      To return whitelisted hosts for specific protection groups, specify a list of
+    description: Get the hosts on allow list. By default, 10 hosts on allow list are returned.
+      To return hosts on allow list for specific protection groups, specify a list of
       protection group IDs or central configuration IDs. An ID of -1 selects hosts
-      that are globally whitelisted.
+      that are globally on allow list.
     execution: false
     name: na-ed-inbound-whitelisted-hosts-list
     outputs:
     - contextPath: NetscoutAED.InboundWhitelistHost.annotation
-      description: List of messages associated with each host in the inbound whitelisted
+      description: List of messages associated with each host in the inbound allow listed
         list.
       type: Unknown
     - contextPath: NetscoutAED.InboundWhitelistHost.cid
@@ -942,12 +942,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds one or more hosts to the inbound whitelisted list.
+    description: Adds one or more hosts to the inbound allow listed list.
     execution: false
     name: na-ed-inbound-whitelisted-hosts-add
     outputs:
     - contextPath: NetscoutAED.InboundWhitelistHost.annotation
-      description: List of messages associated with each host in the inbound whitelisted
+      description: List of messages associated with each host in the inbound allow listed
         list.
       type: Unknown
     - contextPath: NetscoutAED.InboundWhitelistHost.cid
@@ -979,12 +979,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Replaces all the hosts on the inbound whitelist.
+    description: Replaces all the hosts on the inbound allow list.
     execution: false
     name: na-ed-inbound-whitelisted-hosts-replace
     outputs:
     - contextPath: NetscoutAED.InboundWhitelistHost.annotation
-      description: List of messages associated with each host in the inbound whitelisted
+      description: List of messages associated with each host in the inbound allow listed
         list.
       type: Unknown
     - contextPath: NetscoutAED.InboundWhitelistHost.cid
@@ -1008,7 +1008,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Removes one or more hosts or CIDRs from the whitelist for a specific
+    description: Removes one or more hosts or CIDRs from the allow list for a specific
       protection group or for all protection groups.
     execution: false
     name: na-ed-inbound-whitelisted-hosts-remove
@@ -1054,15 +1054,15 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the blacklisted domains. By default, 10 blacklisted domains
-      are returned. To return blacklisted domains for specific protection groups,
+    description: Gets the block listed domains. By default, 10 block listed domains
+      are returned. To return block listed domains for specific protection groups,
       specify a list of protection group IDs or central configuration IDs. An ID of
-      -1 selects domains that are globally blacklisted.
+      -1 selects domains that are globally block listed.
     execution: false
     name: na-ed-inbound-blacklisted-domains-list
     outputs:
     - contextPath: NetscoutAED.InboundBlacklistDomain.annotation
-      description: List of messages associated with each domain in the inbound blacklist.
+      description: List of messages associated with each domain in the inbound block list.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistDomain.cid
       description: List of central configuration IDs.
@@ -1098,18 +1098,18 @@ script:
       required: true
       secret: false
     - default: false
-      description: A message to associate with each domain that you add to the blacklist.
+      description: A message to associate with each domain that you add to the block list.
       isArray: false
       name: annotation
       required: false
       secret: false
     deprecated: false
-    description: Adds one or more domains to the blacklist by pgid or cid.
+    description: Adds one or more domains to the block list by pgid or cid.
     execution: false
     name: na-ed-inbound-blacklisted-domains-add
     outputs:
     - contextPath: NetscoutAED.InboundBlacklistDomain.annotation
-      description: List of messages associated with each domain in the inbound blacklist.
+      description: List of messages associated with each domain in the inbound block list.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistDomain.cid
       description: List of central configuration IDs
@@ -1131,7 +1131,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Removes one or more domains from the blacklist for a specific protection
+    description: Removes one or more domains from the block list for a specific protection
       group or for all protection groups.
     execution: false
     name: na-ed-inbound-blacklisted-domains-remove
@@ -1177,15 +1177,15 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the blacklisted URLs. By default, 10 blacklisted URLs are returned.
-      To return blacklisted URLs for specific protection groups, specify a list of
+    description: Gets the block listed URLs. By default, 10 block listed URLs are returned.
+      To return block listed URLs for specific protection groups, specify a list of
       protection group IDs or central configuration IDs. An ID of -1 selects URLs
-      that are globally blacklisted.
+      that are globally block listed.
     execution: false
     name: na-ed-inbound-blacklisted-urls-list
     outputs:
     - contextPath: NetscoutAED.InboundBlacklistUrl.annotation
-      description: List of messages associated with each url in the inbound blacklist.
+      description: List of messages associated with each url in the inbound block list.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistUrl.cid
       description: List of central configuration IDs
@@ -1221,18 +1221,18 @@ script:
       required: true
       secret: false
     - default: false
-      description: A message to associate with each URL that you add to the blacklist.
+      description: A message to associate with each URL that you add to the block list.
       isArray: false
       name: annotation
       required: false
       secret: false
     deprecated: false
-    description: Adds one or more URLs to the blacklist by pgid or cid.
+    description: Adds one or more URLs to the block list by pgid or cid.
     execution: false
     name: na-ed-inbound-blacklisted-urls-add
     outputs:
     - contextPath: NetscoutAED.InboundBlacklistUrl.annotation
-      description: List of messages associated with each url in the inbound blacklist.
+      description: List of messages associated with each url in the inbound block list.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistUrl.cid
       description: List of central configuration IDs.
@@ -1254,7 +1254,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Removes one or more URLs from the blacklist for a specific protection
+    description: Removes one or more URLs from the block list for a specific protection
       group or for all protection groups.
     execution: false
     name: na-ed-inbound-blacklisted-urls-remove
@@ -1267,10 +1267,10 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Removes one or more hosts or CIDRs from the outbound whitelist.
+    description: Removes one or more hosts or CIDRs from the outbound allow list.
     execution: false
     name: na-ed-outbound-whitelisted-hosts-remove
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
   longRunning: false

@@ -1,0 +1,74 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "domain",
+    "closeForm": false,
+    "content": true,
+    "description": "The domain on which an alert was triggered.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_domain",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Domain",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "agent_device_domain",
+    "Aliases": [
+        {
+            "cliName": "chronicledomainname",
+            "type": "shortText",
+            "name": "Chronicle Domain Name"
+        },
+        {
+            "cliName": "cyberpiondomain",
+            "type": "multiSelect",
+            "name": "Cyberpion Domain"
+        },
+        {
+            "cliName": "destntdomain",
+            "type": "shortText",
+            "name": "Dest NT Domain"
+        },
+        {
+            "cliName": "digitalguardiandestinationdnsdomain",
+            "type": "shortText",
+            "name": "Digital Guardian Destination DNS Domain"
+        },
+        {
+            "cliName": "domainoffense",
+            "type": "shortText",
+            "name": "Domain - Offense"
+        },
+        {
+            "cliName": "expansedomain",
+            "type": "shortText",
+            "name": "Expanse Domain"
+        },
+        {
+            "cliName": "fireeyedomainname",
+            "type": "shortText",
+            "name": "FireEye Domain Name"
+        },
+        {
+            "cliName": "srcntdomain",
+            "type": "shortText",
+            "name": "Src NT Domain"
+        }
+    ]
+}

@@ -2,7 +2,7 @@
     "name": "Palo Alto Networks IoT 3rd Party Integrations",
     "description": "Palo Alto Networks IoT 3rd Party Integrations",
     "support": "xsoar",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/network-security/iot-security",
     "email": "",
@@ -35,5 +35,9 @@
             "mandatory": true,
             "display_name": "Syslog Sender"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

@@ -3,7 +3,7 @@ commonfields:
   id: RSA Archer v2
   version: -1
 configuration:
-- display: Server URL (e.g., https://192.168.0.1/)
+- display: Server URL (e.g., https://192.168.0.1/rsaarcher or https://192.168.0.1/ or https://192.168.0.1/archer)
   name: url
   required: true
   type: 0
@@ -11,8 +11,8 @@ configuration:
   hidden: false
   name: api_endpoint
   required: false
-  additionalinfo: Change only if you have other API Endpoint.
-  defaultvalue: "rsaarcher/api"
+  additionalinfo: Change only if you have another API endpoint.
+  defaultvalue: "api"
   type: 0
 - display: Instance name
   hidden: false
@@ -54,7 +54,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+  display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days, 3
     months, 1 year)
   hidden: false
   name: fetch_time
@@ -73,7 +73,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The RSA Archer GRC Platform provides a common foundation for managing
+description: The RSA Archer GRC platform provides a common foundation for managing
   policies, controls, risks, assessments, and deficiencies across lines of business.
 display: RSA Archer v2
 name: RSA Archer v2
@@ -81,7 +81,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The application ID for which to get details. Leave empty to get
+      description: The application ID to get details for. Leave empty to get
         a list of all applications.
       isArray: false
       name: applicationId
@@ -103,7 +103,7 @@ script:
       description: The application GUID.
       type: String
     - contextPath: Archer.Application.Id
-      description: Unique ID of the application.
+      description: The unique ID of the application.
       type: Number
     - contextPath: Archer.Application.Status
       description: The application status.
@@ -116,7 +116,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The application ID for which to get the application fields.
+      description: The application ID to get the application fields for.
       isArray: false
       name: applicationId
       required: true
@@ -127,7 +127,7 @@ script:
     name: archer-get-application-fields
     outputs:
     - contextPath: Archer.ApplicationField.FieldId
-      description: Unique ID of the field.
+      description: The unique ID of the field.
       type: Number
     - contextPath: Archer.ApplicationField.FieldName
       description: The field name.
@@ -140,18 +140,18 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: ID of the field.
+      description: The ID of the field.
       isArray: false
       name: fieldID
       required: true
       secret: false
     deprecated: false
-    description: Returns mapping from list value name to list value ID.
+    description: Returns a mapping from list value name to list value ID.
     execution: false
     name: archer-get-field
     outputs:
     - contextPath: Archer.ApplicationField.FieldId
-      description: Unique ID of the field.
+      description: The unique ID of the field.
       type: Number
     - contextPath: Archer.ApplicationField.FieldName
       description: The field name.
@@ -164,18 +164,18 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: ID of the level.
+      description: The ID of the level.
       isArray: false
       name: level
       required: true
       secret: false
     deprecated: false
-    description: Returns mapping of fields by level ID.
+    description: Returns a mapping of fields by level ID.
     execution: false
     name: archer-get-mapping-by-level
     outputs:
     - contextPath: Archer.LevelMapping.Id
-      description: Unique ID of the field.
+      description: The unique ID of the field.
       type: Number
     - contextPath: Archer.LevelMapping.Name
       description: The field name.
@@ -205,7 +205,7 @@ script:
     name: archer-get-record
     outputs:
     - contextPath: Archer.Record.Id
-      description: Unique ID of the record.
+      description: The unique ID of the record.
       type: Number
   - arguments:
     - default: false
@@ -222,8 +222,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The Level ID to use to create the record. If empty, the command
-        will take the first level as default.
+      description: The Level ID to use to create the record. If empty, the command 
+        by default takes the first level ID.
       isArray: false
       name: levelId
       required: false
@@ -234,7 +234,7 @@ script:
     name: archer-create-record
     outputs:
     - contextPath: Archer.Record.Id
-      description: Unique ID of the record.
+      description: The unique ID of the record.
       type: Number
   - arguments:
     - default: false
@@ -269,7 +269,7 @@ script:
       secret: false
     - default: false
       description: The Level ID to use to update the record. If empty, the command
-        will take the first level as default.
+        by default takes the first level ID.
       isArray: false
       name: levelId
       required: false
@@ -324,7 +324,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns a list of values for a specified field, e.g., fieldID=16114.
+    description: Returns a list of values for a specified field, for example, fieldID=16114.
       This command only works for value list fields (type 4).
     execution: false
     name: archer-get-valuelist
@@ -352,7 +352,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The Content (record) ID to update.
+      description: The content (record) ID to update.
       isArray: false
       name: contentId
       required: false
@@ -370,7 +370,7 @@ script:
     name: archer-upload-file
   - arguments:
     - default: false
-      description: The attachment ID.
+      description: The file ID.
       isArray: false
       name: fileId
       required: true
@@ -408,12 +408,12 @@ script:
       description: 'The file extension. For example: "xls".'
       type: String
     - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in
+      description: The file type as determined by libmagic (same as displayed in
         file entries).
       type: String
   - arguments:
     - default: false
-      description: The ID of the user for which to get details. Leave empty to get
+      description: The ID of the user to get details for. Leave empty to get
         a list of all users.
       isArray: false
       name: userId
@@ -425,7 +425,7 @@ script:
     name: archer-list-users
     outputs:
     - contextPath: Archer.User.AccountStatus
-      description: The status of the user.
+      description: The account status of the user.
       type: String
     - contextPath: Archer.User.DisplayName
       description: The display name of the user.
@@ -434,10 +434,10 @@ script:
       description: The first name of the user.
       type: String
     - contextPath: Archer.User.Id
-      description: Unique ID of the user.
+      description: The unique ID of the user.
       type: Number
     - contextPath: Archer.User.LastLoginDate
-      description: Last login date of user.
+      description: The last login date of user.
       type: Date
     - contextPath: Archer.User.LastName
       description: The last name of the user.
@@ -450,16 +450,23 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of the application in which to search for records.
+      description: The ID of the application in which to search for records.
       isArray: false
       name: applicationId
       required: true
       secret: false
     - default: false
-      description: Name of the field on which to search. Leave empty to search for
+      description: The name of the field on which to search. Leave empty to search on
         all fields.
       isArray: false
       name: fieldToSearchOn
+      required: false
+      secret: false
+    - default: false
+      description: The name of the primary Id field on which to search.
+        Used instead of the fieldToSearchOn argument for searching by the application primary field.
+      isArray: false
+      name: fieldToSearchById
       required: false
       secret: false
     - default: false
@@ -470,15 +477,14 @@ script:
       secret: false
     - default: false
       defaultValue: '10'
-      description: Maximum number of results to return from the search. Default is
-        10.
+      description: Maximum number of results to return from the search.
       isArray: false
       name: maxResults
       required: false
       secret: false
     - default: false
-      description: 'Fields to present in the search results (in array format). For
-        example: "Title,Incident Summary".'
+      description: 'Fields to display in the search results (in array format). For
+        example "Title,Incident Summary".'
       isArray: false
       name: fieldsToDisplay
       required: false
@@ -535,7 +541,7 @@ script:
       description: Whether to order by descending order.
     - default: false
       description: The Level ID to use for searching. This argument is relevant when
-        fullData is True. If empty, the command will take the first level as default.
+        fullData is True. If empty, the command by default takes the first level ID.
       isArray: false
       name: levelId
       required: false
@@ -567,16 +573,16 @@ script:
       description: The report GUID.
       type: String
     - contextPath: Archer.SearchByReport.RecordsAmount
-      description: Number of records found by the search.
+      description: The number of records found by the search.
       type: Number
     - contextPath: Archer.SearchByReport.Record
       description: The records found by the search.
       type: Unknown
   - deprecated: false
-    description: prints Archer's integration cache.
+    description: Prints the Archer's integration cache.
     execution: false
     name: archer-print-cache
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: true
   longRunning: false

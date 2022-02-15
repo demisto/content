@@ -117,7 +117,7 @@ def update_playbook(source_path, destination_path):
         destination_path = "playbook-{}".format(destination_path)
 
     # Configure safe dumper (multiline for strings)
-    yaml.SafeDumper.org_represent_str = yaml.SafeDumper.represent_str
+    yaml.SafeDumper.org_represent_str = yaml.SafeDumper.represent_str  # type: ignore[attr-defined]
 
     def repr_str(dumper, data):
         if '\n' in data:

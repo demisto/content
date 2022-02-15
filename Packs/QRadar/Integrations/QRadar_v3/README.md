@@ -83,6 +83,9 @@ This integration supports in mirroring from QRadar offenses to XSOAR.
 * The integration will always mirror the events that occurred first in each offense.
 
 For further information about mirroring configurations, see [here](https://xsoar.pan.dev/docs/integrations/mirroring_integration).
+### Use API token instead of Username and Password
+- In the **Username / API Key** field, type **_api_token_key**.  
+- In the **Password** field, type your API token.
 ## Choose your API version
 1. Visit the [QRadar API versions page](https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_getting_started.html) for a full list of available API versions according to the QRadar version.
 2. Choose one of the API versions listed under **Supported REST API versions** column in the line corresponding to your QRadar version.
@@ -488,7 +491,7 @@ Retrieves a list of offense closing reasons.
 
 ### qradar-offense-notes-list
 ***
-Creates a note on an offense.
+Retrieves a list of notes for an offense.
 
 
 #### Base Command
@@ -551,7 +554,7 @@ Creates a note on an offense.
 
 ### qradar-offense-note-create
 ***
-Retrieves a list of notes for an offense.
+Creates a note on an offense.
 
 
 #### Base Command
@@ -2337,7 +2340,7 @@ Retrieves a list of event regex properties.
 ### qradar-reset-last-run
 ***
 Resets the fetch incidents last run value, which resets the fetch to its initial fetch state. (Will try to fetch the first available offense).
-
+**Please Note**: It is recommended to *disable* and then *enable* the QRadar instance for the reset to take effect immediately.
 
 #### Base Command
 

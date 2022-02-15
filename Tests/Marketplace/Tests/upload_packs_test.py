@@ -1,13 +1,17 @@
+# type: ignore[attr-defined]
+# pylint: disable=no-member
 import copy
 import json
 import os
 
 import pytest
 from unittest.mock import patch
-from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs, is_private_packs_updated
+from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs, is_private_packs_updated, \
+    map_pack_dependencies_graph
 
 
 # disable-secrets-detection-start
+
 class TestModifiedPacks:
     @pytest.mark.parametrize("packs_names_input, expected_result", [
         ("pack1,pack2,pack1", {"pack1", "pack2"}),
@@ -43,7 +47,7 @@ class FakeDirEntry:
 
     @staticmethod
     def isdir(path):
-        return True if path == 'mock_path' else False
+        return path == 'mock_path'
 
 
 def scan_dir(dirs=None):
@@ -422,7 +426,7 @@ class TestCleanPacks:
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
                                                    storage_bucket=dummy_storage_bucket,
-                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH)
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH, id_set={})
 
         assert skipped_cleanup
 
@@ -451,7 +455,7 @@ class TestCleanPacks:
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
                                                    storage_bucket=dummy_storage_bucket,
-                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH)
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH, id_set={})
 
         assert skipped_cleanup
 
@@ -499,7 +503,7 @@ class TestCleanPacks:
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path=index_folder_path, private_packs=private_packs,
                                                    storage_bucket=dummy_storage_bucket,
-                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH)
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH, id_set={})
 
         assert not skipped_cleanup
         shutil.rmtree.assert_called_once_with(os.path.join(index_folder_path, invalid_pack))
@@ -591,7 +595,7 @@ class TestUpdatedPrivatePacks:
         assert not is_private_packs_updated(public_index_json, index_file_path)
 
         # private pack was deleted
-        del (private_index_json.get("packs")[0])
+        del private_index_json.get("packs")[0]
         mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
         assert is_private_packs_updated(public_index_json, index_file_path)
 
@@ -604,3 +608,52 @@ class TestUpdatedPrivatePacks:
         private_index_json.get("packs").append({"id": "new_private_pack", "contentCommitHash": "111"})
         mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
         assert is_private_packs_updated(public_index_json, index_file_path)
+
+
+class TestUtilities:
+    MANDATORY_KEY = 'mandatory'
+    DEPENDENCIES_KEY = 'dependencies'
+
+    def test_map_pack_dependencies_graph(self):
+        """
+         Scenario: as part of the zip with dependencies collection, we want to collect all nested mandatory dependencies
+
+         Given:
+         - root_pack is dependant on mandatory_pack
+         - mandatory_pack is dependant on nested_mandatory_pack
+
+         When:
+         - calling map_pack_dependencies_graph for the root_pack
+
+         Then:
+         - All mandatory + nested mandatory dependencies are added under full_deps_graph
+        """
+        root_pack = 'Mock1'
+        mandatory_pack = 'MandatoryDep'
+        nested_mandatory_pack = 'NestedMandatoryPack'
+        first_level_graph = {
+            root_pack: {
+                self.DEPENDENCIES_KEY: {
+                    mandatory_pack: {
+                        self.MANDATORY_KEY: True
+                    },
+                    'OptionalDep': {
+                        self.MANDATORY_KEY: False
+                    }
+                }
+            },
+            mandatory_pack: {
+                self.DEPENDENCIES_KEY: {
+                    nested_mandatory_pack: {
+                        self.MANDATORY_KEY: True
+                    },
+                    'OptionalDep': {
+                        self.MANDATORY_KEY: False
+                    }
+                }
+            }
+        }
+        full_deps_graph = {}
+        map_pack_dependencies_graph(root_pack, first_level_graph, full_deps_graph)
+        assert {'Base', mandatory_pack, nested_mandatory_pack} == full_deps_graph[root_pack]
+        assert {'Base', nested_mandatory_pack} == full_deps_graph[mandatory_pack]

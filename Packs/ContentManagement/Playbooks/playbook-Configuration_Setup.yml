@@ -12,11 +12,11 @@ tasks:
     type: start
     task:
       id: 56a47cd0-a894-45ca-86e0-3789bb3971f9
+      description: Start Task
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -24,7 +24,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
+          "x": 592.5,
           "y": 50
         }
       }
@@ -69,7 +69,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 265,
           "y": 545
         }
       }
@@ -87,16 +87,16 @@ tasks:
     task:
       id: f565187c-1885-43fa-8e28-8074da0d36e7
       version: -1
+      description: DONE
       name: DONE
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 592.5,
           "y": 2555
         }
       }
@@ -130,7 +130,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
+          "x": 1575,
           "y": 1535
         }
       }
@@ -164,7 +164,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 592.5,
           "y": 1535
         }
       }
@@ -198,7 +198,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1535
         }
       }
@@ -232,7 +232,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 397.5,
+          "x": 705,
           "y": 2205
         }
       }
@@ -266,7 +266,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
+          "x": 1360,
           "y": 1185
         }
       }
@@ -284,11 +284,11 @@ tasks:
     task:
       id: fe44aea6-1d68-4c78-8540-a5efdef8e35c
       version: -1
+      description: Install Custom Packs
       name: Install Custom Packs
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "29"
@@ -296,7 +296,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
+          "x": 1472.5,
           "y": 865
         }
       }
@@ -332,7 +332,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
+          "x": 1575,
           "y": 1360
         }
       }
@@ -351,10 +351,10 @@ tasks:
       id: 2135c722-279a-41f1-86b8-3a91d3351cc3
       version: -1
       name: Install Marketplace Packs
+      description: Install Marketplace Packs
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -362,7 +362,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 592.5,
           "y": 1200
         }
       }
@@ -382,7 +382,7 @@ tasks:
       version: -1
       name: Install Marketplace Packs
       description: Marketplace packs installer for the content management pack.
-      scriptName: MarketplacePackInstaller
+      scriptName: ContentPackInstaller
       type: regular
       iscommand: false
       brand: ""
@@ -400,7 +400,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 592.5,
           "y": 1360
         }
       }
@@ -419,10 +419,10 @@ tasks:
       id: 0850e0e3-60e0-4a41-8339-040874f1f3ed
       version: -1
       name: Configure Lists
+      description: Configure the lists
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -430,7 +430,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
+          "x": 50,
           "y": 1025
         }
       }
@@ -449,10 +449,10 @@ tasks:
       id: 63d6392e-96a5-4aeb-8a03-ec7e9cdd1e1e
       version: -1
       name: Configure Jobs
+      description: Configure the jobs
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -460,7 +460,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 592.5,
           "y": 1710
         }
       }
@@ -494,14 +494,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 397.5,
+          "x": 705,
           "y": 2030
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -530,7 +530,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1360
         }
       }
@@ -568,7 +568,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 817.5,
+          "x": 695,
           "y": 370
         }
       }
@@ -581,10 +581,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: a18b95d8-d767-411b-8239-4f686185c229
+    taskid: 7e57a07a-efc1-4285-8154-3df69e775e3d
     type: condition
     task:
-      id: a18b95d8-d767-411b-8239-4f686185c229
+      id: 7e57a07a-efc1-4285-8154-3df69e775e3d
       version: -1
       name: What is the Source of the Configuration File?
       description: Determines from where to get the configuration file.
@@ -596,6 +596,8 @@ tasks:
       - "2"
       GitHub:
       - "22"
+      Gitlab:
+      - "35"
     separatecontext: false
     conditions:
     - label: Attachment
@@ -618,10 +620,20 @@ tasks:
           right:
             value:
               simple: GitHub
+    - label: Gitlab
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.configurationfilesource
+            iscontext: true
+          right:
+            value:
+              simple: Gitlab
     view: |-
       {
         "position": {
-          "x": 602.5,
+          "x": 592.5,
           "y": 195
         }
       }
@@ -666,7 +678,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 817.5,
+          "x": 807.5,
           "y": 545
         }
       }
@@ -685,10 +697,10 @@ tasks:
       id: a166e331-540f-47d2-89e9-ce4fe4f00f19
       version: -1
       name: Configurations
+      description: Configurations
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -698,7 +710,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
+          "x": 592.5,
           "y": 720
         }
       }
@@ -711,10 +723,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 7884abcb-78cc-4ee5-8055-035ec88e531d
+    taskid: 060c98ae-2150-4d71-8dd6-f71d98728610
     type: condition
     task:
-      id: 7884abcb-78cc-4ee5-8055-035ec88e531d
+      id: 060c98ae-2150-4d71-8dd6-f71d98728610
       version: -1
       name: What is the Source of the Custom Packs?
       description: Determines where to get the custom pack files to install.
@@ -724,6 +736,8 @@ tasks:
     nexttasks:
       '#default#':
       - "31"
+      AWS S3:
+      - "36"
       Attachments:
       - "12"
       Google Cloud Storage:
@@ -762,10 +776,20 @@ tasks:
           right:
             value:
               simple: HTTP request
+    - label: AWS S3
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.custompackssource
+            iscontext: true
+          right:
+            value:
+              simple: AWS S3
     view: |-
       {
         "position": {
-          "x": 1370,
+          "x": 1472.5,
           "y": 1010
         }
       }
@@ -778,10 +802,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 56b086df-0caf-401f-81df-6a00c2f7074e
+    taskid: 6009275f-d453-4f60-85dd-281d89081cc5
     type: regular
     task:
-      id: 56b086df-0caf-401f-81df-6a00c2f7074e
+      id: 6009275f-d453-4f60-85dd-281d89081cc5
       version: -1
       name: Download Custom Packs using an HTTP request
       description: Sends an HTTP request. Returns the response as a JSON file.
@@ -793,8 +817,19 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
+      filename:
+        complex:
+          root: ${ConfigurationSetup.CustomPacks
+          accessor: packid}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: .zip
       method:
-        simple: POST
+        simple: GET
       saveAsFile:
         simple: "yes"
       url:
@@ -803,7 +838,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1800,
+          "x": 1790,
           "y": 1185
         }
       }
@@ -844,7 +879,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
+          "x": 1022.5,
           "y": 1535
         }
       }
@@ -875,7 +910,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 592.5,
           "y": 2380
         }
       }
@@ -915,7 +950,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
+          "x": 50,
           "y": 1185
         }
       }
@@ -955,8 +990,82 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 592.5,
           "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 5bdef339-b6d6-4115-840f-d897b76d1ca9
+    type: regular
+    task:
+      id: 5bdef339-b6d6-4115-840f-d897b76d1ca9
+      version: -1
+      name: Get Configuration File From Gitlab
+      description: Get raw file
+      script: GitLab|||gitlab-raw-file-get
+      type: regular
+      iscommand: true
+      brand: GitLab
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      create_file_from_content:
+        simple: "true"
+      file_path:
+        simple: ${incident.configfilepath}
+      project_id:
+        simple: "3606"
+      ref:
+        simple: ${incident.branchname}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 080e1d9c-d0d4-447c-802b-19d951ab8081
+    type: regular
+    task:
+      id: 080e1d9c-d0d4-447c-802b-19d951ab8081
+      version: -1
+      name: aws-s3-download-file
+      description: Download a file from S3 bucket to war room.
+      script: AWS - S3|||aws-s3-download-file
+      type: regular
+      iscommand: true
+      brand: AWS - S3
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      key:
+        simple: ${ConfigurationSetup.CustomPacks.packurl}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2220,
+          "y": 1185
         }
       }
     note: false
@@ -972,7 +1081,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2570,
-        "width": 2130,
+        "width": 2550,
         "x": 50,
         "y": 50
       }

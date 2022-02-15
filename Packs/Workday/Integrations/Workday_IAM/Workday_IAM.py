@@ -326,12 +326,10 @@ def get_all_user_profiles():
             employee_id_to_user_profile[employee_id] = user_profile
             email_to_user_profile[email] = user_profile
 
-    search_indicators = IndicatorsSearcher()
-
-    query_result = search_indicators.search_indicators_by_version(query=query, size=BATCH_SIZE)
-    while query_result.get('iocs', []):
-        handle_batch(query_result.get('iocs', []))
-        query_result = search_indicators.search_indicators_by_version(query=query, size=BATCH_SIZE)
+    search_indicators = IndicatorsSearcher(query=query, size=BATCH_SIZE)
+    for ioc_res in search_indicators:
+        fetched_iocs = ioc_res.get('iocs') or []
+        handle_batch(fetched_iocs)
 
     return display_name_to_user_profile, employee_id_to_user_profile, email_to_user_profile
 

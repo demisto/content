@@ -2,7 +2,7 @@
     "name": "Intel471 Feed",
     "description": "This content pack fetches actor and malware related indicators from Intel 471. It also fetches watcher alerts.",
     "support": "partner",
-    "currentVersion": "2.0.5",
+    "currentVersion": "2.0.9",
     "author": "Intel 471",
     "url": "https://www.intel471.com",
     "email": "support@intel471.com",
@@ -11,9 +11,16 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Threat Intelligence", "Relationship"
+        "Threat Intelligence",
+        "Relationship"
     ],
     "useCases": [],
     "keywords": [],
-    "itemPrefix": ["Titan"]
+    "itemPrefix": [
+        "Titan"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

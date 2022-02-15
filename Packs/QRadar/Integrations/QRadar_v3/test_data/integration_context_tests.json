@@ -1,0 +1,2572 @@
+{
+ "ctx_not_compatible": {
+  "no_mirroring_two_loops_offenses": {
+   "init_context": {
+    "id": 5,
+    "samples": [],
+    "last_mirror_update": 242123,
+    "updated_mirrored_offenses": [],
+    "mirrored_offenses": [],
+    "resubmitted_mirrored_offenses": []
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "mirror_options": "No Mirroring",
+   "mirror_direction": null,
+   "offenses_first_loop": true,
+   "offenses_second_loop": true
+  },
+  "mirror_offense_two_loops_offenses": {
+   "init_context": {
+    "id": 5,
+    "samples": [
+     {
+      "username_count": 1,
+      "description": "Session Closed\n",
+      "rules": [
+       {
+        "id": 100405,
+        "type": "CRE_RULE"
+       }
+      ],
+      "event_count": 1,
+      "flow_count": 0,
+      "assigned_to": null,
+      "security_category_count": 1,
+      "follow_up": false,
+      "source_address_ids": [
+       10
+      ],
+      "source_count": 1,
+      "inactive": true,
+      "protected": false,
+      "closing_user": null,
+      "destination_networks": [
+       "Net-16-182-192.Net_182_10_0_0"
+      ],
+      "source_network": "other",
+      "category_count": 1,
+      "close_time": null,
+      "remote_destination_count": 0,
+      "start_time": 1613399051536,
+      "magnitude": 1,
+      "last_updated_time": 1613399051536,
+      "credibility": 2,
+      "id": 18,
+      "categories": [
+       "Session Closed"
+      ],
+      "severity": 2,
+      "policy_category_count": 0,
+      "log_sources": [
+       {
+        "type_name": "WindowsAuthServer",
+        "type_id": 12,
+        "name": "WindowsAuthServer @ 192.168.1.3",
+        "id": 112
+       }
+      ],
+      "closing_reason_id": null,
+      "device_count": 1,
+      "offense_type": 0,
+      "relevance": 0,
+      "domain_id": 0,
+      "offense_source": "192.168.1.3",
+      "local_destination_address_ids": [
+       1
+      ],
+      "local_destination_count": 1,
+      "status": "OPEN"
+     },
+     {
+      "username_count": 1,
+      "description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
+      "rules": [
+       {
+        "id": 100056,
+        "type": "CRE_RULE"
+       }
+      ],
+      "event_count": 15,
+      "flow_count": 0,
+      "assigned_to": null,
+      "security_category_count": 2,
+      "follow_up": false,
+      "source_address_ids": [
+       2,
+       1
+      ],
+      "source_count": 2,
+      "inactive": true,
+      "protected": false,
+      "closing_user": null,
+      "destination_networks": [
+       "Net-16-182-192.Net_182_10_0_0"
+      ],
+      "source_network": "Net-16-182-192.Net_182_10_0_0",
+      "category_count": 2,
+      "close_time": null,
+      "remote_destination_count": 0,
+      "start_time": 1613395296537,
+      "magnitude": 1,
+      "last_updated_time": 1613395306948,
+      "credibility": 2,
+      "id": 19,
+      "categories": [
+       "General Authentication Failed",
+       "User Login Failure"
+      ],
+      "severity": 3,
+      "policy_category_count": 0,
+      "log_sources": [
+       {
+        "type_name": "WindowsAuthServer",
+        "type_id": 12,
+        "name": "WindowsAuthServer @ 192.168.1.3",
+        "id": 112
+       },
+       {
+        "type_name": "EventCRE",
+        "type_id": 18,
+        "name": "Custom Rule Engine-8 :: ip-162-21-12-77",
+        "id": 63
+       }
+      ],
+      "closing_reason_id": null,
+      "device_count": 2,
+      "offense_type": 3,
+      "relevance": 0,
+      "domain_id": 0,
+      "offense_source": "yarden",
+      "local_destination_address_ids": [
+       1
+      ],
+      "local_destination_count": 1,
+      "status": "OPEN"
+     }
+    ],
+    "last_mirror_update": null,
+    "updated_mirrored_offenses": [],
+    "mirrored_offenses": [],
+    "resubmitted_mirrored_offenses": []
+   },
+   "mirror_options": "Mirror Offense",
+   "mirror_direction": null,
+   "offenses_first_loop": true,
+   "offenses_second_loop": true
+  },
+  "mirror_offense_and_events_two_loops_offenses": {
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "init_context": {
+    "id": 5,
+    "last_mirror_update": 242123,
+    "updated_mirrored_offenses": [],
+    "mirrored_offenses": [],
+    "resubmitted_mirrored_offenses": [],
+    "samples": [
+     {
+      "events": [
+       {
+        "qidname_qid": "Success Audit: The Windows Filtering Platform has allowed a connection",
+        "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+        "categoryname_highlevelcategory": "Access",
+        "categoryname_category": "Access Permitted",
+        "sourceip": "192.168.0.1",
+        "sourceport": 546,
+        "destinationip": "192.168.0.2",
+        "destinationport": 547,
+        "qiddescription_qid": "Success Audit: The Windows Filtering Platform has allowed a connection.",
+        "username": null,
+        "protocolname_protocolid": "UDP",
+        "rulename_creEventList": [
+         "BB:ProtocolDefinition: Windows Protocols",
+         "Destination Asset Weight is Low",
+         "Source Asset Weight is Low",
+         "Fake port scan",
+         "BB:CategoryDefinition: Firewall or ACL Accept",
+         "Load Basic Building Blocks"
+        ],
+        "sourcegeographiclocation": "other",
+        "sourceMAC": "00:00:00:00:00:00",
+        "sourcev6": "ab12:1:4:1:106b:2121:xz15:361a",
+        "destinationgeographiclocation": "other",
+        "destinationv6": "ab13:1:1:1:126b:2121:qz55:361b",
+        "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+        "credibility": 5,
+        "severity": 0,
+        "magnitude": 1,
+        "eventcount": 2,
+        "eventDirection": "R2R",
+        "postNatDestinationIP": "0.0.0.0",
+        "postNatDestinationPort": 0,
+        "postNatSourceIP": "0.0.0.0",
+        "postNatSourcePort": 0,
+        "preNatDestinationPort": 0,
+        "preNatSourceIP": "0.0.0.0",
+        "preNatSourcePort": 0,
+        "starttime": 1614067175962,
+        "devicetime": 1614067166000
+       },
+       {
+        "qidname_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port",
+        "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+        "categoryname_highlevelcategory": "Access",
+        "categoryname_category": "Access Permitted",
+        "sourceip": "192.168.0.1",
+        "sourceport": 0,
+        "destinationip": "192.168.0.2",
+        "destinationport": 546,
+        "qiddescription_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port.",
+        "username": null,
+        "protocolname_protocolid": "UDP",
+        "rulename_creEventList": [
+         "BB:ProtocolDefinition: Windows Protocols",
+         "Destination Asset Weight is Low",
+         "Source Asset Weight is Low",
+         "Context is Remote to Local",
+         "Fake port scan",
+         "BB:CategoryDefinition: Firewall or ACL Accept",
+         "Load Basic Building Blocks"
+        ],
+        "sourcegeographiclocation": "other",
+        "sourceMAC": "00:00:00:00:00:00",
+        "sourcev6": "fb12:1:4:1:106b:2121:xz15:361a",
+        "destinationgeographiclocation": "other",
+        "destinationv6": "0:0:0:0:0:0:0:0",
+        "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+        "credibility": 5,
+        "severity": 0,
+        "magnitude": 2,
+        "eventcount": 1,
+        "eventDirection": "R2L",
+        "postNatDestinationIP": "0.0.0.0",
+        "postNatDestinationPort": 0,
+        "postNatSourceIP": "0.0.0.0",
+        "postNatSourcePort": 0,
+        "preNatDestinationPort": 0,
+        "preNatSourceIP": "0.0.0.0",
+        "preNatSourcePort": 0,
+        "starttime": 1614067175962,
+        "devicetime": 1614067163000
+       }
+      ],
+      "username_count": 1,
+      "description": "Session Closed\n",
+      "rules": [
+       {
+        "id": 100405,
+        "type": "CRE_RULE"
+       }
+      ],
+      "event_count": 1,
+      "flow_count": 0,
+      "assigned_to": null,
+      "security_category_count": 1,
+      "follow_up": false,
+      "source_address_ids": [
+       10
+      ],
+      "source_count": 1,
+      "inactive": true,
+      "protected": false,
+      "closing_user": null,
+      "destination_networks": [
+       "Net-16-182-192.Net_182_10_0_0"
+      ],
+      "source_network": "other",
+      "category_count": 1,
+      "close_time": null,
+      "remote_destination_count": 0,
+      "start_time": 1613399051536,
+      "magnitude": 1,
+      "last_updated_time": 1613399051536,
+      "credibility": 2,
+      "id": 18,
+      "categories": [
+       "Session Closed"
+      ],
+      "severity": 2,
+      "policy_category_count": 0,
+      "log_sources": [
+       {
+        "type_name": "WindowsAuthServer",
+        "type_id": 12,
+        "name": "WindowsAuthServer @ 192.168.1.3",
+        "id": 112
+       }
+      ],
+      "closing_reason_id": null,
+      "device_count": 1,
+      "offense_type": 0,
+      "relevance": 0,
+      "domain_id": 0,
+      "offense_source": "192.168.1.3",
+      "local_destination_address_ids": [
+       1
+      ],
+      "local_destination_count": 1,
+      "status": "OPEN"
+     },
+     {
+      "events": [
+       {
+        "qidname_qid": "Success Audit: The Windows Filtering Platform has allowed a connection",
+        "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+        "categoryname_highlevelcategory": "Access",
+        "categoryname_category": "Access Permitted",
+        "sourceip": "192.168.0.1",
+        "sourceport": 546,
+        "destinationip": "192.168.0.2",
+        "destinationport": 547,
+        "qiddescription_qid": "Success Audit: The Windows Filtering Platform has allowed a connection.",
+        "username": null,
+        "protocolname_protocolid": "UDP",
+        "rulename_creEventList": [
+         "BB:ProtocolDefinition: Windows Protocols",
+         "Destination Asset Weight is Low",
+         "Source Asset Weight is Low",
+         "Fake port scan",
+         "BB:CategoryDefinition: Firewall or ACL Accept",
+         "Load Basic Building Blocks"
+        ],
+        "sourcegeographiclocation": "other",
+        "sourceMAC": "00:00:00:00:00:00",
+        "sourcev6": "ab12:1:4:1:106b:2121:xz15:361a",
+        "destinationgeographiclocation": "other",
+        "destinationv6": "ab13:1:1:1:126b:2121:qz55:361b",
+        "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+        "credibility": 5,
+        "severity": 0,
+        "magnitude": 1,
+        "eventcount": 2,
+        "eventDirection": "R2R",
+        "postNatDestinationIP": "0.0.0.0",
+        "postNatDestinationPort": 0,
+        "postNatSourceIP": "0.0.0.0",
+        "postNatSourcePort": 0,
+        "preNatDestinationPort": 0,
+        "preNatSourceIP": "0.0.0.0",
+        "preNatSourcePort": 0,
+        "starttime": 1614067175962,
+        "devicetime": 1614067166000
+       },
+       {
+        "qidname_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port",
+        "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+        "categoryname_highlevelcategory": "Access",
+        "categoryname_category": "Access Permitted",
+        "sourceip": "192.168.0.1",
+        "sourceport": 0,
+        "destinationip": "192.168.0.2",
+        "destinationport": 546,
+        "qiddescription_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port.",
+        "username": null,
+        "protocolname_protocolid": "UDP",
+        "rulename_creEventList": [
+         "BB:ProtocolDefinition: Windows Protocols",
+         "Destination Asset Weight is Low",
+         "Source Asset Weight is Low",
+         "Context is Remote to Local",
+         "Fake port scan",
+         "BB:CategoryDefinition: Firewall or ACL Accept",
+         "Load Basic Building Blocks"
+        ],
+        "sourcegeographiclocation": "other",
+        "sourceMAC": "00:00:00:00:00:00",
+        "sourcev6": "fb12:1:4:1:106b:2121:xz15:361a",
+        "destinationgeographiclocation": "other",
+        "destinationv6": "0:0:0:0:0:0:0:0",
+        "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+        "credibility": 5,
+        "severity": 0,
+        "magnitude": 2,
+        "eventcount": 1,
+        "eventDirection": "R2L",
+        "postNatDestinationIP": "0.0.0.0",
+        "postNatDestinationPort": 0,
+        "postNatSourceIP": "0.0.0.0",
+        "postNatSourcePort": 0,
+        "preNatDestinationPort": 0,
+        "preNatSourceIP": "0.0.0.0",
+        "preNatSourcePort": 0,
+        "starttime": 1614067175962,
+        "devicetime": 1614067163000
+       }
+      ],
+      "username_count": 1,
+      "description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
+      "rules": [
+       {
+        "id": 100056,
+        "type": "CRE_RULE"
+       }
+      ],
+      "event_count": 15,
+      "flow_count": 0,
+      "assigned_to": null,
+      "security_category_count": 2,
+      "follow_up": false,
+      "source_address_ids": [
+       2,
+       1
+      ],
+      "source_count": 2,
+      "inactive": true,
+      "protected": false,
+      "closing_user": null,
+      "destination_networks": [
+       "Net-16-182-192.Net_182_10_0_0"
+      ],
+      "source_network": "Net-16-182-192.Net_182_10_0_0",
+      "category_count": 2,
+      "close_time": null,
+      "remote_destination_count": 0,
+      "start_time": 1613395296537,
+      "magnitude": 1,
+      "last_updated_time": 1613395306948,
+      "credibility": 2,
+      "id": 19,
+      "categories": [
+       "General Authentication Failed",
+       "User Login Failure"
+      ],
+      "severity": 3,
+      "policy_category_count": 0,
+      "log_sources": [
+       {
+        "type_name": "WindowsAuthServer",
+        "type_id": 12,
+        "name": "WindowsAuthServer @ 192.168.1.3",
+        "id": 112
+       },
+       {
+        "type_name": "EventCRE",
+        "type_id": 18,
+        "name": "Custom Rule Engine-8 :: ip-162-21-12-77",
+        "id": 63
+       }
+      ],
+      "closing_reason_id": null,
+      "device_count": 2,
+      "offense_type": 3,
+      "relevance": 0,
+      "domain_id": 0,
+      "offense_source": "yarden",
+      "local_destination_address_ids": [
+       1
+      ],
+      "local_destination_count": 1,
+      "status": "OPEN"
+     }
+    ]
+   },
+   "mirror_options": "Mirror Offense and Events",
+   "mirror_direction": null,
+   "offenses_first_loop": true,
+   "offenses_second_loop": true
+  },
+  "no_mirroring_first_loop_offenses": {
+   "init_context": {
+    "id": 5,
+    "samples": [],
+    "last_mirror_update": 242123,
+    "updated_mirrored_offenses": [],
+    "mirrored_offenses": [],
+    "resubmitted_mirrored_offenses": []
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "mirror_options": "No Mirroring",
+   "mirror_direction": null,
+   "offenses_first_loop": true,
+   "offenses_second_loop": false
+  },
+  "mirror_offense_first_loop_offenses": {
+   "init_context": {
+    "id": 5,
+    "samples": [
+     {
+      "username_count": 1,
+      "description": "Session Closed\n",
+      "rules": [
+       {
+        "id": 100405,
+        "type": "CRE_RULE"
+       }
+      ],
+      "event_count": 1,
+      "flow_count": 0,
+      "assigned_to": null,
+      "security_category_count": 1,
+      "follow_up": false,
+      "source_address_ids": [
+       10
+      ],
+      "source_count": 1,
+      "inactive": true,
+      "protected": false,
+      "closing_user": null,
+      "destination_networks": [
+       "Net-16-182-192.Net_182_10_0_0"
+      ],
+      "source_network": "other",
+      "category_count": 1,
+      "close_time": null,
+      "remote_destination_count": 0,
+      "start_time": 1613399051536,
+      "magnitude": 1,
+      "last_updated_time": 1613399051536,
+      "credibility": 2,
+      "id": 18,
+      "categories": [
+       "Session Closed"
+      ],
+      "severity": 2,
+      "policy_category_count": 0,
+      "log_sources": [
+       {
+        "type_name": "WindowsAuthServer",
+        "type_id": 12,
+        "name": "WindowsAuthServer @ 192.168.1.3",
+        "id": 112
+       }
+      ],
+      "closing_reason_id": null,
+      "device_count": 1,
+      "offense_type": 0,
+      "relevance": 0,
+      "domain_id": 0,
+      "offense_source": "192.168.1.3",
+      "local_destination_address_ids": [
+       1
+      ],
+      "local_destination_count": 1,
+      "status": "OPEN"
+     },
+     {
+      "username_count": 1,
+      "description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
+      "rules": [
+       {
+        "id": 100056,
+        "type": "CRE_RULE"
+       }
+      ],
+      "event_count": 15,
+      "flow_count": 0,
+      "assigned_to": null,
+      "security_category_count": 2,
+      "follow_up": false,
+      "source_address_ids": [
+       2,
+       1
+      ],
+      "source_count": 2,
+      "inactive": true,
+      "protected": false,
+      "closing_user": null,
+      "destination_networks": [
+       "Net-16-182-192.Net_182_10_0_0"
+      ],
+      "source_network": "Net-16-182-192.Net_182_10_0_0",
+      "category_count": 2,
+      "close_time": null,
+      "remote_destination_count": 0,
+      "start_time": 1613395296537,
+      "magnitude": 1,
+      "last_updated_time": 1613395306948,
+      "credibility": 2,
+      "id": 19,
+      "categories": [
+       "General Authentication Failed",
+       "User Login Failure"
+      ],
+      "severity": 3,
+      "policy_category_count": 0,
+      "log_sources": [
+       {
+        "type_name": "WindowsAuthServer",
+        "type_id": 12,
+        "name": "WindowsAuthServer @ 192.168.1.3",
+        "id": 112
+       },
+       {
+        "type_name": "EventCRE",
+        "type_id": 18,
+        "name": "Custom Rule Engine-8 :: ip-162-21-12-77",
+        "id": 63
+       }
+      ],
+      "closing_reason_id": null,
+      "device_count": 2,
+      "offense_type": 3,
+      "relevance": 0,
+      "domain_id": 0,
+      "offense_source": "yarden",
+      "local_destination_address_ids": [
+       1
+      ],
+      "local_destination_count": 1,
+      "status": "OPEN"
+     }
+    ],
+    "last_mirror_update": null,
+    "updated_mirrored_offenses": [],
+    "mirrored_offenses": [],
+    "resubmitted_mirrored_offenses": []
+   },
+   "mirror_options": "Mirror Offense",
+   "mirror_direction": null,
+   "offenses_first_loop": true,
+   "offenses_second_loop": false
+  },
+  "mirror_offense_and_events_first_loop_offenses": {
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "init_context": {
+    "id": 5,
+    "last_mirror_update": 242123,
+    "updated_mirrored_offenses": [],
+    "mirrored_offenses": [],
+    "resubmitted_mirrored_offenses": [],
+    "samples": [
+     {
+      "events": [
+       {
+        "qidname_qid": "Success Audit: The Windows Filtering Platform has allowed a connection",
+        "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+        "categoryname_highlevelcategory": "Access",
+        "categoryname_category": "Access Permitted",
+        "sourceip": "192.168.0.1",
+        "sourceport": 546,
+        "destinationip": "192.168.0.2",
+        "destinationport": 547,
+        "qiddescription_qid": "Success Audit: The Windows Filtering Platform has allowed a connection.",
+        "username": null,
+        "protocolname_protocolid": "UDP",
+        "rulename_creEventList": [
+         "BB:ProtocolDefinition: Windows Protocols",
+         "Destination Asset Weight is Low",
+         "Source Asset Weight is Low",
+         "Fake port scan",
+         "BB:CategoryDefinition: Firewall or ACL Accept",
+         "Load Basic Building Blocks"
+        ],
+        "sourcegeographiclocation": "other",
+        "sourceMAC": "00:00:00:00:00:00",
+        "sourcev6": "ab12:1:4:1:106b:2121:xz15:361a",
+        "destinationgeographiclocation": "other",
+        "destinationv6": "ab13:1:1:1:126b:2121:qz55:361b",
+        "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+        "credibility": 5,
+        "severity": 0,
+        "magnitude": 1,
+        "eventcount": 2,
+        "eventDirection": "R2R",
+        "postNatDestinationIP": "0.0.0.0",
+        "postNatDestinationPort": 0,
+        "postNatSourceIP": "0.0.0.0",
+        "postNatSourcePort": 0,
+        "preNatDestinationPort": 0,
+        "preNatSourceIP": "0.0.0.0",
+        "preNatSourcePort": 0,
+        "starttime": 1614067175962,
+        "devicetime": 1614067166000
+       },
+       {
+        "qidname_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port",
+        "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+        "categoryname_highlevelcategory": "Access",
+        "categoryname_category": "Access Permitted",
+        "sourceip": "192.168.0.1",
+        "sourceport": 0,
+        "destinationip": "192.168.0.2",
+        "destinationport": 546,
+        "qiddescription_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port.",
+        "username": null,
+        "protocolname_protocolid": "UDP",
+        "rulename_creEventList": [
+         "BB:ProtocolDefinition: Windows Protocols",
+         "Destination Asset Weight is Low",
+         "Source Asset Weight is Low",
+         "Context is Remote to Local",
+         "Fake port scan",
+         "BB:CategoryDefinition: Firewall or ACL Accept",
+         "Load Basic Building Blocks"
+        ],
+        "sourcegeographiclocation": "other",
+        "sourceMAC": "00:00:00:00:00:00",
+        "sourcev6": "fb12:1:4:1:106b:2121:xz15:361a",
+        "destinationgeographiclocation": "other",
+        "destinationv6": "0:0:0:0:0:0:0:0",
+        "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+        "credibility": 5,
+        "severity": 0,
+        "magnitude": 2,
+        "eventcount": 1,
+        "eventDirection": "R2L",
+        "postNatDestinationIP": "0.0.0.0",
+        "postNatDestinationPort": 0,
+        "postNatSourceIP": "0.0.0.0",
+        "postNatSourcePort": 0,
+        "preNatDestinationPort": 0,
+        "preNatSourceIP": "0.0.0.0",
+        "preNatSourcePort": 0,
+        "starttime": 1614067175962,
+        "devicetime": 1614067163000
+       }
+      ],
+      "username_count": 1,
+      "description": "Session Closed\n",
+      "rules": [
+       {
+        "id": 100405,
+        "type": "CRE_RULE"
+       }
+      ],
+      "event_count": 1,
+      "flow_count": 0,
+      "assigned_to": null,
+      "security_category_count": 1,
+      "follow_up": false,
+      "source_address_ids": [
+       10
+      ],
+      "source_count": 1,
+      "inactive": true,
+      "protected": false,
+      "closing_user": null,
+      "destination_networks": [
+       "Net-16-182-192.Net_182_10_0_0"
+      ],
+      "source_network": "other",
+      "category_count": 1,
+      "close_time": null,
+      "remote_destination_count": 0,
+      "start_time": 1613399051536,
+      "magnitude": 1,
+      "last_updated_time": 1613399051536,
+      "credibility": 2,
+      "id": 18,
+      "categories": [
+       "Session Closed"
+      ],
+      "severity": 2,
+      "policy_category_count": 0,
+      "log_sources": [
+       {
+        "type_name": "WindowsAuthServer",
+        "type_id": 12,
+        "name": "WindowsAuthServer @ 192.168.1.3",
+        "id": 112
+       }
+      ],
+      "closing_reason_id": null,
+      "device_count": 1,
+      "offense_type": 0,
+      "relevance": 0,
+      "domain_id": 0,
+      "offense_source": "192.168.1.3",
+      "local_destination_address_ids": [
+       1
+      ],
+      "local_destination_count": 1,
+      "status": "OPEN"
+     },
+     {
+      "events": [
+       {
+        "qidname_qid": "Success Audit: The Windows Filtering Platform has allowed a connection",
+        "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+        "categoryname_highlevelcategory": "Access",
+        "categoryname_category": "Access Permitted",
+        "sourceip": "192.168.0.1",
+        "sourceport": 546,
+        "destinationip": "192.168.0.2",
+        "destinationport": 547,
+        "qiddescription_qid": "Success Audit: The Windows Filtering Platform has allowed a connection.",
+        "username": null,
+        "protocolname_protocolid": "UDP",
+        "rulename_creEventList": [
+         "BB:ProtocolDefinition: Windows Protocols",
+         "Destination Asset Weight is Low",
+         "Source Asset Weight is Low",
+         "Fake port scan",
+         "BB:CategoryDefinition: Firewall or ACL Accept",
+         "Load Basic Building Blocks"
+        ],
+        "sourcegeographiclocation": "other",
+        "sourceMAC": "00:00:00:00:00:00",
+        "sourcev6": "ab12:1:4:1:106b:2121:xz15:361a",
+        "destinationgeographiclocation": "other",
+        "destinationv6": "ab13:1:1:1:126b:2121:qz55:361b",
+        "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+        "credibility": 5,
+        "severity": 0,
+        "magnitude": 1,
+        "eventcount": 2,
+        "eventDirection": "R2R",
+        "postNatDestinationIP": "0.0.0.0",
+        "postNatDestinationPort": 0,
+        "postNatSourceIP": "0.0.0.0",
+        "postNatSourcePort": 0,
+        "preNatDestinationPort": 0,
+        "preNatSourceIP": "0.0.0.0",
+        "preNatSourcePort": 0,
+        "starttime": 1614067175962,
+        "devicetime": 1614067166000
+       },
+       {
+        "qidname_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port",
+        "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+        "categoryname_highlevelcategory": "Access",
+        "categoryname_category": "Access Permitted",
+        "sourceip": "192.168.0.1",
+        "sourceport": 0,
+        "destinationip": "192.168.0.2",
+        "destinationport": 546,
+        "qiddescription_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port.",
+        "username": null,
+        "protocolname_protocolid": "UDP",
+        "rulename_creEventList": [
+         "BB:ProtocolDefinition: Windows Protocols",
+         "Destination Asset Weight is Low",
+         "Source Asset Weight is Low",
+         "Context is Remote to Local",
+         "Fake port scan",
+         "BB:CategoryDefinition: Firewall or ACL Accept",
+         "Load Basic Building Blocks"
+        ],
+        "sourcegeographiclocation": "other",
+        "sourceMAC": "00:00:00:00:00:00",
+        "sourcev6": "fb12:1:4:1:106b:2121:xz15:361a",
+        "destinationgeographiclocation": "other",
+        "destinationv6": "0:0:0:0:0:0:0:0",
+        "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+        "credibility": 5,
+        "severity": 0,
+        "magnitude": 2,
+        "eventcount": 1,
+        "eventDirection": "R2L",
+        "postNatDestinationIP": "0.0.0.0",
+        "postNatDestinationPort": 0,
+        "postNatSourceIP": "0.0.0.0",
+        "postNatSourcePort": 0,
+        "preNatDestinationPort": 0,
+        "preNatSourceIP": "0.0.0.0",
+        "preNatSourcePort": 0,
+        "starttime": 1614067175962,
+        "devicetime": 1614067163000
+       }
+      ],
+      "username_count": 1,
+      "description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
+      "rules": [
+       {
+        "id": 100056,
+        "type": "CRE_RULE"
+       }
+      ],
+      "event_count": 15,
+      "flow_count": 0,
+      "assigned_to": null,
+      "security_category_count": 2,
+      "follow_up": false,
+      "source_address_ids": [
+       2,
+       1
+      ],
+      "source_count": 2,
+      "inactive": true,
+      "protected": false,
+      "closing_user": null,
+      "destination_networks": [
+       "Net-16-182-192.Net_182_10_0_0"
+      ],
+      "source_network": "Net-16-182-192.Net_182_10_0_0",
+      "category_count": 2,
+      "close_time": null,
+      "remote_destination_count": 0,
+      "start_time": 1613395296537,
+      "magnitude": 1,
+      "last_updated_time": 1613395306948,
+      "credibility": 2,
+      "id": 19,
+      "categories": [
+       "General Authentication Failed",
+       "User Login Failure"
+      ],
+      "severity": 3,
+      "policy_category_count": 0,
+      "log_sources": [
+       {
+        "type_name": "WindowsAuthServer",
+        "type_id": 12,
+        "name": "WindowsAuthServer @ 192.168.1.3",
+        "id": 112
+       },
+       {
+        "type_name": "EventCRE",
+        "type_id": 18,
+        "name": "Custom Rule Engine-8 :: ip-162-21-12-77",
+        "id": 63
+       }
+      ],
+      "closing_reason_id": null,
+      "device_count": 2,
+      "offense_type": 3,
+      "relevance": 0,
+      "domain_id": 0,
+      "offense_source": "yarden",
+      "local_destination_address_ids": [
+       1
+      ],
+      "local_destination_count": 1,
+      "status": "OPEN"
+     }
+    ]
+   },
+   "mirror_options": "Mirror Offense and Events",
+   "mirror_direction": null,
+   "offenses_first_loop": true,
+   "offenses_second_loop": false
+  },
+  "no_mirroring_second_loop_offenses": {
+   "init_context": {
+    "id": 5,
+    "samples": [],
+    "last_mirror_update": 242123,
+    "updated_mirrored_offenses": [],
+    "mirrored_offenses": [],
+    "resubmitted_mirrored_offenses": []
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\"",
+    "id": "5"
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "mirror_options": "No Mirroring",
+   "mirror_direction": null,
+   "offenses_first_loop": false,
+   "offenses_second_loop": true
+  },
+  "mirror_offense_second_loop_offenses": {
+   "first_loop_ctx_not_default_values": {
+    "id": "5"
+   },
+   "init_context": {
+    "id": 5,
+    "samples": [
+     {
+      "username_count": 1,
+      "description": "Session Closed\n",
+      "rules": [
+       {
+        "id": 100405,
+        "type": "CRE_RULE"
+       }
+      ],
+      "event_count": 1,
+      "flow_count": 0,
+      "assigned_to": null,
+      "security_category_count": 1,
+      "follow_up": false,
+      "source_address_ids": [
+       10
+      ],
+      "source_count": 1,
+      "inactive": true,
+      "protected": false,
+      "closing_user": null,
+      "destination_networks": [
+       "Net-16-182-192.Net_182_10_0_0"
+      ],
+      "source_network": "other",
+      "category_count": 1,
+      "close_time": null,
+      "remote_destination_count": 0,
+      "start_time": 1613399051536,
+      "magnitude": 1,
+      "last_updated_time": 1613399051536,
+      "credibility": 2,
+      "id": 18,
+      "categories": [
+       "Session Closed"
+      ],
+      "severity": 2,
+      "policy_category_count": 0,
+      "log_sources": [
+       {
+        "type_name": "WindowsAuthServer",
+        "type_id": 12,
+        "name": "WindowsAuthServer @ 192.168.1.3",
+        "id": 112
+       }
+      ],
+      "closing_reason_id": null,
+      "device_count": 1,
+      "offense_type": 0,
+      "relevance": 0,
+      "domain_id": 0,
+      "offense_source": "192.168.1.3",
+      "local_destination_address_ids": [
+       1
+      ],
+      "local_destination_count": 1,
+      "status": "OPEN"
+     },
+     {
+      "username_count": 1,
+      "description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
+      "rules": [
+       {
+        "id": 100056,
+        "type": "CRE_RULE"
+       }
+      ],
+      "event_count": 15,
+      "flow_count": 0,
+      "assigned_to": null,
+      "security_category_count": 2,
+      "follow_up": false,
+      "source_address_ids": [
+       2,
+       1
+      ],
+      "source_count": 2,
+      "inactive": true,
+      "protected": false,
+      "closing_user": null,
+      "destination_networks": [
+       "Net-16-182-192.Net_182_10_0_0"
+      ],
+      "source_network": "Net-16-182-192.Net_182_10_0_0",
+      "category_count": 2,
+      "close_time": null,
+      "remote_destination_count": 0,
+      "start_time": 1613395296537,
+      "magnitude": 1,
+      "last_updated_time": 1613395306948,
+      "credibility": 2,
+      "id": 19,
+      "categories": [
+       "General Authentication Failed",
+       "User Login Failure"
+      ],
+      "severity": 3,
+      "policy_category_count": 0,
+      "log_sources": [
+       {
+        "type_name": "WindowsAuthServer",
+        "type_id": 12,
+        "name": "WindowsAuthServer @ 192.168.1.3",
+        "id": 112
+       },
+       {
+        "type_name": "EventCRE",
+        "type_id": 18,
+        "name": "Custom Rule Engine-8 :: ip-162-21-12-77",
+        "id": 63
+       }
+      ],
+      "closing_reason_id": null,
+      "device_count": 2,
+      "offense_type": 3,
+      "relevance": 0,
+      "domain_id": 0,
+      "offense_source": "yarden",
+      "local_destination_address_ids": [
+       1
+      ],
+      "local_destination_count": 1,
+      "status": "OPEN"
+     }
+    ],
+    "last_mirror_update": null,
+    "updated_mirrored_offenses": [],
+    "mirrored_offenses": [],
+    "resubmitted_mirrored_offenses": []
+   },
+   "mirror_options": "Mirror Offense",
+   "mirror_direction": null,
+   "offenses_first_loop": false,
+   "offenses_second_loop": true
+  },
+  "mirror_offense_and_events_second_loop_offenses": {
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\"",
+    "id": "5"
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "init_context": {
+    "id": 5,
+    "last_mirror_update": 242123,
+    "updated_mirrored_offenses": [],
+    "mirrored_offenses": [],
+    "resubmitted_mirrored_offenses": [],
+    "samples": [
+     {
+      "events": [
+       {
+        "qidname_qid": "Success Audit: The Windows Filtering Platform has allowed a connection",
+        "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+        "categoryname_highlevelcategory": "Access",
+        "categoryname_category": "Access Permitted",
+        "sourceip": "192.168.0.1",
+        "sourceport": 546,
+        "destinationip": "192.168.0.2",
+        "destinationport": 547,
+        "qiddescription_qid": "Success Audit: The Windows Filtering Platform has allowed a connection.",
+        "username": null,
+        "protocolname_protocolid": "UDP",
+        "rulename_creEventList": [
+         "BB:ProtocolDefinition: Windows Protocols",
+         "Destination Asset Weight is Low",
+         "Source Asset Weight is Low",
+         "Fake port scan",
+         "BB:CategoryDefinition: Firewall or ACL Accept",
+         "Load Basic Building Blocks"
+        ],
+        "sourcegeographiclocation": "other",
+        "sourceMAC": "00:00:00:00:00:00",
+        "sourcev6": "ab12:1:4:1:106b:2121:xz15:361a",
+        "destinationgeographiclocation": "other",
+        "destinationv6": "ab13:1:1:1:126b:2121:qz55:361b",
+        "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+        "credibility": 5,
+        "severity": 0,
+        "magnitude": 1,
+        "eventcount": 2,
+        "eventDirection": "R2R",
+        "postNatDestinationIP": "0.0.0.0",
+        "postNatDestinationPort": 0,
+        "postNatSourceIP": "0.0.0.0",
+        "postNatSourcePort": 0,
+        "preNatDestinationPort": 0,
+        "preNatSourceIP": "0.0.0.0",
+        "preNatSourcePort": 0,
+        "starttime": 1614067175962,
+        "devicetime": 1614067166000
+       },
+       {
+        "qidname_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port",
+        "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+        "categoryname_highlevelcategory": "Access",
+        "categoryname_category": "Access Permitted",
+        "sourceip": "192.168.0.1",
+        "sourceport": 0,
+        "destinationip": "192.168.0.2",
+        "destinationport": 546,
+        "qiddescription_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port.",
+        "username": null,
+        "protocolname_protocolid": "UDP",
+        "rulename_creEventList": [
+         "BB:ProtocolDefinition: Windows Protocols",
+         "Destination Asset Weight is Low",
+         "Source Asset Weight is Low",
+         "Context is Remote to Local",
+         "Fake port scan",
+         "BB:CategoryDefinition: Firewall or ACL Accept",
+         "Load Basic Building Blocks"
+        ],
+        "sourcegeographiclocation": "other",
+        "sourceMAC": "00:00:00:00:00:00",
+        "sourcev6": "fb12:1:4:1:106b:2121:xz15:361a",
+        "destinationgeographiclocation": "other",
+        "destinationv6": "0:0:0:0:0:0:0:0",
+        "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+        "credibility": 5,
+        "severity": 0,
+        "magnitude": 2,
+        "eventcount": 1,
+        "eventDirection": "R2L",
+        "postNatDestinationIP": "0.0.0.0",
+        "postNatDestinationPort": 0,
+        "postNatSourceIP": "0.0.0.0",
+        "postNatSourcePort": 0,
+        "preNatDestinationPort": 0,
+        "preNatSourceIP": "0.0.0.0",
+        "preNatSourcePort": 0,
+        "starttime": 1614067175962,
+        "devicetime": 1614067163000
+       }
+      ],
+      "username_count": 1,
+      "description": "Session Closed\n",
+      "rules": [
+       {
+        "id": 100405,
+        "type": "CRE_RULE"
+       }
+      ],
+      "event_count": 1,
+      "flow_count": 0,
+      "assigned_to": null,
+      "security_category_count": 1,
+      "follow_up": false,
+      "source_address_ids": [
+       10
+      ],
+      "source_count": 1,
+      "inactive": true,
+      "protected": false,
+      "closing_user": null,
+      "destination_networks": [
+       "Net-16-182-192.Net_182_10_0_0"
+      ],
+      "source_network": "other",
+      "category_count": 1,
+      "close_time": null,
+      "remote_destination_count": 0,
+      "start_time": 1613399051536,
+      "magnitude": 1,
+      "last_updated_time": 1613399051536,
+      "credibility": 2,
+      "id": 18,
+      "categories": [
+       "Session Closed"
+      ],
+      "severity": 2,
+      "policy_category_count": 0,
+      "log_sources": [
+       {
+        "type_name": "WindowsAuthServer",
+        "type_id": 12,
+        "name": "WindowsAuthServer @ 192.168.1.3",
+        "id": 112
+       }
+      ],
+      "closing_reason_id": null,
+      "device_count": 1,
+      "offense_type": 0,
+      "relevance": 0,
+      "domain_id": 0,
+      "offense_source": "192.168.1.3",
+      "local_destination_address_ids": [
+       1
+      ],
+      "local_destination_count": 1,
+      "status": "OPEN"
+     },
+     {
+      "events": [
+       {
+        "qidname_qid": "Success Audit: The Windows Filtering Platform has allowed a connection",
+        "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+        "categoryname_highlevelcategory": "Access",
+        "categoryname_category": "Access Permitted",
+        "sourceip": "192.168.0.1",
+        "sourceport": 546,
+        "destinationip": "192.168.0.2",
+        "destinationport": 547,
+        "qiddescription_qid": "Success Audit: The Windows Filtering Platform has allowed a connection.",
+        "username": null,
+        "protocolname_protocolid": "UDP",
+        "rulename_creEventList": [
+         "BB:ProtocolDefinition: Windows Protocols",
+         "Destination Asset Weight is Low",
+         "Source Asset Weight is Low",
+         "Fake port scan",
+         "BB:CategoryDefinition: Firewall or ACL Accept",
+         "Load Basic Building Blocks"
+        ],
+        "sourcegeographiclocation": "other",
+        "sourceMAC": "00:00:00:00:00:00",
+        "sourcev6": "ab12:1:4:1:106b:2121:xz15:361a",
+        "destinationgeographiclocation": "other",
+        "destinationv6": "ab13:1:1:1:126b:2121:qz55:361b",
+        "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+        "credibility": 5,
+        "severity": 0,
+        "magnitude": 1,
+        "eventcount": 2,
+        "eventDirection": "R2R",
+        "postNatDestinationIP": "0.0.0.0",
+        "postNatDestinationPort": 0,
+        "postNatSourceIP": "0.0.0.0",
+        "postNatSourcePort": 0,
+        "preNatDestinationPort": 0,
+        "preNatSourceIP": "0.0.0.0",
+        "preNatSourcePort": 0,
+        "starttime": 1614067175962,
+        "devicetime": 1614067166000
+       },
+       {
+        "qidname_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port",
+        "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+        "categoryname_highlevelcategory": "Access",
+        "categoryname_category": "Access Permitted",
+        "sourceip": "192.168.0.1",
+        "sourceport": 0,
+        "destinationip": "192.168.0.2",
+        "destinationport": 546,
+        "qiddescription_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port.",
+        "username": null,
+        "protocolname_protocolid": "UDP",
+        "rulename_creEventList": [
+         "BB:ProtocolDefinition: Windows Protocols",
+         "Destination Asset Weight is Low",
+         "Source Asset Weight is Low",
+         "Context is Remote to Local",
+         "Fake port scan",
+         "BB:CategoryDefinition: Firewall or ACL Accept",
+         "Load Basic Building Blocks"
+        ],
+        "sourcegeographiclocation": "other",
+        "sourceMAC": "00:00:00:00:00:00",
+        "sourcev6": "fb12:1:4:1:106b:2121:xz15:361a",
+        "destinationgeographiclocation": "other",
+        "destinationv6": "0:0:0:0:0:0:0:0",
+        "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+        "credibility": 5,
+        "severity": 0,
+        "magnitude": 2,
+        "eventcount": 1,
+        "eventDirection": "R2L",
+        "postNatDestinationIP": "0.0.0.0",
+        "postNatDestinationPort": 0,
+        "postNatSourceIP": "0.0.0.0",
+        "postNatSourcePort": 0,
+        "preNatDestinationPort": 0,
+        "preNatSourceIP": "0.0.0.0",
+        "preNatSourcePort": 0,
+        "starttime": 1614067175962,
+        "devicetime": 1614067163000
+       }
+      ],
+      "username_count": 1,
+      "description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
+      "rules": [
+       {
+        "id": 100056,
+        "type": "CRE_RULE"
+       }
+      ],
+      "event_count": 15,
+      "flow_count": 0,
+      "assigned_to": null,
+      "security_category_count": 2,
+      "follow_up": false,
+      "source_address_ids": [
+       2,
+       1
+      ],
+      "source_count": 2,
+      "inactive": true,
+      "protected": false,
+      "closing_user": null,
+      "destination_networks": [
+       "Net-16-182-192.Net_182_10_0_0"
+      ],
+      "source_network": "Net-16-182-192.Net_182_10_0_0",
+      "category_count": 2,
+      "close_time": null,
+      "remote_destination_count": 0,
+      "start_time": 1613395296537,
+      "magnitude": 1,
+      "last_updated_time": 1613395306948,
+      "credibility": 2,
+      "id": 19,
+      "categories": [
+       "General Authentication Failed",
+       "User Login Failure"
+      ],
+      "severity": 3,
+      "policy_category_count": 0,
+      "log_sources": [
+       {
+        "type_name": "WindowsAuthServer",
+        "type_id": 12,
+        "name": "WindowsAuthServer @ 192.168.1.3",
+        "id": 112
+       },
+       {
+        "type_name": "EventCRE",
+        "type_id": 18,
+        "name": "Custom Rule Engine-8 :: ip-162-21-12-77",
+        "id": 63
+       }
+      ],
+      "closing_reason_id": null,
+      "device_count": 2,
+      "offense_type": 3,
+      "relevance": 0,
+      "domain_id": 0,
+      "offense_source": "yarden",
+      "local_destination_address_ids": [
+       1
+      ],
+      "local_destination_count": 1,
+      "status": "OPEN"
+     }
+    ]
+   },
+   "mirror_options": "Mirror Offense and Events",
+   "mirror_direction": null,
+   "offenses_first_loop": false,
+   "offenses_second_loop": true
+  },
+  "no_mirroring_no_loop_offenses": {
+   "init_context": {
+    "id": 5,
+    "samples": [],
+    "last_mirror_update": 242123,
+    "updated_mirrored_offenses": [],
+    "mirrored_offenses": [],
+    "resubmitted_mirrored_offenses": []
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\"",
+    "id": "5"
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\"",
+    "id": "5"
+   },
+   "mirror_options": "No Mirroring",
+   "mirror_direction": null,
+   "offenses_first_loop": false,
+   "offenses_second_loop": false
+  },
+  "mirror_offense_no_loop_offenses": {
+   "first_loop_ctx_not_default_values": {
+    "id": "5"
+   },
+   "second_loop_ctx_not_default_values": {
+    "id": "5"
+   },
+   "init_context": {
+    "id": 5,
+    "samples": [
+     {
+      "username_count": 1,
+      "description": "Session Closed\n",
+      "rules": [
+       {
+        "id": 100405,
+        "type": "CRE_RULE"
+       }
+      ],
+      "event_count": 1,
+      "flow_count": 0,
+      "assigned_to": null,
+      "security_category_count": 1,
+      "follow_up": false,
+      "source_address_ids": [
+       10
+      ],
+      "source_count": 1,
+      "inactive": true,
+      "protected": false,
+      "closing_user": null,
+      "destination_networks": [
+       "Net-16-182-192.Net_182_10_0_0"
+      ],
+      "source_network": "other",
+      "category_count": 1,
+      "close_time": null,
+      "remote_destination_count": 0,
+      "start_time": 1613399051536,
+      "magnitude": 1,
+      "last_updated_time": 1613399051536,
+      "credibility": 2,
+      "id": 18,
+      "categories": [
+       "Session Closed"
+      ],
+      "severity": 2,
+      "policy_category_count": 0,
+      "log_sources": [
+       {
+        "type_name": "WindowsAuthServer",
+        "type_id": 12,
+        "name": "WindowsAuthServer @ 192.168.1.3",
+        "id": 112
+       }
+      ],
+      "closing_reason_id": null,
+      "device_count": 1,
+      "offense_type": 0,
+      "relevance": 0,
+      "domain_id": 0,
+      "offense_source": "192.168.1.3",
+      "local_destination_address_ids": [
+       1
+      ],
+      "local_destination_count": 1,
+      "status": "OPEN"
+     },
+     {
+      "username_count": 1,
+      "description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
+      "rules": [
+       {
+        "id": 100056,
+        "type": "CRE_RULE"
+       }
+      ],
+      "event_count": 15,
+      "flow_count": 0,
+      "assigned_to": null,
+      "security_category_count": 2,
+      "follow_up": false,
+      "source_address_ids": [
+       2,
+       1
+      ],
+      "source_count": 2,
+      "inactive": true,
+      "protected": false,
+      "closing_user": null,
+      "destination_networks": [
+       "Net-16-182-192.Net_182_10_0_0"
+      ],
+      "source_network": "Net-16-182-192.Net_182_10_0_0",
+      "category_count": 2,
+      "close_time": null,
+      "remote_destination_count": 0,
+      "start_time": 1613395296537,
+      "magnitude": 1,
+      "last_updated_time": 1613395306948,
+      "credibility": 2,
+      "id": 19,
+      "categories": [
+       "General Authentication Failed",
+       "User Login Failure"
+      ],
+      "severity": 3,
+      "policy_category_count": 0,
+      "log_sources": [
+       {
+        "type_name": "WindowsAuthServer",
+        "type_id": 12,
+        "name": "WindowsAuthServer @ 192.168.1.3",
+        "id": 112
+       },
+       {
+        "type_name": "EventCRE",
+        "type_id": 18,
+        "name": "Custom Rule Engine-8 :: ip-162-21-12-77",
+        "id": 63
+       }
+      ],
+      "closing_reason_id": null,
+      "device_count": 2,
+      "offense_type": 3,
+      "relevance": 0,
+      "domain_id": 0,
+      "offense_source": "yarden",
+      "local_destination_address_ids": [
+       1
+      ],
+      "local_destination_count": 1,
+      "status": "OPEN"
+     }
+    ],
+    "last_mirror_update": null,
+    "updated_mirrored_offenses": [],
+    "mirrored_offenses": [],
+    "resubmitted_mirrored_offenses": []
+   },
+   "mirror_options": "Mirror Offense",
+   "mirror_direction": null,
+   "offenses_first_loop": false,
+   "offenses_second_loop": false
+  },
+  "mirror_offense_and_events_no_loop_offenses": {
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\"",
+    "id": "5"
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\"",
+    "id": "5"
+   },
+   "init_context": {
+    "id": 5,
+    "last_mirror_update": 242123,
+    "updated_mirrored_offenses": [],
+    "mirrored_offenses": [],
+    "resubmitted_mirrored_offenses": [],
+    "samples": [
+     {
+      "events": [
+       {
+        "qidname_qid": "Success Audit: The Windows Filtering Platform has allowed a connection",
+        "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+        "categoryname_highlevelcategory": "Access",
+        "categoryname_category": "Access Permitted",
+        "sourceip": "192.168.0.1",
+        "sourceport": 546,
+        "destinationip": "192.168.0.2",
+        "destinationport": 547,
+        "qiddescription_qid": "Success Audit: The Windows Filtering Platform has allowed a connection.",
+        "username": null,
+        "protocolname_protocolid": "UDP",
+        "rulename_creEventList": [
+         "BB:ProtocolDefinition: Windows Protocols",
+         "Destination Asset Weight is Low",
+         "Source Asset Weight is Low",
+         "Fake port scan",
+         "BB:CategoryDefinition: Firewall or ACL Accept",
+         "Load Basic Building Blocks"
+        ],
+        "sourcegeographiclocation": "other",
+        "sourceMAC": "00:00:00:00:00:00",
+        "sourcev6": "ab12:1:4:1:106b:2121:xz15:361a",
+        "destinationgeographiclocation": "other",
+        "destinationv6": "ab13:1:1:1:126b:2121:qz55:361b",
+        "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+        "credibility": 5,
+        "severity": 0,
+        "magnitude": 1,
+        "eventcount": 2,
+        "eventDirection": "R2R",
+        "postNatDestinationIP": "0.0.0.0",
+        "postNatDestinationPort": 0,
+        "postNatSourceIP": "0.0.0.0",
+        "postNatSourcePort": 0,
+        "preNatDestinationPort": 0,
+        "preNatSourceIP": "0.0.0.0",
+        "preNatSourcePort": 0,
+        "starttime": 1614067175962,
+        "devicetime": 1614067166000
+       },
+       {
+        "qidname_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port",
+        "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+        "categoryname_highlevelcategory": "Access",
+        "categoryname_category": "Access Permitted",
+        "sourceip": "192.168.0.1",
+        "sourceport": 0,
+        "destinationip": "192.168.0.2",
+        "destinationport": 546,
+        "qiddescription_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port.",
+        "username": null,
+        "protocolname_protocolid": "UDP",
+        "rulename_creEventList": [
+         "BB:ProtocolDefinition: Windows Protocols",
+         "Destination Asset Weight is Low",
+         "Source Asset Weight is Low",
+         "Context is Remote to Local",
+         "Fake port scan",
+         "BB:CategoryDefinition: Firewall or ACL Accept",
+         "Load Basic Building Blocks"
+        ],
+        "sourcegeographiclocation": "other",
+        "sourceMAC": "00:00:00:00:00:00",
+        "sourcev6": "fb12:1:4:1:106b:2121:xz15:361a",
+        "destinationgeographiclocation": "other",
+        "destinationv6": "0:0:0:0:0:0:0:0",
+        "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+        "credibility": 5,
+        "severity": 0,
+        "magnitude": 2,
+        "eventcount": 1,
+        "eventDirection": "R2L",
+        "postNatDestinationIP": "0.0.0.0",
+        "postNatDestinationPort": 0,
+        "postNatSourceIP": "0.0.0.0",
+        "postNatSourcePort": 0,
+        "preNatDestinationPort": 0,
+        "preNatSourceIP": "0.0.0.0",
+        "preNatSourcePort": 0,
+        "starttime": 1614067175962,
+        "devicetime": 1614067163000
+       }
+      ],
+      "username_count": 1,
+      "description": "Session Closed\n",
+      "rules": [
+       {
+        "id": 100405,
+        "type": "CRE_RULE"
+       }
+      ],
+      "event_count": 1,
+      "flow_count": 0,
+      "assigned_to": null,
+      "security_category_count": 1,
+      "follow_up": false,
+      "source_address_ids": [
+       10
+      ],
+      "source_count": 1,
+      "inactive": true,
+      "protected": false,
+      "closing_user": null,
+      "destination_networks": [
+       "Net-16-182-192.Net_182_10_0_0"
+      ],
+      "source_network": "other",
+      "category_count": 1,
+      "close_time": null,
+      "remote_destination_count": 0,
+      "start_time": 1613399051536,
+      "magnitude": 1,
+      "last_updated_time": 1613399051536,
+      "credibility": 2,
+      "id": 18,
+      "categories": [
+       "Session Closed"
+      ],
+      "severity": 2,
+      "policy_category_count": 0,
+      "log_sources": [
+       {
+        "type_name": "WindowsAuthServer",
+        "type_id": 12,
+        "name": "WindowsAuthServer @ 192.168.1.3",
+        "id": 112
+       }
+      ],
+      "closing_reason_id": null,
+      "device_count": 1,
+      "offense_type": 0,
+      "relevance": 0,
+      "domain_id": 0,
+      "offense_source": "192.168.1.3",
+      "local_destination_address_ids": [
+       1
+      ],
+      "local_destination_count": 1,
+      "status": "OPEN"
+     },
+     {
+      "events": [
+       {
+        "qidname_qid": "Success Audit: The Windows Filtering Platform has allowed a connection",
+        "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+        "categoryname_highlevelcategory": "Access",
+        "categoryname_category": "Access Permitted",
+        "sourceip": "192.168.0.1",
+        "sourceport": 546,
+        "destinationip": "192.168.0.2",
+        "destinationport": 547,
+        "qiddescription_qid": "Success Audit: The Windows Filtering Platform has allowed a connection.",
+        "username": null,
+        "protocolname_protocolid": "UDP",
+        "rulename_creEventList": [
+         "BB:ProtocolDefinition: Windows Protocols",
+         "Destination Asset Weight is Low",
+         "Source Asset Weight is Low",
+         "Fake port scan",
+         "BB:CategoryDefinition: Firewall or ACL Accept",
+         "Load Basic Building Blocks"
+        ],
+        "sourcegeographiclocation": "other",
+        "sourceMAC": "00:00:00:00:00:00",
+        "sourcev6": "ab12:1:4:1:106b:2121:xz15:361a",
+        "destinationgeographiclocation": "other",
+        "destinationv6": "ab13:1:1:1:126b:2121:qz55:361b",
+        "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+        "credibility": 5,
+        "severity": 0,
+        "magnitude": 1,
+        "eventcount": 2,
+        "eventDirection": "R2R",
+        "postNatDestinationIP": "0.0.0.0",
+        "postNatDestinationPort": 0,
+        "postNatSourceIP": "0.0.0.0",
+        "postNatSourcePort": 0,
+        "preNatDestinationPort": 0,
+        "preNatSourceIP": "0.0.0.0",
+        "preNatSourcePort": 0,
+        "starttime": 1614067175962,
+        "devicetime": 1614067166000
+       },
+       {
+        "qidname_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port",
+        "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+        "categoryname_highlevelcategory": "Access",
+        "categoryname_category": "Access Permitted",
+        "sourceip": "192.168.0.1",
+        "sourceport": 0,
+        "destinationip": "192.168.0.2",
+        "destinationport": 546,
+        "qiddescription_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port.",
+        "username": null,
+        "protocolname_protocolid": "UDP",
+        "rulename_creEventList": [
+         "BB:ProtocolDefinition: Windows Protocols",
+         "Destination Asset Weight is Low",
+         "Source Asset Weight is Low",
+         "Context is Remote to Local",
+         "Fake port scan",
+         "BB:CategoryDefinition: Firewall or ACL Accept",
+         "Load Basic Building Blocks"
+        ],
+        "sourcegeographiclocation": "other",
+        "sourceMAC": "00:00:00:00:00:00",
+        "sourcev6": "fb12:1:4:1:106b:2121:xz15:361a",
+        "destinationgeographiclocation": "other",
+        "destinationv6": "0:0:0:0:0:0:0:0",
+        "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+        "credibility": 5,
+        "severity": 0,
+        "magnitude": 2,
+        "eventcount": 1,
+        "eventDirection": "R2L",
+        "postNatDestinationIP": "0.0.0.0",
+        "postNatDestinationPort": 0,
+        "postNatSourceIP": "0.0.0.0",
+        "postNatSourcePort": 0,
+        "preNatDestinationPort": 0,
+        "preNatSourceIP": "0.0.0.0",
+        "preNatSourcePort": 0,
+        "starttime": 1614067175962,
+        "devicetime": 1614067163000
+       }
+      ],
+      "username_count": 1,
+      "description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
+      "rules": [
+       {
+        "id": 100056,
+        "type": "CRE_RULE"
+       }
+      ],
+      "event_count": 15,
+      "flow_count": 0,
+      "assigned_to": null,
+      "security_category_count": 2,
+      "follow_up": false,
+      "source_address_ids": [
+       2,
+       1
+      ],
+      "source_count": 2,
+      "inactive": true,
+      "protected": false,
+      "closing_user": null,
+      "destination_networks": [
+       "Net-16-182-192.Net_182_10_0_0"
+      ],
+      "source_network": "Net-16-182-192.Net_182_10_0_0",
+      "category_count": 2,
+      "close_time": null,
+      "remote_destination_count": 0,
+      "start_time": 1613395296537,
+      "magnitude": 1,
+      "last_updated_time": 1613395306948,
+      "credibility": 2,
+      "id": 19,
+      "categories": [
+       "General Authentication Failed",
+       "User Login Failure"
+      ],
+      "severity": 3,
+      "policy_category_count": 0,
+      "log_sources": [
+       {
+        "type_name": "WindowsAuthServer",
+        "type_id": 12,
+        "name": "WindowsAuthServer @ 192.168.1.3",
+        "id": 112
+       },
+       {
+        "type_name": "EventCRE",
+        "type_id": 18,
+        "name": "Custom Rule Engine-8 :: ip-162-21-12-77",
+        "id": 63
+       }
+      ],
+      "closing_reason_id": null,
+      "device_count": 2,
+      "offense_type": 3,
+      "relevance": 0,
+      "domain_id": 0,
+      "offense_source": "yarden",
+      "local_destination_address_ids": [
+       1
+      ],
+      "local_destination_count": 1,
+      "status": "OPEN"
+     }
+    ]
+   },
+   "mirror_options": "Mirror Offense and Events",
+   "mirror_direction": null,
+   "offenses_first_loop": false,
+   "offenses_second_loop": false
+  }
+ },
+ "ctx_compatible": {
+  "empty_ctx_no_mirroring_two_loops_offenses": {
+   "init_context": {},
+   "mirror_options": "No Mirroring",
+   "mirror_direction": null,
+   "offenses_first_loop": true,
+   "offenses_second_loop": true
+  },
+  "empty_ctx_mirror_offense_two_loops_offenses": {
+   "init_context": {},
+   "mirror_options": "Mirror Offense",
+   "mirror_direction": "In",
+   "offenses_first_loop": true,
+   "offenses_second_loop": true
+  },
+  "empty_ctx_mirror_offense_and_events_two_loops_offenses": {
+   "init_context": {},
+   "mirror_options": "Mirror Offense and Events",
+   "mirror_direction": "In",
+   "offenses_first_loop": true,
+   "offenses_second_loop": true
+  },
+  "no_mirroring_two_offenses_loop": {
+   "init_context": {
+    "id": "5",
+    "samples": "[]",
+    "last_mirror_update": "242123"
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "mirror_options": "No Mirroring",
+   "mirror_direction": null,
+   "offenses_first_loop": true,
+   "offenses_second_loop": true
+  },
+  "mirror_offense_two_offenses_loop": {
+   "init_context": {
+    "id": "5",
+    "samples": "[]",
+    "last_mirror_update": "242123"
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "mirror_options": "Mirror Offense",
+   "mirror_direction": null,
+   "offenses_first_loop": true,
+   "offenses_second_loop": true
+  },
+  "mirror_offense_and_events_two_offenses_loop": {
+   "init_context": {
+    "id": "5",
+    "samples": "[]",
+    "last_mirror_update": "242123"
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "mirror_options": "Mirror Offense and Events",
+   "mirror_direction": null,
+   "offenses_first_loop": true,
+   "offenses_second_loop": true
+  },
+  "empty_ctx_no_mirroring_first_loop_offenses": {
+   "init_context": {},
+   "mirror_options": "No Mirroring",
+   "mirror_direction": null,
+   "offenses_first_loop": true,
+   "offenses_second_loop": false
+  },
+  "empty_ctx_mirror_offense_first_loop_offenses": {
+   "init_context": {},
+   "mirror_options": "Mirror Offense",
+   "mirror_direction": "In",
+   "offenses_first_loop": true,
+   "offenses_second_loop": false
+  },
+  "empty_ctx_mirror_offense_and_events_first_loop_offenses": {
+   "init_context": {},
+   "mirror_options": "Mirror Offense and Events",
+   "mirror_direction": "In",
+   "offenses_first_loop": true,
+   "offenses_second_loop": false
+  },
+  "no_mirroring_first_offenses_loop": {
+   "init_context": {
+    "id": "5",
+    "samples": "[]",
+    "last_mirror_update": "242123"
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "mirror_options": "No Mirroring",
+   "mirror_direction": null,
+   "offenses_first_loop": true,
+   "offenses_second_loop": false
+  },
+  "mirror_offense_first_offenses_loop": {
+   "init_context": {
+    "id": "5",
+    "samples": "[]",
+    "last_mirror_update": "242123"
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "mirror_options": "Mirror Offense",
+   "mirror_direction": null,
+   "offenses_first_loop": true,
+   "offenses_second_loop": false
+  },
+  "mirror_offense_and_events_first_offenses_loop": {
+   "init_context": {
+    "id": "5",
+    "samples": "[]",
+    "last_mirror_update": "242123"
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "mirror_options": "Mirror Offense and Events",
+   "mirror_direction": null,
+   "offenses_first_loop": true,
+   "offenses_second_loop": false
+  },
+  "empty_ctx_no_mirroring_second_loop_offenses": {
+   "init_context": {},
+   "mirror_options": "No Mirroring",
+   "mirror_direction": null,
+   "offenses_first_loop": false,
+   "offenses_second_loop": true
+  },
+  "empty_ctx_mirror_offenses_second_loop_offenses": {
+   "init_context": {},
+   "mirror_options": "Mirror Offense",
+   "mirror_direction": "In",
+   "offenses_first_loop": false,
+   "offenses_second_loop": true
+  },
+  "empty_ctx_mirror_offenses_and_events_second_loop_offenses": {
+   "init_context": {},
+   "mirror_options": "Mirror Offense and Events",
+   "mirror_direction": "In",
+   "offenses_first_loop": false,
+   "offenses_second_loop": true
+  },
+  "no_mirroring_second_loop_offenses": {
+   "init_context": {
+    "id": "5",
+    "samples": "[]",
+    "last_mirror_update": "242123"
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\"",
+    "id": "5"
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "mirror_options": "No Mirroring",
+   "mirror_direction": null,
+   "offenses_first_loop": false,
+   "offenses_second_loop": true
+  },
+  "mirror_offenses_second_loop_offenses": {
+   "init_context": {
+    "id": "5",
+    "samples": "[]",
+    "last_mirror_update": "242123"
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\"",
+    "id": "5"
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "mirror_options": "Mirror Offense",
+   "mirror_direction": null,
+   "offenses_first_loop": false,
+   "offenses_second_loop": true
+  },
+  "mirror_offenses_and_events_second_loop_offenses": {
+   "init_context": {
+    "id": "5",
+    "samples": "[]",
+    "last_mirror_update": "242123"
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\"",
+    "id": "5"
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "mirror_options": "Mirror Offense and Events",
+   "mirror_direction": null,
+   "offenses_first_loop": false,
+   "offenses_second_loop": true
+  },
+  "empty_ctx_no_mirroring_no_loop_offenses": {
+   "init_context": {},
+   "mirror_options": "No Mirroring",
+   "mirror_direction": null,
+   "offenses_first_loop": false,
+   "offenses_second_loop": false
+  },
+  "empty_ctx_mirror_offenses_no_loop_offenses": {
+   "init_context": {},
+   "mirror_options": "Mirror Offense",
+   "mirror_direction": "In",
+   "offenses_first_loop": false,
+   "offenses_second_loop": false
+  },
+  "empty_ctx_mirror_offenses_and_events_no_loop_offenses": {
+   "init_context": {},
+   "mirror_options": "Mirror Offense and Events",
+   "mirror_direction": "In",
+   "offenses_first_loop": false,
+   "offenses_second_loop": false
+  },
+  "no_mirroring_no_loop_offenses": {
+   "init_context": {
+    "id": "5",
+    "samples": "[]",
+    "last_mirror_update": "242123"
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\"",
+    "id": "5"
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "mirror_options": "No Mirroring",
+   "mirror_direction": null,
+   "offenses_first_loop": false,
+   "offenses_second_loop": false
+  },
+  "mirror_offense_no_loop_offenses": {
+   "init_context": {
+    "id": "5",
+    "samples": "[]",
+    "last_mirror_update": "242123"
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\"",
+    "id": "5"
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "mirror_options": "Mirror Offense",
+   "mirror_direction": null,
+   "offenses_first_loop": false,
+   "offenses_second_loop": false
+  },
+  "mirror_offense_and_events_no_loop_offenses": {
+   "init_context": {
+    "id": "5",
+    "samples": "[]",
+    "last_mirror_update": "242123"
+   },
+   "first_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\"",
+    "id": "5"
+   },
+   "second_loop_ctx_not_default_values": {
+    "last_mirror_update": "\"242123\""
+   },
+   "mirror_options": "Mirror Offense and Events",
+   "mirror_direction": null,
+   "offenses_first_loop": false,
+   "offenses_second_loop": false
+  }
+ },
+ "offenses_first_loop": [
+  {
+   "username_count": 1,
+   "description": "Session Closed\n",
+   "rules": [
+    {
+     "id": 100405,
+     "type": "CRE_RULE"
+    }
+   ],
+   "event_count": 1,
+   "flow_count": 0,
+   "assigned_to": null,
+   "security_category_count": 1,
+   "follow_up": false,
+   "source_address_ids": [
+    10
+   ],
+   "source_count": 1,
+   "inactive": true,
+   "protected": false,
+   "closing_user": null,
+   "destination_networks": [
+    "Net-16-182-192.Net_182_10_0_0"
+   ],
+   "source_network": "other",
+   "category_count": 1,
+   "close_time": null,
+   "remote_destination_count": 0,
+   "start_time": 1613399051536,
+   "magnitude": 1,
+   "last_updated_time": 1613399051536,
+   "credibility": 2,
+   "id": 16,
+   "categories": [
+    "Session Closed"
+   ],
+   "severity": 2,
+   "policy_category_count": 0,
+   "log_sources": [
+    {
+     "type_name": "WindowsAuthServer",
+     "type_id": 12,
+     "name": "WindowsAuthServer @ 192.168.1.3",
+     "id": 112
+    }
+   ],
+   "closing_reason_id": null,
+   "device_count": 1,
+   "offense_type": 0,
+   "relevance": 0,
+   "domain_id": 0,
+   "offense_source": "192.168.1.3",
+   "local_destination_address_ids": [
+    1
+   ],
+   "local_destination_count": 1,
+   "status": "OPEN"
+  },
+  {
+   "username_count": 1,
+   "description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
+   "rules": [
+    {
+     "id": 100056,
+     "type": "CRE_RULE"
+    }
+   ],
+   "event_count": 15,
+   "flow_count": 0,
+   "assigned_to": null,
+   "security_category_count": 2,
+   "follow_up": false,
+   "source_address_ids": [
+    2,
+    1
+   ],
+   "source_count": 2,
+   "inactive": true,
+   "protected": false,
+   "closing_user": null,
+   "destination_networks": [
+    "Net-16-182-192.Net_182_10_0_0"
+   ],
+   "source_network": "Net-16-182-192.Net_182_10_0_0",
+   "category_count": 2,
+   "close_time": null,
+   "remote_destination_count": 0,
+   "start_time": 1613395296537,
+   "magnitude": 1,
+   "last_updated_time": 1613395306948,
+   "credibility": 2,
+   "id": 15,
+   "categories": [
+    "General Authentication Failed",
+    "User Login Failure"
+   ],
+   "severity": 3,
+   "policy_category_count": 0,
+   "log_sources": [
+    {
+     "type_name": "WindowsAuthServer",
+     "type_id": 12,
+     "name": "WindowsAuthServer @ 192.168.1.3",
+     "id": 112
+    },
+    {
+     "type_name": "EventCRE",
+     "type_id": 18,
+     "name": "Custom Rule Engine-8 :: ip-162-21-12-77",
+     "id": 63
+    }
+   ],
+   "closing_reason_id": null,
+   "device_count": 2,
+   "offense_type": 3,
+   "relevance": 0,
+   "domain_id": 0,
+   "offense_source": "yarden",
+   "local_destination_address_ids": [
+    1
+   ],
+   "local_destination_count": 1,
+   "status": "OPEN"
+  }
+ ],
+ "offenses_second_loop": [
+  {
+   "username_count": 1,
+   "description": "Session Closed\n",
+   "rules": [
+    {
+     "id": 100405,
+     "type": "CRE_RULE"
+    }
+   ],
+   "event_count": 1,
+   "flow_count": 0,
+   "assigned_to": null,
+   "security_category_count": 1,
+   "follow_up": false,
+   "source_address_ids": [
+    10
+   ],
+   "source_count": 1,
+   "inactive": true,
+   "protected": false,
+   "closing_user": null,
+   "destination_networks": [
+    "Net-16-182-192.Net_182_10_0_0"
+   ],
+   "source_network": "other",
+   "category_count": 1,
+   "close_time": null,
+   "remote_destination_count": 0,
+   "start_time": 1613399051536,
+   "magnitude": 1,
+   "last_updated_time": 1613399051536,
+   "credibility": 2,
+   "id": 18,
+   "categories": [
+    "Session Closed"
+   ],
+   "severity": 2,
+   "policy_category_count": 0,
+   "log_sources": [
+    {
+     "type_name": "WindowsAuthServer",
+     "type_id": 12,
+     "name": "WindowsAuthServer @ 192.168.1.3",
+     "id": 112
+    }
+   ],
+   "closing_reason_id": null,
+   "device_count": 1,
+   "offense_type": 0,
+   "relevance": 0,
+   "domain_id": 0,
+   "offense_source": "192.168.1.3",
+   "local_destination_address_ids": [
+    1
+   ],
+   "local_destination_count": 1,
+   "status": "OPEN"
+  },
+  {
+   "username_count": 1,
+   "description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
+   "rules": [
+    {
+     "id": 100056,
+     "type": "CRE_RULE"
+    }
+   ],
+   "event_count": 15,
+   "flow_count": 0,
+   "assigned_to": null,
+   "security_category_count": 2,
+   "follow_up": false,
+   "source_address_ids": [
+    2,
+    1
+   ],
+   "source_count": 2,
+   "inactive": true,
+   "protected": false,
+   "closing_user": null,
+   "destination_networks": [
+    "Net-16-182-192.Net_182_10_0_0"
+   ],
+   "source_network": "Net-16-182-192.Net_182_10_0_0",
+   "category_count": 2,
+   "close_time": null,
+   "remote_destination_count": 0,
+   "start_time": 1613395296537,
+   "magnitude": 1,
+   "last_updated_time": 1613395306948,
+   "credibility": 2,
+   "id": 19,
+   "categories": [
+    "General Authentication Failed",
+    "User Login Failure"
+   ],
+   "severity": 3,
+   "policy_category_count": 0,
+   "log_sources": [
+    {
+     "type_name": "WindowsAuthServer",
+     "type_id": 12,
+     "name": "WindowsAuthServer @ 192.168.1.3",
+     "id": 112
+    },
+    {
+     "type_name": "EventCRE",
+     "type_id": 18,
+     "name": "Custom Rule Engine-8 :: ip-162-21-12-77",
+     "id": 63
+    }
+   ],
+   "closing_reason_id": null,
+   "device_count": 2,
+   "offense_type": 3,
+   "relevance": 0,
+   "domain_id": 0,
+   "offense_source": "yarden",
+   "local_destination_address_ids": [
+    1
+   ],
+   "local_destination_count": 1,
+   "status": "OPEN"
+  }
+ ],
+ "events": [
+  {
+   "qidname_qid": "Success Audit: The Windows Filtering Platform has allowed a connection",
+   "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+   "categoryname_highlevelcategory": "Access",
+   "categoryname_category": "Access Permitted",
+   "sourceip": "192.168.0.1",
+   "sourceport": 546,
+   "destinationip": "192.168.0.2",
+   "destinationport": 547,
+   "qiddescription_qid": "Success Audit: The Windows Filtering Platform has allowed a connection.",
+   "username": null,
+   "protocolname_protocolid": "UDP",
+   "rulename_creEventList": [
+    "BB:ProtocolDefinition: Windows Protocols",
+    "Destination Asset Weight is Low",
+    "Source Asset Weight is Low",
+    "Fake port scan",
+    "BB:CategoryDefinition: Firewall or ACL Accept",
+    "Load Basic Building Blocks"
+   ],
+   "sourcegeographiclocation": "other",
+   "sourceMAC": "00:00:00:00:00:00",
+   "sourcev6": "ab12:1:4:1:106b:2121:xz15:361a",
+   "destinationgeographiclocation": "other",
+   "destinationv6": "ab13:1:1:1:126b:2121:qz55:361b",
+   "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+   "credibility": 5,
+   "severity": 0,
+   "magnitude": 1,
+   "eventcount": 2,
+   "eventDirection": "R2R",
+   "postNatDestinationIP": "0.0.0.0",
+   "postNatDestinationPort": 0,
+   "postNatSourceIP": "0.0.0.0",
+   "postNatSourcePort": 0,
+   "preNatDestinationPort": 0,
+   "preNatSourceIP": "0.0.0.0",
+   "preNatSourcePort": 0,
+   "starttime": 1614067175962,
+   "devicetime": 1614067166000
+  },
+  {
+   "qidname_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port",
+   "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+   "categoryname_highlevelcategory": "Access",
+   "categoryname_category": "Access Permitted",
+   "sourceip": "192.168.0.1",
+   "sourceport": 0,
+   "destinationip": "192.168.0.2",
+   "destinationport": 546,
+   "qiddescription_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port.",
+   "username": null,
+   "protocolname_protocolid": "UDP",
+   "rulename_creEventList": [
+    "BB:ProtocolDefinition: Windows Protocols",
+    "Destination Asset Weight is Low",
+    "Source Asset Weight is Low",
+    "Context is Remote to Local",
+    "Fake port scan",
+    "BB:CategoryDefinition: Firewall or ACL Accept",
+    "Load Basic Building Blocks"
+   ],
+   "sourcegeographiclocation": "other",
+   "sourceMAC": "00:00:00:00:00:00",
+   "sourcev6": "fb12:1:4:1:106b:2121:xz15:361a",
+   "destinationgeographiclocation": "other",
+   "destinationv6": "0:0:0:0:0:0:0:0",
+   "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+   "credibility": 5,
+   "severity": 0,
+   "magnitude": 2,
+   "eventcount": 1,
+   "eventDirection": "R2L",
+   "postNatDestinationIP": "0.0.0.0",
+   "postNatDestinationPort": 0,
+   "postNatSourceIP": "0.0.0.0",
+   "postNatSourcePort": 0,
+   "preNatDestinationPort": 0,
+   "preNatSourceIP": "0.0.0.0",
+   "preNatSourcePort": 0,
+   "starttime": 1614067175962,
+   "devicetime": 1614067163000
+  }
+ ],
+ "context_data_first_loop_default": {
+  "updated_mirrored_offenses": "[]",
+  "mirrored_offenses": "[]",
+  "resubmitted_mirrored_offenses": "[]",
+  "samples": "[\"{\\\"name\\\": \\\"16 Session Closed\\\\n\\\", \\\"rawJSON\\\": \\\"{\\\\\\\"username_count\\\\\\\": 1, \\\\\\\"description\\\\\\\": \\\\\\\"Session Closed\\\\\\\\n\\\\\\\", \\\\\\\"rules\\\\\\\": [{\\\\\\\"id\\\\\\\": 100405, \\\\\\\"type\\\\\\\": \\\\\\\"CRE_RULE\\\\\\\"}], \\\\\\\"event_count\\\\\\\": 1, \\\\\\\"flow_count\\\\\\\": 0, \\\\\\\"security_category_count\\\\\\\": 1, \\\\\\\"follow_up\\\\\\\": false, \\\\\\\"source_address_ids\\\\\\\": [10], \\\\\\\"source_count\\\\\\\": 1, \\\\\\\"inactive\\\\\\\": true, \\\\\\\"protected\\\\\\\": false, \\\\\\\"destination_networks\\\\\\\": [\\\\\\\"Net-16-182-192.Net_182_10_0_0\\\\\\\"], \\\\\\\"source_network\\\\\\\": \\\\\\\"other\\\\\\\", \\\\\\\"category_count\\\\\\\": 1, \\\\\\\"remote_destination_count\\\\\\\": 0, \\\\\\\"start_time\\\\\\\": \\\\\\\"2021-02-15T14:24:11.536000+00:00\\\\\\\", \\\\\\\"magnitude\\\\\\\": 1, \\\\\\\"last_updated_time\\\\\\\": \\\\\\\"2021-02-15T14:24:11.536000+00:00\\\\\\\", \\\\\\\"credibility\\\\\\\": 2, \\\\\\\"id\\\\\\\": 16, \\\\\\\"categories\\\\\\\": [\\\\\\\"Session Closed\\\\\\\"], \\\\\\\"severity\\\\\\\": 2, \\\\\\\"policy_category_count\\\\\\\": 0, \\\\\\\"log_sources\\\\\\\": [{\\\\\\\"type_name\\\\\\\": \\\\\\\"WindowsAuthServer\\\\\\\", \\\\\\\"type_id\\\\\\\": 12, \\\\\\\"name\\\\\\\": \\\\\\\"WindowsAuthServer @ 192.168.1.3\\\\\\\", \\\\\\\"id\\\\\\\": 112}], \\\\\\\"device_count\\\\\\\": 1, \\\\\\\"offense_type\\\\\\\": 0, \\\\\\\"relevance\\\\\\\": 0, \\\\\\\"domain_id\\\\\\\": 0, \\\\\\\"offense_source\\\\\\\": \\\\\\\"192.168.1.3\\\\\\\", \\\\\\\"local_destination_address_ids\\\\\\\": [1], \\\\\\\"local_destination_count\\\\\\\": 1, \\\\\\\"status\\\\\\\": \\\\\\\"OPEN\\\\\\\"}\\\", \\\"occurred\\\": \\\"2021-02-15T14:24:11.536000+00:00\\\", \\\"type\\\": null}\", \"{\\\"name\\\": \\\"15 Multiple Login Failures for the Same User\\\\n containing Failure Audit: The domain controller failed to validate the credentials for an account\\\\n\\\", \\\"rawJSON\\\": \\\"{\\\\\\\"username_count\\\\\\\": 1, \\\\\\\"description\\\\\\\": \\\\\\\"Multiple Login Failures for the Same User\\\\\\\\n containing Failure Audit: The domain controller failed to validate the credentials for an account\\\\\\\\n\\\\\\\", \\\\\\\"rules\\\\\\\": [{\\\\\\\"id\\\\\\\": 100056, \\\\\\\"type\\\\\\\": \\\\\\\"CRE_RULE\\\\\\\"}], \\\\\\\"event_count\\\\\\\": 15, \\\\\\\"flow_count\\\\\\\": 0, \\\\\\\"security_category_count\\\\\\\": 2, \\\\\\\"follow_up\\\\\\\": false, \\\\\\\"source_address_ids\\\\\\\": [2, 1], \\\\\\\"source_count\\\\\\\": 2, \\\\\\\"inactive\\\\\\\": true, \\\\\\\"protected\\\\\\\": false, \\\\\\\"destination_networks\\\\\\\": [\\\\\\\"Net-16-182-192.Net_182_10_0_0\\\\\\\"], \\\\\\\"source_network\\\\\\\": \\\\\\\"Net-16-182-192.Net_182_10_0_0\\\\\\\", \\\\\\\"category_count\\\\\\\": 2, \\\\\\\"remote_destination_count\\\\\\\": 0, \\\\\\\"start_time\\\\\\\": \\\\\\\"2021-02-15T13:21:36.537000+00:00\\\\\\\", \\\\\\\"magnitude\\\\\\\": 1, \\\\\\\"last_updated_time\\\\\\\": \\\\\\\"2021-02-15T13:21:46.948000+00:00\\\\\\\", \\\\\\\"credibility\\\\\\\": 2, \\\\\\\"id\\\\\\\": 15, \\\\\\\"categories\\\\\\\": [\\\\\\\"General Authentication Failed\\\\\\\", \\\\\\\"User Login Failure\\\\\\\"], \\\\\\\"severity\\\\\\\": 3, \\\\\\\"policy_category_count\\\\\\\": 0, \\\\\\\"log_sources\\\\\\\": [{\\\\\\\"type_name\\\\\\\": \\\\\\\"WindowsAuthServer\\\\\\\", \\\\\\\"type_id\\\\\\\": 12, \\\\\\\"name\\\\\\\": \\\\\\\"WindowsAuthServer @ 192.168.1.3\\\\\\\", \\\\\\\"id\\\\\\\": 112}, {\\\\\\\"type_name\\\\\\\": \\\\\\\"EventCRE\\\\\\\", \\\\\\\"type_id\\\\\\\": 18, \\\\\\\"name\\\\\\\": \\\\\\\"Custom Rule Engine-8 :: ip-162-21-12-77\\\\\\\", \\\\\\\"id\\\\\\\": 63}], \\\\\\\"device_count\\\\\\\": 2, \\\\\\\"offense_type\\\\\\\": 3, \\\\\\\"relevance\\\\\\\": 0, \\\\\\\"domain_id\\\\\\\": 0, \\\\\\\"offense_source\\\\\\\": \\\\\\\"yarden\\\\\\\", \\\\\\\"local_destination_address_ids\\\\\\\": [1], \\\\\\\"local_destination_count\\\\\\\": 1, \\\\\\\"status\\\\\\\": \\\\\\\"OPEN\\\\\\\"}\\\", \\\"occurred\\\": \\\"2021-02-15T13:21:36.537000+00:00\\\", \\\"type\\\": null}\"]",
+  "last_mirror_update": "\"0\"",
+  "id": "15"
+ },
+ "context_data_second_loop_default": {
+  "updated_mirrored_offenses": "[]",
+  "mirrored_offenses": "[]",
+  "resubmitted_mirrored_offenses": "[]",
+  "samples": "[\"{\\\"name\\\": \\\"18 Session Closed\\\\n\\\", \\\"rawJSON\\\": \\\"{\\\\\\\"username_count\\\\\\\": 1, \\\\\\\"description\\\\\\\": \\\\\\\"Session Closed\\\\\\\\n\\\\\\\", \\\\\\\"rules\\\\\\\": [{\\\\\\\"id\\\\\\\": 100405, \\\\\\\"type\\\\\\\": \\\\\\\"CRE_RULE\\\\\\\"}], \\\\\\\"event_count\\\\\\\": 1, \\\\\\\"flow_count\\\\\\\": 0, \\\\\\\"security_category_count\\\\\\\": 1, \\\\\\\"follow_up\\\\\\\": false, \\\\\\\"source_address_ids\\\\\\\": [10], \\\\\\\"source_count\\\\\\\": 1, \\\\\\\"inactive\\\\\\\": true, \\\\\\\"protected\\\\\\\": false, \\\\\\\"destination_networks\\\\\\\": [\\\\\\\"Net-16-182-192.Net_182_10_0_0\\\\\\\"], \\\\\\\"source_network\\\\\\\": \\\\\\\"other\\\\\\\", \\\\\\\"category_count\\\\\\\": 1, \\\\\\\"remote_destination_count\\\\\\\": 0, \\\\\\\"start_time\\\\\\\": \\\\\\\"2021-02-15T14:24:11.536000+00:00\\\\\\\", \\\\\\\"magnitude\\\\\\\": 1, \\\\\\\"last_updated_time\\\\\\\": \\\\\\\"2021-02-15T14:24:11.536000+00:00\\\\\\\", \\\\\\\"credibility\\\\\\\": 2, \\\\\\\"id\\\\\\\": 18, \\\\\\\"categories\\\\\\\": [\\\\\\\"Session Closed\\\\\\\"], \\\\\\\"severity\\\\\\\": 2, \\\\\\\"policy_category_count\\\\\\\": 0, \\\\\\\"log_sources\\\\\\\": [{\\\\\\\"type_name\\\\\\\": \\\\\\\"WindowsAuthServer\\\\\\\", \\\\\\\"type_id\\\\\\\": 12, \\\\\\\"name\\\\\\\": \\\\\\\"WindowsAuthServer @ 192.168.1.3\\\\\\\", \\\\\\\"id\\\\\\\": 112}], \\\\\\\"device_count\\\\\\\": 1, \\\\\\\"offense_type\\\\\\\": 0, \\\\\\\"relevance\\\\\\\": 0, \\\\\\\"domain_id\\\\\\\": 0, \\\\\\\"offense_source\\\\\\\": \\\\\\\"192.168.1.3\\\\\\\", \\\\\\\"local_destination_address_ids\\\\\\\": [1], \\\\\\\"local_destination_count\\\\\\\": 1, \\\\\\\"status\\\\\\\": \\\\\\\"OPEN\\\\\\\"}\\\", \\\"occurred\\\": \\\"2021-02-15T14:24:11.536000+00:00\\\", \\\"type\\\": null}\", \"{\\\"name\\\": \\\"19 Multiple Login Failures for the Same User\\\\n containing Failure Audit: The domain controller failed to validate the credentials for an account\\\\n\\\", \\\"rawJSON\\\": \\\"{\\\\\\\"username_count\\\\\\\": 1, \\\\\\\"description\\\\\\\": \\\\\\\"Multiple Login Failures for the Same User\\\\\\\\n containing Failure Audit: The domain controller failed to validate the credentials for an account\\\\\\\\n\\\\\\\", \\\\\\\"rules\\\\\\\": [{\\\\\\\"id\\\\\\\": 100056, \\\\\\\"type\\\\\\\": \\\\\\\"CRE_RULE\\\\\\\"}], \\\\\\\"event_count\\\\\\\": 15, \\\\\\\"flow_count\\\\\\\": 0, \\\\\\\"security_category_count\\\\\\\": 2, \\\\\\\"follow_up\\\\\\\": false, \\\\\\\"source_address_ids\\\\\\\": [2, 1], \\\\\\\"source_count\\\\\\\": 2, \\\\\\\"inactive\\\\\\\": true, \\\\\\\"protected\\\\\\\": false, \\\\\\\"destination_networks\\\\\\\": [\\\\\\\"Net-16-182-192.Net_182_10_0_0\\\\\\\"], \\\\\\\"source_network\\\\\\\": \\\\\\\"Net-16-182-192.Net_182_10_0_0\\\\\\\", \\\\\\\"category_count\\\\\\\": 2, \\\\\\\"remote_destination_count\\\\\\\": 0, \\\\\\\"start_time\\\\\\\": \\\\\\\"2021-02-15T13:21:36.537000+00:00\\\\\\\", \\\\\\\"magnitude\\\\\\\": 1, \\\\\\\"last_updated_time\\\\\\\": \\\\\\\"2021-02-15T13:21:46.948000+00:00\\\\\\\", \\\\\\\"credibility\\\\\\\": 2, \\\\\\\"id\\\\\\\": 19, \\\\\\\"categories\\\\\\\": [\\\\\\\"General Authentication Failed\\\\\\\", \\\\\\\"User Login Failure\\\\\\\"], \\\\\\\"severity\\\\\\\": 3, \\\\\\\"policy_category_count\\\\\\\": 0, \\\\\\\"log_sources\\\\\\\": [{\\\\\\\"type_name\\\\\\\": \\\\\\\"WindowsAuthServer\\\\\\\", \\\\\\\"type_id\\\\\\\": 12, \\\\\\\"name\\\\\\\": \\\\\\\"WindowsAuthServer @ 192.168.1.3\\\\\\\", \\\\\\\"id\\\\\\\": 112}, {\\\\\\\"type_name\\\\\\\": \\\\\\\"EventCRE\\\\\\\", \\\\\\\"type_id\\\\\\\": 18, \\\\\\\"name\\\\\\\": \\\\\\\"Custom Rule Engine-8 :: ip-162-21-12-77\\\\\\\", \\\\\\\"id\\\\\\\": 63}], \\\\\\\"device_count\\\\\\\": 2, \\\\\\\"offense_type\\\\\\\": 3, \\\\\\\"relevance\\\\\\\": 0, \\\\\\\"domain_id\\\\\\\": 0, \\\\\\\"offense_source\\\\\\\": \\\\\\\"yarden\\\\\\\", \\\\\\\"local_destination_address_ids\\\\\\\": [1], \\\\\\\"local_destination_count\\\\\\\": 1, \\\\\\\"status\\\\\\\": \\\\\\\"OPEN\\\\\\\"}\\\", \\\"occurred\\\": \\\"2021-02-15T13:21:36.537000+00:00\\\", \\\"type\\\": null}\"]",
+  "last_mirror_update": "\"0\"",
+  "id": "19"
+ },
+ "context_data_after_retry_compatible": {
+  "id": "0",
+  "last_mirror_update": "\"0\"",
+  "mirrored_offenses": "[]",
+  "resubmitted_mirrored_offenses": "[]",
+  "samples": "[]",
+  "updated_mirrored_offenses": "[]"
+ }
+}

@@ -125,7 +125,7 @@ def add_existing_private_packs_from_index(metadata_files, changed_pack_id):
     Returns:
         private_packs (list): The modified list of private packs, including the added pack.
     """
-    private_packs = []
+    private_packs: list = []
     for metadata_file_path in metadata_files:
         # Adding all the existing private packs, already found in the index
         logging.info(f'Getting existing metadata files from the index, in path: {metadata_file_path}')
@@ -158,7 +158,7 @@ def get_existing_private_packs_metadata_paths(private_index_path):
     return metadata_files
 
 
-def get_private_packs(private_index_path: str, pack_names: set = set(),
+def get_private_packs(private_index_path: str, pack_names: set = None,
                       extract_destination_path: str = '') -> list:
     """Gets a list of private packs, that will later be added to index.json.
 
@@ -170,7 +170,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
 
     private_metadata_paths = get_existing_private_packs_metadata_paths(private_index_path)
     # In the private build, there is always exactly one modified pack
-    changed_pack_id = list(pack_names)[0] if len(pack_names) > 0 else ''
+    changed_pack_id = list(pack_names)[0] if pack_names and len(pack_names) > 0 else ''
     private_packs = add_existing_private_packs_from_index(private_metadata_paths, changed_pack_id)
     private_packs = add_changed_private_pack(private_packs, extract_destination_path, changed_pack_id)
 
@@ -240,6 +240,7 @@ def should_upload_core_packs(storage_bucket_name: str) -> bool:
     return not (is_private_storage_bucket or is_private_ci_bucket)
 
 
+# pylint: disable=R0911
 def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bucket: Any, index_folder_path: str,
                                        packs_dependencies_mapping: dict, private_bucket_name: str, storage_base_path,
                                        private_storage_bucket: bool = None,
@@ -331,9 +332,8 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, enc_key,
+    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, enc_key,
                                                private_artifacts_dir, secondary_enc_key)
-
     if not task_status:
         pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
         pack.cleanup()
@@ -505,7 +505,7 @@ def main():
     # detect packs to upload
     pack_names = get_packs_names(target_packs)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
-    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
+    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name), 'xsoar') for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     if not is_private_build:
@@ -524,7 +524,7 @@ def main():
         private_packs = []
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket, storage_base_path)
+    clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket, storage_base_path, {})
     # starting iteration over packs
     for pack in packs_list:
         create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, index_folder_path,

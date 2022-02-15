@@ -1,16 +1,20 @@
 {
-  "name": "F5 firewall",
-  "description": "Manages F5 firewall rules",
-  "support": "xsoar",
-  "currentVersion": "1.2.5",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Network Security"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "F5 firewall",
+    "description": "Manages F5 firewall rules",
+    "support": "xsoar",
+    "currentVersion": "1.2.9",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

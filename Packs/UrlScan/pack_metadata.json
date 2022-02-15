@@ -2,7 +2,7 @@
     "name": "URLScan.io",
     "description": "urlscan.io Web Threat Intelligence",
     "support": "partner",
-    "currentVersion": "1.1.12",
+    "currentVersion": "1.1.15",
     "author": "urlscan GmbH",
     "url": "https://urlscan.io",
     "email": "support@urlscan.io",
@@ -27,5 +27,9 @@
         "web",
         "brand impersonation"
     ],
-    "dependencies": {}
+    "dependencies": {},
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

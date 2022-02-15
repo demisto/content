@@ -2,7 +2,7 @@
     "name": "BlockList DE Feed",
     "description": "Indicators feed from BlockList DE",
     "support": "xsoar",
-    "currentVersion": "1.1.8",
+    "currentVersion": "1.1.13",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,5 +15,9 @@
     "keywords": [
         "BlockList DE",
         "Feed"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

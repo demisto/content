@@ -8,19 +8,19 @@ configuration:
   name: url
   required: true
   type: 0
-- display: ID (received from the admin consent - see Detailed Instructions (?)
-  name: auth_id
-  required: true
-  type: 4
-- display: Token (received from the admin consent - see Detailed Instructions (?)
-    section)
-  name: tenant_id
-  required: true
-  type: 4
-- display: Key (received from the admin consent - see Detailed Instructions (?)
-  name: enc_key
-  required: true
-  type: 4
+- display: ID
+  name: _auth_id
+  required: false
+  type: 0
+- display: Token
+  name: _tenant_id
+  required: false
+  type: 0
+- displaypassword: Key
+  name: credentials
+  required: false
+  type: 9
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -33,6 +33,25 @@ configuration:
   name: self_deployed
   required: false
   type: 8
+- display: Key (received from the admin consent - see Detailed Instructions (?) (Deprecated)
+  name: enc_key
+  required: false
+  type: 4
+  hidden: true
+  additionalinfo: Use the "Key" parameter instead.
+- display: ID (received from the admin consent - see Detailed Instructions (?) (Deprecated)
+  name: auth_id
+  required: false
+  type: 4
+  hidden: true
+  additionalinfo: Use the "ID" parameter instead
+- display: Token (received from the admin consent - see Detailed Instructions (?) (Deprecated)
+    section)
+  name: tenant_id
+  required: false
+  type: 4
+  hidden: true
+  additionalinfo: Use the "Token" parameter instead.
 description: Microsoft Graph Groups enables you to create and manage different types
   of groups and group functionality according to your requirements.
 display: Azure Active Directory Groups
@@ -136,7 +155,7 @@ script:
       description: 'Specifies the visibility of an Office 365 group. Can be: "Private",
         "Public", or "Hiddenmembership". Blank values are treated as public.'
       type: String
-    - contextPath: MSGraphGroup.NextLink
+    - contextPath: MSGraphGroupsNextLink.GroupsNextLink
       description: The URL of the next results page.
       type: String
   - arguments:
@@ -410,6 +429,9 @@ script:
     - contextPath: MSGraphGroups.Members.ID
       description: The unique identifier for the user.
       type: String
+    - contextPath: MSGraphGroups.MembersNextLink
+      description: The URL to the next results page.
+      type: String
   - arguments:
     - default: false
       description: The group ID.
@@ -444,7 +466,7 @@ script:
     description: Removes a member from a group.
     execution: false
     name: msgraph-groups-remove-member
-  dockerimage: demisto/crypto:1.0.0.24037
+  dockerimage: demisto/crypto:1.0.0.24380
   isfetch: false
   longRunning: false
   longRunningPort: false

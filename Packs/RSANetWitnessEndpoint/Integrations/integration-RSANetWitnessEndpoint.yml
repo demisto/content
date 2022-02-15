@@ -1202,8 +1202,8 @@ script:
       description: 'Comma separated IP addresses '
     outputs:
     - contextPath: NetWitness.Blacklist.IPs
-      description: IPs blacklisted successfully
-    description: Add a list of IP addresses to blacklist
+      description: IPs block listed successfully
+    description: Add a list of IP addresses to block list
   - name: netwitness-blacklist-domains
     arguments:
     - name: domains
@@ -1212,9 +1212,9 @@ script:
       description: Comma separated list of domains
     outputs:
     - contextPath: NetWitness.Blacklist.Domains
-      description: Domains blacklisted successfully
-    description: 'Add a list of domains to blacklist '
-  dockerimage: demisto/python:2.7.18.24066
+      description: Domains block listed successfully
+    description: 'Add a list of domains to block list '
+  dockerimage: demisto/python:2.7.18.24398
 tests:
 - NetWitness Endpoint Test
 fromversion: 5.0.0

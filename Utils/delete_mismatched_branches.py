@@ -2,7 +2,7 @@
 
 import gitlab
 from github import Github
-from github_workflow_scripts.utils import timestamped_print, get_env_var
+from Utils.github_workflow_scripts.utils import timestamped_print, get_env_var
 
 
 # ANSI Colors

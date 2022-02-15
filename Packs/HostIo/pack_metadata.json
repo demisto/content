@@ -2,14 +2,18 @@
     "name": "HostIo",
     "description": "Enrich domains using the host.io API.",
     "support": "xsoar",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-       "Data Enrichment & Threat Intelligence"
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

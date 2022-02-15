@@ -2,16 +2,22 @@
     "name": "PICUS",
     "description": "Picus is Breach and Attack Simulation tools.",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Murat Ozfidan",
     "url": "",
     "email": "",
     "created": "2021-02-16T12:21:20Z",
-    "categories": [],
+    "categories": [
+        "Network Security"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [
         "muratozfidan"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

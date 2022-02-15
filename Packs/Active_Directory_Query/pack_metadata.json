@@ -2,7 +2,7 @@
     "name": "Active Directory Query",
     "description": "Active Directory Query integration enables you to access and manage Active Directory objects (users, contacts, and computers).",
     "support": "xsoar",
-    "currentVersion": "1.3.7",
+    "currentVersion": "1.4.5",
     "author": "Cortex XSOAR",
     "url": "",
     "email": "",
@@ -44,5 +44,9 @@
             "mandatory": false,
             "display_name": "Microsoft Graph Mail"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

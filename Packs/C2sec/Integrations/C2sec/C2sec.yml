@@ -193,4 +193,4 @@ script:
       type: string
     description: Query Data for specific component for companies in the portfolio
   runonce: false
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399

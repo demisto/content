@@ -1815,7 +1815,7 @@ script:
         - contextPath: CarbonBlackEEDR.SearchProcess.results.scriptload_count
           description: The cumulative count of loaded scripts since process tracking started.
           type: Number
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: true
   longRunning: false

@@ -1,4 +1,25 @@
-﻿This Script prevents creation of incidents with the same GIB ID, by checking if there is an existing incident with ANY status
-and the same GIB ID. This script returns False if there is an existing incident with the same GIB ID as the 
-incoming incident, and updates the existing incident with the fields of the incoming one. 
-If there is no such incident, the script returns True.
+This script prevents duplication of existing incidents.
+
+## Permissions
+---
+
+This automation runs using the default Limited User role, unless you explicitly change the permissions.
+For more information, see the section about permissions here: [https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html)
+
+## Script Data
+---
+
+| **Name** | **Description** |
+| --- | --- |
+| Script Type | python3 |
+| Tags | preProcessing |
+| Cortex XSOAR Version | 6.0.0 |
+
+## Inputs
+---
+There are no inputs for this script.
+
+## Outputs
+---
+There are no outputs for this script.

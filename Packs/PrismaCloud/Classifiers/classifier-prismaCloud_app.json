@@ -2,7 +2,7 @@
   	"id": "prismaCloud_app",
     "name": "Prisma Cloud App - Classifier",
     "type": "classification",
-    "description": "Classifies Prisma Cloud events.",
+    "description": "Classifies incoming Prisma Cloud events that are pushed into Cortex XSOAR through the Prisma Cloud App add-on.",
 	"fromVersion": "6.0.0",
 	"defaultIncidentType": "",
 	"keyTypeMap": {

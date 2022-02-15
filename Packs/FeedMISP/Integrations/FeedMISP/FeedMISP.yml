@@ -13,6 +13,12 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
+- display: Timeout
+  name: timeout
+  defaultvalue: "60"
+  type: 0
+  required: false
+  additionalinfo: The timeout of the HTTP requests sent to the MISP API (in seconds). If no value is provided, the timeout will be set to 60 seconds.
 - display: Fetch indicators
   name: feed
   required: false
@@ -81,20 +87,20 @@ configuration:
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
 - display: MISP Attribute Tags
-  additionalinfo: Attribute tags to get. You can enter a comma-separated list of tags, 
-    for example <tag1>,<tag2>,<tag3>. The list of MISP tags can be found in your MISP instance then 'Event Actions'>'List Tags'
+  additionalinfo: Attributes having one of the tags, or being an attribute of an event having one of the tags, will be returned. You can enter a comma-separated list of tags,
+    for example <tag1>,<tag2>,<tag3>. The list of MISP tags can be found in your MISP instance under 'Event Actions'>'List Tags'
   name: attribute_tags
   required: false
   type: 0
 - display: MISP Attribute Types
-  additionalinfo: Attribute types to get. You can enter a comma-separated list of types, 
+  additionalinfo: Attributes of one of these types will be returned. You can enter a comma-separated list of types,
     for example <type1>,<type2>,<type3>. The list of MISP types can be found in your MISP instance then 'Event Actions'>'Search Attributes'>'Type dropdown list'
   name: attribute_types
   required: false
   type: 0
 - display: Query
   additionalinfo: JSON query to filter MISP attributes. When the query parameter is used
-    Attribute Types and Attribute Tags parameters are not used. You can find the query syntax in the link provided in the integration's help.
+    Attribute Types and Attribute Tags parameters are not used. You can find the query syntax in the link provided in the integration documentation.
   name: query
   required: false
   type: 12
@@ -136,19 +142,19 @@ script:
       required: false
       secret: false
     - name: tags
-      description: Tags of the attributes to search for.
+      description: Attributes having one of the tags, or being an attribute of an event having one of the tags, will be returned. You can enter a comma-separated list of tags, for example <tag1>,<tag2>,<tag3>. The list of MISP tags can be found in your MISP instance under 'Event Actions'>'List Tags'
       isArray: false
       default: false
       required: false
       secret: false
     - name: attribute_type
-      description: Types of the attributes to search for.
+      description: Attributes of one of these types will be returned. You can enter a comma-separated list of types, for example <type1>,<type2>,<type3>. The list of MISP types can be found in your MISP instance under 'Event Actions'>'Search Attributes'>'Type dropdown list'
       isArray: false
       default: false
       required: false
       secret: false
     - name: query
-      description: JSON query to filter MISP attributes. When query argument is used
+      description: JSON query to filter MISP attributes. When the query argument is used,
         attribute_type and tags arguments are not used. You can check for the correct
         syntax at https://<Your MISP url>/servers/openapi#operation/restSearchAttributes
       isArray: false
@@ -165,7 +171,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.1.25933
 fromversion: 5.5.0
 tests:
 - MISPfeed Test

@@ -1,18 +1,22 @@
 {
-  "name": "Check Point Sandblast Appliance",
-  "description": "Query, upload and download data using Check Point Sandblast on local gateway.",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Forensics & Malware Analysis"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": [
-    "checkpoint"
-  ]
+    "name": "Check Point Sandblast Appliance",
+    "description": "Query, upload and download data using Check Point Sandblast on local gateway.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Forensics & Malware Analysis"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "checkpoint"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

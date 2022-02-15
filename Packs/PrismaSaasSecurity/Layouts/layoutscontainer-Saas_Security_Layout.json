@@ -28,15 +28,6 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "severity",
-                                "height": 22,
-                                "id": "incident-severity-field",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "owner",
                                 "height": 22,
                                 "id": "incident-owner-field",
@@ -82,18 +73,27 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "itemowner",
-                                "height": 22,
-                                "id": "251bfc00-0999-11ec-b39d-d7a2d3b2c97a",
+                                "fieldId": "saassecurityincidentseveritylevel",
+                                "height": 53,
+                                "id": "27a6ba10-6cf8-11ec-a92c-e96e9e41083c",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "saassecurityassetowner",
+                                "height": 53,
+                                "id": "6a7c0170-6e55-11ec-bd52-4bc31e059b51",
                                 "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "itemowneremail",
-                                "height": 22,
-                                "id": "2cc5ce90-0999-11ec-b39d-d7a2d3b2c97a",
+                                "fieldId": "saassecurityassetowneremail",
+                                "height": 53,
+                                "id": "6e4676f0-6e55-11ec-bd52-4bc31e059b51",
                                 "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -534,6 +534,17 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "saassecurityasseturl",
+                                "height": 53,
+                                "id": "417a1bf0-46d6-11ec-a2fc-a7b522c8a67e",
+                                "index": 1,
+                                "listId": "caseinfoid-56502550-2c33-11ec-890f-9fd8e3babc6e",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "endCol": 2,
                                 "fieldId": "saassecurityremediationtype",
                                 "height": 22,
@@ -568,7 +579,7 @@
                                 "height": 44,
                                 "id": "07fd7c90-2c33-11ec-890f-9fd8e3babc6e",
                                 "index": 3,
-                                "name": "Run Remidiate Asset Command",
+                                "name": "Run Remediate Asset Command",
                                 "scriptId": "SaasSecurity|||saas-security-asset-remediate",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -578,7 +589,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Remidiation Action",
+                        "name": "Remediation Action",
                         "static": false,
                         "w": 1,
                         "x": 1,

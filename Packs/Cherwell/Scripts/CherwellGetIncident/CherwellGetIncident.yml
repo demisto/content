@@ -57,7 +57,7 @@ tags: [Cherwell]
 dependson:
   must:
   - Cherwell|||cherwell-get-business-object
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.9.8.24399
 subtype: python3
 tests:
 - Cherwell Example Scripts - test

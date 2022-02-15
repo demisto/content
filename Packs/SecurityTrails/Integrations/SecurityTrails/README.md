@@ -1,4 +1,5 @@
 This integration provides API access to the SecurityTrails platform.
+This integration was integrated and tested with V1 of SecurityTrails
 
 ## Configure SecurityTrails on Cortex XSOAR
 
@@ -43,6 +44,14 @@ Returns child and sibling subdomains for a given hostname.
 | Domain.Subdomains | string | Subdomains | 
 | SecurityTrails.Domain.subdomain_count | number | Subdomain Count | 
 
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
 ### securitytrails-get-domain-details
 ***
 Returns the current data about the given hostname. In addition to the current data, you also get the current statistics associated with a particular record. For example, for a records you'll get how many other hostnames have the same IP.
@@ -71,6 +80,13 @@ Returns the current data about the given hostname. In addition to the current da
 | Domain.NameServers | string | Name servers | 
 
 
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
 ### securitytrails-get-tags
 ***
 Returns tags for a given hostname
@@ -94,6 +110,14 @@ Returns tags for a given hostname
 | SecurityTrails.Domain.tags | unknown | Domain tags | 
 | Domain.Name | string | Domain name | 
 | Domain.Tags | string | Domain tags | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
 
 ### securitytrails-get-company-details
 ***
@@ -121,6 +145,14 @@ Returns details for a company domain.
 | Domain.Registrant.Name | string | Domain registrant name | 
 | WHOIS.Registrant.Name | string | Domain registrant name | 
 
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
 ### securitytrails-get-company-associated-ips
 ***
 Returns associated IPs for a company domain. The data is based on whois data with the names matched to the domains.
@@ -143,6 +175,14 @@ Returns associated IPs for a company domain. The data is based on whois data wit
 | SecurityTrails.Domain.name | string | Domain name | 
 | SecurityTrails.Domain.assocaitedips | unknown | Associated IPs | 
 | SecurityTrails.Domain.assocaitedip_count | number | Associated IP Count | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
 
 ### securitytrails-get-domain-whois
 ***
@@ -205,6 +245,13 @@ Returns the current WHOIS data about a given hostname with the stats merged toge
 | Domain.WHOIS.UpdatedDate | date | Updated date | 
 
 
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
 ### securitytrails-get-dns-history
 ***
 Lists out specific historical information about the given hostname parameter. In addition of fetching the historical data for a particular type, the count statistic is returned as well, which represents the number of that particular resource against current data.
@@ -247,6 +294,13 @@ Lists out specific historical information about the given hostname parameter. In
 | SecurityTrails.Domain.ns_history_record_pages | number | NS record pages count | 
 | SecurityTrails.Domain.soa_history_record_pages | number | SOA record pages count | 
 | SecurityTrails.Domain.txt_history_record_pages | number | TXT record pages count | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
 
 
 ### securitytrails-get-whois-history
@@ -310,6 +364,13 @@ Returns historical WHOIS information about the given domain.
 | Domain.WHOIS/History.UpdatedDate | date | Updated date | 
 
 
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
 ### securitytrails-get-ip-neighbors
 ***
 Returns the neighbors in any given IP level range and essentially allows you to explore closeby IP addresses. It will divide the range into 16 groups. Example: a /28 would be divided into 16 /32 blocks or a /24 would be divided into 16 /28 blocks
@@ -335,6 +396,14 @@ Returns the neighbors in any given IP level range and essentially allows you to 
 | SecurityTrails.IP.block.ports | number | Port | 
 | SecurityTrails.IP.block.sites | number | Sites | 
 | IP.Address | string | Address | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
 
 ### securitytrails-search-domain
 ***
@@ -369,6 +438,13 @@ Filter and search specific records using DSL - a powerful SQL like query interfa
 | SecurityTrails.Domain.Search.whois.registrar | string | Registrar | 
 
 
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
 ### securitytrails-statistics-domain
 ***
 Domain statistics
@@ -396,6 +472,14 @@ Domain statistics
 | SecurityTrails.Domain.Search.DomainStats.top_organizations.count | number | Count | 
 | SecurityTrails.Domain.Search.DomainStats.top_organizations.key | string | Key | 
 | SecurityTrails.Domain.Search.DomainStats.whois_organization_count | number | WHOIS count | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
 
 ### securitytrails-get-associated-domains
 ***
@@ -427,6 +511,14 @@ Find all domains that are related to a hostname you input. Limited to 10000 resu
 | SecurityTrails.Domain.associated_domains.whois.registrar | string | Registrar | 
 | SecurityTrails.Domain.associated_domain_count | number | Associated Domain Count | 
 
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
 ### securitytrails-search-ip
 ***
 Search for IP addresses. A maximum of 10000 results can be retrieved.
@@ -455,6 +547,14 @@ Search for IP addresses. A maximum of 10000 results can be retrieved.
 | IP.Hostname | string | Hostname | 
 | IP.Ports | string | Ports | 
 
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
 ### securitytrails-statistics-ip
 ***
 Statistics like Reverse DNS pattern identification (RDNS entries are grouped and displayed as x), ports (number of open ports found) or total results are returned
@@ -480,6 +580,14 @@ Statistics like Reverse DNS pattern identification (RDNS entries are grouped and
 | SecurityTrails.IP.Search.IPStats.top_ptr_patterns.key | string | Key | 
 | SecurityTrails.IP.Search.IPStats.total.relation | string | Relation | 
 | SecurityTrails.IP.Search.IPStats.total.value | number | Value | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
 
 ### securitytrails-get-ip-whois
 ***
@@ -507,6 +615,14 @@ Returns IPs information based on whois information.
 | SecurityTrails.IP.contacts.type | string | Type | 
 | SecurityTrails.IP.ip | string | IP | 
 | SecurityTrails.IP.source | string | Source | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
 
 ### securitytrails-get-useragents
 ***
@@ -546,6 +662,14 @@ Fetch user agents seen during the last 30 days for a specific IPv4 address. It s
 | SecurityTrails.IP.useragents.os_family | string | OS Family | 
 | SecurityTrails.IP.useragents.user_agent | string | User Agent | 
 
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
 ### domain
 ***
 Provides data enrichment for domains.
@@ -563,4 +687,113 @@ Provides data enrichment for domains.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Domain.Name | String | The domain name, for example: "google.com". | 
+| Domain.DNS | String | A list of IP objects resolved by DNS. | 
+| Domain.DomainStatus | Datte | The status of the domain. | 
+| Domain.NameServers | Unknown | \(List&lt;String&gt;\) Name servers of the domain. | 
+| Domain.Organization | String | The organization of the domain. | 
+| Domain.Subdomains | Unknown | \(List&lt;String&gt;\) Subdomains of the domain. | 
+| Domain.Admin.Country | String | The country of the domain administrator. | 
+| Domain.Admin.Email | String | The email address of the domain administrator. | 
+| Domain.Admin.Name | String | The name of the domain administrator. | 
+| Domain.Admin.Phone | String | The phone number of the domain administrator. | 
+| Domain.Registrant.Country | String | The country of the registrant. | 
+| Domain.Registrant.Email | String | The email address of the registrant. | 
+| Domain.Registrant.Name | String | The name of the registrant. | 
+| Domain.Registrant.Phone | String | The phone number for receiving abuse reports. | 
+| Domain.Tags | Unknown | \(List\) Tags of the domain. | 
+| Domain.WHOIS.DomainStatus | String | The status of the domain. | 
+| Domain.WHOIS.NameServers | String | \(List&lt;String&gt;\) Name servers of the domain. | 
+| Domain.WHOIS.CreationDate | Date | The date that the domain was created. | 
+| Domain.WHOIS.UpdatedDate | Date | The date that the domain was last updated. | 
+| Domain.WHOIS.ExpirationDate | Date | The expiration date of the domain. | 
+| Domain.WHOIS.Registrant.Name | String | The name of the registrant. | 
+| Domain.WHOIS.Registrant.Email | String | The email address of the registrant. | 
+| Domain.WHOIS.Registrant.Phone | String | The phone number of the registrant. | 
+| Domain.WHOIS.Registrar.Name | String | The name of the registrar, for example: \`GoDaddy\` | 
+| Domain.WHOIS.Registrar.Email | String | The email address of the contact. | 
+| Domain.WHOIS.Registrar.Phone | String | The phone number of contact. | 
+| Domain.WHOIS.Admin.Name | String | The name of the domain administrator. | 
+| Domain.WHOIS.Admin.Email | String | The email address of the domain administrator. | 
+| Domain.WHOIS.Admin.Phone | String | The phone number of the domain administrator. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### securitytrails-sql-query
+***
+Queries the SecurityTrails SQL endpoint. The SecurityTrails SQL API provides a powerful SQL-like query interface to data via certain API endpoints. For a full reference of properties and operators please check the following link: https://securitytrails.com/reference/sql
+
+
+#### Base Command
+
+`securitytrails-sql-query`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sql | The SQL query to execute (example: SELECT attribute FROM table WHERE condition = "value"). Possible values are: . | Required | 
+| timeout | Read timeout for calls (default is 20 seconds). Possible values are: . Default is 20. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Securitytrails.SQL.total | Number | The total number of hits discovered | 
+| Securitytrails.SQL.records | Unknown | The records returned | 
+| Securitytrails.SQL.id | String | The ID to use for further GET calls to retrieve more results | 
+| Securitytrails.SQL.query | String | The original query used | 
+| Securitytrails.SQL.pages | Number | The total number of pages that would need to be called to retrieve the rest of the results | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### securitytrails-sql-get-next
+***
+Retrieves the next page of results returned from a SQL query where the results exceeded the last page.
+
+
+#### Base Command
+
+`securitytrails-sql-get-next`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID to use to retrieve the next page of results. Possible values are: . | Required | 
+| timeout | Read timeout for calls (default is 20 seconds). Possible values are: . Default is 20. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Securitytrails.SQL.total | number | The total number of hits discovered | 
+| Securitytrails.SQL.records | unknown | The records returned | 
+| Securitytrails.SQL.id | string | The ID to use for further GET calls to retrieve more results | 
+| Securitytrails.SQL.query | string | The original query used | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+

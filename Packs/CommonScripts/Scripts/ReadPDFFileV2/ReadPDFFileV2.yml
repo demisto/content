@@ -18,7 +18,8 @@ args:
   name: maxImages
   required: false
   secret: false
-comment: Load a PDF file's content and metadata into context.
+comment: |-
+  Load a PDF file's content and metadata into context.
 commonfields:
   id: ReadPDFFileV2
   version: -1
@@ -128,6 +129,7 @@ timeout: '0'
 type: python
 dockerimage: demisto/readpdf:1.0.0.24272
 runonce: false
+runas: DBotRole
 tests:
 - Extract Indicators From File - Generic v2 - Test
 - ReadPDFFileV2-Test

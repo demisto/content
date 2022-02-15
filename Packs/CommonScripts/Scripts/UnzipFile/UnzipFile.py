@@ -99,6 +99,8 @@ def extract(file_info, dir_path, zip_tool='7z', password=None):
     stdout = ''
     if '.rar' in file_name and sys.version_info > (3, 0):
         stdout = extract_using_unrar(file_path, dir_path, password=password)
+    elif '.tar' in file_name:
+        stdout = extract_using_tarfile(file_path, dir_path, file_name)
     else:
         if zip_tool == '7z':
             stdout = extract_using_7z(file_path, dir_path, password=password)
@@ -133,6 +135,21 @@ def extract_using_unrar(file_path, dir_path, password=None):
             return_error("The .rar file provided requires a password.")
         else:
             return_error(str(stderr))
+    return stdout
+
+
+def extract_using_tarfile(file_path: str, dir_path: str, file_name: str) -> str:
+    if '.tar.gz' in file_name:
+        cmd = 'tar -xzvf {} -C {}'.format(file_path, dir_path)
+    elif file_name.endswith('.tar'):
+        cmd = 'tar -xf {} -C {}'.format(file_path, dir_path)
+    process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+    stdout, stderr = process.communicate()
+    stdout = str(stdout)
+    if stderr:
+        return_error(str(stderr))
+    if "Errors" in stdout:
+        return_error(f"Couldn't extract the file {file_name}.")
     return stdout
 
 

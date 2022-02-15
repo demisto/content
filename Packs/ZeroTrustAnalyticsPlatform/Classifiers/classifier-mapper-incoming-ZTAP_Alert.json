@@ -1,0 +1,109 @@
+{
+    "name": "ZeroTrustAnalyticsPlatform - Incoming Mapper",
+    "defaultIncidentType": "ZTAP Alert",
+    "type": "mapping-incoming",
+    "id": "ZeroTrustAnalyticsPlatform - Incoming Mapper",
+    "description": "Maps incoming ZeroTrustAnalyticsPlatform incidents fields.",
+    "mapping": {
+        "ZTAP Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "ZTAP Triggers": {
+                    "complex": null,
+                    "simple": "xsoar_trigger_events"
+                },
+                "ZTAP Source Organization": {
+                    "complex": null,
+                    "simple": "organization.name"
+                },
+                "ZTAP Assigned Organization": {
+                    "complex": null,
+                    "simple": "assigned_group.organization.name"
+                },
+                "ZTAP Trigger Count": {
+                    "complex": null,
+                    "simple": "event_counts_by_tier.tier1"
+                },
+                "ZTAP Input Tag": {
+                    "complex": null,
+                    "simple": "xsoar_input_tag"
+                },
+                "ZTAP Alert ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "ZTAP Status": {
+                    "complex": null,
+                    "simple": "status"
+                },
+                "ZTAP Priority": {
+                    "complex": null,
+                    "simple": "priority.name"
+                },
+                "ZTAP Product Status": {
+                    "complex": null,
+                    "simple": "trigger.product_detail.status_display"
+                },
+                "dbotMirrorId": {
+                    "complex": null,
+                    "simple": "xsoar_mirror_id"
+                },
+                "dbotMirrorDirection": {
+                    "complex": null,
+                    "simple": "xsoar_mirror_direction"
+                },
+                "dbotMirrorInstance": {
+                    "complex": null,
+                    "simple": "xsoar_mirror_instance"
+                },
+                "dbotMirrorLastSync": {
+                    "complex": null,
+                    "simple": "xsoar_mirror_last_sync"
+                },
+                "dbotMirrorTags": {
+                    "complex": null,
+                    "simple": "xsoar_mirror_tags"
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "trigger.datetime_created"
+                },
+                "owner": {
+                    "complex": null,
+                    "simple": "owner"
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "numeric_indicator",
+                        "filters": [],
+                        "root": "priority",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "0,1,2,3,4"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "None,low,medium,high,critical"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

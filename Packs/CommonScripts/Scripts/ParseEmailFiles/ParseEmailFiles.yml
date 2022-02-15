@@ -19,6 +19,14 @@ args:
   name: forced_encoding
   description: Use only the force encoding when parsing the message, e.g 'iso-2022-jp'.
     Relevant to msg files only.
+- auto: PREDEFINED
+  defaultValue: "All files"
+  description: In case of nested email files (for instance, an EML file inside an EML file), determines which of the email files to return as an output.
+  name: nesting_level_to_return
+  predefined:
+  - "All files"
+  - "Outer file"
+  - "Inner file"
 - required: false
   name: default_encoding
   description: Use only the default encoding when parsing the message with the detected
@@ -93,6 +101,18 @@ outputs:
   description: A unique string assigned by the mail system when the message is first
     created. These can easily be forged. (e.g. 5c530c1b.1c69fb81.bd826.0eff@mx.google.com)
   type: String
+- contextPath: Email.AttachmentsData.Name
+  description: The name of the attachment
+  type: String
+- contextPath: Email.AttachmentsData.Content-ID
+  description: The content-id of the attachment
+  type: String
+- contextPath: Email.AttachmentsData.Content-Disposition
+  description: The content-disposition of the attachment
+  type: String
+- contextPath: Email.AttachmentsData.FilePath
+  description: The location of the attachment, on the XSOAR server
+  type: String
 - contextPath: Email.AttachmentNames
   description: The list of attachment names in the email
   type: string
@@ -113,4 +133,4 @@ type: python
 fromversion: 5.0.0
 tests:
 - ParseEmailFiles-test
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python:2.7.18.24398

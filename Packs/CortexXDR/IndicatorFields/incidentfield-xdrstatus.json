@@ -19,7 +19,6 @@
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "selectValues": [
-        "",
         "enabled",
         "disabeld"
     ],

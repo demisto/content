@@ -1665,21 +1665,21 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Lists all whitelisted IP addresses for a policy.
+    description: Lists all IP addresses on allow list for a policy.
     execution: false
     name: f5-asm-policy-whitelist-ips-list
     outputs:
     - contextPath: f5.WhitelistIP.id
-      description: The ID of the whitelisted IP address.
+      description: The ID of the IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.ipAddress
-      description: The whitelisted IP address.
+      description: The IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.ipMask
-      description: The subnet mask of the whitelisted IP address.
+      description: The subnet mask of the IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.description
-      description: The description for the whitelisted IP address.
+      description: The description for the IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.blockRequests
       description: How or if the IP blocks requests.
@@ -1697,7 +1697,7 @@ script:
       description: Whether the IP is trusted by the builder.
       type: Boolean
     - contextPath: f5.WhitelistIP.selfLink
-      description: The self link to the specific whitelisted IP.
+      description: The self link to the specific IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.lastUpdateMicros
       description: The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
@@ -1790,21 +1790,21 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds a new whitelisted IP address to a policy.
+    description: Adds a new IP address on allow list to a policy.
     execution: false
     name: f5-asm-policy-whitelist-ips-add
     outputs:
     - contextPath: f5.WhitelistIP.id
-      description: ID of the whitelisted IP address.
+      description: ID of the IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.ipAddress
-      description: The whitelisted IP address.
+      description: The IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.ipMask
-      description: The subnet mask of the whitelisted IP address.
+      description: The subnet mask of the IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.description
-      description: A description for the whitelisted IP address.
+      description: A description for the IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.blockRequests
       description: How or if the IP blocks requests.
@@ -1822,7 +1822,7 @@ script:
       description: Whether the IP address is trusted by the builder.
       type: Boolean
     - contextPath: f5.WhitelistIP.selfLink
-      description: The self link to the specific whitelisted IP.
+      description: The self link to the specific IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.lastUpdateMicros
       description: The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
@@ -1916,21 +1916,21 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates an existing whitelisted IP address.
+    description: Updates an existing IP address on allow list.
     execution: false
     name: f5-asm-policy-whitelist-ips-update
     outputs:
     - contextPath: f5.WhitelistIP.id
-      description: The ID of the whitelisted IP address.
+      description: The ID of the IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.ipAddress
-      description: The whitelisted IP address.
+      description: The IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.ipMask
-      description: The subnet mask of the whitelisted IP address.
+      description: The subnet mask of the IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.description
-      description: A description for the whitelisted IP address.
+      description: A description for the IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.blockRequests
       description: How or if the IP address blocks requests.
@@ -1948,7 +1948,7 @@ script:
       description: Whether the IP address is trusted by the builder.
       type: Boolean
     - contextPath: f5.WhitelistIP.selfLink
-      description: The self link to the specific whitelisted IP.
+      description: The self link to the specific IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.lastUpdateMicros
       description: The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
@@ -1974,21 +1974,21 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes an existing whitelisted IP address from a policy.
+    description: Deletes an existing IP address on allow list from a policy.
     execution: false
     name: f5-asm-policy-whitelist-ips-delete
     outputs:
     - contextPath: f5.WhitelistIP.id
-      description: The ID of the whitelisted IP address.
+      description: The ID of the IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.ipAddress
-      description: The whitelisted IP address.
+      description: The IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.ipMask
-      description: The subnet mask of the whitelisted IP address.
+      description: The subnet mask of the IP address on allow lists.
       type: String
     - contextPath: f5.WhitelistIP.description
-      description: A description for the whitelisted IP address.
+      description: A description for the IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.blockRequests
       description: How or if the IP address blocks requests.
@@ -2006,7 +2006,7 @@ script:
       description: Whether the IP address is trusted by the builder.
       type: Boolean
     - contextPath: f5.WhitelistIP.selfLink
-      description: The self link to the specific whitelisted IP.
+      description: The self link to the specific IP address on allow list.
       type: String
     - contextPath: f5.WhitelistIP.lastUpdateMicros
       description: The datetime of the last update represented in micro seconds since 1970-01-01 00:00:00 GMT (Unix epoch). For example, 1519382317000000 is Friday, 23 February 2018 10:38:37.
@@ -3633,7 +3633,7 @@ script:
     - contextPath: f5.Policy.md5
       description: The MD5 hash of the policy.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
   longRunning: false

@@ -43,7 +43,7 @@ script:
   script: ''
   type: python
   subtype: python2
-  dockerimage: demisto/python:2.7.18.24066
+  dockerimage: demisto/python:2.7.18.24398
   commands:
   - name: canarytools-list-canaries
     arguments: []
@@ -113,30 +113,30 @@ script:
       description: IP address
       type: string
     - contextPath: CanaryTools.IP.Port
-      description: Destination port for the IP whitelist
+      description: Destination port for the IP allow list
       type: string
     - contextPath: CanaryTools.IP.Whitelisted
-      description: Is the IP address whitelisted (true/false)
+      description: Is the IP address on allow list (true/false)
       type: boolean
-    description: Checks whether a given IP address and port are whitelisted.
+    description: Checks whether a given IP address and port are on allow list.
   - name: canarytools-whitelist-ip
     arguments:
     - name: ip
       required: true
-      description: IP address to whitelist
+      description: IP address to add to allow list
     - name: port
-      description: Destination port to whitelist
+      description: Destination port to add to allow list
     outputs:
     - contextPath: CanaryTools.IP.Address
       description: IP address
       type: string
     - contextPath: CanaryTools.IP.Port
-      description: Destination port for the IP whitelist
+      description: Destination port for the IP allow list
       type: string
     - contextPath: CanaryTools.IP.Whitelisted
-      description: Is the IP address whitelisted (True/False)
+      description: Is the IP address on allow list (True/False)
       type: boolean
-    description: Adds an IP address to the whitelist in Canary
+    description: Adds an IP address to the allow list in Canary
   - name: canarytools-edit-alert-status
     arguments:
     - name: alert_id

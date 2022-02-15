@@ -1,0 +1,679 @@
+id: Test-AnsibleKubernetes
+version: -1
+name: Test-AnsibleKubernetes
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 047c8653-c78b-4616-85d4-812277824fcc
+    type: start
+    task:
+      id: 047c8653-c78b-4616-85d4-812277824fcc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ad85cca6-6881-4933-8c64-a1e42b295639
+    type: regular
+    task:
+      id: ad85cca6-6881-4933-8c64-a1e42b295639
+      version: -1
+      name: Delete TestingPlaybook NS
+      description: |-
+        Manage Kubernetes (K8s) objects
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/k8s_module.html
+      script: '|||k8s-k8s'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      api_version: {}
+      append_hash: {}
+      apply: {}
+      force: {}
+      kind:
+        simple: namespace
+      merge_type: {}
+      name:
+        simple: testingplaybook
+      namespace: {}
+      resource_definition: {}
+      state:
+        simple: absent
+      validate: {}
+      wait:
+        simple: "Yes"
+      wait_condition: {}
+      wait_sleep: {}
+      wait_timeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 0d42743d-47d1-487b-888b-81bae16ae867
+    type: title
+    task:
+      id: 0d42743d-47d1-487b-888b-81bae16ae867
+      version: -1
+      name: Deploy app
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 90e8d4d8-fb6a-45f3-8753-73ec1919364b
+    type: regular
+    task:
+      id: 90e8d4d8-fb6a-45f3-8753-73ec1919364b
+      version: -1
+      name: k8s-k8s (Deployment)
+      description: |-
+        Manage Kubernetes (K8s) objects
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/k8s_module.html
+      script: '|||k8s-k8s'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      api_version: {}
+      append_hash: {}
+      apply: {}
+      force: {}
+      kind: {}
+      merge_type: {}
+      name: {}
+      namespace:
+        simple: testingplaybook
+      resource_definition:
+        simple: |-
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: nginx-deployment
+            labels:
+              app: nginx
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: nginx
+            template:
+              metadata:
+                labels:
+                  app: nginx
+              spec:
+                containers:
+                - name: nginx
+                  image: nginx:1.14.2
+                  ports:
+                  - containerPort: 80
+      state: {}
+      validate: {}
+      wait:
+        simple: "Yes"
+      wait_condition: {}
+      wait_sleep: {}
+      wait_timeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 9aa4c75a-8d4e-4069-8bae-1709deec0d02
+    type: condition
+    task:
+      id: 9aa4c75a-8d4e-4069-8bae-1709deec0d02
+      version: -1
+      name: Check k8s-k8s (Deployment)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Kubernetes.K8S.[1].result.status.availableReplicas
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 5b263707-2f31-4dfe-8ad6-988f0fdd41eb
+    type: regular
+    task:
+      id: 5b263707-2f31-4dfe-8ad6-988f0fdd41eb
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 916d36ab-db3f-4335-8699-84c0c38027d1
+    type: condition
+    task:
+      id: 916d36ab-db3f-4335-8699-84c0c38027d1
+      version: -1
+      name: Check k8s-k8s (Namespace)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Kubernetes.K8S.[0].result.status.phase
+            iscontext: true
+          right:
+            value:
+              simple: Active
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: c4313626-4994-4169-81ad-aba10fce1185
+    type: regular
+    task:
+      id: c4313626-4994-4169-81ad-aba10fce1185
+      version: -1
+      name: k8s-scale
+      description: |-
+        Set a new size for a Deployment, ReplicaSet, Replication Controller, or Job.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/k8s_scale_module.html
+      script: '|||k8s-scale'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      api_version: {}
+      current_replicas: {}
+      kind:
+        simple: Deployment
+      name:
+        simple: nginx-deployment
+      namespace:
+        simple: testingplaybook
+      replicas:
+        simple: "3"
+      resource_definition: {}
+      resource_version: {}
+      wait: {}
+      wait_timeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 3355a8f3-e955-4565-8bf9-8039472acf84
+    type: condition
+    task:
+      id: 3355a8f3-e955-4565-8bf9-8039472acf84
+      version: -1
+      name: Check k8s-scale
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Kubernetes.K8SScale.[0].result.status.availableReplicas
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 6f31e829-d10a-43d7-8667-cba443c3aa49
+    type: regular
+    task:
+      id: 6f31e829-d10a-43d7-8667-cba443c3aa49
+      version: -1
+      name: k8s-info
+      description: |-
+        Describe Kubernetes (K8s) objects
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/k8s_info_module.html
+      script: '|||k8s-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      api_version: {}
+      field_selectors: {}
+      kind:
+        simple: Deployment
+      label_selectors: {}
+      name:
+        simple: nginx-deployment
+      namespace:
+        simple: testingplaybook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 490498ee-c08f-42a3-8594-3dfd9591b185
+    type: regular
+    task:
+      id: 490498ee-c08f-42a3-8594-3dfd9591b185
+      version: -1
+      name: k8s-service
+      description: |-
+        Manage Services on Kubernetes
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/k8s_service_module.html
+      script: '|||k8s-service'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      force: {}
+      merge_type: {}
+      name:
+        simple: nginx-svc
+      namespace:
+        simple: testingplaybook
+      ports:
+        simple: '{{ [{''port'': 80, ''protocol'': ''TCP''}] }}'
+      resource_definition: {}
+      selector:
+        simple: '{''app'': ''nginx''}'
+      state: {}
+      type:
+        simple: ClusterIP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: fa771bdd-9330-4da5-8e17-56260b857b5d
+    type: condition
+    task:
+      id: fa771bdd-9330-4da5-8e17-56260b857b5d
+      version: -1
+      name: Check k8s-service
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Kubernetes.K8SService.[0].result.spec.clusterIP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 8f045439-3ae2-486a-873c-4b347b5afe75
+    type: title
+    task:
+      id: 8f045439-3ae2-486a-873c-4b347b5afe75
+      version: -1
+      name: |
+        Cleanup
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 148150a8-4da9-4554-8305-8c27f9125293
+    type: regular
+    task:
+      id: 148150a8-4da9-4554-8305-8c27f9125293
+      version: -1
+      name: k8s-k8s (namespace)
+      description: |-
+        Manage Kubernetes (K8s) objects
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/k8s_module.html
+      script: '|||k8s-k8s'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      api_version: {}
+      append_hash: {}
+      apply: {}
+      force: {}
+      kind:
+        simple: namespace
+      merge_type: {}
+      name:
+        simple: testingplaybook
+      namespace: {}
+      resource_definition: {}
+      state:
+        simple: present
+      validate: {}
+      wait:
+        simple: "Yes"
+      wait_condition: {}
+      wait_sleep: {}
+      wait_timeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 0da21638-365e-43bc-887c-15b9341e2dea
+    type: condition
+    task:
+      id: 0da21638-365e-43bc-887c-15b9341e2dea
+      version: -1
+      name: Check k8s-info
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Kubernetes.K8SInfo.[0].resources
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 889af84f-0f4b-4820-8dee-8f194160856b
+    type: regular
+    task:
+      id: 889af84f-0f4b-4820-8dee-8f194160856b
+      version: -1
+      name: Delete testingplaybook NS
+      description: |-
+        Manage Kubernetes (K8s) objects
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/k8s_module.html
+      script: '|||k8s-k8s'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      api_version: {}
+      append_hash: {}
+      apply: {}
+      force: {}
+      kind:
+        simple: namespace
+      merge_type: {}
+      name:
+        simple: testingplaybook
+      namespace: {}
+      resource_definition: {}
+      state:
+        simple: absent
+      validate: {}
+      wait:
+        simple: "Yes"
+      wait_condition: {}
+      wait_sleep: {}
+      wait_timeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2630,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+description: Test playbook for Ansible Kubernetes

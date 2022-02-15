@@ -1,5 +1,11 @@
 This widget script generates a map of the Open Expanse Issue Incidents with provider On Prem. The map is generated as a static PNG file embedded in Markdown.
 
+## Permissions
+---
+
+This automation runs using the default Limited User role, unless you explicitly change the permissions.
+For more information, see the section about permissions here: [https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html)
 
 ## Script Data
 ---

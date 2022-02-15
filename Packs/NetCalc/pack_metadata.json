@@ -1,0 +1,20 @@
+{
+    "name": "Network Calculator",
+    "description": "A pack that contains a script to help you automation use cases that require some ip calculations",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ayman Mahmoud",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

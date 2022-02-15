@@ -1,0 +1,18 @@
+{
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('useremail')/messages('someID')/attachments",
+    "value": [
+        {
+            "@odata.mediaContentType": "application/octet-stream",
+            "@odata.type": "#microsoft.graph.fileAttachment",
+            "contentBytes": "Example",
+            "contentId": "f_kwui26rt0",
+            "contentLocation": null,
+            "contentType": "application/octet-stream",
+            "id": "someID",
+            "isInline": false,
+            "lastModifiedDateTime": "2021-12-06T09:57:52Z",
+            "name": "someName",
+            "size": 474482
+        }
+    ]
+}

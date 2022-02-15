@@ -13,7 +13,7 @@ from utils import get_env_var, timestamped_print
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
-REVIEWERS = ['ShacharKidor', 'iyeshaya', 'daryakoval']
+REVIEWERS = ['bziser', 'GuyAfik', 'yucohen']
 MARKETPLACE_CONTRIBUTION_PR_AUTHOR = 'xsoar-bot'
 WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
               'wizard @{selected_reviewer} will very shortly look over your proposed changes.'
@@ -44,13 +44,13 @@ def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
         pr_labels = [label.name.casefold() for label in pull.labels]
         if label_to_consider not in pr_labels:
             continue
-        assignees = set([assignee.login for assignee in pull.assignees])
+        assignees = {assignee.login for assignee in pull.assignees}
         requested_reviewers, _ = pull.get_review_requests()
-        requested_reviewers = set([requested_reviewer.login for requested_reviewer in requested_reviewers])
-        combined_list = assignees.union(requested_reviewers)
+        reviewers_info = {requested_reviewer.login for requested_reviewer in requested_reviewers}
+        combined_list = assignees.union(reviewers_info)
         for reviewer in potential_reviewers:
             if reviewer in combined_list:
-                assigned_prs_per_potential_reviewer[reviewer] = assigned_prs_per_potential_reviewer.get(reviewer) + 1
+                assigned_prs_per_potential_reviewer[reviewer] = assigned_prs_per_potential_reviewer.get(reviewer, 0) + 1
     selected_reviewer = sorted(assigned_prs_per_potential_reviewer, key=assigned_prs_per_potential_reviewer.get)[0]
     return selected_reviewer
 

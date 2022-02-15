@@ -508,7 +508,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-    description: Gets a list of indicators that the user’s company has whitelisted.
+    description: Gets a list of indicators that the user’s company has added to allow list.
   - name: trustar-get-reports
     arguments:
     - name: from_time
@@ -828,8 +828,8 @@ script:
       required: true
       default: true
       isArray: true
-      description: CSV of indicators to whitelist, i.e. evil.com,101.43.52.224
-    description: Whitelist a list of indicator values for the user’s company.
+      description: CSV of indicators to add to allow list, i.e. evil.com,101.43.52.224
+    description: Add to allow list a list of indicator values for the user’s company.
   - name: trustar-remove-from-whitelist
     arguments:
     - name: indicator
@@ -851,7 +851,7 @@ script:
       - CVE
       - REGISTRY_KEY
       description: The type of the indicator to delete.
-    description: Delete an indicator from the user’s company whitelist.
+    description: Delete an indicator from the user’s company allow list.
   - name: trustar-get-phishing-submissions
     arguments:
     - name: priority_event_score

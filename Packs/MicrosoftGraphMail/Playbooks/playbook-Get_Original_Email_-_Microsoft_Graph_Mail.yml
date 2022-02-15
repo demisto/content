@@ -1,0 +1,359 @@
+id: Get Original Email - Microsoft Graph Mail
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Get Original Email - Microsoft Graph Mail
+description: |-
+  This playbook retrieves the original email using the Microsoft Graph Mail integration.
+  Note: You must have the necessary permissions in the Microsoft Graph Mail integration as described in the [message-get API](https://docs.microsoft.com/en-us/graph/api/message-get) and the [user-list-messages API](https://docs.microsoft.com/en-us/graph/api/user-list-messages)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5607d1c6-85b0-4181-8b10-bb3a5b113c6f
+    type: start
+    task:
+      id: 5607d1c6-85b0-4181-8b10-bb3a5b113c6f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d2eca123-db35-4b27-88d8-a8b77ffd6784
+    type: title
+    task:
+      id: d2eca123-db35-4b27-88d8-a8b77ffd6784
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 0db04b60-0358-4214-851a-42598fa48cd3
+    type: condition
+    task:
+      id: 0db04b60-0358-4214-851a-42598fa48cd3
+      version: -1
+      name: Is Microsoft Graph Mail enabled?
+      description: Returns 'yes' if an integration brand is available.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "14"
+    scriptarguments:
+      brandname:
+        simple: MicrosoftGraphMail
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: bac1f73e-786c-4ec4-8334-748fab110af7
+    type: regular
+    task:
+      id: bac1f73e-786c-4ec4-8334-748fab110af7
+      version: -1
+      name: Search for messages by MessageID
+      description: Gets the properties of returned emails. Typically shows partial
+        results. Use the "page_size" and "pages_to_pull" arguments to get all results.
+      script: MicrosoftGraphMail|||msgraph-mail-list-emails
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphMail
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      pages_to_pull:
+        complex:
+          root: inputs.PagesToPull
+      search:
+        simple: subject:${inputs.ThreadTopic}
+      user_id:
+        complex:
+          root: inputs.UserID
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: b22d3fc0-5801-4c61-8b57-87dfc491682e
+    type: condition
+    task:
+      id: b22d3fc0-5801-4c61-8b57-87dfc491682e
+      version: -1
+      name: Was a matching email found?
+      description: Verifies that an email object with a message ID that matches the
+        InReplyTo ID of the forwarded email was found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "Yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MSGraphMail.InternetMessageID
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: MSGraphMail.InternetMessageID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.MessageID
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: ca359a26-a418-44a6-86f9-4b9cee53dfaa
+    type: regular
+    task:
+      id: ca359a26-a418-44a6-86f9-4b9cee53dfaa
+      version: -1
+      name: Get original email
+      description: Retrieves an email message by message ID and uploads the content
+        as an EML file.
+      script: MicrosoftGraphMail|||msgraph-mail-get-email-as-eml
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphMail
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      message_id:
+        complex:
+          root: MSGraphMail
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: MSGraphMail.InternetMessageID
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.MessageID
+                iscontext: true
+          accessor: ID
+          transformers:
+          - operator: StripChars
+            args:
+              chars:
+                value:
+                  simple: <>
+          - operator: uniq
+      user_id:
+        complex:
+          root: inputs.UserID
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 015f4932-563b-458f-8009-e7daafc60547
+    type: condition
+    task:
+      id: 015f4932-563b-458f-8009-e7daafc60547
+      version: -1
+      name: Verify required inputs
+      description: Verifies that the required input values exist for retrieving the
+        original email.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.UserID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.MessageID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.ThreadTopic
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_14_yes": 0.57,
+      "10_2_#default#": 0.31,
+      "12_13_Yes": 0.58,
+      "12_2_#default#": 0.78,
+      "14_11_yes": 0.59,
+      "14_2_#default#": 0.37
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1495,
+        "width": 380,
+        "x": -20,
+        "y": 160
+      }
+    }
+  }
+inputs:
+- key: UserID
+  value: {}
+  required: false
+  description: The email address of the reporting user.
+  playbookInputQuery:
+- key: MessageID
+  value: {}
+  required: false
+  description: The InReplyTo header in the forwarded email.
+  playbookInputQuery:
+- key: ThreadTopic
+  value: {}
+  required: false
+  description: The ThreadTopic header in the forwarded email.
+  playbookInputQuery:
+- key: PagesToPull
+  value:
+    simple: "10"
+  required: false
+  description: The number of pages of emails to return (maximum is 10 emails per page).
+  playbookInputQuery:
+outputs:
+- contextPath: File
+  description: The original email as an EML file.
+  type: string
+tests:
+- Get Original Email - Microsoft Graph Mail - test
+fromversion: 6.0.0

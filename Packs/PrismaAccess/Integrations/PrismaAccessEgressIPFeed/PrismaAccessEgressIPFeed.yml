@@ -4,7 +4,7 @@ commonfields:
 name: Prisma Access Egress IP feed
 display: Prisma Access Egress IP feed
 category: Data Enrichment & Threat Intelligence
-description: Dynamically retrieve and whitelist IPs Prisma Access uses to egress traffic
+description: Dynamically retrieve and add to allow list IPs Prisma Access uses to egress traffic
   to the internet and SaaS apps.
 configuration:
 - display: Fetch indicators
@@ -17,12 +17,11 @@ configuration:
   defaultvalue: https://api.gpcloudservice.com
   type: 0
   required: true
-- display: Prisma Access API Key
-  name: api_key
-  type: 4
-  required: true
-  additionalinfo: The Prisma Access API Key to use (retrieve via Panorama->Service
-    Setup->Egress IP API)
+- displaypassword: Prisma Access API Key
+  name: credentials
+  required: false
+  type: 9
+  hiddenusername: true
 - display: Service Type
   name: serviceType
   defaultvalue: all
@@ -130,6 +129,13 @@ configuration:
   name: feedTags
   required: false
   type: 0
+- display: Prisma Access API Key (Deprecated)
+  name: api_key
+  type: 4
+  required: false
+  hidden: true
+  additionalinfo: The Prisma Access API Key to use (retrieve via Panorama->Service
+    Setup->Egress IP API)
 script:
   script: ''
   type: python
@@ -147,7 +153,7 @@ script:
       description: Prisma Access Egress IP zone
       type: string
     description: Gets indicators from the feed.
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: true
   runonce: false
   subtype: python3

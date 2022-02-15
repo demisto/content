@@ -128,9 +128,9 @@ Creates an exclusion item that matches the specified input filter.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SentinelOne.Exclusions.ID | string | The whitelisted entity ID. | 
-| SentinelOne.Exclusions.Type | string | The whitelisted item type. | 
-| SentinelOne.Exclusions.CreatedAt | date | Time when the whitelist item was created. | 
+| SentinelOne.Exclusions.ID | string | The entity ID on allow list. | 
+| SentinelOne.Exclusions.Type | string | The item type on allow list. | 
+| SentinelOne.Exclusions.CreatedAt | date | Time when the allow list item was created. | 
 
 
 ### sentinelone-get-white-list

@@ -1,4 +1,4 @@
-Use the Zscaler integration to block manage domains using whitelists and blacklists..
+Use the Zscaler Internet Access integration to block manage domains using allow lists and block lists.
 
 For the integration to work properly, the Zscaler user must have admin permissions.
 
@@ -6,16 +6,16 @@ Category ID is the same as the category name, except all letters are capitalized
 
 A custom category ID has the format `CUSTOM_01`, which is not indicative of the category. Use the `zscaler-get-categories` command to get a custom category and its configured name.
 
-## Configure Zscaler on Cortex XSOAR
+## Configure Zscaler Internet Access on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Zscaler.
+2. Search for Zscaler Internet Access.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | cloud | Cloud Name \(i.e., https://admin.zscalertwo.net\) | True |
-| credentials | Credentials | True |
+| credentials | Username | True |
 | key | API Key | True |
 | auto_logout | Auto Logout | False |
 | auto_activate | Auto Activate Changes | False |
@@ -28,7 +28,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### zscaler-blacklist-url
 ***
-Adds the specified URLs to the blacklist.
+Adds the specified URLs to the block list.
 
 
 #### Base Command
@@ -38,7 +38,7 @@ Adds the specified URLs to the blacklist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A comma-separated list of URLs to blacklist. For example, snapchat.com,facebook.com. | Required | 
+| url | A comma-separated list of URLs to block list. For example, snapchat.com,facebook.com. | Required | 
 
 
 #### Context Output
@@ -49,7 +49,7 @@ There is no context output for this command.
 ```!zscaler-blacklist-url url=phishing.com,malware.net```
 
 #### Human Readable Output
-Added the following URLs to the blacklist successfully:
+Added the following URLs to the block list successfully:
 phishing.com
 malware.net
 
@@ -176,7 +176,7 @@ Looks up the classification for each of the specified IP addresses.
 
 ### zscaler-undo-blacklist-url
 ***
-Removes the specified URLs from the blacklist.
+Removes the specified URLs from the block list.
 
 
 #### Base Command
@@ -186,7 +186,7 @@ Removes the specified URLs from the blacklist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A comma-separated list of URLs to remove from the blacklist. For example, snapchat.com,facebook.com. | Required | 
+| url | A comma-separated list of URLs to remove from the block list. For example, snapchat.com,facebook.com. | Required | 
 
 
 #### Context Output
@@ -196,7 +196,7 @@ There is no context output for this command.
 
 ### zscaler-whitelist-url
 ***
-Adds the specified URLs to the whitelist.
+Adds the specified URLs to the allow list.
 
 
 #### Base Command
@@ -206,7 +206,7 @@ Adds the specified URLs to the whitelist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A comma-separated list of URLs to add to the whitelist. For example, snapchat.com,facebook.com. | Required | 
+| url | A comma-separated list of URLs to add to the allow list. For example, snapchat.com,facebook.com. | Required | 
 
 
 #### Context Output
@@ -217,14 +217,14 @@ There is no context output for this command.
 ```!zscaler-whitelist-url url=phising.com,malware.net```
 
 #### Human Readable Output
-Added the following URLs to the whitelist successfully:
+Added the following URLs to the allow list successfully:
 phishing.com
 malware.net
 
 
 ### zscaler-undo-whitelist-url
 ***
-Removes the specified URLs from the whitelist.
+Removes the specified URLs from the allow list.
 
 
 #### Base Command
@@ -234,7 +234,7 @@ Removes the specified URLs from the whitelist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A comma-separated list of URLs to remove from the whitelist. For example, snapchat.com,facebook.com. | Required | 
+| url | A comma-separated list of URLs to remove from the allow list. For example, snapchat.com,facebook.com. | Required | 
 
 
 #### Context Output
@@ -245,14 +245,14 @@ There is no context output for this command.
 ```!zscaler-undo-whitelist-url url=phising.com,malware.net```
 
 #### Human Readable Output
-Removed the following URLs from the whitelist successfully:
+Removed the following URLs from the allow list successfully:
 phishing.com
 malware.net
 
 
 ### zscaler-undo-whitelist-ip
 ***
-Removes the specified IP addresses from the whitelist.
+Removes the specified IP addresses from the allow list.
 
 
 #### Base Command
@@ -262,7 +262,7 @@ Removes the specified IP addresses from the whitelist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | A comma-separated list of IP addresses to remove from the whitelist. For example, 8.8.8.8,1.2.3.4. | Required | 
+| ip | A comma-separated list of IP addresses to remove from the allow list. For example, 8.8.8.8,1.2.3.4. | Required | 
 
 
 #### Context Output
@@ -273,14 +273,14 @@ There is no context output for this command.
 ```!zscaler-undo-whitelist-ip ip=2.2.2.2,3.3.3.3```
 
 #### Human Readable Output
-Removed the following IP addresses from the whitelist successfully:
+Removed the following IP addresses from the allow list successfully:
 2.2.2.2
 3.3.3.3
 
 
 ### zscaler-whitelist-ip
 ***
-Adds the specified IP address to the whitelist.
+Adds the specified IP address to the allow list.
 
 
 #### Base Command
@@ -290,7 +290,7 @@ Adds the specified IP address to the whitelist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | A comma-separated list of IP addresses to add to the whitelist. For example, 8.8.8.8,1.2.3.4. | Required | 
+| ip | A comma-separated list of IP addresses to add to the allow list. For example, 8.8.8.8,1.2.3.4. | Required | 
 
 
 #### Context Output
@@ -301,13 +301,13 @@ There is no context output for this command.
 ```!zscaler-whitelist-ip ip=2.2.2.2,3.3.3.3```
 
 #### Human Readable Output
-Added the following IP addresses to the whitelist successfully:
+Added the following IP addresses to the allow list successfully:
 2.2.2.2
 3.3.3.3
 
 ### zscaler-undo-blacklist-ip
 ***
-Removes the specified IP addresses from the blacklist.
+Removes the specified IP addresses from the block list.
 
 
 #### Base Command
@@ -317,7 +317,7 @@ Removes the specified IP addresses from the blacklist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | A comma-separated list of IP addresses to remove from the blacklist. For example, 8.8.8.8,1.2.3.4. | Required | 
+| ip | A comma-separated list of IP addresses to remove from the block list. For example, 8.8.8.8,1.2.3.4. | Required | 
 
 
 #### Context Output
@@ -329,14 +329,14 @@ There is no context output for this command.
 
 
 #### Human Readable Output
-Removed the following IP addresses from the blacklist successfully:
+Removed the following IP addresses from the block list successfully:
 2.2.2.2
 3.3.3.3
 
 
 ### zscaler-blacklist-ip
 ***
-Adds the specified IP addresses to the blacklist.
+Adds the specified IP addresses to the block list.
 
 
 #### Base Command
@@ -346,7 +346,7 @@ Adds the specified IP addresses to the blacklist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | A comma-separated list of IP addresses to add to the blacklist. For example, 8.8.8.8,1.2.3.4. | Required | 
+| ip | A comma-separated list of IP addresses to add to the block list. For example, 8.8.8.8,1.2.3.4. | Required | 
 
 
 #### Context Output
@@ -358,7 +358,7 @@ There is no context output for this command.
 
 
 #### Human Readable Output
-Added the following IP addresses to the blacklist successfully:
+Added the following IP addresses to the block list successfully:
 2.2.2.2
 3.3.3.3
 
@@ -634,7 +634,7 @@ Retrieves a list of all categories.
 
 ### zscaler-get-blacklist
 ***
-Retrieves the Zscaler default blacklist.
+Retrieves the Zscaler default block list.
 
 
 #### Base Command
@@ -642,13 +642,16 @@ Retrieves the Zscaler default blacklist.
 `zscaler-get-blacklist`
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Filter results by URL or IP objects. Possible values are: ip, url. | Optional |
+| query | Query (Python regular expression) to match against. For example, 8.*.*.8 | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zscaler.Blacklist | string | The Zscaler blacklist. | 
+| Zscaler.Blacklist | string | The Zscaler block list. | 
 
 
 #### Command Example
@@ -667,14 +670,14 @@ There are no input arguments for this command.
 ```
 
 #### Human Readable Output
-Zscaler blacklist
+Zscaler block list
 
 *   malicious.com
 *   bad.net
 
 ### zscaler-get-whitelist
 ***
-Retrieves the Zscaler default whitelist.
+Retrieves the Zscaler default allow list.
 
 
 #### Base Command
@@ -688,7 +691,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zscaler.Whitelist | string | The Zscaler whitelist. | 
+| Zscaler.Whitelist | string | The Zscaler allow list. | 
 
 
 #### Command Example
