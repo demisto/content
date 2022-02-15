@@ -315,14 +315,10 @@ GET_ISSUE_WITH_ATTACHMENT_RESPONSE = {
         "creator": {
             "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=557058%3Afb80ffc0-b374-4260-99a0-ea0c140a4e76",
             "accountId": "557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76",
-            "emailAddress": "admin@demistodev.com",
+            "emailAddress": "email",
             "avatarUrls": {
-                "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/48",
-                "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/24",
-                "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/16",
-                "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/32"
             },
-            "displayName": "Tomer Malache",
+            "displayName": "name",
             "active": True,
             "timeZone": "Asia/Jerusalem",
             "accountType": "atlassian"
@@ -330,15 +326,11 @@ GET_ISSUE_WITH_ATTACHMENT_RESPONSE = {
         "subtasks": [],
         "reporter": {
             "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=557058%3Afb80ffc0-b374-4260-99a0-ea0c140a4e76",
-            "accountId": "557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76",
+            "accountId": "account id",
             "emailAddress": "admin@demistodev.com",
             "avatarUrls": {
-                "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/48",
-                "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/24",
-                "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/16",
-                "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/32"
             },
-            "displayName": "Tomer Malache",
+            "displayName": "name",
             "active": True,
             "timeZone": "Asia/Jerusalem",
             "accountType": "atlassian"
@@ -380,12 +372,7 @@ GET_ISSUE_WITH_ATTACHMENT_RESPONSE = {
             "name": "VikTest",
             "projectTypeKey": "software",
             "simplified": False,
-            "avatarUrls": {
-                "48x48": "https://demistodev.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10324",
-                "24x24": "https://demistodev.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10324?size=small",
-                "16x16": "https://demistodev.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10324?size=xsmall",
-                "32x32": "https://demistodev.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10324?size=medium"
-            }
+            "avatarUrls": {}
         },
 
         "workratio": -1,
@@ -420,15 +407,10 @@ GET_ISSUE_WITH_ATTACHMENT_RESPONSE = {
              "filename": "test",
              "author": {
                  "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=557058%3Afb80ffc0-b374-4260-99a0-ea0c140a4e76",
-                 "accountId": "557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76",
-                 "emailAddress": "admin@demistodev.com",
-                 "avatarUrls": {
-                     "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/48",
-                     "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/24",
-                     "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/16",
-                     "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76/7db37854-040f-4c34-b7c3-203db2669142/32"
-                 },
-                 "displayName": "Tomer Malache",
+                 "accountId": "account id",
+                 "emailAddress": "mail",
+                 "avatarUrls": {},
+                 "displayName": "name",
                  "active": True,
                  "timeZone": "Asia/Jerusalem",
                  "accountType": "atlassian"
@@ -452,12 +434,12 @@ MD_AND_CONTEXT_OUTPUT = {
          'duedate': None,
          'created': '2021-11-17T12:40:08.900+0200',
          'assignee': 'null(null)',
-         'creator': 'Tomer Malache(admin@demistodev.com)',
-         'reporter': 'Tomer Malache(admin@demistodev.com)',
+         'creator': 'creator',
+         'reporter': 'reporter',
          'issueType': 'A task that needs to be done.',
          'labels': [],
          'description': 'galb1 [^test11.py]  [^test] ',
-         'ticket_link': 'https://demistodev.atlassian.net/rest/api/latest/issue/20852',
+         'ticket_link': 'link',
          'attachment': 'test,test11.py'}
         ],
     'context': [
@@ -470,7 +452,7 @@ MD_AND_CONTEXT_OUTPUT = {
          'DueDate': None,
          'Created': '2021-11-17T12:40:08.900+0200',
          'Assignee': 'null(null)',
-         'Creator': 'Tomer Malache(admin@demistodev.com)',
+         'Creator': 'creator',
          'LastSeen': '2022-02-14T11:58:21.161+0200',
          'LastUpdate': '2022-01-04T15:51:01.316+0200',
          'attachment': 'test,test11.py'
