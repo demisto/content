@@ -839,23 +839,23 @@ def search_sessions(query=None, size=None, sort=None, order=None, file_hash=None
                     from_time=None, to_time=None):
     validate_no_query_and_indicators(query, [file_hash, domain, ip, url, from_time, to_time])
     if not query:
-        used_indicator = validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
+        indicator_args_for_query = {
+            'file_hash': file_hash,
+            'domain': domain,
+            'ip': ip,
+            'url': url
+        }
+        used_indicator = validate_no_multiple_indicators_for_search(indicator_args_for_query)
         search_result = []
-        for b in batch(used_indicator, batch_size=100):
-            query = build_session_search_query(file_hash, domain, ip, url, from_time, to_time)
+        for batch in batch(indicator_args_for_query[used_indicator], batch_size=100):
+            query = build_session_search_query(used_indicator, batch, from_time, to_time)
             search_result.append(run_search('sessions', query=query, size=size, sort=sort, order=order))
         return search_result
     return run_search('sessions', query=query, size=size, sort=sort, order=order)
 
 
-def build_session_search_query(file_hash, domain, ip, url, from_time, to_time):
-    indicator_args_for_query = {
-        'file_hash': file_hash,
-        'domain': domain,
-        'ip': ip,
-        'url': url
-    }
-    indicator_list = build_indicator_children_query(indicator_args_for_query)
+def build_session_search_query(used_indicator, indicator_batch, from_time, to_time):
+    indicator_list = build_indicator_children_query(used_indicator, indicator_batch)
     indicator_query = build_logic_query('OR', indicator_list)
     time_filters_for_search = {}  # type: ignore
     if from_time and to_time:
@@ -892,12 +892,12 @@ def build_children_query(args_for_query):
     return children_list
 
 
-def build_indicator_children_query(args_for_query):
-    for key, val in args_for_query.items():
-        if val:
-            field_api_name = API_PARAM_DICT['search_arguments'][key]['api_name']  # type: ignore
-            operator = API_PARAM_DICT['search_arguments'][key]['operator']  # type: ignore
-            children_list = children_list_generator(field_api_name, operator, val)
+def build_indicator_children_query(used_indicator, indicator_batch):
+    # for key, val in args_for_query.items():
+    if indicator_batch:
+        field_api_name = API_PARAM_DICT['search_arguments'][used_indicator]['api_name']  # type: ignore
+        operator = API_PARAM_DICT['search_arguments'][used_indicator]['operator']  # type: ignore
+        children_list = children_list_generator(field_api_name, operator, indicator_batch)
     return children_list
 
 
@@ -920,13 +920,13 @@ def validate_no_query_and_indicators(query, arg_list):
                              'or use the builtin arguments, but not both')
 
 
-def validate_no_multiple_indicators_for_search(arg_list):
+def validate_no_multiple_indicators_for_search(arg_dict):
     used_arg = None
-    for arg in arg_list:
-        if arg and used_arg:
+    for arg, val in arg_dict.items():
+        if val and used_arg:
             return_error(f'The search command can receive one indicator type at a time, two were given: {used_arg}, '
                          f'{arg}. For multiple indicator types use the custom query')
-        elif arg:
+        elif val:
             used_arg = arg
     if not used_arg:
         return_error('In order to perform a samples/sessions search, a query or an indicator must be given.')
