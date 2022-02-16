@@ -13,7 +13,6 @@ pytest-asyncio = "*"
 [packages]
 pytest = "*"
 requests = "*"
-dateparser = "*"
 requests-ntlm = "*"
 
 [requires]

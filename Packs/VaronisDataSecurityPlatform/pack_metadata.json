@@ -1,0 +1,32 @@
+{
+    "name": "Varonis Data Security Platform",
+    "description": "Varonis DSP Rapidly reduce risk, detect abnormal behavior and prove compliance all-in-one",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Varonis",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "Alerts",
+        "Forensics",
+        "Malware",
+        "Ransomware",
+        "UEBA",
+        "Insider risks"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "dcohen@Varonis.com"
+    ],
+    "githubUser": [
+        "vdobrotskyi-varonis"
+    ]
+}
