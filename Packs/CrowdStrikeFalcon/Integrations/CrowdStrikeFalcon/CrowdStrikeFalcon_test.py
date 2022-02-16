@@ -3480,7 +3480,7 @@ def test_upload_batch_custom_ioc_command(requests_mock):
         json=ioc_response,
         status_code=200,
     )
-    results = upload_batch_custom_ioc_command(IOCS_JSON_LIST)
+    results = upload_batch_custom_ioc_command(json.dumps(IOCS_JSON_LIST))
     assert '2022-02-16T11:41:01Z | 1196afeae04528228e782d4efc0c1d8257554dcd99552e1151ca3a3d2eed03f1 | ' \
            '2bf188d347e44e08946f2e61ef590c24 | 2022-02-15T11:42:17.397548307Z | linux | informational | Cortex XSOAR ' \
            '| ipv4 | 8.9.6.8 |' in results[0]["HumanReadable"]
