@@ -219,7 +219,7 @@
     "id": "incident_fortisiemevents",
     "isReadOnly": false,
     "locked": false,
-    "name": "FortiSiem Events",
+    "name": "FortiSIEM Events",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

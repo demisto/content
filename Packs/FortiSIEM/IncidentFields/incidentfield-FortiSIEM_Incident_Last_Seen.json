@@ -13,7 +13,7 @@
     "id": "incident_incidentlastseen",
     "isReadOnly": false,
     "locked": false,
-    "name": "Incident Last Seen",
+    "name": "FortiSIEM Incident Last Seen",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

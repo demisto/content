@@ -13,7 +13,7 @@
     "id": "incident_incidentreporterip",
     "isReadOnly": false,
     "locked": false,
-    "name": "Incident Reporter IP",
+    "name": "FortiSIEM Incident Reporter IP",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

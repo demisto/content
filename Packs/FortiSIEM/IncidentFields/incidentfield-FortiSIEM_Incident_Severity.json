@@ -13,7 +13,7 @@
     "id": "incident_incidentseverity",
     "isReadOnly": false,
     "locked": false,
-    "name": "Incident Severity",
+    "name": "FortiSIEM Incident Severity",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
