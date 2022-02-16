@@ -70,10 +70,6 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 description: Use FortiSIEM v2 to fetch and update incidents, search events and manage
   watchlists of FortiSIEM.
 display: FortiSIEM v2
@@ -1121,7 +1117,7 @@ script:
     - contextPath: FortiSIEM.WatchlistEntry.ageOut
       description: Expiration date of the Entry.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: true
   longRunning: false
