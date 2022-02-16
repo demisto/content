@@ -63,7 +63,7 @@
                     "complex": null,
                     "simple": "incidentStatusVerbal"
                 },
-                "FortiSiem Events": {
+                "FortiSIEM Events": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -77,7 +77,7 @@
                     },
                     "simple": ""
                 },
-                "Incident First Seen": {
+                "FortiSIEM Incident First Seen": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -91,7 +91,7 @@
                     },
                     "simple": ""
                 },
-                "Incident Last Seen": {
+                "FortiSIEM Incident Last Seen": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -105,15 +105,15 @@
                     },
                     "simple": ""
                 },
-                "Incident Report Device Name": {
+                "FortiSIEM Incident Report Device Name": {
                     "complex": null,
                     "simple": "incidentRptDevName"
                 },
-                "Incident Reporter IP": {
+                "FortiSIEM Incident Reporter IP": {
                     "complex": null,
                     "simple": "incidentRptIp"
                 },
-                "Incident Severity": {
+                "FortiSIEM Incident Severity": {
                     "complex": null,
                     "simple": "eventSeverity"
                 },
