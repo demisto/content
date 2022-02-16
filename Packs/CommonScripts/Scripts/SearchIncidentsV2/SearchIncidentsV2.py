@@ -47,15 +47,15 @@ def apply_filters(incidents: List, args: Dict):
     filtered = iter(incidents)
 
     if names_to_filter:
-        filtered = filter(lambda incident: incident['name'] in names_to_filter, filtered)
+        filtered = filter(lambda incident: incident[u'name'] in names_to_filter, filtered)
 
     if types_to_filter:
-        filtered = filter(lambda incident: incident['type'] in types_to_filter, filtered)
+        filtered = filter(lambda incident: incident[u'type'] in types_to_filter, filtered)
 
     if trim_events:
         def event_trimmer(incident: dict):
-            if 'events' in incident:
-                incident['events'] = incident['events'][:trim_events]
+            if u'events' in incident:
+                incident[u'events'] = incident[u'events'][:trim_events]
             return incident
 
         filtered = map(event_trimmer, filtered)

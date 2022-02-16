@@ -76,7 +76,6 @@ EXAMPLE_INCIDENTS_RAW_RESPONSE = [
         u'id': u'1',
         u'type': u'TypeA',
         u'name': u'Phishing',
-        u'events': ['event1', 'event2', 'event3']
     },
     {
         u'id': u'2',
@@ -119,8 +118,8 @@ def test_apply_filters(args, expected_incident_ids):
                                                               )
                          )
 def test_filter_events(trim_events, expected_event_count):
-    events = ['event0', 'event1', 'event2']
-    incidents = apply_filters([dict(name='foo', events=events)], dict(trim_events=trim_events))
+    events = [u'event0', u'event1', u'event2']
+    incidents = apply_filters([dict(name=u'foo', events=events)], dict(trim_events=trim_events))
     assert len(incidents) == 1
-    assert incidents[0]['name'] == 'foo'
-    assert incidents[0]['events'] == events[:expected_event_count]
+    assert incidents[0][u'name'] == u'foo'
+    assert incidents[0][u'events'] == events[:expected_event_count]
