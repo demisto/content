@@ -99,18 +99,18 @@ class FortiSIEMClient(BaseClient):
         response = self._http_request('GET', f'query/progress/{search_id}', resp_type='text')
         return response
 
-    def events_search_results_request(self, search_id: str, start_index: int, last_index: int):
+    def events_search_results_request(self, search_id: str, start_index: int, limit: int):
         """
         Get the results of an executed query by the specified search_id.
         Args:
             search_id (str): The ID of the search to fetch the results.
             start_index (int): The first record to retrieve.
-            last_index(int): The last record to retrieve.
+            limit(int): How many records records to retrieve.
         Returns:
             Dict[str,Any]: API response from FortiSIEM.
         """
 
-        response = self._http_request('GET', f'query/events/{search_id}/{start_index}/{last_index}', resp_type='xml')
+        response = self._http_request('GET', f'query/events/{search_id}/{start_index}/{limit}', resp_type='xml')
         return format_resp_xml_to_dict(response.text)
 
     def cmdb_devices_list_request(self, include_ip_list: list, exclude_ip_list: list, include_ip_range: str,
@@ -527,13 +527,15 @@ def events_search_results_command(client: FortiSIEMClient, args: Dict[str, Any])
     search_id = args['search_id']
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     page = arg_to_number(args.get('page'), DEFAULT_PAGE)
-    start_index, last_index = get_first_and_last_index_for_list_command(page, limit)
-    response = client.events_search_results_request(search_id, start_index, last_index)
+    start_index = (page - 1) * limit
+    response = client.events_search_results_request(search_id, start_index, limit)
     outputs, total_pages = format_search_events_results(response, limit)
     header = format_readable_output_header(f"Search Query: {search_id} Results", limit, page, total_pages)
-    readable_outputs = tableToMarkdown(header, outputs,
-                                       headers=["id", "custId", "index", "eventType", "receiveTime"],
-                                       headerTransform=pascalToSpace)
+    readable_outputs = tableToMarkdown(header, get_list_events_readable_output(outputs),
+                                       headers=["eventID", "EventReceiveTime", "EventType", "rawMessage", "sourceIP",
+                                                "destinationIP",
+                                                "hostName", "hostIp", "user", "fileName", "command", "filePath",
+                                                "SHA256Hash", "MD5Hash", "rawEventLog"], headerTransform=pascalToSpace)
     command_results = CommandResults(
         outputs_prefix='FortiSIEM.Event',
         outputs_key_field='id',
@@ -697,7 +699,9 @@ def events_list_command(client: FortiSIEMClient, args: Dict[str, Any]) -> Comman
     readable_output = tableToMarkdown(
         format_readable_output_header(f'List Events Of incident: {incident_id}', limit, page),
         get_list_events_readable_output(outputs),
-        headers=["eventID", "receiveTime", "EventName", "rawMessage", "ReportingDevice", "rawEventLog"],
+        headers=["eventID", "EventReceiveTime", "EventType", "rawMessage", "sourceIP", "destinationIP",
+                 "hostName", "hostIp", "user", "fileName", "command", "filePath", "SHA256Hash", "MD5Hash", "rawEventLog"
+                 ],
         headerTransform=pascalToSpace)
 
     command_results = CommandResults(
@@ -1179,8 +1183,8 @@ def format_search_events_results(response: Dict[str, Any], limit: int) -> tuple:
     events = dict_safe_get(response, ['queryResult', 'events', 'event'])
     if isinstance(events, dict):
         events = [events]
-    total_count = int(dict_safe_get(response, ['queryResult', '@totalCount']))
-    total_pages = total_count // limit + (total_count % limit != 0)
+    total_count = arg_to_number(dict_safe_get(response, ['queryResult', '@totalCount']))
+    total_pages = total_count // limit + (total_count % limit != 0) if total_count else 0
     if events:
         for event in events:
             formatted_event = copy.deepcopy(event)
@@ -1562,8 +1566,8 @@ def format_incidents(response: Dict[str, Any], last_incident_id: str) -> List[di
 def format_nested_incident_attribute(attribute_value: str) -> tuple:
     """
     Format nested attributes to be readable. For example:
-    for the attribute_value "srcIpAddr:192.168.91.57,",
-    The formatted attribute will be: "srcIpAddr", and it's value is: "192.168.91.57".
+    for the attribute_value "srcIpAddr:192.168.1.1,",
+    The formatted attribute will be: "srcIpAddr", and it's value is: "192.168.1.1".
 
     Args:
          attribute_value:str (str): The attribute cotent
@@ -1690,20 +1694,6 @@ def convert_verbal_status_filtering_to_numeric(verbal_status_list: List[str]) ->
     return [INCIDENT_STATUS_VALUE_MAPPING[verbal_status] for verbal_status in verbal_status_list]
 
 
-def get_first_and_last_index_for_list_command(page_number: int, limit: int) -> tuple:
-    """
-    Get the edges of indexes for list command.
-    Args:
-         page_number (int): Which page to retrieve.
-         limit (int): The maximum number of records to retrieve in a page.
-    Returns:
-      tuple: first and last index of records to get.
-    """
-    start_index = (page_number - 1) * limit
-    last_index = start_index + limit - 1
-    return start_index, last_index
-
-
 def format_list_events_output(response: Dict[str, Any], incident_id: str, page: int, limit: int) -> list:
     """
     Format event list command output.
@@ -1726,7 +1716,7 @@ def format_list_events_output(response: Dict[str, Any], incident_id: str, page: 
 
 def get_list_events_readable_output(outputs: List[dict]) -> List[dict]:
     """
-    Get the human redable of event list command.
+    Get the human readable of event list command.
     Args:
         outputs (Dict[str,Any]): command outputs.
     Returns:
@@ -1734,13 +1724,23 @@ def get_list_events_readable_output(outputs: List[dict]) -> List[dict]:
     """
     readable_outputs = []
     for event in outputs:
+        attributes = event.get('attributes')
         readable_outputs.append({
+            "EventReceiveTime": event.get('receiveTime'),
             "eventID": event.get('id'),
-            "receiveTime": event.get('receiveTime'),
-            "EventName": event.get('eventType'),
-            "rawMessage": event.get('rawMessage'),
-            "ReportingDevice": dict_safe_get(event, ['attributes', 'Reporting Device']),
-            "rawEventLog": dict_safe_get(event, ['attributes', 'Raw Event Log'])
+            "eventType": event.get('eventType'),
+            "rawMessage": attributes.get('rawMessage') or event.get('msg'),
+            "sourceIP": attributes.get("Source IP") or attributes.get('srcIpAddr'),
+            "destinationIP": attributes.get("Destination IP") or attributes.get('destIpAddr'),
+            "hostName": attributes.get("Host Name") or attributes.get('hostName'),
+            "hostIp": attributes.get("Host IP") or attributes.get('hostIpAddr'),
+            "user": attributes.get("User") or attributes.get('user'),
+            "fileName": attributes.get("File Name") or attributes.get('fileName'),
+            "command": attributes.get("Command") or attributes.get('command'),
+            "filePath": attributes.get("File Path") or attributes.get('filePath'),
+            "SHA256Hash": attributes.get("SHA256 Hash") or attributes.get('hashSHA256'),
+            "MD5Hash": attributes.get("MD5 Hash") or attributes.get('hashMD5'),
+            "rawEventLog": attributes.get("Raw Event Log") or attributes.get('rawEventMsg'),
         })
     return readable_outputs
 
