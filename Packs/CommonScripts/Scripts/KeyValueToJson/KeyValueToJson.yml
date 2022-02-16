@@ -1,7 +1,6 @@
 commonfields:
   id: KeyValueToJson
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: KeyValueToJson
 script: ''
 type: python
@@ -23,9 +22,9 @@ args:
   isArray: true
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.10.1.25933
 runas: DBotWeakRole
-engineinfo: {}
-mainengineinfo: {}
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
