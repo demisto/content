@@ -41,8 +41,8 @@ def create_pr_comment():
     comment += get_failing_ut()
     comment += get_failing_validations()
     comment += get_failing_tests()
-    # TODO add the right link to the report (should save in the artifacts folder)
-    comment += f'here is a link to the full report: https://xsoar.docs.pan.run/-/content/-/jobs/{JOB_ID}/artifacts/'
+    comment += f'here is a link to the full report: ' \
+               f'https://xsoar.docs.pan.run/-/content/-/jobs/{JOB_ID}/artifacts/artifacts/summary.html'
     return comment
 
 
