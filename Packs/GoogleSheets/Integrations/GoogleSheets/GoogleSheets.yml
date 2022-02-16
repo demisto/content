@@ -33,9 +33,9 @@ configuration:
     spreadsheets is created in the associated Google Drive and is
     easily accessible from a UI. This parameter is used during the
     authentication process.
-description: Google Sheets is a spreadsheet program that is part of the free web-based Google
-  applications to create and format spreadsheets. Use this integration to create and
-  modify spreadsheets.
+description: Google Sheets is a spreadsheet program that is part of the free web-based
+  Google applications to create and format spreadsheets. Use this integration to create
+  and modify spreadsheets.
 display: Google Sheets
 name: GoogleSheets
 script:
@@ -72,9 +72,9 @@ script:
       required: false
       secret: false
     - name: cell_format_backgroundColor
-      description: "A comma-separated list of background colors in the\
-        \ following order - red,green,blue,alpha. All values must be between 0-1. If\
-        \ chosen, you must specify all fields."
+      description: "A comma-separated list of background colors in the following order\
+        \ - red,green,blue,alpha. All values must be between 0-1. If chosen, you must\
+        \ specify all fields."
       required: false
       isArray: true
       defaultValue: ""
@@ -144,18 +144,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: Works only with include_grid_data = True. 
-        The ranges to retrieve from the spreadsheet. Ranges are specified
-        using A1 notation. For example, Sheet1!A1:D5. For further explanation
-        and examples, see https://developers.google.com/sheets/api/guides/concepts#expandable-1.
+      description: Works only with include_grid_data = True. The ranges to retrieve
+        from the spreadsheet. Ranges are specified using A1 notation. For example,
+        Sheet1!A1:D5. For further explanation and examples, see https://developers.google.com/sheets/api/guides/concepts#expandable-1.
       isArray: true
       name: ranges
       required: false
       secret: false
     deprecated: false
-    description: Returns the spreadsheet of the given ID.
-      If include_grid_data is set to true and no ranges given,
-      will defaultly return the first 500 rows and 20 columns of the first sheet.
+    description: Returns the spreadsheet of the given ID. If include_grid_data is
+      set to true and no ranges given, will defaultly return the first 500 rows and
+      20 columns of the first sheet.
     execution: false
     name: google-sheets-spreadsheet-get
     outputs:
@@ -224,7 +223,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: True if the sheet is a right_to_left sheet instead of a left_to_right sheet.
+      description: True if the sheet is a right_to_left sheet instead of a left_to_right
+        sheet.
       isArray: false
       name: right_to_left
       auto: PREDEFINED
@@ -234,8 +234,9 @@ script:
       required: false
       secret: false
     - name: tab_color
-      description: A comma-separated list of the color of the tab in the UI in the following order - red,green,blue,alpha. All values must be between
-        0-1. If chosen, you must specify all fields.
+      description: A comma-separated list of the color of the tab in the UI in the
+        following order - red,green,blue,alpha. All values must be between 0-1. If
+        chosen, you must specify all fields.
       required: false
       isArray: true
       defaultValue: ""
@@ -296,8 +297,8 @@ script:
       defaultValue: ""
     - name: new_sheet_index
       description: If set, the ID of the new sheet. If not set, an ID is chosen. If
-        set, the ID must not conflict with any existing sheet ID and it must
-        be non-negative number.
+        set, the ID must not conflict with any existing sheet ID and it must be non-negative
+        number.
       required: false
       isArray: false
       defaultValue: ""
@@ -578,7 +579,8 @@ script:
       defaultValue: ""
     - name: data
       description: The data to insert. If data_kind is delimiter, the delimiter will
-        be ',' and the data should be in the following format cell1, cell2, cell3... If data_kind is html, enter a single value.
+        be ',' and the data should be in the following format cell1, cell2, cell3...
+        If data_kind is html, enter a single value.
       required: true
       isArray: false
       defaultValue: ""
@@ -640,7 +642,7 @@ script:
       - "true"
       - "false"
     - name: find
-      description: The value to find. 
+      description: The value to find.
       required: true
       isArray: false
       defaultValue: ""
@@ -758,8 +760,8 @@ script:
     - name: values
       description: The data that was read or to be written. This is an array of arrays.
         The outer array representing all the data and each inner array representing
-        a major dimension. Each item in the inner array corresponds to one cell.
-        To be entered in the following format - [1,2,3],[4,5,6] where each bracket will
+        a major dimension. Each item in the inner array corresponds to one cell. To
+        be entered in the following format - [1,2,3],[4,5,6] where each bracket will
         be the row or column, and each value inside will correspond to a cell.
       required: true
       isArray: false
@@ -769,11 +771,12 @@ script:
     description: Appends values to a spreadsheet. The input range is used to search
       for existing data and find a "table" within that range. Values will be appended
       to the next row of the table, starting with the first column of the table. See
-      the guide (https://developers.google.com/sheets/api/guides/values#appending_values) and sample code (https://developers.google.com/sheets/api/samples/writing#append_values) for specific details of how tables are detected and
-      data is appended. The caller must specify the spreadsheet ID, range, and a
-      valueInputOption. The valueInputOption only controls how the input data will
-      be added to the sheet (column-wise or row-wise), it does not influence what
-      cell the data starts being written to.
+      the guide (https://developers.google.com/sheets/api/guides/values#appending_values)
+      and sample code (https://developers.google.com/sheets/api/samples/writing#append_values)
+      for specific details of how tables are detected and data is appended. The caller
+      must specify the spreadsheet ID, range, and a valueInputOption. The valueInputOption
+      only controls how the input data will be added to the sheet (column-wise or
+      row-wise), it does not influence what cell the data starts being written to.
     deprecated: false
     arguments:
     - name: spreadsheet_id
@@ -783,8 +786,8 @@ script:
       defaultValue: ""
     - name: range
       description: The A1 notation of a range to search for a logical table of data.
-        Values are appended after the last row of the table. A1 notation example, Sheet1!A1:D5
-        For further explanation and examples, see https://developers.google.com/sheets/api/guides/concepts#expandable-1
+        Values are appended after the last row of the table. A1 notation example,
+        Sheet1!A1:D5 For further explanation and examples, see https://developers.google.com/sheets/api/guides/concepts#expandable-1
       required: true
       isArray: false
       defaultValue: ""
@@ -818,8 +821,8 @@ script:
     - name: values
       description: The data that was read or to be written. This is an array of arrays.
         The outer array representing all the data and each inner array representing
-        a major dimension. Each item in the inner array corresponds to one cell.
-        To be entered in the following format - [1,2,3],[4,5,6] where each bracket will
+        a major dimension. Each item in the inner array corresponds to one cell. To
+        be entered in the following format - [1,2,3],[4,5,6] where each bracket will
         be the row or column, and each value inside will correspond to a cell.
       required: true
       isArray: false
@@ -828,8 +831,8 @@ script:
   - name: google-sheets-spreadsheet-update
     description: This is a custom update command, used to apply any of the Google
       Sheets API options. Applies one or more updates to the spreadsheet. Each request
-      is validated before being applied. If any request is not valid, the entire
-      request will fail and nothing will be applied.
+      is validated before being applied. If any request is not valid, the entire request
+      will fail and nothing will be applied.
     deprecated: false
     arguments:
     - name: spreadsheet_id
@@ -868,7 +871,7 @@ script:
     - contextPath: GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title
       description: Sheet title.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.26208
+  dockerimage: demisto/googleapi-python3:1.0.0.26733
   feed: false
   isfetch: false
   longRunning: false

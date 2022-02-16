@@ -67,7 +67,7 @@ def test_prepare_result_with_echo(mocker):
                         return_value=[{'SheetId': 783932040, 'Sheet title': "new sheet"},
                                       {'SheetId': 0, 'Sheet title': "Sheet1"}])
     response = util_load_json('test_data/helper_functions/test_prepare_result_echo/response.json')
-    command_result = GoogleSheets.prepare_result(response, {"echo_spreadsheet": "true"})
+    command_result = GoogleSheets.prepare_result(response, {"echo_spreadsheet": "true"}, "")
     with open('test_data/helper_functions/test_prepare_result_echo/markdown_result.md', 'r') as file:
         markdown_assert = file.read()
     assert command_result.readable_output == markdown_assert
@@ -87,7 +87,7 @@ def test_prepare_result_without_echo():
         - return the command result
 
     '''
-    assert GoogleSheets.prepare_result({}, {"echo_spreadsheet": "false"}).readable_output == '### Success\n'
+    assert GoogleSheets.prepare_result({}, {"echo_spreadsheet": "false"}, "").readable_output == '### Successfully \n'
 
 
 def test_create_list_id_title():
@@ -316,7 +316,7 @@ def test_value_update():
     service = build('sheets', 'v4', http=http, developerKey=api_key)
     args = util_load_json("test_data/update_spreadsheet/test_value_update/command_mock.json")
     command_result = GoogleSheets.value_update_sheets(service, args)
-    assert command_result.readable_output == '### Success'
+    assert command_result.readable_output == '### Successfully updated sheet values'
 
 
 @pytest.mark.parametrize("path", ['test_data/update_spreadsheet/test_sheet_create/',

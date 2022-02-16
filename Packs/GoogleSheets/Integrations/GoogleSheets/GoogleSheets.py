@@ -24,7 +24,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 # HELPER FUNCTIONS
 
-def prepare_result(response: dict, args: dict) -> CommandResults:
+def prepare_result(response: dict, args: dict, readable_comment: str) -> CommandResults:
     """
         This function is for the UPDATE command result formatting
         echo_spreadsheat is false then the HR will be only success or failed,
@@ -34,10 +34,11 @@ def prepare_result(response: dict, args: dict) -> CommandResults:
         Args:
             response: the response from the google API
             args: demisto.args
+            readable_comment: (str) a comment for the UI
         Returns:
             The command result ready for the server
     """
-    markdown = '### Success\n'
+    markdown = f'### Successfully {readable_comment}\n'
     outputs = None
     if argToBoolean(args.get('echo_spreadsheet')):
         human_readable = {
@@ -347,7 +348,8 @@ def create_spreadsheet(service: Resource, args: dict) -> CommandResults:
         'spreadsheet Id': response.get('spreadsheetId'),
         'spreadsheet title': response.get('properties').get('title'),
     }
-    markdown = tableToMarkdown('Success', human_readable, headers=['spreadsheet Id', 'spreadsheet title'])
+    markdown = tableToMarkdown('Successfully created a spreadsheet', human_readable,
+                               headers=['spreadsheet Id', 'spreadsheet title'])
     results = CommandResults(
         readable_output=markdown,
         outputs_prefix='GoogleSheets.Spreadsheet',
@@ -370,7 +372,8 @@ def update_spreadsheet(service: Resource, args: dict) -> CommandResults:
     spreadsheet_id = args.get('spreadsheet_id')
     request_to_update = safe_load_json(args.get('requests'))
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
-    return prepare_result(response, args)
+    readable_comment = 'updated the spreadsheet'
+    return prepare_result(response, args, readable_comment)
 
 
 def get_spreadsheet(service: Resource, args: dict) -> CommandResults:
@@ -455,7 +458,8 @@ def create_sheet(service: Resource, args: dict) -> CommandResults:
     }
     request_to_update = remove_empty_elements(request_to_update)
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
-    results = prepare_result(response, args)
+    readable_comment = 'created a new sheet'
+    results = prepare_result(response, args, readable_comment)
     return results
 
 
@@ -483,7 +487,8 @@ def duplicate_sheet(service: Resource, args: dict) -> CommandResults:
     }
     request_to_update = remove_empty_elements(request_to_update)
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
-    results = prepare_result(response, args)
+    readable_comment = 'duplicated the sheet'
+    results = prepare_result(response, args, readable_comment)
     return results
 
 
@@ -509,7 +514,7 @@ def copy_to_sheet(service: Resource, args: dict) -> CommandResults:
                                                      body=copy_sheet_to_another_spreadsheet_request_body)
     request.execute()  # we don't save the response because there is no need for output or HR
     results = CommandResults(
-        readable_output="### Success"
+        readable_output="### Successfully copied the sheet"
     )
 
     return results
@@ -538,7 +543,8 @@ def delete_sheet(service: Resource, args: dict) -> CommandResults:
     }
     request_to_update = remove_empty_elements(request_to_update)
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
-    results = prepare_result(response, args)
+    readable_comment = 'deleted the sheet'
+    results = prepare_result(response, args, readable_comment)
     return results
 
 
@@ -559,7 +565,7 @@ def clear_sheet(service: Resource, args: dict) -> CommandResults:
                                                     body={})
     request.execute()  # we don't save the response because there is no need for output or HR
     results = CommandResults(
-        readable_output='### Success'
+        readable_output='### Successfully cleared the sheet'
     )
     return results
 
@@ -593,7 +599,8 @@ def dimension_delete_sheet(service: Resource, args: dict) -> CommandResults:
     }
     request_to_update = remove_empty_elements(request_to_update)
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
-    results = prepare_result(response, args)
+    readable_comment = 'deleted dimensions'
+    results = prepare_result(response, args, readable_comment)
     return results
 
 
@@ -628,7 +635,8 @@ def range_delete_sheet(service: Resource, args: dict) -> CommandResults:
     }
     request_to_update = remove_empty_elements(request_to_update)
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
-    results = prepare_result(response, args)
+    readable_comment = 'deleted range'
+    results = prepare_result(response, args, readable_comment)
     return results
 
 
@@ -669,7 +677,8 @@ def data_paste_sheets(service: Resource, args: dict) -> CommandResults:
         paste_data[kind] = "true"
     request_to_update = remove_empty_elements(request_to_update)
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
-    results = prepare_result(response, args)
+    readable_comment = 'pasted the data'
+    results = prepare_result(response, args, readable_comment)
     return results
 
 
@@ -709,7 +718,8 @@ def find_replace_sheets(service: Resource, args: dict) -> CommandResults:
 
     request_to_update = remove_empty_elements(request_to_update)
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
-    results = prepare_result(response, args)
+    readable_comment = 'found and replaced'
+    results = prepare_result(response, args, readable_comment)
     return results
 
 
@@ -733,7 +743,7 @@ def value_update_sheets(service: Resource, args: dict) -> CommandResults:
     request = service.spreadsheets().values().update(spreadsheetId=spreadsheet_id, range=ranges,
                                                      valueInputOption=input_option, body=value_range_body)
     request.execute()
-    markdown = '### Success'
+    markdown = '### Successfully updated sheet values'
     return CommandResults(readable_output=markdown)
 
 
@@ -760,7 +770,7 @@ def value_append_sheets(service: Resource, args: dict) -> CommandResults:
                                                      valueInputOption=input_option,
                                                      insertDataOption=insert_option, body=value_range_body)
     request.execute()
-    markdown = '### Success'
+    markdown = '### Successfully appended values to the sheet'
     return CommandResults(readable_output=markdown)
 
 
