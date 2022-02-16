@@ -21,9 +21,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Qualys Vulnerability Management let's you create, run, fetch and manage
-  reports. Launch and manage vulnerability and compliance scans. Manage the host assets
-  you want to scan for vulnerabilities and compliance
+description: Qualys Vulnerability Management lets you create, run, fetch and manage
+  reports, launch and manage vulnerability and compliance scans, and manage the host
+  assets you want to scan for vulnerabilities and compliance.
 display: Qualys v2
 name: QualysV2
 script:
@@ -54,47 +54,47 @@ script:
     - auto: PREDEFINED
       default: false
       description: Specify 1 to list compliance IP addresses in the user’s account.
-        These hosts are assigned to the policy compliance module. or 0 to get host
-        that are not
+        These hosts are assigned to the policy compliance module. Specify 0 to get host
+        that are not assigned to the policy compliance module.
       isArray: false
       name: compliance_enabled
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       required: false
       secret: false
     - name: certview_enabled
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
-      description: (Optional) Set to 1 to list IP addresses in the user’s account
-        assigned to the Certificate View module. Specify 0 to list IPs that are not
+      - '0'
+      - '1'
+      description: (Optional) Specify 1 to list IP addresses in the user’s account
+        assigned to the Certificate View module. Specify 0 to list IP addresses that are not
         assigned to the Certificate View module. Note - This option will be supported
         when Certificate View GA is released and is enabled for your account.
     - name: limit
       description: Specify a positive numeric value to limit the amount of results
-        in the requested list
+        in the requested list.
     deprecated: false
     description: View a list of IP addresses in the user account.
     execution: false
     name: qualys-ip-list
     outputs:
     - contextPath: Qualys.IP.Address
-      description: IP Addresses.
+      description: IP addresses.
     - contextPath: Qualys.IP.Range
-      description: IP Range.
+      description: IP range.
   - arguments:
     - default: false
       description: Specify a report ID of a report that is saved in the Report Share
-        storage space
+        storage space.
       isArray: false
       name: id
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify reports with a certain state
+      description: Specify reports with a certain state.
       isArray: false
       name: state
       predefined:
@@ -112,9 +112,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time to get only reports that expire before
+      description: Specify the date and time to get only reports that expire before
         it. use YYYY-MM-DD[THH:MM:SSZ] like “2007-07-01” or “2007-01-25T23:12:00Z”
-        or today, yesterday, 24hr ago, 3 days ago, last week.'
+        or today, yesterday, 24hr ago, 3 days ago, last week.
       isArray: false
       name: expires_before_datetime
       required: false
@@ -131,6 +131,7 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: Report ID.
+      type: String
     - contextPath: Qualys.Report.TITLE
       description: Report title.
     - contextPath: Qualys.Report.TYPE
@@ -161,8 +162,8 @@ script:
     - name: processed
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Specify 0 to show only scans that are not processed. Specify 1
         to show only scans that have been processed.
     - name: type
@@ -187,24 +188,24 @@ script:
     - name: show_ags
       auto: PREDEFINED
       predefined:
-      - "1"
+      - '1'
       description: Specify 1 to show asset group information for each scan in the
         output.
     - name: show_op
       auto: PREDEFINED
       predefined:
-      - "1"
+      - '1'
       description: Specify 1 to show option profile information for each scan in the
         output.
     - name: show_status
       auto: PREDEFINED
       predefined:
-      - "0"
+      - '0'
       description: Specify 0 to not show scan status for each scan in the output.
     - name: show_last
       auto: PREDEFINED
       predefined:
-      - "1"
+      - '1'
       description: Specify 1 to show only the most recent scan (which meets all other
         search filters in the request) in the output.
     - name: scan_id
@@ -218,7 +219,7 @@ script:
     - name: pci_only
       auto: PREDEFINED
       predefined:
-      - "1"
+      - '1'
       description: (Optional) Specify 1 to show only external PCI scans in the XML
         output. External PCI scans are vulnerability scans run with the option profile
         "Payment Card Industry (PCI) Options". When pci_only=1 is specified, the XML
@@ -226,8 +227,8 @@ script:
     - name: ignore_target
       auto: PREDEFINED
       predefined:
-      - "1"
-      - "0"
+      - '1'
+      - '0'
       description: (Optional) Specify 1 to hide target information from the scan list.
         Specify 0 to display the target information.
     - name: limit
@@ -275,8 +276,8 @@ script:
     - name: processed
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Specify 0 to show only scans that are not processed. Specify 1
         to show only scans that have been processed.
     - name: type
@@ -301,24 +302,24 @@ script:
     - name: show_ags
       auto: PREDEFINED
       predefined:
-      - "1"
+      - '1'
       description: Specify 1 to show asset group information for each scan in the
         output.
     - name: show_op
       auto: PREDEFINED
       predefined:
-      - "1"
+      - '1'
       description: Specify 1 to show option profile information for each scan in the
         output.
     - name: show_status
       auto: PREDEFINED
       predefined:
-      - "0"
+      - '0'
       description: Specify 0 to not show scan status for each scan in the output.
     - name: show_last
       auto: PREDEFINED
       predefined:
-      - "1"
+      - '1'
       description: Specify 1 to show only the most recent scan (which meets all other
         search filters in the request) in the output.
     - name: scan_id
@@ -332,7 +333,7 @@ script:
     - name: pci_only
       auto: PREDEFINED
       predefined:
-      - "1"
+      - '1'
       description: (Optional) Specify 1 to show only external PCI scans in the XML
         output. External PCI scans are vulnerability scans run with the option profile
         "Payment Card Industry (PCI) Options". When pci_only=1 is specified, the XML
@@ -340,8 +341,8 @@ script:
     - name: ignore_target
       auto: PREDEFINED
       predefined:
-      - "1"
-      - "0"
+      - '1'
+      - '0'
       description: (Optional) Specify 1 to hide target information from the scan list.
         Specify 0 to display the target information.
     - name: limit
@@ -392,8 +393,8 @@ script:
     - name: processed
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Specify 0 to show only scans that are not processed. Specify 1
         to show only scans that have been processed.
     - name: type
@@ -413,31 +414,31 @@ script:
     - name: show_ags
       auto: PREDEFINED
       predefined:
-      - "1"
+      - '1'
       description: Specify 1 to show asset group information for each scan in the
         output.
     - name: show_op
       auto: PREDEFINED
       predefined:
-      - "1"
+      - '1'
       description: Specify 1 to show option profile information for each scan in the
         output.
     - name: show_status
       auto: PREDEFINED
       predefined:
-      - "0"
+      - '0'
       description: Specify 0 to not show scan status for each scan in the output.
     - name: show_last
       auto: PREDEFINED
       predefined:
-      - "1"
+      - '1'
       description: Specify 1 to show only the most recent scan (which meets all other
         search filters in the request) in the output.
     - name: pci_only
       auto: PREDEFINED
       predefined:
-      - "1"
-      - "0"
+      - '1'
+      - '0'
       description: Specify 1 to show only external PCI scans in the XML output. External
         PCI scans are vulnerability scans run with the option profile "Payment Card
         Industry (PCI) Options". When pci_only=1 is specified, the XML output will
@@ -445,8 +446,8 @@ script:
     - name: ignore_target
       auto: PREDEFINED
       predefined:
-      - "1"
-      - "0"
+      - '1'
+      - '0'
       description: Specify 1 to hide target information from the scan list. Specify
         0 to display the target information.
     - name: client_id
@@ -484,7 +485,7 @@ script:
     - contextPath: Qualys.Scan.ASSET_GROUP_TITLE
       description: Target Asset Group Title.
     - contextPath: Qualys.Scan.DEFAULT_FLAG
-      description: Scan Deafualt Flag.
+      description: Scan Default Flag.
     - contextPath: Qualys.Scan.USER_LOGIN
       description: The user that created the scan.
     description: Get a list of compliance scans in your account.
@@ -495,8 +496,8 @@ script:
     - name: active
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Specify 1 for active schedules only, or 0 for deactivated schedules
         only.
     - name: show_notifications
@@ -625,15 +626,15 @@ script:
         or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago, 3 days ago, last
         week. Permissions: An Auditor cannot specify this parameter.'
     - name: no_compliance_scan_since
-      description: '(Optional) Show compliance hosts not scanned since a certain date
+      description: (Optional) Show compliance hosts not scanned since a certain date
         and time (optional). This parameter is invalid for an Express Lite user. use
         YYYY-MM-DD[THH:MM:SSZ] like “2007-07-01” or “2007-01-25T23:12:00Z” or today,
-        yesterday, 24hr ago, 3 days ago, last week.'
+        yesterday, 24hr ago, 3 days ago, last week.
     - name: use_tags
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Specify 0 (the default) if you want to select hosts based on IP
         addresses/ranges and/or asset groups. Specify 1 if you want to select hosts
         based on asset tags.
@@ -672,21 +673,21 @@ script:
     - name: show_tags
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: (Optional) Specify 1 to display asset tags associated with each
         host in the XML output.
     - name: host_metadata
-      description: "Specify the name of the cloud provider to show the assets managed\
-        \ by the cloud provider. Valid values: ec2, google, azure"
+      description: 'Specify the name of the cloud provider to show the assets managed
+        by the cloud provider. Valid values: ec2, google, azure'
     - name: host_metadata_fields
       description: (Optional when host_metadata is specified) Specify metadata fields
         to only return data for certain attributes.
     - name: show_cloud_tags
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: (Optional) Specify 1 to display cloud provider tags for each scanned
         host asset in the output. The default value of the parameter is set to 0.
         When set to 0, we will not show the cloud provider tags for the scanned assets.
@@ -800,8 +801,8 @@ script:
         select hosts based on asset tags.
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
     - name: tag_include_selector
       description: (Optional when use_tags=1) Specify "any" (the default) to include
         excluded hosts that match at least one of the selected tags. Specify "all"
@@ -859,8 +860,8 @@ script:
     - name: is_active
       auto: PREDEFINED
       predefined:
-      - "1"
-      - "0"
+      - '1'
+      - '0'
       description: Select is_active=1 for active or is_active=0 for inactive scheduled
         reports to view
     - name: limit
@@ -869,6 +870,7 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: Report ID.
+      type: String
     - contextPath: Qualys.Report.TITLE
       description: Report title.
     - contextPath: Qualys.Report.TYPE
@@ -955,8 +957,8 @@ script:
     - name: is_patchable
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Used to filter the XML output to show only vulnerabilities that
         are patchable or not patchable. A vulnerability is considered patchable when
         a patch exists for it. When 1 is specified, only vulnerabilities that are
@@ -976,10 +978,10 @@ script:
         like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago,
         3 days ago, last week.
     - name: last_modified_by_user_after
-      description: 'Used to filter the XML output to show only vulnerabilities last
+      description: Used to filter the XML output to show only vulnerabilities last
         modified by a user after a certain date and time. use YYYY-MM-DD[THH:MM:SSZ]
         like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago,
-        3 days ago, last week.'
+        3 days ago, last week.
     - name: last_modified_by_user_before
       description: Used to filter the XML output to show only vulnerabilities last
         modified by a user before a certain date and time. use YYYY-MM-DD[THH:MM:SSZ]
@@ -1023,8 +1025,8 @@ script:
     - name: show_pci_reasons
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Used to filter the XML output to show reasons for passing or failing
         PCI compliance (when the CVSS Scoring feature is turned on in the user’s subscription).
         Specify 1 to view the reasons in the XML output. When unspecified, the reasons
@@ -1032,8 +1034,8 @@ script:
     - name: show_supported_modules_info
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Used to filter the XML output to show Qualys modules that can be
         used to detect each vulnerability. Specify 1 to view supported modules in
         the XML output. When unspecified, supported modules are not included in the
@@ -1041,15 +1043,15 @@ script:
     - name: show_disabled_flag
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Specify 1 to include the disabled flag for each vulnerability in
         the XML output.
     - name: show_qid_change_log
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Specify 1 to include QID changes for each vulnerability in the
         XML output.
     - name: limit
@@ -1102,8 +1104,8 @@ script:
   - name: qualys-group-list
     arguments:
     - name: ids
-      description: 'Show only asset groups with certain IDs. Multiple IDs are comma
-        separated.'
+      description: Show only asset groups with certain IDs. Multiple IDs are comma
+        separated.
     - name: id_min
       description: Show only asset groups with certain IDs. Multiple IDs are comma
         separated.
@@ -1274,7 +1276,14 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: ID of the canceled report
-    description: Cancel running report
+      type: String
+    - contextPath: Qualys.ScheduleScan.DATETIME
+      description: Date the command was executed.
+      type: Date
+    - contextPath: Qualys.ScheduleScan.TEXT
+      description: Qualys response for report cancellation.
+      type: String
+    description: Cancel the running report.
     execution: true
   - name: qualys-report-delete
     arguments:
@@ -1283,8 +1292,15 @@ script:
       description: (Required) The report ID you want to take action on.
     outputs:
     - contextPath: Qualys.Report.ID
-      description: Deleted Report ID
-    description: Delete a saved report in the user’s Report Share
+      description: Deleted report ID.
+      type: String
+    - contextPath: Qualys.ScheduleScan.DATETIME
+      description: Date the command was executed.
+      type: Date
+    - contextPath: Qualys.ScheduleScan.TEXT
+      description: Qualys response for the report deletion.
+      type: String
+    description: Delete a saved report in the user’s Report Share.
     execution: true
   - name: qualys-scorecard-launch
     arguments:
@@ -1310,8 +1326,8 @@ script:
     - name: hide_header
       auto: PREDEFINED
       predefined:
-      - "1"
-      - "0"
+      - '1'
+      - '0'
       description: (Valid for CSV format report only). Specify hide_header=1 to omit
         the header information from the report.
     - name: pdf_password
@@ -1327,7 +1343,7 @@ script:
     - name: all_asset_groups
       auto: PREDEFINED
       predefined:
-      - "1"
+      - '1'
       description: et to 1 to select all asset groups available in your account as
         the source asset groups for the scorecard report.
     - name: business_unit
@@ -1348,7 +1364,14 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: Report ID.
-    description: Launch a vulnerability scorecard report
+      type: String
+    - contextPath: Qualys.ScheduleScan.DATETIME
+      description: Date the command was executed.
+      type: Date
+    - contextPath: Qualys.ScheduleScan.TEXT
+      description: Qualys response for the scorecard launch.
+      type: String
+    description: Launch a vulnerability scorecard report.
     execution: true
   - name: qualys-vm-scan-launch
     arguments:
@@ -1412,8 +1435,8 @@ script:
     - name: use_ip_nt_range_tags_include
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Specify “0” (the default) to select from all tags (tags with any
         tag rule). Specify “1” to scan all IP addresses defined in tag selection.
         When this is specified, only tags with the dynamic IP address rule called
@@ -1422,8 +1445,8 @@ script:
     - name: use_ip_nt_range_tags_exclude
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Specify “0” (the default) to select from all tags (tags with any
         tag rule). Specify “1” to exclude all IP addresses defined in tag selection.
         When this is specified, only tags with the dynamic IP address rule called
@@ -1432,8 +1455,8 @@ script:
     - name: use_ip_nt_range_tags
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Specify “0” (the default) to select from all tags (tags with any
         tag rule). Specify “1” to scan all IP addresses defined in tags. When this
         is specified, only tags with the dynamic IP address rule called “IP address
@@ -1453,16 +1476,16 @@ script:
     - name: default_scanner
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Specify 1 to use the default scanner in each target asset group.
         For an Express Lite user, Internal Scanning must be enabled in the user’s
         account.
     - name: scanners_in_ag
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Specify 1 to distribute the scan to the target asset groups’ scanner
         appliances. Appliances in each asset group are tasked with scanning the IPs
         in the group. By default up to 5 appliances per group will be used and this
@@ -1472,14 +1495,14 @@ script:
     - name: scanners_in_tagset
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
-      description: "Specify 1 to distribute the scan to scanner appliances that match\
-        \ the asset tags specified for the scan target. One of these parameters must\
-        \ be specified in a request for an internal scan: iscanner_name, iscanner_id,\
-        \ default_scanner, scanners_in_ag, scanners_in_tagset. When none of these\
-        \ are specified, External scanners are used. valid when the target_from=tags\
-        \ is specified."
+      - '0'
+      - '1'
+      description: 'Specify 1 to distribute the scan to scanner appliances that match
+        the asset tags specified for the scan target. One of these parameters must
+        be specified in a request for an internal scan: iscanner_name, iscanner_id,
+        default_scanner, scanners_in_ag, scanners_in_tagset. When none of these are
+        specified, external scanners are used. Only valid when the target_from=tags is
+        specified.'
     - name: scanners_in_network
       description: Specify 1 to distribute the scan to all scanner appliances in the
         network.
@@ -1494,16 +1517,16 @@ script:
     - name: priority
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
-      - "2"
-      - "3"
-      - "4"
-      - "5"
-      - "6"
-      - "7"
-      - "8"
-      - "9"
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+      - '8'
+      - '9'
       description: Specify a value of 0 - 9 to set a processing priority level for
         the scan. When not specified, a value of 0 (no priority) is used. 0 = No Priority
         (the default), 1 = Emergency, 2 = Ultimate, 3 = Critical, 4 = Major, 5 = High,
@@ -1548,8 +1571,8 @@ script:
     - name: include_agent_targets
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Specify 1 when your scan target includes agent hosts. This lets
         you scan private IPs where agents are installed when these IPs are not in
         your VM/PC license.
@@ -1630,16 +1653,16 @@ script:
     - name: default_scanner
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Specify 1 to use the default scanner in each target asset group.
         For an Express Lite user, Internal Scanning must be enabled in the user’s
         account.
     - name: scanners_in_ag
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Specify 1 to distribute the scan to the target asset groups’ scanner
         appliances. Appliances in each asset group are tasked with scanning the IPs
         in the group. By default up to 5 appliances per group will be used and this
@@ -1688,8 +1711,8 @@ script:
     - name: use_ip_nt_range_tags
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Specify “0” (the default) to select from all tags (tags with any
         tag rule). Specify “1” to scan all IP addresses defined in tags. When this
         is specified, only tags with the dynamic IP address rule called “IP address
@@ -1734,20 +1757,20 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: You must enable the hosts for the VM application (enable_vm=1)
         or the PC application (enable_pc=1) or both VM and PC.
-      defaultValue: "0"
+      defaultValue: '0'
     - name: enable_pc
       required: true
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: You must enable the hosts for the VM application (enable_vm=1)
         or the PC application (enable_pc=1) or both VM and PC.
-      defaultValue: "0"
+      defaultValue: '0'
     - name: owner
       description: The owner of the host asset(s). The owner must be a Manager or
         a Unit Manager.
@@ -1769,16 +1792,18 @@ script:
     - name: enable_certview
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Set to 1 to add IPs to your CertView license. By default IPs are
         not added to your CertView license. This option will be supported when CertView
         GA is released and is enabled for your account.
     outputs:
     - contextPath: Qualys.IP.Add.TEXT
       description: Action result message.
+      type: String
     - contextPath: Qualys.IP.Add.DATETIME
       description: Date & time of the action.
+      type: Date
     description: Add IP addresses to the subscription.
     execution: true
   - name: qualys-ip-update
@@ -1871,8 +1896,15 @@ script:
       description: Scheduled report ID. Can be found by running the command qualys-scheduled-report-list.
     outputs:
     - contextPath: Qualys.Report.ID
-      description: Launched Report ID
-    description: Launch a scheduled report now
+      description: Launched report ID.
+      type: String
+    - contextPath: Qualys.ScheduleScan.DATETIME
+      description: Date the command was executed.
+      type: Date
+    - contextPath: Qualys.ScheduleScan.TEXT
+      description: Qualys response for the scheduled report launch.
+      type: String
+    description: Launch a scheduled report now.
     execution: true
   - name: qualys-report-launch-map
     arguments:
@@ -1909,8 +1941,8 @@ script:
     - name: hide_header
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: (Valid for CSV format report only). Specify hide_header=1 to omit
         the header information from the report. By default this information is included.
     - name: pdf_password
@@ -1937,8 +1969,15 @@ script:
         report. Multiple IPs and/or ranges are comma separated.
     outputs:
     - contextPath: Qualys.Report.ID
-      description: Launched Map Report ID
-    description: Launches a map report
+      description: Launched map report ID.
+      type: String
+    - contextPath: Qualys.ScheduleScan.DATETIME
+      description: Date the command was executed.
+      type: Date
+    - contextPath: Qualys.ScheduleScan.TEXT
+      description: Qualys response for the report launch map.
+      type: String
+    description: Launches a map report.
     execution: true
   - name: qualys-report-launch-host-based-findings
     description: Run host based findings report
@@ -2003,6 +2042,13 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: Report ID.
+      type: String
+    - contextPath: Qualys.ScheduleScan.DATETIME
+      description: Date the command was executed.
+      type: Date
+    - contextPath: Qualys.ScheduleScan.TEXT
+      description: Qualys response for the scan based findings.
+      type: String
     execution: true
   - name: qualys-report-launch-scan-based-findings
     arguments:
@@ -2059,6 +2105,7 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: Report ID.
+      type: String
     description: launches a scan report including scan based findings
   - name: qualys-report-launch-patch
     description: Run patch report
@@ -2116,6 +2163,13 @@ script:
     outputs:
     - contextPath: Qualys.Report.ID
       description: Report ID.
+      type: String
+    - contextPath: Qualys.ScheduleScan.DATETIME
+      description: Date the command was executed.
+      type: Date
+    - contextPath: Qualys.ScheduleScan.TEXT
+      description: Qualys response for the launch patch.
+      type: String
     execution: true
   - name: qualys-report-launch-remediation
     description: Run remediation report
@@ -2176,7 +2230,14 @@ script:
         to the current user are included. Valid values are: User (default) or All.'
     outputs:
     - contextPath: Qualys.Report.ID
-      description: Remediation Report ID
+      description: Remediation report ID.
+      type: String
+    - contextPath: Qualys.ScheduleScan.DATETIME
+      description: Date the command was executed.
+      type: Date
+    - contextPath: Qualys.ScheduleScan.TEXT
+      description: Qualys response for the launch remediation.
+      type: String
     execution: true
   - name: qualys-report-launch-compliance
     description: Run compliance report
@@ -2237,7 +2298,14 @@ script:
         command qualys-pc-scan-list.
     outputs:
     - contextPath: Qualys.Report.ID
-      description: Compliance Report ID
+      description: Compliance report ID.
+      type: String
+    - contextPath: Qualys.ScheduleScan.DATETIME
+      description: Date the command was executed.
+      type: Date
+    - contextPath: Qualys.ScheduleScan.TEXT
+      description: Qualys response for the launch compliance.
+      type: String
     execution: true
   - name: qualys-report-launch-compliance-policy
     description: Run compliance policy report
@@ -2305,7 +2373,14 @@ script:
         string may be “os” or a string like “oracle10:1:1521:ora10204u”.
     outputs:
     - contextPath: Qualys.Report.ID
-      description: Policy Report ID
+      description: Policy report ID.
+      type: String
+    - contextPath: Qualys.ScheduleScan.DATETIME
+      description: Date the command was executed.
+      type: Date
+    - contextPath: Qualys.ScheduleScan.TEXT
+      description: Qualys response for the launch compliance policy.
+      type: String
     execution: true
   - name: qualys-ip-restricted-list
     arguments:
@@ -2336,8 +2411,8 @@ script:
     - name: enable
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
       description: Enable or disable the restricted IPs list. set enable=1 to enable
         the list; set enable=0 to clear any IPs in the list and disable the feature.
     - name: ips
@@ -2354,7 +2429,949 @@ script:
       description: Status of the restricted ips feature.
     description: Get the list of restricted IPs within the user's subscription.
     execution: true
-  dockerimage: demisto/python3:3.9.8.24399
+  - name: qualys-host-list-detection
+    arguments:
+    - default: false
+      description: A comma-separated list of host IDs/ranges. A host ID range is
+        specified with a hyphen (for example, 190-400). Valid host IDs are required.
+      isArray: true
+      name: ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of host IP addresses/ranges. 
+        An IP address range is specified with a hyphen (for example, 10.10.30.1-10.10.30.50).
+      isArray: true
+      name: ips
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of valid detection record QIDs. 
+        A range is specified with a dash (for example, 68518-68522).
+      isArray: true
+      name: qids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of severity levels.
+       A range is specified with a dash (for example, 1-3). 
+      isArray: true
+      name: severities
+      required: false
+      secret: false
+    - name: use_tags
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      description: Specify 0 (the default) to select hosts based on IP
+        addresses/ranges and/or asset groups. 
+        Specify 1 to select hosts based on asset tags.
+    - name: tag_set_by
+      auto: PREDEFINED
+      predefined:
+      - id
+      - name
+      description: (Optional when use_tags=1) Specify “id” (the default) to select
+        a tag set by providing tag IDs. Specify “name” to select a tag set by providing
+        tag names.
+    - name: tag_include_selector
+      auto: PREDEFINED
+      predefined:
+      - any
+      - all
+      description: (Optional when use_tags=1) Specify “any” (the default) to include
+        hosts that match at least one of the selected tags. Specify “all” to include
+        hosts that match all of the selected tags.
+    - name: tag_exclude_selector
+      auto: PREDEFINED
+      predefined:
+      - any
+      - all
+      description: (Optional when use_tags=1) Specify “any” (the default) to exclude
+        hosts that match at least one of the selected tags. Specify “all” to exclude
+        hosts that match all of the selected tags.
+    - name: tag_set_include
+      description: (Optional when use_tags=1) Specify a comma-separated list of 
+        tag names or IDs to include hosts that match these tags. 
+      isArray: true
+    - name: tag_set_exclude
+      description: (Optional when use_tags=1) Specify a comma-separated list of 
+        tag names or IDs for which to exclude hosts that match the tags. 
+      isArray: true
+    - name: detection_processed_before
+      description: Specify the date before which to retrieve detections vulnerability 
+        scan results that were processed. 
+        Specify the date in YYYY-MMDD[THH:MM:SSZ] format
+        (UTC/GMT), for example, “2016-09-12” or “2016-09-12T23:15:00Z”.
+    - name: detection_processed_after
+      description: Specify the date after which to retrieve detections vulnerability
+        scan results that were processed. 
+        Specify the date in YYYY-MMDD[THH:MM:SSZ] format
+        (UTC/GMT), for example, “2016-09-12” or “2016-09-12T23:15:00Z”.
+    - name: vm_scan_since
+      description: 'Show hosts that were last scanned for vulnerabilities since the
+        specified date and time (optional). Hosts that were the target of a vulnerability
+        scan since the date/time will be shown. Date/time is specified in the following format:
+        YYYY-MM-DD[THH:MM:SSZ] (UTC/GMT). Permissions: An Auditor cannot specify this
+        parameter.'
+    - name: no_vm_scan_since
+      description: 'Show hosts not scanned since the specified date and time (optional).
+        The date/time is specified in the following format: YYYY-MMDD[THH:MM:SSZ] format (UTC/GMT), for example,
+        “2007-07-01” or “2007-01-25T23:12:00Z”. Permissions - An Auditor cannot specify
+        this parameter.'
+    - name: truncation_limit
+      description: Specify the maximum number of host records processed per request.
+        When not specified, the truncation limit is set to 1000 host records. You
+        may specify a value less than the default (1-999) or greater than the default
+        (1001-1000000).
+    outputs:
+    - contextPath: Qualys.HostDetections.ID
+      description: Host detection ID.
+      type: String
+    - contextPath: Qualys.HostDetections.IP
+      description: Host detection IP address.
+      type: String
+    - contextPath: Qualys.HostDetections.TRACKING_METHOD
+      description: Tracking method.
+      type: String
+    - contextPath: Qualys.HostDetections.OS
+      description: Host operating system.
+      type: String
+    - contextPath: Qualys.HostDetections.DNS
+      description: Host DNS.
+      type: String
+    - contextPath: Qualys.HostDetections.DNS_DATA.HOSTNAME
+      description: DNS data host name.
+      type: String
+    - contextPath: Qualys.HostDetections.DNS_DATA.DOMAIN
+      description: DNS data domain.
+      type: Unknown
+    - contextPath: Qualys.HostDetections.DNS_DATA.FQDN
+      description: DNS data FQDN.
+      type: Unknown
+    - contextPath: Qualys.HostDetections.NETBIOS
+      description: Netbios.
+      type: String
+    - contextPath: Qualys.HostDetections.QG_HOSTID
+      description: QG host ID.
+      type: String
+    - contextPath: Qualys.HostDetections.LAST_SCAN_DATETIME
+      description: Last scan date.
+      type: Date
+    - contextPath: Qualys.HostDetections.LAST_VM_SCANNED_DATE
+      description: Last VM scan date.
+      type: Date
+    - contextPath: Qualys.HostDetections.LAST_VM_SCANNED_DURATION
+      description: Last VM scan duration.
+      type: String
+    - contextPath: Qualys.HostDetections.LAST_PC_SCANNED_DATE
+      description: Last PC scan date.
+      type: Date
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.QID
+      description: Detection QID.
+      type: String
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.TYPE
+      description: Detection type.
+      type: String
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.SEVERITY
+      description: Detection severity.
+      type: String
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.SSL
+      description: Detection SSL.
+      type: String
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.RESULTS
+      description: Detection results.
+      type: String
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.STATUS
+      description: Detection status.
+      type: String
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.FIRST_FOUND_DATETIME
+      description: Date detection was first found.
+      type: Date
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_FOUND_DATETIME
+      description: Date detection was last found.
+      type: Date
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.TIMES_FOUND
+      description: Number of times detection was found.
+      type: String
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_TEST_DATETIME
+      description: Date detection was last tested.
+      type: Date
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_UPDATE_DATETIME
+      description: Date detection was last updated.
+      type: Date
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.IS_IGNORED
+      description: Whether detection is ignored.
+      type: String
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.IS_DISABLED
+      description: Whether detection is disabled.
+      type: String
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_PROCESSED_DATETIME
+      description: Date detection was last processed.
+      type: Date
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.PORT
+      description: Detection port.
+      type: String
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.PROTOCOL
+      description: Detection protocol.
+      type: String
+    description: Get a list of hosts with the hosts latest vulnerability data. The list is based
+      on the host based scan data available in the user’s account.
+    execution: true
+  - name: qualys-host-update
+    arguments:
+    - default: false
+      description: A comma-separated list of host IDs/ranges to update. A host ID range is
+        specified with a hyphen (for example, 190-400). Valid host IDs are required.
+        Either the `ips` or `ids` parameter must be supplied. IDs or IPs can be retrieved
+        via running the `qualys-host-list-detection` command, using the ID field or
+        IPs field.
+      isArray: true
+      name: ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of host IP addresses/ranges to add to, 
+        remove from or replace in the restricted
+        IPs list. An IP range is specified with a hyphen
+        (for example, 10.10.30.1-10.10.30.50). Either the `ips` or `ids` parameter must be supplied.
+      isArray: true
+      name: ips
+      required: false
+      secret: false
+    - default: false
+      description: (Valid only when the Network Support feature is enabled for the
+        user’s account.) The network ID of the custom network for which to restrict the request. When unspecified, defaults to Global Default Network.
+      name: network_id
+      required: false
+      secret: false
+    - default: false
+      description: The DNS hostname for the IP you want to update. A single IP must
+        be specified in the same request and the IP will only be updated if it matches
+        the hostname specified.
+      name: host_dns
+      required: false
+      secret: false
+    - default: false
+      description: The NetBIOS hostname for the IP you want to update. A single IP
+        must be specified in the same request and the IP will only be updated if it
+        matches the hostname specified.
+      name: host_netbios
+      required: false
+      secret: false
+    - name: tracking_method
+      auto: PREDEFINED
+      predefined:
+      - IP
+      - DNS
+      - NETBIOS
+      description: Show only IP addresses/ranges which have a certain tracking method.
+    - name: new_tracking_method
+      auto: PREDEFINED
+      predefined:
+      - IP
+      - DNS
+      - NETBIOS
+      description: The new tracking method. 
+        Note - You cannot change the tracking method to EC2 or AGENT. If an IP is
+        already tracked by EC2 or AGENT, you cannot change the tracking method to
+        something else.
+    - default: false
+      description: The new owner of the host asset(s). The owner must be a Manager.
+        Another user (Unit Manager, Scanner, Reader) can be the owner if the IP address
+        is in the user’s account.
+      isArray: true
+      name: new_owner
+      required: false
+      secret: false
+    - default: false
+      description: The user-defined comments. Specify new comments for the
+        host asset(s).
+      name: new_comment
+      required: false
+      secret: false
+    - default: false
+      description: Change value for user-defined field 1. You can specify a maximum
+        of 128 characters (ASCII) for each field value.
+      name: new_ud1
+      required: false
+      secret: false
+    - default: false
+      description: Change value for user-defined field 2. You can specify a maximum
+        of 128 characters (ASCII) for each field value.
+      name: new_ud2
+      required: false
+      secret: false
+    - default: false
+      description: Change value for user-defined field 3. You can specify a maximum
+        of 128 characters (ASCII) for each field value.
+      name: new_ud3
+      required: false
+      secret: false
+    outputs:
+    - contextPath: Qualys.Endpoint.Update.DATETIME
+      description: Date the command was executed.
+      type: Date
+    - contextPath: Qualys.Endpoint.Update.TEXT
+      description: Qualys response for the host update.
+      type: String
+    description: Update host attributes using new update parameters.
+    execution: true
+  - name: qualys-schedule-scan-create
+    arguments:
+    - default: false
+      description: The scan title.
+      isArray: false
+      name: scan_title
+      required: true
+      secret: false
+    - name: ip
+      isArray: true
+      description: 'A comma-separated list of IP addresses/ranges to be scanned. 
+        At most, one of these parameters can be supplied: ip, asset_groups or asset_group_ids.'
+    - name: asset_group_ids
+      isArray: true
+      description: 'A comma-separated list of IDs of asset groups containing the hosts to be scanned. 
+        At most, one of these parameters can be supplied: ip, asset_groups
+        or asset_group_ids.'
+    - name: asset_groups
+      isArray: true
+      description: 'A comma-separated list of titles of asset groups containing the hosts to be scanned.
+        At most, one of these parameters can be supplied:
+        ip, asset_groups or asset_group_ids.'
+    - name: option_title
+      description: The title of the compliance option profile to be used.
+      required: true
+    - default: false
+      description: "The frequency (days) in which the scan occurs. The value is between 1-365. For example:\
+        \ '1' indicates that the schedule will occur every day. '2' indicates that the schedule will\
+        \ occur every 2 days. At most, one of these parameters can be supplied: 'frequency_days',\
+        \ 'frequency_weeks', 'frequency_months'."
+      name: frequency_days
+      required: false
+      secret: false
+    - default: false
+      description: "The frequency (weeks) in which the scan occurs. The value is between 1-52. For example:\
+        \ '1' indicates that the schedule will occur every week. '2' indicates that the schedule\
+        \ will occur every 2 weeks. The argument 'weekdays' is required when frequency_weeks\
+        \ is given. Scan will occur only on specified days given in the 'weekdays'\
+        \ argument. At most, one of these parameters can be supplied: 'frequency_days', 'frequency_weeks',\
+        \ 'frequency_months'."
+      name: frequency_weeks
+      required: false
+      secret: false
+    - default: false
+      description: "The frequency (months) in which the scan occurs. The value is between 1-12. For example:\
+        \ '1' indicates that the schedule will occur every month. '2' indicates that the schedule\
+        \ will occur every 2 months. Either the argument 'day_of_month' or the arguments\
+        \ 'day_of_week' and 'week_of_month' are required when frequency_months is\
+        \ given. The scan will occur only on specified days given in those arguments\
+        \ At most, one of these parameters can be supplied: 'frequency_days', 'frequency_weeks',\
+        \ 'frequency_months'."
+      name: frequency_months
+      required: false
+      secret: false
+    - name: weekdays
+      auto: PREDEFINED
+      predefined:
+      - sunday
+      - monday
+      - tuesday
+      - wednesday
+      - thursday
+      - friday
+      - saturday
+      description: "A comma-separated list of the days when the scan will occur each week. 
+        Required when 'frequency_weeks' is given. For example: 
+        weekdays='sunday,tuesday' along with 'frequency_weeks=2'
+        means the scan will occur on Sunday and Tuesday every two weeks."
+      isArray: true
+    - default: false
+      description: "Day of the month the monthly schedule will run on. 
+        The value is between 1-31 depending on the month. 
+        Only relevant when 'frequency_months' value was given.        
+        For example: day_of_month=15 along with frequency_months=2 will result in
+        the scan running every 2 months on the 15th of the month."
+      name: day_of_month
+      required: false
+      secret: false
+    - default: false
+      description: "Day of week that the schedule will run on.
+        The value is between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month.
+        Only relevant when 'frequency_months' value was given. Must be
+        used with 'week_of_month' as well. 
+        For example: day_of_week=2, week_of_month=second along with frequency_months=2
+        will result in the scan running every 2 months on Tuesday in the second week
+        of the month."
+      name: day_of_week
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+    - default: false
+      description: "Comma-separated list of the days of the week that the
+        schedule will run on. 
+        The value is between 0-6, where 0 is Sunday, and 6 is Saturday depending
+        on the month. Only relevant when 'frequency_months' value
+        was given. Must be used with 'week_of_month' as well. For example: day_of_week=2, week_of_month=second along with
+        frequency_months=2 will result in the scan running every 2 months on Tuesday
+        in the second week of the month."
+      name: week_of_month
+      required: false
+      isArray: true
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - first
+      - second
+      - third
+      - fourth
+      - last
+    - default: false
+      description: "The start date of the schedule in the format of mm/dd/yyyy. 
+        For example: 12/15/2020."
+      name: start_date
+      required: true
+      secret: false
+    - default: false
+      description: The start hour of the scheduled scan. 
+        Required when 'start_date' is given. The value is between 0-23.
+      name: start_hour
+      required: true
+      secret: false
+    - default: false
+      description: The start minute of the scheduled scan. 
+        Required when 'start_date' is given. The value is between 0-59.
+      name: start_minute
+      required: true
+      secret: false
+    - default: false
+      description: "Time zone code of the given scheduled scan. For example: US-CA for
+        California time zone in the US. Required when 'start_date' is given."
+      name: time_zone_code
+      required: true
+      secret: false
+    - default: false
+      auto: PREDEFINED
+      predefined:
+        - 'yes'
+        - 'no'
+      description: Whether to observe Daylight Saving Time (DST).
+        Required when start_date is given. This parameter is valid when the time zone code specified in
+        time_zone_code supports DST. To get the list of time zones and their DST support, use the `qualys-time-zone-code` command.
+      name: observe_dst
+      required: false
+      secret: false
+    - name: exclude_ip_per_scan
+      description: "A comma-separated list of IP addresses/ranges to be excluded from the scan when the scan target\
+        \ is specified as IP addresses (not asset tags). One of\
+        \ the following parameters must be set: 'scanners_in_ag', 'default_scanner'."
+      isArray: true
+    - name: default_scanner
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      description: "Specify 1 to use the default scanner in each target asset group.\
+        \ For an Express Lite user, Internal Scanning must be enabled in the user’s\
+        \ account. At most, one of these parameters can be supplied: 'scanners_in_ag', 'default_scanner'."
+    - name: scanners_in_ag
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      description: "Specify 1 to distribute the scan to the target asset groups’ scanner\
+        \ appliances. Appliances in each asset group are tasked with scanning the\
+        \ IPs in the group. By default, up to 5 appliances per group will be used and\
+        \ this can be configured for your account (contact your Account Manager\
+        \ or Support). For an Express Lite user, Internal Scanning must be enabled\
+        \ in the user’s account. At most, one of these parameters can be supplied:\
+        \ 'scanners_in_ag', 'default_scanner'."
+    outputs:
+    - contextPath: Qualys.ScheduleScan.ID
+      description: ID of the new scheduled scan.
+      type: String
+    - contextPath: Qualys.ScheduleScan.DATETIME
+      description: Date the command was executed.
+      type: Date
+    - contextPath: Qualys.ScheduleScan.TEXT
+      description: Qualys response for the scheduled scan creation.
+      type: String
+    description: Create a scan schedule in the user’s account.
+    execution: true
+  - name: qualys-schedule-scan-update
+    arguments:
+    - default: false
+      description: The scan ID to update. The ID can be retrieved by running the
+        'qualys-schedule-scan-list' command, and using the ID field.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: The scan title.
+      isArray: false
+      name: scan_title
+      required: false
+      secret: false
+    - name: ip
+      isArray: true
+      description: 'A comma-separated list of IP addresses/ranges to be scanned. 
+        At most, one of these parameters can be supplied: ip, asset_groups or asset_group_ids.'
+    - name: asset_group_ids
+      isArray: true
+      description: 'A comma-separated list of IDs of asset groups containing the hosts to be scanned. 
+        At most, one of these parameters can be supplied:
+        ip, asset_groups or asset_group_ids.'
+    - name: asset_groups
+      isArray: true
+      description: 'A comma-separated list of titles of asset groups containing the hosts to be scanned.
+       At most, one of these parameters can be supplied: 
+       ip, asset_groups or asset_group_ids.'
+    - default: false
+      description: "The frequency (days) in which the scan occurs. The value is between 1-365. For example:\
+        \ '1' indicates that the schedule will occur every day. '2' indicates that the schedule will\
+        \ occur every 2 days. At most, one of these parameters can be supplied: 'frequency_days',\
+        \ 'frequency_weeks', 'frequency_months'."
+      name: frequency_days
+      required: false
+      secret: false
+    - default: false
+      description: "The frequency (weeks) in which the scan occurs. The value is between 1-52. For example:\
+        \ '1' indicates that the schedule will occur every week. '2' indicates that the schedule\
+        \ will occur every 2 weeks. The argument 'weekdays' is required when frequency_weeks\
+        \ is given. Scan will occur only on specified days given in the 'weekdays'\
+        \ argument. At most, one of these parameters can be supplied: 'frequency_days', 'frequency_weeks',\
+        \ 'frequency_months'."
+      name: frequency_weeks
+      required: false
+      secret: false
+    - default: false
+      description: "The frequency (months) in which the scan occurs. The value is between 1-12. For example:\
+        \ '1' indicates that the schedule will occur every month. '2' indicates that the schedule\
+        \ will occur every 2 months. Either the argument 'day_of_month' or the arguments\
+        \ 'day_of_week' and 'week_of_month' are required when frequency_months is\
+        \ given. The scan will occur only on specified days given in those arguments\
+        \ At most, one of these parameters can be supplied: 'frequency_days', 'frequency_weeks',\
+        \ 'frequency_months'."
+      name: frequency_months
+      required: false
+      secret: false
+    - name: weekdays
+      auto: PREDEFINED
+      predefined:
+      - sunday
+      - monday
+      - tuesday
+      - wednesday
+      - thursday
+      - friday
+      - saturday
+      description: "A comma-separated list of the days when the scan will occur each week. 
+        Required when 'frequency_weeks' is given. For example: 
+        weekdays='sunday,tuesday' along with 'frequency_weeks=2'
+        means the scan will occur on Sunday and Tuesday every two weeks."
+      isArray: true
+    - default: false
+      description: "Day of the month the monthly schedule will run on. 
+        The value is between 1-31 depending on the month. 
+        Only relevant when 'frequency_months' value was given.        
+        For example: day_of_month=15 along with frequency_months=2 will result in
+        the scan running every 2 months on the 15th of the month."
+      name: day_of_month
+      required: false
+      secret: false
+    - default: false
+      description: "Day of week that the schedule will run on.
+        The value is between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month.
+        Only relevant when 'frequency_months' value was given. Must be
+        used with 'week_of_month' as well. 
+        For example: day_of_week=2, week_of_month=second along with frequency_months=2
+        will result in the scan running every 2 months on Tuesday in the second week
+        of the month."
+      name: day_of_week
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+    - default: false
+      description: "Comma-separated list of the days of the week that the
+        schedule will run on. 
+        The value is between 0-6, where 0 is Sunday, and 6 is Saturday depending
+        on the month. Only relevant when 'frequency_months' value
+        was given. Must be used with 'week_of_month' as well. For example: day_of_week=2, week_of_month=second along with
+        frequency_months=2 will result in the scan running every 2 months on Tuesday
+        in the second week of the month."
+      name: week_of_month
+      required: false
+      isArray: true
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - first
+      - second
+      - third
+      - fourth
+      - last
+    - default: false
+      description: "The start date of the schedule in the format of mm/dd/yyyy. 
+        For example: 12/15/2020."
+      name: start_date
+      required: false
+      secret: false
+    - default: false
+      description: The start hour of the scheduled scan. 
+        Required when 'start_date' is given. The value is between 0-23.
+      name: start_hour
+      required: false
+      secret: false
+    - default: false
+      description: The start minute of the scheduled scan. 
+        Required when 'start_date' is given. The value is between 0-59.
+      name: start_minute
+      required: false
+      secret: false
+    - default: false
+      description: "Time zone code of the given scheduled scan. For example: US-CA for
+        California time zone in the US. Required when 'start_date' is given."
+      name: time_zone_code
+      required: false
+      secret: false
+    - default: false
+      auto: PREDEFINED
+      predefined:
+        - 'yes'
+        - 'no'
+      description: Whether to observe Daylight Saving Time (DST).
+        Required when start_date is given. This parameter is valid when the time zone code specified in
+        time_zone_code supports DST. To get the list of time zones and their DST support, use the `qualys-time-zone-code` command.
+      name: observe_dst
+      required: false
+      secret: false
+    - name: exclude_ip_per_scan
+      description: "A comma-separated list of IP addresses/ranges to be excluded from the scan when the scan target\
+        \ is specified as IP addresses (not asset tags). One of\
+        \ the following parameters must be set: 'scanners_in_ag', 'default_scanner'."
+      isArray: true
+    - name: default_scanner
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      description: "Specify 1 to use the default scanner in each target asset group.\
+        \ For an Express Lite user, Internal Scanning must be enabled in the user’s\
+        \ account. At most, one of these parameters can be supplied: 'scanners_in_ag',\
+        \ 'default_scanner'."
+    - name: scanners_in_ag
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      description: "Specify 1 to distribute the scan to the target asset groups’ scanner\
+        \ appliances. Appliances in each asset group are tasked with scanning the\
+        \ IPs in the group. By default, up to 5 appliances per group will be used and\
+        \ this can be configured for your account (contact your Account Manager\
+        \ or Support). For an Express Lite user, Internal Scanning must be enabled\
+        \ in the user’s account. At most, one of these parameters can be supplied:\
+        \ 'scanners_in_ag', 'default_scanner'."
+    - name: active
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      description: Whether the scheduled scan is activated.
+    outputs:
+    - contextPath: Qualys.ScheduleScan.ID
+      description: ID of the scheduled scan to be updated.
+      type: String
+    - contextPath: Qualys.ScheduleScan.DATETIME
+      description: Date the command was executed.
+      type: Date
+    - contextPath: Qualys.ScheduleScan.TEXT
+      description: Qualys response for the scheduled scan update.
+      type: String
+    description: Updates a scan schedule in the user’s account.
+    execution: true
+  - name: qualys-asset-group-add
+    arguments:
+    - default: false
+      description: The asset group title to add.
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - default: false
+      description: Restrict the request to a certain custom network ID.
+      isArray: false
+      name: network_id
+      required: false
+      secret: false
+    - name: ips
+      description: A comma-separated list of IP address/ranges to add to an asset group. 
+        An IP range is specified with a hyphen (for example, 10.10.10.1-10.10.10.100).
+      isArray: true
+    - name: domains
+      required: false
+      description: A comma-separated list of domains to add to an asset group. 
+        Do not enter "www." at the start of
+        the domain name. 
+      isArray: true
+    - name: dns_names
+      required: false
+      description: A comma-separated list of DNS names to add to an asset group.
+      isArray: true
+    - name: netbios_names
+      required: false
+      description: A comma-separated list of NETBIOS names to add to an asset group.
+      isArray: true
+    - name: cvss_enviro_td
+      auto: PREDEFINED
+      predefined:
+      - high
+      - medium
+      - low
+      - none
+      description: The CVSS environment target distribution to add.
+      isArray: false
+    - name: cvss_enviro_cr
+      auto: PREDEFINED
+      predefined:
+      - high
+      - medium
+      - low
+      description: The CVSS environment confidentiality requirement to add.
+      isArray: false
+    - name: cvss_enviro_ir
+      auto: PREDEFINED
+      predefined:
+      - high
+      - medium
+      - low
+      description: The CVSS environment integrity requirement to add.
+      isArray: false
+    - name: cvss_enviro_ar
+      auto: PREDEFINED
+      predefined:
+      - high
+      - medium
+      - low
+      description: The CVSS environment availability requirement to add.
+      isArray: false
+    - name: appliance_ids
+      required: false
+      description: A comma-separated list of appliance IDs to add to an asset group. 
+      isArray: true
+    outputs:
+    - contextPath: Qualys.AssetGroup.ID
+      description: Asset group ID.
+      type: String
+    - contextPath: Qualys.AssetGroup.DATETIME
+      description: Date the command was executed.
+      type: Date
+    - contextPath: Qualys.AssetGroup.TEXT
+      description: Qualys response for the asset group creation.
+      type: String
+    description: Create a new asset group.
+    execution: true
+  - name: qualys-asset-group-edit
+    arguments:
+    - default: false
+      description: The new asset group title.
+      isArray: false
+      name: set_title
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the asset group to edit. The ID of asset groups can be retrieved
+        via running the `qualys-group-list` command and using its ID field.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - name: add_ips
+      description: A comma-separated list of IP address/ranges to add to an asset group. 
+        An IP range is specified with a hyphen (for example, 10.10.10.1-10.10.10.100).
+      isArray: true
+    - name: set_ips
+      description: A comma-separated list of IP address/ranges of an asset group to set.
+        An IP range is specified with a hyphen (for example, 10.10.10.1-10.10.10.100).
+      isArray: true
+    - name: remove_ips
+      description: A comma-separated list of IP addresses/ranges to remove 
+        from an asset group. 
+        An IP range is specified with a hyphen (for example, 10.10.10.1-10.10.10.100).
+      isArray: true
+    - name: add_domains
+      required: false
+      description: A comma-separated list of domains to add to an asset group. 
+        Do not enter "www." at the start of
+        the domain name. 
+      isArray: true
+    - name: set_domains
+      required: false
+      description: A comma-separated list of domains of an asset group to set. 
+        Do not enter "www." at the start of
+        the domain name. 
+      isArray: true
+    - name: remove_domains
+      required: false
+      description: A comma-separated list of domains to remove from an asset group.
+        Do not enter "www." at the start
+        of the domain name. 
+      isArray: true
+    - name: add_dns_names
+      required: false
+      description: A comma-separated list of DNS names to add to an asset group. 
+      isArray: true
+    - name: set_dns_names
+      required: false
+      description: A comma-separated list of DNS names of asset group to set. 
+      isArray: true
+    - name: remove_dns_names
+      required: false
+      description: A comma-separated list of DNS names to remove from an asset group. 
+      isArray: true
+    - name: add_netbios_names
+      required: false
+      description: A comma-separated list of NETBIOS names to add to an asset group. 
+      isArray: true
+    - name: set_netbios_names
+      required: false
+      description: A comma-separated list of NETBIOS names of an asset group to set.
+      isArray: true
+    - name: remove_netbios_names
+      required: false
+      description: A comma-separated list of NETBIOS names to delete from an asset group. 
+      isArray: true
+    - name: set_cvss_enviro_td
+      auto: PREDEFINED
+      predefined:
+      - high
+      - medium
+      - low
+      - none
+      description: The CVSS environment target distribution to set.
+      isArray: false
+    - name: set_cvss_enviro_cr
+      auto: PREDEFINED
+      predefined:
+      - high
+      - medium
+      - low
+      description: The CVSS environment confidentiality requirement to set.
+      isArray: false
+    - name: set_cvss_enviro_ir
+      auto: PREDEFINED
+      predefined:
+      - high
+      - medium
+      - low
+      description: The CVSS environment integrity requirement to set.
+      isArray: false
+    - name: set_cvss_enviro_ar
+      auto: PREDEFINED
+      predefined:
+      - high
+      - medium
+      - low
+      description: The CVSS environment availability requirement to set.
+      isArray: false
+    - name: add_appliance_ids
+      required: false
+      description: A comma-separated list of appliance IDs to add to an asset group.
+      isArray: true
+    - name: set_appliance_ids
+      required: false
+      description: A comma-separated list of appliance IDs of an asset group to set.
+      isArray: true
+    - name: remove_appliance_ids
+      required: false
+      description: A comma-separated list of appliance IDs to remove from an asset group. 
+      isArray: true
+    outputs:
+    - contextPath: Qualys.AssetGroup.ID
+      description: Asset group ID.
+      type: String
+    - contextPath: Qualys.AssetGroup.DATETIME
+      description: Date the command was executed.
+      type: Date
+    - contextPath: Qualys.AssetGroup.TEXT
+      description: Qualys response for the asset group update.
+      type: String
+    description: Update an asset group.
+    execution: true
+  - name: qualys-asset-group-delete
+    arguments:
+    - default: false
+      description: Asset group ID to delete. ID of asset groups can be retrieved via
+        running the `qualys-group-list` command and using its ID field.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    outputs:
+    - contextPath: Qualys.AssetGroup.ID
+      description: Asset group ID.
+      type: String
+    - contextPath: Qualys.AssetGroup.DATETIME
+      description: Date the command was executed.
+      type: Date
+    - contextPath: Qualys.AssetGroup.TEXT
+      description: Qualys response for the asset group deletion.
+      type: String
+    description: Delete an asset group.
+    execution: true
+  - name: qualys-schedule-scan-delete
+    arguments:
+    - default: false
+      description: Scheduled Scan ID to delete. The ID can be retrieved via running
+        the `qualys-schedule-scan-list` command, and using the ID field.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    outputs:
+    - contextPath: Qualys.ScheduleScan.ID
+      description: ID of the scheduled scan to be deleted.
+      type: String
+    - contextPath: Qualys.ScheduleScan.DATETIME
+      description: Date the command was executed.
+      type: Date
+    - contextPath: Qualys.ScheduleScan.TEXT
+      description: Qualys response for the scheduled scan deletion.
+      type: String
+    description: Delete a scheduled scan.
+    execution: true
+  - name: qualys-time-zone-code
+    arguments: []
+    outputs:
+    - contextPath: Qualys.TimeZone.DST_SUPPORTED
+      description: Whether Daylight Saving Time (DST) is supported.
+      type: String
+    - contextPath: Qualys.TimeZone.TIME_ZONE_CODE
+      description: Time zone code.
+      type: String
+    - contextPath: Qualys.TimeZone.TIME_ZONE_DETAILS
+      description: Timezone code details.
+      type: String
+    description: Gets a list of the supported time zone codes.
+    execution: true
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
   longRunning: false

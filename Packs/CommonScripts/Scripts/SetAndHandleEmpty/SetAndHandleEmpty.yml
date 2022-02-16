@@ -34,10 +34,17 @@ args:
   - "false"
   description: Whether to save the argument as a string. The default value is "false".
   defaultValue: "false"
+- name: force
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Whether to force the creation of the context. The default value is "false".
+  defaultValue: "false"
 scripttarget: 0
 script: '-'
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.1.25933
 tests:
 - SetAndHandleEmpty test

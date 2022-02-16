@@ -1,0 +1,19 @@
+{
+    "name": "Netskope v2",
+    "description": "Block URLs, domains and file hashes.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "randomizerxd",
+    "url": "",
+    "email": "",
+    "created": "2021-12-14T14:21:32Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "randomizerxd"
+    ]
+}

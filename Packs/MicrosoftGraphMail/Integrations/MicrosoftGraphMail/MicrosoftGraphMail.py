@@ -451,7 +451,7 @@ class MsGraphClient:
 
     @staticmethod
     def build_message(to_recipients, cc_recipients, bcc_recipients, subject, body, body_type, flag, importance,
-                      internet_message_headers, attach_ids, attach_names, attach_cids, manual_attachments):
+                      internet_message_headers, attach_ids, attach_names, attach_cids, manual_attachments, reply_to):
         """
         Builds valid message dict.
         For more information https://docs.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
@@ -460,6 +460,7 @@ class MsGraphClient:
             'toRecipients': MsGraphClient._build_recipient_input(to_recipients),
             'ccRecipients': MsGraphClient._build_recipient_input(cc_recipients),
             'bccRecipients': MsGraphClient._build_recipient_input(bcc_recipients),
+            'replyTo': MsGraphClient._build_recipient_input(reply_to),
             'subject': subject,
             'body': MsGraphClient._build_body_input(body=body, body_type=body_type),
             'bodyPreview': body[:255],
@@ -519,7 +520,7 @@ class MsGraphClient:
         return parsed_email
 
     @staticmethod
-    def build_reply(to_recipients, comment):
+    def build_reply(to_recipients, comment, attach_ids, attach_names, attach_cids):
         """
         Builds the reply message that includes recipients to reply and reply message.
 
@@ -529,12 +530,22 @@ class MsGraphClient:
         :type comment: ``str``
         :param comment: The message to reply.
 
+        :type attach_ids: ``list``
+        :param attach_ids: List of uploaded to War Room regular attachments to send
+
+        :type attach_names: ``list``
+        :param attach_names: List of regular attachments names to send
+
+        :type attach_cids: ``list``
+        :param attach_cids: List of uploaded to War Room inline attachments to send
+
         :return: Returns legal reply message.
         :rtype: ``dict``
         """
         return {
             'message': {
-                'toRecipients': MsGraphClient._build_recipient_input(to_recipients)
+                'toRecipients': MsGraphClient._build_recipient_input(to_recipients),
+                'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids, [])
             },
             'comment': comment
         }
@@ -1409,6 +1420,7 @@ def prepare_args(command, args):
             'to_recipients': argToList(args.get('to')),
             'cc_recipients': argToList(args.get('cc')),
             'bcc_recipients': argToList(args.get('bcc')),
+            'reply_to': argToList(args.get('replyTo')),
             'subject': args.get('subject', ''),
             'body': email_body,
             'body_type': args.get('bodyType', 'html'),
@@ -1425,7 +1437,10 @@ def prepare_args(command, args):
         return {
             'to_recipients': argToList(args.get('to')),
             'message_id': args.get('ID', ''),
-            'comment': args.get('body')
+            'comment': args.get('body'),
+            'attach_ids': argToList(args.get('attachIDs')),
+            'attach_names': argToList(args.get('attachNames')),
+            'attach_cids': argToList((args.get('attachCIDs')))
         }
 
     return args
@@ -1457,6 +1472,7 @@ def build_recipients_human_readable(message_content):
     to_recipients = []
     cc_recipients = []
     bcc_recipients = []
+    reply_to_recipients = []
 
     for recipients_dict in message_content.get('toRecipients', {}):
         to_recipients.append(recipients_dict.get('emailAddress', {}).get('address'))
@@ -1467,7 +1483,10 @@ def build_recipients_human_readable(message_content):
     for recipients_dict in message_content.get('bccRecipients', {}):
         bcc_recipients.append(recipients_dict.get('emailAddress', {}).get('address'))
 
-    return to_recipients, cc_recipients, bcc_recipients
+    for recipients_dict in message_content.get('replyTo', {}):
+        reply_to_recipients.append(recipients_dict.get('emailAddress', {}).get('address'))
+
+    return to_recipients, cc_recipients, bcc_recipients, reply_to_recipients
 
 
 def send_email_command(client: MsGraphClient, args):
@@ -1483,10 +1502,11 @@ def send_email_command(client: MsGraphClient, args):
     message_content.pop('attachments', None)
     message_content.pop('internet_message_headers', None)
 
-    to_recipients, cc_recipients, bcc_recipients = build_recipients_human_readable(message_content)
+    to_recipients, cc_recipients, bcc_recipients, reply_to_recipients = build_recipients_human_readable(message_content)
     message_content['toRecipients'] = to_recipients
     message_content['ccRecipients'] = cc_recipients
     message_content['bccRecipients'] = bcc_recipients
+    message_content['replyTo'] = reply_to_recipients
 
     message_content = assign_params(**message_content)
     human_readable = tableToMarkdown('Email was sent successfully.', message_content)
@@ -1497,7 +1517,7 @@ def send_email_command(client: MsGraphClient, args):
 
 def prepare_outputs_for_reply_mail_command(reply, email_to, message_id):
     reply.pop('attachments', None)
-    to_recipients, cc_recipients, bcc_recipients = build_recipients_human_readable(reply)
+    to_recipients, cc_recipients, bcc_recipients, _ = build_recipients_human_readable(reply)
     reply['toRecipients'] = to_recipients
     reply['ccRecipients'] = cc_recipients
     reply['bccRecipients'] = bcc_recipients
@@ -1548,10 +1568,13 @@ def reply_to_command(client: MsGraphClient, args):
     to_recipients = prepared_args.get('to_recipients')
     message_id = prepared_args.get('message_id')
     comment = prepared_args.get('comment')
+    attach_ids = prepared_args.get('attach_ids')
+    attach_names = prepared_args.get('attach_names')
+    attach_cids = prepared_args.get('attach_cids')
     email = args.get('from')
 
     suffix_endpoint = f'/users/{email}/messages/{message_id}/reply'
-    reply = client.build_reply(to_recipients, comment)
+    reply = client.build_reply(to_recipients, comment, attach_ids, attach_names, attach_cids)
     client.ms_client.http_request('POST', suffix_endpoint, json_data=reply, resp_type="text")
 
     return_outputs(f'### Replied to: {", ".join(to_recipients)} with comment: {comment}')

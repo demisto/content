@@ -32,6 +32,7 @@ import hashlib
 ''' GLOBAL VARS '''
 params = demisto.params()
 EMAIL = params.get('email', '')
+SEND_AS = params.get('send_as')
 PROXIES = handle_proxy()
 DISABLE_SSL = params.get('insecure', False)
 FETCH_TIME = params.get('fetch_time', '1 days')
@@ -818,7 +819,7 @@ class Client:
                     msg_base.add_header('Content-Disposition', 'attachment', filename=att['name'])
                 message.attach(msg_base)
 
-    def send_mail(self, emailto, emailfrom, cc, bcc, subject, body, htmlBody, entry_ids, replyTo, file_names,
+    def send_mail(self, emailto, emailfrom, send_as, cc, bcc, subject, body, htmlBody, entry_ids, replyTo, file_names,
                   attach_cid, manualAttachObj,
                   transientFile, transientFileContent, transientFileCID, additional_headers, templateParams):
 
@@ -855,7 +856,7 @@ class Client:
         message['to'] = emailto
         message['cc'] = cc
         message['bcc'] = bcc
-        message['from'] = emailfrom
+        message['from'] = send_as or emailfrom
         message['subject'] = subject
         message['reply-to'] = replyTo
 
@@ -953,10 +954,10 @@ def send_mail_command(client):
     additional_headers = argToList(args.get('additionalHeader'))
     template_param = args.get('templateParams')
 
-    result = client.send_mail(emailto, EMAIL, cc, bcc, subject, body, htmlBody, entry_ids,
+    result = client.send_mail(emailto, EMAIL, SEND_AS, cc, bcc, subject, body, htmlBody, entry_ids,
                               replyTo, file_names, attchCID, manualAttachObj, transientFile, transientFileContent,
                               transientFileCID, additional_headers, template_param)
-    return client.sent_mail_to_entry('Email sent:', [result], emailto, EMAIL, cc, bcc, htmlBody, body, subject)
+    return client.sent_mail_to_entry('Email sent:', [result], emailto, SEND_AS or EMAIL, cc, bcc, htmlBody, body, subject)
 
 
 '''FETCH INCIDENTS'''
@@ -1075,6 +1076,7 @@ def auth_test_command(client):
 
 def main():
     global EMAIL
+    global SEND_AS
 
     command = demisto.command()
     client = Client()

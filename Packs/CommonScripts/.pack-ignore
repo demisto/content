@@ -63,3 +63,6 @@ ignore=SC106
 
 [file:DeleteContext.yml]
 ignore=SC106
+
+[file:ReadPDFFileV2.yml]
+ignore=SC106

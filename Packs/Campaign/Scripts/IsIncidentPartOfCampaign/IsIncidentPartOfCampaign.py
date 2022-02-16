@@ -39,21 +39,6 @@ def get_incidents_ids_by_type(incident_type: str) -> Iterable[str]:
         incidents = execute_command("getIncidents", search_args)['data']
 
 
-def arg_to_set(arg: str) -> Set[str]:
-    """
-    Convert given comma separated string to set.
-    Args:
-        arg (str): list as comma separated string.
-
-    Returns: Set
-
-    """
-    if not isinstance(arg, str):
-        return set()
-    arg_list = arg.split(',')
-    return set(arg_list)
-
-
 ''' COMMAND FUNCTION '''
 
 
@@ -86,7 +71,7 @@ def main():
     try:
         args = demisto.args()
         campaign_type = args.get('CampaignIncidentType', 'Phishing Campaign')
-        incidents_ids_set = arg_to_set(args.get('IncidentIDs', ''))
+        incidents_ids_set = set(argToList(args.get('IncidentIDs', '')))
         campaign_id = None
 
         for campaign_id in get_incidents_ids_by_type(campaign_type):
@@ -95,6 +80,7 @@ def main():
                 break
         else:
             # did not find a relevant campaign
+            campaign_id = None
             readable = "No campaign has found"
 
         return CommandResults(readable_output=readable, outputs={"ExistingCampaignID": campaign_id})
