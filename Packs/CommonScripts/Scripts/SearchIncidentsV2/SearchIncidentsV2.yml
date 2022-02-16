@@ -110,7 +110,7 @@ args:
     The number of events to return from the alert JSON. The default is 0, which returns all events.
     Note that the trimming is from the top of the list, regardless of event time or other properties.
   isArray: false
-  name: trim_events
+  name: trimevent
   required: false
   secret: false
   defaultValue: '0'

@@ -1,3 +1,5 @@
+from typing import Dict, List
+import demistomock as demisto
 from CommonServerPython import *
 
 special = ['n', 't', '\\', '"', '\'', '7', 'r']
@@ -42,25 +44,16 @@ def is_valid_args(args: Dict):
 def apply_filters(incidents: List, args: Dict):
     names_to_filter = set(argToList(args.get('name')))
     types_to_filter = set(argToList(args.get('type')))
-    trim_events = int(args.get('trim_events', '0'))
+    filtered_incidents = []
+    for incident in incidents:
+        if names_to_filter and incident['name'] not in names_to_filter:
+            continue
+        if types_to_filter and incident['type'] not in types_to_filter:
+            continue
 
-    filtered = iter(incidents)
+        filtered_incidents.append(incident)
 
-    if names_to_filter:
-        filtered = filter(lambda incident: incident[u'name'] in names_to_filter, filtered)
-
-    if types_to_filter:
-        filtered = filter(lambda incident: incident[u'type'] in types_to_filter, filtered)
-
-    if trim_events:
-        def event_trimmer(incident: dict):
-            if u'events' in incident:
-                incident[u'events'] = incident[u'events'][:trim_events]
-            return incident
-
-        filtered = map(event_trimmer, filtered)
-
-    return list(filtered)
+    return filtered_incidents
 
 
 def add_incidents_link(data: List):
