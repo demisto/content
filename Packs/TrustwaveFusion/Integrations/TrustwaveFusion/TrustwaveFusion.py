@@ -397,7 +397,7 @@ def simplify_finding(finding):
     for f in list(finding.keys()):
         if f not in FINDING_FIELDS:
             del finding[f]
-    if "status" in finding:
+    if finding.get("status"):
         finding["status"].pop("code", None)
 
 
