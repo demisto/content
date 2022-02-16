@@ -106,6 +106,16 @@ args:
   required: false
   secret: false
 - default: false
+  description: |-
+    Used to reduce the number of events returned in oversized Magnifier alerts.
+    Setting the parameter to 0 will return the full response (default).
+    Setting it to 1 will trim the 'events' key in the alert JSON, only keeping the first event.
+  isArray: false
+  name: trim_events
+  required: false
+  secret: false
+  defaultValue: '0'
+- default: false
   description: Number of incidents per page (per fetch)
   isArray: false
   name: size
@@ -172,5 +182,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.1.25933
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
