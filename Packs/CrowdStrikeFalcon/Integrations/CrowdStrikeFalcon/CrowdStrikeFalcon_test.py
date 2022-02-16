@@ -105,15 +105,15 @@ incident_context = {'name': 'Incident ID: inc:afb5d1512a00480f53e9ad91dc3e4b55:1
                         'Techniques: External Remote Services. Involved hosts and end users: SFO-M-Y81WHJ.", '
                         '"tags": ["Objective/Keep Access"], "fine_score": 38}'}
 
-IOCS_JSON_LIST = json.dumps([{'type': 'ipv4', 'value': '4.4.4.4', 'source': 'cortex xsoar', 'action': 'no_action',
-                              'severity': 'informational', 'description': 'lala', 'platforms': ['linux'],
-                              'tags': ['test'], 'expiration': '2022-02-15T15:55:09Z', 'applied_globally': True,
-                              'host_groups': []}, {'type': 'ipv4', 'value': '5.5.5.5', 'source': 'cortex xsoar',
-                                                   'action': 'no_action', 'severity': 'informational',
-                                                   'description': 'lala',
-                                                   'platforms': ['linux'], 'tags': ['test'],
-                                                   'expiration': '2022-02-15T15:55:09Z', 'applied_globally': True,
-                                                   'host_groups': []}])
+IOCS_JSON_LIST = [{'type': 'ipv4', 'value': '4.4.4.4', 'source': 'cortex xsoar', 'action': 'no_action',
+                   'severity': 'informational', 'description': 'lala', 'platforms': ['linux'],
+                   'tags': ['test'], 'expiration': '2022-02-15T15:55:09Z', 'applied_globally': True,
+                   }, {'type': 'ipv4', 'value': '5.5.5.5', 'source': 'cortex xsoar',
+                       'action': 'no_action', 'severity': 'informational',
+                       'description': 'lala',
+                       'platforms': ['linux'], 'tags': ['test'],
+                       'expiration': '2022-02-15T15:55:09Z', 'applied_globally': True,
+                       }]
 
 
 def test_incident_to_incident_context():
@@ -2667,7 +2667,7 @@ def test_search_custom_iocs_command_exists(requests_mock):
         status_code=200
     )
     results = search_custom_iocs_command()
-    assert '| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-01T09:09:04Z | high | md5 | testmd5 |' \
+    assert '| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | prevent | high | md5 |' \
            in results["HumanReadable"]
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
@@ -2731,7 +2731,7 @@ def test_search_custom_iocs_command_filter(requests_mock):
         types=ioc_type,
         values=ioc_value,
     )
-    assert f'| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-01T09:09:04Z | high | {ioc_type} | {ioc_value} |' in \
+    assert f'| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | prevent | high | {ioc_type} | {ioc_value} |' in \
            results["HumanReadable"]  # noqa: E501
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == ioc_value
 
