@@ -88,7 +88,6 @@ def main():
 
     thread_exists = False
     thread_items = []
-    reply_count = 0
     full_thread_html = str()
 
     for thread in email_threads:
@@ -107,7 +106,6 @@ def main():
             thread_items.append(thread_dict)
 
     attachments = None  # incident.get('attachment', {})
-    files = None  # demisto.context().get('File', [])
 
     if thread_exists:
         # Append all messages together, with the most recent on top
