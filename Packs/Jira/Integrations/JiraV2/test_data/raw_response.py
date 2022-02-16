@@ -241,23 +241,23 @@ GET_ISSUE_RESPONSE = {
                     'created': '2021-04-04T12:49:42.881+0300', 'size': 8225,
                     'mimeType': 'application/json',
                     }],
-               'aggregatetimeestimate': None, 'summary': 'test master1', 
+               'aggregatetimeestimate': None, 'summary': 'test master1',
                'creator': {
-                    "accountId": "557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76",
-                    "accountType": "atlassian",
-                    "active": True,
-                    "avatarUrls": {
-                        "16x16": "",
-                        "24x24": "",
-                        "32x32": "",
-                        "48x48": ""
-                    },
-                    "displayName": "jon doe",
-                    "emailAddress": "admin@demistodev.com",
-                    "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=id",
-                    "timeZone": "Asia"
-                }
-    }
+                   "accountId": "557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76",
+                   "accountType": "atlassian",
+                   "active": True,
+                   "avatarUrls": {
+                       "16x16": "",
+                       "24x24": "",
+                       "32x32": "",
+                       "48x48": ""
+                   },
+                   "displayName": "jon doe",
+                   "emailAddress": "admin@demistodev.com",
+                   "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=id",
+                   "timeZone": "Asia"
+               }
+               }
 }
 
 FIELDS_RESPONSE = [
@@ -266,162 +266,38 @@ FIELDS_RESPONSE = [
      'clauseNames': ['cf[10001]', 'Owner', 'Owner[User Picker (single user)]'],
      'schema': {'type': 'user', 'custom': 'com.atlassian.jira.plugin.system.customfieldtypes:userpicker',
                 'customId': 10001}},
-    {'id': 'resolution', 'key': 'resolution', 'name': 'Resolution', 'custom': False, 'orderable': True, 'navigable': True, 'searchable': True, 'clauseNames': ['resolution'], 'schema': {'type': 'resolution', 'system': 'resolution'}},
-    {'id': 'resolutiondate', 'key': 'resolutiondate', 'name': 'Resolved', 'custom': False, 'orderable': False, 'navigable': True, 'searchable': True, 'clauseNames': ['resolutiondate', 'resolved'], 'schema': {'type': 'datetime', 'system': 'resolutiondate'}}
+    {'id': 'resolution', 'key': 'resolution', 'name': 'Resolution', 'custom': False, 'orderable': True,
+     'navigable': True, 'searchable': True, 'clauseNames': ['resolution'],
+     'schema': {'type': 'resolution', 'system': 'resolution'}},
+    {'id': 'resolutiondate', 'key': 'resolutiondate', 'name': 'Resolved', 'custom': False, 'orderable': False,
+     'navigable': True, 'searchable': True, 'clauseNames': ['resolutiondate', 'resolved'],
+     'schema': {'type': 'datetime', 'system': 'resolutiondate'}}
 ]
 
-EXPECTED_RESP={
+EXPECTED_RESP = {
     'customfield_10001': 'Owner',
     'resolution': 'Resolution',
     'resolutiondate': 'Resolved'
 }
 
-GET_ISSUE_WITH_ATTACHMENT_RESPONSE = {
-    "expand": "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations,customfield_10022.requestTypePractice",
-    "id": "20852",
-    "self": "https://demistodev.atlassian.net/rest/api/latest/issue/20852",
-    "key": "VIK-267",
-    "fields": {
-        "statuscategorychangedate": "2021-11-17T12:40:09.977+0200",
-        "fixVersions": [],
-        "lastViewed": "2022-02-14T11:58:21.161+0200",
-        "priority": {
-            "self": "https://demistodev.atlassian.net/rest/api/2/priority/3",
-            "iconUrl": "https://demistodev.atlassian.net/images/icons/priorities/medium.svg",
-            "name": "Medium",
-            "id": "3"
-        },
-        "labels": [],
-        "aggregatetimeoriginalestimate": None,
-        "timeestimate": None,
-        "versions": [],
-        "issuelinks": [],
-        "assignee": None,
-        "status": {
-            "self": "https://demistodev.atlassian.net/rest/api/2/status/10000",
-            "description": "",
-            "iconUrl": "https://demistodev.atlassian.net/images/icons/status_generic.gif",
-            "name": "To Do",
-            "id": "10000",
-            "statusCategory": {
-                "self": "https://demistodev.atlassian.net/rest/api/2/statuscategory/2",
-                "id": 2,
-                "key": "new",
-                "colorName": "blue-gray",
-                "name": "To Do"
-            }
-        },
-        "components": [],
-        "creator": {
-            "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=557058%3Afb80ffc0-b374-4260-99a0-ea0c140a4e76",
-            "accountId": "557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76",
-            "emailAddress": "email",
-            "avatarUrls": {
-            },
-            "displayName": "name",
-            "active": True,
-            "timeZone": "Asia/Jerusalem",
-            "accountType": "atlassian"
-        },
-        "subtasks": [],
-        "reporter": {
-            "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=557058%3Afb80ffc0-b374-4260-99a0-ea0c140a4e76",
-            "accountId": "account id",
-            "emailAddress": "admin@demistodev.com",
-            "avatarUrls": {
-            },
-            "displayName": "name",
-            "active": True,
-            "timeZone": "Asia/Jerusalem",
-            "accountType": "atlassian"
-        },
-        "aggregateprogress": {
-            "progress": 0,
-            "total": 0
-        },
-        "progress": {
-            "progress": 0,
-            "total": 0
-        },
-        "votes": {
-            "self": "https://demistodev.atlassian.net/rest/api/2/issue/VIK-267/votes",
-            "votes": 0,
-            "hasVoted": False
-        },
-        "worklog": {
-            "startAt": 0,
-            "maxResults": 20,
-            "total": 0,
-            "worklogs": []
-        },
-        "issuetype": {
-            "self": "https://demistodev.atlassian.net/rest/api/2/issuetype/10001",
-            "id": "10001",
-            "description": "A task that needs to be done.",
-            "iconUrl": "https://demistodev.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
-            "name": "Task",
-            "subtask": False,
-            "avatarId": 10318,
-            "hierarchyLevel": 0
-        },
-        "timespent": None,
-        "project": {
-            "self": "https://demistodev.atlassian.net/rest/api/2/project/10005",
-            "id": "10005",
-            "key": "VIK",
-            "name": "VikTest",
-            "projectTypeKey": "software",
-            "simplified": False,
-            "avatarUrls": {}
-        },
-
-        "workratio": -1,
-        "issuerestriction": {
-            "issuerestrictions": {},
-            "shouldDisplay": False
-        },
-        "watches": {
-            "self": "https://demistodev.atlassian.net/rest/api/2/issue/VIK-267/watchers",
-            "watchCount": 1,
-            "isWatching": True
-        },
-        "created": "2021-11-17T12:40:08.900+0200",
-
-        "customfield_10019": "0|i00i5b:",
-        "updated": "2022-01-04T15:51:01.316+0200",
-        "timeoriginalestimate": None,
-        "description": "galb1 [^test11.py]  [^test] ",
-
-        "customfield_10015": {
-            "hasEpicLinkFieldDependency": False,
-            "showField": False,
-            "nonEditableReason": {
-                "reason": "PLUGIN_LICENSE_ERROR",
-                "message": "The Parent Link is only available to Jira Premium users."
-            }
-        },
-        "timetracking": {},
-        "attachment": [
-            {"self": "https://demistodev.atlassian.net/rest/api/2/attachment/16188",
-             "id": "16188",
-             "filename": "test",
-             "author": {
-                 "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=557058%3Afb80ffc0-b374-4260-99a0-ea0c140a4e76",
-                 "accountId": "account id",
-                 "emailAddress": "mail",
-                 "avatarUrls": {},
-                 "displayName": "name",
-                 "active": True,
-                 "timeZone": "Asia/Jerusalem",
-                 "accountType": "atlassian"
-             },
-             "created": "2021-11-17T12:40:06.700+0200",
-             "size": 4,
-             "mimeType": "binary/octet-stream",
-             "content": "https://demistodev.atlassian.net/rest/api/2/attachment/content/16188"}
-        ]
-        }
-    }
+ATTACHMENT = {
+    "self": "https://demistodev.atlassian.net/rest/api/2/attachment/16188",
+    "id": "16188",
+    "filename": "test",
+    "author": {
+        "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=557058%3Afb80ffc0-b374-4260-99a0-ea0c140a4e76",
+        "accountId": "account id",
+        "emailAddress": "mail",
+        "avatarUrls": {},
+        "displayName": "name",
+        "active": True,
+        "timeZone": "Asia/Jerusalem",
+        "accountType": "atlassian"
+    },
+    "created": "2021-11-17T12:40:06.700+0200",
+    "size": 4,
+    "mimeType": "binary/octet-stream",
+    "content": "https://demistodev.atlassian.net/rest/api/2/attachment/content/16188"}
 
 MD_AND_CONTEXT_OUTPUT = {
     'md': [
@@ -441,7 +317,7 @@ MD_AND_CONTEXT_OUTPUT = {
          'description': 'galb1 [^test11.py]  [^test] ',
          'ticket_link': 'link',
          'attachment': 'test,test11.py'}
-        ],
+    ],
     'context': [
         {'Id': '20852',
          'Key': 'VIK-267',

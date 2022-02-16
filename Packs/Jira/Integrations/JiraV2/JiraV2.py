@@ -671,11 +671,8 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
         get_attachments = False
 
     if get_attachments and attachments:
-        attachment_urls = [attachment['content'] for attachment in attachments]
-        for attachment_url in attachment_urls:
-            attachment = f"rest{attachment_url.split('/rest')[-1]}"
-            filename = attachment.split("/")[-1]
-            attachments_zip = jira_req(method='GET', resource_url=attachment).content
+        for attachment in attachments:
+            filename, attachments_zip = get_attachment_data(attachment)
             demisto.results(fileResult(filename=filename, data=attachments_zip))
 
     md_and_context = generate_md_context_get_issue(j_res)
@@ -1020,7 +1017,7 @@ def get_attachment_data(attachment):
     :param attachment: attachment metadata
     :return: attachment name and content
     """
-    attachment_url = f"secure{attachment['content'].split('/secure')[-1]}"
+    attachment_url = f"rest{attachment['content'].split('/rest')[-1]}"
     filename = attachment_url.split("/")[-1]
     attachments_zip = jira_req(method='GET', resource_url=attachment_url).content
     return filename, attachments_zip

@@ -1284,21 +1284,39 @@ def test_get_custom_field_names(mocker, requests_mock):
     assert res == EXPECTED_RESP
 
 
-def test_get_issue_attachment_url(mocker, requests_mock):
+def test_get_attachment_data_request(mocker, requests_mock):
     """
     Given:
-        - The issue ID.
+        - An attachment data.
     When
-        - Running the get issue command.
+        - Running the get_attachment_data command.
     Then
-        - Ensure the outputs as expected
+        - Ensure the command does not fail.
     """
-    from JiraV2 import get_issue
-    from test_data.raw_response import GET_ISSUE_WITH_ATTACHMENT_RESPONSE, MD_AND_CONTEXT_OUTPUT
+    from JiraV2 import get_attachment_data
+    from test_data.raw_response import ATTACHMENT
 
     mocker.patch.object(demisto, "params", return_value=integration_params)
-    mocker.patch('JiraV2.generate_md_context_get_issue', return_value=MD_AND_CONTEXT_OUTPUT)
-    requests_mock.get('https://localhost/rest/api/latest/issue/VIK-267', json=GET_ISSUE_WITH_ATTACHMENT_RESPONSE)
     requests_mock.get('https://localhost/rest/api/2/attachment/content/16188', json={})
 
-    get_issue("VIK-267", get_attachments="true")  # the command will fail if not doing a request with the proper url
+    assert get_attachment_data(ATTACHMENT), 'There was a request to the wrong url'
+
+
+def test_get_attachment_data_url_processing(mocker, requests_mock):
+    """
+    Given:
+        - An attachment data.
+    When
+        - Running the get_attachment_data command.
+    Then
+        - Ensure the filename output is correct, and the req_path is correct.
+    """
+    from JiraV2 import get_attachment_data
+    from test_data.raw_response import ATTACHMENT
+
+    mocker.patch.object(demisto, "params", return_value=integration_params)
+    request = requests_mock.get('https://localhost/rest/api/2/attachment/content/16188', json={})
+    filename, _ = get_attachment_data(ATTACHMENT)
+
+    assert filename == '16188'
+    assert request.last_request.path == '/rest/api/2/attachment/content/16188'
