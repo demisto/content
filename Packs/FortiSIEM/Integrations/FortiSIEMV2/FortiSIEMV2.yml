@@ -12,11 +12,6 @@ configuration:
   name: credentials
   required: true
   type: 9
-- display: Fetch incidents
-  hidden: false
-  name: isFetch
-  required: false
-  type: 8
 - additionalinfo: Default is 50. Maximum is 200.
   defaultvalue: '50'
   display: Maximum incidents per fetch.
@@ -70,6 +65,10 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
 description: Use FortiSIEM v2 to fetch and update incidents, search events and manage
   watchlists of FortiSIEM.
 display: FortiSIEM v2
