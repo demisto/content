@@ -7,7 +7,7 @@
     "cliName": "healthcheckdockercontainersstats",
     "closeForm": false,
     "columns": [
-		{
+        {
             "displayName": "Name",
             "fieldCalcScript": "",
             "isDefault": true,

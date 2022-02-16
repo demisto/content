@@ -4,15 +4,15 @@
         "System Diagnostics and Health Check"
     ],
     "caseInsensitive": true,
-    "cliName": "healthcheckinvestigationsbiggerthan1mb",
+    "cliName": "healthcheckpanics",
     "closeForm": false,
     "columns": [
         {
-            "displayName": "Incident ID",
+            "displayName": "Number Of Occurrences",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "incidentid",
+            "key": "numberofoccurrences",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -20,51 +20,32 @@
             "width": 150
         },
         {
-            "displayName": "Size",
+            "displayName": "PanicValue",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "size",
+            "key": "panicvalue",
             "required": false,
             "script": "",
             "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Amount of entries",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "amountofentries",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 130
-        },
-        {
-            "displayName": "Date",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "date",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
+            "type": "longText",
             "width": 150
         }
     ],
     "content": true,
+    "defaultRows": [
+        {},
+        {}
+    ],
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_healthcheckinvestigationsbiggerthan1mb",
+    "id": "incident_healthcheckpanics",
     "isReadOnly": false,
     "locked": false,
-    "name": "Health Check Investigations bigger than 1MB",
+    "name": "Health Check Panics",
     "neverSetAsRequired": false,
+    "openEnded": false,
     "ownerOnly": false,
     "required": false,
     "sla": 0,
@@ -75,5 +56,5 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "5.5.0"
 }

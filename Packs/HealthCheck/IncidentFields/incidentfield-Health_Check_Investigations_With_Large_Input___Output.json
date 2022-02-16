@@ -17,7 +17,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 112
+            "width": 80
         },
         {
             "displayName": "Size",
@@ -29,19 +29,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Input or Output",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "inputoroutput",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 120
+            "width": 100
         },
         {
             "displayName": "Details",
@@ -53,7 +41,7 @@
             "script": "",
             "selectValues": null,
             "type": "longText",
-            "width": 150
+            "width": 200
         }
     ],
     "content": true,

@@ -16,7 +16,7 @@
             "required": false,
             "script": "",
             "selectValues": null,
-            "type": "shortText",
+            "type": "number",
             "width": 100
         },
         {
@@ -32,18 +32,6 @@
             "width": 100
         },
         {
-            "displayName": "Amount of entries",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "amountofentries",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
             "displayName": "Date",
             "fieldCalcScript": "",
             "isDefault": true,
@@ -53,6 +41,18 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
+            "width": 100
+        },
+        {
+            "displayName": "Info",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "info",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "longText",
             "width": 100
         }
     ],
