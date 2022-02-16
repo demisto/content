@@ -44,7 +44,7 @@ def apply_filters(incidents: List, args: Dict):
     types_to_filter = set(argToList(args.get('type')))
     trim_events = int(args.get('trim_events', '0'))
 
-    filtered = incidents
+    filtered = iter(incidents)
 
     if names_to_filter:
         filtered = filter(lambda incident: incident['name'] in names_to_filter, filtered)
