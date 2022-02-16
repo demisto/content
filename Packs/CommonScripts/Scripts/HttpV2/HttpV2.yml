@@ -26,12 +26,14 @@ args:
   name: headers
   required: false
   secret: false
+  type: keyValue
 - default: false
   description: Specify the body of the request.
   isArray: false
   name: body
   required: false
   secret: false
+  type: textArea
 - default: false
   description: |-
     Specify the Content-Type header for the request.
@@ -84,6 +86,7 @@ args:
   name: params
   required: false
   secret: false
+  type: keyValue
 - default: false
   defaultValue: '10'
   description: Specify the timeout of the HTTP request in seconds. Defaults to 10
