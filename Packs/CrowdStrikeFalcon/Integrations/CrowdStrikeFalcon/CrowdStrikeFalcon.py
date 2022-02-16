@@ -1594,9 +1594,11 @@ def get_remote_data_command(args: Dict[str, Any]):
             raise Exception(f'Executed get-remote-data command with undefined id: {remote_args.remote_incident_id}')
 
         entries = []
-        if delta and CLOSE_IN_XSOAR:
+        if delta:
+            demisto.debug(f'Update incident or detection {remote_args.remote_incident_id} with fields: {delta}')
+
             # 'state' field indicates whether the incident is closed
-            if delta.get('state') == 'closed':
+            if delta.get('state') == 'closed' and CLOSE_IN_XSOAR:
                 demisto.debug(f'Incident is closed: {remote_args.remote_incident_id}')
                 entries.append({
                     'Type': EntryType.NOTE,
@@ -1608,7 +1610,7 @@ def get_remote_data_command(args: Dict[str, Any]):
                 })
 
             # 'status' field indicates whether the detection is closed
-            elif delta.get('status') == 'closed':
+            elif delta.get('status') == 'closed' and CLOSE_IN_XSOAR:
                 demisto.debug(f'Detection is closed: {remote_args.remote_incident_id}')
                 entries.append({
                     'Type': EntryType.NOTE,
@@ -1619,9 +1621,18 @@ def get_remote_data_command(args: Dict[str, Any]):
                     'ContentsFormat': EntryFormat.JSON
                 })
 
-            demisto.debug(f"Update incident or detection {remote_args.remote_incident_id} with fields: {delta}")
+            # 'reopened' is stated in 'status' field for both incidents and detections
+            elif delta.get('status') == 'reopened':
+                entries.append({
+                    'Type': EntryType.NOTE,
+                    'Contents': {
+                        'dbotIncidentReopen': True
+                    },
+                    'ContentsFormat': EntryFormat.JSON
+                })
+
         else:
-            demisto.debug("No delta was found for incident or detection.")
+            demisto.debug(f'No delta was found for incident or detection {remote_args.remote_incident_id}.')
 
         return GetRemoteDataResponse(mirrored_object=delta, entries=entries)
 
