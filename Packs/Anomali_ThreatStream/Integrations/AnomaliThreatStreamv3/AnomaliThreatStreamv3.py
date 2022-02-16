@@ -1153,7 +1153,7 @@ def get_indicators(client: Client, **kwargs):
             offset += len(iocs_list)
             kwargs['limit'] = limit
             kwargs['offset'] = offset
-            iocs_list = client.http_request("GET", "v2/intelligence/", params=kwargs).get('objects', None)
+            iocs_list = client.http_request("GET", url, params=kwargs).get('objects', None)
             if iocs_list:
                 iocs_context.extend(parse_indicators_list(iocs_list))
             else:
