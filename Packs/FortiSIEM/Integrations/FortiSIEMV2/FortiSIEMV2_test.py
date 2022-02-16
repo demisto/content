@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import pytest
 
 '''MOCK PARAMETERS '''
-SERVER_URL = "https://help.kusto.windows.net"
+SERVER_URL = "https://192.168.30.124"
 BASE_URL = f'{SERVER_URL}/phoenix/rest'
 USERNAME = 'TEST_USERNAME'
 PASSWORD = 'XXXX'
