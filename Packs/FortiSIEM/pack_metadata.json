@@ -1,5 +1,5 @@
 {
-    "name": "FortiSIEMV2",
+    "name": "FortiSIEM",
     "description": "Use FortiSIEM v2 to fetch and update incidents, search events and manage watchlists of FortiSIEM.",
     "support": "xsoar",
     "currentVersion": "2.0.0",
