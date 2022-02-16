@@ -65,27 +65,6 @@ ALERT_COLUMNS = [
 
 class Client(BaseClient):
 
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
-    def baseintegration_dummy(self, url: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {'dummy': url}
-
     def varonis_authenticate(self, username: str, password: str) -> Dict[str, Any]:
         ntlm = HttpNtlmAuth(username, password)
         response = self._http_request('POST', '/auth/win', auth=ntlm, data='grant_type=client_credentials')
@@ -118,6 +97,7 @@ class Client(BaseClient):
 
 
 class SearchQueryBuilder(object):
+
     def __init__(self, select_columns: List[str], client: Client):
         self._filters: List[Any] = []
         self._columns = select_columns
