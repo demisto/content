@@ -1,0 +1,31 @@
+commonfields:
+  id: KeyValueToJson
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: KeyValueToJson
+script: ''
+type: python
+tags:
+- transformer
+- general
+comment: 'This script will take in an array of values and an array of keys. It will
+  create a JSON dictionary using the key and value pairs based on their indicies.
+  For example; value=[1, 2, 3] key=[''a'', ''b'', ''c''] will return {''a'': 1, ''b'':2,
+  ''c'': 3}.'
+enabled: true
+args:
+- name: value
+  default: true
+  description: Values to map (can be list or CSV)
+  isArray: true
+- name: key
+  description: Keys to map (can be list or CSV)
+  isArray: true
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.10.1.25933
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
