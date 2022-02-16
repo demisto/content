@@ -47,7 +47,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '50'
+      defaultValue: '1000'
       description: The max number of alerts to retrieve (up to 50)
       isArray: false
       name: max_results
@@ -195,7 +195,7 @@ script:
     execution: false
     name: varonis-update-alert-status
     description: Updating an alert status
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/ntlm:1.0.0.24037
   feed: false
   isfetch: false
   longRunning: false

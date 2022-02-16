@@ -182,14 +182,17 @@ class SearchQueryBuilder(object):
 
 
 def get_query_range(count: int):
-    return f'from=0&to={count-1}'
+    if count:
+        return f'from=0&to={count-1}'
+    else:
+        return ''
 
 
 def get_search_result_path(search_response: List[Any]) -> str:
     return next(x['location'] for x in search_response if x['dataType'] == 'rows')
 
 
-def get_alerts(client: Client, statuses: List[str], threats: List[str], start: datetime, end: datetime):
+def get_alerts(client: Client, statuses: List[str], threats: List[str], start: datetime, end: datetime, count: int):
     builder = SearchQueryBuilder(ALERT_COLUMNS, client)
 
     if statuses and any(statuses):
@@ -203,10 +206,43 @@ def get_alerts(client: Client, statuses: List[str], threats: List[str], start: d
 
     response = client.varonis_search_alerts(query)
     location = get_search_result_path(response)
+    date_range = get_query_range(count)
 
-    date_range = get_query_range(10)
     search_result = client.varonis_get_alerts(location, date_range, 10)
     return search_result
+
+
+def create_output_from_alerts(rows: List[Any]) -> List[str]:
+    outputs: List[Any] = []
+    for row in rows:
+        output = {
+            'ID': row[0],
+            'Name': row[1],
+            'Time': row[2],
+            'Severity': row[3],
+            'Category': row[4],
+            'Country': row[5],
+            'State': row[6],
+            'Status': row[7],
+            'CloseReason': row[8],
+            'BlacklistLocation': row[9],
+            'AbnormalLocation': row[10],
+            'NumOfAlertedEvents': row[11],
+            'UserName': row[12],
+            'By.SamAccountName': row[13],
+            'By.PreivilegedAccountType': row[14],
+            'By.HasFollowUpIndicators': row[15],
+            'On.ContainsFlaggedData': row[16],
+            'On.ContainsSensitiveData': row[17],
+            'On.Platform': row[18],
+            'on.Asset': row[19],
+            'On.FileServerOrDomain': row[20],
+            'Device.Name': row[21],
+            'Device.ContainMaliciousExternalIP': row[22],
+            'Device.IPThreatTypes': row[23]
+        }
+        outputs.append(output)
+    return outputs
 
 
 ''' COMMAND FUNCTIONS '''
@@ -228,7 +264,7 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-
+        client.varonis_get_enum(THREAT_MODEL_ENUM_ID)
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
@@ -240,17 +276,18 @@ def test_module(client: Client) -> str:
 
 def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
+    threat_model_names = args.get('threat_model_name', None)
+    max_results = args.get('max_results', None)
+    start_time = args.get('Start time', None)
+    end_time = args.get('End time', None)
+    alert_statuses = args.get('Alert Status', None)
 
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
+    result = get_alerts(client, alert_statuses, threat_model_names, start_time, end_time, max_results)
+    outputs = create_output_from_alerts(result['rows'])
     return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
+        outputs_prefix='Varonis.Alert',
+        outputs_key_field='Varonis.Alert.ID',
+        outputs=outputs,
     )
 
 
@@ -269,8 +306,8 @@ def main() -> None:
     """
 
     # TODO: make sure you properly handle authentication
-    username = demisto.params().get('credentials', {}).get('username')
-    password = demisto.params().get('credentials', {}).get('password')
+    username = demisto.params().get('Username')
+    password = demisto.params().get('Password')
 
     # get the service API url
     base_url = urljoin(demisto.params()['url'], '/DatAdvantage')
@@ -286,16 +323,11 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. 'Authorization': {api key})
-        headers: Dict = {}
-
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+            proxy=proxy
+        )
 
         client.varonis_authenticate(username, password)
 
