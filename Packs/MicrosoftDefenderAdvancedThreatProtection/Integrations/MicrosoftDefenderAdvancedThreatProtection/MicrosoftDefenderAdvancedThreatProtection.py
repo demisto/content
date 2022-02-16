@@ -3231,8 +3231,12 @@ def run_live_response_script_action(client, args):
 
     # create action:
     res = client.create_action(machine_id, request_body)
+
+    md = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
     return CommandResults(
-        outputs={'action_id': res['id']}
+        outputs_prefix='MicrosoftATP.LiveResponseAction',
+        outputs={'action_id': res['id']},
+        readable_output=md
     )
 
 
@@ -3282,9 +3286,12 @@ def get_live_response_file_action(client, args):
 
     # create action:
     res = client.create_action(machine_id, request_body)
+    md = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
+
     return CommandResults(
-        outputs={'action_id': res['id']}
-    )
+        outputs_prefix='MicrosoftATP.LiveResponseAction',
+        outputs={'action_id': res['id']},
+        readable_output=md    )
 
 
 def get_file_get_successfull_action_results(client, res):
@@ -3338,9 +3345,12 @@ def put_live_response_file_action(client, args):
 
     # create action:
     res = client.create_action(machine_id, request_body)
+    md = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
+
     return CommandResults(
-        outputs={'action_id': res['id']}
-    )
+        outputs_prefix='MicrosoftATP.LiveResponseAction',
+        outputs={'action_id': res['id']},
+        readable_output=md    )
 
 
 def put_file_get_successful_action_results(client, res):
