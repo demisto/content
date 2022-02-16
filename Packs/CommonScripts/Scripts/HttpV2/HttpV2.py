@@ -94,7 +94,7 @@ def create_headers(headers: Dict, request_content_type_header: str, response_con
     return headers
 
 
-def get_parsed_response(res: requests.Response, resp_type: str) -> Any:
+def get_parsed_response(res, resp_type: str) -> Any:
     try:
         resp_type = resp_type.lower()
         if resp_type == 'json':
