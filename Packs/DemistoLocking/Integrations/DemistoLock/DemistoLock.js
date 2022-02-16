@@ -1,17 +1,19 @@
 /* version should be given if theres a known version we must update according to.
 In case of a known version, retries should be set to 0 */
+var incidentID = incidents[0].id
+
 function mergeVersionedIntegrationContext({newContext, retries = 0,version, objectKey = {}}) {
     var savedSuccessfully = false;
     do {
-        logDebug("mergeVersionedIntegrationContext - retries: " + retries  + " given version: " + version)
+        logDebug('incidentID ' + incidentID + " mergeVersionedIntegrationContext - retries: " + retries  + " given version: " + JSON.stringify(version));
 
         var versionedIntegrationContext = getVersionedIntegrationContext(true, true) || {};
         var context = versionedIntegrationContext.context;
         mergeContexts(newContext, context, objectKey);
-        logDebug('Trying to save context: ' + JSON.stringify(context));
+        logDebug('incidentID ' + incidentID + ' Trying to save context: ' + JSON.stringify(context) + 'server version ' + JSON.stringify(versionedIntegrationContext.version));
 
         var response = setVersionedIntegrationContext(context, true, version || versionedIntegrationContext.version);
-        logDebug('response from merge: ' + JSON.stringify(response));
+        logDebug('incidentID ' + incidentID + ' response from merge: ' + JSON.stringify(response));
         if(response.Error){
             logDebug(response.Error)
         }
@@ -22,7 +24,7 @@ function mergeVersionedIntegrationContext({newContext, retries = 0,version, obje
 
     } while (!savedSuccessfully && retries-- > 0);
     if(!savedSuccessfully){
-        throw 'Did not merge context successfully.'
+        throw 'incidentID' + incidentID + 'Did not merge context successfully.'
     }
 }
 /*
@@ -79,7 +81,7 @@ switch (command) {
 
     case 'demisto-lock-get':
         var lockTimeout = args.timeout || params.timeout;
-        var lockInfo = 'Locked by incident #' + incidents[0].id + '.';
+        var lockInfo = 'Locked by incident #' + incidentID + '.';
         lockInfo += (args.info) ? ' Additional info: ' + args.info :'';
 
         var guid = guid();
@@ -87,16 +89,16 @@ switch (command) {
         var lock, version;
 
         do{
-            logDebug('timeout is : ' + lockTimeout + ' time is ' + time);
+            logDebug('incidentID ' + incidentID + ': timeout is : ' + lockTimeout + ' time is ' + time + ' lockname is ' + lockName);
             [lock, version] = getLock();
             if (lock.guid === guid) {
                 break;
             }
             if (!lock.guid) {
                 try {
-                    logDebug('call set to lock with guid' + guid + ' ' + 'version: ' + version)
+                    logDebug('incidentID ' + incidentID + 'call set to lock with guid' + guid + ' ' + 'version: ' + JSON.stringify(version) + ' lockname is ' + lockName);
                     setLock(guid, lockInfo, version);
-                    logDebug('done with set lock')
+                    logDebug('incidentID ' + incidentID + 'done with set lock' + ' lockname is ' + lockName);
                 } catch(err) {
                     logDebug(err.message)
                 }
@@ -105,8 +107,9 @@ switch (command) {
         } while (time++ < lockTimeout) ;
 
         [lock, version] = getLock();
-        logDebug('got lock after loop ' + JSON.stringify(lock))
+        logDebug('incidentID ' + incidentID + ' got lock after loop ' + JSON.stringify(lock) + ' lockname is ' + lockName);
         if (lock.guid === guid) {
+            logDebug('incidentID ' + incidentID + 'return success' + ' lockname is ' + lockName);
             var md = '### Demisto Locking Mechanism\n';
             md += 'Lock acquired successfully\n';
             md += 'GUID: ' + guid;
@@ -115,13 +118,15 @@ switch (command) {
             var md = 'Timeout waiting for lock\n';
             md += 'Lock name: ' + lockName + '\n';
             md += 'Lock info: ' + lock.info + '\n';
+            logDebug('incidentID ' + incidentID + 'return fail for info:' + md)
+
             return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: md };
         }
         break;
 
     case 'demisto-lock-release':
         mergeVersionedIntegrationContext({newContext : {[lockName] : {}}, retries : 5});
-
+        logDebug('incidentID ' + incidentID + ' calling release for ' + lockName);
         var md = '### Demisto Locking Mechanism\n';
         md += 'Lock released successfully';
         return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
