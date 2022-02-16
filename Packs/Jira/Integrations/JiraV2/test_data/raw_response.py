@@ -299,39 +299,3 @@ ATTACHMENT = {
     "mimeType": "binary/octet-stream",
     "content": "https://demistodev.atlassian.net/rest/api/2/attachment/content/16188"}
 
-MD_AND_CONTEXT_OUTPUT = {
-    'md': [
-        {'id': '20852',
-         'key': 'VIK-267',
-         'summary': 'o767676',
-         'status': 'To Do',
-         'priority': 'Medium',
-         'project': 'VikTest',
-         'duedate': None,
-         'created': '2021-11-17T12:40:08.900+0200',
-         'assignee': 'null(null)',
-         'creator': 'creator',
-         'reporter': 'reporter',
-         'issueType': 'A task that needs to be done.',
-         'labels': [],
-         'description': 'galb1 [^test11.py]  [^test] ',
-         'ticket_link': 'link',
-         'attachment': 'test,test11.py'}
-    ],
-    'context': [
-        {'Id': '20852',
-         'Key': 'VIK-267',
-         'Summary': 'o767676',
-         'Status': 'To Do',
-         'Priority': 'Medium',
-         'ProjectName': 'VikTest',
-         'DueDate': None,
-         'Created': '2021-11-17T12:40:08.900+0200',
-         'Assignee': 'null(null)',
-         'Creator': 'creator',
-         'LastSeen': '2022-02-14T11:58:21.161+0200',
-         'LastUpdate': '2022-01-04T15:51:01.316+0200',
-         'attachment': 'test,test11.py'
-         }
-    ]
-}
