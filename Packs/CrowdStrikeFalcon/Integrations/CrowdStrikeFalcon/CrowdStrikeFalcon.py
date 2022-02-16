@@ -8,7 +8,7 @@ import requests
 import base64
 import email
 import hashlib
-from typing import List
+from typing import List, Callable
 from dateutil.parser import parse
 from typing import Dict, Tuple, Any, Optional, Union
 from threading import Timer
@@ -516,20 +516,22 @@ def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, opt
         'command_string': full_command
     }
     if optional_hosts:
-        default_body.update({'optional_hosts': optional_hosts})
+        default_body['optional_hosts'] = optional_hosts
 
     body = json.dumps(default_body)
     response = http_request('POST', endpoint_url, data=body)
     return response
 
 
-def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, timeout: int = 30) -> Dict:
+def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, timeout: int = 30,
+                        optional_hosts: list = None) -> Dict:
     """
         Sends RTR command scope with write access
         :param batch_id:  Batch ID to execute the command on.
         :param command_type: Read-only command type we are going to execute, for example: ls or cd.
         :param full_command: Full command string for the command.
         :param timeout: Timeout for how long to wait for the request in seconds.
+        :param optional_hosts: The hosts ids to run the command on.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-admin-command/v1'
@@ -538,11 +540,15 @@ def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, tim
         'timeout': timeout
     }
 
-    body = json.dumps({
+    default_body = {
         'base_command': command_type,
         'batch_id': batch_id,
         'command_string': full_command
-    })
+    }
+    if optional_hosts:
+        default_body['optional_hosts'] = optional_hosts
+
+    body = json.dumps(default_body)
     response = http_request('POST', endpoint_url, data=body, params=params)
     return response
 
@@ -3078,17 +3084,40 @@ def execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command,
     return response
 
 
-def rtr_general_command_on_single_host(args: dict, command: str) -> list[CommandResults, dict]:
-    host_id = args.get('host_id')
-    host_ids = [host_id]
-    batch_id = init_rtr_batch_session(host_ids)
-    response = execute_run_batch_write_cmd_with_timer(batch_id, command_type=command, full_command=command,
-                                                      host_ids=host_ids)
-    resources: dict = response.get('combined', {}).get('resources', {})
-    output = {}
-    file = {}
+def execute_run_batch_admin_cmd_with_timer(batch_id, command_type, full_command, host_ids=None):
+    timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
+    timer.start()
+    try:
+        response = run_batch_admin_cmd(batch_id, command_type=command_type, full_command=full_command,
+                                       optional_hosts=host_ids)
+    finally:
+        timer.cancel()
+    return response
 
-    for _, resource in resources.items():
+
+def rtr_general_command_on_hosts(host_ids: list, command: str, full_command: str, get_session_function: Callable,
+                                 write_to_context=True) -> \
+        list[CommandResults, dict]:
+    batch_id = init_rtr_batch_session(host_ids)
+    response = get_session_function(batch_id, command_type=command, full_command=full_command, host_ids=host_ids)
+    output, file, not_found_hosts = parse_stdout_response(host_ids, response, command)
+    human_readable = tableToMarkdown(
+        f'{INTEGRATION_NAME} {command} command on host {host_ids[0]}:', output, headers="Stdout")
+    human_readable += add_error_message(not_found_hosts, host_ids)
+    if write_to_context:
+        outputs = {"Filename": file[0].get('File')}
+        return [CommandResults(raw_response=response, readable_output=human_readable, outputs=outputs,
+                               outputs_prefix=f"CrowdStrike.Command.{command}",
+                               outputs_key_field="Filename"), file]
+    return [CommandResults(raw_response=response, readable_output=human_readable), file]
+
+
+def parse_stdout_response(host_ids, response, command, file_name_suffix=""):
+    resources: dict = response.get('combined', {}).get('resources', {})
+    outputs = []
+    files = []
+
+    for host_id, resource in resources.items():
         current_error = ""
         errors = resource.get('errors')
         stderr = resource.get('stderr')
@@ -3099,22 +3128,49 @@ def rtr_general_command_on_single_host(args: dict, command: str) -> list[Command
             elif stderr:
                 current_error = stderr
             return_error(current_error)
-        output = {'Stdout': resource.get('stdout')}
-        file = fileResult(f"{command}-{host_id}", resource.get('stdout'))
+        stdout = resource.get('stdout', "")
+        outputs.append({'Stdout': stdout})
+        files.append(fileResult(f"{command}-{host_id}{file_name_suffix}", stdout))
+
+    not_found_hosts = set(host_ids) - resources.keys()
+    return outputs, files, not_found_hosts
+
+
+def rtr_read_registry_keys_command(args: dict):
+    host_ids = remove_duplicates_from_list_arg(args, 'host_ids')
+    registry_keys = remove_duplicates_from_list_arg(args, 'registry_keys')
+    command_type = "reg"
+    raw_response = []
+    batch_id = init_rtr_batch_session(host_ids)
+    outputs = []
+    files = []
+    not_found_hosts = set()
+
+    for registry_key in registry_keys:
+        full_command = f"{command_type} query {registry_key}"
+        response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids=host_ids)
+        output, file, not_found_host = parse_stdout_response(host_ids, response, command_type,
+                                                             file_name_suffix=registry_key)
+        not_found_hosts.update(not_found_host)
+        outputs.append(output)
+        files.append(file)
+        raw_response.append(response)
 
     human_readable = tableToMarkdown(
-        f'{INTEGRATION_NAME} {command} command on host {host_ids[0]}:', output)
-    return [CommandResults(raw_response=response, readable_output=human_readable), file]
+        f'{INTEGRATION_NAME} {command_type} command on hosts {host_ids}:', outputs, headers="Stdout")
+    human_readable += add_error_message(not_found_hosts, host_ids)
+    return [CommandResults(raw_response=raw_response, readable_output=human_readable), files]
 
 
-def add_error_message(failed_devices):
-    # todo delete if not in use
+def add_error_message(failed_hosts, all_requested_hosts):
     human_readable = ""
-    if failed_devices:
+    if failed_hosts:
+        if len(all_requested_hosts) == len(failed_hosts):
+            raise DemistoException(f"{INTEGRATION_NAME} The command was failed with the errors: {failed_hosts}")
         human_readable = "Note: you don't see the following IDs in the results as the request was failed " \
                          "for them. \n"
-        for device_id in failed_devices:
-            human_readable += f'ID {device_id} failed with the error: {failed_devices[device_id]} \n'
+        for host_id in failed_hosts:
+            human_readable += f'ID {host_id} failed as it was not found. \n'
     return human_readable
 
 
@@ -3245,10 +3301,24 @@ def main():
             return_results(rtr_remove_file_command(args))
 
         elif command == 'cs-falcon-rtr-list-processes':
-            return_results(rtr_general_command_on_single_host(args, "ps"))
+            host_id = args.get('host_id')
+            return_results(
+                rtr_general_command_on_hosts([host_id], "ps", "ps", execute_run_batch_write_cmd_with_timer, True))
 
         elif command == 'cs-falcon-rtr-list-network-stats':
-            return_results(rtr_general_command_on_single_host(args, "netstat"))
+            host_id = args.get('host_id')
+            return_results(
+                rtr_general_command_on_hosts([host_id], "netstat", "netstat", execute_run_batch_write_cmd_with_timer,
+                                             True))
+
+        elif command == 'cs-falcon-rtr-read-registry':
+            return_results(rtr_read_registry_keys_command(args))
+
+        elif command == 'cs-falcon-rtr-list-scheduled-tasks':
+            full_command = f'runscript -Raw=```schtasks /query /fo CSV /v```'
+            host_ids = argToList(args.get('host_ids'))
+            return_results(rtr_general_command_on_hosts(host_ids, "runscript", full_command,
+                                                        execute_run_batch_admin_cmd_with_timer))
 
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '

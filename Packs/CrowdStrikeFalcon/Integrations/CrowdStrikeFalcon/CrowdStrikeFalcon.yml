@@ -3027,6 +3027,10 @@ script:
     description: Executes a RTR active-responder ps command to get a list of active processes across the given host.
     execution: false
     name: cs-falcon-rtr-list-processes
+    outputs:
+    - contextPath: CrowdStrike.Command.ps.Filename
+      description: The the name of the result file to be returned.
+      type: String
   - arguments:
     - default: false
       description: The host ID in which you would like to get the network status and protocol statistics list from.
@@ -3038,6 +3042,61 @@ script:
     description: Executes a RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
     execution: false
     name: cs-falcon-rtr-list-network-stats
+    outputs:
+    - contextPath: CrowdStrike.Command.netstat.Filename
+      description: The the name of the result file to be returned.
+      type: String
+  - arguments:
+    - default: false
+      description: A comma-separated list of the hosts IDs in which you would like to get the registry keys from.
+      isArray: true
+      name: host_ids
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of the registy keys, subkeys or value to get.
+      isArray: true
+      name: registry_keys
+      required: true
+      secret: false
+    deprecated: false
+    description: Executes a RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
+    execution: false
+    name: cs-falcon-rtr-read-registry
+  - arguments:
+    - default: false
+      description: A comma-separated list of the hosts IDs in which you would like to get the list of scheduled tasks from.
+      isArray: true
+      name: host_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Executes a RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
+    execution: false
+    name: cs-falcon-rtr-list-scheduled-tasks
+  - arguments:
+    - default: false
+      description: A comma-separated list of the hosts IDs in which you would like to get file from.
+      isArray: true
+      name: host_ids
+      required: true
+      secret: false
+    - default: false
+      description: The file path of the required file to extract.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      description: The filename to use for the archive name and the file within the archive.
+      isArray: false
+      name: filename
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the RTR extracted file contents for the specified file path.
+    execution: false
+    name: cs-falcon-rtr-retrieve-file
   dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: true
