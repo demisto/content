@@ -1571,7 +1571,6 @@ def get_remote_data_command(args: Dict[str, Any]):
     """
     remote_args = GetRemoteDataArgs(args)
 
-    mirrored_data = {}
     try:
         demisto.debug(f'Performing get-remote-data command with incident or detection id: {remote_args.remote_incident_id} '
                       f'and last_update: {remote_args.last_update}')
@@ -1579,14 +1578,14 @@ def get_remote_data_command(args: Dict[str, Any]):
         # updating remote incident
         if remote_args.remote_incident_id[0:3] == 'inc':
             mirrored_data_list = get_incidents_entities([remote_args.remote_incident_id]).get('resources', [])
-            delta: Dict[str, Any] = {}
+            delta: Dict[str, Any] = {'type': 'incident'}
             for mirrored_data in mirrored_data_list:
                 set_delta(delta, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
 
         # updating remote detection
         elif remote_args.remote_incident_id[0:3] == 'ldt':
             mirrored_data_list = get_detections_entities([remote_args.remote_incident_id]).get('resources', [])
-            delta = {}
+            delta: Dict[str, Any] = {'type': 'detection'}
             for mirrored_data in mirrored_data_list:
                 mirrored_data['severity'] = severity_string_to_int(mirrored_data.get('max_severity_displayname'))
                 set_delta(delta, mirrored_data, CS_FALCON_DETECTION_INCOMING_ARGS)
