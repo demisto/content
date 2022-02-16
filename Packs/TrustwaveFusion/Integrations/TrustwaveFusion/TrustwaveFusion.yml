@@ -53,7 +53,14 @@ configuration:
   - CHANGE
   required: false
   type: 16
-description: Trustwave Fusion Integration.
+description: |+
+  The Trustwave Fusion platform connects your organization’s digital footprint
+  to a robust security cloud comprised of the Trustwave data lake, advanced
+  analytics, actionable threat intelligence and a wide range of Trustwave
+  services including Trustwave SpiderLabs , elite team of security
+  specialists. Your team will benefit from deep visibility and the advanced
+  security expertise necessary for protecting assets and eradicating threats as
+  they arise.
 display: TrustwaveFusion
 name: TrustwaveFusion
 script:
@@ -64,7 +71,7 @@ script:
       description: Ticket ID
       name: id
       required: true
-    description: Get a single incident
+    description: Get a single ticket
     name: trustwave-get-ticket
     outputs:
     - contextPath: Trustwave.Ticket.number
@@ -261,7 +268,7 @@ script:
       description: Comment text
       name: comment
       required: true
-    description: Add a comment to an incident
+    description: Add a comment to a ticket
     name: trustwave-add-ticket-comment
   - arguments:
     - default: false
@@ -274,7 +281,7 @@ script:
       description: Comment text
       name: comment
       required: true
-    description: Close an Incident
+    description: Close a ticket
     name: trustwave-close-ticket
   - arguments:
     - default: false

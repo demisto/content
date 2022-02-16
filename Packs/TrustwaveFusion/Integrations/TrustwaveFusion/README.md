@@ -1,4 +1,11 @@
-Trustwave Fusion Integration.
+The Trustwave Fusion platform connects your organization’s digital footprint
+to a robust security cloud comprised of the Trustwave data lake, advanced
+analytics, actionable threat intelligence and a wide range of Trustwave
+services including Trustwave SpiderLabs , elite team of security
+specialists. Your team will benefit from deep visibility and the advanced
+security expertise necessary for protecting assets and eradicating threats as
+they arise.
+
 This integration was integrated and tested with version 1.0.68 of TrustwaveFusion
 
 ## Configure TrustwaveFusion on Cortex XSOAR
@@ -25,7 +32,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### trustwave-get-ticket
 ***
-Get a single incident
+Get a single ticket
 
 
 #### Base Command
@@ -276,7 +283,7 @@ Search tickets
 
 ### trustwave-add-ticket-comment
 ***
-Add a comment to an incident
+Add a comment to a ticket
 
 
 #### Base Command
@@ -301,7 +308,7 @@ There is no context output for this command.
 
 ### trustwave-close-ticket
 ***
-Close an Incident
+Close a ticket
 
 
 #### Base Command
