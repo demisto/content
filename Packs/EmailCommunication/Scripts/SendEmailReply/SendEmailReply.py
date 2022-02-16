@@ -683,9 +683,9 @@ def main():
                 # Format any markdown in the email body as HTML
                 new_email_body = format_body(new_email_body)
 
-                result = resend_first_contact(email_selected_thread, incident_email_threads, incident_id, new_email_attachments,
-                                              files, new_email_body, add_cc, add_bcc, service_mail,
-                                              mail_sender_instance, new_attachment_names)
+                result = resend_first_contact(email_selected_thread, incident_email_threads, incident_id,
+                                              new_email_attachments, files, new_email_body, add_cc, add_bcc,
+                                              service_mail, mail_sender_instance, new_attachment_names)
 
                 # Clear fields for re-use
                 reset_fields()
@@ -756,7 +756,7 @@ def main():
                     # first-contact message and must be sent as a new email message.
 
                     # Format any markdown in the email body as HTML
-                    new_email_body = format(new_email_body)
+                    new_email_body = format_body(new_email_body)
 
                     result = resend_first_contact(email_selected_thread, incident_email_threads[last_thread_processed],
                                                   incident_id, new_email_attachments, files, new_email_body, add_cc,
@@ -785,7 +785,7 @@ def main():
                 entry_id_list = get_entry_id_list(incident_id, [], new_email_attachments, files)
 
                 # Format any markdown in the email body as HTML
-                reply_html_body = format(new_email_body)
+                reply_html_body = format_body(new_email_body)
 
                 # Trim "Re:" from subject since the reply-mail command in both EWS and Gmail adds it again
                 reply_subject = reply_subject.lstrip("Re: ")
@@ -802,6 +802,7 @@ def main():
                     subject_with_id = reply_subject
 
                 # Store message details in context entry
+                reply_html_body = append_email_signature(reply_html_body)
                 create_thread_context(reply_code, final_email_cc, final_email_bcc, new_email_body, service_mail,
                                       reply_html_body, '', '', service_mail, subject_with_id, final_reply_recipients,
                                       incident_id, new_attachment_names)

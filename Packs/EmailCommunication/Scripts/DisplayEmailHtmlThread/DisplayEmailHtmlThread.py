@@ -110,7 +110,8 @@ def main():
     files = None  # demisto.context().get('File', [])
 
     if thread_exists:
-        for thread in thread_items:
+        # Append all messages together, with the most recent on top
+        for thread in reversed(thread_items):
             email_reply = set_email_reply(thread['email_from'], thread['email_to'], thread['email_cc'],
                                           thread['email_subject'], thread['email_html'], thread['email_time'],
                                           attachments, thread['email_attachments'])

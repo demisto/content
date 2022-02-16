@@ -1,8 +1,7 @@
 {
 	"associatedToAll": false,
 	"associatedTypes": [
-		"Email Communication",
-		"NDIT - MSISAC_EmlCommsTesting"
+		"Email Communication"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
