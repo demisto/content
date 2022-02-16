@@ -1068,21 +1068,29 @@ Get entry by the specified entry ID.
 
 
 ## Breaking changes from the previous version of this integration - FortiSIEM v2
-%%FILL HERE%%
 The following sections list the changes in this version.
 
 ### Commands
 #### The following commands were removed in this version:
-* *fortisiem-get-events-by-incident* - this command was replaced by XXX.
-* *fortisiem-clear-incident* - this command was replaced by XXX.
-* *fortisiem-get-events-by-filter* - this command was replaced by XXX.
-* *fortisiem-get-cmdb-devices* - this command was replaced by XXX.
-* *fortisiem-get-events-by-query* - this command was replaced by XXX.
-* *fortisiem-get-lists* - this command was replaced by XXX.
-* *fortisiem-add-item-to-resource-list* - this command was replaced by XXX.
-* *fortisiem-remove-item-from-resource-list* - this command was replaced by XXX.
-* *fortisiem-get-resource-list* - this command was replaced by XXX.
+* *fortisiem-get-events-by-incident* - this command was replaced by *fortisiem-event-list-by-incident*.
+* *fortisiem-clear-incident* - this command was replaced by *fortisiem-incident-update*.
+* *fortisiem-get-events-by-filter* - this command was replaced by *fortisiem-event-search-status*.
+* *fortisiem-get-cmdb-devices* - this command was replaced by *fortisiem-cmdb-devices-list*.
+* *fortisiem-get-events-by-query* - this command was replaced by *fortisiem-event-search-status*.
+* *fortisiem-get-lists* .
+* *fortisiem-add-item-to-resource-list* .
+* *fortisiem-remove-item-from-resource-list*.
+* *fortisiem-get-resource-list*.
 
 ## Additional Considerations for this version
-%%FILL HERE%%
-* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.
+#### The following commands were added in this version:
+* *fortisiem-watchlist-list*
+* *fortisiem-watchlist-get*
+* *fortisiem-watchlist-add*
+* *fortisiem-watchlist-entry-add*
+* *fortisiem-watchlist-entry-update*
+* *fortisiem-watchlist-delete*
+* *fortisiem-watchlist-entry-delete*
+* *fortisiem-watchlist-entry-get*
+
+#### Fetch incidents command can fetch also triggered events. 
