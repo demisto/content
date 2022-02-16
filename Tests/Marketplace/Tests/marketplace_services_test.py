@@ -23,7 +23,7 @@ from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_vali
     store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file, \
     is_the_only_rn_in_block
 from Tests.Marketplace.marketplace_constants import PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
-    PACKS_FOLDER, PackTags
+    PACKS_FOLDER, PackTags, BASE_PACK_DEPENDENCY_DICT
 
 CHANGELOG_DATA_INITIAL_VERSION = {
     "1.0.0": {
@@ -64,7 +64,7 @@ AGGREGATED_CHANGELOG = {
 }
 
 DUMMY_PACKS_DICT = {'HelloWorld': '', 'ServiceNow': '', 'Ipstack': '', 'Active_Directory_Query': '', 'SlackV2': '',
-                    'CommonTypes': '', 'CommonPlaybooks': ''}
+                    'CommonTypes': '', 'CommonPlaybooks': '', 'Base':''}
 
 
 @pytest.fixture(scope="module")
@@ -1367,7 +1367,7 @@ class TestSetDependencies:
                 }
             }
         }
-
+        generated_dependencies['ImpossibleTraveler']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
         p = Pack('ImpossibleTraveler', 'dummy_path')
         dependencies = json.dumps(metadata['dependencies'])
         dependencies = json.loads(dependencies)
@@ -1425,7 +1425,7 @@ class TestSetDependencies:
                 }
             }
         }
-
+        generated_dependencies['ImpossibleTraveler']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
         metadata['dependencies'] = {}
         p = Pack('ImpossibleTraveler', 'dummy_path')
         p._user_metadata = metadata
@@ -1480,6 +1480,7 @@ class TestSetDependencies:
             }
         }
 
+        generated_dependencies['HelloWorld']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
         metadata['dependencies'] = {}
         metadata['name'] = 'HelloWorld'
         metadata['id'] = 'HelloWorld'
@@ -1527,6 +1528,7 @@ class TestSetDependencies:
             }
         }
 
+        generated_dependencies['HelloWorld']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
         metadata['dependencies'] = {}
         p = Pack('HelloWorld', 'dummy_path')
         p._user_metadata = metadata
@@ -1571,6 +1573,7 @@ class TestSetDependencies:
             }
         }
 
+        generated_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
         p = Pack('HelloWorld', 'dummy_path')
         user_dependencies = metadata['dependencies']
         dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])

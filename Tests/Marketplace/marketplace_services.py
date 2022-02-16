@@ -2066,10 +2066,9 @@ class Pack(object):
         if Metadata.DEPENDENCIES not in self._user_metadata:
             self._user_metadata[Metadata.DEPENDENCIES] = {}
 
-        # if self._pack_name != GCPConfig.BASE_PACK:
-        #     # add base as a mandatory pack dependency, by design for all packs
-        #     first_level_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
-        # TODO: verify - results in many UT changes
+        if self._pack_name != GCPConfig.BASE_PACK:
+            # add base as a mandatory pack dependency, by design for all packs
+            first_level_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
 
         # update the calculated dependencies with the hardcoded dependencies
         first_level_dependencies.update(self.user_metadata[Metadata.DEPENDENCIES])

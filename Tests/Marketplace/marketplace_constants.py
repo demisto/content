@@ -9,7 +9,16 @@ PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
 IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
 LANDING_PAGE_SECTIONS_PATH = os.path.abspath(os.path.join(__file__, '../landingPage_sections.json'))
-BASE_PACK_DEPENDENCY_DICT = {"Base": {"mandatory": True, "display_name": "Base"}}
+BASE_PACK_DEPENDENCY_DICT = {
+    'Base':
+        {
+            'mandatory': True,
+                                      'author': 'Cortex XSOAR',
+                                      'minVersion': '1.0.0',
+                                      'name': 'Base',
+                                      'certification': ''
+        }
+}
 
 
 class BucketUploadFlow(object):
