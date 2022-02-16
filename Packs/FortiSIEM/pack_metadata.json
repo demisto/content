@@ -1,8 +1,8 @@
 {
     "name": "FortiSIEM",
-    "description": "Search and update events of FortiSIEM and manage resource lists.",
+    "description": "Use FortiSIEM v2 to fetch and update incidents, search events and manage watchlists of FortiSIEM.",
     "support": "xsoar",
-    "currentVersion": "1.0.4",
+    "currentVersion": "2.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
