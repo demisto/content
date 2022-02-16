@@ -1,7 +1,6 @@
 commonfields:
-  id: b2d200b7-9f6f-43e8-84c9-07d1084739f1
-  version: 5
-vcShouldKeepItemLegacyProdMachine: false
+  id: VerifyIPv4Indicator
+  version: -1
 name: VerifyIPv4Indicator
 script: ''
 type: python
