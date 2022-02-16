@@ -13,7 +13,7 @@
     "id": "incident_destinationuser",
     "isReadOnly": false,
     "locked": false,
-    "name": "Destination User",
+    "name": "FortiSIEM Destination User",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
