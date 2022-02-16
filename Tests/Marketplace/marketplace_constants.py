@@ -13,10 +13,10 @@ BASE_PACK_DEPENDENCY_DICT = {
     'Base':
         {
             'mandatory': True,
-                                      'author': 'Cortex XSOAR',
-                                      'minVersion': '1.0.0',
-                                      'name': 'Base',
-                                      'certification': ''
+            'author': 'Cortex XSOAR',
+            'minVersion': '1.0.0',
+            'name': 'Base',
+            'certification': ''
         }
 }
 

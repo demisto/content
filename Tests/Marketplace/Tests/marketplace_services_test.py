@@ -64,7 +64,7 @@ AGGREGATED_CHANGELOG = {
 }
 
 DUMMY_PACKS_DICT = {'HelloWorld': '', 'ServiceNow': '', 'Ipstack': '', 'Active_Directory_Query': '', 'SlackV2': '',
-                    'CommonTypes': '', 'CommonPlaybooks': '', 'Base':''}
+                    'CommonTypes': '', 'CommonPlaybooks': '', 'Base': ''}
 
 
 @pytest.fixture(scope="module")
