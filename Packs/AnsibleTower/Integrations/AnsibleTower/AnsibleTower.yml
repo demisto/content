@@ -1113,7 +1113,7 @@ script:
       description: The ID of the job event.
       isArray: false
       name: job_id
-      required: false
+      required: true
       secret: false
     - default: false
       defaultValue: '1'

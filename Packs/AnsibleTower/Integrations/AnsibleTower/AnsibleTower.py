@@ -378,13 +378,14 @@ def list_job_events_by_id(client: Client, args: dict) -> CommandResults:
             raw_response=response
         )
 
-    context_data = results_output_data(results)
-    headers = get_headers(context_data)
+    readable_data = results_output_data(results)
+    context_data = results
+    headers = get_headers(readable_data)
     return CommandResults(
         outputs_prefix='AnsibleAWX.JobEvents',
         outputs_key_field='id',
         outputs=context_data,
-        readable_output=tableToMarkdown(name='Results', t=context_data, removeNull=True, headers=headers),
+        readable_output=tableToMarkdown(name='Results', t=readable_data, removeNull=True, headers=headers),
         raw_response=response
     )
 
