@@ -44,6 +44,7 @@ def test_fetch_indicators(mocker):
     assert actual_results["type"] == expected_results["type"]
     assert actual_results["value"] == expected_results["value"]
     assert actual_results["fields"] == expected_results["fields"]
+    assert True
 
 
 def test_incremental_level_fetch(mocker):
