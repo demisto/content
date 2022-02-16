@@ -11,7 +11,14 @@ requests.packages.urllib3.disable_warnings()
 PARAMS = demisto.params()
 URL = PARAMS.get('server')
 TOKEN = PARAMS.get('token') or (PARAMS.get('credentials') or {}).get('password')
-if not TOKEN and is_demisto_version_ge('6.5.0'):
+current_platform = demisto.demistoVersion()['platform']
+if not TOKEN and current_platform == 'x2':
+    """
+    Note: We don't want to get the token from the license if we're on the standard XSOAR platform.
+    The main reason is it has a strict API limit.
+    Therefore, we only get the token from in X2 (from the config), even though it is
+    available in the license from version 6.5 of XSOAR
+    """
     try:
         TOKEN = demisto.getLicenseCustomField('WildFire-Reports.token')
     except Exception:
