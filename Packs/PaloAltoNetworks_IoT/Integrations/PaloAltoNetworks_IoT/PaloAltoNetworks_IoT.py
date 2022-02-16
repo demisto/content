@@ -1,13 +1,12 @@
-import dateparser
-from datetime import datetime, timezone
 import json
 import time
+from datetime import datetime, timezone
 from typing import Any, Optional
 
-import demistomock as demisto
+import dateparser
+import demistomock as demisto  # noqa: F401
 import requests
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
+from CommonServerPython import *  # noqa: F401
 
 # IMPORTS
 
@@ -25,6 +24,7 @@ class Client(BaseClient):
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
+
     def __init__(self, base_url, tenant_id, first_fetch='-1', max_fetch=10, api_timeout=60, verify=True, proxy=False,
                  ok_codes=tuple(), headers=None):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers)
@@ -59,6 +59,20 @@ class Client(BaseClient):
             params={
                 'customerid': self.tenant_id,
                 'deviceid': id
+            },
+            timeout=self.api_timeout
+        )
+
+    def get_device_by_ip(self, ip):
+        """
+        Get a device from IoT security portal by ip
+        """
+        return self._http_request(
+            method='GET',
+            url_suffix='/device/ip',
+            params={
+                'customerid': self.tenant_id,
+                'ip': ip
             },
             timeout=self.api_timeout
         )
@@ -251,6 +265,30 @@ def iot_get_device(client, args):
         outputs_prefix='PaloAltoNetworksIoT.Device',
         outputs_key_field='deviceid',
         outputs=result
+    )
+
+
+def iot_get_device_by_ip(client, args):
+    """
+    Returns an IoT device
+
+    Args:
+        client (Client): IoT client.
+        args (dict): all command arguments.
+
+    Returns:
+        device
+
+        CommandResults
+    """
+    device_ip = args.get('ip')
+
+    result = client.get_device_by_ip(device_ip)
+
+    return CommandResults(
+        outputs_prefix='PaloAltoNetworksIoT.Device',
+        outputs_key_field='devices',
+        outputs=result['devices']
     )
 
 
@@ -583,6 +621,9 @@ def main():
 
         elif demisto.command() == 'iot-security-get-device':
             return_results(iot_get_device(client, demisto.args()))
+
+        elif demisto.command() == 'iot-security-get-device-by-ip':
+            return_results(iot_get_device_by_ip(client, demisto.args()))
 
         elif demisto.command() == 'iot-security-list-devices':
             return_results(iot_list_devices(client, demisto.args()))
