@@ -839,8 +839,12 @@ def search_sessions(query=None, size=None, sort=None, order=None, file_hash=None
                     from_time=None, to_time=None):
     validate_no_query_and_indicators(query, [file_hash, domain, ip, url, from_time, to_time])
     if not query:
-        validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
-        query = build_session_search_query(file_hash, domain, ip, url, from_time, to_time)
+        used_indicator = validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
+        search_result = []
+        for b in batch(used_indicator, batch_size=100):
+            query = build_session_search_query(file_hash, domain, ip, url, from_time, to_time)
+            search_result.append(run_search('sessions', query=query, size=size, sort=sort, order=order))
+        return search_result
     return run_search('sessions', query=query, size=size, sort=sort, order=order)
 
 
@@ -926,7 +930,7 @@ def validate_no_multiple_indicators_for_search(arg_list):
             used_arg = arg
     if not used_arg:
         return_error('In order to perform a samples/sessions search, a query or an indicator must be given.')
-    return
+    return used_arg
 
 
 def search_indicator(indicator_type, indicator_value):
