@@ -1,0 +1,24 @@
+commonfields:
+  id: b2d200b7-9f6f-43e8-84c9-07d1084739f1
+  version: 5
+vcShouldKeepItemLegacyProdMachine: false
+name: VerifyIPv4Indicator
+script: ''
+type: python
+tags:
+- indicator-format
+comment: Verify that the address is a valid IPv4 address.
+enabled: true
+args:
+- name: input
+  default: true
+  description: The IPv6 to vriefy.
+  isArray: true
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.10.1.25933
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
