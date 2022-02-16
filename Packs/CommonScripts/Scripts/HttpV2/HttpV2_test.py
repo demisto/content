@@ -1,13 +1,3 @@
-"""Base Script for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-"""
-
 import json
 import io
 import pytest
@@ -23,7 +13,7 @@ def util_load_json(path):
     (["401", "405"], [401, 405]),
     (["401-404"], [401, 402, 403, 404]),
 ])
-def test_get_status_list(status_list, expected_output):
+def test_format_status_list(status_list, expected_output):
     """
     Given
         List of statuses

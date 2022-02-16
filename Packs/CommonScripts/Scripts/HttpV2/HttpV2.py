@@ -20,9 +20,10 @@ class Client(BaseClient):
 
         super().__init__(base_url=base_url, auth=auth, verify=verify, proxy=proxy)
 
-    def http_request(self, method: str, full_url: str = '', headers=None, resp_type=RAW_RESPONSE, params=None,
-                     data=None, timeout=10, retries=0, status_list_to_retry=None, raise_on_status=False,
-                     allow_redirects=True, backoff_factor=5):
+    def http_request(self, method: str, full_url: str = '', headers: dict = None, resp_type: str = RAW_RESPONSE,
+                     params: dict = None, data: str = None, timeout: int = 10, retries: int = 0,
+                     status_list_to_retry: list = None, raise_on_status: bool = False, allow_redirects: bool = True,
+                     backoff_factor: int = 5):
         try:
             res = self._http_request(
                 method=method,
@@ -46,7 +47,7 @@ class Client(BaseClient):
         return res
 
     @staticmethod
-    def _generic_error_handler(res):
+    def _generic_error_handler(res: requests.Response):
         status_code = res.status_code
         if status_code == 400:
             raise DemistoException(f"Bad request. Status code: {status_code}. Origin response from server: {res.text}")
@@ -93,7 +94,7 @@ def create_headers(headers: Dict, request_content_type_header: str, response_con
     return headers
 
 
-def get_parsed_response(res, resp_type: str) -> Dict:
+def get_parsed_response(res: requests.Response, resp_type: str) -> Any:
     try:
         resp_type = resp_type.lower()
         if resp_type == 'json':
@@ -131,7 +132,7 @@ def format_status_list(status_list: list) -> List[int]:
     return final_status_list
 
 
-def build_outputs(parsed_res, res) -> Dict:
+def build_outputs(parsed_res, res: requests.Response) -> Dict:
     return {'ParsedBody': parsed_res,
             'Body': res.text,
             'StatusCode': res.status_code,
@@ -143,72 +144,73 @@ def build_outputs(parsed_res, res) -> Dict:
 ''' MAIN FUNCTION '''
 
 
-def main(args: Dict):
-    method = args.get('method', '')
-    full_url = args.get('url', '')
-    body = args.get('body', '')
-    request_content_type = args.get('request_content_type', '')
-    response_content_type = args.get('response_content_type', '')
-    parse_response_as = args.get('parse_response_as', RAW_RESPONSE)
-    params = args.get('params', {})
-    headers = args.get('headers', {})
-    headers = create_headers(headers, request_content_type, response_content_type)
-    auth = tuple(argToList(args.get('auth_credentials', None)))
-    save_as_file = args.get('save_as_file', 'no')
-    file_name = args.get('filename', 'http-file')
-    timeout = arg_to_number(args.get('timeout', 10))
-    timeout_between_retries = args.get('timeout_between_retries', 5)
-    retry_count = arg_to_number(args.get('retry_count', 3))
-    proxy = argToBoolean(args.get('proxy', False))
-    verify = argToBoolean(not args.get('unsecure', False))
+def main():
+    try:
+        args = demisto.args()
+        method = args.get('method', '')
+        full_url = args.get('url', '')
+        body = args.get('body', '')
+        request_content_type = args.get('request_content_type', '')
+        response_content_type = args.get('response_content_type', '')
+        parse_response_as = args.get('parse_response_as', RAW_RESPONSE)
+        params = args.get('params', {})
+        headers = args.get('headers', {})
+        headers = create_headers(headers, request_content_type, response_content_type)
+        auth = tuple(argToList(args.get('auth_credentials', None)))
+        save_as_file = args.get('save_as_file', 'no')
+        file_name = args.get('filename', 'http-file')
+        timeout = arg_to_number(args.get('timeout', 10))
+        timeout_between_retries = args.get('timeout_between_retries', 5)
+        retry_count = arg_to_number(args.get('retry_count', 3))
+        proxy = argToBoolean(args.get('proxy', False))
+        verify = argToBoolean(not args.get('unsecure', False))
 
-    client = Client(base_url=full_url, auth=auth, verify=verify, proxy=proxy)
-    kwargs = {
-        'method': method,
-        'full_url': full_url,
-        'headers': headers,
-        'data': body,
-        'timeout': timeout,
-        'params': params,
-        'backoff_factor': timeout_between_retries
-    }
+        client = Client(base_url=full_url, auth=auth, verify=verify, proxy=proxy)
+        kwargs = {
+            'method': method,
+            'full_url': full_url,
+            'headers': headers,
+            'data': body,
+            'timeout': timeout,
+            'params': params,
+            'backoff_factor': timeout_between_retries
+        }
 
-    retry_on_status = args.get('retry_on_status', None)
-    raise_on_status = True if retry_on_status else False
-    retry_status_list = format_status_list(argToList(retry_on_status))
+        retry_on_status = args.get('retry_on_status', None)
+        raise_on_status = True if retry_on_status else False
+        retry_status_list = format_status_list(argToList(retry_on_status))
 
-    if raise_on_status:
-        kwargs.update({
-            'retries': retry_count,
-            'status_list_to_retry': retry_status_list,
-            'raise_on_status': raise_on_status
-        })
+        if raise_on_status:
+            kwargs.update({
+                'retries': retry_count,
+                'status_list_to_retry': retry_status_list,
+                'raise_on_status': raise_on_status
+            })
 
-    enable_redirect = argToBoolean(args.get('enable_redirect', True))
+        enable_redirect = argToBoolean(args.get('enable_redirect', True))
 
-    if not enable_redirect:
-        kwargs.update({
-            'allow_redirects': enable_redirect
-        })
+        if not enable_redirect:
+            kwargs.update({
+                'allow_redirects': enable_redirect
+            })
 
-    res = client.http_request(**kwargs)
-    parsed_res = get_parsed_response(res, parse_response_as)
+        res = client.http_request(**kwargs)
+        parsed_res = get_parsed_response(res, parse_response_as)
 
-    if save_as_file == 'yes':
-        return fileResult(file_name, res.content)
+        if save_as_file == 'yes':
+            return fileResult(file_name, res.content)
 
-    outputs = build_outputs(parsed_res, res)
+        outputs = build_outputs(parsed_res, res)
 
-    return CommandResults(
-        readable_output=f"Sent a {method} request to {full_url}",
-        outputs_prefix='HttpRequest.Response',
-        outputs=outputs,
-        raw_response={'data': parsed_res}
-    )
+        return CommandResults(
+            readable_output=f"Sent a {method} request to {full_url}",
+            outputs_prefix='HttpRequest.Response',
+            outputs=outputs,
+            raw_response={'data': parsed_res}
+        )
+    except Exception as e:
+        return_error(f'Failed to execute HttpV2 script. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    try:
-        return_results(main(demisto.args()))
-    except Exception as exc:
-        return_error(str(exc), error=exc)
+    return_results(main())
