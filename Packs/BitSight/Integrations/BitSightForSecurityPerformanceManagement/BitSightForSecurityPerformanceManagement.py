@@ -1,13 +1,9 @@
-import traceback
-
 import demistomock as demisto  # noqa: F401
-import requests
 from CommonServerPython import *  # noqa: F401
 
-register_module_line('BitSight for Security Performance Management', 'start', __line__())
-
-
 ''' IMPORTS '''
+import traceback
+import requests
 
 
 '''CONSTANTS'''
@@ -366,9 +362,6 @@ def get_company_findings_command(client, args, first_seen=None, fetch_incidents=
     res_json = client.get_company_findings(guid, first_seen, last_seen, severity_gte, grade, asset_category_eq,
                                            risk_vector)
 
-    return_results(res_json)
-    return
-
     if not fetch_incidents:
         generic_iam_context_data_list = []
         readable_list = []
@@ -496,5 +489,3 @@ def main():
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
-
-register_module_line('BitSight for Security Performance Management', 'end', __line__())
