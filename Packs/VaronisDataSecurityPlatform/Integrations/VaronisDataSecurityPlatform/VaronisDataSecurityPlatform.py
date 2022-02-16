@@ -56,7 +56,9 @@ ALERT_COLUMNS = [
     'Alert.Filer.Name',
     'Alert.Device.HostName',
     'Alert.Device.IsMaliciousExternalIP',
-    'Alert.Device.ExternalIPThreatTypesName']
+    'Alert.Device.ExternalIPThreatTypesName'
+]
+
 
 ''' CLIENT CLASS '''
 
