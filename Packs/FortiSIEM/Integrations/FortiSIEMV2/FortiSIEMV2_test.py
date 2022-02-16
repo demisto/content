@@ -445,7 +445,7 @@ def test_events_search_status(requests_mock):
     client: FortiSIEMClient = mock_client()
     search_id = '10931,1638796483313'
     mock_response = '100'
-    requests_mock.get(f'{client._base_url}query/progress/{search_id}', text= mock_response )
+    requests_mock.get(f'{client._base_url}query/progress/{search_id}', text=mock_response)
     results = events_search_status_command(client, {
         "search_id": search_id
     })
@@ -455,30 +455,33 @@ def test_events_search_status(requests_mock):
     assert outputs['percentage_status'] == mock_response
 
 
-# def test_events_search_results(requests_mock):
-#     """
-#     Scenario: Retrieve events search process results.
-#     Given:
-#         - User has provided valid credentials.
-#         - User has provided search ID.
-#     When:
-#         - fortisiem-event-list-by-incident command called.
-#     Then:
-#         - Ensure number of items is correct.
-#         - Ensure outputs prefix is correct.
-#         - Validate outputs' fields.
-#     """
-#     from FortiSIEMV2 import FortiSIEMClient, events_search_results_command
-#     client: FortiSIEMClient = mock_client()
-#     mock_response = load_json_mock_response('list_events_by_incident.json')
-#     requests_mock.get(f'{client._base_url}pub/incident/triggeringEvents', json=mock_response)
-#     result = events_list_command(client, {
-#         "incident_id": 123
-#     })
-#     outputs = result.outputs
-#     assert len(outputs) == 2
-#     assert outputs[0]['id'] == "1111"
-#     assert outputs[0]['attributes']['Reporting IP'] == '192.168.1.1'
-#     assert outputs[1]['id'] == "9071234812007542512"
-#     assert outputs[1]['attributes']['Reporting IP'] == '192.168.1.2'
-
+def test_events_search_results(requests_mock):
+    """
+    Scenario: Retrieve events search process results.
+    Given:
+        - User has provided valid credentials.
+        - User has provided search ID.
+    When:
+        - fortisiem-event-list-by-incident command called.
+    Then:
+        - Ensure number of items is correct.
+        - Ensure outputs prefix is correct.
+        - Validate outputs' fields.
+    """
+    from FortiSIEMV2 import FortiSIEMClient, events_search_results_command
+    client: FortiSIEMClient = mock_client()
+    mock_response = load_xml_mock_response('list_events_via_search_query.xml')
+    start_index = 0
+    limit = 1
+    search_id = '47189,1638796483313'
+    requests_mock.get(f'{client._base_url}query/events/{search_id}/{start_index}/{limit}', text=mock_response)
+    result = events_search_results_command(client, {
+        "search_id": search_id,
+        "limit": limit,
+        "page":1
+    })
+    outputs = result.outputs
+    assert len(outputs) == 1
+    assert result.outputs_prefix == 'FortiSIEM.Event'
+    assert outputs[0]['id'] == "9071234812100595667"
+    assert outputs[0]['attributes']['reptDevIpAddr'] == '192.168.1.1'
