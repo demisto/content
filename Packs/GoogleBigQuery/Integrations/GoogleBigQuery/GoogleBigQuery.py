@@ -8,6 +8,7 @@ import json
 import requests
 from google.cloud import bigquery
 from datetime import date
+import hashlib
 
 
 # Disable insecure warnings
@@ -200,6 +201,131 @@ try:
         test_module()
     elif demisto.command() == 'bigquery-query':
         query_command()
+    elif demisto.command() == 'fetch-incidents':
+
+        def get_incident_id(row):
+            additional_fields = row['additional_fields']
+            generated = row['generatedTime'] or row['generated_time'] or row['GeneratedTime']
+            event_id = row['event_id'] or row['EventId'] or row['eventId']
+            instance_id = row['instance_id'] or row['InstanceId'] or row['instanceId']
+            agent_id = row['agent_id'] or row['AgentId'] or row['agentId']
+            data = [additional_fields, generated, event_id, instance_id, agent_id]
+            row_data_string = ''
+            for data_field in data:
+                row_data_string += f'{data_field}_'
+            row_id = hashlib.md5(row_data_string.encode('utf-8')).hexdigest()
+            return row_id
+
+        def get_last_run_date():
+            last_date = demisto.getLastRun().get('last_date')
+            demisto.debug('[BigQuery Debug] last_date is: {}'.format(last_date))
+
+            if last_date is None:
+                time_24_hours_ago = datetime.now() - timedelta(hours=24)
+
+                time_24_hours_ago = time_24_hours_ago.strftime('%Y-%m-%d %H:%M:%S.%f')
+                last_date = time_24_hours_ago
+                demisto.debug('[BigQuery Debug] FIRST RUN - last_date is: {}'.format(last_date))
+
+            return last_date
+
+        def build_fetch_query(last_date):
+            fixed_query = demisto.params()["fetch_query"]
+
+            if "WHERE" in fixed_query:
+                fixed_query += " AND"
+            else:
+                fixed_query += " WHERE"
+
+            fetch_query = "{} `{}` > \"{}\"".format(fixed_query, demisto.params()["fetch_field"], last_date)
+            return fetch_query
+
+        def row_to_incident(row):
+            incident = {}
+            raw = {underscoreToCamelCase(k): convert_to_string_if_datetime(v) for k, v in row.items()}
+            incident["rawJSON"] = json.dumps(raw)
+            incident["name"] = raw[demisto.params()["fetch_name"]]
+            # incident["occurred"] = get_row_date_string(row)
+            return incident
+
+        def get_incident_time(incident):
+            incident_row = json.loads(incident["rawJSON"])
+            # return_error(str(incident_row))
+            return get_row_date_string(incident_row)
+
+        def get_row_date_string(row):
+            # try creation_time (fetch_field param) and CreationTime. Can be either
+            row_date_field = demisto.params().get("fetch_field", "CreationTime")
+            row_date_str = row.get(row_date_field) or row.get("creation_time")
+            row_date = datetime.strptime(row_date_str, '%Y-%m-%d %H:%M:%S')
+            new_row_date_str = row_date.strftime('%Y-%m-%d %H:%M:%S.%f')
+            demisto.debug("[BigQuery Debug] new_row_date_str is: {}".format(new_row_date_str))
+            return new_row_date_str
+
+        def get_max_incident_time(new_incidents):
+            def incident_to_timestamp(incident):
+                incident_time = get_incident_time(incident)
+                return datetime.strptime(incident_time, '%Y-%m-%d %H:%M:%S.%f')
+
+            incident_with_latest_timestamp = max(new_incidents, key=lambda inc: incident_to_timestamp(inc))
+            return get_incident_time(incident_with_latest_timestamp)
+
+        def remove_outdated_incident_ids(found_incidents_ids, latest_incident_time_str):
+            new_found_ids = {}
+            latest_incident_time = datetime.strptime(latest_incident_time_str, '%Y-%m-%d %H:%M:%S.%f')
+
+            for incident_id, date_str in  found_incidents_ids.items():
+                incident_time = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S.%f')
+                if incident_time >= latest_incident_time:
+                    new_found_ids[incident_id] = date_str
+
+            return new_found_ids
+
+
+        latest_incident_time_str = get_last_run_date()
+        fetch_query = build_fetch_query(latest_incident_time_str)
+        demisto.debug("[BigQuery Debug] fetch query with date is: {}".format(fetch_query))
+
+        bigquery_rows = list(query_command(fetch_query))
+
+        demisto.debug("[BigQuery Debug] number of results is: {}".format(len(bigquery_rows)))
+        if len(bigquery_rows) > 0:
+            demisto.debug("[BigQuery Debug] first row is: {}".format(bigquery_rows[0]))
+            demisto.debug("[BigQuery Debug] last row is: {}".format(bigquery_rows[-1]))
+
+        # incident = {} was here
+        new_incidents = []
+        found_incidents_ids = demisto.getLastRun().get('found_ids', {})
+
+        for i in range(len(bigquery_rows) - 1, - 1, -1):
+            if len(new_incidents) == 50:
+                break
+            row = bigquery_rows[i]
+            row_incident_id = get_incident_id(row)
+            row_date = get_row_date_string(row)
+            if row_incident_id in found_incidents_ids:
+                continue
+
+            found_incidents_ids[row_incident_id] = row_date
+            demisto.debug("[BigQuery Debug] cur row: {}".format(row))
+            incident = row_to_incident(row)
+            new_incidents.append(incident)
+
+        demisto.debug("[BigQuery Debug] new_incidents is: {}\nbigquery_rows is: {}".format(new_incidents, len(bigquery_rows)))
+
+        if 0 < len(new_incidents) < 50:
+            demisto.debug("[BigQuery Debug] Less than 50 incidents")
+            latest_incident_time_str = get_max_incident_time(new_incidents)
+            found_incidents_ids = remove_outdated_incident_ids(found_incidents_ids, latest_incident_time_str)
+
+        next_run = {
+            "last_date": latest_incident_time_str,
+            "found_ids": found_incidents_ids
+        }
+        demisto.debug("[BigQuery Debug] next run is: {}".format(next_run))
+        demisto.setLastRun(next_run)
+
+        demisto.incidents(new_incidents)
 
 
 except Exception as e:
