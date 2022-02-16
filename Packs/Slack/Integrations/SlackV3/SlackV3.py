@@ -1277,6 +1277,7 @@ async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse):
     integration_context = fetch_context()
     demisto.info("Fetching context")
     if not integration_context or 'mirrors' not in integration_context:
+        demisto.debug("No mirrors are found in context. Done processing mirror.")
         return
 
     mirrors = json.loads(integration_context['mirrors'])
@@ -1287,6 +1288,7 @@ async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse):
 
     for mirror in mirror_filter:
         if mirror['mirror_direction'] == 'FromDemisto' or mirror['mirror_type'] == 'none':
+            demisto.debug("Found mirrored message, but incident is only mirroring out.")
             return
 
         if not mirror['mirrored']:
@@ -1307,6 +1309,8 @@ async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse):
                 mirrors.append(mirror)
                 set_to_integration_context_with_retries({'mirrors': mirrors},
                                                         OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        else:
+            demisto.debug("Already Mirrored")
 
         investigation_id = mirror['investigation_id']
         await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
@@ -1322,9 +1326,10 @@ def fetch_context(force_refresh: bool = False) -> dict:
     """
     demisto.info("Fetching context using fetch_context")
     global CACHED_INTEGRATION_CONTEXT, CACHE_EXPIRY
-    if (CACHE_EXPIRY <= int(datetime.now(timezone.utc).timestamp() * 1000)) or force_refresh:
+    now = int(datetime.now(timezone.utc).timestamp() * 1000)
+    if (CACHE_EXPIRY <= now) or force_refresh:
         demisto.debug("Cached context has expired. Fetching new context")
-        CACHE_EXPIRY = int(datetime.now(timezone.utc).timestamp() * 1000) + 300
+        CACHE_EXPIRY = now + 300
         CACHED_INTEGRATION_CONTEXT = get_integration_context(SYNC_CONTEXT)
 
     return CACHED_INTEGRATION_CONTEXT
@@ -1341,14 +1346,23 @@ def handle_newly_created_channel(creator, channel):
     """
     if BOT_ID == creator:
         demisto.debug("Found channel created by Bot or Bot User.")
-        CACHED_INTEGRATION_CONTEXT.get('channels', [])
         if 'mirrors' in CACHED_INTEGRATION_CONTEXT:
             mirrors = json.loads(CACHED_INTEGRATION_CONTEXT['mirrors'])
-            mirror_filter = list(filter(lambda m: m['channel_id'] == channel, mirrors))
-            if not mirror_filter:
-                demisto.debug("Channel not yet found in cached context. Refreshing.")
+            if len(mirrors) == 0:
+                demisto.debug("No mirrors are currently in the cache, refreshing")
                 fetch_context(force_refresh=True)
                 return
+            mirror_filter = list(filter(lambda m: m['channel_id'] == channel, mirrors))
+            if not mirror_filter:
+                demisto.debug("Channel is not yet in cached context. Refreshing.")
+                fetch_context(force_refresh=True)
+                return
+            else:
+                demisto.debug(f"The channel {channel} already exists in cache. No need to refresh.")
+        else:
+            demisto.debug("Mirrors were not found in cache, refreshing cache.")
+            fetch_context(force_refresh=True)
+            return
     else:
         demisto.debug(f"Channel was created by {channel}, ignoring event.")
         return
