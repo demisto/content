@@ -457,12 +457,12 @@ def test_events_search_status(requests_mock):
 
 def test_events_search_results(requests_mock):
     """
-    Scenario: Retrieve events search process results.
+    Scenario: Retrieve the events that returned from the specified search query ID.
     Given:
         - User has provided valid credentials.
         - User has provided search ID.
     When:
-        - fortisiem-event-list-by-incident command called.
+        -  'fortisiem-event-search-results' command called.
     Then:
         - Ensure number of items is correct.
         - Ensure outputs prefix is correct.
