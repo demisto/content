@@ -71,12 +71,13 @@ def test_url_fails_unknown_error_code(mocker, requests_mock):
     Zscaler.BASE_URL = 'http://cloud/api/v1'
 
     requests_mock.post(urljoin(Zscaler.BASE_URL, 'urlLookup'), status_code=501)
-    args={'url': 'https://www.demisto-news.com,https://www.demisto-search.com'}
+    args = {'url': 'https://www.demisto-news.com,https://www.demisto-search.com'}
 
     try:
-        res = Zscaler.url_lookup(args)
+        Zscaler.url_lookup(args)
     except Exception as ex:
         assert 'following error: 501' in str(ex)
+
 
 def test_url_command_with_urlClassificationsWithSecurityAlert(mocker):
     """url"""
