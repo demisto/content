@@ -1,9 +1,11 @@
 id: e9f4ac34-76d6-4d2e-825b-5542722755cf
+description: Generic Polling for searching events in FortiSIEM.
+fromversion: 6.0.0
 inputs:
-- description: 'The query for filtering the relevant events. For example: ''eventId=9071234812319593968
-        AND eventType=type''. You can retrieve the attributes names  by the naming
+- description: The query for filtering the relevant events. For example, "eventId=9071234812319593968
+        AND eventType='type'". You can retrieve the attributes names  by the naming one
         of the filtering arguments of the command, or by naming the attributes of
-        the event that returned in the context output.'
+        the event that returned in the context output.
   key: query
   playbookInputQuery: null
   required: false
@@ -34,6 +36,7 @@ name: GenericPolling-FortiSIEM
 outputs:
 - contextPath: FortiSIEM.Event
   type: unknown
+  description: The events that retrieved from the search query.
 starttaskid: "0"
 tasks:
   "0":
@@ -52,6 +55,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ""
     taskid: 2a3026bc-813f-47c5-886b-b878959c5fc7
     timertriggers: []
     type: start
@@ -132,6 +136,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ""
     taskid: b1990696-5bd7-466e-809a-af06cdc9ebe4
     timertriggers: []
     type: title
@@ -265,6 +270,7 @@ tasks:
       name: Fetch Completed?
       type: condition
       version: -1
+      description: ""
     taskid: 99df6564-5723-4623-854e-c9643a61fdc9
     timertriggers: []
     type: condition
