@@ -107,9 +107,8 @@ args:
   secret: false
 - default: false
   description: |-
-    Used to reduce the number of events returned in oversized Magnifier alerts.
-    Setting the parameter to 0 will return the full response (default).
-    Setting it to 1 will trim the 'events' key in the alert JSON, only keeping the first event.
+    The number of events to return from the alert JSON. The default is 0, which returns all events.
+    Note that the trimming is from the top of the list, regardless of event time or other properties.
   isArray: false
   name: trim_events
   required: false

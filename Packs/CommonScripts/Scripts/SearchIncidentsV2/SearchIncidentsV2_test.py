@@ -1,5 +1,6 @@
-from SearchIncidentsV2 import *
 import pytest
+
+from SearchIncidentsV2 import *
 
 data_test_check_if_found_incident = [
     ([], 'failed to get incidents from demisto.\nGot: []'),
@@ -75,6 +76,7 @@ EXAMPLE_INCIDENTS_RAW_RESPONSE = [
         u'id': u'1',
         u'type': u'TypeA',
         u'name': u'Phishing',
+        u'events': ['event1', 'event2', 'event3']
     },
     {
         u'id': u'2',
@@ -107,3 +109,18 @@ FILTER_TO_MATCHED_INCIDENTS = [
 def test_apply_filters(args, expected_incident_ids):
     incidents = apply_filters(EXAMPLE_INCIDENTS_RAW_RESPONSE, args)
     assert [incident['id'] for incident in incidents] == expected_incident_ids
+
+
+@pytest.mark.parametrize('trim_events,expected_event_count', ((0, 3),
+                                                              (1, 1),
+                                                              (2, 2),
+                                                              (3, 3),
+                                                              (4, 3),
+                                                              )
+                         )
+def test_filter_events(trim_events, expected_event_count):
+    events = ['event0', 'event1', 'event2']
+    incidents = apply_filters([dict(name='foo', events=events)], dict(trim_events=trim_events))
+    assert len(incidents) == 1
+    assert incidents[0]['name'] == 'foo'
+    assert incidents[0]['events'] == events[:expected_event_count]

@@ -42,7 +42,7 @@ def is_valid_args(args: Dict):
 def apply_filters(incidents: List, args: Dict):
     names_to_filter = set(argToList(args.get('name')))
     types_to_filter = set(argToList(args.get('type')))
-    trim_events = argToBoolean((args.get('trim_events', '0')))
+    trim_events = int(args.get('trim_events', '0'))
 
     filtered = incidents
 
@@ -55,9 +55,10 @@ def apply_filters(incidents: List, args: Dict):
     if trim_events:
         def event_trimmer(incident: dict):
             if 'events' in incident:
-                incident['events'] = incident['events'][:1]
+                incident['events'] = incident['events'][:trim_events]
+            return incident
 
-        map(event_trimmer, filtered)
+        filtered = map(event_trimmer, filtered)
 
     return list(filtered)
 
