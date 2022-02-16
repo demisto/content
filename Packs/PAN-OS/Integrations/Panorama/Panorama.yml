@@ -3156,6 +3156,7 @@ script:
       name: profile_name
       required: true
     description: Set default categories to block in the URL filtering profile.
+    deprecated: true
     name: panorama-url-filtering-block-default-categories
   - arguments: []
     description: Get anti-spyware best practices.
