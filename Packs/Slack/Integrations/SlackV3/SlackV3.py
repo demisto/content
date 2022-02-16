@@ -1402,11 +1402,7 @@ async def handle_file(
     user: dict
 ):
     demisto.info(f'SlackV3 - adding file entry to incident {investigation_id}')
-<<<<<<< Updated upstream
-    demisto.addEntry(
-=======
     MirrorInvestigation.add_entry(
->>>>>>> Stashed changes
         id=investigation_id,
         entry=json.dumps(file_result),
         username=user.get('name', ''),
@@ -1414,10 +1410,6 @@ async def handle_file(
         footer=MESSAGE_FOOTER,
         entryType=EntryType.FILE
     )
-<<<<<<< Updated upstream
-    demisto.info(f'Added entry')
-=======
->>>>>>> Stashed changes
 
 
 async def handle_text(client: AsyncWebClient, investigation_id: str, text: str, user: dict):
@@ -1717,11 +1709,6 @@ def slack_send():
         demisto.debug('Could not find files in the incoming entry')
     else:
         demisto.debug(f'file found {file_}')
-<<<<<<< Updated upstream
-        
-=======
-
->>>>>>> Stashed changes
     response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, message=message, blocks=blocks,
                                   channel_id=channel_id, file_dict=file_)
 
