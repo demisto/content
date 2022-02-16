@@ -478,7 +478,7 @@ def test_events_search_results(requests_mock):
     result = events_search_results_command(client, {
         "search_id": search_id,
         "limit": limit,
-        "page":1
+        "page": 1
     })
     outputs = result.outputs
     assert len(outputs) == 1
