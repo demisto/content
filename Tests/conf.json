@@ -3327,7 +3327,7 @@
             "integrations": "RSA Archer v2",
             "playbookID": "Archer v2 - Test",
             "fromversion": "5.0.0",
-            "timeout": 600
+            "timeout": 800
         },
         {
             "integrations": "WootCloud",
