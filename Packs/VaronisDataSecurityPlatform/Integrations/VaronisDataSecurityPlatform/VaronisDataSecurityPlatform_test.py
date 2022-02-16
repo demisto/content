@@ -11,16 +11,16 @@ you are implementing with your integration
 """
 
 from datetime import datetime
-from distutils.command.clean import clean
 import json
 import io
 
-from VaronisDataSecurityPlatform import QueryBuilder, Client, get_query_range, get_search_result_path
+from VaronisDataSecurityPlatform import SearchQueryBuilder, Client, get_query_range, get_search_result_path
 
 ALERT_COLUMNS = [
-        'Alert.ID',
-        'Alert.Rule.Name'
-    ]
+    'Alert.ID',
+    'Alert.Rule.Name'
+]
+
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -37,15 +37,17 @@ def test_baseintegration_dummy():
     any external API.
     """
 
-    client = Client(base_url='https://10.10.187.128/DatAdvantage', verify=False)
+    client = Client(verify=False)
     auth = client.varonis_authenticate('L1398\\administrator', 'p@ssword1')
     print(auth)
     print(client._headers)
 
-    builder = QueryBuilder(ALERT_COLUMNS, client)
+    builder = SearchQueryBuilder(ALERT_COLUMNS, client)
     builder.create_alert_status_filter(['Open'])
     builder.create_threat_model_filter(['DNS'])
-    builder.create_time_interval_filter(datetime.fromisoformat('2022-02-12T13:00:00+02:00'), datetime.fromisoformat('2022-02-12T13:59:00+02:00'))
+    builder.create_time_interval_filter(
+        datetime.fromisoformat('2022-02-12T13:00:00+02:00'),
+        datetime.fromisoformat('2022-02-12T13:59:00+02:00'))
     query = builder.build()
     print(json.dumps(query))
     response = client.varonis_search_alerts(query)
@@ -64,5 +66,6 @@ def test_baseintegration_dummy():
 
     # assert response.outputs == mock_response
 # TODO: ADD HERE unit tests for every command
+
 
 test_baseintegration_dummy()

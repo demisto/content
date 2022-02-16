@@ -20,7 +20,7 @@ from CommonServerUserPython import *  # noqa
 
 import requests
 import traceback
-from typing import Dict, Any
+from typing import Dict, Any, List
 from requests_ntlm import HttpNtlmAuth
 
 # Disable insecure warnings
@@ -30,34 +30,33 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 THREAT_MODEL_ENUM_ID = 5821
-ALERT_STATUSES = { 'Open': 1, 'Under Investigation': 2, 'Closed': 3 }
+ALERT_STATUSES = {'Open': 1, 'Under Investigation': 2, 'Closed': 3}
 STATUSES_TO_RETRY = [304, 405]
 ALERT_COLUMNS = [
-        'Alert.ID',
-        'Alert.Rule.Name',
-        'Alert.Time',
-        'Alert.Rule.Severity.Name',
-        'Alert.Rule.Category.Name',
-        'Alert.Location.CountryName',
-        'Alert.Location.SubdivisionName',
-        'Alert.Status.Name',
-        'Alert.CloseReason.Name',
-        'Alert.Location.BlacklistedLocation',
-        'Alert.Location.AbnormalLocation',
-        'Alert.EventsCount',
-        'Alert.User.Name',
-        'Alert.User.SamAccountName',
-        'Alert.User.AccountType.Name',
-        'Alert.User.IsFlagged',
-        'Alert.Data.IsFlagged',
-        'Alert.Data.IsSensitive',
-        'Alert.Filer.Platform.Name',
-        'Alert.Asset.Path',
-        'Alert.Filer.Name',
-        'Alert.Device.HostName',
-        'Alert.Device.IsMaliciousExternalIP',
-        'Alert.Device.ExternalIPThreatTypesName'
-    ]
+    'Alert.ID',
+    'Alert.Rule.Name',
+    'Alert.Time',
+    'Alert.Rule.Severity.Name',
+    'Alert.Rule.Category.Name',
+    'Alert.Location.CountryName',
+    'Alert.Location.SubdivisionName',
+    'Alert.Status.Name',
+    'Alert.CloseReason.Name',
+    'Alert.Location.BlacklistedLocation',
+    'Alert.Location.AbnormalLocation',
+    'Alert.EventsCount',
+    'Alert.User.Name',
+    'Alert.User.SamAccountName',
+    'Alert.User.AccountType.Name',
+    'Alert.User.IsFlagged',
+    'Alert.Data.IsFlagged',
+    'Alert.Data.IsSensitive',
+    'Alert.Filer.Platform.Name',
+    'Alert.Asset.Path',
+    'Alert.Filer.Name',
+    'Alert.Device.HostName',
+    'Alert.Device.IsMaliciousExternalIP',
+    'Alert.Device.ExternalIPThreatTypesName']
 
 ''' CLIENT CLASS '''
 
@@ -82,9 +81,9 @@ class Client(BaseClient):
         :return: dict as {"dummy": dummy}
         :rtype: ``str``
         """
-        
+
         return {'dummy': url}
-        
+
     def varonis_authenticate(self, username: str, password: str) -> Dict[str, Any]:
         ntlm = HttpNtlmAuth(username, password)
         response = self._http_request('POST', '/auth/win', auth=ntlm, data='grant_type=client_credentials')
@@ -96,34 +95,36 @@ class Client(BaseClient):
         }
         return response
 
-    def varonis_get_enum(self, enum_id: int) -> Dict[str, Any]:
+    def varonis_get_enum(self, enum_id: int) -> List[Any]:
         respose = self._http_request('GET', f'/api/entitymodel/enum/{enum_id}')
         return respose
 
-    def varonis_search_alerts(self, query: Dict[str, Any]) -> Dict[str, Any]:
-        response = self._http_request('POST', f'/api/search/v2/search', json_data=query)
+    def varonis_search_alerts(self, query: Dict[str, Any]) -> List[Any]:
+        response = self._http_request('POST', '/api/search/v2/search', json_data=query)
         return response
 
     def varonis_get_alerts(self, search_location: str, url_query: str, retries=0) -> Dict[str, Any]:
-        response = self._http_request('GET', 
-            f'/api/search/{search_location}?{url_query}', 
+        response = self._http_request(
+            'GET',
+            f'/api/search/{search_location}?{url_query}',
             retries=retries,
-            status_list_to_retry=STATUSES_TO_RETRY
-        )
+            status_list_to_retry=STATUSES_TO_RETRY)
         return response
-    
+
 
 ''' HELPER FUNCTIONS '''
-class QueryBuilder(object):
-    def __init__(self, select_columns: 'list[str]', client: Client):
-        self._filters = []
+
+
+class SearchQueryBuilder(object):
+    def __init__(self, select_columns: List[str], client: Client):
+        self._filters: List[Any] = []
         self._columns = select_columns
         self._client = client
         self._url_query = ''
 
-    def create_threat_model_filter(self, threats: 'list[str]'):
+    def create_threat_model_filter(self, threats: List[str]):
         rule_enum = self._client.varonis_get_enum(THREAT_MODEL_ENUM_ID)
-        filter = {
+        filter_obj: Dict[str, Any] = {
             'path': 'Alert.Rule.ID',
             'operator': 'In',
             'values': []
@@ -132,14 +133,14 @@ class QueryBuilder(object):
         for t in threats:
             rule = next(x for x in rule_enum if x['ruleName'] == t)
             threat_object = {
-              'Alert.Rule.ID': rule['ruleID'],
-              'displayValue': rule['ruleName']
+                'Alert.Rule.ID': rule['ruleID'],
+                'displayValue': rule['ruleName']
             }
-            filter['values'].append(threat_object)
-        self._filters.append(filter)
+            filter_obj['values'].append(threat_object)
+        self._filters.append(filter_obj)
 
     def create_time_interval_filter(self, start: datetime, end: datetime):
-        filter = {
+        filter_obj: Dict[str, Any] = {
             'path': 'Alert.Time',
             'operator': 'Between',
             'values': [
@@ -150,11 +151,11 @@ class QueryBuilder(object):
                 }
             ]
         }
-        self._filters.append(filter)
+        self._filters.append(filter_obj)
 
-    def create_alert_status_filter(self, statuses: 'list[str]'):
+    def create_alert_status_filter(self, statuses: List[str]):
         status_enum = ALERT_STATUSES
-        filter = {
+        filter_obj: Dict[str, Any] = {
             'path': 'Alert.Status.ID',
             'operator': 'In',
             'values': []
@@ -166,43 +167,47 @@ class QueryBuilder(object):
                 'Alert.Status.ID': status_id,
                 'displayValue': status_name
             }
-            filter['values'].append(status_object)
-        self._filters.append(filter)
+            filter_obj['values'].append(status_object)
+        self._filters.append(filter_obj)
 
     def build(self):
-        query = dict()
-        query['rows'] = { 'columns' : self._columns }
-        query['query'] = { 
-            'entityName': 'Alert', 
-            'requestParams': { 'searchSource': 1, 'searchSourceName': 'Alert'}, # todo
-            'filter': { 'filterOperator': 0, 'filters': self._filters }
+        query: Dict[str, Any] = dict()
+        query['rows'] = {'columns': self._columns}
+        query['query'] = {
+            'entityName': 'Alert',
+            'requestParams': {'searchSource': 1, 'searchSourceName': 'Alert'},  # todo
+            'filter': {'filterOperator': 0, 'filters': self._filters}
         }
         return query
+
 
 def get_query_range(count: int):
     return f'from=0&to={count-1}'
 
-def get_search_result_path(search_response: 'list[Any]') -> str:
+
+def get_search_result_path(search_response: List[Any]) -> str:
     return next(x['location'] for x in search_response if x['dataType'] == 'rows')
 
-def get_alerts(client: Client, statuses: 'list[str]', threats: 'list[str]', start: datetime, end: datetime):
-    builder = QueryBuilder(ALERT_COLUMNS, client)
+
+def get_alerts(client: Client, statuses: List[str], threats: List[str], start: datetime, end: datetime):
+    builder = SearchQueryBuilder(ALERT_COLUMNS, client)
 
     if statuses and any(statuses):
         builder.create_alert_status_filter(statuses)
-    if threats and any(threats):    
+    if threats and any(threats):
         builder.create_threat_model_filter(threats)
     if start and end:
         builder.create_time_interval_filter(start, end)
 
     query = builder.build()
-    print(json.dumps(query))
+
     response = client.varonis_search_alerts(query)
     location = get_search_result_path(response)
-    print(location)
-    range = get_query_range(10)
-    search_result = client.varonis_get_alerts(location, range, 10)
+
+    date_range = get_query_range(10)
+    search_result = client.varonis_get_alerts(location, date_range, 10)
     return search_result
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -223,7 +228,7 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        
+
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
@@ -231,6 +236,7 @@ def test_module(client: Client) -> str:
         else:
             raise e
     return message
+
 
 def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
@@ -246,6 +252,10 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
         outputs_key_field='',
         outputs=result,
     )
+
+
+def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    pass
 
 
 ''' MAIN FUNCTION '''
@@ -297,6 +307,8 @@ def main() -> None:
         # TODO: REMOVE the following dummy command case:
         elif demisto.command() == 'varonis-get-alerts':
             return_results(varonis_get_alerts_command(client, demisto.args()))
+        elif demisto.command() == 'varonis-update-alert-status':
+            return_results(varonis_update_alert_status_command(client, demisto.args()))
         # TODO: ADD command cases for the commands you will implement
 
     # Log exceptions and return errors
