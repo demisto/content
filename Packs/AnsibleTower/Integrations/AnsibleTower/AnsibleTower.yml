@@ -1039,6 +1039,12 @@ script:
       name: search
       required: false
       secret: false
+    - default: false
+      description: The ID of the job event.
+      isArray: false
+      name: id
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves the list of job events.
     execution: false
