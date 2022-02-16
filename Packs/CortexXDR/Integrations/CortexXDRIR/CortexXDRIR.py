@@ -1947,11 +1947,20 @@ def endpoint_command(client, args):
     endpoint_ip_list = argToList(args.get('ip'))
     endpoint_hostname_list = argToList(args.get('hostname'))
 
-    endpoints = client.get_endpoints(
-        endpoint_id_list=endpoint_id_list,
-        ip_list=endpoint_ip_list,
-        hostname=endpoint_hostname_list,
-    )
+    # The `!endpoint` command should use an OR operator between filters. Since XDR API supports only AND, we handle it
+    # by sending multiple requests with a single filter and appending the returned results to previous results.
+    endpoints = []
+    if endpoint_id_list:
+        endpoints.extend(client.get_endpoints(endpoint_id_list=endpoint_id_list))
+    if endpoint_ip_list:
+        endpoints.extend(client.get_endpoints(ip_list=endpoint_ip_list))
+    if endpoint_hostname_list:
+        endpoints.extend(client.get_endpoints(hostname=endpoint_hostname_list))
+
+    # Remove duplicates by taking entries with unique `endpoint_id`:
+    if endpoints:
+        endpoints = list({v['endpoint_id']: v for v in endpoints}.values())
+
     standard_endpoints = generate_endpoint_by_contex_standard(endpoints, True)
     command_results = []
     if standard_endpoints:
