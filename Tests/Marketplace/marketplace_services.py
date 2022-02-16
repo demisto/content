@@ -72,7 +72,7 @@ class Pack(object):
         self._hidden = False  # initialized in load_user_metadata function
         self._description = None  # initialized in load_user_metadata function
         self._display_name = None  # initialized in load_user_metadata function
-        self._user_metadata = None  # initialized in load_user_metadata function
+        self._user_metadata = {}  # initialized in load_user_metadata function
         self._eula_link = None  # initialized in load_user_metadata function
         self._is_feed = False  # a flag that specifies if pack is a feed pack
         self._downloads_count = 0  # number of pack downloads
@@ -88,7 +88,7 @@ class Pack(object):
         self._certification = None  # initialized in enhance_pack_attributes function
         self._legacy = None  # initialized in enhance_pack_attributes function
         self._author_image = None  # initialized in upload_author_image function
-        self._displayed_integration_images = None  # initialized in upload_integration_images function
+        self._displayed_integration_images = []  # initialized in upload_integration_images function
         self._price = 0  # initialized in enhance_pack_attributes function
         self._is_private_pack = False  # initialized in enhance_pack_attributes function
         self._is_premium = False  # initialized in enhance_pack_attributes function
@@ -112,8 +112,8 @@ class Pack(object):
 
         # Dependencies attributes - these contain only packs that are a part of this marketplace
         self._first_level_dependencies = {}  # initialized in set_pack_dependencies function
-        self._all_levels_dependencies = []  # initialized in set_pack_dependencies function
-        self._displayed_images_dependent_on_packs = []  # initialized in set_pack_dependencies function
+        self._all_levels_dependencies = {}  # initialized in set_pack_dependencies function
+        self._displayed_images_dependent_on_packs = {}  # initialized in set_pack_dependencies function
         self._parsed_dependencies = None  # initialized in enhance_pack_attributes function
 
     @property
@@ -408,7 +408,8 @@ class Pack(object):
         return all_dep_int_imgs
 
     @staticmethod
-    def _get_all_pack_images(pack_integration_images: List, display_dependencies_images: List, dependencies_metadata: Dict,
+    def _get_all_pack_images(pack_integration_images: List, display_dependencies_images: List,
+                             dependencies_metadata: Dict,
                              pack_dependencies_by_download_count):
         """ Returns data of uploaded pack integration images and it's path in gcs. Pack dependencies integration images
         are added to that result as well.
@@ -2276,9 +2277,9 @@ class Pack(object):
 
         Args:
             storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where image will be uploaded.
-            diff_files_list (list): The list of all modified/added files found in the diff
+            storage_base_path (str): The target destination of the upload in the target bucket.
             detect_changes (bool): Whether to detect changes or upload all images in any case.
-
+            diff_files_list (list): The list of all modified/added files found in the diff
         Returns:
             bool: whether the operation succeeded.
             list: list of dictionaries with uploaded pack integration images.
@@ -2350,14 +2351,16 @@ class Pack(object):
             self._displayed_integration_images = integration_images
             return task_status
 
-    def copy_integration_images(self, production_bucket, build_bucket, images_data, storage_base_path, build_bucket_base_path):
+    def copy_integration_images(self, production_bucket, build_bucket, images_data, storage_base_path,
+                                build_bucket_base_path):
         """ Copies all pack's integration images from the build bucket to the production bucket
 
         Args:
             production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
             build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
             images_data (dict): The images data structure from Prepare Content step
-
+            storage_base_path (str): The target destination of the upload in the target bucket.
+            build_bucket_base_path (str): The path of the build bucket in gcp.
         Returns:
             bool: Whether the operation succeeded.
 
@@ -2477,7 +2480,8 @@ class Pack(object):
             production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
             build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
             images_data (dict): The images data structure from Prepare Content step
-
+            storage_base_path (str): The target destination of the upload in the target bucket.
+            build_bucket_base_path (str): The path of the build bucket in gcp.
         Returns:
             bool: Whether the operation succeeded.
 
