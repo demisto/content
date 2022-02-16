@@ -75,7 +75,7 @@ script:
       description: The table rows the given query returned.
       type: Unknown
     description: Performs a query on BigQuery.
-  dockerimage: demisto/bigquery:1.0.0.24037
+  dockerimage: demisto/bigquery:1.0.0.26052
   subtype: python3
   runonce: false
 fromversion: 5.0.0

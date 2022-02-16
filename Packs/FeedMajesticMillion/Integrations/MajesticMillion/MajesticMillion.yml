@@ -109,7 +109,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: majesticmillion-get-indicators
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: true
   isfetch: false
   longRunning: false

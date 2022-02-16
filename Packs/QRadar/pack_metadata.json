@@ -2,7 +2,7 @@
     "name": "IBM QRadar",
     "description": "Fetch offenses as incidents and search QRadar",
     "support": "xsoar",
-    "currentVersion": "2.1.11",
+    "currentVersion": "2.1.34",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -41,5 +41,9 @@
         "CommonScripts",
         "CommonPlaybooks",
         "CommonTypes"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

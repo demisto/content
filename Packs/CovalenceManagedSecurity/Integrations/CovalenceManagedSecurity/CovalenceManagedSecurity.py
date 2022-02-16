@@ -134,6 +134,11 @@ class Portal():
             aros.extend(r["items"])
         return aros
 
+    def get_active_response_profile(self, org_id):
+        r = self.get('my_organizations/{org_id}', auth=self.auth, org_id=org_id)
+        org_details = r.json()
+        return org_details.get('active_response_profile', None)
+
 
 ''' Commands '''
 
@@ -179,8 +184,10 @@ def fetch_incidents(last_run, first_run_time_range):
 
             if a.get('organization', None):
                 org_name = a['organization'].get('name', 'No org name')
+                org_id = a['organization'].get('ID', None)
             else:
                 org_name = 'No org name'
+                org_id = None
 
             aro_type = a.get('type', 'No ARO type')
 
@@ -221,6 +228,14 @@ def fetch_incidents(last_run, first_run_time_range):
                         incident['details'] += '\n\nMitigation Steps\n'
                         for step in a['steps']:
                             incident['details'] += f'''- {step['label']}\n'''
+                if org_id:
+                    active_response_profile = p.get_active_response_profile(org_id)
+                    if active_response_profile:
+                        policy = active_response_profile.get('response_policy')
+                        options = active_response_profile.get('options')
+                        incident['details'] += '\nActive Response Profile\n'
+                        incident['details'] += f'''- Response policy: {policy}\n'''
+                        incident['details'] += f'''- Exclusions/ Modifications: {options}\n'''
 
             incidents.append(incident)
 
@@ -240,7 +255,7 @@ def get_aros():
     q = demisto.args().get('query', None)
 
     if q:
-        query = {}
+        query = {}  # pragma: no cover
         for param in q.split('&'):
             key = param.split('=')[0]
             value = param.split('=')[1]

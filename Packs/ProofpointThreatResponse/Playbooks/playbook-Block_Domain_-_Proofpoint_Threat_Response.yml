@@ -101,7 +101,7 @@ tasks:
       id: 3ebeaad6-b6de-4e4d-85df-19734521adf4
       version: -1
       name: Block Domain
-      description: Adds the supplied domains to the specified blacklist.
+      description: Adds the supplied domains to the specified block list.
       script: '|||proofpoint-tr-block-domain'
       type: regular
       iscommand: true
@@ -223,7 +223,7 @@ inputs:
 - key: DomainBlackListID
   value: {}
   required: false
-  description: The ID of the blacklist to block the domain in.
+  description: The ID of the block list to block the domain in.
   playbookInputQuery:
 outputs: []
 tests:

@@ -2,7 +2,7 @@
     "name": "APIVoid",
     "description": "APIVoid wraps up a number of services such as ipvoid & urlvoid",
     "support": "xsoar",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.9",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,5 +12,9 @@
     "tags": [],
     "created": "2020-04-01T22:23:20Z",
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

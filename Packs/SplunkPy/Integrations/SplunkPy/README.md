@@ -74,7 +74,7 @@ where the **$ASSETS_VALUE** is replaced with the **src**, **dest**, **src_ip** a
 where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** from the fetched notable event. The results are stored in the context of the incident under the **Identity** field.
 
 #### How to configure
-1. Configure the integration to fetch incidents (see the Integration documentation for details).
+1. Configure the integration to fetch incidents.
 2. *Enrichment Types*: Select the enrichment types you want to enrich each fetched notable with. If none are selected, the integration will fetch notables as usual (without enrichment).
 3. *Fetch events query*: The query for fetching events. The default query is for fetching notable events. You can edit this query to fetch other types of events. Note that to fetch notable events, make sure the query uses the \`notable\` macro.  
 4. *Enrichment Timeout (Minutes)*:  The timeout for each enrichment (default is 5min). When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
@@ -244,16 +244,22 @@ Searches Splunk for events.
 | app | The string that contains the application namespace in which to restrict searches. | Optional|
 | batch_limit | The maximum number of returned results to process at a time. For example, if 100 results are returned, and you specify a `batch_limit` of 10, the results will be processed 10 at a time over 10 iterations. This does not affect the search or the context and outputs returned. In some cases, specifying a `batch_size` enhances search performance. If you think that the search execution is suboptimal, it is  recommended to try several `batch_size` values to determine which works best for your search. The default is 25,000. | Optional |	
 | update_context | Determines whether the results will be entered into the context. | Optional |
+| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional |
+| interval_in_seconds | Interval in seconds between each poll. | Optional |
+| sid | The job sid. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Splunk.Result | Unknown | The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event. | 
+| Splunk.JobStatus | String | The search status. | 
 
 
 ##### Command Example
 ```!splunk-search query="* | head 3" earliest_time="-1000d"```
+
+**Note:** To display empty columns as well, the following should be added to the query: `| fillnull value=`
 
 ##### Human Readable Output
 ### Splunk Search results for query: * | head 3

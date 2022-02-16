@@ -2,7 +2,7 @@
     "name": "Orca",
     "description": " Integrate with Orca security for bidirectional incident management and fetching of asset information. \n",
     "support": "partner",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.9",
     "author": "Orca Security",
     "url": "https://orca.security/",
     "email": "support@orca.security",
@@ -13,5 +13,9 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": "edenorca"
+    "githubUser": "edenorca",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

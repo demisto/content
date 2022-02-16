@@ -2950,7 +2950,7 @@ inputs:
 - key: IPBlacklistMiner
   value: {}
   required: false
-  description: The name of the IP blacklist miner in MineMeld.
+  description: The name of the IP block list miner in MineMeld.
 outputs:
 - contextPath: Account.Email.Address
   description: The email address object associated with the Account

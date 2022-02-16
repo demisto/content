@@ -21,5 +21,9 @@
         "Hash",
         "File",
         "Extract"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

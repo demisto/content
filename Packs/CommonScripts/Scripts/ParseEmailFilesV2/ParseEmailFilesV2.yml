@@ -1,0 +1,129 @@
+args:
+- default: true
+  description: Entry ID with the Email as a file in msg or eml format
+  name: entryid
+  required: true
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: Will parse only the headers and return headers table
+  name: parse_only_headers
+  predefined:
+  - "true"
+  - "false"
+- defaultValue: "3"
+  description: How many levels deep we should parse the attached emails (e.g. email
+    contains an emails contains an email). Default depth level is 3. Minimum level
+    is 1, if set to 1 the script will parse only the first level email
+  name: max_depth
+- required: false
+  name: forced_encoding
+  description: Use only the force encoding when parsing the message, e.g 'iso-2022-jp'.
+    Relevant to msg files only.
+- required: false
+  name: default_encoding
+  description: Use only the default encoding when parsing the message with the detected
+    encoding fails, e.g 'utf-8'. Relevant to msg files only.
+comment: (Beta) Parse an email from an eml or msg file and populate all relevant context
+  data to investigate the email. Also extracts inner attachments and returns them
+  to the war room. The incident labels themselves are preserved and not modified -
+  only the "Label/x" context items that originated from the labels, and the best practice
+  is to rely on these for the remainder of the playbook.
+  This script is based on the parse-emails XSOAR python package, check the script documentation for more info
+commonfields:
+  id: ParseEmailFilesV2
+  version: -1
+enabled: true
+name: ParseEmailFilesV2
+outputs:
+- contextPath: Email.To
+  description: This shows to whom the message was addressed, but may not contain the
+    recipient's address.
+  type: string
+- contextPath: Email.CC
+  description: Email 'cc' addresses
+  type: string
+- contextPath: Email.From
+  description: This displays who the message is from, however, this can be easily
+    forged and can be the least reliable.
+  type: string
+- contextPath: Email.Subject
+  description: Email subject
+  type: string
+- contextPath: Email.HTML
+  description: Email 'html' body if exists
+  type: string
+- contextPath: Email.Text
+  description: Email 'text' body if exists
+  type: string
+- contextPath: Email.Depth
+  description: The depth of the email. Depth=0 for the first level email. If email1
+    contains email2 contains email3. Then email1 depth is 0, email2 depth is 1, email3
+    depth is 2
+  type: number
+- contextPath: Email.Headers
+  description: Deprecated - use Email.HeadersMap output instead. The full email headers
+    as a single string
+  type: string
+- contextPath: Email.HeadersMap
+  description: The full email headers json
+  type: Unknown
+- contextPath: Email.HeadersMap.From
+  description: This displays who the message is from, however, this can be easily
+    forged and can be the least reliable.
+  type: Unknown
+- contextPath: Email.HeadersMap.To
+  description: This shows to whom the message was addressed, but may not contain the
+    recipient's address.
+  type: Unknown
+- contextPath: Email.HeadersMap.Subject
+  description: Email subject
+  type: String
+- contextPath: Email.HeadersMap.Date
+  description: The date and time the email message was composed
+  type: Unknown
+- contextPath: Email.HeadersMap.CC
+  description: Email 'cc' addresses
+  type: Unknown
+- contextPath: Email.HeadersMap.Reply-To
+  description: The email address for return mail
+  type: String
+- contextPath: Email.HeadersMap.Received
+  description: List of all the servers/computers through which the message traveled
+  type: String
+- contextPath: Email.HeadersMap.Message-ID
+  description: A unique string assigned by the mail system when the message is first
+    created. These can easily be forged. (e.g. 5c530c1b.1c69fb81.bd826.0eff@mx.google.com)
+  type: String
+- contextPath: Email.AttachmentsData.Name
+  description: The name of the attachment
+  type: String
+- contextPath: Email.AttachmentsData.Content-ID
+  description: The content-id of the attachment
+  type: String
+- contextPath: Email.AttachmentsData.Content-Disposition
+  description: The content-disposition of the attachment
+  type: String
+- contextPath: Email.AttachmentsData.FilePath
+  description: The location of the attachment, on the XSOAR server
+  type: String
+- contextPath: Email.AttachmentNames
+  description: The list of attachment names in the email
+  type: string
+- contextPath: Email.Format
+  description: The format of the email if available
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- email
+- phishing
+- enhancement
+- file
+type: python
+fromversion: 5.0.0
+tests:
+- ParseEmailFilesV2-test
+dockerimage: demisto/parse-emails:1.0.0.26393

@@ -503,7 +503,7 @@ script:
     - contextPath: FraudWatch.Brand.services.action
       description: Brand service action.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isFetchSamples: true
   isfetch: true
   runonce: false

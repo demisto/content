@@ -2,7 +2,7 @@
     "name": "Logz.io",
     "description": "Logz.io Package to fetch alerts from logz.io and threat hunting",
     "support": "partner",
-    "currentVersion": "1.1.7",
+    "currentVersion": "1.1.8",
     "author": "Logz.io",
     "url": "",
     "email": "support@logz.io",
@@ -19,5 +19,9 @@
     "githubUser": [
         "yyyogev"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

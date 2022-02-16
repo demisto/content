@@ -309,6 +309,7 @@ def options_handler():
                         help="CircleCi branch of current build", required=True)
     parser.add_argument('-pbp', '--production_base_path', help="Production base path of the directory to upload to.",
                         required=False)
+    parser.add_argument('-mp', '--marketplace', help='marketplace version.', default='xsoar')
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -325,6 +326,7 @@ def main():
     circle_branch = options.circle_branch
     production_base_path = options.production_base_path
     target_packs = options.pack_names
+    marketplace = options.marketplace
 
     # Google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -332,7 +334,7 @@ def main():
     build_bucket = storage_client.bucket(build_bucket_name)
 
     # Initialize build and prod base paths
-    build_bucket_path = os.path.join(GCPConfig.BUILD_PATH_PREFIX, circle_branch, build_number)
+    build_bucket_path = os.path.join(GCPConfig.BUILD_PATH_PREFIX, circle_branch, build_number, marketplace)
     build_bucket_base_path = os.path.join(build_bucket_path, GCPConfig.CONTENT_PACKS_PATH)
 
     # Relevant when triggering test upload flow
@@ -360,7 +362,7 @@ def main():
     # Detect packs to upload
     pack_names = get_pack_names(target_packs)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
-    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
+    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name), marketplace) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     # Starting iteration over packs
@@ -372,7 +374,7 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.load_user_metadata()
+        task_status = pack.load_user_metadata(marketplace)
         if not task_status:
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.name
             pack.cleanup()

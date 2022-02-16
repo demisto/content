@@ -2,7 +2,7 @@
     "name": "CreatePlbkDoc",
     "description": "This automation will produce docx file detailing the tasks in the given playbook. The text will come from the \u201cDetails\u201d section of the tasks. The automation can produce a table or paragraph format of the report. The automation will create separate tables (in case of Table format), or separate paragraphs (in case of Paragraph format), for separate sections in the playbook. The definition of a section is path starting from a section header type of task and ends when it hits another section header in that path of traversal.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.1.0",
     "author": "Mahmood Azmat",
     "url": "",
     "email": "",
@@ -14,10 +14,14 @@
     "githubUser": [
         "mazmat-panw"
     ],
-        "dependencies": {
+    "dependencies": {
         "Demisto REST API": {
             "mandatory": true,
             "display_name": "Demisto REST API"
-       }
-    }
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

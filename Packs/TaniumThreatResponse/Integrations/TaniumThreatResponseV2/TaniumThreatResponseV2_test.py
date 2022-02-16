@@ -21,7 +21,101 @@ def mock_client():
 BASE_URL = 'https://test.com'
 MOCK_CLIENT = mock_client()
 
-''' GENERAL HELPER FUNCTIONS TESTS'''
+FILTER_FILE_DOWNLOADS_ARGS = [
+    ({'offset': '0', 'limit': '50', 'hostname': 'host1'}, 3),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host2'}, 2),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host3'}, 2),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host2,host3'}, 4),
+    (
+        {
+            'offset': '0',
+            'limit': '50',
+            'hash': '123',
+        },
+        2,
+    ),
+    (
+        {
+            'offset': '0',
+            'limit': '50',
+            'hash': '123,1234',
+        },
+        3,
+    ),
+]
+
+FILTER_CONNECTIONS_LIST_ARGS = [
+    ({'offset': '0', 'limit': '50', 'hostname': 'host1'}, 3),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host2'}, 2),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host3'}, 2),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host1,host2'}, 5),
+    ({'offset': '0', 'limit': '50', 'platform': 'Linux'}, 3),
+    ({'offset': '0', 'limit': '50', 'platform': 'Windows'}, 4),
+    ({'offset': '0', 'limit': '50', 'status': 'connected'}, 2),
+    ({'offset': '0', 'limit': '50', 'status': 'disconnected'}, 5),
+    ({'offset': '0', 'limit': '50', 'ip': '3.3.3.3'}, 4),
+    (
+        {
+            'offset': '0',
+            'limit': '50',
+            'ip': '3.3.3.3',
+            'hostname': 'host2',
+        },
+        6
+    ),
+]
+
+FILTER_EVIDENCE_LIST_ARGS = [
+    ({'offset': '0', 'limit': '50', 'hostname': 'host1,host2'}, 6),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host1'}, 3),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host2'}, 3),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host3'}, 2),
+    (
+        {
+            'offset': '0',
+            'limit': '50',
+            'hostname': 'host1,host3',
+            'type': 'event',
+        },
+        5,
+    ),
+]
+
+FILTER_GET_SYSTEM_STATUS_ARGS = [
+    ({'offset': '0', 'limit': '50', 'status': 'Leader'}, 2),
+    ({'offset': '0', 'limit': '50', 'status': 'Normal'}, 1),
+    (
+        {
+            'offset': '0',
+            'limit': '50',
+            'status': 'Normal',
+            'hostname': 'host1',
+        },
+        3,
+    ),
+    (
+        {
+            'offset': '0',
+            'limit': '50',
+            'hostname': 'host1',
+            'ip_client': '3.3.3.3',
+        },
+        4,
+    ),
+    (
+        {
+            'offset': '0',
+            'limit': '50',
+            'hostname': 'host3',
+            'ip_server': '1.1.1.1',
+        },
+        2,
+    ),
+    ({'offset': '0', 'limit': '50', 'hostname': 'host1,host2,host4'}, 4),
+    ({'offset': '0', 'limit': '50', 'port': '8080'}, 2),
+]
+
+""" GENERAL HELPER FUNCTIONS TESTS"""
 
 
 @pytest.mark.parametrize('test_input, expected_output', [('2', 2), (None, None), (2, 2), ('', None)])
@@ -53,6 +147,7 @@ def test_format_context_data(test_input, expected_output):
 
     When -
         Running format_context_data function.
+        Running format_context_data function.
 
     Then -
         A formatted dict should be returned.
@@ -77,7 +172,7 @@ def test_get_intel_doc(requests_mock):
     """
 
     api_expected_response = util_load_json('test_files/get_intel_doc_raw_response.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/423', json=api_expected_response)
 
     human_readable, outputs, raw_response = TaniumThreatResponseV2.get_intel_doc(MOCK_CLIENT, {'intel_doc_id': '423'})
@@ -99,7 +194,7 @@ def test_get_intel_docs_single(requests_mock):
     """
 
     api_expected_response = util_load_json('test_files/get_intel_docs_raw_response.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/?name=test2', json=api_expected_response[1])
 
     human_readable, outputs, raw_response = TaniumThreatResponseV2.get_intel_docs(MOCK_CLIENT, {'name': 'test2'})
@@ -122,7 +217,7 @@ def test_get_intel_docs_multiple(requests_mock):
     """
 
     api_expected_response = util_load_json('test_files/get_intel_docs_raw_response.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/', json=api_expected_response)
 
     human_readable, outputs, raw_response = TaniumThreatResponseV2.get_intel_docs(MOCK_CLIENT, {})
@@ -144,7 +239,7 @@ def test_get_intel_docs_labels_list(requests_mock):
 
     intel_doc_id = 423
     api_expected_response = util_load_json('test_files/get_intel_docs_labels_list_raw_response.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + f'/plugin/products/detect3/api/v1/intels/{intel_doc_id}/labels',
                       json=api_expected_response)
 
@@ -176,7 +271,7 @@ def test_add_intel_docs_label(requests_mock):
     intel_doc_id = 423
     label_id = 3
     api_expected_response = util_load_json('test_files/add_intel_docs_labels_raw_response.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     req = requests_mock.put(BASE_URL + f'/plugin/products/detect3/api/v1/intels/{intel_doc_id}/labels',
                             json=api_expected_response)
 
@@ -210,7 +305,7 @@ def test_remove_intel_docs_label(requests_mock):
     intel_doc_id = 423
     label_id = 3
     api_expected_response = util_load_json('test_files/get_intel_docs_labels_list_raw_response.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.delete(BASE_URL + f'/plugin/products/detect3/api/v1/intels/{intel_doc_id}/labels/{label_id}',
                          json=api_expected_response)
 
@@ -243,7 +338,7 @@ def test_create_intel_doc(mocker, requests_mock):
     api_expected_response = util_load_json('test_files/create_intel_docs_raw_response.json')
     mocker.patch('TaniumThreatResponseV2.get_file_data',
                  return_value=("test_name", "test_files/test.ioc", file_content))
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.post(BASE_URL + '/plugin/products/detect3/api/v1/intels', json=api_expected_response)
 
     human_readable, outputs, raw_response = TaniumThreatResponseV2.create_intel_doc(MOCK_CLIENT, {
@@ -263,7 +358,7 @@ def test_update_intel_doc_ioc(mocker, requests_mock):
     api_get_expected_response = util_load_json('test_files/get_intel_doc_raw_response.json')
     mocker.patch('TaniumThreatResponseV2.get_file_data',
                  return_value=("test_name", 'test_files/test.ioc', file_content))
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/423', json=api_get_expected_response)
     requests_mock.put(BASE_URL + f'/plugin/products/detect3/api/v1/intels/{str(intel_doc_id)}',
                       json=api_update_expected_response,
@@ -288,7 +383,7 @@ def test_update_intel_doc_yara(mocker, requests_mock):
     api_get_expected_response = util_load_json('test_files/get_intel_doc_raw_response.json')
     mocker.patch('TaniumThreatResponseV2.get_file_data',
                  return_value=("test_name", 'test_files/test.yara', file_content))
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/423', json=api_get_expected_response)
     requests_mock.put(BASE_URL + f'/plugin/products/detect3/api/v1/intels/{str(intel_doc_id)}',
                       request_headers={'Content-Disposition': 'filename=test123456',
@@ -300,6 +395,56 @@ def test_update_intel_doc_yara(mocker, requests_mock):
         'file_extension': file_extension})
     assert outputs.get('Tanium.IntelDoc(val.ID && val.ID === obj.ID)', {}).get('IntrinsicId') == 'test123456'
     assert outputs.get('Tanium.IntelDoc(val.ID && val.ID === obj.ID)', {}).get('RevisionId') == 2
+
+
+def test_delete_intel_doc(mocker, requests_mock):
+    """
+    Given -
+        A specific intel-doc ID.
+
+    When -
+        Running delete_intel_doc function.
+
+    Then -
+        Specified intel-doc is deleted.
+    """
+
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.delete(BASE_URL + '/plugin/products/detect3/api/v1/intels/?id=431', json={})
+
+    human_readable, outputs, raw_response = TaniumThreatResponseV2.delete_intel_doc(MOCK_CLIENT, {'intel_doc_id': 431})
+    assert 'Intel Doc deleted' in human_readable
+
+
+def test_start_quick_scan(mocker, requests_mock):
+    """
+    Given -
+        A specific intel-doc ID.
+        A Tanium Computer Group Name
+
+    When -
+        Running start_quick_scan function.
+
+    Then -
+        A quick scan is started.
+    """
+
+    api_get_expected_response = util_load_json('test_files/get_computer_group_name_raw_response.json')
+    api_post_expected_response = util_load_json('test_files/start_quick_scan_raw_response.json')
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/api/v2/groups/by-name/All%20Computers', json=api_get_expected_response)
+    requests_mock.post(BASE_URL + '/plugin/products/detect3/api/v1/quick-scans/', json=api_post_expected_response)
+
+    human_readable, outputs, raw_response = TaniumThreatResponseV2.start_quick_scan(MOCK_CLIENT, {
+        'intel_doc_id': 431, 'computer_group_name': 'All Computers'})
+    assert 'Quick Scan started' in human_readable
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('IntelDocId') == 431
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('ComputerGroupId') == 1
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('ID') == 1000239
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('AlertCount') == 0
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('CreatedAt') == "2022-01-05T19:53:43.049Z"
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('UserId') == 64
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('QuestionId') == 2025697
 
 
 def test_deploy_intel(requests_mock):
@@ -319,7 +464,7 @@ def test_deploy_intel(requests_mock):
             'taskId': 750
         }
     }
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.post(BASE_URL + '/plugin/products/threat-response/api/v1/intel/deploy',
                        json=api_raw_response)
 
@@ -350,7 +495,7 @@ def test_get_deploy_status(requests_mock):
             'pendingSize': None
         }
     }
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/intel/status',
                       json=api_raw_response)
 
@@ -372,7 +517,7 @@ def test_get_alerts(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/get_alerts_raw_response.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts/',
                       json=api_raw_response)
 
@@ -394,7 +539,7 @@ def test_get_alert(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/get_alert_raw_response.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts/1',
                       json=api_raw_response)
 
@@ -414,7 +559,7 @@ def test_alert_update_state(requests_mock):
     Then -
         The alert should be returned.
     """
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.put(BASE_URL + '/plugin/products/detect3/api/v1/alerts/', json={})
 
     args = {'alert_ids': '1,2',
@@ -437,7 +582,7 @@ def test_create_snapshot(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/create_snapshot.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.post(BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:host:123:/snapshot',
                        json=api_raw_response)
 
@@ -462,7 +607,7 @@ def test_delete_snapshot(requests_mock):
         The human_readable should be returned.
     """
 
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.delete(BASE_URL + '/plugin/products/threat-response/api/v1/snapshot',
                          json={})
 
@@ -484,7 +629,7 @@ def test_list_snapshots(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/list_snapshots.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/snapshot',
                       json=api_raw_response)
 
@@ -505,7 +650,7 @@ def test_delete_local_snapshot(requests_mock):
         The human_readable should be returned.
     """
 
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.delete(BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:host:123:',
                          json={})
 
@@ -527,7 +672,7 @@ def test_get_connections(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/get_connections.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/conns',
                       json=api_raw_response)
 
@@ -536,6 +681,40 @@ def test_get_connections(requests_mock):
     assert 'Connections' in human_readable
     assert outputs.get('Tanium.Connection(val.id === obj.id)', [{}])[0].get('hostname') == 'hostname'
     assert len(outputs.get('Tanium.Connection(val.id === obj.id)')) == 2
+
+
+@pytest.mark.parametrize(
+    'command_args, expected_output_len', FILTER_CONNECTIONS_LIST_ARGS
+)
+def test_filter_get_connections(
+        requests_mock, command_args, expected_output_len
+):
+    """
+    Given -
+        offset, limit, hostname/platform/status/ip as filter parameters to 'get_connections' function
+
+    When -
+        Running 'get_connections' function
+
+    Then -
+        'get_connections' function will filter and return response output length the same as expected_output_len
+    """
+    api_raw_response = util_load_json('test_files/filter_get_connections.json')
+    requests_mock.get(
+        BASE_URL + '/api/v2/session/login',
+        json={'data': {'session': 'session-id'}},
+    )
+    requests_mock.get(
+        BASE_URL + '/plugin/products/threat-response/api/v1/conns',
+        json=api_raw_response,
+    )
+
+    _, outputs, _ = TaniumThreatResponseV2.get_connections(
+        client=MOCK_CLIENT, command_args=command_args
+    )
+    response = outputs.get('Tanium.Connection(val.id === obj.id)', {})
+    full_response_len = len(response)
+    assert full_response_len == expected_output_len, f'Actual: {full_response_len}, Expected: {expected_output_len}'
 
 
 def test_create_connection(requests_mock):
@@ -549,7 +728,7 @@ def test_create_connection(requests_mock):
         The connection_id should be returned.
     """
 
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.post(BASE_URL + '/plugin/products/threat-response/api/v1/conns/connect',
                        content=b'remote:hostname:123:')
 
@@ -572,7 +751,7 @@ def test_delete_connection(requests_mock):
         The connection should be deleted without errors.
     """
 
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.delete(BASE_URL + '/plugin/products/threat-response/api/v1/conns/delete/remote:host:123:', json={})
 
     args = {'connection_id': 'remote:host:123:'}
@@ -592,7 +771,7 @@ def test_close_connection(requests_mock):
         The connection should be closed without errors.
     """
 
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.delete(BASE_URL + '/plugin/products/threat-response/api/v1/conns/close/remote:host:123:', json={})
 
     args = {'connection_id': 'remote:host:123:'}
@@ -613,7 +792,7 @@ def test_get_events_by_connection(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/get_events_by_connection.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(
         BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:hostname:123:/views/process/events',
         json=api_raw_response)
@@ -639,7 +818,7 @@ def test_get_labels(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/get_labels.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/labels/',
                       json=api_raw_response)
 
@@ -662,7 +841,7 @@ def test_get_label(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/get_label.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/labels/1',
                       json=api_raw_response)
 
@@ -684,7 +863,7 @@ def test_get_events_by_process(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/get_events_by_process.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(
         BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:host:123:/processevents/1/process?limit=2&offset=0',
         json=api_raw_response)
@@ -711,7 +890,7 @@ def test_get_process_info(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/get_process_info.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:host:123:/processtrees/1',
                       json=api_raw_response)
 
@@ -734,7 +913,7 @@ def test_get_process_children(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/get_process_children.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:host:123:/processtrees/1',
                       json=api_raw_response)
 
@@ -757,7 +936,7 @@ def test_get_parent_process(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/get_parent_process.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:host:123:/processtrees/2',
                       json=api_raw_response)
 
@@ -780,7 +959,7 @@ def test_get_process_tree(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/get_process_tree.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:host:123:/processtrees/2',
                       json=api_raw_response)
 
@@ -803,7 +982,7 @@ def test_list_evidence(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/list_evidence.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/evidence',
                       json=api_raw_response)
 
@@ -813,6 +992,31 @@ def test_list_evidence(requests_mock):
     assert 'Evidence list' in human_readable
     assert outputs.get('Tanium.Evidence(val.uuid && val.uuid === obj.uuid)', [{}])[0].get('uuid') == '123abc'
     assert len(outputs.get('Tanium.Evidence(val.uuid && val.uuid === obj.uuid)')) == 2
+
+
+@pytest.mark.parametrize(
+    'command_args, expected_output_len', FILTER_EVIDENCE_LIST_ARGS
+)
+def test_filter_list_evidence(requests_mock, command_args, expected_output_len):
+    """
+    Given -
+        offset, limit, hash/hostname as filter arguments for 'get_file_downloads_function'
+
+    When -
+        Running 'get_file_downloads' function
+
+    Then -
+        'get_file_downloads' function will filter and return response in the same length as expected_output_len.
+    """
+    api_raw_response = util_load_json('test_files/filter_list_evidence.json')
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/evidence',
+                      json=api_raw_response)
+
+    _, outputs, _ = TaniumThreatResponseV2.list_evidence(MOCK_CLIENT, command_args)
+    response = outputs.get('Tanium.Evidence(val.uuid && val.uuid === obj.uuid)', {})
+    assert (len(
+        response) == expected_output_len), f'Actual length: {len(response)}, Expected length: {expected_output_len}'
 
 
 def test_event_evidence_get_properties(requests_mock):
@@ -827,7 +1031,7 @@ def test_event_evidence_get_properties(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/event_evidence_get_properties.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/event-evidence/properties',
                       json=api_raw_response)
 
@@ -849,7 +1053,7 @@ def test_get_evidence_by_id(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/get_evidence_by_id.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/event-evidence/1',
                       json=api_raw_response)
 
@@ -870,7 +1074,7 @@ def test_create_evidence(requests_mock):
         Human readable should be returned.
     """
     api_raw_response = util_load_json('test_files/create_evidence.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:host:123:/views/process/events',
                       json=api_raw_response)
     requests_mock.post(BASE_URL + '/plugin/products/threat-response/api/v1/event-evidence',
@@ -894,7 +1098,7 @@ def test_delete_evidence(requests_mock):
         The evidence ids should be deleted.
     """
 
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.delete(BASE_URL + '/plugin/products/threat-response/api/v1/event-evidence',
                          json={})
 
@@ -915,7 +1119,7 @@ def test_get_file_downloads(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/get_file_downloads.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/filedownload',
                       json=api_raw_response)
 
@@ -924,6 +1128,30 @@ def test_get_file_downloads(requests_mock):
     assert 'File downloads' in human_readable
     assert outputs.get('Tanium.FileDownload(val.uuid === obj.uuid)', [{}])[0].get('uuid') == '1'
     assert outputs.get('Tanium.FileDownload(val.uuid === obj.uuid)', [{}])[0].get('evidenceType') == 'file'
+
+
+@pytest.mark.parametrize(
+    'command_args, expected_output_len', FILTER_FILE_DOWNLOADS_ARGS
+)
+def test_filter_get_file_downloads(requests_mock, command_args, expected_output_len):
+    """
+    Given -
+        offset, limit, hash/hostname as filter arguments for 'get_file_downloads_function'
+
+    When -
+        Running 'get_file_downloads' function
+
+    Then -
+        'get_file_downloads' function will filter and return response in the same length as expected_output_len.
+    """
+    api_raw_response = util_load_json('test_files/filter_get_file_downloads.json')
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/filedownload',
+                      json=api_raw_response)
+
+    _, outputs, _ = TaniumThreatResponseV2.get_file_downloads(MOCK_CLIENT, command_args)
+    response = outputs.get('Tanium.FileDownload(val.uuid === obj.uuid)', {})
+    assert len(response) == expected_output_len, f"Expected length: {expected_output_len}, actual: {len(response)}"
 
 
 def test_get_file_download_info(requests_mock):
@@ -938,7 +1166,7 @@ def test_get_file_download_info(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/get_file_download_info.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/filedownload/1',
                       json=api_raw_response)
 
@@ -960,7 +1188,7 @@ def test_request_file_download(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/request_file_download.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.post(BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:host:123:/file',
                        json=api_raw_response)
 
@@ -984,7 +1212,7 @@ def test_delete_file_download(requests_mock):
         The file download should be deleted.
     """
 
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.delete(BASE_URL + '/plugin/products/threat-response/api/v1/filedownload/1',
                          json={})
 
@@ -1005,7 +1233,7 @@ def test_list_files_in_dir(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/list_files_in_dir.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(
         BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:host:123:/file/list/C%3A%5CDir%5C',
         json=api_raw_response)
@@ -1033,7 +1261,7 @@ def test_get_file_info(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/get_file_info.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(
         BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:host:123:/file/info/C%3A%5Cfile1.txt',
         json=api_raw_response)
@@ -1059,7 +1287,7 @@ def test_delete_file_from_endpoint(requests_mock):
         The file should be deleted.
     """
 
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.delete(
         BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:host:123:/file/delete/C%3A%5Cfile1.txt',
         json={})
@@ -1082,7 +1310,7 @@ def test_get_task_by_id(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/get_task_by_id.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/tasks/1',
                       json=api_raw_response)
 
@@ -1104,7 +1332,7 @@ def test_get_system_status(requests_mock):
     """
 
     api_raw_response = util_load_json('test_files/get_system_status.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/api/v2/system_status',
                       json=api_raw_response)
 
@@ -1112,6 +1340,44 @@ def test_get_system_status(requests_mock):
     human_readable, outputs, _ = TaniumThreatResponseV2.get_system_status(MOCK_CLIENT, args)
     assert 'Reporting clients' in human_readable
     assert outputs.get('Tanium.SystemStatus(val.clientId === obj.clientId)', {})[0].get('clientId') == 1
+
+
+@pytest.mark.parametrize(
+    'command_args, expected_output_len', FILTER_GET_SYSTEM_STATUS_ARGS
+)
+def test_filter_get_system_status(
+        requests_mock, command_args, expected_output_len
+):
+    """
+    Given -
+        offset, limit, status/hostname/ip_server/ip_client/port as filter arguments for 'get_system_status' function
+
+    When -
+        Running 'get_system_status' function
+
+    Then -
+        'get_system_status' function will filter and return response in the same length as expected_output_len.
+    """
+    api_raw_response = util_load_json(
+        'test_files/filter_get_system_status.json'
+    )
+
+    requests_mock.get(
+        BASE_URL + '/api/v2/session/login',
+        json={'data': {'session': 'session-id'}},
+    )
+    requests_mock.get(
+        BASE_URL + '/api/v2/system_status', json=api_raw_response
+    )
+
+    _, outputs, _ = TaniumThreatResponseV2.get_system_status(
+        MOCK_CLIENT, command_args
+    )
+    response = outputs.get(
+        'Tanium.SystemStatus(val.clientId === obj.clientId)', {}
+    )
+    assert (len(
+        response) == expected_output_len), f'Actual length: {len(response)}, Expected length: {expected_output_len}'
 
 
 def test_fetch_all_incidents(requests_mock):
@@ -1125,9 +1391,13 @@ def test_fetch_all_incidents(requests_mock):
     """
 
     test_incidents = util_load_json('test_files/fetch_incidents.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
-    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts?&state=unresolved&limit=500',
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts?'
+                                 '&state=unresolved&sort=-createdAt&limit=500&offset=0',
                       json=test_incidents)
+    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts?'
+                                 '&state=unresolved&sort=-createdAt&limit=500&offset=500',
+                      json=[])
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/11', json={'name': 'test'})
 
     alerts_states_to_retrieve = 'unresolved'
@@ -1149,7 +1419,8 @@ def test_fetch_all_incidents(requests_mock):
     assert incidents[0].get(
         'occurred') == "2021-09-26T14:01:31.000Z"
     assert next_run.get('id') == "2"
-    assert next_run.get('time') == datetime.strftime(parse("2021-09-26T14:02:59.000Z"), TaniumThreatResponseV2.DATE_FORMAT)
+    assert next_run.get('time') == datetime.strftime(parse("2021-09-26T14:02:59.000Z"),
+                                                     TaniumThreatResponseV2.DATE_FORMAT)
 
 
 def test_fetch_new_incidents(requests_mock):
@@ -1163,9 +1434,13 @@ def test_fetch_new_incidents(requests_mock):
     """
 
     test_incidents = util_load_json('test_files/fetch_incidents_new.json')
-    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
-    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts?&state=unresolved&limit=500',
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts?'
+                                 '&state=unresolved&sort=-createdAt&limit=500&offset=0',
                       json=test_incidents)
+    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts?'
+                                 '&state=unresolved&sort=-createdAt&limit=500&offset=500',
+                      json=[])
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/11', json={'name': 'test'})
 
     alerts_states_to_retrieve = 'unresolved'

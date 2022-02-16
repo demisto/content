@@ -38,12 +38,16 @@ USERS_ON_CALL_RESULTS = [
 
 GetUsersOOO_RESULT = [{'Type': 1, 'EntryContext': {'ShiftManagment.OOOUsers': [{'username': 'brucewaine'}]}}]
 
+AWAY_USERS = [{'Type': 1, 'EntryContext': {'AwayUsers': [{'username': 'batman'}]}}]
+
 
 def execute_command(name, args=None):
     if name == 'getUsers':
         return USERS_ON_CALL_RESULTS
     elif name == 'GetUsersOOO':
         return GetUsersOOO_RESULT
+    elif name == 'GetAwayUsers':
+        return AWAY_USERS
     else:
         return None
 
@@ -64,4 +68,4 @@ def test_get_users_on_call(mocker):
     mocker.patch.object(demisto, 'args', return_value={'include_OOO_users': 'false'})
     main()
     results = demisto.results.call_args[0]
-    assert 'brucewaine' not in results[0]['Contents']
+    assert 'brucewaine' not in results[0]['Contents'] and 'batman' not in results[0]['Contents']

@@ -46,7 +46,7 @@ configuration:
     specify just the read timeout (for example 60) or also the connect timeout followed
     after a comma (for example 60,10). If a connect timeout is not specified, a default
     of 10 second will be used.
-  defaultvalue: 60,10
+  defaultvalue: ''
   required: false
   type: 0
 - display: Retries
@@ -61,8 +61,8 @@ configuration:
   name: isFetch
   type: 8
   required: false
-- defaultvalue: '50'
-  display: 'Maximum incidents for one fetch'
+- defaultvalue: '10'
+  display: 'Maximum incidents for one fetch. Hard cap of 100.'
   name: max_fetch
   required: false
   type: 0

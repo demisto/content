@@ -2,7 +2,7 @@
     "name": "Bambenek Consulting Feed",
     "description": "Indicators feed from Bambenek Consulting",
     "support": "xsoar",
-    "currentVersion": "1.1.9",
+    "currentVersion": "1.1.13",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -17,5 +17,9 @@
     "keywords": [
         "Bambenek Consulting",
         "Feed"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

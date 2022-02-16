@@ -30,7 +30,7 @@ QUERY_ISSUE_RESPONSE = {
                     "timeZone": "Asia"
                 },
                 "customfield_10000": "{}",
-                "customfield_10001": None,
+                "customfield_10001": "John Doe",
                 "customfield_10002": None,
                 "customfield_10003": None,
                 "customfield_10004": None,
@@ -241,5 +241,37 @@ GET_ISSUE_RESPONSE = {
                     'created': '2021-04-04T12:49:42.881+0300', 'size': 8225,
                     'mimeType': 'application/json',
                     }],
-               'aggregatetimeestimate': None, 'summary': 'test master1', 'creator': {}
-               }}
+               'aggregatetimeestimate': None, 'summary': 'test master1', 
+               'creator': {
+                    "accountId": "557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76",
+                    "accountType": "atlassian",
+                    "active": True,
+                    "avatarUrls": {
+                        "16x16": "",
+                        "24x24": "",
+                        "32x32": "",
+                        "48x48": ""
+                    },
+                    "displayName": "jon doe",
+                    "emailAddress": "admin@demistodev.com",
+                    "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=id",
+                    "timeZone": "Asia"
+                }
+    }
+}
+
+FIELDS_RESPONSE = [
+    {'id': 'customfield_10001', 'key': 'customfield_10001', 'name': 'Owner', 'untranslatedName': 'Owner',
+     'custom': True, 'orderable': True, 'navigable': True, 'searchable': True,
+     'clauseNames': ['cf[10001]', 'Owner', 'Owner[User Picker (single user)]'],
+     'schema': {'type': 'user', 'custom': 'com.atlassian.jira.plugin.system.customfieldtypes:userpicker',
+                'customId': 10001}},
+    {'id': 'resolution', 'key': 'resolution', 'name': 'Resolution', 'custom': False, 'orderable': True, 'navigable': True, 'searchable': True, 'clauseNames': ['resolution'], 'schema': {'type': 'resolution', 'system': 'resolution'}},
+    {'id': 'resolutiondate', 'key': 'resolutiondate', 'name': 'Resolved', 'custom': False, 'orderable': False, 'navigable': True, 'searchable': True, 'clauseNames': ['resolutiondate', 'resolved'], 'schema': {'type': 'datetime', 'system': 'resolutiondate'}}
+]
+
+EXPECTED_RESP={
+    'customfield_10001': 'Owner',
+    'resolution': 'Resolution',
+    'resolutiondate': 'Resolved'
+}

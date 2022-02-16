@@ -351,7 +351,7 @@ script:
       description: The display name of device.
       type: String
     - contextPath: ExtraHop.Device.OnWatchlist
-      description: Whether the device is whitelisted.
+      description: Whether the device is on allow list.
       type: Boolean
     - contextPath: ExtraHop.Device.ModTime
       description: The time of the most recent update, expressed in milliseconds since the epoch.
@@ -394,11 +394,11 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Modifies a whitelist from ExtraHop.
+    description: Modifies an allow list from ExtraHop.
     execution: false
     name: extrahop-whitelist-modify
   - deprecated: true
-    description: Retrieves the whitelist from ExtraHop.
+    description: Retrieves the allow list from ExtraHop.
     execution: false
     name: extrahop-whitelist-retrieve
     outputs:

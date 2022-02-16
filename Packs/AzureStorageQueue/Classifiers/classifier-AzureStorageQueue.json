@@ -1,0 +1,18 @@
+{
+    "defaultIncidentType": "Azure Storage Queue Incident",
+    "description": "",
+    "feed": false,
+    "id": "Azure Storage Queue Classifier",
+    "keyTypeMap": {},
+    "name": "Azure Storage Queue Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

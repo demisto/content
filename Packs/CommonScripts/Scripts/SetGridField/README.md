@@ -78,5 +78,14 @@ keys="name, value"
 Grid after update: \
 ![Grid](https://github.com/demisto/content/raw/4510eafaf6cfeb48a42d9032dd0e71200b288ad5/Packs/Legacy/Scripts/SetGridField/doc_files/grid_list_update.png) 
 
+## Troubleshooting
+
+The first time you run `SetGridField` on a newly created grid field, you may see an error similar to the following:
+
+![Screen Shot 2021-12-21 at 10 36 03 PM](doc_files/troubleshoot.png)
+
+To resolve the error:
+1. Make sure the grid field is associated with the incident type the field is being used in.
+2. Run the following command to initialize the grid field: `!setIncident <GRID_FIELD_NAME>=[]`
 
 

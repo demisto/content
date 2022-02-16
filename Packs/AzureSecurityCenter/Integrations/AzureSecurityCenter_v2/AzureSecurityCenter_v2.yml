@@ -12,7 +12,8 @@ configuration:
   name: auth_id
   required: true
   type: 4
-- display: Token (received from the admin consent - see Detailed Instructions (?) section)
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    section)
   name: tenant_id
   required: true
   type: 4
@@ -36,20 +37,24 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-description: Unified security management and advanced threat protection across hybrid cloud workloads.
+description: Unified security management and advanced threat protection across hybrid
+  cloud workloads.
 display: Azure Security Center v2
 name: Azure Security Center v2
 script:
   commands:
   - arguments:
     - default: false
-      description: The name of the resource group within the user's subscription. The name is case insensitive.
+      description: The name of the resource group within the user's subscription.
+        The name is case insensitive.
       isArray: false
       name: resource_group_name
       required: false
       secret: false
     - default: false
-      description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument.
+      description: The location where Azure Security Center stores the data of the
+        subscription. Run the 'azure-sc-list-location' command to get the ascLocation.
+        This command requires the resourceGroupName argument.
       isArray: false
       name: asc_location
       required: false
@@ -73,7 +78,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
@@ -103,13 +109,16 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The name of the resource group within the user's subscription. The name is case insensitive.
+      description: The name of the resource group within the user's subscription.
+        The name is case insensitive.
       isArray: false
       name: resource_group_name
       required: false
       secret: false
     - default: false
-      description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument.
+      description: The location where Azure Security Center stores the data of the
+        subscription. Run the 'azure-sc-list-location' command to get the ascLocation.
+        This command requires the resourceGroupName argument.
       isArray: false
       name: asc_location
       required: true
@@ -121,14 +130,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
       secret: false
     deprecated: false
-    description: Gets an alert that is associated with a resource group or a subscription. The subscription_id argument is
-      required in case it was not defined in the integration's configuration.
+    description: Gets an alert that is associated with a resource group or a subscription.
+      The subscription_id argument is required in case it was not defined in the integration's
+      configuration.
     execution: false
     name: azure-sc-get-alert
     outputs:
@@ -154,7 +165,8 @@ script:
       description: Level of confidence for the alert.
       type: string
     - contextPath: AzureSecurityCenter.Alert.ActionTaken
-      description: The action that was taken in a response to the alert (Active, Blocked etc.).
+      description: The action that was taken in a response to the alert (Active, Blocked
+        etc.).
       type: string
     - contextPath: AzureSecurityCenter.Alert.CanBeInvestigated
       description: Whether this alert can be investigated using Azure Security Center.
@@ -178,7 +190,8 @@ script:
       description: The alert ID.
       type: string
     - contextPath: AzureSecurityCenter.Alert.SubscriptionID
-      description: Azure subscription ID of the resource that had the security alert or the subscription ID of the workspace that this resource reports to.
+      description: Azure subscription ID of the resource that had the security alert
+        or the subscription ID of the workspace that this resource reports to.
       type: string
     - contextPath: AzureSecurityCenter.Alert.Description
       description: Description of the incident and what it means.
@@ -191,13 +204,16 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The name of the resource group within the user's subscription. The name is case insensitive.
+      description: The name of the resource group within the user's subscription.
+        The name is case insensitive.
       isArray: false
       name: resource_group_name
       required: false
       secret: false
     - default: false
-      description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument.
+      description: The location where Azure Security Center stores the data of the
+        subscription. Run the 'azure-sc-list-location' command to get the ascLocation.
+        This command requires the resourceGroupName argument.
       isArray: false
       name: asc_location
       required: true
@@ -209,7 +225,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
@@ -261,7 +278,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
@@ -289,7 +307,8 @@ script:
       secret: false
     - default: false
       defaultValue: current
-      description: Name of the Advanced Threat Detection setting. The default setting's name is 'current'.
+      description: Name of the Advanced Threat Detection setting. The default setting's
+        name is 'current'.
       isArray: false
       name: setting_name
       required: false
@@ -301,7 +320,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
@@ -323,19 +343,22 @@ script:
   - arguments:
     - default: true
       defaultValue: default
-      description: Name of the auto provisioning setting. The default setting's name is 'default'.
+      description: Name of the auto provisioning setting. The default setting's name
+        is 'default'.
       isArray: false
       name: setting_name
       required: true
       secret: false
     - default: false
-      description: Describes the type of security agent provisioning action to take (On or Off).
+      description: Describes the type of security agent provisioning action to take
+        (On or Off).
       isArray: false
       name: auto_provision
       required: true
       secret: false
     - default: false
-      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
@@ -349,7 +372,8 @@ script:
       description: The setting display name.
       type: string
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.AutoProvision
-      description: Displays the type of security agent provisioning action to take (On or Off).
+      description: Displays the type of security agent provisioning action to take
+        (On or Off).
       type: string
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.ID
       description: The setting resource ID.
@@ -363,7 +387,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
@@ -377,14 +402,16 @@ script:
       description: The setting display name.
       type: string
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.AutoProvision
-      description: Displays the type of security agent provisioning action to take (On or Off).
+      description: Displays the type of security agent provisioning action to take
+        (On or Off).
       type: string
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.ID
       description: The setting resource ID.
       type: string
   - arguments:
     - default: false
-      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
@@ -398,32 +425,37 @@ script:
       description: The setting display name.
       type: string
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.AutoProvision
-      description: Displays the type of security agent provisioning action to take (On or Off).
+      description: Displays the type of security agent provisioning action to take
+        (On or Off).
       type: string
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.ID
       description: The setting resource ID.
       type: string
   - arguments:
     - default: false
-      description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the asc_location.
+      description: The location where Azure Security Center stores the data of the
+        subscription. Run the 'azure-sc-list-location' command to get the asc_location.
       isArray: false
       name: asc_location
       required: false
       secret: false
     - default: false
-      description: The name of the resource group within the user's subscription. The name is case insensitive.
+      description: The name of the resource group within the user's subscription.
+        The name is case insensitive.
       isArray: false
       name: resource_group_name
       required: false
       secret: false
     - default: false
-      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
       secret: false
     deprecated: false
-    description: Lists all policies for protecting resources using Just-in-Time access control.
+    description: Lists all policies for protecting resources using Just-in-Time access
+      control.
     execution: false
     name: azure-sc-list-jit
     outputs:
@@ -431,7 +463,8 @@ script:
       description: The display name of the policy.
       type: string
     - contextPath: AzureSecurityCenter.JITPolicy.Rules
-      description: 'A CSV list of access rules for Microsoft.Compute/virtualMachines resource, in the format (VMName: allowPort1,...)'
+      description: 'A CSV list of access rules for Microsoft.Compute/virtualMachines
+        resource, in the format (VMName: allowPort1,...)'
       type: string
     - contextPath: AzureSecurityCenter.JITPolicy.Location
       description: The location where the resource is stored.
@@ -441,7 +474,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
@@ -476,15 +510,53 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
       secret: false
     deprecated: false
-    description: The location of the responsible ASC of the specific subscription. For each subscription there is only one responsible location.
+    description: The location of the responsible ASC of the specific subscription.
+      For each subscription there is only one responsible location.
     execution: false
     name: azure-sc-list-location
+  - name: azure-get-secure-score
+    description: Retrieve the Secure Score for the provided subscription and score
+      name
+    deprecated: false
+    arguments:
+    - name: secure_score_name
+      description: description
+      required: false
+      isArray: false
+      defaultValue: ascScore
+      predefined:
+      - ""
+    - name: subscription_id
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    outputs:
+    - contextPath: Azure.Securescore.displayName
+      description: The initiative’s name.
+      type: String
+    - contextPath: Azure.Securescore.score.max
+      description: The max score of the Securescore.
+      type: String
+    - contextPath: Azure.Securescore.score.current
+      description: The current score of the Securescore.
+      type: String
+    - contextPath: Azure.Securescore.score.percentage
+      description: The Ratio of the current score divided by the maximum.
+      type: String
+    - contextPath: Azure.Securescore.weight
+      description: The relative weight for each subscription.
+      type: String
   dockerimage: demisto/crypto:1.0.0.24380
   isfetch: false
   longRunning: false

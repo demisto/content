@@ -199,7 +199,7 @@ script:
       description: Server name
       type: string
     description: Retrieves server details
-  dockerimage: demisto/python:2.7.18.24066
+  dockerimage: demisto/python:2.7.18.24398
 hidden: false
 fromversion: 5.0.0
 tests:

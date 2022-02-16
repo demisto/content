@@ -1,6 +1,9 @@
 commonfields:
   id: MapPattern
   version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
 name: MapPattern
 script: ''
 type: python
@@ -29,7 +32,6 @@ comment: |-
 enabled: true
 args:
 - name: value
-  required: true
   description: The value to modify.
 - name: mappings
   required: true
@@ -42,8 +44,9 @@ args:
   - wildcard
   - regex
   - regmatch
-  description: 'The default algorithm for pattern match. Available algorithm: literal,wildcard,regex
-    and regmatch.'
+  - dt
+  description: 'The default algorithm for pattern match. Available algorithm: literal,wildcard,regex,regmatch
+    and dt.'
   defaultValue: literal
 - name: caseless
   auto: PREDEFINED
@@ -66,10 +69,17 @@ args:
   description: The comma separated flags for pattern matching in regex. "dotall" (s),
     "multiline" (m), "ignorecase" (i) and "unicode" (u) are supported. This will apply
     to all the algorithms.
+- name: compare_fields
+  description: Set to true if you want pattern matching for each field, otherwise
+    false.
+  defaultValue: "false"
+- name: wildcards
+  description: The list of the special patterns which match to any values regardless
+    of algorithm.
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.9.8.24399
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

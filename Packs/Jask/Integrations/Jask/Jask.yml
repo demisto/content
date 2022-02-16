@@ -127,7 +127,7 @@ script:
       description: IP address of related entity
       type: string
     - contextPath: Jask.Insight.RelatedEntityList.IsWhitelisted
-      description: Whether or not the entity is whitelisted
+      description: Whether or not the entity is on allow list
       type: boolean
     - contextPath: Jask.Insight.RelatedEntityList.RiskScore
       description: The risk score of the related entity
@@ -253,7 +253,7 @@ script:
       description: The risk score
       type: number
     - contextPath: Jask.Entity.IsWhiteListed
-      description: Whether or not the entity is whitelisted
+      description: Whether or not the entity is on allow list
       type: boolean
   - arguments:
     - default: true
@@ -304,7 +304,7 @@ script:
       description: The name given to the entity
       type: string
     - contextPath: Jask.RelatedEntityList.IsWhiteListed
-      description: Whether or not the entity is whitelisted
+      description: Whether or not the entity is on allow list
       type: boolean
     - contextPath: Jask.RelatedEntityList.LastSeen
       description: The time the entity was last seen
@@ -316,27 +316,27 @@ script:
       description: The risk score of the entity
       type: number
   - deprecated: false
-    description: Get the whitelisted entities.
+    description: Get the entities on allow list.
     execution: false
     name: jask-get-whitelisted-entities
     outputs:
     - contextPath: Jask.Whitelisted.EntityList.Id
-      description: Id of the whitelisted entity
+      description: Id of the entity on allow list
       type: string
     - contextPath: Jask.Whitelisted.EntityList.Name
-      description: Name of the whitelisted entity
+      description: Name of the entity on allow list
       type: string
     - contextPath: Jask.Whitelisted.EntityList.UserName
-      description: Username of the whitelisted entity
+      description: Username of the entity on allow list
       type: string
     - contextPath: Jask.Whitelisted.EntityList.ModelId
-      description: The modelID of the whitelisted entity
+      description: The modelID of the entity on allow list
       type: string
     - contextPath: Jask.Whitelisted.EntityList.Timestamp
-      description: The time of the whitelisted entity
+      description: The time of the entity on allow list
       type: date
     - contextPath: Jask.Whitelisted.EntityList.Metadata.TotalCount
-      description: The number of whitelisted entities
+      description: The number of entities on allow list
       type: number
   - arguments:
     - auto: PREDEFINED
@@ -622,7 +622,7 @@ script:
       description: The risk score of the entity
       type: number
     - contextPath: Jask.Entity.IsWhiteListed
-      description: Whether or not the entity is whitelisted
+      description: Whether or not the entity is on allow list
       type: boolean
     - contextPath: Jask.Entity.Groups
       description: The groups of the entity

@@ -1,2 +1,4 @@
 [file:MimecastV2.yml]
 ignore=IN126,IN145
+[file:README.md]
+ignore=RM104

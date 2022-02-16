@@ -2,7 +2,7 @@
     "name": "Palo Alto Networks PAN-OS EDL Management",
     "description": "This integration enables you to manage and edit files located on a remote web server via SSH using integration context as Single Source of Truth.",
     "support": "xsoar",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -13,5 +13,9 @@
     "deprecated": "true",
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

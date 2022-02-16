@@ -5338,8 +5338,8 @@ script:
       name: created_after
       required: false
       secret: false
-    deprecated: false
-    description: Retrieve risky flows detected by Xpanse Behavior.
+    deprecated: true
+    description: (Deprecated) Retrieve risky flows detected by Xpanse Behavior.
     execution: false
     name: expanse-get-risky-flows
     outputs:
@@ -5425,8 +5425,8 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: false
-    description: List risk rules from Xpanse Behavior.
+    deprecated: true
+    description: (Deprecated) List risk rules from Xpanse Behavior.
     execution: false
     name: expanse-list-risk-rules
     outputs:
@@ -6370,7 +6370,7 @@ script:
     - contextPath: Expanse.IPDomains.DomainList
       description: An array of domain objects. This is truncated at 50.
       type: Unknown
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: true
   longRunning: false

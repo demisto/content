@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6fb80ac3-6f4b-4426-8a6d-86945293227b
+    taskid: 05a6500b-d305-4ee6-86c1-98becec58c7b
     type: start
     task:
-      id: 6fb80ac3-6f4b-4426-8a6d-86945293227b
+      id: 05a6500b-d305-4ee6-86c1-98becec58c7b
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 23664634-b878-4358-8636-a464416eea6d
+    taskid: af5241d4-d3a1-49df-8398-1385e958a77f
     type: regular
     task:
-      id: 23664634-b878-4358-8636-a464416eea6d
+      id: af5241d4-d3a1-49df-8398-1385e958a77f
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -72,10 +72,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: d32e96dd-405e-4ac6-8b7d-f52bcc45823f
+    taskid: 2c228062-f6ce-4123-8ac9-26c89c2fc491
     type: regular
     task:
-      id: d32e96dd-405e-4ac6-8b7d-f52bcc45823f
+      id: 2c228062-f6ce-4123-8ac9-26c89c2fc491
       version: -1
       name: tanium-tr-get-intel-doc-by-id
       script: Tanium Threat Response v2|||tanium-tr-get-intel-doc-by-id
@@ -87,23 +87,13 @@ tasks:
       - "3"
     scriptarguments:
       intel_doc_id:
-        complex:
-          root: Tanium.IntelDoc
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Tanium.IntelDoc.LabelIds
-                iscontext: true
-          accessor: ID
-          transformers:
-          - operator: FirstArrayElement
+        simple: ${Tanium.IntelDoc.ID}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 3172.5,
-          "y": 2645
+          "y": 2640
         }
       }
     note: false
@@ -115,10 +105,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: cee229d2-1b76-42f5-889b-8533703f95da
+    taskid: e9c6d9b1-5359-4e4e-8f56-27735ab5174b
     type: condition
     task:
-      id: cee229d2-1b76-42f5-889b-8533703f95da
+      id: e9c6d9b1-5359-4e4e-8f56-27735ab5174b
       version: -1
       name: Verify Outputs
       type: condition
@@ -126,7 +116,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "63"
+      - "65"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -177,10 +167,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: b50cee55-adcc-485a-8cb1-f5942dd4f3a5
+    taskid: e8df41de-549b-4d2a-833d-693b5f604198
     type: regular
     task:
-      id: b50cee55-adcc-485a-8cb1-f5942dd4f3a5
+      id: e8df41de-549b-4d2a-833d-693b5f604198
       version: -1
       name: tanium-tr-list-intel-docs
       script: Tanium Threat Response v2|||tanium-tr-list-intel-docs
@@ -195,7 +185,7 @@ tasks:
       {
         "position": {
           "x": 3172.5,
-          "y": 2295
+          "y": 1095
         }
       }
     note: false
@@ -207,10 +197,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: e3705f3a-dad4-4157-8529-88fa6e83731b
+    taskid: 596e7f10-5449-49c0-89d3-6c5d9f218b3e
     type: condition
     task:
-      id: e3705f3a-dad4-4157-8529-88fa6e83731b
+      id: 596e7f10-5449-49c0-89d3-6c5d9f218b3e
       version: -1
       name: Verify Outputs
       type: condition
@@ -218,7 +208,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "2"
+      - "92"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -257,7 +247,7 @@ tasks:
       {
         "position": {
           "x": 3172.5,
-          "y": 2470
+          "y": 1260
         }
       }
     note: false
@@ -269,10 +259,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 6ec13eb3-f865-41ee-8ff4-bcf67c0c7d5a
+    taskid: aca4a277-c8ed-4323-86e1-ef9e23bd54d0
     type: regular
     task:
-      id: 6ec13eb3-f865-41ee-8ff4-bcf67c0c7d5a
+      id: aca4a277-c8ed-4323-86e1-ef9e23bd54d0
       version: -1
       name: tanium-tr-list-alerts
       script: Tanium Threat Response v2|||tanium-tr-list-alerts
@@ -299,10 +289,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 30ab0b2b-9102-4f4d-850a-6690c37fea19
+    taskid: 76ff62ec-5148-411e-8dd3-752cff693b53
     type: condition
     task:
-      id: 30ab0b2b-9102-4f4d-850a-6690c37fea19
+      id: 76ff62ec-5148-411e-8dd3-752cff693b53
       version: -1
       name: Verify Outputs
       type: condition
@@ -391,10 +381,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 178eb509-39e9-422d-87c3-6d6b6e8491f4
+    taskid: e4e0712f-6894-449e-827b-16aee766e810
     type: regular
     task:
-      id: 178eb509-39e9-422d-87c3-6d6b6e8491f4
+      id: e4e0712f-6894-449e-827b-16aee766e810
       version: -1
       name: tanium-tr-get-alert-by-id
       script: Tanium Threat Response v2|||tanium-tr-get-alert-by-id
@@ -424,10 +414,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 21fe407d-e4e9-43c8-8df0-30de54b56537
+    taskid: 82eb79e3-77fa-4f26-8e2f-32821c0ad678
     type: condition
     task:
-      id: 21fe407d-e4e9-43c8-8df0-30de54b56537
+      id: 82eb79e3-77fa-4f26-8e2f-32821c0ad678
       version: -1
       name: Verify Outputs
       type: condition
@@ -516,10 +506,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 5a7a6f22-189a-4fb1-8750-58ceb53efac8
+    taskid: 5f382ed7-e8eb-4941-8cfc-13e15c111432
     type: regular
     task:
-      id: 5a7a6f22-189a-4fb1-8750-58ceb53efac8
+      id: 5f382ed7-e8eb-4941-8cfc-13e15c111432
       version: -1
       name: tanium-tr-alert-update-state
       script: Tanium Threat Response v2|||tanium-tr-alert-update-state
@@ -551,10 +541,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 562f3fe9-504d-45cf-8892-5ea644ae5bcf
+    taskid: c5c37a58-ecc9-4133-8132-4df1c4f75fa0
     type: regular
     task:
-      id: 562f3fe9-504d-45cf-8892-5ea644ae5bcf
+      id: c5c37a58-ecc9-4133-8132-4df1c4f75fa0
       version: -1
       name: tanium-tr-create-snapshot
       script: Tanium Threat Response v2|||tanium-tr-create-snapshot
@@ -595,10 +585,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: d7581e7d-a1bd-41ae-8165-a3ce54eebeb3
+    taskid: 025b65c0-4221-48f4-8f08-a10f4b2b188e
     type: condition
     task:
-      id: d7581e7d-a1bd-41ae-8165-a3ce54eebeb3
+      id: 025b65c0-4221-48f4-8f08-a10f4b2b188e
       version: -1
       name: Verify Outputs
       type: condition
@@ -639,10 +629,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 6799bcb1-a3be-491a-8757-e9aedfcf1b81
+    taskid: f90921fb-246a-4784-8459-8f22f0da5f34
     type: regular
     task:
-      id: 6799bcb1-a3be-491a-8757-e9aedfcf1b81
+      id: f90921fb-246a-4784-8459-8f22f0da5f34
       version: -1
       name: tanium-tr-list-snapshots
       script: Tanium Threat Response v2|||tanium-tr-list-snapshots
@@ -669,10 +659,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: cf0b1988-fb82-47ab-830f-73395af526ea
+    taskid: 1c0c8fc2-ce49-47c5-813d-33e34d9e045d
     type: condition
     task:
-      id: cf0b1988-fb82-47ab-830f-73395af526ea
+      id: 1c0c8fc2-ce49-47c5-813d-33e34d9e045d
       version: -1
       name: Verify Outputs
       type: condition
@@ -751,10 +741,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 96a56df9-b28f-4ef9-884e-3651492bca07
+    taskid: 226788f3-afc5-4c4b-8599-2b6c88551243
     type: regular
     task:
-      id: 96a56df9-b28f-4ef9-884e-3651492bca07
+      id: 226788f3-afc5-4c4b-8599-2b6c88551243
       version: -1
       name: tanium-tr-list-connections
       script: Tanium Threat Response v2|||tanium-tr-list-connections
@@ -781,10 +771,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 8c435bc7-8a22-42bf-8c55-5d3c1b644190
+    taskid: f12e5601-01c2-40cc-85da-cad8061e8bce
     type: condition
     task:
-      id: 8c435bc7-8a22-42bf-8c55-5d3c1b644190
+      id: f12e5601-01c2-40cc-85da-cad8061e8bce
       version: -1
       name: Verify Outputs
       type: condition
@@ -855,11 +845,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.Connection.eid
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: Tanium.Connection.hasTools
             iscontext: true
     view: |-
@@ -878,10 +863,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 4a0b1d75-bf63-4025-8c68-c3fec58922fe
+    taskid: 280d8b3e-3a94-44a6-8fb1-f58051434d85
     type: condition
     task:
-      id: 4a0b1d75-bf63-4025-8c68-c3fec58922fe
+      id: 280d8b3e-3a94-44a6-8fb1-f58051434d85
       version: -1
       name: Verify Outputs
       type: condition
@@ -915,10 +900,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 131819c4-3353-49c7-8600-f242d941e656
+    taskid: f3ac98b6-31c3-4daa-884a-c294a8c4ebed
     type: regular
     task:
-      id: 131819c4-3353-49c7-8600-f242d941e656
+      id: f3ac98b6-31c3-4daa-884a-c294a8c4ebed
       version: -1
       name: tanium-tr-delete-connection
       script: Tanium Threat Response v2|||tanium-tr-delete-connection
@@ -959,10 +944,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: cb32fc81-9916-4c4d-866b-fcbafe840173
+    taskid: c615cf3b-0f44-42cc-8902-4a98be566aab
     type: regular
     task:
-      id: cb32fc81-9916-4c4d-866b-fcbafe840173
+      id: c615cf3b-0f44-42cc-8902-4a98be566aab
       version: -1
       name: tanium-tr-close-connection
       script: Tanium Threat Response v2|||tanium-tr-close-connection
@@ -1005,10 +990,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 31da3471-0bfc-4736-8108-dd219ebba7bd
+    taskid: 55f32350-819d-4fca-8b30-ea0390847f6a
     type: regular
     task:
-      id: 31da3471-0bfc-4736-8108-dd219ebba7bd
+      id: 55f32350-819d-4fca-8b30-ea0390847f6a
       version: -1
       name: tanium-tr-list-labels
       script: Tanium Threat Response v2|||tanium-tr-list-labels
@@ -1035,10 +1020,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: f9ecc461-9cb3-4742-855d-b382fb228aed
+    taskid: 4fa20051-b4d3-46ef-8345-773f9d6c7656
     type: condition
     task:
-      id: f9ecc461-9cb3-4742-855d-b382fb228aed
+      id: 4fa20051-b4d3-46ef-8345-773f9d6c7656
       version: -1
       name: Verify Outputs
       type: condition
@@ -1102,10 +1087,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 64717828-ee53-4519-83bf-e870271fead7
+    taskid: 08df352c-c790-4f44-8a93-15254f93247b
     type: regular
     task:
-      id: 64717828-ee53-4519-83bf-e870271fead7
+      id: 08df352c-c790-4f44-8a93-15254f93247b
       version: -1
       name: tanium-tr-get-label-by-id
       script: Tanium Threat Response v2|||tanium-tr-get-label-by-id
@@ -1135,10 +1120,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: e3ed0758-f539-4da2-893a-29a0f6a36ee0
+    taskid: ba1be173-3f3d-47b5-81cd-1583b54a2b71
     type: condition
     task:
-      id: e3ed0758-f539-4da2-893a-29a0f6a36ee0
+      id: ba1be173-3f3d-47b5-81cd-1583b54a2b71
       version: -1
       name: Verify Outputs
       type: condition
@@ -1202,10 +1187,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 1ae28961-52cb-49a0-86a8-dade789901c2
+    taskid: 35cee6b0-ecc0-4b3e-8053-ac911cb30af3
     type: regular
     task:
-      id: 1ae28961-52cb-49a0-86a8-dade789901c2
+      id: 35cee6b0-ecc0-4b3e-8053-ac911cb30af3
       version: -1
       name: tanium-tr-list-file-downloads
       script: Tanium Threat Response v2|||tanium-tr-list-file-downloads
@@ -1235,10 +1220,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: ee81531e-53e7-4855-83ee-12074d6ea490
+    taskid: 53177653-0aa2-4adf-88d3-502f309f3ab1
     type: condition
     task:
-      id: ee81531e-53e7-4855-83ee-12074d6ea490
+      id: 53177653-0aa2-4adf-88d3-502f309f3ab1
       version: -1
       name: Verify Outputs
       type: condition
@@ -1332,10 +1317,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 284d3063-ddf8-4103-8cdb-c03b0836afe1
+    taskid: 1c504ce9-8ded-4353-82bd-148655919ef1
     type: regular
     task:
-      id: 284d3063-ddf8-4103-8cdb-c03b0836afe1
+      id: 1c504ce9-8ded-4353-82bd-148655919ef1
       version: -1
       name: tanium-tr-get-downloaded-file
       script: Tanium Threat Response v2|||tanium-tr-get-downloaded-file
@@ -1369,10 +1354,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 6b1c3fe9-eb15-4e71-87d8-60abe6417488
+    taskid: f31cfe49-bb56-46a0-802d-0915aedee7d9
     type: condition
     task:
-      id: 6b1c3fe9-eb15-4e71-87d8-60abe6417488
+      id: f31cfe49-bb56-46a0-802d-0915aedee7d9
       version: -1
       name: Verify Outputs
       type: condition
@@ -1456,10 +1441,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 003c4437-967c-4b86-8e36-f4ac75c292b4
+    taskid: 15ca51cc-c070-4f60-84ca-042b1a48ad85
     type: regular
     task:
-      id: 003c4437-967c-4b86-8e36-f4ac75c292b4
+      id: 15ca51cc-c070-4f60-84ca-042b1a48ad85
       version: -1
       name: tanium-tr-list-events-by-connection
       script: Tanium Threat Response v2|||tanium-tr-list-events-by-connection
@@ -1504,10 +1489,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 28aeb514-08fd-459b-8456-0937431aca2c
+    taskid: 8d5f03c1-8c87-4ff6-8136-4715173e2996
     type: condition
     task:
-      id: 28aeb514-08fd-459b-8456-0937431aca2c
+      id: 8d5f03c1-8c87-4ff6-8136-4715173e2996
       version: -1
       name: Verify Outputs
       type: condition
@@ -1567,10 +1552,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: b90f0ece-4826-4881-8229-6692425ca14e
+    taskid: f345fd08-6c10-415a-8eff-51a021702709
     type: regular
     task:
-      id: b90f0ece-4826-4881-8229-6692425ca14e
+      id: f345fd08-6c10-415a-8eff-51a021702709
       version: -1
       name: tanium-tr-get-file-download-info
       script: Tanium Threat Response v2|||tanium-tr-get-file-download-info
@@ -1604,10 +1589,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: d9da66f7-cf7b-4edd-80f7-daed00fb9bea
+    taskid: 49b117ae-6e4e-4aba-8630-243168e621f0
     type: condition
     task:
-      id: d9da66f7-cf7b-4edd-80f7-daed00fb9bea
+      id: 49b117ae-6e4e-4aba-8630-243168e621f0
       version: -1
       name: Verify Outputs
       type: condition
@@ -1701,10 +1686,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: e32a4955-a57c-46f3-8bf1-4b4fb97084f3
+    taskid: 318a50f2-28e5-4a20-8acb-bf5f67b79a70
     type: regular
     task:
-      id: e32a4955-a57c-46f3-8bf1-4b4fb97084f3
+      id: 318a50f2-28e5-4a20-8acb-bf5f67b79a70
       version: -1
       name: tanium-tr-get-process-info
       script: Tanium Threat Response v2|||tanium-tr-get-process-info
@@ -1753,10 +1738,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 9871a222-1b9b-44fa-8609-c32c5da36b4a
+    taskid: f27e8e9f-5031-44e1-8541-5e6c427e2d2a
     type: condition
     task:
-      id: 9871a222-1b9b-44fa-8609-c32c5da36b4a
+      id: f27e8e9f-5031-44e1-8541-5e6c427e2d2a
       version: -1
       name: Verify Outputs
       type: condition
@@ -1835,10 +1820,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 7a639688-5627-40e9-8704-2bec4650b4a0
+    taskid: e8ec7385-ba8d-4575-8dad-81dded29325e
     type: regular
     task:
-      id: 7a639688-5627-40e9-8704-2bec4650b4a0
+      id: e8ec7385-ba8d-4575-8dad-81dded29325e
       version: -1
       name: tanium-tr-get-events-by-process
       script: Tanium Threat Response v2|||tanium-tr-get-events-by-process
@@ -1889,10 +1874,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: fc513f88-3594-458a-84e4-482e8ea567b4
+    taskid: 0781b9e6-2be6-4155-8f04-f4ff8c1de9bb
     type: condition
     task:
-      id: fc513f88-3594-458a-84e4-482e8ea567b4
+      id: 0781b9e6-2be6-4155-8f04-f4ff8c1de9bb
       version: -1
       name: Verify Outputs
       type: condition
@@ -1946,10 +1931,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: feb07a8b-b3db-422f-8db5-764239b63123
+    taskid: 83ce8a83-7cef-4899-8bfa-c088f3061b45
     type: regular
     task:
-      id: feb07a8b-b3db-422f-8db5-764239b63123
+      id: 83ce8a83-7cef-4899-8bfa-c088f3061b45
       version: -1
       name: tanium-tr-get-process-children
       script: Tanium Threat Response v2|||tanium-tr-get-process-children
@@ -1998,10 +1983,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: de0fde0c-013f-41cc-81cc-d5c3fc0a2805
+    taskid: c100932b-e76d-4f4e-8727-c371b10feb3d
     type: condition
     task:
-      id: de0fde0c-013f-41cc-81cc-d5c3fc0a2805
+      id: c100932b-e76d-4f4e-8727-c371b10feb3d
       version: -1
       name: Verify Outputs
       type: condition
@@ -2140,10 +2125,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: e78a1e8a-ab58-4aff-8ca6-8c90c181a8e9
+    taskid: a7ccf0bc-d3cf-4e33-8099-675b89787163
     type: regular
     task:
-      id: e78a1e8a-ab58-4aff-8ca6-8c90c181a8e9
+      id: a7ccf0bc-d3cf-4e33-8099-675b89787163
       version: -1
       name: tanium-tr-get-parent-process
       script: Tanium Threat Response v2|||tanium-tr-get-parent-process
@@ -2192,10 +2177,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 52e42403-3000-4ea5-8574-5fc37c09a1f6
+    taskid: e09cce34-94f1-4c23-8fc0-501aa0228660
     type: condition
     task:
-      id: 52e42403-3000-4ea5-8574-5fc37c09a1f6
+      id: e09cce34-94f1-4c23-8fc0-501aa0228660
       version: -1
       name: Verify Outputs
       type: condition
@@ -2314,10 +2299,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 191211dc-1f10-4741-8cc7-99b38a888876
+    taskid: 3384f0af-8d29-410c-8c09-535e3fac6f72
     type: regular
     task:
-      id: 191211dc-1f10-4741-8cc7-99b38a888876
+      id: 3384f0af-8d29-410c-8c09-535e3fac6f72
       version: -1
       name: tanium-tr-get-process-tree
       script: Tanium Threat Response v2|||tanium-tr-get-process-tree
@@ -2341,6 +2326,8 @@ tasks:
                 value:
                   simple: connected
           accessor: id
+          transformers:
+          - operator: FirstArrayElement
       ptid:
         complex:
           root: Tanium.ProcessParent
@@ -2364,10 +2351,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 1a6d8cc3-cb1c-4302-84ea-8683b5743b3a
+    taskid: c084c8f4-6f28-408b-80eb-9ecb461af070
     type: condition
     task:
-      id: 1a6d8cc3-cb1c-4302-84ea-8683b5743b3a
+      id: c084c8f4-6f28-408b-80eb-9ecb461af070
       version: -1
       name: Verify Outputs
       type: condition
@@ -2481,10 +2468,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 5646dedf-6062-4754-86db-8a4f9db509de
+    taskid: e4420671-a94d-4bd6-880f-21677fe06f1d
     type: regular
     task:
-      id: 5646dedf-6062-4754-86db-8a4f9db509de
+      id: e4420671-a94d-4bd6-880f-21677fe06f1d
       version: -1
       name: tanium-tr-event-evidence-list
       script: Tanium Threat Response v2|||tanium-tr-event-evidence-list
@@ -2499,6 +2486,8 @@ tasks:
         simple: "150"
       offset:
         simple: "30"
+      type:
+        simple: "event"
     separatecontext: false
     view: |-
       {
@@ -2516,10 +2505,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 4ce615f4-af4e-4e52-8540-8f9d047aa8bb
+    taskid: 988b6927-5849-4422-80cc-e54eaafe6ca3
     type: condition
     task:
-      id: 4ce615f4-af4e-4e52-8540-8f9d047aa8bb
+      id: 988b6927-5849-4422-80cc-e54eaafe6ca3
       version: -1
       name: Verify Outputs
       type: condition
@@ -2573,10 +2562,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 78e0d037-15d6-4d36-8c43-dd5fa5f71d9b
+    taskid: 776c2bd0-878e-46a7-8234-dd4a9a8324a7
     type: regular
     task:
-      id: 78e0d037-15d6-4d36-8c43-dd5fa5f71d9b
+      id: 776c2bd0-878e-46a7-8234-dd4a9a8324a7
       version: -1
       name: tanium-tr-event-evidence-get-properties
       script: Tanium Threat Response v2|||tanium-tr-event-evidence-get-properties
@@ -2603,10 +2592,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: c692406d-4af1-43ac-8ced-0aff6910121d
+    taskid: 337c9580-0de4-4d73-851b-c0df395a6d08
     type: regular
     task:
-      id: c692406d-4af1-43ac-8ced-0aff6910121d
+      id: 337c9580-0de4-4d73-851b-c0df395a6d08
       version: -1
       name: tanium-tr-get-evidence-by-id
       script: Tanium Threat Response v2|||tanium-tr-get-evidence-by-id
@@ -2649,10 +2638,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 33078949-f0ce-4411-8085-7cd24bb9c548
+    taskid: 82c97db7-41ba-4ab4-8ac9-61e864f2caa9
     type: condition
     task:
-      id: 33078949-f0ce-4411-8085-7cd24bb9c548
+      id: 82c97db7-41ba-4ab4-8ac9-61e864f2caa9
       version: -1
       name: Verify Outputs
       type: condition
@@ -2726,10 +2715,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 0fd9ca80-41b1-40e1-85c3-2cafbfc1875e
+    taskid: b66e30a8-5371-47b0-8a8e-bd9ad659dcd8
     type: regular
     task:
-      id: 0fd9ca80-41b1-40e1-85c3-2cafbfc1875e
+      id: b66e30a8-5371-47b0-8a8e-bd9ad659dcd8
       version: -1
       name: tanium-tr-create-evidence
       script: Tanium Threat Response v2|||tanium-tr-create-evidence
@@ -2753,6 +2742,8 @@ tasks:
                 value:
                   simple: connected
           accessor: id
+          transformers:
+          - operator: FirstArrayElement
       hostname:
         complex:
           root: Tanium.Connection
@@ -2793,10 +2784,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 924c9fd4-a37a-49e1-86c6-eda5d40cc9b0
+    taskid: bb622a34-d902-4136-893f-0648c06ee216
     type: regular
     task:
-      id: 924c9fd4-a37a-49e1-86c6-eda5d40cc9b0
+      id: bb622a34-d902-4136-893f-0648c06ee216
       version: -1
       name: tanium-tr-delete-evidence
       script: Tanium Threat Response v2|||tanium-tr-delete-evidence
@@ -2839,10 +2830,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 3070045c-3277-4d5b-864f-d252f4e5bc3a
+    taskid: 8447be72-aebf-4bdb-8256-89f6cae72e8a
     type: regular
     task:
-      id: 3070045c-3277-4d5b-864f-d252f4e5bc3a
+      id: 8447be72-aebf-4bdb-8256-89f6cae72e8a
       version: -1
       name: tanium-tr-request-file-download
       script: Tanium Threat Response v2|||tanium-tr-request-file-download
@@ -2887,10 +2878,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 4f3126f8-5ff4-474f-8f74-434c8ed69f8d
+    taskid: 78636f84-4cab-4e57-8fce-dd4aca3380e4
     type: condition
     task:
-      id: 4f3126f8-5ff4-474f-8f74-434c8ed69f8d
+      id: 78636f84-4cab-4e57-8fce-dd4aca3380e4
       version: -1
       name: Verify Outputs
       type: condition
@@ -2949,10 +2940,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: fb69c6cd-44f7-4211-89fb-048b6276101c
+    taskid: e6fb1159-b9af-49fb-81c6-63778d56b593
     type: regular
     task:
-      id: fb69c6cd-44f7-4211-89fb-048b6276101c
+      id: e6fb1159-b9af-49fb-81c6-63778d56b593
       version: -1
       name: tanium-tr-delete-file-download
       script: Tanium Threat Response v2|||tanium-tr-delete-file-download
@@ -2995,10 +2986,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: a3cffdf8-7cac-4c39-8c3f-531b2bf703f4
+    taskid: 4beae6c2-88f6-4659-8149-a7e960a1b08e
     type: regular
     task:
-      id: a3cffdf8-7cac-4c39-8c3f-531b2bf703f4
+      id: 4beae6c2-88f6-4659-8149-a7e960a1b08e
       version: -1
       name: tanium-tr-list-files-in-directory
       script: Tanium Threat Response v2|||tanium-tr-list-files-in-directory
@@ -3021,7 +3012,17 @@ tasks:
               right:
                 value:
                   simple: connected
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Tanium.Connection.platform
+                iscontext: true
+              right:
+                value:
+                  simple: Windows
           accessor: id
+          transformers:
+          - operator: FirstArrayElement
       path:
         simple: C:\Users\Administrator\Desktop\
     separatecontext: false
@@ -3041,10 +3042,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: c9e513e6-4c43-4f48-8863-b73af0503cbf
+    taskid: b2acfb4a-497a-42f1-80d4-9e8130fa7a0c
     type: condition
     task:
-      id: c9e513e6-4c43-4f48-8863-b73af0503cbf
+      id: b2acfb4a-497a-42f1-80d4-9e8130fa7a0c
       version: -1
       name: Verify Outputs
       type: condition
@@ -3113,10 +3114,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: b6261c7e-4398-4dc6-88be-5f72431c64d6
+    taskid: 8b566f23-86ef-4cb4-8366-14f5153f607c
     type: regular
     task:
-      id: b6261c7e-4398-4dc6-88be-5f72431c64d6
+      id: 8b566f23-86ef-4cb4-8366-14f5153f607c
       version: -1
       name: tanium-tr-get-file-info
       script: Tanium Threat Response v2|||tanium-tr-get-file-info
@@ -3156,10 +3157,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 20faa851-e0d6-433d-82b6-f65915b7f3bf
+    taskid: e1db8ccf-7510-423b-8d85-8cec50a4df0e
     type: condition
     task:
-      id: 20faa851-e0d6-433d-82b6-f65915b7f3bf
+      id: e1db8ccf-7510-423b-8d85-8cec50a4df0e
       version: -1
       name: Verify Outputs
       type: condition
@@ -3243,10 +3244,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: e9c2f602-94e2-456f-8f2f-2fe7fa41e09a
+    taskid: 17e9d3fe-e668-4679-86c8-6aa4e1319a93
     type: regular
     task:
-      id: e9c2f602-94e2-456f-8f2f-2fe7fa41e09a
+      id: 17e9d3fe-e668-4679-86c8-6aa4e1319a93
       version: -1
       name: tanium-tr-intel-docs-labels-list
       script: Tanium Threat Response v2|||tanium-tr-intel-docs-labels-list
@@ -3258,23 +3259,13 @@ tasks:
       - "64"
     scriptarguments:
       intel_doc_id:
-        complex:
-          root: Tanium.IntelDoc
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Tanium.IntelDoc.LabelIds
-                iscontext: true
-          accessor: ID
-          transformers:
-          - operator: FirstArrayElement
+        simple: ${Tanium.IntelDoc.ID}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 3172.5,
-          "y": 2995
+          "y": 3355
         }
       }
     note: false
@@ -3286,10 +3277,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 2918f094-e267-49a2-82c3-6e7fb64dee62
+    taskid: 1e62aed5-b128-4df3-8321-8130a1b900c4
     type: condition
     task:
-      id: 2918f094-e267-49a2-82c3-6e7fb64dee62
+      id: 1e62aed5-b128-4df3-8321-8130a1b900c4
       version: -1
       name: Verify Outputs
       type: condition
@@ -3297,7 +3288,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "65"
+      - "67"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -3326,7 +3317,7 @@ tasks:
       {
         "position": {
           "x": 3172.5,
-          "y": 3170
+          "y": 3530
         }
       }
     note: false
@@ -3338,10 +3329,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: 5177008b-4256-4731-8449-3b00f7431e70
+    taskid: cd695a0e-af2f-4069-8a97-4262f2683d79
     type: regular
     task:
-      id: 5177008b-4256-4731-8449-3b00f7431e70
+      id: cd695a0e-af2f-4069-8a97-4262f2683d79
       version: -1
       name: tanium-tr-intel-docs-add-label
       script: Tanium Threat Response v2|||tanium-tr-intel-docs-add-label
@@ -3353,11 +3344,7 @@ tasks:
       - "66"
     scriptarguments:
       intel_doc_id:
-        complex:
-          root: Tanium.IntelDoc
-          accessor: ID
-          transformers:
-          - operator: FirstArrayElement
+        simple: ${Tanium.IntelDoc.ID}
       label_id:
         simple: "1"
     separatecontext: false
@@ -3365,7 +3352,7 @@ tasks:
       {
         "position": {
           "x": 3172.5,
-          "y": 3345
+          "y": 3005
         }
       }
     note: false
@@ -3377,10 +3364,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: cfae4fa5-adca-45a4-8183-619da33bc100
+    taskid: cb94067a-7051-4653-858c-9f1aa1f85948
     type: condition
     task:
-      id: cfae4fa5-adca-45a4-8183-619da33bc100
+      id: cb94067a-7051-4653-858c-9f1aa1f85948
       version: -1
       name: Verify Outputs
       type: condition
@@ -3388,7 +3375,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "67"
+      - "63"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -3427,7 +3414,7 @@ tasks:
       {
         "position": {
           "x": 3172.5,
-          "y": 3520
+          "y": 3180
         }
       }
     note: false
@@ -3439,10 +3426,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: d8cd223c-1090-48eb-867a-c59d34c7de0d
+    taskid: e0bd6dd9-5064-4998-86f3-85d6ff00589c
     type: regular
     task:
-      id: d8cd223c-1090-48eb-867a-c59d34c7de0d
+      id: e0bd6dd9-5064-4998-86f3-85d6ff00589c
       version: -1
       name: tanium-tr-intel-docs-remove-label
       script: Tanium Threat Response v2|||tanium-tr-intel-docs-remove-label
@@ -3462,7 +3449,7 @@ tasks:
       {
         "position": {
           "x": 3172.5,
-          "y": 3695
+          "y": 3690
         }
       }
     note: false
@@ -3474,10 +3461,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: e985dde5-9363-4a21-8c78-bfb6ad60ad2c
+    taskid: 5d4bd667-bc65-4bf3-865a-19eae4fe0af7
     type: regular
     task:
-      id: e985dde5-9363-4a21-8c78-bfb6ad60ad2c
+      id: 5d4bd667-bc65-4bf3-865a-19eae4fe0af7
       version: -1
       name: tanium-tr-get-task-by-id
       script: Tanium Threat Response v2|||tanium-tr-get-task-by-id
@@ -3507,10 +3494,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: f69aab6d-26c4-4a55-8b77-84f9570627e8
+    taskid: 5ca4eddb-a9b4-4db5-8c75-cc202482c7e6
     type: condition
     task:
-      id: f69aab6d-26c4-4a55-8b77-84f9570627e8
+      id: 5ca4eddb-a9b4-4db5-8c75-cc202482c7e6
       version: -1
       name: Verify Outputs
       type: condition
@@ -3569,10 +3556,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: 4d92d9f1-014f-478f-85b2-0b1bcd0066cb
+    taskid: e2d655c8-5806-4d5f-837b-ef7a93b263fd
     type: regular
     task:
-      id: 4d92d9f1-014f-478f-85b2-0b1bcd0066cb
+      id: e2d655c8-5806-4d5f-837b-ef7a93b263fd
       version: -1
       name: tanium-tr-get-system-status
       script: Tanium Threat Response v2|||tanium-tr-get-system-status
@@ -3599,10 +3586,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 30cadf3a-4ab7-40a5-8cf4-534c13367d33
+    taskid: 03604d46-c680-4e48-8df5-1ddf0b9f620f
     type: condition
     task:
-      id: 30cadf3a-4ab7-40a5-8cf4-534c13367d33
+      id: 03604d46-c680-4e48-8df5-1ddf0b9f620f
       version: -1
       name: Verify Outputs
       type: condition
@@ -3651,10 +3638,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: 989dce3e-f911-4af1-89fd-29e6b97edc3b
+    taskid: 02bedc33-3d69-49ee-8238-2bf2b25aba63
     type: title
     task:
-      id: 989dce3e-f911-4af1-89fd-29e6b97edc3b
+      id: 02bedc33-3d69-49ee-8238-2bf2b25aba63
       version: -1
       name: Test Done
       type: title
@@ -3678,10 +3665,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: e6f872fb-9c3f-492d-8709-a1c92dc68d32
+    taskid: 4f31ef5d-0bce-48ab-89f7-9bbe8782b825
     type: regular
     task:
-      id: e6f872fb-9c3f-492d-8709-a1c92dc68d32
+      id: 4f31ef5d-0bce-48ab-89f7-9bbe8782b825
       version: -1
       name: tanium-tr-create-connection
       script: Tanium Threat Response v2|||tanium-tr-create-connection
@@ -3695,42 +3682,21 @@ tasks:
       client_id:
         complex:
           root: Tanium.SystemStatus
-          filters:
-          - - operator: isEqualNumber
-              left:
-                value:
-                  simple: Tanium.SystemStatus.computerId
-                iscontext: true
-              right:
-                value:
-                  simple: "9065264"
           accessor: clientId
+          transformers:
+          - operator: FirstArrayElement
       hostname:
         complex:
           root: Tanium.SystemStatus
-          filters:
-          - - operator: isEqualNumber
-              left:
-                value:
-                  simple: Tanium.SystemStatus.computerId
-                iscontext: true
-              right:
-                value:
-                  simple: "9065264"
           accessor: hostName
+          transformers:
+          - operator: FirstArrayElement
       ip:
         complex:
           root: Tanium.SystemStatus
-          filters:
-          - - operator: isEqualNumber
-              left:
-                value:
-                  simple: Tanium.SystemStatus.computerId
-                iscontext: true
-              right:
-                value:
-                  simple: "9065264"
           accessor: ipaddressClient
+          transformers:
+          - operator: FirstArrayElement
       platform:
         simple: Windows
     separatecontext: false
@@ -3750,10 +3716,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 48a6c7bd-a752-4a3d-87b5-ff36354cc41d
+    taskid: c641fa3b-b772-4776-8c15-8a5861917a79
     type: regular
     task:
-      id: 48a6c7bd-a752-4a3d-87b5-ff36354cc41d
+      id: c641fa3b-b772-4776-8c15-8a5861917a79
       version: -1
       name: tanium-tr-list-connections
       script: Tanium Threat Response v2|||tanium-tr-list-connections
@@ -3780,10 +3746,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: c7f42a2e-0a49-4d39-8906-a71a55e3ee65
+    taskid: bff51c1e-ac2d-4331-82e4-364f81d0ec9a
     type: regular
     task:
-      id: c7f42a2e-0a49-4d39-8906-a71a55e3ee65
+      id: bff51c1e-ac2d-4331-82e4-364f81d0ec9a
       version: -1
       name: tanium-tr-event-evidence-list
       script: Tanium Threat Response v2|||tanium-tr-event-evidence-list
@@ -3815,10 +3781,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 5a6cd8b9-f5a2-4b7c-873d-17030ee6fb73
+    taskid: 88e57262-37db-4f93-81c5-de908b7e1239
     type: condition
     task:
-      id: 5a6cd8b9-f5a2-4b7c-873d-17030ee6fb73
+      id: 88e57262-37db-4f93-81c5-de908b7e1239
       version: -1
       name: Verify Outputs
       type: condition
@@ -3877,10 +3843,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 63a81023-5407-470d-82d5-c4c5b9027e1e
+    taskid: a1f1c5e9-4368-4749-8f0b-fcadecaa8f93
     type: regular
     task:
-      id: 63a81023-5407-470d-82d5-c4c5b9027e1e
+      id: a1f1c5e9-4368-4749-8f0b-fcadecaa8f93
       version: -1
       name: Sleep - waiting connection to connect
       description: Sleep for X seconds
@@ -3911,10 +3877,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: e1fc12e0-2fdd-49d0-85f7-21cbc228f08b
+    taskid: 3e8985cc-13cb-45e6-8264-297f4ebcc325
     type: playbook
     task:
-      id: e1fc12e0-2fdd-49d0-85f7-21cbc228f08b
+      id: 3e8985cc-13cb-45e6-8264-297f4ebcc325
       version: -1
       name: Fetch Incidents Test
       playbookName: Fetch Incidents Test
@@ -3952,10 +3918,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: b3c5be67-6107-4d5b-8e48-c69752456425
+    taskid: 04fac791-b21b-4d1b-8b0a-58660101232a
     type: condition
     task:
-      id: b3c5be67-6107-4d5b-8e48-c69752456425
+      id: 04fac791-b21b-4d1b-8b0a-58660101232a
       version: -1
       name: Verify Outputs
       type: condition
@@ -4002,6 +3968,300 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 9dcb4510-ad7c-4291-8502-4afb4461ae11
+    type: regular
+    task:
+      id: 9dcb4510-ad7c-4291-8502-4afb4461ae11
+      version: -1
+      name: tanium-tr-list-intel-docs
+      description: Returns a comma-separated list of all intel documents.
+      script: Tanium Threat Response v2|||tanium-tr-list-intel-docs
+      type: regular
+      iscommand: true
+      brand: Tanium Threat Response v2
+    nexttasks:
+      '#none#':
+      - "91"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3172.5,
+          "y": 2280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 9e4df465-d61d-4cb1-8269-e408321028d5
+    type: regular
+    task:
+      id: 9e4df465-d61d-4cb1-8269-e408321028d5
+      version: -1
+      name: tanium-tr-start-quick-scan
+      description: Scan a computer group for hashes in intel document. Computer groups
+        can be viewed by navigating to `Administration -> Computer Groups` in the
+        Threat-Response product console. Computer group names and IDs can also be
+        retrieved by using the `tn-list-groups` command in the `Tanium` integration.
+      script: '|||tanium-tr-start-quick-scan'
+      type: regular
+      iscommand: true
+      brand: Tanium Threat Response v2
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      computer_group_name:
+        simple: ${inputs.computer_group_name}
+      intel_doc_id:
+        simple: ${TaniumIntelDocID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3172.5,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: 3f022257-4cef-4f5a-84c9-264d896554aa
+    type: regular
+    task:
+      id: 3f022257-4cef-4f5a-84c9-264d896554aa
+      version: -1
+      name: tanium-tr-intel-doc-delete
+      description: Remove an intel document from the system by providing its ID
+      script: '|||tanium-tr-intel-doc-delete'
+      type: regular
+      iscommand: true
+      brand: Tanium Threat Response v2
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      intel_doc_id:
+        simple: ${TaniumIntelDocID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3172.5,
+          "y": 2105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: 9c11b630-5008-478d-8374-9c6524f5457a
+    type: condition
+    task:
+      id: 9c11b630-5008-478d-8374-9c6524f5457a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "89"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tanium.QuickScan.IntelDocId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tanium.QuickScan.ComputerGroupId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tanium.QuickScan.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tanium.QuickScan.AlertCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tanium.QuickScan.CreatedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tanium.QuickScan.UserId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tanium.QuickScan.QuestionId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3172.5,
+          "y": 1925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: cb2199cb-5961-402b-8b5d-8143c54e9b02
+    type: condition
+    task:
+      id: cb2199cb-5961-402b-8b5d-8143c54e9b02
+      version: -1
+      name: Verify Intel Doc was deleted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notIn
+          left:
+            value:
+              simple: TaniumIntelDocID
+            iscontext: true
+          right:
+            value:
+              simple: Tanium.IntelDoc.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3172.5,
+          "y": 2455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: bace8cf3-760a-4e4d-82e3-1ed9dd2ceec4
+    type: regular
+    task:
+      id: bace8cf3-760a-4e4d-82e3-1ed9dd2ceec4
+      version: -1
+      name: Set TaniumIntelDocID
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      key:
+        simple: TaniumIntelDocID
+      value:
+        complex:
+          root: Tanium.IntelDoc
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3172.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 205d38a3-ef50-4804-823a-8c3c65c01c6b
+    type: regular
+    task:
+      id: 205d38a3-ef50-4804-823a-8c3c65c01c6b
+      version: -1
+      name: Delete Tanium.IntelDoc context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      key:
+        simple: Tanium.IntelDoc
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3172.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -4016,6 +4276,12 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: computer_group_name
+  value:
+    simple: All Computers
+  required: false
+  description: ""
+  playbookInputQuery:
 outputs: []
 fromversion: 6.0.0

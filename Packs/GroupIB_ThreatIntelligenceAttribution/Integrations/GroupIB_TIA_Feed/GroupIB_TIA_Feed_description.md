@@ -9,4 +9,4 @@
 2.2. In the new interface: click on your name in the right upper corner -> choose **Profile** option -> switch to **Security and Access** tab -> click **Personal token** -> follow instructions to generate API token.  
 3. Your server URL is the same as your TI&A web interface URL.  
 4. Your username is the email that you use to enter in the web interface.   
-5. Don't forget to contact Group-IB to whitelist your Cortex IP or public IP of a proxy that you are using with Cortex.
+5. Don't forget to contact Group-IB to add to allow list your Cortex IP or public IP of a proxy that you are using with Cortex.

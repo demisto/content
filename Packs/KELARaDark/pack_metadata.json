@@ -2,15 +2,23 @@
     "name": "KELA RaDark",
     "description": "This content pack enables you to fetch incidents and manage your RaDark monitor from Cortex XSOAR.",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.1.0",
     "author": "KELA",
     "url": "ke-la.com",
     "email": "support@ke-la.com",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": ["Breach", "Dark Web", "Threat Intelligence"],
-    "useCases": ["Breach Notification", "Vulnerability Management", "Phishing"],
+    "tags": [
+        "Breach",
+        "Dark Web",
+        "Threat Intelligence"
+    ],
+    "useCases": [
+        "Breach Notification",
+        "Vulnerability Management",
+        "Phishing"
+    ],
     "keywords": [
         "Darknet",
         "darkweb",
@@ -26,5 +34,9 @@
         "intel",
         "recon"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

@@ -2,7 +2,7 @@
     "name": "Respond Analyst",
     "description": "Respond Analyst Integration",
     "support": "partner",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Respond Software",
     "url": "https://www.fireeye.com/support.html",
     "email": "d.mayer@mandiant.com",
@@ -13,5 +13,11 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": ["dannomayernotabot"]
+    "githubUser": [
+        "dannomayernotabot"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

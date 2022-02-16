@@ -40,7 +40,7 @@
                 "prevName": "Active Incidents - Line chart",
                 "dataType": "incidents",
                 "widgetType": "line",
-                "query": "",
+                "query": "type:\"Cybersixgill Actionable Alerts\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -160,7 +160,7 @@
                 "prevName": "Cybersixgill Alerts by Status",
                 "dataType": "incidents",
                 "widgetType": "column",
-                "query": "cybersixgillstatus:\"In Treatment\" or cybersixgillstatus:Resolved or cybersixgillstatus:\"Treatment Required\"",
+                "query": "cybersixgillstatus:*",
                 "sort": [],
                 "isPredefined": false,
                 "dateRange": {

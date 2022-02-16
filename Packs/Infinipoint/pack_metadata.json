@@ -2,17 +2,23 @@
     "name": "Infinipoint",
     "description": "Use the Infinipoint integration to retrieve security and policy incompliance events, vulnerabilities or incidents. Investigate and respond to events in real-time",
     "support": "partner",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.8",
     "author": "Infinipoint - ET",
     "url": "",
     "email": "support@infinipoint.io",
     "created": "2020-06-07T11:55:44Z",
-    "categories": [],
+    "categories": [
+        "Network Security"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [
         "etInfp"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

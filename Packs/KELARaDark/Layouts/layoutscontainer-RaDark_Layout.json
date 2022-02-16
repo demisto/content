@@ -105,7 +105,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -119,7 +118,6 @@
                     {
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -135,7 +133,6 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -152,7 +149,6 @@
                         "h": 2,
                         "hideName": false,
                         "i": "caseinfoid-field-changed-caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -215,7 +211,6 @@
                                 "startCol": 1
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -260,7 +255,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -334,7 +328,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -359,7 +352,7 @@
                         "h": 6,
                         "hideItemTitleOnlyOne": false,
                         "hideName": false,
-                        "i": "caseinfoid-mmkrejkpmo-field-changed-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-field-changed-mmkrejkpmo-caseinfoid-2cc0c980-0e4f-11ec-8ebc-17e77219c928",
+                        "i": "caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-field-changed-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-field-changed-mmkrejkpmo-caseinfoid-2cc0c980-0e4f-11ec-8ebc-17e77219c928",
                         "items": [
                             {
                                 "endCol": 6,
@@ -375,7 +368,7 @@
                                 "fieldId": "kelaradarktableagressor",
                                 "height": 106,
                                 "id": "13363380-115e-11ec-a6de-01cfffc703d3",
-                                "index": 2,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -384,7 +377,7 @@
                                 "fieldId": "kelaradarktablerussianmarket",
                                 "height": 106,
                                 "id": "1480b4e0-115e-11ec-a6de-01cfffc703d3",
-                                "index": 3,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -393,7 +386,7 @@
                                 "fieldId": "kelaradarktableleakedcredentialsfromcitadel",
                                 "height": 106,
                                 "id": "1574d8e0-115e-11ec-a6de-01cfffc703d3",
-                                "index": 4,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -402,7 +395,7 @@
                                 "fieldId": "kelaradarktableleakedcredentialsfromhackingdiscussions",
                                 "height": 106,
                                 "id": "166134b0-115e-11ec-a6de-01cfffc703d3",
-                                "index": 5,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -411,7 +404,7 @@
                                 "fieldId": "kelaradarktableleakedcredentialsfrominstantmessaging",
                                 "height": 106,
                                 "id": "178ae7a0-115e-11ec-a6de-01cfffc703d3",
-                                "index": 6,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -420,12 +413,137 @@
                                 "fieldId": "kelaradarktableleakedcredentialsfromdump",
                                 "height": 106,
                                 "id": "19311d90-115e-11ec-a6de-01cfffc703d3",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktableinformationdisclosure",
+                                "height": 106,
+                                "id": "dddec360-300b-11ec-9af3-d7bdebbeb5eb",
                                 "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktablesensitivehosts",
+                                "height": 106,
+                                "id": "e60b0c60-300b-11ec-9af3-d7bdebbeb5eb",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktablevulnerableservicesdatabase",
+                                "height": 106,
+                                "id": "f0eb78e0-300b-11ec-9af3-d7bdebbeb5eb",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktablevulnerableservicesfilesharing",
+                                "height": 106,
+                                "id": "02a96740-300c-11ec-9af3-d7bdebbeb5eb",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktablevulnerableservicesinsecurenetworkservices",
+                                "height": 106,
+                                "id": "0b13cab0-300c-11ec-9af3-d7bdebbeb5eb",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktablevulnerableservicesmessagebroker",
+                                "height": 106,
+                                "id": "1471b5e0-300c-11ec-9af3-d7bdebbeb5eb",
+                                "index": 12,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktablevulnerableservicesremotecontrol",
+                                "height": 106,
+                                "id": "1baff560-300c-11ec-9af3-d7bdebbeb5eb",
+                                "index": 13,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktablevulnerableservicesscada",
+                                "height": 106,
+                                "id": "27c2a050-300c-11ec-9af3-d7bdebbeb5eb",
+                                "index": 14,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktablevulnerabletechnologies",
+                                "height": 106,
+                                "id": "30ecaa40-300c-11ec-9af3-d7bdebbeb5eb",
+                                "index": 15,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktablewebapplicationsvulnerabilities",
+                                "height": 106,
+                                "id": "374da920-300c-11ec-9af3-d7bdebbeb5eb",
+                                "index": 16,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktablecreditcards",
+                                "height": 106,
+                                "id": "2adf4560-30d7-11ec-9a15-3ddcc6d0e2ee",
+                                "index": 17,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktablecreditcardsfrominstantmessaging",
+                                "height": 106,
+                                "id": "20d0b160-30e3-11ec-a4ad-0527450a0a88",
+                                "index": 18,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktablehackingdiscussions",
+                                "height": 106,
+                                "id": "0c973a50-3586-11ec-a6f8-a562c8f41d32",
+                                "index": 19,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktabletwoeasy",
+                                "height": 106,
+                                "id": "620e4170-3d67-11ec-96df-c36256cbc1ff",
+                                "index": 20,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "minW": 3,

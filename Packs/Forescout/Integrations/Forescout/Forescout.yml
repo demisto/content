@@ -21,6 +21,13 @@ configuration:
   name: dex_account
   required: false
   type: 0
+- display: HTTP Timeout
+  additionalinfo: Sets the timeout of the HTTP requests sent to Forescout API (in
+    seconds).
+  defaultvalue: 60
+  name: timeout
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -36,13 +43,36 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Filter hosts by those selected by policies or policy sub-rules. Policies and/or rules should be specified by their IDs. To find policy and rule IDs by which you can filter, run the 'forescout-get-policies' command. If multiple policy and/or rule IDs are entered, only hosts that are selected by all of the policies and/or rules specifed will be returned. Multiple policy or rule IDs should be separated by a comma.
+      description: Filter hosts by those selected by policies or policy sub-rules.
+        Policies and/or rules should be specified by their IDs. To find policy and
+        rule IDs by which you can filter, run the 'forescout-get-policies' command.
+        If multiple policy and/or rule IDs are entered, only hosts that are selected
+        by all of the policies and/or rules specifed will be returned. Multiple policy
+        or rule IDs should be separated by a comma.
       isArray: true
       name: rule_ids
       required: false
       secret: false
     - default: false
-      description: Filter hosts based on host field values. Enter fields with their associated values in the following format, '{field_1}={val_1}&{field_2}={val_2} … &{field_n}={val_n}' where '{field_1}' through '{field_n}' are replaced by actual field names and '{val_1}' through '{val_n}' are replaced by the desired matching values. Note that a list field may be specified with the values separated by commas. Only hosts whose properties match all the specified values will be returned. For a list of potential host fields that may be specified, try executing the 'forescout-get-hostfields' command. A composite property may also be specified. If entered in the format where all the field-value pairs are in a single set of square brackets, for example, '{composite_prop}=[{field_1},{val_1},..,{field_n},{val_n}]' then only hosts for which the specified composite property's fields all match the values entered will be returned. If entered in the format, '{composite_prop}=[{field_1},{val}_1],..,[{field_n},{val_n}]' where each field-value pair is enclosed in its own set of brackets, then hosts for which the composite property contains any of the field-values specified will be returned. Note that for composite properties, sub-fields should be entered as their internal representation in Forescout. To find internal representation for a composite property's sub-fields try executing 'forescout-get-host' command with the host specified in the 'identifier' argument and the name of the composite property entered in the 'fields'  argument of the command.
+      description: Filter hosts based on host field values. Enter fields with their
+        associated values in the following format, '{field_1}={val_1}&{field_2}={val_2}
+        … &{field_n}={val_n}' where '{field_1}' through '{field_n}' are replaced by
+        actual field names and '{val_1}' through '{val_n}' are replaced by the desired
+        matching values. Note that a list field may be specified with the values separated
+        by commas. Only hosts whose properties match all the specified values will
+        be returned. For a list of potential host fields that may be specified, try
+        executing the 'forescout-get-hostfields' command. A composite property may
+        also be specified. If entered in the format where all the field-value pairs
+        are in a single set of square brackets, for example, '{composite_prop}=[{field_1},{val_1},..,{field_n},{val_n}]'
+        then only hosts for which the specified composite property's fields all match
+        the values entered will be returned. If entered in the format, '{composite_prop}=[{field_1},{val}_1],..,[{field_n},{val_n}]'
+        where each field-value pair is enclosed in its own set of brackets, then hosts
+        for which the composite property contains any of the field-values specified
+        will be returned. Note that for composite properties, sub-fields should be
+        entered as their internal representation in Forescout. To find internal representation
+        for a composite property's sub-fields try executing 'forescout-get-host' command
+        with the host specified in the 'identifier' argument and the name of the composite
+        property entered in the 'fields'  argument of the command.
       isArray: false
       name: fields
       required: false
@@ -71,7 +101,10 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: name
-      description: Each host field has three searchable parts, the 'name', 'label', and 'description'. By default only the 'name' will be searched. If you want to expand the search to include the description, you would enter 'name,description' for this argument.
+      description: Each host field has three searchable parts, the 'name', 'label',
+        and 'description'. By default only the 'name' will be searched. If you want
+        to expand the search to include the description, you would enter 'name,description'
+        for this argument.
       isArray: true
       name: search_in
       predefined:
@@ -94,7 +127,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Determines whether the search term is matched against the entirety of the potential host field instead of just seeing whether the host field contains the search term.
+      description: Determines whether the search term is matched against the entirety
+        of the potential host field instead of just seeing whether the host field
+        contains the search term.
       isArray: false
       name: match_exactly
       predefined:
@@ -103,7 +138,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: The term by which to filter host fields. By default, the search will be case insensitive and checked to see if a host field contains the search term unless otherwise specified in the 'case_sensitive' and 'match_exactly' arguments respectively.
+      description: The term by which to filter host fields. By default, the search
+        will be case insensitive and checked to see if a host field contains the search
+        term unless otherwise specified in the 'case_sensitive' and 'match_exactly'
+        arguments respectively.
       isArray: false
       name: search_term
       required: false
@@ -111,7 +149,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: all_types
-      description: Limit the search to host fields whose values are of a certain type. For example, to limit the search to host properties whose values are either boolean, ip, or a date, enter 'boolean,ip,date'.
+      description: Limit the search to host fields whose values are of a certain type.
+        For example, to limit the search to host properties whose values are either
+        boolean, ip, or a date, enter 'boolean,ip,date'.
       isArray: true
       name: host_field_type
       predefined:
@@ -132,7 +172,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves an index of Forescout host fields that match the specified criteria.
+    description: Retrieves an index of Forescout host fields that match the specified
+      criteria.
     execution: false
     name: forescout-get-host-fields
     outputs:
@@ -141,25 +182,32 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: List of host properties to include in the output for the targeted endpoint. If a specified host property is not found, the property is omitted from the outputs. For a list of potential host properties that can be specified, run the 'forescout-get-host-fields' command. Requested fields should be comma separated.
+      description: List of host properties to include in the output for the targeted
+        endpoint. If a specified host property is not found, the property is omitted
+        from the outputs. For a list of potential host properties that can be specified,
+        run the 'forescout-get-host-fields' command. Requested fields should be comma
+        separated.
       isArray: true
       name: fields
       required: false
       secret: false
     - default: false
-      description: IP (ipv4) of the endpoint. To get the Endpoint identifiers - IPs, MAC addresses, and object IDs, run the `forescout-get-hosts` command.
+      description: IP (ipv4) of the endpoint. To get the Endpoint identifiers - IPs,
+        MAC addresses, and object IDs, run the `forescout-get-hosts` command.
       isArray: false
       name: ip
       required: false
       secret: false
     - default: false
-      description: MAC address of the endpoint. To get the Endpoint identifiers - IPs, MAC addresses, and object IDs, run the `forescout-get-hosts` command.
+      description: MAC address of the endpoint. To get the Endpoint identifiers -
+        IPs, MAC addresses, and object IDs, run the `forescout-get-hosts` command.
       isArray: false
       name: mac
       required: false
       secret: false
     - default: false
-      description: Forescout ID of the endpoint. To get the Endpoint identifiers - IPs, MAC addresses, and object IDs, run the `forescout-get-hosts` command.
+      description: Forescout ID of the endpoint. To get the Endpoint identifiers -
+        IPs, MAC addresses, and object IDs, run the `forescout-get-hosts` command.
       isArray: false
       name: id
       required: false
@@ -170,7 +218,8 @@ script:
     name: forescout-get-host
     outputs:
     - contextPath: Forescout.Host.MatchedFingerprint
-      description: An endpoint might match multiple profiles. This property indicates all the classification profiles that this endpoint matches.
+      description: An endpoint might match multiple profiles. This property indicates
+        all the classification profiles that this endpoint matches.
       type: Unknown
     - contextPath: Forescout.Host.EngineSeenPacket
       description: Indicates the host was seen by CounterACT.
@@ -179,7 +228,10 @@ script:
       description: Host is online.
       type: String
     - contextPath: Forescout.Host.PrimClassification
-      description: Indicates the most specific endpoint function detected. If CounterACT detects multiple endpoint functions, the property is resolved as the most specific value that is common to all the detected functions. If there is no common value, the property is resolved as 'Multiple Suggestions'.
+      description: Indicates the most specific endpoint function detected. If CounterACT
+        detects multiple endpoint functions, the property is resolved as the most
+        specific value that is common to all the detected functions. If there is no
+        common value, the property is resolved as 'Multiple Suggestions'.
       type: String
     - contextPath: Forescout.Host.MacVendorString
       description: Indicates a value associated with the NIC Vendor.
@@ -188,7 +240,8 @@ script:
       description: NetBIOS ports that are open.
       type: String
     - contextPath: Forescout.Host.UserDefFp
-      description: Indicates the operating system of the endpoint, as determined by classification tools.
+      description: Indicates the operating system of the endpoint, as determined by
+        classification tools.
       type: String
     - contextPath: Forescout.Host.Vendor
       description: Network Device Vendor, Type, and Model.
@@ -224,13 +277,15 @@ script:
       description: Nmap-OS Fingerprint (Ver. 5.3).
       type: String
     - contextPath: Forescout.Host.AgentInstallMode
-      description: Indicates the SecureConnector deployment mode installed on the host.
+      description: Indicates the SecureConnector deployment mode installed on the
+        host.
       type: String
     - contextPath: Forescout.Host.NmapFp7
       description: Nmap-OS Class(Ver. 7.01) (Obsolete).
       type: String
     - contextPath: Forescout.Host.ClType
-      description: Indicates how CounterACT determines the Network Function property of the endpoint.
+      description: Indicates how CounterACT determines the Network Function property
+        of the endpoint.
       type: String
     - contextPath: Forescout.Host.ClRule
       description: Indicates the rule responsible for classifying the host.
@@ -242,7 +297,8 @@ script:
       description: Operating system.
       type: String
     - contextPath: Forescout.Host.ClassificationSourceOS
-      description: Indicates how the OS classification property was determined for this endpoint.
+      description: Indicates how the OS classification property was determined for
+        this endpoint.
       type: String
     - contextPath: Forescout.Host.LastNbtReportTime
       description: Last time the NBT name was reported.
@@ -251,7 +307,8 @@ script:
       description: Miscellaneous.
       type: String
     - contextPath: Forescout.Host.ClassificationSourceFunc
-      description: Indicates how the Function classification property was determined for this endpoint.
+      description: Indicates how the Function classification property was determined
+        for this endpoint.
       type: String
     - contextPath: Forescout.Host.NmapNetfunc7
       description: Nmap-Network Function (Ver. 7.01).
@@ -348,31 +405,46 @@ script:
       required: false
       secret: false
     - default: false
-      description: The IP address of the target host. Required if 'updated_type' is "update" or "delete".
+      description: The IP address of the target host. Required if 'updated_type' is
+        "update" or "delete".
       isArray: false
       name: host_ip
       required: true
       secret: false
     - default: false
-      description: Enter the the name of the field to update. Composite fields should be updated using the 'fields_json' command argument.
+      description: Enter the the name of the field to update. Composite fields should
+        be updated using the 'fields_json' command argument.
       isArray: false
       name: field
       required: false
       secret: false
     - default: false
-      description: Value to be assigned to the field specified in the 'field' argument. If the value is a list of items, then items should be separated using a comma.
+      description: Value to be assigned to the field specified in the 'field' argument.
+        If the value is a list of items, then items should be separated using a comma.
       isArray: true
       name: value
       required: false
       secret: false
     - default: false
-      description: 'One may perform multiple field-value assignments using this command argument. The argument should be entered in valid JSON format. This argument is useful for setting composite fields although other fields may be entered as well. For example, ''{"Example_Composite": [{"Shape": "Triangle", "Color": "Beige"}, {"Shape": "Square", "Color": "Violet"}], "String_Field": "Example"}'' where ''Example_Composite'' is the name of the Composite field in Forescout and ''Shape'' and ''Color'' are sub fields. In the example, ''String_Field'' is a regular host field of type string whose value will be assigned ''Example''. If the composite field was defined in Forescout as an aggregate property then additional records will be appended, otherwise they will be overwritten. '
+      description: 'One may perform multiple field-value assignments using this command
+        argument. The argument should be entered in valid JSON format. This argument
+        is useful for setting composite fields although other fields may be entered
+        as well. For example, ''{"Example_Composite": [{"Shape": "Triangle", "Color":
+        "Beige"}, {"Shape": "Square", "Color": "Violet"}], "String_Field": "Example"}''
+        where ''Example_Composite'' is the name of the Composite field in Forescout
+        and ''Shape'' and ''Color'' are sub fields. In the example, ''String_Field''
+        is a regular host field of type string whose value will be assigned ''Example''.
+        If the composite field was defined in Forescout as an aggregate property then
+        additional records will be appended, otherwise they will be overwritten. '
       isArray: false
       name: fields_json
       required: false
       secret: false
     deprecated: false
-    description: Update a host's field. If a List field or Composite field has not been defined in Forescout to 'Aggregate new values from each update' then performing an update operation on a field will overwrite previous data written to that field.
+    description: Update a host's field. If a List field or Composite field has not
+      been defined in Forescout to 'Aggregate new values from each update' then performing
+      an update operation on a field will overwrite previous data written to that
+      field.
     execution: false
     name: forescout-update-host-fields
   - arguments:
@@ -389,13 +461,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: Names of lists defined in the Forescout platform that you wish to update. If the 'update_type' is set to 'delete_all_list_values' then it is unnecessary to fill in the 'values' command argument. Multiple list names should be separated by a comma. To find names of lists that may be updated, navigate to *Tools* > *Options* > *Lists* in the Forescout platform.
+      description: Names of lists defined in the Forescout platform that you wish
+        to update. If the 'update_type' is set to 'delete_all_list_values' then it
+        is unnecessary to fill in the 'values' command argument. Multiple list names
+        should be separated by a comma. To find names of lists that may be updated,
+        navigate to *Tools* > *Options* > *Lists* in the Forescout platform.
       isArray: true
       name: list_names
       required: true
       secret: false
     - default: false
-      description: The values to add or delete from the lists entered in the 'list_names' command argument. Multiple values should separated by a comma. Note that the values entered here will be updated for all of the lists entered in the 'list_names' command argument.
+      description: The values to add or delete from the lists entered in the 'list_names'
+        command argument. Multiple values should separated by a comma. Note that the
+        values entered here will be updated for all of the lists entered in the 'list_names'
+        command argument.
       isArray: true
       name: values
       required: false
@@ -404,7 +483,7 @@ script:
     description: Update Forescout lists.
     execution: false
     name: forescout-update-lists
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: false
   runonce: false
   script: '-'

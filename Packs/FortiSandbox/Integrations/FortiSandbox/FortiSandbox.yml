@@ -127,7 +127,7 @@ script:
       required: true
     description: Upload CSV URLs
     name: fortisandbox-upload-urls
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: true
   script: ''
   subtype: python3

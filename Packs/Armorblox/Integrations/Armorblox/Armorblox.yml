@@ -1,0 +1,84 @@
+category: Analytics & SIEM
+commonfields:
+  id: Armorblox
+  version: -1
+configuration:
+- display: Armorblox tenant name
+  name: tenantName
+  required: true
+  type: 0
+- defaultvalue: Armorblox
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: API key
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: "50"
+  display: Fetch limit
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: lastDay
+  display: First fetch timestamp
+  name: first_fetch
+  options:
+  - lastDay
+  - last3Days
+  - last5Days
+  - last7Days
+  - lastMonth
+  - last3Months
+  - lastYear
+  - last2Years
+  - allTime
+  required: false
+  type: 15
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+description: |-
+  Armorblox is an API-based platform that stops targeted email attacks,
+    protects sensitive data, and automates incident response.
+display: Armorblox
+name: Armorblox
+script:
+  commands:
+  - arguments: []
+    description: Gets a list of armorblox incidents
+    name: fetch-incidents
+  - arguments:
+    - description: The incident id of the incident under inspection
+      name: incident_id
+      required: true
+    description: Check the recommended remediation action for any incident
+    name: armorblox-check-remediation-action
+    outputs:
+    - contextPath: Armorblox.Threat.remediation_actions
+      description: Should be the remediation action name for the incident under inspection
+      type: string
+  dockerimage: demisto/python3:3.9.8.24399
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

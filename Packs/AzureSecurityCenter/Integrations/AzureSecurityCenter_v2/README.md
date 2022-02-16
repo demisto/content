@@ -61,6 +61,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 9. azure-list-subscriptions
 10. azure-sc-list-location
 11. azure-sc-get-alert
+12. azure-get-secure-score
 
 ### 1. azure-sc-list-alert
 
@@ -582,3 +583,57 @@ Get an alert that is associated a resource group or a subscription.
 ## Additional Information
 
 For more information regarding roles, see [the microsoft documentation.](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
+
+### 12. azure-get-secure-score
+***
+Retrieve the Secure Score for the provided subscription and score name
+
+
+#### Base Command
+
+`azure-get-secure-score`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| secure_score_name | description. Possible values are: . Default is ascScore. | Optional | 
+| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. Possible values are: . | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Securescore.displayName | String | The initiative’s name. | 
+| Azure.Securescore.score.max | String | The max score of the Securescore. | 
+| Azure.Securescore.score.current | String | The current score of the Securescore. | 
+| Azure.Securescore.score.percentage | String | The Ratio of the current score divided by the maximum. | 
+| Azure.Securescore.weight | String | The relative weight for each subscription. | 
+
+
+#### Command Example
+```!azure-get-secure-score```
+
+#### Context Example
+```json
+{
+    "Azure": {
+        "Securescore": {
+            "displayName": "ASC score",
+            "score": {
+                "current": 14.51,
+                "max": 58,
+                "percentage": 0.2502
+            },
+            "weight": 199
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Azure Security Center - Secure Score
+>|displayName|score|weight|
+>|---|---|---|
+>| ASC score | max: 58<br/>current: 14.51<br/>percentage: 0.2502 | 199 |

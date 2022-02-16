@@ -1,0 +1,475 @@
+commonfields:
+  id: Check Point
+  version: -1
+name: Check Point
+display: Check Point Firewall (Deprecated)
+deprecated: true
+category: Network Security
+description: Deprecated. Use the Check Point Firewall v2 integration instead. Manage
+  Check Point firewall via API
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Port
+  name: port
+  defaultvalue: "443"
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: checkpoint-show-access-rule-base
+    arguments:
+    - name: name
+      required: true
+      description: Object name. Should be unique in domain.
+    - name: uid
+      description: Object unique identifier.
+    outputs:
+    - contextPath: CheckpointFWRule.Name
+      description: Object name. Should be unique in domain
+      type: string
+    - contextPath: CheckpointFWRule.UID
+      description: Object unique identifier
+      type: string
+    - contextPath: CheckpointFWRule.Type
+      description: Type of the object
+      type: string
+    - contextPath: CheckpointFWRule.Action
+      description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned
+        depends on the details-level field of the request. This table shows the level
+        of detail shown when details-level is set to standard
+      type: string
+    - contextPath: CheckpointFWRule.ActionSetting
+      description: Action settings
+      type: string
+    - contextPath: CheckpointFWRule.CustomFields
+      description: Custom fields
+      type: string
+    - contextPath: CheckpointFWRule.Data
+      description: How much details are returned depends on the details-level field
+        of the request. This table shows the level of detail shown when details-level
+        is set to standard
+      type: string
+    - contextPath: CheckpointFWRule.Data.Name
+      description: Object name. Should be unique in domain.
+      type: string
+    - contextPath: CheckpointFWRule.UID
+      description: Object unique identifier
+      type: string
+    - contextPath: CheckpointFWRule.Type
+      description: Type of the object
+      type: string
+    - contextPath: CheckpointFWRule.Data.Domain
+      description: Information about the domain the object belongs to
+      type: string
+    - contextPath: CheckpointFWRule.DataDirection
+      description: On which direction the file types processing is applied
+      type: string
+    - contextPath: CheckpointFWRule.DataNegate
+      description: True if negate is set for data
+      type: string
+    - contextPath: CheckpointFWRule.Destination
+      description: Collection of Network objects identified by the name or UID. How
+        much details are returned depends on the details-level field of the request.
+        This table shows the level of detail shown when details-level is set to standard
+      type: string
+    - contextPath: CheckpointFWRule.DestinationNegate
+      description: True if negate is set for destination.
+      type: string
+    - contextPath: CheckpointFWRule.Domain
+      description: Information about the domain the object belongs to.
+      type: string
+    - contextPath: CheckpointFWRule.Domain.Name
+      description: Object name. Should be unique in domain.
+      type: string
+    - contextPath: CheckpointFWRule.Domain.UID
+      description: Object unique identifier.
+      type: string
+    - contextPath: CheckpointFWRule.Domain.Type
+      description: Domain type
+      type: string
+    - contextPath: CheckpointFWRule.Enabled
+      description: Enable/Disable the rule
+      type: string
+    - contextPath: CheckpointFWRule.Hits
+      description: Hits count object
+      type: number
+    - contextPath: CheckpointFWRule.Hits.FirstDate
+      description: First of hits
+      type: string
+    - contextPath: CheckpointFWRule.Hits.LastDate
+      description: Last date of hits
+      type: string
+    - contextPath: CheckpointFWRule.Hits.Level
+      description: Level of hits
+      type: string
+    - contextPath: CheckpointFWRule.Hits.Percentage
+      description: Percentage of hits
+      type: string
+    - contextPath: CheckpointFWRule.Hits.Value
+      description: Value of hits
+      type: string
+    description: Show items in an access rulebase configured in Checkpoint FW
+  - name: checkpoint-set-rule
+    arguments:
+    - name: uid
+      description: Object unique identifier.
+    - name: name
+      description: Object name.
+    - name: rule_number
+      description: Rule number.
+    - name: layer
+      required: true
+      description: Layer that the rule belongs to identified by the name or UID.
+    - name: enabled
+      description: true to enable the rule, false to disable it.
+    outputs:
+    - contextPath: CheckpointFWRule.Name
+      description: Object name. Should be unique in domain
+      type: string
+    - contextPath: CheckpointFWRule.UID
+      description: Object unique identifier
+      type: string
+    - contextPath: CheckpointFWRule.Type
+      description: Type of the object
+      type: string
+    - contextPath: CheckpointFWRule.Action
+      description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned
+        depends on the details-level field of the request. This table shows the level
+        of detail shown when details-level is set to standard
+      type: string
+    - contextPath: CheckpointFWRule.ActionSetting
+      description: Action settings
+      type: string
+    - contextPath: CheckpointFWRule.CustomFields
+      description: Custom fields
+      type: string
+    - contextPath: CheckpointFWRule.Data
+      description: How much details are returned depends on the details-level field
+        of the request. This table shows the level of detail shown when details-level
+        is set  to standard
+      type: string
+    - contextPath: CheckpointFWRule.Data.Name
+      description: Object name. Should be unique in domain
+      type: string
+    - contextPath: CheckpointFWRule.UID
+      description: Object unique identifier
+      type: string
+    - contextPath: CheckpointFWRule.Type
+      description: Type of the object
+      type: string
+    - contextPath: CheckpointFWRule.Data.Domain
+      description: Information about the domain the object belongs to
+      type: string
+    - contextPath: CheckpointFWRule.DataDirection
+      description: On which direction the file types processing is applied
+      type: string
+    - contextPath: CheckpointFWRule.DataNegate
+      description: True if negate is set for data
+      type: string
+    - contextPath: CheckpointFWRule.Destination
+      description: Collection of Network objects identified by the name or UID. How
+        much details are returned depends on the details-level field of the request.
+        This table shows the level of detail shown when details-level is set to standard
+      type: string
+    - contextPath: CheckpointFWRule.DestinationNegate
+      description: True if negate is set for destination
+      type: string
+    - contextPath: CheckpointFWRule.Domain
+      description: Information about the domain the object belongs to
+      type: string
+    - contextPath: CheckpointFWRule.Domain.Name
+      description: Object name. Should be unique in domain
+      type: string
+    - contextPath: CheckpointFWRule.Domain.UID
+      description: Object unique identifier
+      type: string
+    - contextPath: CheckpointFWRule.Domain.Type
+      description: Domain type
+      type: string
+    - contextPath: CheckpointFWRule.Enabled
+      description: Enable/Disable the rule
+      type: string
+    - contextPath: CheckpointFWRule.Hits
+      description: Hits count object
+      type: number
+    - contextPath: CheckpointFWRule.Hits.FirstDate
+      description: First of hits
+      type: string
+    - contextPath: CheckpointFWRule.Hits.LastDate
+      description: Last date of hits
+      type: string
+    - contextPath: CheckpointFWRule.Hits.Level
+      description: Level of hits
+      type: string
+    - contextPath: CheckpointFWRule.Hits.Percentage
+      description: Percentage of hits
+      type: string
+    - contextPath: CheckpointFWRule.Hits.Value
+      description: Value of hits
+      type: string
+    description: Set attributes of an access rule object configured in Checkpoint
+      FW
+  - name: checkpoint-task-status
+    arguments:
+    - name: task_id
+      required: true
+      description: Unique identifier of one or more tasks.
+    outputs:
+    - contextPath: CheckpointFWTask.Name
+      description: Object name. Should be unique in domain
+      type: string
+    - contextPath: CheckpointFWTask.UID
+      description: Object unique identifier
+      type: string
+    - contextPath: CheckpointFWTask.Type
+      description: Type of the object
+      type: string
+    - contextPath: CheckpointFWTask.Domain
+      description: Information about the domain the object belongs to.
+      type: string
+    - contextPath: CheckpointFWTask.Domain.Name
+      description: Object name. Should be unique in domain.
+      type: string
+    - contextPath: CheckpointFWTask.Domain.UID
+      description: Object unique identifier
+      type: string
+    - contextPath: CheckpointFWTask.Domain.Type
+      description: Domain type
+      type: string
+    - contextPath: CheckpointFWTask.LastUpdateTime
+      description: Last update date and time represented in international ISO 8601
+        format
+      type: string
+    - contextPath: CheckpointFWTask.MetaInfo.CreationTime
+      description: Object creation time
+      type: string
+    - contextPath: CheckpointFWTask.MetaInfo.Creator
+      description: Object creator
+      type: string
+    - contextPath: CheckpointFWTask.MetaInfo.LastModifier
+      description: Last modifier of object
+      type: string
+    - contextPath: CheckpointFWTask.MetaInfo.LastModifyTime
+      description: Object last modification time
+      type: string
+    - contextPath: CheckpointFWTask.MetaInfo.LockStatus
+      description: Object lock state. It's not allowed to edit objects locked by other
+        session.
+      type: string
+    - contextPath: CheckpointFWTask.MetaInfo.ValidationStatus
+      description: Object validation state - ok, info, warning, error
+      type: string
+    - contextPath: CheckpointFWTask.ProgressPercentage
+      description: Object progress percentage
+      type: string
+    - contextPath: CheckpointFWTask.ReadOnly
+      description: Read only
+      type: string
+    - contextPath: CheckpointFWTask.StartTime
+      description: Start time date and time represented in international ISO 8601
+        format.
+      type: string
+    - contextPath: CheckpointFWTask.Status
+      description: Task status
+      type: string
+    - contextPath: CheckpointFWTask.Suppressed
+      description: Is suppressed
+      type: string
+    - contextPath: CheckpointFWTask.Tags
+      description: Collection of tag objects identified by the name or UID. How much
+        details are returned depends on the details-level field of the request. This
+        table shows the level of detail shown when details-level is set to standard
+      type: string
+    - contextPath: CheckpointFWTask.Details
+      description: Task details. How much details are returned depends on the details-level
+        field of the request. This table shows the level of detail shown when details-level
+        is set to standard
+      type: string
+    - contextPath: CheckpointFWTask.ID
+      description: Asynchronous task unique identifier
+      type: string
+    - contextPath: CheckpointFWTask.TaskName
+      description: Task name
+      type: string
+    description: Shows status of a checkpoint task by task uuid
+  - name: checkpoint-show-hosts
+    arguments:
+    - name: limit
+      description: No more than that many results will be returned.
+    - name: offset
+      description: Skip that many results before beginning to return them.
+    - name: order
+      auto: PREDEFINED
+      predefined:
+      - ASC
+      - DESC
+      description: Sorts results by the given field. The default is the random order.
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: Object name. Should be unique in domain
+      type: string
+    - contextPath: Endpoint.UID
+      description: Object unique identifier
+      type: string
+    - contextPath: Endpoint.Type
+      description: Type of the object
+      type: string
+    - contextPath: Endpoint.Domain
+      description: Information about the domain the object belongs to
+      type: string
+    - contextPath: Endpoint.Domain.Name
+      description: Object name. Should be unique in domain
+      type: string
+    - contextPath: Endpoint.Domain.UID
+      description: Object unique identifier
+      type: string
+    - contextPath: Endpoint.Domain.Type
+      description: Type of the object
+      type: string
+    description: Show host objects configured in Checkpoint FW
+  - name: checkpoint-block-ip
+    arguments:
+    - name: ip
+      required: true
+      description: IP addresse to be blocked
+    - name: direction
+      auto: PREDEFINED
+      predefined:
+      - to
+      - from
+      - both
+      description: Whether to block traffic "to" or "from" the IPs, or "both". Default     is
+        "both".
+    - name: rulename
+      required: false
+      description: Base name for added rules inside checkpoint db
+      deprecated: true
+    - name: ipname
+      required: true
+      description: Base name for added ip/hosts inside checkpoint db
+    outputs:
+    - contextPath: CheckpointFWRule.Name
+      description: Object name. Should be unique in domain
+      type: string
+    - contextPath: CheckpointFWRule.UID
+      description: Object unique identifier
+      type: string
+    - contextPath: CheckpointFWRule.Type
+      description: Type of the object
+      type: string
+    - contextPath: CheckpointFWRule.Action
+      description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned
+        depends on the details-level field of the request. This table shows the level
+        of detail shown when details-level is set to standard
+      type: string
+    - contextPath: CheckpointFWRule.ActionSetting
+      description: Action settings
+      type: string
+    - contextPath: CheckpointFWRule.CustomFields
+      description: Custom fields
+      type: string
+    - contextPath: CheckpointFWRule.Data
+      description: How much details are returned depends on the details-level field
+        of the request. This table shows the level of detail shown when details-level
+        is set to standard
+      type: string
+    - contextPath: CheckpointFWRule.Data.Name
+      description: Object name. Should be unique in domain
+      type: string
+    - contextPath: CheckpointFWRule.UID
+      description: Object unique identifier
+      type: string
+    - contextPath: CheckpointFWRule.Type
+      description: Type of the object
+      type: string
+    - contextPath: CheckpointFWRule.Data.Domain
+      description: Information about the domain the object belongs to
+      type: string
+    - contextPath: CheckpointFWRule.DataDirection
+      description: On which direction the file types processing is applied
+      type: string
+    - contextPath: CheckpointFWRule.DataNegate
+      description: True if negate is set for data
+      type: string
+    - contextPath: CheckpointFWRule.Destination
+      description: Collection of Network objects identified by the name or UID. How
+        much details are returned depends on the details-level field of the request.
+        This table shows the level of detail shown when details-level is set to standard
+      type: string
+    - contextPath: CheckpointFWRule.DestinationNegate
+      description: True if negate is set for destination
+      type: string
+    - contextPath: CheckpointFWRule.Domain
+      description: Information about the domain the object belongs to
+      type: string
+    - contextPath: CheckpointFWRule.Domain.Name
+      description: Object name. Should be unique in domain
+      type: string
+    - contextPath: CheckpointFWRule.Domain.UID
+      description: Object unique identifier
+      type: string
+    - contextPath: CheckpointFWRule.Domain.Type
+      description: Domain type
+      type: string
+    - contextPath: CheckpointFWRule.Enabled
+      description: Enable/Disable the rule
+      type: string
+    - contextPath: CheckpointFWRule.Hits
+      description: Hits count object
+      type: number
+    - contextPath: CheckpointFWRule.Hits.FirstDate
+      description: First of hits
+      type: string
+    - contextPath: CheckpointFWRule.Hits.LastDate
+      description: Last date of hits
+      type: string
+    - contextPath: CheckpointFWRule.Hits.Level
+      description: Level of hits
+      type: string
+    - contextPath: CheckpointFWRule.Hits.Percentage
+      description: Percentage of hits
+      type: string
+    - contextPath: CheckpointFWRule.Hits.Value
+      description: Value of hits
+      type: string
+    description: Block one or more IP addresses using Checkpoint Firewall
+  - name: checkpoint
+    arguments: []
+    description: Use Check Point's Management API (requires management server R80
+      or later). Specifying 'command'=<API command> is mandatory
+  - name: checkpoint-delete-rule
+    arguments:
+    - name: uid
+      description: uid of the rule
+    - name: name
+      description: name of the rule
+    - name: layer
+      required: true
+      default: true
+      description: e.g. Network
+    description: Delete rule from firewall
+  runonce: false
+tests:
+- No tests - deprecated
+fromversion: 5.0.0

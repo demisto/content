@@ -15,20 +15,24 @@ urllib3.disable_warnings()
 
 # Validators
 MAX_INCIDENTS_TO_FETCH = 1000
-SUPPORTED_SUB_TYPES = [2, 3, 12, 16, 17, 18, 19, 23]
-SUPPORTED_SUB_TYPES_FOR_PURCHASE = [16, 18]
-# Mappers And Formaters
+SUPPORTED_SUB_TYPES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 23, 24, 26]
+SUPPORTED_SUB_TYPES_FOR_PURCHASE = [16, 18, 26]
+# Mappers And Formatters
 TYPE_MAPPER = {
     'leaked_credentials': 'Leaked Credentials',
     'reports': 'Intelligence Reports',
-    'botnets': 'Compromised Accounts'
+    'botnets': 'Compromised Accounts',
+    'network_vulnerabilities': 'Network Vulnerabilities',
+    'credit_cards': 'Credit Cards',
+    'hacking_discussions': 'Hacking Discussions'
 }
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+HACKING_DISCUSSIONS_LINES_SNIPPET = 5
 # URLs
 RADARK_URL = 'https://radark2.ke-la.com'
 BASE_URL = RADARK_URL + '/api'
 INCIDENT_URL = RADARK_URL + '/#/incident?monitorId={MONITOR_ID}&feedPropertyId={incident_id}'
-FETCH_ITEMS_API = 'incidents/feedProperty/{incident_id}?apiToken={API_KEY}&monitor_id={MONITOR_ID}'
+FETCH_ITEMS_API = 'incidents/feedProperty/{incident_id}?apiToken={API_KEY}&monitor_id={MONITOR_ID}&include_original_text=true'
 FETCH_INCIDENTS_API = 'aggregations?monitor_id={MONITOR_ID}&apiToken={API_KEY}&limit={max_results}'
 EMAIL_ENRICHMENT_API = 'incidents/all?monitor_id={MONITOR_ID}&apiToken={API_KEY}'
 INCIDENT_ACTION_API = 'incidents/{item_id}/{action}?apiToken={API_KEY}'
@@ -37,7 +41,14 @@ MESSAGE_API = 'messages/message?apiToken={API_KEY}'
 MENTIONS_LIST_API = 'messages/mentionsList?monitorId={MONITOR_ID}&apiToken={API_KEY}'
 # Default values
 DEFAULT_MAX_FETCH = 10
-DEFAULT_INCIDENT_TYPES = ['Leaked Credentials', 'Intelligence Reports', 'Compromised Accounts']  # All types allowed
+DEFAULT_INCIDENT_TYPES = [
+    'Leaked Credentials',
+    'Intelligence Reports',
+    'Compromised Accounts',
+    'Network Vulnerabilities',
+    'Credit Cards',
+    'Hacking Discussions'
+]  # All types allowed
 DEFAULT_FIRST_TIME_TO_FETCH = '45 days'
 # Get from instance
 API_KEY = demisto.params().get('api_key')
@@ -234,6 +245,20 @@ def parse_incident_markdown_table(data: dict, incident_id: str):
         many_suffix = "s" if count > 1 else ""
         details = f'Incident contains {count} item{many_suffix}. Full details can be found on "items" tab.'
         table = parse_leaked_credentials_markdown_table(items, sub_type)
+    elif aggr_type == 'network_vulnerabilities':
+        count = len(items)
+        many_suffix = "s" if count > 1 else ""
+        details = f'Incident contains {count} item{many_suffix}. Full details can be found on "items" tab.'
+        table = parse_network_vulnerabilities_markdown_table(items, sub_type)
+    elif aggr_type == 'credit_cards':
+        count = len(items)
+        many_suffix = "s" if count > 1 else ""
+        details = f'Incident contains {count} item{many_suffix}. Full details can be found on "items" tab.'
+        table = parse_credit_cards_markdown_table(items, sub_type)
+    elif aggr_type == 'hacking_discussions':
+        details = ('incident may contain textual context or screenshots that include the company\'s assets. '
+                   'More details can be found on "items" tab.')
+        table = parse_hacking_discussions_markdown_table(items, aggr)
     else:
         details = f'No data found for item ID: {incident_id}'
         table = []
@@ -256,14 +281,14 @@ def parse_leaked_credentials_markdown_table(items: List[Dict[str, Any]], sub_typ
             'password': password if password else '-',
             'password_type': password_type if password_type else '-'
         }
-        if sub_type == 2 or sub_type == 23:
+        if sub_type in [2, 23]:
             source = item.get('source', '')
             date = item.get('posted_date', '')
             row['source'] = source if source else '-'
             row['date'] = timestamp_to_datestring(date * 1000, DATE_FORMAT) if date else '-'
-        elif sub_type == 3:
+        elif sub_type in [3]:
             pass
-        elif sub_type == 19:
+        elif sub_type in [19]:
             date = item.get('dump_post_date', '')
             compromised_website = item.get('compromised_website', '')
             row['dump_post_date'] = timestamp_to_datestring(date * 1000, DATE_FORMAT) if date else '-'
@@ -288,7 +313,7 @@ def parse_botnets_markdown_table(items: List[Dict[str, Any]], sub_type: int):
             'country': country if country else '-',
             'updated_date': timestamp_to_datestring(updated_date * 1000, DATE_FORMAT) if updated_date else '-'
         }
-        if sub_type == 16:
+        if sub_type in [16]:
             additional_data, username, password = extract_available_data_from_item(item)
             source_ip = item.get('source_ip', '')
             price = item.get('price', '')
@@ -297,7 +322,7 @@ def parse_botnets_markdown_table(items: List[Dict[str, Any]], sub_type: int):
             row['additional_data'] = additional_data
             row['source_ip'] = source_ip if source_ip else '-'
             row['price'] = str(price) + '$' if price else price
-        elif sub_type == 17:
+        elif sub_type in [17]:
             username = item.get('username', '')
             password = item.get('password', '')
             source_ip = item.get('source_ip', '')
@@ -306,7 +331,7 @@ def parse_botnets_markdown_table(items: List[Dict[str, Any]], sub_type: int):
             row['password'] = password if password else '-'
             row['source_ip'] = source_ip if source_ip else '-'
             row['infection_type'] = infection_type if infection_type else '-'
-        elif sub_type == 18:
+        elif sub_type in [18]:
             additional_data, username, password = extract_available_data_from_item(item)
             isp = item.get('isp', '')
             infection_type = item.get('infection_type', '')
@@ -317,14 +342,148 @@ def parse_botnets_markdown_table(items: List[Dict[str, Any]], sub_type: int):
             row['isp'] = isp if isp else '-'
             row['infection_type'] = infection_type if infection_type else '-'
             row['price'] = str(price) + '$' if price else price
-
+        elif sub_type in [26]:
+            additional_data, username, password = extract_available_data_from_item(item)
+            tags = item.get('tags', '')
+            price = item.get('price', '')
+            row['username'] = username if username else '-'
+            row['password'] = password if password else '-'
+            row['tags'] = tags if tags else '-'
+            row['price'] = str(price) + '$' if price else price
         table.append(row)
+    return table
+
+
+def parse_network_vulnerabilities_markdown_table(items: List[Dict[str, Any]], sub_type: int):
+    table = []
+    # Parse each item base on subtype
+    for item in items:
+        item_id = item.get('id', '')
+        hostname = item.get('hostname', '')
+        row = {
+            'item_id': item_id if item_id else '-',
+            'hostname': hostname if hostname else '-',
+        }
+        if sub_type in [4, 5, 6, 7, 8, 14]:
+            ip = item.get('ip', '')
+            port = item.get('port', '')
+            service = item.get('service', '')
+            isp = item.get('isp', '')
+            row['ip'] = ip if ip else '-'
+            row['port'] = port if port else '-'
+            row['service'] = service if service else '-'
+            row['isp'] = isp if isp else '-'
+        elif sub_type in [9]:
+            technology = item.get('technology', '')
+            cve_details = item.get('cve_details', '')
+            row['technology'] = technology if technology else '-'
+            row['cve_details'] = cve_details if cve_details else '-'
+        elif sub_type in [10, 11]:
+            nv_type = item.get('type', '')
+            details = item.get('details', '')
+            row['type'] = nv_type if nv_type else '-'
+            row['details'] = details if details else '-'
+        elif sub_type in [20]:
+            ip = item.get('ip', '')
+            isp = item.get('isp', '')
+            description = item.get('description', '')
+            row['ip'] = ip if ip else '-'
+            row['isp'] = isp if isp else '-'
+            row['description'] = description if description else '-'
+        table.append(row)
+    return table
+
+
+def parse_credit_cards_markdown_table(items: List[Dict[str, Any]], sub_type: int):
+    table = []
+    # Parse each item base on subtype
+    # Include both 13 and 24
+    for item in items:
+        item_id = item.get('id', '')
+        bin = item.get('bin', '')
+        number = item.get('number', '')
+        source = item.get('source', '')
+        date = item.get('posted_date', '')
+        row = {
+            'item_id': item_id if item_id else '-',
+            'bin': bin if bin else '-',
+            'number': number if number else '-',
+            'source': source if source else '-',
+            'date': timestamp_to_datestring(date * 1000, DATE_FORMAT) if date else '-'
+        }
+        table.append(row)
+    return table
+
+
+def parse_hacking_discussions_markdown_table(items: List[Dict[str, Any]], aggr: Dict[str, Any]):
+    table = []
+    aggr_media = aggr.get('media', [])
+    aggr_tags = aggr.get('tags', [])
+    if not isinstance(aggr_media, list) or not isinstance(aggr_tags, list):
+        raise Exception('RaDark Error: Response is missing!')
+    aggr_tags = list(map(lambda t: t.lower(), aggr_tags))
+    # Image items handler
+    for media_item in aggr_media:
+        if not isinstance(media_item, dict):
+            raise Exception('RaDark Error: Incorrect media_item type!')
+        media_item_tags = media_item.get('tags', [])
+        if not isinstance(media_item_tags, list):
+            raise Exception('RaDark Error: Incorrect media_item_tags type!')
+        for tag in media_item_tags:
+            if not isinstance(tag, str):
+                raise Exception('RaDark Error: Incorrect tag type!')
+        if media_item_tags:
+            media_item_url = media_item.get('url', '')
+            if not isinstance(media_item_url, str):
+                raise Exception('RaDark Error: Incorrect media_item_url type!')
+            item_type = 'image'
+            tags = ', '.join(media_item_tags)
+            link = media_item_url
+            row = {
+                'type': item_type if item_type else '-',
+                'tags': tags if tags else '-',
+                'link': link if link else '-',
+                'context': '-'
+            }
+            table.append(row)
+
+    # Snippet items handler
+    item = items[0]
+    if not isinstance(item, dict):
+        raise Exception('RaDark Error: Incorrect item type!')
+    text = item.get('text', {})
+    if not isinstance(text, str):
+        raise Exception('RaDark Error: Incorrect text type!')
+    lines = text.splitlines()
+    for i in range(len(lines)):
+        tag_catched = []
+        for tag in aggr_tags:
+            if tag in lines[i].lower():
+                tag_catched.append(tag)
+        if len(tag_catched) > 0:
+            snippet_lines = []
+            for j in range(
+                    max(0, i - HACKING_DISCUSSIONS_LINES_SNIPPET),
+                    min(len(lines), i + 1 + HACKING_DISCUSSIONS_LINES_SNIPPET)):
+                snippet_lines.append(lines[j])
+            item_type = 'text'
+            tags = ', '.join(tag_catched)
+            context = '\n'.join(snippet_lines)
+            row = {
+                'type': item_type if item_type else '-',
+                'tags': tags if tags else '-',
+                'link': '-',
+                'context': context if context else '-'
+            }
+            table.append(row)
     return table
 
 
 def extract_available_data_from_item(item: dict) -> Tuple[str, str, str]:
     additional_data = ''
-    available_data = item.get('available_data', {'-': ''})
+    available_data = item.get('available_data', '')
+    if not available_data:
+        available_data = {'-': ''}
     for key in available_data:
         additional_data += key + '(' + available_data[key] + '),' if available_data[key] else key + ','
     if additional_data[-1] == ',':
@@ -621,6 +780,7 @@ def main() -> None:
 
 
 ''' ENTRY POINT '''
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

@@ -14,4 +14,4 @@
 * Set up conditions: "gibid Is not empty (General)" and "Type Doesn't equal(String) GIB Data Breach".
 * Action: "Run a script".
 * Script: "GIBIncidentUpdate" (will recreate closed incidents if they get an update, in other cases will update the existing one) or "GIBIncidentUpdateIncludingClosed"(will only update incidents). 
-7. Don't forget to contact Group-IB to whitelist your Cortex IP or public IP of a proxy that you are using with Cortex.
+7. Don't forget to contact Group-IB to add to allow list your Cortex IP or public IP of a proxy that you are using with Cortex.

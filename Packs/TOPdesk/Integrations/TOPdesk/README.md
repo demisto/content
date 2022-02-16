@@ -509,6 +509,7 @@ Visible fields in response: id, dynamicName, phoneNumber, mobileNumber, fax, ema
 | start | The offset at which to start listing the persons at. Must be greater or equal to 0, default is 0. | Optional | 
 | page_size | The amount of persons to be returned per request. Must be between 1 and 100, default is 10. | Optional | 
 | query | A FIQL search expression to filter the result. (e.g. manager.name==Alice) Available from Supporting-Files-API version 1.38.0. The FIQL query syntax is documented in the TOPdesk tutorial. | Optional | 
+| fields | A comma-separated list of which fields should be included. By default all fields will be included. | Optional |
 
 
 #### Context Output
@@ -1012,7 +1013,7 @@ Get list of branches.
 | start | The offset at which to start listing the persons at. Must be greater or equal to 0, default is 0. | Optional | 
 | page_size | The amount of persons to be returned per request. Must be between 1 and 100, default is 10. | Optional | 
 | query | A FIQL search expression to filter the result. (e.g. address.country.name=NL) Available from Supporting-Files-API version 1.38.0. The FIQL query syntax is documented in the TOPdesk tutorial. | Optional | 
-
+| fields | A comma-separated list of which fields should be included. By default fields id and name will be included. | Optional |
 
 #### Context Output
 
@@ -1451,13 +1452,14 @@ Get list of incidents.
 | query | A search expression to filter the result. The FIQL query syntax will be used if 'Use new query option' in the settings is checked, otherwise old style query will be used. The FIQL query syntax is documented in the in the TOPdesk tutorial. TOPdesk tutorial. (e.g. (FIQL) status==firsLine) (e.g. (old style) status=firsLine). | Optional | 
 | incident_id | The id of the incident to retrieve, overrides any other arguments. | Optional | 
 | incident_number | The number of the incident to retrieve, overrides any other argument but incidnet_id. | Optional | 
-| status | Retrive only the incidents of the given status. firstLine/secondLine/partial. Possible values are: firstLine, secondLine, partial. | Optional | 
-| caller_id | Retrive only the incidents of the given caller id. | Optional | 
-| branch_id | Retrive only the incidents of the given branch id. | Optional | 
-| category | Retrive only the incidents of the given category. Supported only with new FIQL type queries. | Optional | 
-| subcategory | Retrive only the incidents of the given subcategory. Supported only with new FIQL type queries. | Optional | 
-| call_type | Retrive only the incidents of the given call type. Supported only with new FIQL type queries. | Optional | 
-| entry_type | Retrive only the incidents of the given entry type. Supported only with new FIQL type queries. | Optional | 
+| status | Retrieve only the incidents of the given status. firstLine/secondLine/partial. Possible values are: firstLine, secondLine, partial. | Optional | 
+| caller_id | Retrieve only the incidents of the given caller id. | Optional | 
+| branch_id | Retrieve only the incidents of the given branch id. | Optional | 
+| category | Retrieve only the incidents of the given category. Supported only with new FIQL type queries. | Optional | 
+| subcategory | Retrieve only the incidents of the given subcategory. Supported only with new FIQL type queries. | Optional | 
+| call_type | Retrieve only the incidents of the given call type. Supported only with new FIQL type queries. | Optional | 
+| entry_type | Retrieve only the incidents of the given entry type. Supported only with new FIQL type queries. | Optional | 
+| fields | A comma-separated list of which fields should be returned. By default all fields will be returned. | Optional |
 
 
 #### Context Output

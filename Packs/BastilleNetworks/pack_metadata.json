@@ -2,7 +2,7 @@
     "name": "Bastille Networks",
     "description": "RF monitoring for wireless intrusion detection and policy enforcement. Visit https://www.bastille.net for details.",
     "support": "partner",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.0.7",
     "author": "Bastille Networks",
     "url": "https://www.bastille.net/support",
     "email": "ask-customer-support@bastille.io",
@@ -16,5 +16,9 @@
     "githubUser": [
         "sszilvasi"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

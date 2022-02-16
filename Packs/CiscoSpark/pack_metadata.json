@@ -1,16 +1,20 @@
 {
-  "name": "Cisco Webex Teams",
-  "description": "Send messages, create rooms and more, via the Cisco Spark API.",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Messaging"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "Cisco Webex Teams",
+    "description": "Send messages, create rooms and more, via the Cisco Spark API.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Messaging"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
