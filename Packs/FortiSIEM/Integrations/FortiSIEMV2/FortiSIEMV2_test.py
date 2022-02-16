@@ -508,12 +508,11 @@ def test_build_readable_attribute_key(incident_attrib, original_key, formatted_k
 
 
 @pytest.mark.parametrize("args,expected_output",
-                         [({
-                               "extended_data": True,
-                               "eventId": "111",
-                               "eventType": "ASA-Built-Conn"
-                           }, 'eventId = "111" AND eventType = "ASA-Built-Conn"'),
-                             ({"query": "eventId!=111", "extended_data": False}, '')])
+                         [({"extended_data": True,
+                            "eventId": "111",
+                            "eventType": "ASA-Built-Conn"},
+                           'eventId = "111" AND eventType = "ASA-Built-Conn"'),
+                          ({"query": "eventId!=111", "extended_data": False}, '')])
 def test_build_constraint_from_args(args, expected_output):
     """
     Building a constraint for the search query.
