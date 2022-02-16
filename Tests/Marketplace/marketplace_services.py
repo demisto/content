@@ -345,7 +345,7 @@ class Pack(object):
         changelog_path = os.path.join(self._pack_path, Pack.CHANGELOG_JSON)
 
         if not os.path.exists(changelog_path):
-            return self.PACK_INITIAL_VERSION
+            return self._current_version
 
         with open(changelog_path, "r") as changelog_file:
             changelog = json.load(changelog_file)
@@ -1451,13 +1451,14 @@ class Pack(object):
                         release_notes_dir, new_release_notes_versions, changelog, rn_files_names)
 
                     if self._current_version != latest_release_notes:
-                        logging.error(f"Version mismatch detected between current version: {self._current_version} "
-                                      f"and latest release notes version: {latest_release_notes}")
+                        logging.error(f"Version mismatch detected between the pack's current version in "
+                                      f"pack_metadata.json: {self._current_version} and latest release notes "
+                                      f"version: {latest_release_notes}.")
                         task_status = False
                         return task_status, not_updated_build
                     else:
                         if latest_release_notes in changelog:
-                            logging.info(f"Found existing release notes for version: {latest_release_notes}")
+                            logging.debug(f"Found existing release notes for version: {latest_release_notes}")
                             version_changelog = self._create_changelog_entry(release_notes=release_notes_lines,
                                                                              version_display_name=latest_release_notes,
                                                                              build_number=build_number,
@@ -1475,49 +1476,56 @@ class Pack(object):
                             changelog[latest_release_notes] = version_changelog
 
                         if modified_release_notes_lines_dict:
-                            logging.info("updating changelog entries for modified rn")
+                            logging.info("Updating changelog entries for modified release notes")
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
                                 updated_entry = self._get_updated_changelog_entry(
                                     changelog, version, release_notes=modified_release_notes_lines)
                                 changelog[version] = updated_entry
 
-                else:  # will enter only on initial version and release notes folder still was not created
-                    if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
+                else:
+                    if len(changelog.keys()) > 1:
+                        # If there is no release notes dir but the changelog has a few entries in it,
+                        # there is a mismatch
                         logging.warning(
                             f"{self._pack_name} pack mismatch between {Pack.CHANGELOG_JSON} and {Pack.RELEASE_NOTES}")
                         task_status, not_updated_build = True, True
                         return task_status, not_updated_build
 
-                    changelog[Pack.PACK_INITIAL_VERSION] = self._create_changelog_entry(
-                        release_notes=self.description,
-                        version_display_name=Pack.PACK_INITIAL_VERSION,
-                        build_number=build_number,
-                        initial_release=True,
-                        new_version=False)
+                    else:
+                        # allow changing the initial changelog version
+                        first_key_in_changelog = list(changelog.keys())[0]
+                        changelog[first_key_in_changelog] = self._create_changelog_entry(
+                            release_notes=self.description,
+                            version_display_name=first_key_in_changelog,
+                            build_number=build_number,
+                            initial_release=True,
+                            new_version=False)
 
-                    logging.info(f"Found existing release notes for version: {Pack.PACK_INITIAL_VERSION} "
-                                 f"in the {self._pack_name} pack.")
+                        logging.info(f"Found existing release notes in {Pack.CHANGELOG_JSON} for version: "
+                                     f"{first_key_in_changelog} of pack {self._pack_name}. Modifying this version in "
+                                     f"{Pack.CHANGELOG_JSON}")
 
-            elif self._current_version == Pack.PACK_INITIAL_VERSION:
-                version_changelog = self._create_changelog_entry(
-                    release_notes=self.description,
-                    version_display_name=Pack.PACK_INITIAL_VERSION,
-                    build_number=build_number,
-                    new_version=True,
-                    initial_release=True
-                )
-                changelog = {
-                    Pack.PACK_INITIAL_VERSION: version_changelog
-                }
             elif self._hidden:
                 logging.warning(f"Pack {self._pack_name} is deprecated. Skipping release notes handling.")
                 task_status = True
                 not_updated_build = True
                 return task_status, not_updated_build
+
             else:
-                logging.error(f"No release notes found for: {self._pack_name}")
-                task_status = False
-                return task_status, not_updated_build
+                # if there is no changelog file for the pack, this is a new pack, and we start it's changelog at it's
+                # current version
+                version_changelog = self._create_changelog_entry(
+                    release_notes=self.description,
+                    version_display_name=self._current_version,
+                    build_number=build_number,
+                    new_version=True,
+                    initial_release=True
+                )
+                changelog = {
+                    self._current_version: version_changelog
+                }
+                logging.info(f'Created {Pack.CHANGELOG_JSON} for pack {self._pack_name} starting at version'
+                             f' {self._current_version}')
 
             # Update change log entries with BC flag.
             self.add_bc_entries_if_needed(release_notes_dir, changelog)
