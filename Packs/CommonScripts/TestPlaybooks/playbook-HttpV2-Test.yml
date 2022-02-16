@@ -1,5 +1,5 @@
 id: HttpV2-test
-version: 2
+version: -1
 name: HttpV2-test
 description: Test playbook for HttpV2 script.
 starttaskid: "0"
