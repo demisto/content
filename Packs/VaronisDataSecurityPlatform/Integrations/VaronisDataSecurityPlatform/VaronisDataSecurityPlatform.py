@@ -157,7 +157,7 @@ class SearchQueryBuilder(object):
         query['rows'] = {'columns': self._columns}
         query['query'] = {
             'entityName': 'Alert',
-            'requestParams': {'searchSource': 1, 'searchSourceName': 'Alert'},  # todo
+            'requestParams': {'searchSource': 1, 'searchSourceName': 'Alert'},  # TODO: find out where is this object come from
             'filter': {'filterOperator': 0, 'filters': self._filters}
         }
         return query
