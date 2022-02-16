@@ -24,6 +24,8 @@ def format_dict_keys(entry: Dict[str, Any]) -> Dict:
     for key, value in entry.items():
         if key == 'Size(MB)':
             new_entry['size'] = f'{value} MB'
+        if key == 'AmountOfEntries':
+            new_entry['info'] = f'{value} Entries'
         else:
             new_entry[key.lower()] = value
 
@@ -32,6 +34,7 @@ def format_dict_keys(entry: Dict[str, Any]) -> Dict:
 
 def main(args):
     thresholds = args.get('Thresholds', THRESHOLDS)
+    append = args.get('Append', False)
     prev_month = datetime.today() + dateutil.relativedelta.relativedelta(months=-1)
     current_month = datetime.today()
     res = execute_command('GetLargestInvestigations', {
@@ -54,12 +57,19 @@ def main(args):
     numberofincidentsbiggerthan1mb = len(incidentsbiggerthan1mb)
     numberofincidentswithmorethan500entries = len(incidentswithmorethan500entries)
 
-    analyze_fields = {
+    analyzeFields = {
         'healthchecklargeinvestigations': incidentsbiggerthan1mb,
         'healthchecknumberofinvestigationsbiggerthan1mb': numberofincidentsbiggerthan1mb,
         'healthcheckincidentslargenumberofentries': incidentswithmorethan500entries
     }
-    execute_command('setIncident', analyze_fields)
+
+    if append == 'False':
+        execute_command('setIncident', analyzeFields)
+    else:
+        incident = demisto.incidents()
+        prevData = incident[0].get('CustomFields', {}).get('healthchecklargeinvestigations')
+        analyzeFields["healthchecklargeinvestigations"].extend(prevData)
+        demisto.executeCommand('setIncident', analyzeFields)
 
     action_items = []
     if numberofincidentswithmorethan500entries > int(thresholds['numberofincidentswithmorethan500entries']):

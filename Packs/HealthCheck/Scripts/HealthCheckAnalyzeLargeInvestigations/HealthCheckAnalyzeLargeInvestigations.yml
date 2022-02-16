@@ -1,6 +1,13 @@
 args:
 - description: Define the thresholds.
   name: Thresholds
+- auto: PREDEFINED
+  defaultValue: "False"
+  description: 'Append to existing data in grid field , Default: False'
+  name: Append
+  predefined:
+  - "True"
+  - "False"
 comment: Analyze large investigation from previous month until current month.
 commonfields:
   id: HealthCheckAnalyzeLargeInvestigations

@@ -186,7 +186,6 @@
                                 "startCol": 2
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -254,7 +253,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -316,7 +314,6 @@
                                 "startCol": 2
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -330,7 +327,6 @@
                         "h": 3,
                         "i": "fwrsfiljze-9391ae10-c212-11eb-9118-13a43afba38c",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -347,7 +343,6 @@
                         "h": 3,
                         "i": "fwrsfiljze-b6f93f80-c212-11eb-9118-13a43afba38c",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -364,7 +359,6 @@
                         "h": 3,
                         "i": "fwrsfiljze-e5261450-c212-11eb-9118-13a43afba38c",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -393,7 +387,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -415,7 +408,7 @@
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": true,
-                        "i": "fwrsfiljze-42d34000-c213-11eb-9118-13a43afba38c",
+                        "i": "fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-42d34000-c213-11eb-9118-13a43afba38c",
                         "items": [
                             {
                                 "endCol": 3,
@@ -428,10 +421,23 @@
                             },
                             {
                                 "endCol": 6,
+                                "fieldId": "healthchecktopusedplaybooks",
+                                "height": 22,
+                                "id": "b1e45c40-81cb-11ec-8609-73136863cab0",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 3,
+                                "dropEffect": "move",
+                                "listId": "fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-42d34000-c213-11eb-9118-13a43afba38c"
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
                                 "fieldId": "healthcheckenabledinstances",
                                 "height": 106,
                                 "id": "18d3a7e0-c6fa-11eb-a8ef-5f644da8ef19",
-                                "index": 0,
+                                "index": 2,
+                                "listId": "fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-42d34000-c213-11eb-9118-13a43afba38c",
                                 "sectionItemType": "field",
                                 "startCol": 3
                             }
@@ -443,12 +449,11 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 2,
-                        "maxH": null
+                        "y": 2
                     },
                     {
                         "h": 2,
-                        "i": "fwrsfiljze-4ba2dc40-c6a5-11eb-876c-112c3198e0e9",
+                        "i": "fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-4ba2dc40-c6a5-11eb-876c-112c3198e0e9",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -460,12 +465,11 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 0,
-                        "y": 0,
-                        "maxH": null
+                        "y": 0
                     },
                     {
                         "h": 2,
-                        "i": "fwrsfiljze-4ef69b20-c6a5-11eb-876c-112c3198e0e9",
+                        "i": "fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-4ef69b20-c6a5-11eb-876c-112c3198e0e9",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -477,12 +481,11 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 1,
-                        "y": 0,
-                        "maxH": null
+                        "y": 0
                     },
                     {
                         "h": 2,
-                        "i": "fwrsfiljze-51635560-c6a5-11eb-876c-112c3198e0e9",
+                        "i": "fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-51635560-c6a5-11eb-876c-112c3198e0e9",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -494,14 +497,13 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 2,
-                        "y": 0,
-                        "maxH": null
+                        "y": 0
                     },
                     {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
-                        "i": "fwrsfiljze-355e1ba0-7c5f-11ec-b6f9-7f86365346a6",
+                        "i": "fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-355e1ba0-7c5f-11ec-b6f9-7f86365346a6",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -515,13 +517,12 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
                         "name": "Risky Indexed Fields",
                         "static": false,
-                        "w": 2,
+                        "w": 1,
                         "x": 0,
                         "y": 5
                     },
@@ -529,8 +530,20 @@
                         "displayType": "ROW",
                         "h": 4,
                         "hideName": false,
-                        "i": "fwrsfiljze-adc32bf0-7c80-11ec-aea3-c16c38303a1f",
-                        "items": [],
+                        "i": "fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-adc32bf0-7c80-11ec-aea3-c16c38303a1f",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "healthcheckdockercontainersstats",
+                                "height": 106,
+                                "id": "89d9f7e0-7d03-11ec-a832-5f5a3dc64a2c",
+                                "index": 0,
+                                "listId": "fwrsfiljze-adc32bf0-7c80-11ec-aea3-c16c38303a1f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -538,14 +551,24 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 11
+                        "y": 12
                     },
                     {
                         "displayType": "ROW",
                         "h": 4,
                         "hideName": false,
-                        "i": "fwrsfiljze-b8557870-7c80-11ec-aea3-c16c38303a1f",
-                        "items": [],
+                        "i": "fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-b8557870-7c80-11ec-aea3-c16c38303a1f",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "healthcheckdockerimages",
+                                "height": 106,
+                                "id": "83628ad0-7d03-11ec-a832-5f5a3dc64a2c",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -553,7 +576,34 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 7
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-32935f70-7f6b-11ec-ae78-f137171a7bfa",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "healthcheckpanics",
+                                "height": 106,
+                                "id": "5806ad20-7f70-11ec-ae78-f137171a7bfa",
+                                "index": 0,
+                                "listId": "fwrsfiljze-32935f70-7f6b-11ec-ae78-f137171a7bfa",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Panics",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 5
                     }
                 ],
                 "type": "custom"
@@ -569,6 +619,7 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
+                        "minW": 3,
                         "moved": false,
                         "name": "CPU Usage Last 24 Hours",
                         "query": "HealthCheckCPU",
@@ -586,6 +637,7 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
+                        "minW": 3,
                         "moved": false,
                         "name": "Memory Usage Last 24 Hours",
                         "query": "HealthCheckMemory",
@@ -602,8 +654,9 @@
                         "hideName": true,
                         "i": "fwrsfiljze-ac0e2f30-c213-11eb-9118-13a43afba38c",
                         "items": [],
-                        "maxW": 3,
+                        "maxW": 1,
                         "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Containers Status",
                         "query": "HealthCheckContainersStatus",
@@ -620,8 +673,9 @@
                         "hideName": true,
                         "i": "fwrsfiljze-ec8728a0-c213-11eb-9118-13a43afba38c",
                         "items": [],
-                        "maxW": 3,
+                        "maxW": 1,
                         "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Workers Status",
                         "query": "HealthCheckWorkers",
@@ -638,8 +692,9 @@
                         "h": 2,
                         "i": "fwrsfiljze-f0356390-c213-11eb-9118-13a43afba38c",
                         "items": [],
-                        "maxW": 3,
+                        "maxW": 1,
                         "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Disk Usage",
                         "query": "HealthCheckDiskUsage",
@@ -658,6 +713,7 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
+                        "minW": 3,
                         "moved": false,
                         "name": "Disk Usage Last 24 Hours",
                         "query": "HealthCheckDiskUsageLine",
@@ -813,10 +869,10 @@
                         "w": 1,
                         "x": 0,
                         "y": 2,
-                        "description": "Presting the large investigations larger than 1 MB"
+                        "description": "Presenting the large investigations larger than 1 MB"
                     },
                     {
-                        "description": "Presting all large investigations in the last 2 months with playbook Input or Output tasks larger than 1 MB.",
+                        "description": "Presenting all large investigations in the last 2 months with playbook Input or Output tasks larger than 1 MB.",
                         "displayType": "ROW",
                         "h": 5,
                         "hideName": false,
@@ -908,6 +964,30 @@
                     }
                 ],
                 "type": "custom"
+            },
+            {
+                "id": "dhesessq9i",
+                "name": "New tab",
+                "type": "custom",
+                "hidden": false,
+                "sections": [
+                    {
+                        "h": 2,
+                        "i": "fwrsfiljze-6006d7e0-7f82-11ec-ae78-f137171a7bfa",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "General Purpose Dynamic Section",
+                        "query": "f064bc63-3059-4790-87f3-f10a3e6288dd",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ]
             },
             {
                 "id": "warRoom",

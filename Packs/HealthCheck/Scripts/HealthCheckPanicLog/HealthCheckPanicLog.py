@@ -26,11 +26,14 @@ def countUniqueLogs(table):
     for log in common_values:
 
         panic1 = {}
-        panic1['PanicValue'] = log[0]
-        panic1['occurness'] = str(log[1])
+        panic1['panicvalue'] = log[0]
+        panic1['numberofoccurrences'] = str(log[1])
         commonTable.append(panic1)
     return commonTable
 
+
+DESCRIPTION = ['Panic logs were found, it typically means something went unexpectedly wrong']
+RESOLUTION = ['Please contact customer support']
 
 args = demisto.args()
 entry_id = args.get('entryID')
@@ -40,9 +43,18 @@ with open(path, 'rb') as file_:
 panicstr = fs.decode("utf-8")
 lines = re.findall(
     r'(?P<time>^\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01]).{14})\s(?P<log>.*)\s*(?P<value>[ !\w\/.:()\n@\'\[\]]*)\s',
-     panicstr, re.MULTILINE)
+    panicstr, re.MULTILINE)
 
 table = formatToTableStructure(lines)
 commonTable = countUniqueLogs(table)
+demisto.executeCommand("setIncident", {"healthcheckpanics": commonTable})
 
-return_outputs(readable_output=tableToMarkdown("Panic", commonTable, ['PanicValue', 'occurness']))
+action_items = []
+if commonTable:
+    action_items.append({
+        'category': 'Server',
+        'severity': 'High',
+        'description': DESCRIPTION[0],
+        'resolution': '{}'.format(RESOLUTION[0]),
+    })
+return_outputs(readable_output=tableToMarkdown("Panic", commonTable, ['panicvalue', 'numberofoccurrences']))

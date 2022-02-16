@@ -48,4 +48,4 @@ main['widgets']['IncidentsCreatedDaily'] = json.loads(res).get('stats')
 
 variables = json.dumps(main).encode('utf-8')
 variables2 = json.loads(variables)
-demisto.results(fileResult('filename.txt', variables))
+demisto.results(fileResult('HealthCheckDataExport.txt', variables))
