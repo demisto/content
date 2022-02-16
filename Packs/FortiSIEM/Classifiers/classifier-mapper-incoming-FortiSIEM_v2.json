@@ -26,6 +26,10 @@
                     "complex": null,
                     "simple": "target_destIpPort"
                 },
+                "FortiSIEM Destination User": {
+                    "complex": null,
+                    "simple": "target_user"
+                },
                 "Events": {
                     "complex": {
                         "accessor": "",
