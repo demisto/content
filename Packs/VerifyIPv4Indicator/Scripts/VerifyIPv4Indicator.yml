@@ -12,7 +12,7 @@ enabled: true
 args:
 - name: input
   default: true
-  description: The IPv6 to vriefy.
+  description: The IPv4 to verify.
   isArray: true
 scripttarget: 0
 subtype: python3
