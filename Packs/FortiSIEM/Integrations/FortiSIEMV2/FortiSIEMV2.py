@@ -1627,7 +1627,7 @@ def get_mapping_for_verbal_incident_attrib(field_name: str) -> tuple:
 
 def build_readable_attribute_key(key: str, attribute_name: str):
     """
-    Formatting nested attribute name to be more redable, and convenient to display in fetch incident command.
+    Formatting nested attribute name to be more readable, and convenient to display in fetch incident command.
     For the input of "srcIpAddr", "incidentSrc" the formatted key will be: "source_ipAddr".
     Args:
          key: (str): The that was extracted from the original incident attribute vale.

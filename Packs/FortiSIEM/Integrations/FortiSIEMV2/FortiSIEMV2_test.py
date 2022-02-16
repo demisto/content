@@ -485,3 +485,45 @@ def test_events_search_results(requests_mock):
     assert result.outputs_prefix == 'FortiSIEM.Event'
     assert outputs[0]['id'] == "9071234812100595667"
     assert outputs[0]['attributes']['reptDevIpAddr'] == '192.168.1.1'
+
+
+@pytest.mark.parametrize("incident_attrib,original_key,formatted_key",
+                         [("incidentTarget", "hostName", "target_hostName"),
+                          ("incidentSrc", "hostIpAddr", "source_ipAddr")])
+def test_build_readable_attribute_key(incident_attrib, original_key, formatted_key):
+    """
+    Scenario: Formatting nested attribute name to be more readable, and convenient to display in fetch incident command.
+    For the input of "srcIpAddr", "incidentSrc" the formatted key will be: "source_ipAddr".
+    Given:
+        - Incident attribute name.
+        - The nested key of the value the resides in the incident attribute.
+    When:
+        -  During fetch incidents command is invoked.
+    Then:
+        - Validate method's output.
+    """
+    from FortiSIEMV2 import build_readable_attribute_key
+    result = build_readable_attribute_key(original_key, incident_attrib)
+    assert result == formatted_key
+
+
+@pytest.mark.parametrize("args,expected_output",
+                         [({
+                               "extended_data": True,
+                               "eventId": "111",
+                               "eventType": "ASA-Built-Conn"
+                           }, 'eventId = "111" AND eventType = "ASA-Built-Conn"'),
+                             ({"query": "eventId!=111", "extended_data": False}, '')])
+def test_build_constraint_from_args(args, expected_output):
+    """
+    Building a constraint for the search query.
+    Given:
+        - 'fortisiem-event-search' arguments.
+    When:
+        -  'fortisiem-event-search' command called.
+    Then:
+        - Validate method's output.
+    """
+    from FortiSIEMV2 import build_constraint_from_args
+    result = build_constraint_from_args(args)
+    assert result == expected_output
