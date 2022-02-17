@@ -136,10 +136,10 @@ script:
       description: The host MAC address.
       type: Unknown
   - arguments:
-    - description: ""
+    - description: Specifies which record to start with in the response, The default is 0.
       name: offset
       required: false
-    - description: ""
+    - description: Limit the number of results
       name: limit
       required: false
     description: Get information on all hosts.
@@ -388,19 +388,19 @@ script:
       description: Host set FireEye url
       type: string
   - arguments:
-    - description: ""
+    - description: Specifies which record to start with in the response, The default is 0.
       name: offset
       required: false
-    - description: ""
+    - description: Limit the number of results
       name: limit
       required: false
-    - description: ""
+    - description: The name of the policy
       name: policyName
       required: false
-    - description: ""
+    - description: Unique policy ID
       name: policyId
       required: false
-    - description: ""
+    - description: The policy is enabled ("true") or disabled ("false").
       name: enabled
       auto: PREDEFINED
       default: false
@@ -456,10 +456,10 @@ script:
       description: ""
       type: Unknown
   - arguments:
-    - description: ""
+    - description: Specifies which record to start with in the response, The default is 0.
       name: offset
       required: false
-    - description: ""
+    - description: Limit the number of results
       name: limit
       required: false
     - description: ""
@@ -478,10 +478,10 @@ script:
       description: ""
       type: Unknown
   - arguments:
-    - description: ""
+    - description: Specifies which record to start with in the response, The default is 0.
       name: offset
       required: false
-    - description: ""
+    - description: Limit the number of results
       name: limit
       required: false
     - description: "must be from type of -> String: date-time"
@@ -491,43 +491,43 @@ script:
     description: Fetches all containment states across known hosts.
     outputs:
     - contextPath: FireEyeHX.Hosts._id
-      description: ""
+      description: " "
       type: Unknown
     - contextPath: FireEyeHX.Hosts.last_sysinfo
-      description: ""
+      description: " "
       type: Unknown
     - contextPath: FireEyeHX.Hosts.requested_by_actor
-      description: ""
+      description: " "
       type: Unknown
     - contextPath: FireEyeHX.Hosts.requested_on
-      description: ""
+      description: " "
       type: Unknown
     - contextPath: FireEyeHX.Hosts.contained_by_actor
-      description: ""
+      description: " "
       type: Unknown
     - contextPath: FireEyeHX.Hosts.contained_on
-      description: ""
+      description: " "
       type: Unknown
     - contextPath: FireEyeHX.Hosts.queued
-      description: ""
+      description: " "
       type: Unknown
     - contextPath: FireEyeHX.Hosts.excluded
-      description: ""
+      description: " "
       type: Unknown
     - contextPath: FireEyeHX.Hosts.missing_software
-      description: ""
+      description: " "
       type: Unknown
     - contextPath: FireEyeHX.Hosts.reported_clone
-      description: ""
+      description: " "
       type: Unknown
     - contextPath: FireEyeHX.Hosts.state
-      description: ""
+      description: " "
       type: Unknown
     - contextPath: FireEyeHX.Hosts.state_update_time
-      description: ""
+      description: " "
       type: Unknown
     - contextPath: FireEyeHX.Hosts.url
-      description: ""
+      description: " "
       type: Unknown
   - arguments:
     - description: "Specifies which record to start with in the response, The default\
@@ -574,40 +574,40 @@ script:
     name: fireeye-hx-search-list
     outputs:
     - contextPath: FireEyeHX.Search._id
-      description: ""
+      description: Unique search ID
       type: Unknown
     - contextPath: FireEyeHX.Search.state
-      description: ""
+      description: The state of the search whether it stopped or running
       type: Unknown
     - contextPath: FireEyeHX.Search.scripts
-      description: ""
+      description: A list of reference objects for the scripts utilized in this search
       type: Unknown
     - contextPath: FireEyeHX.Search.update_time
-      description: ""
+      description: Time the search was updated last
       type: Unknown
     - contextPath: FireEyeHX.Search.create_time
-      description: ""
+      description: Time the search was created
       type: Unknown
     - contextPath: FireEyeHX.Search.scripts.platform
-      description: ""
+      description: Platform this script is used for
       type: Unknown
     - contextPath: FireEyeHX.Search.update_actor
-      description: ""
+      description: Actor who last updated the search
       type: Unknown
     - contextPath: FireEyeHX.Search.create_actor
-      description: ""
+      description: Actor who created the search
       type: Unknown
     - contextPath: FireEyeHX.Search.error
-      description: ""
+      description: Collection of errors per agents for the search
       type: Unknown
     - contextPath: FireEyeHX.Search._revision
-      description: ""
+      description: ETag that can be used for concurrency checking
       type: Unknown
     - contextPath: FireEyeHX.Search.input_type
-      description: ""
+      description: The input method that was used to start the search
       type: Unknown
     - contextPath: FireEyeHX.Search.url
-      description: ""
+      description: URI to retrieve data for this record
       type: Unknown
     - contextPath: FireEyeHX.Search.host_set
       description: ""
@@ -616,16 +616,16 @@ script:
       description: ""
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.hosts
-      description: ""
+      description: Number of hosts running this operation
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.skipped_hosts
-      description: ""
+      description: Number of hosts that were skipped
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.search_state
-      description: ""
+      description: Number of search in different states
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.search_issues
-      description: ""
+      description: Issues encountered for searches
       type: Unknown
     - contextPath: FireEyeHX.Search.settings.query_terms.terms
       description: ""
@@ -634,16 +634,16 @@ script:
       description: ""
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.settings.search_type
-      description: ""
+      description: The type of search.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.settings.exhaustive
-      description: ""
+      description: Whether a search is exhaustive or not
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.settings.mode
-      description: ""
+      description: Whether a search is HOST type or GRID type
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.settings.displayname
-      description: ""
+      description: Name of the search
       type: Unknown
   - arguments:
     - description: "Unique search ID - Required"
@@ -654,40 +654,40 @@ script:
     name: fireeye-hx-search-stop
     outputs:
     - contextPath: FireEyeHX.Search._id
-      description: ""
+      description: Unique search ID
       type: Unknown
     - contextPath: FireEyeHX.Search.state
-      description: ""
+      description: The state of the search whether it stopped or running
       type: Unknown
     - contextPath: FireEyeHX.Search.scripts
-      description: ""
+      description: A list of reference objects for the scripts utilized in this search
       type: Unknown
     - contextPath: FireEyeHX.Search.update_time
-      description: ""
+      description: Time the search was updated last
       type: Unknown
     - contextPath: FireEyeHX.Search.create_time
-      description: ""
+      description: Time the search was created
       type: Unknown
     - contextPath: FireEyeHX.Search.scripts.platform
-      description: ""
+      description: Platform this script is used for
       type: Unknown
     - contextPath: FireEyeHX.Search.update_actor
-      description: ""
+      description: Actor who last updated the search
       type: Unknown
     - contextPath: FireEyeHX.Search.create_actor
-      description: ""
+      description: Actor who created the search
       type: Unknown
     - contextPath: FireEyeHX.Search.error
-      description: ""
+      description: Collection of errors per agents for the search
       type: Unknown
     - contextPath: FireEyeHX.Search._revision
-      description: ""
+      description: ETag that can be used for concurrency checking
       type: Unknown
     - contextPath: FireEyeHX.Search.input_type
-      description: ""
+      description: The input method that was used to start the search
       type: Unknown
     - contextPath: FireEyeHX.Search.url
-      description: ""
+      description: URI to retrieve data for this record
       type: Unknown
     - contextPath: FireEyeHX.Search.host_set
       description: ""
@@ -696,16 +696,16 @@ script:
       description: ""
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.hosts
-      description: ""
+      description: Number of hosts running this operation
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.skipped_hosts
-      description: ""
+      description: Number of hosts that were skipped
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.search_state
-      description: ""
+      description: Number of search in different states
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.search_issues
-      description: ""
+      description: Issues encountered for searches
       type: Unknown
     - contextPath: FireEyeHX.Search.settings.query_terms.terms
       description: ""
@@ -714,16 +714,16 @@ script:
       description: ""
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.settings.search_type
-      description: ""
+      description: The type of search.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.settings.exhaustive
-      description: ""
+      description: Whether a search is exhaustive or not
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.settings.mode
-      description: ""
+      description: Whether a search is HOST type or GRID type
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.settings.displayname
-      description: ""
+      description: Name of the search
       type: Unknown
   - arguments:
     - description: ""
@@ -733,22 +733,22 @@ script:
     name: fireeye-hx-search-result-get
     outputs:
     - contextPath: FireEyeHX.Search.host._id
-      description: ""
+      description: Unique agent ID
       type: Unknown
     - contextPath: FireEyeHX.Search.host.url
-      description: ""
+      description: URI to retrieve data for this record
       type: Unknown
     - contextPath: FireEyeHX.Search.host.hostname
-      description: ""
+      description: Name of the host
       type: Unknown
     - contextPath: FireEyeHX.Search.results._id
-      description: ""
+      description: Unique ID
       type: Unknown
     - contextPath: FireEyeHX.Search.results.type
-      description: ""
+      description: Type of the search result data
       type: Unknown
     - contextPath: FireEyeHX.Search.results.data
-      description: ""
+      description: Object containing data relating to the search result for the host
       type: Unknown
   - arguments:
     - description: searchId
@@ -790,6 +790,13 @@ script:
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '60'
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
       required: false
       secret: false
     - description: A 32-character MD5 hash value to search for
@@ -1262,7 +1269,7 @@ script:
     - description: The host name. If the agent ID is not specified, the host name
         must be specified.
       name: hostName
-    - description: ""
+    - description: "This argument is deprecated"
       name: acquisition_id
       deprecated: true
     - auto: PREDEFINED
@@ -1273,6 +1280,13 @@ script:
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '60'
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
       required: false
       secret: false
     description: Start a data acquisition process to gather artifacts from the system
@@ -1439,6 +1453,13 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: false
+      defaultValue: '60'
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
     description: Aquire a specific file as a password protected zip file. The password
       for unlocking the zip file is 'unzip-me'.
     name: fireeye-hx-file-acquisition
@@ -1563,4 +1584,4 @@ script:
   dockerimage: demisto/python3:3.10.1.25933
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- FireEyeHX_v2

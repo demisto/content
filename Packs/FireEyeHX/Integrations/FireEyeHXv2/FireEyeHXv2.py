@@ -1,5 +1,4 @@
 
-
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -18,9 +17,9 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"  # ISO8601 format with UTC, default in XSOAR
 
-STANDART_INVESTIGATIVE_DETAILS_OSX = {  # pragma: no cover
+STANDARD_INVESTIGATIVE_DETAILS_OSX = {  # pragma: no cover
     "commands": [
         {
             "name": "sysinfo"
@@ -205,7 +204,7 @@ STANDART_INVESTIGATIVE_DETAILS_OSX = {  # pragma: no cover
         }
     ]
 }
-STANDART_INVESTIGATIVE_DETAILS_LINUX = {
+STANDARD_INVESTIGATIVE_DETAILS_LINUX = {
     "commands": [
         {
             "name": "sysinfo"
@@ -280,7 +279,7 @@ STANDART_INVESTIGATIVE_DETAILS_LINUX = {
         }
     ]
 }
-STANDART_INVESTIGATIVE_DETAILS_WIN = {
+STANDARD_INVESTIGATIVE_DETAILS_WIN = {
     "commands": [
         {
             "name": "sysinfo"
@@ -655,9 +654,9 @@ STANDART_INVESTIGATIVE_DETAILS_WIN = {
 }
 
 SYS_SCRIPT_MAP = {
-    'osx': STANDART_INVESTIGATIVE_DETAILS_OSX,
-    'win': STANDART_INVESTIGATIVE_DETAILS_WIN,
-    'linux': STANDART_INVESTIGATIVE_DETAILS_LINUX
+    'osx': STANDARD_INVESTIGATIVE_DETAILS_OSX,
+    'win': STANDARD_INVESTIGATIVE_DETAILS_WIN,
+    'linux': STANDARD_INVESTIGATIVE_DETAILS_LINUX
 }
 
 TABLE_POLLING_COMMANDS = {
@@ -677,34 +676,30 @@ TABLE_POLLING_COMMANDS = {
 
 class Client(BaseClient):
 
-    def __init__(self, base_url, verify=True, proxy=False, auth=None):
+    def __init__(self, base_url: str, verify: bool = True, proxy: bool = False, auth: Optional[tuple] = None):
 
-        headers = {'X-FeApi-Token': self.get_token_request(base_url, verify, auth)}
+        headers = {'Accept': 'application/json'}
 
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=range(200, 205), headers=headers, auth=auth)
 
-    def get_token_request(self, base_url, verify, auth):
+        self._headers['X-FeApi-Token'] = self.get_token_request()
+
+    def get_token_request(self):
         """
         returns a token on successful request
         """
 
-        url = '{}token'.format(base_url)
-
         # basic authentication
         try:
-            response = requests.request(
-                'GET',
-                url,
-                headers={'Accept': 'application/json'},
-                verify=verify,
-                auth=auth
+            response = self._http_request(
+                method='GET',
+                url_suffix='token',
+                resp_type='response'
             )
-        except Exception:
+        except Exception as e:
+            demisto.debug(f'Encountered an error for url {self._base_url}/token: {e}')
             raise ValueError("Server URL incorrect")
 
-        # handle request failure
-        if response.status_code not in range(200, 205):
-            raise ValueError("User Name or Password incorrect")
         # successful request
         response_headers = response.headers
         token = response_headers.get('X-FeApi-Token')
@@ -724,9 +719,9 @@ class Client(BaseClient):
             params=params,
         )
 
-    def list_host_set_policy_request(self, offset: int, limit: int, policyId: str = ''):
+    def list_host_set_policy_request(self, offset: int, limit: int, policy_id: str = ''):
 
-        params = assign_params(policy_id=policyId, offset=offset, limit=limit)
+        params = assign_params(policy_id=policy_id, offset=offset, limit=limit)
 
         return self._http_request(
             method="GET",
@@ -734,11 +729,11 @@ class Client(BaseClient):
             params=params
         )
 
-    def list_host_set_policy_by_hostSetId_request(self, hostSetId):
+    def list_host_set_policy_by_hostSetId_request(self, host_set_id):
 
         return self._http_request(
             method="GET",
-            url_suffix=f"host_sets/{hostSetId}/host_set_policies"
+            url_suffix=f"host_sets/{host_set_id}/host_set_policies"
         )
 
     def assign_host_set_policy_request(self, body: Dict[str, Any]):
@@ -749,11 +744,11 @@ class Client(BaseClient):
             json_data=body,
             return_empty_response=True)
 
-    def delete_host_set_policy_request(self, hostSetId, policyId):
+    def delete_host_set_policy_request(self, host_set_id, policy_id):
 
         return self._http_request(
             method="DELETE",
-            url_suffix=f'host_sets/{hostSetId}/host_set_policies/{policyId}',
+            url_suffix=f'host_sets/{host_set_id}/host_set_policies/{policy_id}',
             return_empty_response=True
         )
 
@@ -761,11 +756,11 @@ class Client(BaseClient):
     HOST INFORMATION REQUEST
     """
 
-    def get_hosts_by_agentId_request(self, agentId: str):
+    def get_hosts_by_agentId_request(self, agent_id: str):
 
         return self._http_request(
             method="GET",
-            url_suffix=f"hosts/{agentId}"
+            url_suffix=f"hosts/{agent_id}"
         )
 
     def get_hosts_request(self, limit=None, offset=None, has_active_threats=None, has_alerts=None,
@@ -794,9 +789,9 @@ class Client(BaseClient):
             headers=self._headers
         )
 
-    def get_host_set_information_request(self, body, hostSetId):
+    def get_host_set_information_request(self, body, host_set_id):
 
-        url = f"host_sets/{hostSetId}" if hostSetId else "host_sets"
+        url = f"host_sets/{host_set_id}" if host_set_id else "host_sets"
         return self._http_request(
             method='GET',
             url_suffix=url,
@@ -807,33 +802,33 @@ class Client(BaseClient):
     HOST CONTAINMENT REQUESTS
     """
 
-    def host_containmet_request(self, agentId: str):
+    def host_containmet_request(self, agent_id: str):
 
         self._http_request(
             method="POST",
-            url_suffix=f"hosts/{agentId}/containment",
+            url_suffix=f"hosts/{agent_id}/containment",
         )
 
-    def approve_containment_request(self, agentId: str):
+    def approve_containment_request(self, agent_id: str):
 
         return self._http_request(
             method="PATCH",
-            url_suffix=f"hosts/{agentId}/containment",
+            url_suffix=f"hosts/{agent_id}/containment",
             json_data={"state": "contain"},
             return_empty_response=True
         )
 
-    def cancel_containment_request(self, agentId: str):
+    def cancel_containment_request(self, agent_id: str):
 
         self._http_request(
             method="DELETE",
-            url_suffix=f"hosts/{agentId}/containment",
+            url_suffix=f"hosts/{agent_id}/containment",
             return_empty_response=True
         )
 
-    def get_list_containment_request(self, offset: int, limit: int, stateUpdateTime: str):
+    def get_list_containment_request(self, offset: int, limit: int, state_update_time: str):
 
-        params = assign_params(offset=offset, limit=limit, stateUpdateTime=stateUpdateTime)
+        params = assign_params(offset=offset, limit=limit, state_update_time=state_update_time)
 
         return self._http_request(
             method="GET",
@@ -845,11 +840,11 @@ class Client(BaseClient):
     ACQUISITION REQUEST
     """
 
-    def data_acquisition_request(self, agentId: str, body: Dict):
+    def data_acquisition_request(self, agent_id: str, body: Dict):
 
         return self._http_request(
             method="POST",
-            url_suffix=f"hosts/{agentId}/live",
+            url_suffix=f"hosts/{agent_id}/live",
             json_data=body
         )
 
@@ -860,11 +855,11 @@ class Client(BaseClient):
             url_suffix=f'acqs/live/{acquisition_id}'
         )["data"]
 
-    def delete_data_acquisition_request(self, acquisitionId):
+    def delete_data_acquisition_request(self, acquisition_id):
 
         self._http_request(
             method="DELETE",
-            url_suffix=f"acqs/live/{acquisitionId}",
+            url_suffix=f"acqs/live/{acquisition_id}",
             return_empty_response=True
         )
 
@@ -885,14 +880,14 @@ class Client(BaseClient):
             method='POST',
             url_suffix=f'hosts/{agent_id}/files',
             json_data=body
-        )["data"]
+        ).get('data')
 
     def file_acquisition_information_request(self, acquisition_id):
 
         return self._http_request(
             method='GET',
             url_suffix=f'acqs/files/{acquisition_id}'
-        )["data"]
+        ).get('data')
 
     def file_acquisition_package_request(self, acquisition_id):
 
@@ -919,7 +914,7 @@ class Client(BaseClient):
 
     def get_alerts_request(self, has_share_mode=None, resolution=None, agent_id=None,
                            condition_id=None, limit=None, offset=None, sort=None, min_id=None,
-                           event_at=None, alert_id=None, matched_at=None, reported_at=None, source=None, filterQuery=None):
+                           event_at=None, alert_id=None, matched_at=None, reported_at=None, source=None, filter_query=None):
         """
 
         returns the response body on successful request
@@ -945,15 +940,14 @@ class Client(BaseClient):
         if condition_id:
             params["condition._id"] = condition_id
 
-        if filterQuery:
-            demisto.debug(f"QUERY = {filterQuery} BEFORE _http_request with filterQuery")
+        if filter_query:
+
             response = self._http_request(
                 'GET',
-                url_suffix=f"alerts?filterQuery={filterQuery}",
+                url_suffix=f"alerts?filterQuery={filter_query}",
                 params=params,
                 headers=self._headers
             )
-            demisto.debug(f"QUERY = {filterQuery} AFTER _http_request with filterQuery")
 
         else:
             response = self._http_request(
@@ -965,7 +959,7 @@ class Client(BaseClient):
         try:
             return response
         except Exception as e:
-            LOG(e)
+            demisto.debug(str(e))
             raise ValueError('Failed to parse response body')
 
     def get_alert_request(self, alert_id: int):
@@ -1004,7 +998,7 @@ class Client(BaseClient):
             )["data"]
         except Exception as e:
             if '404' in str(e):
-                raise ValueError(f"The indecator '{name}' Not Found")
+                raise ValueError(f"The indicator '{name}' was not found")
             else:
                 raise ValueError(e)
 
@@ -1018,7 +1012,7 @@ class Client(BaseClient):
             )
 
         except Exception as e:
-            LOG(e)
+            demisto.debug(str(e))
             raise ValueError('Failed to parse response body')
 
     def get_indicator_conditions_request(self, category, name, offset):
@@ -1037,7 +1031,7 @@ class Client(BaseClient):
             )
 
         except Exception as e:
-            LOG(e)
+            demisto.debug(str(e))
             raise ValueError('Failed to parse response body')
 
     def append_conditions_request(self, name: str, category: str, body: str):
@@ -1060,25 +1054,31 @@ class Client(BaseClient):
                 url_suffix=f"indicators/{category}"
             )
         except Exception as e:
-            LOG(e)
+            demisto.debug(str(e))
             raise ValueError('Failed to parse response body, unexpected response structure from the server.')
 
     """
     SEARCHES REQUEST
     """
 
-    def get_search_by_id_request(self, searchId: int):
+    def get_search_by_id_request(self, search_id: int):
 
         return self._http_request(
             method="GET",
-            url_suffix=f"searches/{searchId}"
+            url_suffix=f"searches/{search_id}"
         )
 
-    def get_search_list_request(self, offset: int, limit: int, state: str = None, hostSetId: int = None,
-                                actorUsername: str = None, sort: str = None):
+    def get_search_list_request(self, offset: int, limit: int, state: str = None, host_set_id: int = None,
+                                actor_username: str = None, sort: str = None):
 
-        params = assign_params(offset=offset, limit=limit, hostSetId=hostSetId,
-                               actorUsername=actorUsername, state=state, sort=sort)
+        params = assign_params(offset=offset, limit=limit,
+                               state=state, sort=sort)
+
+        if actor_username:
+            params['update_actor.username'] = actor_username
+
+        if host_set_id:
+            params['host_set._id'] = host_set_id
 
         return self._http_request(
             method='GET',
@@ -1086,11 +1086,11 @@ class Client(BaseClient):
             params=params
         )
 
-    def search_stop_request(self, searchId: str):
+    def search_stop_request(self, search_id: str):
 
         return self._http_request(
             method="POST",
-            url_suffix=f"searches/{searchId}/actions/stop",
+            url_suffix=f"searches/{search_id}/actions/stop",
         )
 
     def delete_search_request(self, search_id):
@@ -1106,11 +1106,11 @@ class Client(BaseClient):
             return_empty_response=True
         )
 
-    def search_result_get_request(self, searchId: str):
+    def search_result_get_request(self, search_id: str):
 
         return self._http_request(
             method="GET",
-            url_suffix=f"searches/{searchId}/results",
+            url_suffix=f"searches/{search_id}/results",
         )
 
     def search_request(self, body: Dict):
@@ -1146,7 +1146,7 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> List:
             offset=offset,
             limit=args.get("limit") or 100,
             sort=args.get("sort"),
-            filterQuery=args.get("filterQuery")
+            filter_query=args.get("filterQuery")
         )
         # empty list
         if len(alerts_partial_results['data']['entries']) == 0:
@@ -1154,16 +1154,16 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> List:
         alerts.extend(alerts_partial_results['data']['entries'])
         offset = len(alerts)
 
-    # remove access results
+    # remove excess results
     if len(alerts) > max_records:
         alerts[int(max_records) - 1: -1] = []
 
     return alerts
 
 
-def get_agent_id_by_host_name(client: Client, hostName: str):
+def get_agent_id_by_host_name(client: Client, host_name: str):
 
-    return client.get_hosts_request(host_name=hostName, limit=1)["data"]["entries"][0]["_id"]
+    return client.get_hosts_request(host_name=host_name, limit=1)["data"]["entries"][0]["_id"]
 
 
 def host_set_entry(host_sets: List[Dict]) -> List[Dict]:
@@ -1208,10 +1208,10 @@ def general_context_from_event(alert: Dict):
     return None
 
 
-def oneFromList(listOfArgs, **args):
+def oneFromList(list_of_args, args):
 
     checker = 0
-    for arg in listOfArgs:
+    for arg in list_of_args:
         if args.get(arg):
             checker += 1
             result = (arg, args.get(arg))
@@ -1247,14 +1247,14 @@ def organize_search_body_host(client: Client, arg: Tuple, body: Dict):
     return body
 
 
-def organize_search_body_query(argForQuery: Tuple, **args):
+def organize_search_body_query(argForQuery: Tuple, args):
 
     query = []
     if argForQuery[0] == "fieldSearchName":
         if not args.get("fieldSearchOperator") or not args.get("fieldSearchValue"):
             raise ValueError("fieldSearchOperator and fieldSearchValue are required arguments")
 
-        fieldSearchValue = args.get("fieldSearchValue", "").split(",")
+        fieldSearchValue = argToList(args.get("fieldSearchValue", ""))
         for searchValue in fieldSearchValue:
             query.append(assign_params(field=argForQuery[1], operator=args.get("fieldSearchOperator"), value=searchValue))
 
@@ -1269,7 +1269,7 @@ def organize_search_body_query(argForQuery: Tuple, **args):
             'ipAddress': 'IP Address'
         }
 
-        for searchValue in argForQuery[1].split(","):
+        for searchValue in argToList(argForQuery[1]):
             query.append(assign_params(field=arg_to_query_field_map[argForQuery[0]],
                                        operator=args.get(f"{argForQuery[0]}Operator"),
                                        value=searchValue)
@@ -1278,7 +1278,7 @@ def organize_search_body_query(argForQuery: Tuple, **args):
     return query
 
 
-def collect_endpoint_contxt(host: Dict):
+def get_collect_endpoint_contxt(host: Dict):
 
     return {
         'Hostname': host.get('hostname'),
@@ -1291,41 +1291,41 @@ def collect_endpoint_contxt(host: Dict):
     }
 
 
-def data_acquisition(client: Client, args: Dict[str, Any]) -> Dict:
+def get_data_acquisition(client: Client, args: Dict[str, Any]) -> Dict:
 
-    hostName = args.get("hostName", "")
-    agentId = args.get("agentId")
+    host_name = args.get("hostName", "")
+    agent_id = args.get("agentId")
     script = args.get("script", "")
-    scriptName = args.get("scriptName")
+    script_name = args.get("scriptName")
     defaultSystemScript = args.get("defaultSystemScript")
 
-    if not hostName and not agentId:
+    if not host_name and not agent_id:
         raise ValueError('Please provide either agentId or hostName')
 
     if not defaultSystemScript and not script:
         raise ValueError('If the script is not provided, defaultSystemScript must be specified')
 
-    if script and not scriptName:
+    if script and not script_name:
         raise ValueError('If the script is provided, script name must be specified as well')
 
-    if not agentId:
-        agentId = get_agent_id_by_host_name(client, hostName)
+    if not agent_id:
+        agent_id = get_agent_id_by_host_name(client, host_name)
 
     # determine whether to use the default script
     sys = defaultSystemScript
     if sys:
         script = json.dumps(SYS_SCRIPT_MAP[sys])
-        scriptName = f'{sys}DefaultScript'
+        script_name = f'{sys}DefaultScript'
 
     body = {
-        'name': scriptName,
+        'name': script_name,
         'script': {'b64': base64.b64encode(bytes(script, 'utf-8')).decode()}
     }
 
-    return client.data_acquisition_request(agentId, body)["data"]
+    return client.data_acquisition_request(agent_id, body)["data"]
 
 
-def alert_entry(alert: Dict):
+def get_alert_entry(alert: Dict):
 
     alert_entry = {
         'Alert ID': alert.get('_id'),
@@ -1337,7 +1337,7 @@ def alert_entry(alert: Dict):
     return alert_entry
 
 
-def indicator_entry(indicator: Dict):
+def get_indicator_entry(indicator: Dict):
 
     indicator_entry = {
         'OS': ', '.join(indicator.get('platforms', [])),
@@ -1353,7 +1353,7 @@ def indicator_entry(indicator: Dict):
     return indicator_entry
 
 
-def organization_of_indicator(alert: Dict[str, Any]) -> CommandResults:
+def get_indicator_command_result(alert: Dict[str, Any]) -> CommandResults:
 
     if alert.get("event_type") == 'fileWriteEvent':
         indicator = general_context_from_event(alert)
@@ -1376,7 +1376,7 @@ def organization_of_indicator(alert: Dict[str, Any]) -> CommandResults:
         indicator = general_context_from_event(alert)
         event_values = alert.get('event_values', {})
         md_table = tableToMarkdown(
-            name="File",
+            name="Ip",
             t={'Ipv4': event_values.get('ipv4NetworkEvent/remoteIP')}
         )
         return CommandResults(
@@ -1386,7 +1386,7 @@ def organization_of_indicator(alert: Dict[str, Any]) -> CommandResults:
         )
 
 
-def condition_entry(condition: Dict):
+def get_condition_entry(condition: Dict):
 
     indicator_entry = {
         'Event Type': condition.get('event_type'),
@@ -1459,7 +1459,7 @@ def get_indicator_conditions(client: Client, args: Dict[str, Any]) -> CommandRes
         args.get('name')
     )
 
-    conditions_entries = [condition_entry(condition) for condition in conditions]
+    conditions_entries = [get_condition_entry(condition) for condition in conditions]
 
     md_table = tableToMarkdown(
         name=f"Indicator '{args.get('name')}' Alerts on",
@@ -1481,8 +1481,8 @@ def organize_reported_at(reported_at):
 
     milisecond = int(reported_at[-4:-1]) + 1
     if milisecond == 1000:
-        reported_at = date_to_timestamp(reported_at[:-5], date_format="%Y-%m-%dT%H:%M:%S") + 1000
-        reported_at = timestamp_to_datestring(reported_at, date_format="%Y-%m-%dT%H:%M:%S") + ".000Z"
+        reported_at = date_to_timestamp(reported_at[:-5], date_format=DATE_FORMAT) + 1000
+        reported_at = timestamp_to_datestring(reported_at, date_format=DATE_FORMAT) + ".000Z"
     else:
         if milisecond < 10:
             demisto.debug(f"{milisecond} BEFORE MANIPULATION")
@@ -1562,19 +1562,14 @@ POLICIES
 
 def list_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    offset = args.get('offset')
-    limit = args.get('limit')
+    offset = args.get('offset', 0)
+    limit = args.get('limit', 50)
     name = args.get('policyName')
     policy_id = args.get('policyId')
     enabled = args.get('enabled')
 
     if name and policy_id:
         raise ValueError("Enter a name or ID but not both")
-
-    if not limit:
-        limit = 50  # default value
-    if not offset:
-        offset = 0  # default value
 
     response = client.list_policy_request(offset=offset, limit=limit, policy_id=policy_id, name=name, enabled=enabled)
 
@@ -1603,23 +1598,18 @@ def list_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def list_host_set_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    offset = args.get("offset")
-    limit = args.get("limit")
-    hostSetId = args.get("hostSetId")
-    policyId = args.get("policyId", "")
+    offset = args.get("offset", 0)
+    limit = args.get("limit", 50)
+    host_set_id = args.get("hostSetId")
+    policy_id = args.get("policyId", "")
 
-    if hostSetId and policyId:
+    if host_set_id and policy_id:
         raise ValueError("Enter a Policy Id or Host Set Id but not both")
 
-    if not offset:
-        offset = 0
-    if not limit:
-        limit = 50
-
-    if hostSetId:
-        response = client.list_host_set_policy_by_hostSetId_request(hostSetId)
+    if host_set_id:
+        response = client.list_host_set_policy_by_hostSetId_request(host_set_id)
     else:
-        response = client.list_host_set_policy_request(offset, limit, policyId)
+        response = client.list_host_set_policy_request(offset=offset, limit=limit, policy_id=policy_id)
 
     for_table = []
     for entry in response["data"]["entries"]:
@@ -1640,21 +1630,22 @@ def list_host_set_policy_command(client: Client, args: Dict[str, Any]) -> Comman
 
 def assign_host_set_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    hostSetId = args.get("hostSetId")
-    policyId = args.get("policyId")
+    host_set_id = args.get("hostSetId")
+    policy_id = args.get("policyId")
 
-    if not policyId or not hostSetId:
+    if not policy_id or not host_set_id:
         raise ValueError("policy ID and hostSetId are required")
 
     message = ""
     response = None
     try:
         response = client.assign_host_set_policy_request({
-            "persist_id": hostSetId,
-            "policy_id": policyId})
+            "persist_id": host_set_id,
+            "policy_id": policy_id})
         message = "Success"
     except Exception as e:
         if '400' in str(e):
+            demisto.debug(str(e))
             message = "This hostset may already be included in this policy"
         else:
             raise ValueError(e)
@@ -1668,16 +1659,16 @@ def assign_host_set_policy_command(client: Client, args: Dict[str, Any]) -> Comm
 
 def delete_host_set_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    hostSetId = int(args.get('hostSetId', ''))
-    policyId = args.get('policyId')
+    host_set_id = int(args.get('hostSetId', ''))
+    policy_id = args.get('policyId')
 
     message = ''
     try:
-        client.delete_host_set_policy_request(hostSetId, policyId)
+        client.delete_host_set_policy_request(host_set_id, policy_id)
         message = 'Success'
     except Exception as e:
         if '404' in str(e):
-            message = f'polisy ID - {policyId} or Host Set ID - {hostSetId} Not Found'
+            message = f'polisy ID - {policy_id} or Host Set ID - {host_set_id} Not Found'
         else:
             raise ValueError(e)
 
@@ -1740,24 +1731,24 @@ def get_all_hosts_information_command(client: Client, args: Dict[str, Any]) -> C
 
 def get_host_information_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    agentId = args.get("agentId")
-    hostName = args.get("hostName")
+    agent_id = args.get("agentId")
+    host_name = args.get("hostName")
 
-    if not agentId and not hostName:
+    if not agent_id and not host_name:
         raise ValueError("Please provide either agentId or hostName")
 
     host: Dict
-    if agentId:
+    if agent_id:
         try:
-            host = client.get_hosts_by_agentId_request(agentId)["data"]
+            host = client.get_hosts_by_agentId_request(agent_id)["data"]
         except Exception:
-            raise ValueError(f"agentId {agentId} is not correct")
+            raise ValueError(f"agentId {agent_id} is not correct")
 
     else:
         try:
-            host = client.get_hosts_request(limit=1, host_name=hostName)["data"]["entries"][0]
+            host = client.get_hosts_request(limit=1, host_name=host_name)["data"]["entries"][0]
         except Exception:
-            raise ValueError(f"{hostName} is not found")
+            raise ValueError(f"{host_name} is not found")
 
     headers_for_table = ['Host Name', 'Host IP', 'Agent ID', 'Agent Version',
                          'OS', 'Last Poll', 'Containment State', 'Domain', 'Last Alert']
@@ -1792,7 +1783,7 @@ def get_host_set_information_command(client: Client, args: Dict[str, Any]) -> Co
     return host set information to the war room according to given id or filters
 
     """
-    hostSetID = args.get('hostSetID')
+    host_set_id = args.get('hostSetID')
 
     body = assign_params(
         limit=args.get('limit'),
@@ -1803,18 +1794,18 @@ def get_host_set_information_command(client: Client, args: Dict[str, Any]) -> Co
         type=args.get('type')
     )
 
-    response = client.get_host_set_information_request(body, hostSetID)
+    response = client.get_host_set_information_request(body, host_set_id)
 
     host_set = []  # type: List[Dict[str, str]]
     try:
-        if hostSetID:
+        if host_set_id:
             data = response['data']
             host_set = [data]
         else:
             data = response['data']
             host_set = data.get('entries', [])
     except Exception as e:
-        LOG(e)
+        demisto.debug(str(e))
         raise ValueError('Failed to get host set information - unexpected response from the server.\n' + response.text)
 
     md_table = "No host sets found"
@@ -1840,16 +1831,13 @@ HOST CONTAINMENT
 
 def get_list_containment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    stateUpdateTime = args.get("state_update_time", "")
-    offset = args.get("offset")
-    limit = args.get("limit")
+    state_update_time = args.get("state_update_time", "")
+    offset = args.get("offset", 0)
+    limit = args.get("limit", 50)
 
-    if not offset:
-        offset = 0
-    if not limit:
-        limit = 50
-
-    response = client.get_list_containment_request(offset, limit, stateUpdateTime)["data"]["entries"]
+    response = client.get_list_containment_request(offset=offset,
+                                                   limit=limit,
+                                                   state_update_time=state_update_time)["data"]["entries"]
 
     for_table = []
     for entry in response:
@@ -1878,24 +1866,23 @@ def get_list_containment_command(client: Client, args: Dict[str, Any]) -> Comman
 
 def host_containment_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
-    agentId = args.get("agentId")
-    hostName = args.get("hostName", "")
+    agent_id = args.get("agentId")
+    host_name = args.get("hostName", "")
 
-    if not agentId and not hostName:
+    if not agent_id and not host_name:
         raise ValueError("Please provide either agentId or hostName")
 
-    if not agentId:
-        agentId = get_agent_id_by_host_name(client, hostName)
+    if not agent_id:
+        agent_id = get_agent_id_by_host_name(client, host_name)
 
     try:
-        client.host_containmet_request(agentId)
-    except Exception:
-
-        pass
+        client.host_containmet_request(agent_id)
+    except Exception as e:
+        raise ValueError(e)
 
     message = ""
     try:
-        client.approve_containment_request(agentId)
+        client.approve_containment_request(agent_id)
         message = "Containment request for the host was sent and approved successfully"
     except Exception as e:
         if '422' in str(e):
@@ -1906,24 +1893,24 @@ def host_containment_command(client: Client, args: Dict[str, Any]) -> List[Comma
         else:
             raise ValueError(e)
 
-    host = client.get_hosts_by_agentId_request(agentId)
+    host = client.get_hosts_by_agentId_request(agent_id)
 
     return [CommandResults(
         outputs_prefix="FireEyeHX.Hosts",
         outputs_key_field="_id",
         outputs=host['data'],
-        readable_output=message), CommandResults(outputs_prefix="Endpoint", outputs=collect_endpoint_contxt(host["data"]))]
+        readable_output=message), CommandResults(outputs_prefix="Endpoint", outputs=get_collect_endpoint_contxt(host["data"]))]
 
 
 def approve_containment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    agentId = args.get("agentId")
+    agent_id = args.get("agentId")
 
-    if not agentId:
+    if not agent_id:
         raise ValueError("Agent ID is required")
     message = "Containment for the host was approved successfully"
     try:
-        client.approve_containment_request(agentId)
+        client.approve_containment_request(agent_id)
     except Exception as e:
         if '409' in str(e):
             message = "This host may already in containment"
@@ -1938,18 +1925,18 @@ def approve_containment_command(client: Client, args: Dict[str, Any]) -> Command
 
 def cancel_containment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    agentId = args.get("agentId")
-    hostName = args.get("hostName", "")
+    agent_id = args.get("agentId")
+    host_name = args.get("hostName", "")
 
-    if not agentId and not hostName:
+    if not agent_id and not host_name:
         raise ValueError("One of the following arguments is required -> [agentId, hostName]")
 
-    if not agentId:
-        agentId = get_agent_id_by_host_name(client, hostName)
+    if not agent_id:
+        agent_id = get_agent_id_by_host_name(client, host_name)
 
     message = "Success"
     try:
-        client.cancel_containment_request(agentId)
+        client.cancel_containment_request(agent_id)
     except Exception as e:
         if '409' in str(e):
             message = "This host may already in uncontain"
@@ -1967,9 +1954,9 @@ ACQUISITION
 def data_acquisition_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, bool, str]:
 
     if 'acquisition_id' not in args:
-        acquisition_info = data_acquisition(client, args)
+        acquisition_info = get_data_acquisition(client, args)
         acquisition_id = acquisition_info.get('_id')
-        LOG('Acquisition request was successful. Waiting for acquisition process to be complete.')
+        demisto.debug('Acquisition request was successful. Waiting for acquisition process to be complete.')
 
     acquisition_id = args.get('acquisition_id') if args.get('acquisition_id') else acquisition_id
     acquisition_info = client.data_acquisition_information_request(acquisition_id)
@@ -1996,7 +1983,7 @@ def data_acquisition_with_polling_command(client: Client, args: Dict[str, Any]):
 
 def result_data_acquisition(client: Client, args: Dict[str, Any]) -> List:
 
-    LOG('Acquisition process has been complete. Fetching mans file.')
+    demisto.debug('Acquisition process has been complete. Fetching mans file.')
 
     message = f'{args.get("fileName")} acquired successfully'
     if args.get('acquisition_info', {}).get('error_message'):
@@ -2044,7 +2031,7 @@ def file_acquisition_command(client: Client, args: Dict[str, Any]) -> Tuple[Comm
 
         acquisition_id = acquisition_info.get('_id')
 
-    LOG('acquisition request was successful. Waiting for acquisition process to be complete.')
+    demisto.debug('acquisition request was successful. Waiting for acquisition process to be complete.')
 
     acquisition_id = args.get('acquisition_id') if args.get('acquisition_id') else str(acquisition_id)
     acquisition_info = client.file_acquisition_information_request(acquisition_id)
@@ -2071,7 +2058,7 @@ def file_acquisition_with_polling_command(client: Client, args: Dict[str, Any]):
 
 def result_file_acquisituon(client: Client, args: Dict[str, Any]) -> List:
 
-    LOG('acquisition process has been complete. Fetching zip file.')
+    demisto.debug('acquisition process has been complete. Fetching zip file.')
 
     acquired_file = client.file_acquisition_package_request(args.get('acquisition_id'))
 
@@ -2143,7 +2130,7 @@ def get_data_acquisition_command(client: Client, args: Dict[str, Any]) -> List[C
 
 def initiate_data_acquisition_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    acquisition_info: Dict = data_acquisition(client, args)
+    acquisition_info: Dict = get_data_acquisition(client, args)
 
     # Add hostname to the host info of acquisition_info
     acquisition_info["host"]["hostname"] = args.get("hostName")
@@ -2190,6 +2177,8 @@ def get_all_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResul
         source.append('exd')
     if args.get('IOCsource'):
         source.append('ioc')
+    if source:
+        args['source'] = source
 
     sort_map = {
         'agentId': 'agent._id',
@@ -2215,7 +2204,7 @@ def get_all_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResul
     alerts = get_alerts(client, args)
 
     # parse each alert to a record displayed in the human readable table
-    alerts_entries = [alert_entry(alert) for alert in alerts]
+    alerts_entries = [get_alert_entry(alert) for alert in alerts]
 
     headers_for_table = ['Alert ID', 'Reported', 'Event Type', 'Agent ID']
     md_table = tableToMarkdown(
@@ -2252,12 +2241,12 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> List[CommandResul
     alert_id = int(args.get('alertId', ""))
     alert: Dict = client.get_alert_request(alert_id)["data"]
 
-    alertEntry = alert_entry(alert)
+    alert_entry = get_alert_entry(alert)
     headers_for_table = ['Alert ID', 'Reported', 'Event Type', 'Agent ID']
 
     alert_table = tableToMarkdown(
         name=f'FireEye HX Get Alert # {alert_id}',
-        t=alertEntry,
+        t=alert_entry,
         headers=headers_for_table
     )
 
@@ -2276,7 +2265,7 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> List[CommandResul
         readable_output=f'{alert_table}\n{event_table}'
     )]
 
-    indicator = organization_of_indicator(alert)
+    indicator = get_indicator_command_result(alert)
     if indicator:
         result.append(indicator)
 
@@ -2339,7 +2328,7 @@ def get_indicators_command(client: Client, args: Dict[str, Any]) -> CommandResul
         limit=args.get('limit')
     )
 
-    for_table = [indicator_entry(indicator) for indicator in indicators]
+    for_table = [get_indicator_entry(indicator) for indicator in indicators]
 
     headers_for_table = ['OS', 'Name', 'Created By', 'Active Since', 'Category', 'Signature', 'Active Condition',
                          'Hosts With Alerts', 'Source Alerts']
@@ -2373,7 +2362,7 @@ def get_indicator_command(client: Client, args: Dict[str, Any]) -> List[CommandR
 
     md_table = tableToMarkdown(
         name=f"FireEye HX Get Indicator- {args.get('name')}",
-        t=indicator_entry(indicator),
+        t=get_indicator_entry(indicator),
         headers=headers_for_table
     )
 
@@ -2442,8 +2431,8 @@ SEARCHES
 def start_search_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, bool, str]:
 
     if 'searchId' not in args:
-        listOfArgs = ["agentsIds", "hostsNames", "hostSet", "hostSetName"]
-        arg = oneFromList(listOfArgs=listOfArgs, **args)
+        list_of_args = ["agentsIds", "hostsNames", "hostSet", "hostSetName"]
+        arg = oneFromList(list_of_args=list_of_args, args=args)
         if arg is False:
             raise ValueError("One of the following arguments is required -> [agentsIds, hostsNames, hostSet, hostSetName]")
 
@@ -2452,34 +2441,34 @@ def start_search_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandR
         body = organize_search_body_host(client, arg, {})
 
         # checking if provided only one of these following arguments
-        listOfArgs = ['dnsHostname', 'fileFullPath', 'fileMD5Hash', 'ipAddress', 'fieldSearchName']
-        argForQuery = oneFromList(listOfArgs=listOfArgs, **args)
-        if argForQuery is False:
+        list_of_args = ['dnsHostname', 'fileFullPath', 'fileMD5Hash', 'ipAddress', 'fieldSearchName']
+        arg_for_query = oneFromList(list_of_args=list_of_args, args=args)
+        if arg_for_query is False:
             raise ValueError("One of the following arguments is required ->"
                              " [dnsHostname, fileFullPath, fileMD5Hash, ipAddress, fieldSearchName]")
 
         # this function organize the query of the request body, and returns list of queries
-        body["query"] = organize_search_body_query(argForQuery, **args)
+        body["query"] = organize_search_body_query(arg_for_query, args)
         body["exhaustive"] = False if args.get("exhaustive") == "false" else True
 
         try:
-            searchId = client.search_request(body)["data"]["_id"]
+            search_id = client.search_request(body)["data"]["_id"]
         except Exception as e:
             raise ValueError(e)
 
     if not args.get("limit"):
         args['limit'] = 1000
 
-    searchId = str(args.get('searchId')) if args.get('searchId') else str(searchId)
-    searchInfo = client.get_search_by_id_request(searchId)["data"]
+    search_id = str(args.get('searchId')) if args.get('searchId') else str(search_id)
+    searchInfo = client.get_search_by_id_request(search_id)["data"]
     matched = searchInfo.get('stats', {}).get('search_state', {}).get('MATCHED', 0)
     pending = searchInfo.get('stats', {}).get('search_state', {}).get('PENDING', 0)
 
     if searchInfo.get("state") != "STOPPED" and matched < int(args.get('limit', '')) and pending != 0:
 
-        return CommandResults(readable_output=f"Search started,\nSearch ID: {searchId}"), False, searchId
+        return CommandResults(readable_output=f"Search started,\nSearch ID: {search_id}"), False, search_id
 
-    return CommandResults(readable_output=f"Search started,\nSearch ID: {searchId}"), True, searchId
+    return CommandResults(readable_output=f"Search started,\nSearch ID: {search_id}"), True, search_id
 
 
 def start_search_with_polling_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, List[CommandResults]]:
@@ -2497,10 +2486,10 @@ def get_search_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     if args.get("searchId"):
 
-        searchesIds = sorted(args.get("searchId", "").split(","), reverse=True)
+        searches_ids = sorted(args.get("searchId", "").split(","), reverse=True)
         response = []
-        for searchId in searchesIds:
-            response.append(client.get_search_by_id_request(searchId)["data"])
+        for search_id in searches_ids:
+            response.append(client.get_search_by_id_request(search_id)["data"])
 
     else:
 
@@ -2515,8 +2504,8 @@ def get_search_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
             offset=offset,
             limit=limit,
             state=state,
-            hostSetId=hostSetId,
-            actorUsername=actorUsername,
+            host_set_id=hostSetId,
+            actor_username=actorUsername,
             sort=sort
         )["data"]["entries"]
 
@@ -2558,16 +2547,16 @@ def search_stop_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if not args.get("searchId"):
         raise ValueError("Search Id is must be")
 
-    searchesIds = str(args.get("searchId")).split(",")
+    searches_ids = argToList(str(args.get("searchId")))
     responses = []
-    md = ""
-    for searchId in searchesIds:
+    md = "Results"
+    for search_id in searches_ids:
         try:
-            response = client.search_stop_request(searchId)
-            md += f"\n{searchId} : Success"
+            response = client.search_stop_request(search_id)
+            md += f"\nSearch Id {search_id}: Success"
             responses.append(response["data"])
         except Exception:
-            md += f"\n{searchId} : Not Found"
+            md += f"\nSearch Id {search_id}: Not Found"
 
     return CommandResults(
         outputs_prefix="FireEyeHX.Search",
@@ -2582,11 +2571,10 @@ def search_result_get_command(client: Client, args: Dict[str, Any]) -> List[Comm
     if not args.get("searchId"):
         raise ValueError("Search Id is must be")
 
-    searchesIds = str(args.get("searchId")).split(",")
-
+    searches_ids = argToList(str(args.get("searchId")))
     results: List[List[Dict]] = []
-    for searchId in searchesIds:
-        result = client.search_result_get_request(searchId)["data"]["entries"]
+    for search_id in searches_ids:
+        result = client.search_result_get_request(search_id)["data"]["entries"]
         if result:
             results.append(result)
 
@@ -2618,15 +2606,15 @@ def search_result_get_command(client: Client, args: Dict[str, Any]) -> List[Comm
         try:
             if args.get('stopSearch') == 'stop':
                 message = 'Failed to stop search'
-                client.search_stop_request(searchesIds[0])
+                client.search_stop_request(searches_ids[0])
                 message = "The search was stopped successfully"
             # no need to stop a search before deleting it.
             if args.get('stopSearch') == 'stopAndDelete':
                 message = 'Failed to delete search'
-                client.delete_search_request(searchesIds[0])
+                client.delete_search_request(searches_ids[0])
                 message = "The search was deleted successfully"
         except Exception as e:
-            LOG('{}\n{}'.format(message, e))
+            demisto.debug(f'{message}\n{e}')
         commandsResults[0].readable_output += f"\n\n{message}"
 
     return commandsResults if commandsResults else [CommandResults(readable_output="No Results")]
@@ -2634,19 +2622,19 @@ def search_result_get_command(client: Client, args: Dict[str, Any]) -> List[Comm
 
 def search_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    searchIds = str(args.get('searchId')).split(',')
+    search_ids = argToList(str(args.get('searchId')))
 
     message = 'Results'
-    for searchId in searchIds:
+    for search_id in search_ids:
 
         try:
-            client.delete_search_request(searchId)
-            message += f'\nSearch Id {searchId}: Deleted successfully'
+            client.delete_search_request(search_id)
+            message += f'\nSearch Id {search_id}: Deleted successfully'
         except Exception as e:
             if '404' in str(e):
-                message += f'\nSearch Id {searchId}: Not Found'
+                message += f'\nSearch Id {search_id}: Not Found'
             else:
-                message += f'\nSearch Id {searchId}: Failed to delete search'
+                message += f'\nSearch Id {search_id}: Failed to delete search'
 
     return CommandResults(readable_output=message)
 
@@ -2675,9 +2663,6 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> List:
         # Get all alerts with reported_at greater than last reported_at
         alerts = get_alerts(client, args)
 
-        # Results are sorted in ascending order - the last alert holds the greatest time *********
-        reported_at = alerts[-1].get("reported_at") if alerts else None
-
     else:
         # Design the filterQuery argument, and convert it to urlEncoding
         first_fetch = args.get("first_fetch") if args.get("first_fetch") else "3 days"
@@ -2687,8 +2672,8 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> List:
         # Receive alerts from last 3 days - if they are more than 50 return the 50 older alerts
         alerts = get_alerts(client, args)
 
-        # Results are sorted in ascending order - the last alert holds the greatest time
-        reported_at = alerts[-1].get("reported_at") if alerts else None
+    # Results are sorted in ascending order - the last alert holds the greatest time
+    reported_at = alerts[-1].get("reported_at") if alerts else None
 
     # Parse the alerts as the incidents
     incidents = [parse_alert_to_incident(alert) for alert in alerts]
@@ -2705,6 +2690,7 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> List:
 
 def run_polling_command(client, args, cmd, post_func, get_func, t):
 
+    interval_in_secs = int(args.get('interval_in_seconds', 60))
     _, is_ready, item_id = post_func(client, args)
     if not is_ready:
         type_id = TABLE_POLLING_COMMANDS[t]['type']
@@ -2713,7 +2699,7 @@ def run_polling_command(client, args, cmd, post_func, get_func, t):
             args[type_id] = item_id
         scheduled_command = ScheduledCommand(
             command=cmd,
-            next_run_in_seconds=60,
+            next_run_in_seconds=interval_in_secs,
             args=args,
             timeout_in_seconds=600)
         # result with scheduled_command only - no update to the war room
@@ -2773,9 +2759,9 @@ def main() -> None:
     }
 
     params = demisto.params()
-    userName = params.get("userName").get('identifier')
+    user_name = params.get("userName").get('identifier')
     password = params.get("userName").get('password')
-    if not userName or not password:
+    if not user_name or not password:
         raise ValueError("User Name and Password are required")
 
     # get the service API url
@@ -2799,7 +2785,7 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
-            auth=(userName, password))
+            auth=(user_name, password))
 
         if command == 'test-module':
             get_alerts(client, {"limit": 1})

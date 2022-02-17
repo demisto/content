@@ -5,7 +5,6 @@
         "FireEye HX Alert",
         "FireEye NX Alert",
         "FireEye NX IPS Event"
-
     ],
     "caseInsensitive": true,
     "cliName": "fireeyematchcount",

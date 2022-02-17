@@ -109,6 +109,79 @@ def test_assign_host_set_policy_command_failed(demisto_args, expected_results):
     assert str(e.value) == expected_results
 
 
+UPSERT_COMMAND_DATA_CASES_LIST_POLICY = [
+    (
+        {'policyId': 11, 'enabled': 'test', 'limit': 5, 'offset': 2},
+        {'policy_id': 11, 'enabled': 'test', 'limit': 5, 'offset': 2, 'name': None}
+    ),
+    (
+        {'policyName': 'test'},
+        {'policy_id': None, 'enabled': None, 'limit': 50, 'offset': 0, 'name': 'test'}
+    )
+]
+
+
+@pytest.mark.parametrize('demisto_args, call_args', UPSERT_COMMAND_DATA_CASES_LIST_POLICY)
+def test_list_policy_command(mocker, demisto_args, call_args):
+
+    from FireEyeHXv2 import list_policy_command, Client
+    return_value = {
+        'data': {
+            'entries': [{'_id': 'test', 'name': 'test', 'description': 'test', 'priority': 'test', 'enabled': 'test'}]
+        }
+    }
+
+    policies = mocker.patch.object(Client, 'list_policy_request', return_value=return_value)
+    mocker.patch('FireEyeHXv2.tableToMarkdown', return_value='test')
+
+    list_policy_command(Client, demisto_args)
+
+    assert policies.call_args.kwargs['policy_id'] == call_args['policy_id']
+    assert policies.call_args.kwargs['offset'] == call_args['offset']
+    assert policies.call_args.kwargs['limit'] == call_args['limit']
+    assert policies.call_args.kwargs['name'] == call_args['name']
+    assert policies.call_args.kwargs['enabled'] == call_args['enabled']
+
+
+UPSERT_COMMAND_DATA_CASES_LIST_HOST_SET_POLICY = [
+    (
+        {'hostSetId': 11},
+        {"hostSetId": 1, "hostSetPolicy": 0},
+        {}
+    ),
+    (
+        {},
+        {"hostSetId": 0, "hostSetPolicy": 1},
+        {'limit': 50, 'offset': 0}
+    ),
+    (
+        {'limit': 5, 'offset': 2},
+        {"hostSetId": 0, "hostSetPolicy": 1},
+        {'limit': 5, 'offset': 2}
+    )
+]
+
+
+@pytest.mark.parametrize('demisto_args, call_count, call_args', UPSERT_COMMAND_DATA_CASES_LIST_HOST_SET_POLICY)
+def test_list_host_set_policy_command(mocker, demisto_args, call_count, call_args):
+
+    from FireEyeHXv2 import list_host_set_policy_command, Client
+    return_value = {'data': {'entries': [{'policy_id': 'test', 'persist_id': 'test'}]}}
+
+    hostSetId = mocker.patch.object(Client, 'list_host_set_policy_by_hostSetId_request', return_value=return_value)
+    hostSetPolicy = mocker.patch.object(Client, 'list_host_set_policy_request', return_value=return_value)
+    mocker.patch('FireEyeHXv2.tableToMarkdown', return_value='test')
+
+    list_host_set_policy_command(Client, demisto_args)
+
+    assert hostSetId.call_count == call_count['hostSetId']
+    assert hostSetPolicy.call_count == call_count['hostSetPolicy']
+
+    if hostSetPolicy.call_count != 0:
+        assert hostSetPolicy.call_args.kwargs['offset'] == call_args['offset']
+        assert hostSetPolicy.call_args.kwargs['limit'] == call_args['limit']
+
+
 UPSERT_COMMAND_DATA_CASES_DELETE_POLICY = [
     (
         {'hostSetId': 11, 'policyId': 'test'},
@@ -457,6 +530,32 @@ def test_cancel_containment_command(mocker, demisto_args, call_count):
     assert get_agentId.call_count == call_count
 
 
+UPSERT_COMMAND_DATA_CASES_LIST_CONTAINMENT = [
+    (
+        {"offset": 2, "limit": 5},
+        {"offset": 2, "limit": 5}
+    ),
+    (
+        {},
+        {"offset": 0, "limit": 50}
+    )
+]
+
+
+@pytest.mark.parametrize('demisto_args, args_call', UPSERT_COMMAND_DATA_CASES_LIST_CONTAINMENT)
+def test_get_list_containment_command(mocker, demisto_args, args_call):
+
+    from FireEyeHXv2 import get_list_containment_command, Client
+
+    request = mocker.patch.object(Client, "get_list_containment_request", return_value={"data": {"entries": []}})
+    mocker.patch("FireEyeHXv2.tableToMarkdown", return_value=" ")
+
+    get_list_containment_command(Client, demisto_args)
+
+    assert request.call_args.kwargs['offset'] == args_call['offset']
+    assert request.call_args.kwargs['limit'] == args_call['limit']
+
+
 """INDICATORS"""
 
 
@@ -561,7 +660,7 @@ def test_get_indicator_command(mocker, demisto_args):
     mocker.patch.object(Client, 'get_indicator_request', return_value='test')
     mocker.patch('FireEyeHXv2.tableToMarkdown', return_value='test')
     mocker.patch('FireEyeHXv2.get_indicator_conditions', return_value='test')
-    mocker.patch('FireEyeHXv2.indicator_entry', return_value='test')
+    mocker.patch('FireEyeHXv2.get_indicator_entry', return_value='test')
     result = get_indicator_command(Client, demisto_args)
 
     assert isinstance(result, list)
@@ -617,6 +716,31 @@ def test_get_indicators_command(mocker, demisto_args):
     assert get_all_indicators.call_args.kwargs['alerted'] is True
     assert get_all_indicators.call_args.kwargs['sort'] == 'created_by'
     assert isinstance(result, object)
+
+
+UPSERT_COMMAND_DATA_CASES_GET_INDICATOR_RESULT = [
+    (
+        {'event_type': 'fileWriteEvent'},
+        'File'
+    ),
+    (
+        {'event_type': 'test'},
+        'Ip'
+    )
+]
+
+
+@pytest.mark.parametrize('args, expected_results', UPSERT_COMMAND_DATA_CASES_GET_INDICATOR_RESULT)
+def test_get_indicator_command_result(mocker, args, expected_results):
+
+    from FireEyeHXv2 import get_indicator_command_result
+
+    mocker.patch('FireEyeHXv2.general_context_from_event', return_value='test')
+    mocker.patch('FireEyeHXv2.tableToMarkdown', return_value='test')
+
+    result = get_indicator_command_result(args)
+
+    assert result.outputs_prefix == expected_results
 
 
 """SEARCH"""
@@ -795,6 +919,51 @@ def test_get_search_list_command(mocker, demisto_args, call_count):
     assert isinstance(result, object)
 
 
+UPSERT_COMMAND_DATA_CASES_SEARCH_DELETE = [
+    (
+        {"searchId": "2,3,4"},
+        [None, Exception("404"), None],
+        "Results\nSearch Id 2: Deleted successfully\nSearch Id 3: Not Found\nSearch Id 4: Deleted successfully"
+    ),
+    (
+        {"searchId": "2"},
+        [Exception("400")],
+        "Results\nSearch Id 2: Failed to delete search"
+    )
+]
+
+
+@pytest.mark.parametrize('demisto_args, return_mocker, expected_results', UPSERT_COMMAND_DATA_CASES_SEARCH_DELETE)
+def test_search_delete_command(mocker, demisto_args, return_mocker, expected_results):
+
+    from FireEyeHXv2 import search_delete_command, Client
+
+    mocker.patch.object(Client, "delete_search_request", side_effect=return_mocker)
+    result = search_delete_command(Client, demisto_args)
+
+    assert result.readable_output == expected_results
+
+
+UPSERT_COMMAND_DATA_CASES_SEARCH_STOP = [
+    (
+        {"searchId": "2,3,4"},
+        [{"data": ""}, Exception("404"), {"data": ""}],
+        "Results\nSearch Id 2: Success\nSearch Id 3: Not Found\nSearch Id 4: Success"
+    )
+]
+
+
+@pytest.mark.parametrize('demisto_args, return_mocker, expected_results', UPSERT_COMMAND_DATA_CASES_SEARCH_STOP)
+def test_search_stop_command(mocker, demisto_args, return_mocker, expected_results):
+
+    from FireEyeHXv2 import search_stop_command, Client
+
+    mocker.patch.object(Client, "search_stop_request", side_effect=return_mocker)
+    result = search_stop_command(Client, demisto_args)
+
+    assert result.readable_output == expected_results
+
+
 """ACQUISITIONS"""
 
 
@@ -818,12 +987,12 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
 @pytest.mark.parametrize('demisto_args, expected_results', UPSERT_COMMAND_DATA_BAD_CASES)
 def test_data_acquisition_failed(demisto_args, expected_results):
 
-    from FireEyeHXv2 import data_acquisition
+    from FireEyeHXv2 import get_data_acquisition
 
     client = ""
 
     with pytest.raises(Exception) as e:
-        data_acquisition(client, demisto_args)
+        get_data_acquisition(client, demisto_args)
     assert str(e.value) == expected_results
 
 
@@ -838,16 +1007,7 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
 
 @pytest.mark.parametrize('demisto_args, expected_results', UPSERT_COMMAND_DATA_BAD_CASES)
 def test_delete_data_acquisition_command_failed(demisto_args, expected_results):
-    """
-    Given:
-        - searchId
 
-    When:
-        - get result specific search by search Id
-
-    Then:
-        - failing when missing required data
-    """
     from FireEyeHXv2 import delete_data_acquisition_command
 
     client = ""
@@ -898,16 +1058,7 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
 
 @pytest.mark.parametrize('demisto_args, expected_results', UPSERT_COMMAND_DATA_BAD_CASES)
 def test_get_data_acquisition_command_failed(demisto_args, expected_results):
-    """
-    Given:
-        - acquisitionId
 
-    When:
-        - ""
-
-    Then:
-        - failing when missing required data
-    """
     from FireEyeHXv2 import get_data_acquisition_command
 
     client = ""
@@ -932,7 +1083,7 @@ UPSERT_COMMAND_DATA_CASES_DATA_ACQUISITION = [
 @pytest.mark.parametrize('demisto_args, call_count', UPSERT_COMMAND_DATA_CASES_DATA_ACQUISITION)
 def test_data_acquisition(mocker, demisto_args, call_count):
 
-    from FireEyeHXv2 import data_acquisition, Client
+    from FireEyeHXv2 import get_data_acquisition, Client
     mocker.patch.object(Client, "get_token_request", return_value="test")
     client = Client(
         base_url="base_url",
@@ -942,7 +1093,7 @@ def test_data_acquisition(mocker, demisto_args, call_count):
 
     get_agentId = mocker.patch("FireEyeHXv2.get_agent_id_by_host_name", return_value="")
     mocker.patch.object(client, "data_acquisition_request", return_value={"data": ""})
-    data_acquisition(client, demisto_args)
+    get_data_acquisition(client, demisto_args)
     assert get_agentId.call_count == call_count
 
 
@@ -971,7 +1122,7 @@ def test_data_acquisition_command(mocker, demisto_args, state, expected_results)
         proxy=True,
         auth=("userName", "password"))
 
-    data_acquisition_call = mocker.patch("FireEyeHXv2.data_acquisition", return_value={"_id": '12'})
+    data_acquisition_call = mocker.patch("FireEyeHXv2.get_data_acquisition", return_value={"_id": '12'})
     mocker.patch.object(client, "data_acquisition_information_request", return_value={"state": state})
     _, result_bool, result_id = data_acquisition_command(client, demisto_args)
 
@@ -1088,6 +1239,64 @@ def test_get_alerts(mocker, demisto_args, results_mocker, expected_results):
     assert len(result) == expected_results
 
 
+UPSERT_COMMAND_DATA_CASES_GET_ALL_ALERTS = [
+    (
+        {'sort': 'agentId', 'hostName': 'test', 'limit': 5, 'MALsource': 'yes', 'EXDsource': 'yes', 'IOCsource': 'yes'},
+        [
+            {
+                'event_type': 'regKeyEvent',
+                'event_values': {
+                    'regKeyEvent/path': 'test',
+                    'regKeyEvent/valueName': 'test',
+                    'regKeyEvent/value': 'test'
+                }
+            },
+            {'event_type': 'test'}
+
+        ],
+        {'sort': 'agent._id+ascending', 'agentId': 'test', 'limit': 5, 'source': ['mal', 'exd', 'ioc']},
+        {'get_agent_id': 1, 'general_context': 1}
+    ),
+    (
+        {},
+        [
+            {
+                'event_type': 'regKeyEvent',
+                'event_values': {
+                    'regKeyEvent/path': 'test',
+                    'regKeyEvent/valueName': 'test',
+                    'regKeyEvent/value': 'test'
+                }
+            }
+        ],
+        {'sort': None, 'agentId': None, 'limit': 50, 'source': None},
+        {'get_agent_id': 0, 'general_context': 0}
+    )
+]
+
+
+@pytest.mark.parametrize('demisto_args, return_mocker,  call_args, call_count', UPSERT_COMMAND_DATA_CASES_GET_ALL_ALERTS)
+def test_get_all_alerts_command(mocker, demisto_args, return_mocker, call_args, call_count):
+
+    from FireEyeHXv2 import get_all_alerts_command, Client
+
+    get_agent_id = mocker.patch("FireEyeHXv2.get_agent_id_by_host_name", return_value='test')
+    alerts = mocker.patch("FireEyeHXv2.get_alerts", return_value=return_mocker)
+    mocker.patch("FireEyeHXv2.tableToMarkdown", return_value='test')
+    general_context = mocker.patch("FireEyeHXv2.general_context_from_event", return_value='test')
+    mocker.patch("FireEyeHXv2.get_alert_entry", return_value='test')
+
+    get_all_alerts_command(Client, demisto_args)
+
+    assert alerts.call_args.args[1].get('sort') == call_args['sort']
+    assert alerts.call_args.args[1].get('agentId') == call_args['agentId']
+    assert alerts.call_args.args[1].get('limit') == call_args['limit']
+    assert alerts.call_args.args[1].get('source') == call_args['source']
+
+    assert get_agent_id.call_count == call_count['get_agent_id']
+    assert general_context.call_count == call_count['general_context']
+
+
 """HELPERS"""
 
 
@@ -1111,7 +1320,7 @@ def test_organize_search_body_query_failed(argForQuery, args, expected_results):
     from FireEyeHXv2 import organize_search_body_query
 
     with pytest.raises(Exception) as e:
-        organize_search_body_query(argForQuery, **args)
+        organize_search_body_query(argForQuery, args)
     assert str(e.value) == expected_results
 
 
@@ -1139,7 +1348,7 @@ def test_oneFromList(demisto_arg1, demisto_arg2, expected_results):
 
     from FireEyeHXv2 import oneFromList
 
-    result = oneFromList(listOfArgs=demisto_arg1, **demisto_arg2)
+    result = oneFromList(list_of_args=demisto_arg1, args=demisto_arg2)
     assert result == expected_results
 
 
@@ -1301,3 +1510,35 @@ def test_fetch_incidents(mocker, demisto_args, alerts_return, call_count):
     assert parse_alert.call_count == call_count["parse_alert"]
     assert reported_at.call_count == call_count["reported_at"]
     assert setLastRun.call_count == call_count["setLastRun"]
+
+
+UPSERT_COMMAND_DATA_CASES_PARSE_ALERT_TO_INCIDENT = [
+    (
+        {"cmd": "fireeye-hx-search"},
+        {"search": 1, "data_acquisition": 0, "file_acquisition": 0}
+    ),
+    (
+        {"cmd": "fireeye-hx-data-acquisition"},
+        {"search": 0, "data_acquisition": 1, "file_acquisition": 0}
+    ),
+    (
+        {"cmd": "fireeye-hx-file-acquisition"},
+        {"search": 0, "data_acquisition": 0, "file_acquisition": 1}
+    )
+]
+
+
+@pytest.mark.parametrize('demisto_args, call_count', UPSERT_COMMAND_DATA_CASES_PARSE_ALERT_TO_INCIDENT)
+def test_run_commands_without_polling(mocker, demisto_args, call_count):
+
+    from FireEyeHXv2 import run_commands_without_polling, Client
+
+    search = mocker.patch("FireEyeHXv2.start_search_command", return_value=["test", "_", "_"])
+    data_acquisition = mocker.patch("FireEyeHXv2.data_acquisition_command", return_value=["test", "_", "_"])
+    file_acquisition = mocker.patch("FireEyeHXv2.file_acquisition_command", return_value=["test", "_", "_"])
+
+    run_commands_without_polling(Client, demisto_args)
+
+    assert search.call_count == call_count["search"]
+    assert data_acquisition.call_count == call_count['data_acquisition']
+    assert file_acquisition.call_count == call_count['file_acquisition']
