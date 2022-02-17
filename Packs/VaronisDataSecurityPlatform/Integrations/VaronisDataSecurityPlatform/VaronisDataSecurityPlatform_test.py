@@ -13,7 +13,7 @@ you are implementing with your integration
 import json
 import io
 
-from VaronisDataSecurityPlatform import Client, varonis_get_alerts_command
+from VaronisDataSecurityPlatform import Client, varonis_get_alerts_command, varonis_update_alert_status_command
 
 
 def util_load_json(path):
@@ -53,3 +53,22 @@ def test_varonis_get_alerts_command(mocker):
 
     assert result.outputs_prefix == 'Varonis.Alert'
     assert result.outputs == expected_outputs
+
+
+def test_varonis_update_alert_status_command(requests_mock):
+    requests_mock.post('https://test.com/api/alert/alert/SetStatusToAlerts', json="True")
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False,
+        proxy=False
+    )
+
+    args = {
+        'Status': 'Under Investigation',
+        'Alert_id': "C8CF4194-133F-4F5A-ACB1-FFFB00573468, F8F608A7-0256-42E0-A527-FFF4749C1A8B"
+    }
+
+    resp = varonis_update_alert_status_command(client, args)
+
+    assert resp == "True"

@@ -92,6 +92,12 @@ class Client(BaseClient):
             status_list_to_retry=STATUSES_TO_RETRY)
         return response
 
+    def varonis_update_alert_status(self, query: Dict[str, Any]) -> Any:
+        return self._http_request(
+            'POST',
+            '/api/alert/alert/SetStatusToAlerts',
+            json_data=query)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -284,8 +290,24 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    pass
+def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) -> Any:
+    alert_ids = argToList(args.get('Alert_id'))
+    if len(alert_ids) == 0:
+        raise ValueError('alert id(s) not specified')
+
+    status = args.get('Status', None)
+    if status not in ('Open', 'Under Investigation'):
+        raise ValueError('status must be either Open or Under Investigation')
+
+    status_id = ALERT_STATUSES[status]
+
+    query: Dict[str, Any] = {
+        'AlertGuids': alert_ids,
+        'closeReasonId': '0',
+        'statusId': status_id
+    }
+
+    return client.varonis_update_alert_status(query)
 
 
 ''' MAIN FUNCTION '''
