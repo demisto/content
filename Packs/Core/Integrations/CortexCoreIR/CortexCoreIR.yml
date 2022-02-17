@@ -2438,11 +2438,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: User’s email address. Default value is 'XSIAM-Playbooks@paloaltonetowrks.com'.
+      description: User’s email address.
       isArray: false
       name: email
       required: false
-      defaultValue: 'XSIAM-Playbooks@paloaltonetowrks.com'
       secret: false
     deprecated: false
     description: Reports to WildFire about incorrect hash verdict through Cortex.

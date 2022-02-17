@@ -1566,7 +1566,7 @@ Reports to WildFire about incorrect hash verdict through Cortex.
 | file_hash | String that represents the file’s hash. Must be a valid SHA256 hash. | Required | 
 | new_verdict | The new verdict of the file. 0 - benign, 1 - malware. Possible values are: 0, 1. | Required | 
 | reason | String that represents the reason of the report. | Required | 
-| email | User’s email address. Default is XSIAM-Playbooks@paloaltonetowrks.com. | Optional | 
+| email | User’s email address. | Optional | 
 
 
 #### Context Output
