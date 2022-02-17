@@ -2337,6 +2337,9 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
 
     if last_run:
         last_fetch_time = last_run.get('last_alert_fetched_time')
+        # handling old version of time format:
+        if not last_fetch_time.endswith('Z'):
+            last_fetch_time = last_fetch_time + "Z"
 
     else:
         last_fetch_time = datetime.strftime(first_fetch_time, TIME_FORMAT)
@@ -2345,10 +2348,11 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
                                            settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
 
     params = _get_incidents_query_params(client, fetch_evidence, last_fetch_time)
-
+    demisto.info(f'########### {params=}')
     incidents = []
     # get_alerts:
     try:
+        demisto.debug(f'getting alerts using {params=}')
         alerts = client.list_alerts_by_params(params=params)['value']
     except DemistoException as err:
         big_query_err_msg = 'Verify that the server URL parameter is correct and that you have access to the server' \
@@ -2358,6 +2362,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
             raise Exception(
                 f'Failed to fetch {client.max_alerts_to_fetch} alerts. This may caused due to large amount of alert. '
                 f'Try using a lower limit.')
+        demisto.debug(f'Query crashed API. Params sent to query: {params}')
         raise err
 
     for alert in alerts:
@@ -2382,6 +2387,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
             latest_created_time = alert_time
 
     # last alert is the newest as we ordered by it ascending
+    demisto.debug(f'got {len(incidents)} incidents from the API.')
     last_run['last_alert_fetched_time'] = datetime.strftime(latest_created_time, TIME_FORMAT)
     return incidents, last_run
 
