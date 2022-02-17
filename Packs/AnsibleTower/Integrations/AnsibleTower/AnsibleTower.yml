@@ -1046,7 +1046,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves the list of job events.
+    description: Retrieves the list of job events, you can use the id filter to get
+      one job event, you can use the ansible-tower-job-event-list-by-id command to
+      filter through events by job id.
     execution: false
     name: ansible-tower-job-events-list
     outputs:
