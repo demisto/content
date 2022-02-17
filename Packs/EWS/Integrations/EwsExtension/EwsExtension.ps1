@@ -198,7 +198,7 @@ class OAuth2DeviceCodeClient {
     [bool]$proxy
 
     OAuth2DeviceCodeClient([string]$device_code, [string]$device_code_expires_in, [string]$device_code_creation_time, [string]$access_token,
-        [string]$refresh_token, [string]$refresh_token_creation_time, [string]$access_token_expires_in, [string]$access_token_creation_time,
+        [string]$refresh_token, [int]$refresh_token_creation_time, [string]$access_token_expires_in, [int]$access_token_creation_time,
         [bool]$insecure, [bool]$proxy) {
         $this.device_code = $device_code
         $this.device_code_expires_in = $device_code_expires_in
@@ -264,7 +264,7 @@ class OAuth2DeviceCodeClient {
     static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy) {
         $ic = $script:Demisto.getIntegrationContext()
         $client = [OAuth2DeviceCodeClient]::new($ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
-            $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy)
+            $ic.RefreshTokenCreationTime, $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy)
 
         return $client
         <#
@@ -280,6 +280,7 @@ class OAuth2DeviceCodeClient {
     }
 
     [PSObject]AuthorizationRequest() {
+        $script:Demisto.Info("Insert into AuthorizationRequest method")
         # Reset object-properties
         $this.device_code = $null
         $this.device_code_expires_in = $null
@@ -299,7 +300,7 @@ class OAuth2DeviceCodeClient {
         $this.device_code = $response_body.device_code
         $this.device_code_creation_time = [int][double]::Parse((Get-Date -UFormat %s))
         $this.device_code_expires_in = [int]::Parse($response_body.expires_in)
-
+        $script:Demisto.Info("This is the response body form AuthorizationRequest $($response_body)")
         return $response_body
 
         <#
@@ -319,6 +320,7 @@ class OAuth2DeviceCodeClient {
 
     [psobject]AccessTokenRequest() {
         # Get new token using device-code
+        $script:Demisto.Info("We are going into AccessTokenRequest")
         try {
             $params = @{
                 "URI"                  = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
@@ -328,11 +330,13 @@ class OAuth2DeviceCodeClient {
                 "NoProxy"              = !$this.proxy
                 "SkipCertificateCheck" = $this.insecure
             }
+            $script:Demisto.Info("This is the params.body form AccessTokenRequest: $($params.Body)")
             $response = Invoke-WebRequest @params
             $response_body = ConvertFrom-Json $response.Content
         }
         catch {
             $response_body = ConvertFrom-Json $_.ErrorDetails.Message
+            $script:Demisto.Info("This is the response_body AccessTokenRequest: $($response_body)")
             if ($response_body.error -eq "authorization_pending" -or $response_body.error -eq "invalid_grant") {
                 $error_details = "Please run command !$script:COMMAND_PREFIX-auth-start , before running this command."
             }
@@ -347,10 +351,12 @@ class OAuth2DeviceCodeClient {
         }
         # Update object properties
         $this.access_token = $response_body.access_token
-        $this.refresh_token = $response_body.refresh_token
-        $this.refresh_token_creation_time = [int][double]::Parse((Get-Date -UFormat %s))
         $this.access_token_expires_in = [int]::Parse($response_body.expires_in)
         $this.access_token_creation_time = [int][double]::Parse((Get-Date -UFormat %s))
+        $this.refresh_token = $response_body.refresh_token
+        $this.refresh_token_creation_time = [int][double]::Parse((Get-Date -UFormat %s))
+
+        $script:Demisto.Info("This is the response_body AccessTokenRequest: $($response_body)")
 
         return $response_body
 
@@ -371,6 +377,7 @@ class OAuth2DeviceCodeClient {
 
     [psobject]RefreshTokenRequest() {
         # Get new token using refresh token
+        $script:Demisto.Info("application_id: $($this.application_id) refresh_token: $($this.refresh_token) application_scope: $($this.application_scope)")
         try {
             $params = @{
                 "URI"                  = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
@@ -395,12 +402,13 @@ class OAuth2DeviceCodeClient {
             throw "Unable to refresh access token for your account, $error_details"
         }
         # Update object properties
-        $this.refresh_token = $response_body.refresh_token
         $this.access_token = $response_body.access_token
-        $this.refresh_token_creation_time = [int][double]::Parse((Get-Date -UFormat %s))
+        $this.refresh_token = $response_body.refresh_token
         $this.access_token_expires_in = [int]::Parse($response_body.expires_in)
         $this.access_token_creation_time = [int][double]::Parse((Get-Date -UFormat %s))
+        $this.refresh_token_creation_time = [int][double]::Parse((Get-Date -UFormat %s))
 
+        $script:Demisto.Info("This is the from RefreshTokenRequest: $($response_body)")
         return $response_body
 
         <#
@@ -443,17 +451,23 @@ class OAuth2DeviceCodeClient {
     }
 
     [bool]IsRefreshTokenExpired() {
+        $script:Demisto.Info("Insert into IsRefreshTokenExpired")
+
         if (!$this.refresh_token) {
             return $true
         }
-        $current_time = [int][double]::Parse((Get-Date -UFormat %s)) + 30
-        $Demisto.Debug("Current time")
-        $Demisto.Debug($current_time)
-        $valid_until = $this.refresh_token_creation_time + 7776000
-        $Demisto.Debug("valid until")
-        $Demisto.Debug($valid_until)
 
-        return $valid_until -gt $current_time
+        $script:Demisto.Info("refresh_token existing")
+
+        $current_time = [int][double]::Parse((Get-Date -UFormat %s))
+        $valid_until = $this.refresh_token_creation_time + 7776000 - 30
+
+        $script:Demisto.Info("Current time: $($current_time)")
+        $script:Demisto.Info("Valid until: $($valid_until)")
+        $script:Demisto.Info("returns sum: $($current_time - $valid_until)")
+        $script:Demisto.Info("returns: $($current_time -gt $valid_until)")
+
+        return $current_time -gt $valid_until
         <#
             .DESCRIPTION
             Check if refresh-token expired by adding 90 days from the creation date.
@@ -470,11 +484,21 @@ class OAuth2DeviceCodeClient {
     }
 
     [bool]IsAccessTokenExpired() {
+        $script:Demisto.Info("Insert into IsAccessTokenExpired")
+
         if (!$this.access_token) {
             return $true
         }
+
+        $script:Demisto.Info("refresh_token existing")
+
         $current_time = [int][double]::Parse((Get-Date -UFormat %s)) - 30
         $valid_until = $this.access_token_creation_time + $this.access_token_expires_in
+
+        $script:Demisto.Info("Current time: $($current_time)")
+        $script:Demisto.Info("Valid until: $($valid_until)")
+        $script:Demisto.Info("returns sum: $($current_time - $valid_until)")
+        $script:Demisto.Info("returns: $($current_time -gt $valid_until)")
 
         return $current_time -gt $valid_until
         <#
@@ -494,9 +518,11 @@ class OAuth2DeviceCodeClient {
 
     RefreshTokenIfExpired() {
         if ($this.refresh_token -and $this.IsRefreshTokenExpired()) {
-            $this.AccessTokenRequest()
+            $script:Demisto.Info("We are going to create both tokens")
+            $this.AuthorizationRequest()
         }
         elseif ($this.access_token -and $this.IsAccessTokenExpired()) {
+            $script:Demisto.Info("We are going to create an access token")
             $this.RefreshTokenRequest()
         }
         <#
@@ -1162,6 +1188,7 @@ function TestModuleCommand ([OAuth2DeviceCodeClient]$oclient, [ExchangeOnlineCli
 }
 
 function StartAuthCommand ([OAuth2DeviceCodeClient]$client) {
+    $Demisto.Info("Insert into StartAuthCommand function")
     $raw_response = $client.AuthorizationRequest()
     $human_readable = "## $script:INTEGRATION_NAME - Authorize instructions
 1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **$($raw_response.user_code)** to authenticate.
@@ -1364,6 +1391,7 @@ function GetMailboxAuditBypassAssociationCommand {
 #### INTEGRATION COMMANDS MANAGER ####
 
 function Main {
+    $Demisto.info("Insert into main")
     $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
@@ -1371,10 +1399,13 @@ function Main {
     $proxy = (ConvertTo-Boolean $integration_params.proxy)
 
     try {
+        $Demisto.info("Start trying to execute command")
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
         # Refreshing tokens if expired
+        $Demisto.info("oauth2_client creating completed successfully")
         $oauth2_client.RefreshTokenIfExpired()
+        $Demisto.info("oauth2_client token is up to date")
         # Creating ExchangeOnline client
         $exo_client = [ExchangeOnlineClient]::new(
                 $integration_params.url,
@@ -1385,7 +1416,7 @@ function Main {
                 $proxy
         )
         # Executing command
-        $Demisto.Debug("Command being called is $Command")
+        $Demisto.info("Command being called is $Command")
         switch ($command) {
             "test-module" {
                 ($human_readable, $entry_context, $raw_response) = TestModuleCommand $oauth2_client $exo_client
