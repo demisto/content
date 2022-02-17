@@ -1,0 +1,40 @@
+commonfields:
+  id: c918decb-1358-4774-8090-fe9540ea63ae
+  version: 73
+vcShouldKeepItemLegacyProdMachine: false
+name: CybersixgillActionableAlertStatusUpdate
+script: |-
+  from urllib.parse import urlparse, parse_qs
+
+  args = demisto.args()
+
+  command_args = {}
+
+  incident = demisto.incident()
+
+  command_args['alert_status'] = args['new']
+
+  incident_link = incident.get('CustomFields').get('incidentlink')
+
+  command_args['alert_id'] = parse_qs(urlparse(incident_link).fragment)["/?actionable_alert"][0]
+
+  demisto.executeCommand("cybersixgill-update-alert-status", command_args)
+type: python
+tags:
+- field-change-triggered
+- Cybersixgill
+comment: Updates the Actionable alert status.
+enabled: true
+scripttarget: 0
+subtype: python3
+dependson:
+  must:
+  - Cybersixgill_Actionable_Alerts_dev|||cybersixgill-update-alert-status
+  should:
+  - Cybersixgill_Actionable_Alerts_dev|||cybersixgill-update-alert-status
+timeout: 180ns
+pswd: ""
+runonce: false
+dockerimage: devdemisto/sixgill:1.0.0.26750
+runas: DBotWeakRole
+engineinfo: {}
