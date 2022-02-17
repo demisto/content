@@ -1,17 +1,17 @@
 args:
 - default: true
-  description: 'Comma separated list of indexes to slice by (0,1-3,6-7,...,etc).'
+  description: 'A comma-separated list of indexes or ranges of to retrieve (e.g., 0,1-3,6-7).'
   isArray: true
   name: range
   required: true
   secret: false
 - default: true
-  description: 'List'
+  description: 'The list to transform.'
   isArray: true
   name: value
   required: true
   secret: false
-comment: 'Get a range of indexes from a list.'
+comment: 'Gets specified indexes of a list.'
 commonfields:
   id: GetRange
   version: -1
@@ -23,7 +23,6 @@ system: false
 tags:
 - transformer
 - general
-- basescript
 - entirelist
 timeout: '0'
 type: python
