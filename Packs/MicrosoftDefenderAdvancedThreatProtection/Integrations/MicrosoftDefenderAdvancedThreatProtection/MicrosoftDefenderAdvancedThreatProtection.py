@@ -3291,7 +3291,7 @@ def get_live_response_file_action(client, args):
     return CommandResults(
         outputs_prefix='MicrosoftATP.LiveResponseAction',
         outputs={'action_id': res['id']},
-        readable_output=md    )
+        readable_output=md)
 
 
 def get_file_get_successfull_action_results(client, res):
@@ -3314,7 +3314,7 @@ def get_file_get_successfull_action_results(client, res):
     return [fileResult('Response Result.gz', f_data.content), CommandResults(
         outputs_prefix='MicrosoftATP.LiveResponseAction',
         outputs=res,
-        readable_output=tableToMarkdown('Machine Action:', md_results,  is_auto_json_transform=True)
+        readable_output=tableToMarkdown('Machine Action:', md_results, is_auto_json_transform=True)
 
     )]
 
@@ -3350,7 +3350,7 @@ def put_live_response_file_action(client, args):
     return CommandResults(
         outputs_prefix='MicrosoftATP.LiveResponseAction',
         outputs={'action_id': res['id']},
-        readable_output=md    )
+        readable_output=md)
 
 
 def put_file_get_successful_action_results(client, res):
@@ -3362,7 +3362,7 @@ def put_file_get_successful_action_results(client, res):
         'Creation time': res.get('creationDateTimeUtc'),
         'Commands': res.get('commands')
     }
-    print(tableToMarkdown('Machine Action:', md_results, is_auto_json_transform=True))
+
     return CommandResults(
         outputs_prefix='MicrosoftATP.LiveResponseAction',
         outputs=res,
