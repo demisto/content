@@ -252,8 +252,8 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
     """
 
     if issue_type and resource_id or (not issue_type and not resource_id):
-        demisto.info("You should (only) pass one filter")
-        return "You should (only) pass one filter"
+        demisto.info("You should (only) pass either issue_type or resource_id filters")
+        return "You should (only) pass either issue_type or resource_id filters"
 
     query = ("""
         query IssuesTable(
@@ -578,8 +578,101 @@ def main():
     try:
         command = demisto.command()
         if command == 'test-module':
-            get_token()
-            demisto.results('ok')
+            auth_token = get_token()
+            if 'error' not in auth_token:
+                test_query = ("""
+                    query IssuesTable(
+                        $filterBy: IssueFilters
+                        $first: Int
+                        $after: String
+                        $orderBy: IssueOrder
+                    ) {
+                        issues(
+                        filterBy: $filterBy
+                        first: $first
+                        after: $after
+                        orderBy: $orderBy
+                        ) {
+                        nodes {
+                            ...IssueDetails
+                        }
+                        pageInfo {
+                            hasNextPage
+                            endCursor
+                        }
+                        totalCount
+                        informationalSeverityCount
+                        lowSeverityCount
+                        mediumSeverityCount
+                        highSeverityCount
+                        criticalSeverityCount
+                        uniqueEntityCount
+                        }
+                    }
+
+                    fragment IssueDetails on Issue {
+                        id
+                        control {
+                        id
+                        name
+                        query
+                        }
+                        createdAt
+                        updatedAt
+                        projects {
+                        id
+                        name
+                        slug
+                        businessUnit
+                        riskProfile {
+                            businessImpact
+                        }
+                        }
+                        status
+                        severity
+                        entity {
+                        id
+                        name
+                        type
+                        }
+                        entitySnapshot {
+                        id
+                        type
+                        name
+                        }
+                        note
+                        serviceTickets {
+                        externalId
+                        name
+                        url
+                        action {
+                            id
+                            type
+                        }
+                        }
+                    }
+                """)
+
+                test_variables = {
+                    'first': 1,
+                    'filterBy': {
+                        'status': [
+                            'OPEN',
+                            'IN_PROGRESS'
+                        ]
+                    },
+                    'orderBy': {
+                        'field': 'SEVERITY',
+                        'direction': 'DESC'
+                    }
+                }
+
+                test_response = checkAPIerrors(test_query, test_variables)
+
+                if 'errors' not in test_response:
+                    demisto.results('ok')
+                else:
+                    demisto.results(test_response)
 
         elif command == 'fetch-incidents':
             max_fetch = int(demisto.params().get('max_fetch'))

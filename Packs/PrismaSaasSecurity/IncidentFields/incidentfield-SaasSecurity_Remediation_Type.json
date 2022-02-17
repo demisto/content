@@ -1,5 +1,6 @@
 {
     "id": "incident_saassecurityremediationtype",
+    "description": "Action taken to remediate includes **Remove Public Link**, **Quarantine**, and **Restore**.",
     "version": -1,
     "modified": "2021-10-13T18:10:26.417643+03:00",
     "name": "Saas Security Remediation Type",

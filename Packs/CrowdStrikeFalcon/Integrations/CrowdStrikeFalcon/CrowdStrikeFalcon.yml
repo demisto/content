@@ -414,7 +414,7 @@ script:
       default: false
       defaultValue: read
       description: 'The scope for which to run the command. Possible values are: "read",
-        "write", and "admin".'
+        "write", and "admin". (NOTE: In order to run the CrowdStrike RTR `put` command, it is necessary to pass `scope=admin`.)'
       isArray: false
       name: scope
       predefined:

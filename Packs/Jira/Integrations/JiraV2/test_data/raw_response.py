@@ -30,7 +30,7 @@ QUERY_ISSUE_RESPONSE = {
                     "timeZone": "Asia"
                 },
                 "customfield_10000": "{}",
-                "customfield_10001": None,
+                "customfield_10001": "John Doe",
                 "customfield_10002": None,
                 "customfield_10003": None,
                 "customfield_10004": None,
@@ -258,4 +258,20 @@ GET_ISSUE_RESPONSE = {
                     "timeZone": "Asia"
                 }
     }
+}
+
+FIELDS_RESPONSE = [
+    {'id': 'customfield_10001', 'key': 'customfield_10001', 'name': 'Owner', 'untranslatedName': 'Owner',
+     'custom': True, 'orderable': True, 'navigable': True, 'searchable': True,
+     'clauseNames': ['cf[10001]', 'Owner', 'Owner[User Picker (single user)]'],
+     'schema': {'type': 'user', 'custom': 'com.atlassian.jira.plugin.system.customfieldtypes:userpicker',
+                'customId': 10001}},
+    {'id': 'resolution', 'key': 'resolution', 'name': 'Resolution', 'custom': False, 'orderable': True, 'navigable': True, 'searchable': True, 'clauseNames': ['resolution'], 'schema': {'type': 'resolution', 'system': 'resolution'}},
+    {'id': 'resolutiondate', 'key': 'resolutiondate', 'name': 'Resolved', 'custom': False, 'orderable': False, 'navigable': True, 'searchable': True, 'clauseNames': ['resolutiondate', 'resolved'], 'schema': {'type': 'datetime', 'system': 'resolutiondate'}}
+]
+
+EXPECTED_RESP={
+    'customfield_10001': 'Owner',
+    'resolution': 'Resolution',
+    'resolutiondate': 'Resolved'
 }

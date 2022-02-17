@@ -46,8 +46,8 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 | Truncate URL length | If selected, URLs will be truncated to no more than 254 characters. | False |
 | Prepend string to list | String to add to beginning of published list. Supports newline characters (\n). | False |
 | Append string to list | String to add to end of published list. Supports newline characters (\n). | False |
-| IP Collapsing | For use with PAN-OS (Text) format - collapse method for IPs (none, range, CIDR). | False |
-| PAN-OS: drop invalid URL entries | For use with PAN-OS (Text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of being rewritten. | False |
+| IP Collapsing | For use with PAN-OS (text) format - collapse method for IPs (none, range, CIDR). | False |
+| PAN-OS: drop invalid URL entries | For use with PAN-OS (text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of being rewritten. | False |
 | McAfee Gateway: Indicator List Type | For use with McAfee Web Gateway format - set the indicator list type. | False |
 | Symantec ProxySG: Default Category | For use with Symantec ProxySG format - set the default category for the output. | False |
 | Symantec ProxySG: Listed Categories | For use with Symantec ProxySG format - set the categories that should be listed in the output. If not set, will list all existing categories. | False |
@@ -74,17 +74,17 @@ Use the following arguments in the URL to change the request:
 | --- | --- | --- |
 | n | The maximum number of entries in the output. If no value is provided, will use the value specified in the List Size parameter configured in the instance configuration. | `https://{server_host}/instance/execute/{instance_name}?n=50` |
 | s | The starting entry index from which to export the indicators. | `https://{server_host}/instance/execute/{instance_name}?s=10&n=50` |
-| v | The output format. Supports `PAN-OS (Text)`, `csv`, `json`, `mwg`, `panosurl` and `proxysg` (alias: `bluecoat`). | `https://{server_host}/instance/execute/{instance_name}?v=json` |
+| v | The output format. Supports `PAN-OS (text)`, `CSV`, `JSON`, `mwg` and `proxysg` (alias: `bluecoat`). | `https://{server_host}/instance/execute/{instance_name}?v=JSON` |
 | q | The query used to retrieve indicators from the system. | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"` |
 | t | Only with `mwg` format. The type indicated on the top of the exported list. Supports: string, applcontrol, dimension, category, ip, mediatype, number and regex. | `https://{server_host}/instance/execute/{instance_name}?v=mwg&t=ip` |
-| sp | If set will strip ports off URLs. | `https://{server_host}/instance/execute/{instance_name}?v=text&sp` |
+| sp | If set will strip ports off URLs. | `https://{server_host}/instance/execute/{instance_name}?v=PAN-OS (text)&sp` |
 | pr | If set will strip protocol off URLs. | `https://{server_host}/instance/execute/{instance_name}?v=text&pr` |
-| di | Only with `PAN-OS (Text)` format. If set will ignore urls which are not compliant with PAN-OS URL format instead of being re-written. | `https://{server_host}/instance/execute/{instance_name}?v=text&di` |
-| tr | Only with `PAN-OS (Text)`Whether to collapse IPs. 0 - to not collapse, 1 - collapse to ranges or 2 - collapse to CIDRs | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"&tr=1` |
+| di | Only with `PAN-OS (text)` format. If set will ignore urls which are not compliant with PAN-OS URL format instead of being re-written. | `https://{server_host}/instance/execute/{instance_name}?v=PAN-OS (text)&di` |
+| tr | Only with `PAN-OS (text)`Whether to collapse IPs. 0 - to not collapse, 1 - collapse to ranges or 2 - collapse to CIDRs | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"&tr=1` |
 | cd | Only with `proxysg` format. The default category for the exported indicators. | `https://{server_host}/instance/execute/{instance_name}?v=proxysg&cd=default_category` |
 | ca | Only with `proxysg` format. The categories which will be exported. Indicators not falling to these categories will be classified as the default category. | `https://{server_host}/instance/execute/{instance_name}?v=proxysg&ca=category1,category2` |
-| tx | Whether to output `CSV` format as textual web pages. | `https://{server_host}/instance/execute/{instance_name}?v=xsoar-csv&tx` |
-| fi | Only with `CSV` or `JSON` format - Select fields to export .. | `https://{server_host}/instance/execute/{instance_name}?v=xsoar-csv&tx` |
+| tx | Whether to output `CSV` format as textual web pages. | `https://{server_host}/instance/execute/{instance_name}?v=CSV&tx` |
+| fi | Only with `CSV` or `JSON` format - Select fields to export. | `https://{server_host}/instance/execute/{instance_name}?v=CSV&tx` |
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI as part of an automation, or in a playbook.
@@ -109,10 +109,10 @@ Updates values stored in the List (only available On-Demand).
 | mwg_type | For use with McAfee Web Gateway format to indicate the list type. | Optional |
 | url_port_stripping | if True will strip the port off urls. | Optional |
 | url_protocol_stripping | if True will strip the port off urls. | Optional |
-| drop_invalids | For use with PAN-OS (Text) format - if checked any URL entry which is not compliant with PAN-OS EDL URL format the entry is dropped instead of being rewritten. | Optional |
+| drop_invalids | For use with PAN-OS (text) format - if checked any URL entry which is not compliant with PAN-OS EDL URL format the entry is dropped instead of being rewritten. | Optional |
 | category_attribute | For use with Symantec ProxySG format - set the categories that should be listed in the output. If not set will list all existing categories. | Optional |
 | category_default | For use with Symantec ProxySG format - set the default category for the output. | Optional |
-| collapse_ips | For use with PAN-OS (Text) format - Whether to collapse IPs, and if so - to ranges or CIDRs | Optional |
+| collapse_ips | For use with PAN-OS (text) format - Whether to collapse IPs, and if so - to ranges or CIDRs | Optional |
 | csv_text | If True, will output csv format as textual web pages | Optional |
 | add_comment_if_empty | If selected, add to an empty List the comment "# Empty List". | Optional |
 
@@ -126,7 +126,7 @@ There is no context output for this command.
 'EDL will be updated the next time you access it'
 
 ### Troubleshooting
-Memory issue can happen in CSV / JSON format over 150,000 if all fields are selectedץ
+Memory issue can happen in CSV / JSON format over 150,000 if all fields are selected.
 
 #### In terms of times
 10,000 indicators can take 10 - 20 seconds

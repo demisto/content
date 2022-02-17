@@ -1,5 +1,6 @@
 {
     "id": "incident_saassecuritycategory",
+    "description": "Reason the incident is Closed on SaaS Security, including **No Reason**, **Business Justified**, **Misidentified**, and **In The Cloud**. Open incidents indicate **New**.",
     "version": -1,
     "modified": "2021-10-13T10:31:27.153032+03:00",
     "name": "Saas Security Category",

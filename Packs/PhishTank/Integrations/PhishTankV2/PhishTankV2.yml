@@ -89,7 +89,7 @@ script:
       was loaded.
     execution: false
     name: phishtank-status
-  dockerimage: demisto/python3:3.9.9.25564
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
   longRunning: false

@@ -829,7 +829,7 @@ def get_offense_types(client: Client, offenses: List[Dict]) -> Dict:
                                              fields='id,name')
         return {offense_type.get('id'): offense_type.get('name') for offense_type in offense_types}
     except Exception as e:
-        demisto.info(f"Encountered an issue while getting offense type: {e}")
+        demisto.error(f"Encountered an issue while getting offense type: {e}")
         return {}
 
 
@@ -853,7 +853,7 @@ def get_offense_closing_reasons(client: Client, offenses: List[Dict]) -> Dict:
                                                       fields='id,text')
         return {closing_reason.get('id'): closing_reason.get('text') for closing_reason in closing_reasons}
     except Exception as e:
-        demisto.info(f"Encountered an issue while getting offense closing reasons: {e}")
+        demisto.error(f"Encountered an issue while getting offense closing reasons: {e}")
         return {}
 
 
@@ -875,7 +875,7 @@ def get_domain_names(client: Client, outputs: List[Dict]) -> Dict:
         domains_info = client.domains_list(filter_=f'''id in ({','.join(map(str, domain_ids))})''', fields='id,name')
         return {domain_info.get('id'): domain_info.get('name') for domain_info in domains_info}
     except Exception as e:
-        demisto.info(f"Encountered an issue while getting offense domain names: {e}")
+        demisto.error(f"Encountered an issue while getting offense domain names: {e}")
         return {}
 
 
@@ -897,7 +897,7 @@ def get_rules_names(client: Client, offenses: List[Dict]) -> Dict:
         rules = client.rules_list(None, None, f'''id in ({','.join(map(str, rules_ids))})''', 'id,name')
         return {rule.get('id'): rule.get('name') for rule in rules}
     except Exception as e:
-        demisto.info(f"Encountered an issue while getting offenses rules: {e}")
+        demisto.error(f"Encountered an issue while getting offenses rules: {e}")
         return {}
 
 
@@ -922,7 +922,7 @@ def get_offense_addresses(client: Client, offenses: List[Dict], is_destination_a
         try:
             return client.get_addresses(url_suffix, f'''id in ({','.join(map(str, b))})''', f'id,{address_field}')
         except Exception as e:
-            demisto.info(f'Failed getting address barch with error: {e}')
+            demisto.error(f'Failed getting address barch with error: {e}')
             return []
 
     addresses_ids = [address_id for offense in offenses
@@ -976,7 +976,8 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[D
         try:
             return client.assets_list(filter_=filter_query)
         except Exception as e:
-            demisto.info(f'Failed getting assets for filter_query: {filter_query}. {e}')
+            demisto.error(f'Failed getting assets for filter_query: {filter_query}. {e}')
+            return []
 
     offense_ips = [offense_ip for offense_ip in offense_ips if is_valid_ip(offense_ip)]
     # Submit addresses in batches to avoid overloading QRadar service
@@ -1585,7 +1586,7 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
                 ))
             offenses = [future.result(timeout=DEFAULT_EVENTS_TIMEOUT * 60) for future in futures]
         except concurrent.futures.TimeoutError as e:
-            demisto.info(
+            demisto.error(
                 f"Error while enriching mirrored offenses with events: {str(e)} \n {traceback.format_exc()}")
             update_missing_offenses_from_raw_offenses(raw_offenses, offenses)
     else:
@@ -1847,7 +1848,7 @@ def long_running_execution_command(client: Client, params: Dict):
             print_debug_msg(
                 f'Error while reseting mirroring variables, retring. Error details: {str(e)} \n'
                 f'{traceback.format_exc()}')
-            demisto.info('Exception when calling reset_mirroring_events_variables')
+            demisto.error('Exception when calling reset_mirroring_events_variables')
             raise e
 
     while True:
@@ -3148,7 +3149,7 @@ def json_loads_inner(json_dumps_list: List[str]) -> list:
         try:
             python_object_list.append(json.loads(json_dump))
         except Exception as e:
-            demisto.info(f'Exception {e} when trying to json parse {json_dump}, as part of {json_dumps_list}')
+            demisto.error(f'Exception {e} when trying to json parse {json_dump}, as part of {json_dumps_list}')
             raise e
 
     return python_object_list
@@ -3308,7 +3309,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
             else:
                 close_reason_with_note = f'From QRadar: {close_reason_with_note}'
         except Exception as e:
-            demisto.info(f'Failed to get closing reason with error: {e}')
+            demisto.error(f'Failed to get closing reason with error: {e}')
             close_reason_with_note = 'Unknown closing reason from QRadar'
 
         entries.append({

@@ -3,10 +3,8 @@ This section explains how to fully configure the instance of Wiz Inc. Integratio
 ### Integration flow
 - If "Fetch incidents" is checked, on initialization, XSOAR pulls all Wiz Issues as XSOAR incidents (this may take time, depending on the number of Issues to pull). By default, only 7 days back will be fetched. This can be increased upon Integration creation.
 There Are 2 integration flows:
-- Wiz-Push (realtime)
-    - After Connecting XSOAR integration on Wiz platform, Wiz will stream in realtime Issues to XSOAR (including Issue state changes), via Wiz Automation Actions.
-- XSOAR-Pull (periodical, 1 minute interval)
-    - XSOAR will query for Wiz Issues/Issue updates every 1 minute 
+- If "Do not fetch" is checked, no fetching of Wiz Issues by XSOAR will be made.
+- You can always choose to push Wiz Issues as they happen, by configuring the Wiz Automation Rule to send new Issues to XSOAR as they happen. For more info visit the [Cortex XSOAR Integration doc](https://docs.wiz.io/wiz-docs/docs/cortex-xsoar-integration).
 
 
 ## Steps to follow
@@ -17,11 +15,9 @@ There Are 2 integration flows:
     - Check **Fetches incidents** radio button
     - Choose **Wiz Classifier** as your classifier
     - Choose Wiz **Mapper Webhook** as your mapper
-    - Paste the Service Account ID and Secret from Wiz
+    - Paste the Service Account ID and Secret from Wiz, or create a set of credentials beforehand.
     - Choose max Issues to fetch (up to 200)
-    - Check Trust any certificate (not secure) checkbox if necessary
     - Use system proxy settings checkbox 
-    - Select Issue Streaming Type as described above (Wiz-Push vs XSOAR-Pull)
     - Click "Test" button to make sure the Service Account ID/Secret is valid and then click the "Done" button
     
 - If Issue Streaming Type is "Wiz", return back to Wiz Portal and:
