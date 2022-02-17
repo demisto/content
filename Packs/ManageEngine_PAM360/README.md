@@ -6,7 +6,7 @@ PAM360 is a comprehensive solution for businesses looking to incorporate PAM int
 
 ## What does this pack do?
 
-This pack help you to build a secure way to transact and use credentials stored in ManageEngine PAM360. They also help automate repetitive tasks associated with credential management and password reset:
+This pack helps you to build a secure way to transact and use credentials stored in ManageEngine PAM360. It also helps automate repetitive tasks associated with credential management and password reset:
 
 1. PAM360 provides a secure safe to store your account credentials.
 2. Securely use the latest credentials from the PAM360 in order to configure instances in Cortex XSOAR.
