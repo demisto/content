@@ -3327,7 +3327,7 @@
             "integrations": "RSA Archer v2",
             "playbookID": "Archer v2 - Test",
             "fromversion": "5.0.0",
-            "timeout": 600
+            "timeout": 1000
         },
         {
             "integrations": "WootCloud",
@@ -4988,6 +4988,13 @@
             "integrations": "FortiSIEMV2",
             "playbookID": "playbook-FortiSIEMV2_Test",
             "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "HttpV2-test",
+            "fromversion": "6.5.0",
+            "scripts": [
+                "HttpV2"
+            ]
         }
     ],
     "skipped_tests": {
@@ -5113,7 +5120,6 @@
         "EWS_O365_send_mail_test": "Issue 44200",
         "Phishing Investigation - Generic v2 - Campaign Test": "Issue 44740",
         "Cisco Umbrella Test": "Issue 24338",
-        "Archer v2 - Test": "Issue 31653",
         "Azure NSG - Test": "Issue 33217",
         "Unit42 Intel Objects Feed - Test": "Issue 44100"
     },
