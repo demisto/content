@@ -2,8 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 def main():
     args = demisto.args()
-    values = args.get('value')
-    keys = args.get('key')
+    values = argToList(args.get('value'))
+    keys = argToList(args.get('key'))
 
     if not isinstance(values, list):
         try:
@@ -29,9 +29,6 @@ def main():
                 keys = keys.split(",")
             except AttributeError:
                 pass
-
-    if not isinstance(keys, list):
-        return_error("Canoot convert the input key into a list")
 
     if len(values) != len(keys):
         return_error("The length of the value and key are not the same")
