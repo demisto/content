@@ -1509,7 +1509,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to add the tag as local.
+      description: Whether to add the tag as a local tag.
       isArray: false
       name: is_local
       predefined:
@@ -1639,7 +1639,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to add the tag as local.
+      description: Whether to add the tag as a local tag.
       isArray: false
       name: is_local
       predefined:
@@ -2816,7 +2816,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes an attribute according to the given attribute ID.
+    description: Delete an attribute according to the given attribute ID.
     execution: false
     name: misp-delete-attribute
   dockerimage: demisto/pymisp2:1.0.0.25484

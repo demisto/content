@@ -2515,9 +2515,10 @@ Adds a tag to the given UUID event .
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| uuid | UUID of the event. For example, 59575300-4be8-4ff6-8767-0037ac110032. | Required | 
-| tag | Tag to add to the event. | Required | 
+| --- | --- |--------------|
+| uuid | UUID of the event. For example, 59575300-4be8-4ff6-8767-0037ac110032. | Required     | 
+| tag | Tag to add to the event. | Required     | 
+| is_local | Whether to add the tag as a local tag. | Optional     | 
 
 
 #### Context Output
@@ -2630,6 +2631,7 @@ Adds a tag to the given UUID attribute.
 | --- | --- | --- |
 | uuid | UUID of the attribute. For example, 59575300-4be8-4ff6-8767-0037ac110032. | Required | 
 | tag | Tag to add to the attribute. | Required | 
+| is_local | Whether to add the tag as a local tag. | Optional     | 
 
 
 #### Context Output
@@ -3802,6 +3804,10 @@ Update an attribute of an existing MISP event.
 
 >## MISP update attribute
 >Attribute: c0ba7147-d99a-418a-a23a-d9be62590c33 was updated.
+
+### misp-delete-attribute
+***
+Delete an attribute according to the given attribute ID.
 
 #### Base Command
 
