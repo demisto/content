@@ -446,10 +446,14 @@ class OAuth2DeviceCodeClient {
         if (!$this.refresh_token) {
             return $true
         }
-        $current_time = [int][double]::Parse((Get-Date -UFormat %s)) - 30
+        $current_time = [int][double]::Parse((Get-Date -UFormat %s)) + 30
+        $Demisto.Debug("Current time")
+        $Demisto.Debug($current_time)
         $valid_until = $this.refresh_token_creation_time + 7776000
+        $Demisto.Debug("valid until")
+        $Demisto.Debug($valid_until)
 
-        return $current_time -gt $valid_until
+        return $valid_until -gt $current_time
         <#
             .DESCRIPTION
             Check if refresh-token expired by adding 90 days from the creation date.
