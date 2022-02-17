@@ -11,6 +11,19 @@ requests.packages.urllib3.disable_warnings()
 PARAMS = demisto.params()
 URL = PARAMS.get('server')
 TOKEN = PARAMS.get('token') or (PARAMS.get('credentials') or {}).get('password')
+current_platform = demisto.demistoVersion().get('platform')
+if not TOKEN and current_platform == 'x2':
+    """
+    Note: We don't want to get the token from the license if we're on the standard XSOAR platform.
+    The main reason is it has a strict API limit.
+    Therefore, we only get the token from in X2 (from the config), even though it is
+    available in the license from version 6.5 of XSOAR
+    """
+    try:
+        TOKEN = demisto.getLicenseCustomField('WildFire-Reports.token')
+    except Exception:
+        TOKEN = None
+
 USE_SSL = not PARAMS.get('insecure', False)
 FILE_TYPE_SUPPRESS_ERROR = PARAMS.get('suppress_file_type_error')
 RELIABILITY = PARAMS.get('integrationReliability', DBotScoreReliability.B) or DBotScoreReliability.B
