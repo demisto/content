@@ -1571,6 +1571,7 @@ def get_remote_data_command(args: Dict[str, Any]):
     """
     remote_args = GetRemoteDataArgs(args)
 
+    mirrored_data = {}
     try:
         demisto.debug(f'Performing get-remote-data command with incident or detection id: {remote_args.remote_incident_id} '
                       f'and last_update: {remote_args.last_update}')
