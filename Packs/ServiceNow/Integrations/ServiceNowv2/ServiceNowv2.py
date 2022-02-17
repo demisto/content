@@ -1978,7 +1978,7 @@ def fetch_incidents(client: Client) -> list:
 
     last_run = demisto.getLastRun()
     if 'time' not in last_run:
-        snow_time = dateparser.parse(client.fetch_time)
+        snow_time, _ = dateparser.parse(client.fetch_time)
     else:
         snow_time = last_run['time']
 
