@@ -1216,7 +1216,8 @@ async def get_user_details(user_id: str) -> AsyncSlackResponse:
     :param user_id: str: The ID of the user to perform the lookup on.
     :return: AsyncSlackResponse: An AsyncSlackResponse object which is a dictionary of the user object.
     """
-    return await ASYNC_CLIENT.users_info(user=user_id)
+    user = await ASYNC_CLIENT.users_info(user=user_id)
+    return user.get('user', {})
 
 
 def search_text_for_entitlement(text: str, user: AsyncSlackResponse) -> str:
@@ -1391,6 +1392,9 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
     if req.envelope_id:
         response = SocketModeResponse(envelope_id=req.envelope_id)
         await client.send_socket_mode_response(response)
+    if req.retry_attempt > 0:
+        demisto.debug("Slack is resending the message. To prevent double posts, the retry is ignored.")
+        return
     data_type: str = req.type
     payload: dict = req.payload
     if data_type == 'error':
@@ -1452,7 +1456,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             entitlement_string = json.loads(entitlement_json)
             entitlement_reply = json.loads(entitlement_json).get("reply", "Thank you for your reply.")
             action_text = actions[0].get('text').get('text')
-            answer_question(action_text, entitlement_string, user.get('user', {}).get('profile', {}).get('email'))
+            answer_question(action_text, entitlement_string, user.get('profile', {}).get('email'))
 
         # If a thread_id is found in the payload, we will check if it is a reply to a SlackAsk task. Currently threads
         # are not mirrored
