@@ -4890,3 +4890,4 @@ script:
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
+fromversion: 5.0.0
