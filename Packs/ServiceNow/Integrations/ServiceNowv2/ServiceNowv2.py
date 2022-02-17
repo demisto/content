@@ -1,17 +1,18 @@
+import os
+import shutil
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from urllib import parse
 
-import shutil
-from typing import List, Tuple, Dict, Callable, Iterable
+import dateparser
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-from CommonServerPython import *
+register_module_line('ServiceNow v2', 'start', __line__())
+
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-INCIDENT = 'incident'
-SIR_INCIDENT = 'sn_si_incident'
-
-SIR_INCIDENT_UNIQUE_FIELDS = ('risk_score', 'attack_vector')
 
 COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
@@ -55,14 +56,6 @@ TICKET_STATES = {
         '3': '3 - Closed',
         '4': '4 - Rejected'
     },
-    SIR_INCIDENT: {
-        '3': 'Closed',
-        '7': 'Cancelled',
-        '10': 'Draft',
-        '16': 'Analysis',
-        '18': 'Contain',
-        '19': 'Eradicate'
-    }
 }
 
 TICKET_APPROVAL = {
@@ -91,12 +84,6 @@ TICKET_IMPACT = {
     '5': '5 - Caregiver'
 }
 
-BUSINESS_IMPACT = {
-    '1': '1 - Critical',
-    '2': '2 - High',
-    '3': '3 - Non-Critical'
-}
-
 SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additional_assignee_list', 'approval_history',
              'approval', 'approval_set', 'assigned_to', 'assignment_group',
              'business_duration', 'business_service', 'business_stc', 'change_type', 'category', 'caller',
@@ -108,11 +95,7 @@ SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additi
              'problem_id', 'reassignment_count', 'reopen_count', 'resolved_at', 'resolved_by', 'rfc',
              'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'sys_updated_by', 'sys_updated_on',
              'time_worked', 'title', 'type', 'urgency', 'user_input', 'watch_list', 'work_end', 'work_notes',
-             'work_notes_list', 'work_start', 'business_criticality', 'risk_score']
-
-SIR_OUT_FIELDS = ('description', 'short_description', 'sla_due', 'business_criticality',
-                  'priority', 'state', 'urgency', 'severity', 'closed_at',
-                  'risk_score', 'close_notes', 'attack_vector', 'work_notes')
+             'work_notes_list', 'work_start']
 
 # Every table in ServiceNow should have those fields
 DEFAULT_RECORD_FIELDS = {
@@ -122,6 +105,7 @@ DEFAULT_RECORD_FIELDS = {
     'sys_created_by': 'CreatedBy',
     'sys_created_on': 'CreatedAt'
 }
+
 
 MIRROR_DIRECTION = {
     'None': None,
@@ -264,8 +248,7 @@ def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
     priority = data.get('priority')
     if priority:
         if isinstance(priority, dict):
-            context['Priority'] = TICKET_PRIORITY.get(str(int(priority.get('value', ''))),
-                                                      str(int(priority.get('value', '')))),
+            context['Priority'] = TICKET_PRIORITY.get(str(int(priority.get('value', ''))), str(int(priority.get('value', '')))),
         else:
             context['Priority'] = TICKET_PRIORITY.get(priority, priority)
     state = data.get('state')
@@ -394,13 +377,11 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
 
     inv_severity = {v: k for k, v in ticket_severity.items()}
     inv_priority = {v: k for k, v in TICKET_PRIORITY.items()}
-    inv_business_impact = {v: k for k, v in BUSINESS_IMPACT.items()}
     states = TICKET_STATES.get(ticket_type)
     inv_states = {v: k for k, v in states.items()} if states else {}
     approval = TICKET_APPROVAL.get(ticket_type)
     inv_approval = {v: k for k, v in approval.items()} if approval else {}
-    fields_to_clear = argToList(
-        args.get('clear_fields', []))  # This argument will contain fields to allow their value empty
+    fields_to_clear = argToList(args.get('clear_fields', []))  # This argument will contain fields to allow their value empty
 
     ticket_fields = {}
     for arg in SNOW_ARGS:
@@ -423,8 +404,6 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
             elif arg == 'change_type':
                 # this change is required in order to use type 'Standard' as well.
                 ticket_fields['type'] = input_arg
-            elif arg == 'business_criticality':
-                ticket_fields[arg] = inv_business_impact.get(input_arg, input_arg)
             else:
                 ticket_fields[arg] = input_arg
         elif template_name and arg in template_name:
@@ -574,6 +553,24 @@ class Client(BaseClient):
         else:
             self._auth = (self._username, self._password)
 
+    def generic_request(self, method: str, path: str, body: Optional[Dict] = None, headers: Optional[Dict] = None, sc_api: bool = False, cr_api: bool = False):
+        """Generic request to ServiceNow api.
+
+        Args:
+            (Required Arguments)
+            method (str) required: The HTTP method, for example, GET, POST, and so on.
+            path (str) required: The API endpoint.
+            (Optional Arguments)
+            body (dict): The body to send in a 'POST' request. Default is None.
+            header (dict): requests headers. Default is None.
+            sc_api: Whether to send the request to the Service Catalog API
+            cr_api: Whether to send the request to the Change Request REST API
+
+        Returns:
+            Resposne object or Exception
+        """
+        return self.send_request(path, method, body, headers=headers, sc_api=sc_api, cr_api=cr_api)
+
     def send_request(self, path: str, method: str = 'GET', body: dict = None, params: dict = None,
                      headers: dict = None, file=None, sc_api: bool = False, cr_api: bool = False):
         """Generic request to ServiceNow.
@@ -611,7 +608,7 @@ class Client(BaseClient):
         while num_of_tries < max_retries:
             if file:
                 # Not supported in v2
-                url = url.replace('/v2', '/v1')
+                url = url.replace('v2', 'v1')
                 try:
                     file_entry = file['id']
                     file_name = file['name']
@@ -743,10 +740,6 @@ class Client(BaseClient):
         """
         entries = []
         links = []  # type: List[Tuple[str, str]]
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
         attachments_res = self.get_ticket_attachments(ticket_id, sys_created_on)
         if 'result' in attachments_res and len(attachments_res['result']) > 0:
             attachments = attachments_res['result']
@@ -754,14 +747,8 @@ class Client(BaseClient):
                      for attachment in attachments]
 
         for link in links:
-            if self.use_oauth:
-                access_token = self.snow_client.get_access_token()
-                headers.update({'Authorization': f'Bearer {access_token}'})
-                file_res = requests.get(link[0], headers=headers, verify=self._verify, proxies=self._proxies)
-            else:
-                file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
-                                        proxies=self._proxies)
-
+            file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
+                                    proxies=self._proxies)
             if file_res is not None:
                 entries.append(fileResult(link[1], file_res.content))
 
@@ -2022,10 +2009,17 @@ def fetch_incidents(client: Client) -> list:
         except Exception:
             pass
 
-        labels = [
-            {'type': k, 'value': v if isinstance(v, str) else json.dumps(v)}
-            for k, v in result.items()
-        ]
+        for k, v in result.items():
+            if isinstance(v, str):
+                labels.append({
+                    'type': k,
+                    'value': v
+                })
+            else:
+                labels.append({
+                    'type': k,
+                    'value': json.dumps(v)
+                })
 
         severity = severity_map.get(result.get('severity', ''), 0)
 
@@ -2131,23 +2125,10 @@ def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, 
         hr = '### Logged in successfully.\n A refresh token was saved to the integration context. This token will be ' \
              'used to generate a new access token once the current one expires.'
     except Exception as e:
-        return_error(
-            f'Failed to login. Please verify that the provided username and password are correct, and that you '
-            f'entered the correct client id and client secret in the instance configuration (see ? for'
-            f'correct usage when using OAuth).\n\n{e}')
+        return_error(f'Failed to login. Please verify that the provided username and password are correct, and that you '
+                     f'entered the correct client id and client secret in the instance configuration (see ? for'
+                     f'correct usage when using OAuth).\n\n{e}')
     return hr, {}, {}, True
-
-
-def check_assigned_to_field(client: Client, assigned_to: dict) -> Optional[str]:
-    if assigned_to:
-        user_result = client.get('sys_user', assigned_to.get('value'))  # type: ignore[arg-type]
-        user = user_result.get('result', {})
-        if user:
-            user_email = user.get('email')
-            return user_email
-        else:
-            demisto.debug(f'Could not assign user {assigned_to.get("value")} since it does not exist in ServiceNow')
-    return ''
 
 
 def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> Union[List[Dict[str, Any]], str]:
@@ -2214,7 +2195,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     sys_param_offset = args.get('offset', client.sys_param_offset)
 
     sys_param_query = f'element_id={ticket_id}^sys_created_on>' \
-                      f'{datetime.fromtimestamp(last_update)}^element=comments^ORelement=work_notes'
+        f'{datetime.fromtimestamp(last_update)}^element=comments^ORelement=work_notes'
 
     comments_result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
     demisto.debug(f'Comments result is {comments_result}')
@@ -2246,8 +2227,11 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         group_name = group.get('name')
         ticket['assignment_group'] = group_name
 
-    user_assigned = check_assigned_to_field(client, assigned_to)
-    ticket['assigned_to'] = user_assigned
+    if assigned_to:
+        user_result = client.get('sys_user', assigned_to.get('value'))
+        user = user_result.get('result', {})
+        user_email = user.get('email')
+        ticket['assigned_to'] = user_email
 
     if caller:
         user_result = client.get('sys_user', caller.get('value'))
@@ -2295,12 +2279,13 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     ticket_id = parsed_args.remote_incident_id
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
-        if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
-            # These ticket types are closed by changing their state.
-            if ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}:
-                parsed_args.data['state'] = '3'
-            elif ticket_type == INCIDENT:  # Closing incident ticket.
-                parsed_args.data['state'] = '7'
+        # Closing sc_type ticket. This ticket type can be closed only when changing the ticket state.
+        if (ticket_type == 'sc_task' or ticket_type == 'sc_req_item')\
+                and parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
+            parsed_args.data['state'] = '3'
+        # Closing incident ticket.
+        if ticket_type == 'incident' and parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
+            parsed_args.data['state'] = '7'
 
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
         if not params.get('close_ticket'):
@@ -2355,8 +2340,7 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     incident_type_scheme = SchemeTypeMapping(type_name=client.ticket_type)
     demisto.debug(f'Collecting incident mapping for incident type - "{client.ticket_type}"')
 
-    out_fields = SIR_OUT_FIELDS if client.ticket_type == SIR_INCIDENT else SNOW_ARGS
-    for field in out_fields:
+    for field in SNOW_ARGS:
         incident_type_scheme.add_field(field)
 
     mapping_response = GetMappingFieldsResponse()
@@ -2398,7 +2382,7 @@ def add_custom_fields(params):
     SNOW_ARGS += custom_fields
 
 
-def get_tasks_from_co_human_readable(data: dict, ticket_type: str) -> dict:
+def get_tasks_from_co_human_readable(data: dict) -> dict:
     """Get item human readable.
 
     Args:
@@ -2406,10 +2390,8 @@ def get_tasks_from_co_human_readable(data: dict, ticket_type: str) -> dict:
 
     Returns:
         item human readable.
-        :param data: the task data
-        :param ticket_type: ticket type
     """
-    states = TICKET_STATES.get(ticket_type, {})
+    states = TICKET_STATES.get("sc_task", {})
     state = data.get('state', {}).get('value')
     item = {
         'ID': data.get('sys_id', {}).get('value', ''),
@@ -2464,7 +2446,7 @@ def get_tasks_for_co_command(client: Client, args: dict) -> CommandResults:
 
     mapped_items = []
     for item in items_list:
-        mapped_items.append(get_tasks_from_co_human_readable(item, client.ticket_type))
+        mapped_items.append(get_tasks_from_co_human_readable(item))
 
     headers = ['ID', 'Name', 'State', 'Description']
     human_readable = tableToMarkdown('ServiceNow Catalog Items', mapped_items, headers=headers,
@@ -2514,7 +2496,7 @@ def create_co_from_template_command(client: Client, args: dict) -> CommandResult
     )
 
 
-def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Iterable = tuple()) -> dict:
+def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: list = None) -> dict:
     """Get co human readable.
 
     Args:
@@ -2534,7 +2516,6 @@ def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Ite
         'System ID': ticket.get('sys_id', {}).get('value', ''),
         'Number': ticket.get('number', {}).get('value', ''),
         'Impact': TICKET_IMPACT.get(str(int(ticket.get('impact', {}).get('value', ''))), ''),
-        'Business Impact': BUSINESS_IMPACT.get(str(ticket.get('business_criticality', {}).get('value', '')), ''),
         'Urgency': ticket.get('urgency', {}).get('display_value', ''),
         'Severity': ticket.get('severity', {}).get('value', ''),
         'Priority': TICKET_PRIORITY.get(str(int(priority)), str(int(priority))),
@@ -2554,10 +2535,47 @@ def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Ite
         'Short Description': ticket.get('short_description', {}).get('value', ''),
         'Additional Comments': ticket.get('comments', {}).get('value', '')
     }
-    for field in additional_fields:
-        item.update({field: ticket.get(field, {}).get('value', '')})
 
     return item
+
+
+def generic_api_call_command(client: Client, args: Dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
+    """make a call to ServiceNow api
+    Args:
+        (Required Arguments)
+        method (str) required: The HTTP method, for example, GET, POST, and so on.
+        url_suffix (str) required: The API endpoint.
+        (Optional Arguments)
+        body (dict): The body to send in a 'POST' request. Default is None.
+        header (dict): requests headers. Default is None.
+
+    Return:
+        Generic Api Response.
+    """
+    methods = ("GET", "POST", "PATCH", "DELETE")
+    method = str(args.get("method"))
+    path = str(args.get("path"))
+    headers = json.loads(str(args.get("headers", {})))
+    body: Dict = json.loads(str(args.get("body", {})))
+    sc_api: bool = argToBoolean(args.get("sc_api", False))
+    cr_api: bool = argToBoolean(args.get("cr_api", False))
+
+    if method.upper() not in methods:
+        return f"{method} method not supported.\nTry something from {', '.join(methods)}"
+
+    response = None
+    response = client.generic_request(method=method, path=path, body=body, headers=headers, sc_api=sc_api, cr_api=cr_api)
+
+    if response is not None:
+        resp = response
+        human_readable: str = f"Request for {method} method is successful"
+        return CommandResults(
+            outputs_prefix="ServiceNow.Generic.Response",
+            outputs=resp,
+            readable_output=human_readable,
+        )
+    demisto.error(f"{err}")
+    return f"Request for {method} method is not successful"
 
 
 def main():
@@ -2615,7 +2633,7 @@ def main():
     sysparm_query = params.get('sysparm_query')
     sysparm_limit = int(params.get('fetch_limit', 10))
     timestamp_field = params.get('timestamp_field', 'opened_at')
-    ticket_type = params.get('ticket_type', INCIDENT)
+    ticket_type = params.get('ticket_type', 'incident')
     incident_name = params.get('incident_name', 'number') or 'number'
     get_attachments = params.get('get_attachments', False)
     update_timestamp_field = params.get('update_timestamp_field', 'sys_updated_on') or 'sys_updated_on'
@@ -2664,6 +2682,8 @@ def main():
             demisto.incidents(incidents)
         elif command == 'servicenow-get-ticket':
             demisto.results(get_ticket_command(client, args))
+        elif command == "servicenow-generic-api-call":
+            return_results(generic_api_call_command(client, args))
         elif command == 'get-remote-data':
             return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
         elif command == 'update-remote-system':
@@ -2692,7 +2712,180 @@ def main():
             raise
 
 
-from ServiceNowApiModule import *  # noqa: E402
+### GENERATED CODE ###: from ServiceNowApiModule import *  # noqa: E402
+# This code was inserted in place of an API module.
+register_module_line('ServiceNowApiModule', 'start', __line__(), wrapper=-3)
+
+
+OAUTH_URL = '/oauth_token.do'
+
+
+class ServiceNowClient(BaseClient):
+
+    def __init__(self, credentials: dict, use_oauth: bool = False, client_id: str = '', client_secret: str = '',
+                 url: str = '', verify: bool = False, proxy: bool = False, headers: dict = None):
+        """
+        ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
+        Args:
+            - credentials: the username and password given by the user.
+            - client_id: the client id of the application of the user.
+            - client_secret - the client secret of the application of the user.
+            - url: the instance url of the user, i.e: https://<instance>.service-now.com.
+                   NOTE - url should be given without an API specific suffix as it is also used for the OAuth process.
+            - verify: Whether the request should verify the SSL certificate.
+            - proxy: Whether to run the integration using the system proxy.
+            - headers: The request headers, for example: {'Accept`: `application/json`}. Can be None.
+            - use_oauth: a flag indicating whether the user wants to use OAuth 2.0 or basic authorization.
+        """
+        self.auth = None
+        self.use_oauth = use_oauth
+        if self.use_oauth:  # if user selected the `Use OAuth` box use OAuth authorization, else use basic authorization
+            self.client_id = client_id
+            self.client_secret = client_secret
+        else:
+            self.username = credentials.get('identifier')
+            self.password = credentials.get('password')
+            self.auth = (self.username, self.password)
+
+        self.base_url = url
+        super().__init__(base_url=self.base_url, verify=verify, proxy=proxy, headers=headers, auth=self.auth)  # type
+        # : ignore[misc]
+
+    def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
+                     files=None, return_empty_response=False, auth=None):
+        ok_codes = (200, 201, 401)  # includes responses that are ok (200) and error responses that should be
+        # handled by the client and not in the BaseClient
+        try:
+            if self.use_oauth:  # add a valid access token to the headers when using OAuth
+                access_token = self.get_access_token()
+                self._headers.update({
+                    'Authorization': 'Bearer ' + access_token
+                })
+            res = super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, resp_type='response',
+                                        headers=headers, json_data=json_data, params=params, data=data, files=files,
+                                        ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth)
+            if res.status_code in [200, 201]:
+                try:
+                    return res.json()
+                except ValueError as exception:
+                    raise DemistoException('Failed to parse json object from response: {}'
+                                           .format(res.content), exception)
+
+            if res.status_code in [401]:
+                if self.use_oauth:
+                    if demisto.getIntegrationContext().get('expiry_time', 0) <= date_to_timestamp(datetime.now()):
+                        access_token = self.get_access_token()
+                        self._headers.update({
+                            'Authorization': 'Bearer ' + access_token
+                        })
+                        return self.http_request(method, url_suffix, full_url=full_url, params=params)
+                    try:
+                        err_msg = f'Unauthorized request: \n{str(res.json())}'
+                    except ValueError:
+                        err_msg = f'Unauthorized request: \n{str(res)}'
+                    raise DemistoException(err_msg)
+                else:
+                    raise Exception(f'Authorization failed. Please verify that the username and password are correct.'
+                                    f'\n{res}')
+
+        except Exception as e:
+            if self._verify and 'SSL Certificate Verification Failed' in e.args[0]:
+                return_error('SSL Certificate Verification Failed - try selecting \'Trust any certificate\' '
+                             'checkbox in the integration configuration.')
+            raise DemistoException(e.args[0])
+
+    def login(self, username: str, password: str):
+        """
+        Generate a refresh token using the given client credentials and save it in the integration context.
+        """
+        data = {
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'username': username,
+            'password': password,
+            'grant_type': 'password'
+        }
+        try:
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+            res = super()._http_request(method='POST', url_suffix=OAUTH_URL, resp_type='response', headers=headers,
+                                        data=data)
+            try:
+                res = res.json()
+            except ValueError as exception:
+                raise DemistoException('Failed to parse json object from response: {}'.format(res.content), exception)
+            if 'error' in res:
+                return_error(
+                    f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
+                    f'and that the given username and password are correct.\n{res}')
+            if res.get('refresh_token'):
+                refresh_token = {
+                    'refresh_token': res.get('refresh_token')
+                }
+                set_integration_context(refresh_token)
+        except Exception as e:
+            return_error(f'Login failed. Please check the instance configuration and the given username and password.\n'
+                         f'{e.args[0]}')
+
+    def get_access_token(self):
+        """
+        Get an access token that was previously created if it is still valid, else, generate a new access token from
+        the client id, client secret and refresh token.
+        """
+        ok_codes = (200, 201, 401)
+        previous_token = get_integration_context()
+
+        # Check if there is an existing valid access token
+        if previous_token.get('access_token') and previous_token.get('expiry_time') > date_to_timestamp(datetime.now()):
+            return previous_token.get('access_token')
+        else:
+            data = {'client_id': self.client_id,
+                    'client_secret': self.client_secret}
+
+            # Check if a refresh token exists. If not, raise an exception indicating to call the login function first.
+            if previous_token.get('refresh_token'):
+                data['refresh_token'] = previous_token.get('refresh_token')
+                data['grant_type'] = 'refresh_token'
+            else:
+                raise Exception('Could not create an access token. User might be not logged in. Try running the'
+                                ' oauth-login command first.')
+
+            try:
+                headers = {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+                res = super()._http_request(method='POST', url_suffix=OAUTH_URL, resp_type='response', headers=headers,
+                                            data=data, ok_codes=ok_codes)
+                try:
+                    res = res.json()
+                except ValueError as exception:
+                    raise DemistoException('Failed to parse json object from response: {}'.format(res.content),
+                                           exception)
+                if 'error' in res:
+                    return_error(
+                        f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
+                        f'and try to run again the login command to generate a new refresh token as it '
+                        f'might have expired.\n{res}')
+                if res.get('access_token'):
+                    expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
+                    expiry_time += res.get('expires_in', 0) * 1000 - 10
+                    new_token = {
+                        'access_token': res.get('access_token'),
+                        'refresh_token': res.get('refresh_token'),
+                        'expiry_time': expiry_time
+                    }
+                    set_integration_context(new_token)
+                    return res.get('access_token')
+            except Exception as e:
+                return_error(f'Error occurred while creating an access token. Please check the instance configuration.'
+                             f'\n\n{e.args[0]}')
+
+
+register_module_line('ServiceNowApiModule', 'end', __line__(), wrapper=1)
+### END GENERATED CODE ###
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
+register_module_line('ServiceNow v2', 'end', __line__())
