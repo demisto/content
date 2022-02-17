@@ -1,7 +1,6 @@
 commonfields:
-  id: e832dd9b-11a7-4d79-830f-96a0e6ab96f7
-  version: 53
-vcShouldKeepItemLegacyProdMachine: false
+  id: DisplayEmailHtmlThread
+  version: -1
 name: DisplayEmailHtmlThread
 script: |
   import re
@@ -141,8 +140,9 @@ comment: |-
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.10.1.25933
 runas: DBotWeakRole
-engineinfo: {}
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

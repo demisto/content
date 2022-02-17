@@ -1,13 +1,20 @@
+args:
+- defaultValue: ${incident.attachment}
+  description: Attachments
+  isArray: true
+  name: attachments
+- description: Files
+  name: files
+comment: |-
+  Preprocessing script for email communication layout.
+  This script checks if the incoming email contains an Incident ID to link the mail to an existing incident, and tags the email as "email-thread".
+  This script runs with elevated permissions. 
+  Cortex XSOAR recommends using the built-in RBAC functionality to limit access to only those users requiring access to this script.
+  For more information about the preprocessing rules, refer to: https://demisto.developers.paloaltonetworks.com/docs/incidents/incident-pre-processing
 commonfields:
   id: PreprocessEmail
-  version: 81
-contentitemexportablefields:
-  contentitemfields:
-    packID: EmailCommunication
-    itemVersion: ""
-    fromServerVersion: ""
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
+  version: -1
+enabled: true
 name: PreprocessEmail
 script: |2
 
@@ -428,29 +435,19 @@ script: |2
 
   if __name__ in ('__main__', '__builtin__', 'builtins'):
       main()
-type: python
+subtype: python3
+system: true
 tags:
 - email
 - preProcessing
-comment: "Preprocessing script for email communication layout.\nThis script checks
-  if the incoming email contains an Incident ID to link the mail to an existing incident,
-  and tags the email as \"email-thread\".\nThis script runs with elevated permissions.
-  \nCortex XSOAR recommends using the built-in RBAC functionality to limit access
-  to only those users requiring access to this script.\nFor more information about
-  the preprocessing rules, refer to: https://demisto.developers.paloaltonetworks.com/docs/incidents/incident-pre-processing"
-enabled: true
-system: true
-args:
-- name: attachments
-  description: Attachments
-  isArray: true
-  defaultValue: ${incident.attachment}
-- name: files
-  description: Files
-scripttarget: 0
-subtype: python3
-pswd: ""
-runonce: false
+type: python
 dockerimage: demisto/python3:3.10.1.25933
 runas: DBotRole
-engineinfo: {}
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+scripttarget: 0
+runonce: false

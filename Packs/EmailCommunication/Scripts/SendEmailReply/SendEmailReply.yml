@@ -1,13 +1,39 @@
+args:
+- defaultValue: ${File}
+  description: Files
+  isArray: true
+  name: files
+- defaultValue: ${incident.attachment}
+  description: Attachment
+  isArray: true
+  name: attachment
+- defaultValue: 
+  description: The mailbox from which emails are sent from the 3rd party integration.
+  name: service_mail
+  required: true
+- name: mail_sender_instance
+  required: true
+  description: Name of the mail sender instance name for transmitting emails
+  defaultValue:
+- name: new_thread
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  - n/a
+  description: Specify whether to reply to an existing thread or start a new one.  Default
+    value of 'n/a' is for 'Email Communication' type incidents only
+  defaultValue: n/a
+comment: |-
+  Send email reply
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
 commonfields:
   id: SendEmailReply
-  version: 118
-contentitemexportablefields:
-  contentitemfields:
-    packID: EmailCommunication
-    itemVersion: ""
-    fromServerVersion: ""
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
+  version: -1
+enabled: true
 name: SendEmailReply
 script: |
   import json
@@ -827,46 +853,17 @@ script: |
 
   if __name__ in ('__main__', '__builtin__', 'builtins'):
       main()
-type: python
-tags: []
-comment: |-
-  Send email reply
-  This automation runs using the default Limited User role, unless you explicitly change the permissions.
-  For more information, see the section about permissions here:
-  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-enabled: true
-system: true
-args:
-- name: files
-  description: Files
-  isArray: true
-  defaultValue: ${File}
-- name: attachment
-  description: Attachment
-  isArray: true
-  defaultValue: ${incident.attachment}
-- name: service_mail
-  required: true
-  description: The mailbox from which emails are sent from the 3rd party integration.
-  defaultValue: cyoc@nd.gov
-- name: mail_sender_instance
-  required: true
-  description: Name of the mail sender instance name for transmitting emails
-  defaultValue: NDIT - CyOC Sender
-- name: new_thread
-  required: true
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  - n/a
-  description: Specify whether to reply to an existing thread or start a new one.  Default
-    value of 'n/a' is for 'Email Communication' type incidents only
-  defaultValue: n/a
-scripttarget: 0
 subtype: python3
-pswd: ""
-runonce: false
+system: true
+type: python
+fromversion: 5.0.0
 dockerimage: demisto/python3:3.10.1.25933
+tests:
+- No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+tags: []
+scripttarget: 0
+runonce: false
 runas: DBotWeakRole
-engineinfo: {}

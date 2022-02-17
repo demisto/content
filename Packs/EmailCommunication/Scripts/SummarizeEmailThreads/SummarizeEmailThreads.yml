@@ -1,7 +1,6 @@
 commonfields:
-  id: 5b97a387-4403-4da9-8d52-4c8d1e3be4e3
-  version: 54
-vcShouldKeepItemLegacyProdMachine: false
+  id: SummarizeEmailThreads
+  version: -1
 name: SummarizeEmailThreads
 script: |2
 
@@ -127,8 +126,9 @@ comment: |-
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.10.1.25933
 runas: DBotWeakRole
-engineinfo: {}
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
