@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 APP_NAME = 'ms-defender-atp'
-TIME_FORMAT = '%Y-%m-%dT%H:%M:%S:%fZ'
+TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 ''' HELPER FUNCTIONS '''
 
@@ -203,7 +203,7 @@ class MsClient:
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
             base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
             scope=Scopes.security_center_apt_service)
-        self.alert_severities_to_fetch = alert_severities_to_fetch,
+        self.alert_severities_to_fetch = alert_severities_to_fetch
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
         self.max_alerts_to_fetch = max_fetch
@@ -2295,57 +2295,98 @@ def add_remove_machine_tag_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+# def fetch_incidents(client: MsClient, last_run, fetch_evidence):
+# last_alert_fetched_time = get_last_alert_fetched_time(last_run, client.alert_time_to_fetch)
+# existing_ids = last_run.get('existing_ids', [])
+# latest_creation_time = last_alert_fetched_time
+# filter_alerts_creation_time = create_filter_alerts_creation_time(last_alert_fetched_time)
+# alerts = client.list_alerts(filter_alerts_creation_time)['value']
+#
+# incidents, new_ids, latest_creation_time = all_alerts_to_incidents(alerts, latest_creation_time, existing_ids,
+#                                                                    client.alert_status_to_fetch,
+#                                                                    client.alert_severities_to_fetch)
+#
+# demisto.setLastRun({
+#     'last_alert_fetched_time': datetime.strftime(latest_creation_time, '%Y-%m-%dT%H:%M:%S'),
+#     'existing_ids': new_ids
+# })
+# demisto.incidents(incidents)
+
+
 def fetch_incidents(client: MsClient, last_run, fetch_evidence):
-    last_alert_fetched_time = get_last_alert_fetched_time(last_run, client.alert_time_to_fetch)
-    existing_ids = last_run.get('existing_ids', [])
-    latest_creation_time = last_alert_fetched_time
-    filter_alerts_creation_time = create_filter_alerts_creation_time(last_alert_fetched_time)
-    alerts = client.list_alerts(fetch_evidence, filter_alerts_creation_time)['value']
+    first_fetch_time = dateparser.parse(client.alert_time_to_fetch,
+                                        settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
 
-    incidents, new_ids, latest_creation_time = all_alerts_to_incidents(alerts, latest_creation_time, existing_ids,
-                                                                       client.alert_status_to_fetch,
-                                                                       client.alert_severities_to_fetch)
-
-    demisto.setLastRun({
-        'last_alert_fetched_time': datetime.strftime(latest_creation_time, '%Y-%m-%dT%H:%M:%S'),
-        'existing_ids': new_ids
-    })
-    demisto.incidents(incidents)
-
-def new_fetch(client: MsClient, last_run, fetch_evidence):
-
-    first_fetch_time = dateparser.parse(client.alert_time_to_fetch)
     if last_run:
-        last_fetch_time = last_run.get('last_fetch')
-    else:
-        last_fetch_time = datetime.strptime(first_fetch_time, TIME_FORMAT)
+        last_fetch_time = last_run.get('last_alert_fetched_time')
 
+    else:
+        last_fetch_time = datetime.strftime(first_fetch_time, TIME_FORMAT)
+
+    latest_created_time = dateparser.parse(last_fetch_time,
+                                           settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
+
+    params = _get_incidents_query_params(client, fetch_evidence, last_fetch_time)
+
+    incidents = []
     # get_alerts:
-    params = {'$filter': f'alertCreationTime+gt+{last_fetch_time}'}
+    try:
+        alerts = client.list_alerts(params=params)['value']
+    except DemistoException as err:
+        big_query_err_msg = 'Verify that the server URL parameter is correct and that you have access to the server from your host.'
+        if str(err).startswith(big_query_err_msg):
+            demisto.debug(f'Query crashed API, probably due to a big response. Params sent to query: {params}')
+            raise Exception(
+                f'Failed to fetch {client.max_alerts_to_fetch} alerts. This may caused due to large amount of alert. '
+                f'Try using a lower limit.')
+        raise err
+
+    for alert in alerts:
+        alert_time = dateparser.parse(alert['alertCreationTime'],
+                                      settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
+        # to prevent duplicates, adding incidents with creation_time > last fetched incident
+        if last_fetch_time:
+            if alert_time <= dateparser.parse(last_fetch_time,
+                                              settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'}):
+                demisto.debug(f"{INTEGRATION_NAME} - alert {str(alert)} was created at {alert['alertCreationTime']}."
+                              f' Skipping.')
+                continue
+
+        incidents.append({
+            'rawJSON': json.dumps(alert),
+            'name': f'{INTEGRATION_NAME} Alert {alert["id"]}',
+            'occurred': alert['alertCreationTime']
+        })
+
+        # Update last run and add incident if the incident is newer than last fetch
+        if alert_time > latest_created_time:
+            latest_created_time = alert_time
+
+    # last alert is the newest as we ordered by it ascending
+    last_run['last_alert_fetched_time'] = datetime.strftime(latest_created_time, TIME_FORMAT)
+    return incidents, last_run
+
+
+def _get_incidents_query_params(client, fetch_evidence, last_fetch_time):
+    filter_query = f'alertCreationTime+gt+{last_fetch_time}'
+    if client.alert_status_to_fetch:
+        statuses = argToList(client.alert_status_to_fetch)
+        status_filter_list = [f"status+eq+'{status}'" for status in statuses]
+        if len(status_filter_list) > 1:
+            status_filter_list = map(lambda x: f'({x})', status_filter_list)
+        filter_query = filter_query + ' and (' + ' or '.join(status_filter_list) + ')'
+    if client.alert_severities_to_fetch:
+        severities = argToList(client.alert_severities_to_fetch)
+        severities_filter_list = [f"severity+eq+'{severity}'" for severity in severities]
+        if len(severities_filter_list) > 1:
+            severities_filter_list = map(lambda x: f'({x})', severities_filter_list)
+        filter_query = filter_query + ' and (' + ' or '.join(severities_filter_list) + ')'
+    params = {'$filter': filter_query}
     params['$orderby'] = 'alertCreationTime asc'
     if fetch_evidence:
         params['$expand'] = 'evidence'
     params['$top'] = client.max_alerts_to_fetch
-    incidents = []
-    alerts = client.list_alerts(params=params)['value']
-
-    for alert in alerts:
-        incidents.append({
-            'rawJSON': json.dumps(alert),
-            'name': f'Microsoft Defender ATP Alert {alert["id"]}',
-            'occurred': alert['alertCreationTime']
-        })
-
-    # last alert is the newest as we ordered by it ascending
-    new_last_fetch_time = alert['alertCreationTime']
-    last_run['last_fetch'] = new_last_fetch_time
-    return incidents
-
-
-
-
-
-
+    return params
 
 
 def create_filter_alerts_creation_time(last_alert_fetched_time):
@@ -3093,6 +3134,7 @@ def main():
     alert_status_to_fetch = params.get('fetch_status')
     alert_time_to_fetch = params.get('first_fetch_timestamp', '3 days')
     max_alert_to_fetch = arg_to_number(params.get('max_fetch', 50))
+    fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
 
     if not enc_key:
@@ -3109,14 +3151,16 @@ def main():
         client = MsClient(
             base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME, verify=use_ssl,
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
-            alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch, max_fetch=max_alert_to_fetch
+            alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
+            max_fetch=max_alert_to_fetch
         )
         if command == 'test-module':
             test_module(client)
 
         elif command == 'fetch-incidents':
-            fetch_evidence = True
-            fetch_incidents(client, last_run, fetch_evidence)
+            incidents, last_run = fetch_incidents(client, last_run, fetch_evidence)
+            demisto.setLastRun(last_run)
+            demisto.incidents(incidents)
 
         elif command == 'microsoft-atp-isolate-machine':
             return_outputs(*isolate_machine_command(client, args))
