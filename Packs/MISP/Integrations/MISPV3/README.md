@@ -3803,4 +3803,21 @@ Update an attribute of an existing MISP event.
 >## MISP update attribute
 >Attribute: c0ba7147-d99a-418a-a23a-d9be62590c33 was updated.
 
+#### Base Command
 
+`misp-delete-attribute`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| attribute_id | Attribute ID to delete. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!misp-delete-attribute attribute_id=3f5917b3-100c-4e21-91c3-48b265337232```
+#### Human Readable Output
+
+>Attribute 3f5917b3-100c-4e21-91c3-48b265337232 has been deleted
