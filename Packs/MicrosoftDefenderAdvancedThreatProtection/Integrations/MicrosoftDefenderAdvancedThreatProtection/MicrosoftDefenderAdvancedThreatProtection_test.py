@@ -27,7 +27,7 @@ client_mocker = MsClient(
 def atp_mocker(mocker, file_name):
     with open(f'test_data/{file_name}', 'r') as f:
         alerts = json.loads(f.read())
-    mocker.patch.object(client_mocker, 'list_alerts', return_value=alerts)
+    mocker.patch.object(client_mocker, 'list_alerts_by_params', return_value=alerts)
 
 
 def test_first_fetch_incidents(mocker):
@@ -55,7 +55,16 @@ def test_second_fetch_incidents(mocker):
     incidents, _ = fetch_incidents(client_mocker, {'last_alert_fetched_time': "2019-09-01T13:31:07",
                                                    'existing_ids': ['da637029414680409372_735564929']}, False)
     assert [{
-        'rawJSON': '{"id": "da637029414680409372_735564929", "incidentId": 14, "investigationId": null, "assignedTo": null, "severity": "Medium", "status": "New", "classification": null, "determination": null, "investigationState": "UnsupportedAlertType", "detectionSource": "CustomerTI", "category": "null", "threatFamilyName": null, "title": "Demisto Alert", "description": "Created for documentation", "alertCreationTime": "2019-09-01T13:31:08.0252869Z", "firstEventTime": "2019-08-05T00:53:51.1469367Z", "lastEventTime": "2019-08-05T00:53:51.1469367Z", "lastUpdateTime": "2019-09-01T13:31:08.57Z", "resolvedTime": null, "machineId": "43df73d1dac43593d1275e20422f44a949f6dfc3", "alertUser": null, "comments": [], "alertFiles": [], "alertDomains": [], "alertIps": []}',
+        'rawJSON': '{"id": "da637029414680409372_735564929", "incidentId": 14, "investigationId": null, '
+                   '"assignedTo": null, "severity": "Medium", "status": "New", "classification": null, '
+                   '"determination": null, "investigationState": "UnsupportedAlertType", '
+                   '"detectionSource": "CustomerTI", "category": "null", "threatFamilyName": null, '
+                   '"title": "Demisto Alert", "description": "Created for documentation", '
+                   '"alertCreationTime": "2019-09-01T13:31:08.0252869Z", '
+                   '"firstEventTime": "2019-08-05T00:53:51.1469367Z", "lastEventTime": "2019-08-05T00:53:51.1469367Z",'
+                   ' "lastUpdateTime": "2019-09-01T13:31:08.57Z", "resolvedTime": null, '
+                   '"machineId": "43df73d1dac43593d1275e20422f44a949f6dfc3", "alertUser": null, "comments": [], '
+                   '"alertFiles": [], "alertDomains": [], "alertIps": []}',
         'name': 'Microsoft Defender ATP Alert da637029414680409372_735564929',
         'occurred': '2019-09-01T13:31:08.0252869Z'}] == incidents
 
@@ -1020,8 +1029,9 @@ def test_fetch(mocker, case, expected_result):
     frozen_time = dateparser.parse('2022-02-17T14:39:01.391001Z',
                                    settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
 
+    mocker.patch.object(demisto, 'debug')
     with freeze_time(frozen_time):
-        mocker.patch.object(client_mocker, 'list_alerts', return_value={'value': case['incidents']})
+        mocker.patch.object(client_mocker, 'list_alerts_by_params', return_value={'value': case['incidents']})
         incidents, last_run = fetch_incidents(client_mocker, case['last_run'], True)
         assert last_run.get('last_alert_fetched_time') == expected_result['last_alert_fetched_time']
         assert len(incidents) == expected_result['incidents']
@@ -1029,6 +1039,7 @@ def test_fetch(mocker, case, expected_result):
 
 def test_fetch_fails(mocker):
     from MicrosoftDefenderAdvancedThreatProtection import fetch_incidents
+    mocker.patch.object(demisto, 'debug')
 
     def raise_mock(params=None):
         raise DemistoException("""Verify that the server URL parameter is correct and that you have access to the server from your host.
@@ -1037,25 +1048,31 @@ Error Number: [None]
 Message: None
 """)
 
-    mocker.patch.object(client_mocker, 'list_alerts', side_effect=raise_mock)
+    mocker.patch.object(client_mocker, 'list_alerts_by_params', side_effect=raise_mock)
     with pytest.raises(Exception) as e:
         fetch_incidents(client_mocker, {}, True)
     assert str(
-        e.value) == f'Failed to fetch {client_mocker.max_alerts_to_fetch} alerts. This may caused due to large amount of alert. Try using a lower limit.'
+        e.value) == f'Failed to fetch {client_mocker.max_alerts_to_fetch} alerts. ' \
+                    f'This may caused due to large amount of alert. Try using a lower limit.'
 
 
 QUERY_BUILDING_CASES = [
     (
         'New, Resolved', 'Informational,Low,Medium,High', '5', False, '2022-02-17T14:39:01.391001Z',
         {
-            '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and ((status+eq+'New') or (status+eq+'Resolved')) and ((severity+eq+'Informational') or (severity+eq+'Low') or (severity+eq+'Medium') or (severity+eq+'High'))",
+            '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and "
+                       "((status+eq+'New') or (status+eq+'Resolved')) and "
+                       "((severity+eq+'Informational') or (severity+eq+'Low') or (severity+eq+'Medium') "
+                       "or (severity+eq+'High'))",
             '$orderby': 'alertCreationTime asc', '$top': '5'
         }
     ),
     (
         None, 'Informational,Low,Medium,High', '5', False, '2022-02-17T14:39:01.391001Z',
         {
-            '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and ((severity+eq+'Informational') or (severity+eq+'Low') or (severity+eq+'Medium') or (severity+eq+'High'))",
+            '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and "
+                       "((severity+eq+'Informational') or (severity+eq+'Low') "
+                       "or (severity+eq+'Medium') or (severity+eq+'High'))",
             '$orderby': 'alertCreationTime asc', '$top': '5'
         }
     ),
@@ -1083,7 +1100,8 @@ QUERY_BUILDING_CASES = [
     (
         'Resolved', 'High', '5', True, '2022-02-17T14:39:01.391001Z',
         {
-            '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and (status+eq+'Resolved') and (severity+eq+'High')",
+            '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and "
+                       "(status+eq+'Resolved') and (severity+eq+'High')",
             '$orderby': 'alertCreationTime asc', '$expand': 'evidence', '$top': '5'
         }
     ),

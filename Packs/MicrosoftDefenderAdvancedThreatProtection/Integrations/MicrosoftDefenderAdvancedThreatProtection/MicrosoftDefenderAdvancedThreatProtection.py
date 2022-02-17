@@ -332,7 +332,7 @@ class MsClient:
         }
         return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
 
-    def list_alerts(self, filter_req=None, params=None):
+    def list_alerts_by_params(self, filter_req=None, params=None):
         """Retrieves a collection of Alerts.
 
         Returns:
@@ -342,6 +342,24 @@ class MsClient:
         if not params:
             params = {'$filter': filter_req} if filter_req else None
 
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+
+    def list_alerts(self, filter_req=None, limit=None, evidence=False, creation_time=None):
+        """Retrieves a collection of Alerts.
+
+        Returns:
+            dict. Alerts info
+        """
+        cmd_url = '/alerts'
+        params = {}
+        if evidence:
+            params['$expand'] = 'evidence'
+        if filter_req:
+            if creation_time:
+                filter_req += f"and {create_filter_alerts_creation_time(creation_time)}"
+            params['$filter'] = filter_req
+        if limit:
+            params['$top'] = limit
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
     def update_alert(self, alert_id, json_data):
@@ -2331,9 +2349,10 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
     incidents = []
     # get_alerts:
     try:
-        alerts = client.list_alerts(params=params)['value']
+        alerts = client.list_alerts_by_params(params=params)['value']
     except DemistoException as err:
-        big_query_err_msg = 'Verify that the server URL parameter is correct and that you have access to the server from your host.'
+        big_query_err_msg = 'Verify that the server URL parameter is correct and that you have access to the server' \
+                            ' from your host.'
         if str(err).startswith(big_query_err_msg):
             demisto.debug(f'Query crashed API, probably due to a big response. Params sent to query: {params}')
             raise Exception(
@@ -2373,13 +2392,13 @@ def _get_incidents_query_params(client, fetch_evidence, last_fetch_time):
         statuses = argToList(client.alert_status_to_fetch)
         status_filter_list = [f"status+eq+'{status}'" for status in statuses]
         if len(status_filter_list) > 1:
-            status_filter_list = map(lambda x: f'({x})', status_filter_list)
+            status_filter_list = list(map(lambda x: f'({x})', status_filter_list))
         filter_query = filter_query + ' and (' + ' or '.join(status_filter_list) + ')'
     if client.alert_severities_to_fetch:
         severities = argToList(client.alert_severities_to_fetch)
         severities_filter_list = [f"severity+eq+'{severity}'" for severity in severities]
         if len(severities_filter_list) > 1:
-            severities_filter_list = map(lambda x: f'({x})', severities_filter_list)
+            severities_filter_list = list(map(lambda x: f'({x})', severities_filter_list))
         filter_query = filter_query + ' and (' + ' or '.join(severities_filter_list) + ')'
     params = {'$filter': filter_query}
     params['$orderby'] = 'alertCreationTime asc'
