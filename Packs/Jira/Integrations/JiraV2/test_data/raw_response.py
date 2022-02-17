@@ -233,7 +233,7 @@ GET_ISSUE_RESPONSE = {
              'content': 'https://someurl.com',
              'id': '15451',
              'filename': 'entry_artifact_5@317.json', 'author': {
-                'accountId': '557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76',
+                'accountId': 'accoundid',
                 'emailAddress': 'admin@demistodev.com',
                 'avatarUrls': {
                     '48x48': ''},
@@ -244,7 +244,7 @@ GET_ISSUE_RESPONSE = {
              }],
         'aggregatetimeestimate': None, 'summary': 'test master1',
         'creator': {
-            'accountId': '557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76',
+            'accountId': 'accoundid',
             'accountType': 'atlassian',
             'active': True,
             'avatarUrls': {
@@ -286,7 +286,8 @@ ATTACHMENT = {
     "id": "16188",
     "filename": "test",
     "author": {
-        "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=557058%3Afb80ffc0-b374-4260-99a0-ea0c140a4e76",
+        "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=557058%3Afb80ffc0-b374-4260-99a0"
+                "-ea0c140a4e76",
         "accountId": "account id",
         "emailAddress": "mail",
         "avatarUrls": {},
