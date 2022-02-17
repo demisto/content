@@ -1,5 +1,4 @@
 The Cortex Core - IOCs integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
-This integration was integrated and tested with version xx of Cortex Core - IOC
 
 ## Configure Indicators detection
 
