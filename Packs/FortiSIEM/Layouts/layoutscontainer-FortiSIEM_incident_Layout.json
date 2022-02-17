@@ -189,7 +189,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "incidentfirstseen",
+                                "fieldId": "fortisiemincidentfirstseen",
                                 "height": 53,
                                 "id": "097b7060-7f3d-11ec-9b26-afc07d885666",
                                 "index": 0,
@@ -226,7 +226,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "incidentlastseen",
+                                "fieldId": "fortisiemincidentlastseen",
                                 "height": 53,
                                 "id": "0f86d530-7f3d-11ec-9b26-afc07d885666",
                                 "index": 0,
@@ -419,7 +419,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "destinationuser",
+                                "fieldId": "fortisiemdestinationuser",
                                 "height": 53,
                                 "id": "0ff09280-7f48-11ec-8d9c-93ca15dede56",
                                 "index": 3,
@@ -470,7 +470,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "incidentreportdevicename",
+                                "fieldId": "fortisiemincidentreportdevicename",
                                 "height": 53,
                                 "id": "f4764640-7f3c-11ec-9b26-afc07d885666",
                                 "index": 2,
@@ -525,7 +525,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "incidentreporterip",
+                                "fieldId": "fortisiemincidentreporterip",
                                 "height": 53,
                                 "id": "f69862f0-7f3c-11ec-9b26-afc07d885666",
                                 "index": 2,
