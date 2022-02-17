@@ -35,7 +35,7 @@ enum EntryFormats {
     markdown
 }
 
-# Demisto Object Class for communicating with the Demisto Server
+# Demist Object Class for communicating with the Demisto Server
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'use of global:DemistoServerRequest')]
 class DemistoObject {
     hidden [hashtable] $ServerEntry
