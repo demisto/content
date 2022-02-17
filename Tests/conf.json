@@ -116,6 +116,10 @@
             "playbookID": "FireEyeNX-Test"
         },
         {
+            "integrations": "FireEyeHX v2",
+            "playbookID": "FireEyeHX_v2"
+        },
+        {
             "integrations": "EmailRepIO",
             "playbookID": "TestEmailRepIOPlaybook",
             "fromversion": "5.0.0"
