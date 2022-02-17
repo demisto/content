@@ -1,4 +1,5 @@
 Phishing
+SplunkPy
 remediate
 playbook
 firewalls
@@ -88,3 +89,4 @@ GitHub
 TAXII
 Syslog
 DomainTools
+replyTo
