@@ -47,9 +47,16 @@ def test_varonis_get_alerts_command(mocker):
         'varonis_get_alerts',
         return_value=util_load_json('test_data/varonis_get_alerts_api_response.json')
     )
+    mocker.patch.object(
+        client,
+        'varonis_get_enum',
+        return_value=util_load_json('test_data/varonis_get_enum_response.json')
+    )
 
-    result = varonis_get_alerts_command(client, util_load_json("test_data/demisto_args.json"))
+    args = util_load_json("test_data/demisto_args.json")
     expected_outputs = util_load_json('test_data/varonis_get_alerts_command_output.json')
+
+    result = varonis_get_alerts_command(client, args)
 
     assert result.outputs_prefix == 'Varonis.Alert'
     assert result.outputs == expected_outputs
