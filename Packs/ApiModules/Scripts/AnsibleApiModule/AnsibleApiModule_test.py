@@ -210,3 +210,60 @@ def test_generic_ansible():
 
         assert CommandResults.readable_output == expected_readable
         assert CommandResults.outputs == expected_outputs
+
+
+def test_generic_ansible_bad_events():
+    """
+    Given:
+        - Valid params and arguments for running the linux-expect command.
+
+    When:
+        - Calling generic_ansible() method.
+        - ansible_runner.run() returns unexpected events.
+
+    Then:
+        - Make sure a DemistoException is raised.
+    """
+    command_passed = False
+
+    args = {
+        "command": "date",
+        "echo": "No",
+        "host": "8.8.8.8",
+        "responses": "ls=ls",
+        "timeout": "30"
+    }
+    params = {
+        'port': 5985,
+        'creds': {'identifier': 'bill', 'password': 'xyz321', 'credentials': {}},
+        'concurrency': '4',
+        'become_method': 'sudo',
+        'become_user': 'root',
+        'become': 'No',
+        'become_password': ''
+    }
+
+    host_type = 'ssh'
+    integration_name = 'Linux'
+    command_name = 'expect'
+
+    mock_ansible_results = Object()
+    mock_ansible_results.events = [
+        {
+            'event': 'verbose',
+            'uuid': 'e5b95379-8988-4460-8c25-bc6cea7bccc3',
+            'counter': 9,
+            'stdout': "PermissionError: [Errno 13] Permission denied: b'/.ansible'",
+            'start_line': 8,
+            'end_line': 9,
+            'runner_ident': '1f4e5207-2227-44ff-a292-590145cfb0d1'
+        }
+    ]
+
+    try:
+        with patch('ansible_runner.run', return_value=mock_ansible_results):
+            generic_ansible(integration_name, command_name, args, params, host_type)
+        assert command_passed  # should not get here
+    except Exception as e:
+        assert not command_passed
+        assert 'Got unexpected events from Ansible' in str(e)
