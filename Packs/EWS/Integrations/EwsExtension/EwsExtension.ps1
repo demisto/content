@@ -12,13 +12,14 @@ $script:MESSAGE_TRACE_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEXT.Message
 
 function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client) {
     $integration_context = @{
-        "DeviceCode"              = $client.device_code
-        "DeviceCodeExpiresIn"     = $client.device_code_expires_in
-        "DeviceCodeCreationTime"  = $client.device_code_creation_time
-        "AccessToken"             = $client.access_token
-        "RefreshToken"            = $client.refresh_token
-        "AccessTokenExpiresIn"    = $client.access_token_expires_in
-        "AccessTokenCreationTime" = $client.access_token_creation_time
+        "DeviceCode"               = $client.device_code
+        "DeviceCodeExpiresIn"      = $client.device_code_expires_in
+        "DeviceCodeCreationTime"   = $client.device_code_creation_time
+        "AccessToken"              = $client.access_token
+        "RefreshToken"             = $client.refresh_token
+        "RefreshTokenCreationTime" = $client.refresh_token_creation_time
+        "AccessTokenExpiresIn"     = $client.access_token_expires_in
+        "AccessTokenCreationTime"  = $client.access_token_creation_time
     }
 
     $Demisto.setIntegrationContext($integration_context)
@@ -190,18 +191,21 @@ class OAuth2DeviceCodeClient {
     [int]$device_code_creation_time
     [string]$access_token
     [string]$refresh_token
+    [int]$refresh_token_creation_time
     [int]$access_token_expires_in
     [int]$access_token_creation_time
     [bool]$insecure
     [bool]$proxy
 
     OAuth2DeviceCodeClient([string]$device_code, [string]$device_code_expires_in, [string]$device_code_creation_time, [string]$access_token,
-        [string]$refresh_token, [string]$access_token_expires_in, [string]$access_token_creation_time, [bool]$insecure, [bool]$proxy) {
+        [string]$refresh_token, [string]$refresh_token_creation_time, [string]$access_token_expires_in, [string]$access_token_creation_time,
+        [bool]$insecure, [bool]$proxy) {
         $this.device_code = $device_code
         $this.device_code_expires_in = $device_code_expires_in
         $this.device_code_creation_time = $device_code_creation_time
         $this.access_token = $access_token
         $this.refresh_token = $refresh_token
+        $this.refresh_token_creation_time = $refresh_token_creation_time
         $this.access_token_expires_in = $access_token_expires_in
         $this.access_token_creation_time = $access_token_creation_time
         $this.insecure = $insecure
@@ -230,6 +234,9 @@ class OAuth2DeviceCodeClient {
 
             .PARAMETER refresh_token
             Opaque string, Issued if the original scope parameter included offline_access. (Valid for 90 days)
+
+            .PARAMETER refresh_token_creation_time
+            Unix time of refresh token creation (Used for knowing when to refresh the token).
 
             .PARAMETER access_token_expires_in
             Number of seconds before the included access token is valid for. (Usually - 60 minutes)
@@ -341,6 +348,7 @@ class OAuth2DeviceCodeClient {
         # Update object properties
         $this.access_token = $response_body.access_token
         $this.refresh_token = $response_body.refresh_token
+        $this.refresh_token_creation_time = [int][double]::Parse((Get-Date -UFormat %s))
         $this.access_token_expires_in = [int]::Parse($response_body.expires_in)
         $this.access_token_creation_time = [int][double]::Parse((Get-Date -UFormat %s))
 
@@ -387,8 +395,9 @@ class OAuth2DeviceCodeClient {
             throw "Unable to refresh access token for your account, $error_details"
         }
         # Update object properties
-        $this.access_token = $response_body.access_token
         $this.refresh_token = $response_body.refresh_token
+        $this.access_token = $response_body.access_token
+        $this.refresh_token_creation_time = [int][double]::Parse((Get-Date -UFormat %s))
         $this.access_token_expires_in = [int]::Parse($response_body.expires_in)
         $this.access_token_creation_time = [int][double]::Parse((Get-Date -UFormat %s))
 
@@ -433,6 +442,29 @@ class OAuth2DeviceCodeClient {
         #>
     }
 
+    [bool]IsRefreshTokenExpired() {
+        if (!$this.refresh_token) {
+            return $true
+        }
+        $current_time = [int][double]::Parse((Get-Date -UFormat %s)) - 30
+        $valid_until = $this.refresh_token_creation_time + 7776000
+
+        return $current_time -gt $valid_until
+        <#
+            .DESCRIPTION
+            Check if refresh-token expired by adding 90 days from the creation date.
+
+            .EXAMPLE
+            $client.IsRefreshTokenExpired()
+
+            .OUTPUTS
+            bool - True If refresh-token expired else False.
+
+            .LINK
+            https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-configurable-token-lifetimes#configurable-token-lifetime-properties-after-the-retirement
+        #>
+    }
+
     [bool]IsAccessTokenExpired() {
         if (!$this.access_token) {
             return $true
@@ -457,12 +489,15 @@ class OAuth2DeviceCodeClient {
     }
 
     RefreshTokenIfExpired() {
-        if ($this.access_token -and $this.IsAccessTokenExpired()) {
+        if ($this.refresh_token -and $this.IsRefreshTokenExpired()) {
+            $this.AccessTokenRequest()
+        }
+        elseif ($this.access_token -and $this.IsAccessTokenExpired()) {
             $this.RefreshTokenRequest()
         }
         <#
             .DESCRIPTION
-            Refresh access token if expired, with offset of 30 seconds.
+            Refresh refresh-token and/or access-token if expired, with offset of 30 seconds.
 
             .EXAMPLE
             $client.RefreshTokenIfExpired()
