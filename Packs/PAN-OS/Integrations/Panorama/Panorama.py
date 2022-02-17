@@ -170,20 +170,14 @@ def http_request(uri: str, method: str, headers: dict = {},
 
             # catch already registered ip tags and return this as an entry.note
             elif str(json_result['response']['msg']['line']).find('already exists, ignore') != -1:
-                if isinstance(json_result['response']['msg']['line']['uid-response']['payload']['register'][
-                                  'entry'],
+                if isinstance(json_result['response']['msg']['line']['uid-response']['payload']['register']['entry'],
                               list):
                     ips = [o['@ip'] for o in
-                           json_result['response']['msg']['line']['uid-response']['payload']['register'][
-                               'entry']]
+                           json_result['response']['msg']['line']['uid-response']['payload']['register']['entry']]
                 else:
-                    ips = \
-                        json_result['response']['msg']['line']['uid-response']['payload']['register'][
-                            'entry'][
-                            '@ip']
+                    ips = json_result['response']['msg']['line']['uid-response']['payload']['register']['entry']['@ip']
                 return_results(
-                    'IP ' + str(
-                        ips) + ' already exist in the tag. All submitted IPs were not registered to the tag.')
+                    'IP ' + str(ips) + ' already exist in the tag. All submitted IPs were not registered to the tag.')
                 sys.exit(0)
 
             # catch timed out log queries and return this as an entry.note
@@ -193,8 +187,7 @@ def http_request(uri: str, method: str, headers: dict = {},
 
         if '@code' in json_result['response']:
             raise Exception(
-                'Request Failed.\nStatus code: ' + str(
-                    json_result['response']['@code']) + '\nWith message: ' + str(
+                'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
                     json_result['response']['msg']['line']))
         else:
             raise Exception('Request Failed.\n' + str(json_result['response']))
@@ -214,8 +207,7 @@ def http_request(uri: str, method: str, headers: dict = {},
         # error code non exist in dict and not of success
         if 'msg' in json_result['response']:
             raise Exception(
-                'Request Failed.\nStatus code: ' + str(
-                    json_result['response']['@code']) + '\nWith message: ' + str(
+                'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
                     json_result['response']['msg']))
         else:
             raise Exception('Request Failed.\n' + str(json_result['response']))
@@ -316,11 +308,9 @@ def set_xpath_network(template: str = None) -> Tuple[str, Optional[str]]:
 
 def prepare_security_rule_params(api_action: str = None, rulename: str = None, source: Any = None,
                                  destination: Any = None, negate_source: str = None,
-                                 negate_destination: str = None, action: str = None,
-                                 service: List[str] = None,
+                                 negate_destination: str = None, action: str = None, service: List[str] = None,
                                  disable: str = None, application: List[str] = None, source_user: str = None,
-                                 category: List[str] = None, from_: str = None, to: str = None,
-                                 description: str = None,
+                                 category: List[str] = None, from_: str = None, to: str = None, description: str = None,
                                  target: str = None, log_forwarding: str = None,
                                  disable_server_response_inspection: str = None, tags: List[str] = None,
                                  profile_setting: str = None) -> Dict:
@@ -348,8 +338,7 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
                    + add_argument_yes_no(negate_source, 'negate-source')
                    + add_argument_yes_no(negate_destination, 'negate-destination')
                    + add_argument_yes_no(disable, 'disabled')
-                   + add_argument_yes_no(disable_server_response_inspection,
-                                         'disable-server-response-inspection', True)
+                   + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
                    + add_argument(log_forwarding, 'log-setting', False)
                    + add_argument_list(tags, 'tag', True)
                    + add_argument_profile_setting(profile_setting, 'profile-setting')
@@ -359,8 +348,7 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
             raise Exception('Please provide the pre_post argument when configuring'
                             ' a security rule in Panorama instance.')
         else:
-            params[
-                'xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+            params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
     else:
         params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
     return params
@@ -607,9 +595,8 @@ def panorama_commit_status_command(args: dict):
     # WARNINGS - Job warnings
     status_warnings = []
     if result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}):
-        status_warnings = result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}).get(
-            'line',
-            [])
+        status_warnings = result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}).get('line',
+                                                                                                              [])
     ignored_error = 'configured with no certificate profile'
     commit_status_output["Warnings"] = [item for item in status_warnings if item not in ignored_error]
 
@@ -648,8 +635,7 @@ def panorama_push_to_device_group_command():
     Push Panorama configuration and show message in warroom
     """
     if not DEVICE_GROUP:
-        raise Exception(
-            "The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
+        raise Exception("The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
 
     result = panorama_push_to_device_group()
     if 'result' in result['response']:
@@ -1436,8 +1422,7 @@ def panorama_list_services_command(tag: Optional[str]):
         'Contents': services_arr,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Services:', services_output,
-                                         ['Name', 'Protocol', 'SourcePort', 'DestinationPort', 'Description',
-                                          'Tags'],
+                                         ['Name', 'Protocol', 'SourcePort', 'DestinationPort', 'Description', 'Tags'],
                                          removeNull=True),
         'EntryContext': {
             "Panorama.Services(val.Name == obj.Name)": services_output
@@ -1505,8 +1490,7 @@ def panorama_get_service_command(service_name: str):
         'Contents': service,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Address:', service_output,
-                                         ['Name', 'Protocol', 'SourcePort', 'DestinationPort', 'Description',
-                                          'Tags'],
+                                         ['Name', 'Protocol', 'SourcePort', 'DestinationPort', 'Description', 'Tags'],
                                          removeNull=True),
         'EntryContext': {
             "Panorama.Services(val.Name == obj.Name)": service_output
@@ -1550,8 +1534,7 @@ def panorama_create_service_command(args: dict):
     description = args.get('description')
     tags = argToList(args['tags']) if 'tags' in args else None
 
-    service = panorama_create_service(service_name, protocol, destination_port, source_port, description,
-                                      tags)
+    service = panorama_create_service(service_name, protocol, destination_port, source_port, description, tags)
 
     service_output = {
         'Name': service_name,
@@ -1675,8 +1658,7 @@ def panorama_list_service_groups_command(tag: Optional[str]):
         'ContentsFormat': formats['json'],
         'Contents': service_groups_arr,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Service groups:', service_groups_output,
-                                         ['Name', 'Services', 'Tags'],
+        'HumanReadable': tableToMarkdown('Service groups:', service_groups_output, ['Name', 'Services', 'Tags'],
                                          removeNull=True),
         'EntryContext': {
             "Panorama.ServiceGroups(val.Name == obj.Name)": service_groups_output
@@ -1871,8 +1853,7 @@ def panorama_edit_service_group_command(args: dict):
     tag = argToList(args['tag']) if 'tag' in args else None
 
     if not services_to_add and not services_to_remove and not tag:
-        raise Exception(
-            'Specify at least one of the following arguments: services_to_add, services_to_remove, tag')
+        raise Exception('Specify at least one of the following arguments: services_to_add, services_to_remove, tag')
 
     if services_to_add and services_to_remove:
         raise Exception('Specify at most one of the following arguments: services_to_add, services_to_remove')
@@ -1968,8 +1949,7 @@ def panorama_get_custom_url_category_command(name: str):
         'Contents': custom_url_category,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Custom URL Category:', custom_url_category_output,
-                                         ['Name', 'Type', 'Categories', 'Sites', 'Description'],
-                                         removeNull=True),
+                                         ['Name', 'Type', 'Categories', 'Sites', 'Description'], removeNull=True),
         'EntryContext': {
             "Panorama.CustomURLCategory(val.Name == obj.Name)": custom_url_category_output
         }
@@ -2038,18 +2018,16 @@ def panorama_create_custom_url_category_command(args: dict):
     categories = argToList(args['categories']) if 'categories' in args else None
     description = args.get('description')
 
-    custom_url_category, custom_url_category_output = panorama_create_custom_url_category(
-        custom_url_category_name,
-        type_, sites, categories,
-        description)
+    custom_url_category, custom_url_category_output = panorama_create_custom_url_category(custom_url_category_name,
+                                                                                          type_, sites, categories,
+                                                                                          description)
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': custom_url_category,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Created Custom URL Category:', custom_url_category_output,
-                                         ['Name', 'Type', 'Categories', 'Sites', 'Description'],
-                                         removeNull=True),
+                                         ['Name', 'Type', 'Categories', 'Sites', 'Description'], removeNull=True),
         'EntryContext': {
             "Panorama.CustomURLCategory(val.Name == obj.Name)": custom_url_category_output
         }
@@ -2163,8 +2141,7 @@ def panorama_custom_url_category_add_items(custom_url_category_name: str, items:
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Updated Custom URL Category:', custom_url_category_output,
-                                         ['Name', 'Type', 'Categories', 'Sites', 'Description'],
-                                         removeNull=True),
+                                         ['Name', 'Type', 'Categories', 'Sites', 'Description'], removeNull=True),
         'EntryContext': {
             "Panorama.CustomURLCategory(val.Name == obj.Name)": custom_url_category_output
         }
@@ -2271,8 +2248,7 @@ def calculate_dbot_score(category: str, additional_suspicious: list, additional_
     Returns:
         dbot score.
     """
-    predefined_suspicious = ['high-risk', 'medium-risk', 'hacking', 'proxy-avoidance-and-anonymizers',
-                             'grayware',
+    predefined_suspicious = ['high-risk', 'medium-risk', 'hacking', 'proxy-avoidance-and-anonymizers', 'grayware',
                              'not-resolved']
     suspicious_categories = list((set(additional_suspicious)).union(set(predefined_suspicious)))
 
@@ -2290,8 +2266,7 @@ def calculate_dbot_score(category: str, additional_suspicious: list, additional_
     return dbot_score
 
 
-def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspicious: list,
-                                      additional_malicious: list):
+def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspicious: list, additional_malicious: list):
     """
     Get the url category from Palo Alto URL Filtering
     """
@@ -2347,8 +2322,7 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
         title += ' from cloud'
     elif url_cmd == 'url-info-host':
         title += ' from host'
-    human_readable = tableToMarkdown(f'{title}:', url_category_output_hr, ['URL', 'Category'],
-                                     removeNull=True)
+    human_readable = tableToMarkdown(f'{title}:', url_category_output_hr, ['URL', 'Category'], removeNull=True)
 
     command_results.insert(0, CommandResults(
         outputs_prefix='Panorama.URLFilter',
@@ -2455,8 +2429,7 @@ def panorama_get_url_filter_command(name: str):
         'Contents': url_filter,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('URL Filter:', url_filter_output,
-                                         ['Name', 'Category', 'OverrideAllowList', 'OverrideBlockList',
-                                          'Description'],
+                                         ['Name', 'Category', 'OverrideAllowList', 'OverrideBlockList', 'Description'],
                                          removeNull=True),
         'EntryContext': {
             "Panorama.URLFilter(val.Name == obj.Name)": url_filter_output
@@ -2471,8 +2444,7 @@ def panorama_create_url_filter(
         override_allow_list: Optional[str] = None,
         override_block_list: Optional[str] = None,
         description: Optional[str] = None):
-    element = add_argument_list(url_category_list, action, True) + add_argument_list(override_allow_list,
-                                                                                     'allow-list',
+    element = add_argument_list(url_category_list, action, True) + add_argument_list(override_allow_list, 'allow-list',
                                                                                      True) + add_argument_list(
         override_block_list, 'block-list', True) + add_argument(description, 'description',
                                                                 False) + "<action>block</action>"
@@ -2552,8 +2524,7 @@ def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, eleme
     }
 
     if element_to_change == 'description':
-        params[
-            'xpath'] = XPATH_OBJECTS + f"profiles/url-filtering/entry[@name='{url_filter_name}']/{element_to_change}"
+        params['xpath'] = XPATH_OBJECTS + f"profiles/url-filtering/entry[@name='{url_filter_name}']/{element_to_change}"
         params['element'] = add_argument_open(element_value, 'description', False)
         result = http_request(URL, 'POST', body=params)
         url_filter_output['Description'] = element_value
@@ -2565,8 +2536,7 @@ def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, eleme
         else:
             new_override_allow_list = [url for url in prev_override_allow_list if url != element_value]
 
-        params[
-            'xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/allow-list"
+        params['xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/allow-list"
         params['element'] = add_argument_list(new_override_allow_list, 'allow-list', True)
         result = http_request(URL, 'POST', body=params)
         url_filter_output[element_to_change] = new_override_allow_list
@@ -2579,8 +2549,7 @@ def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, eleme
         else:
             new_override_block_list = [url for url in prev_override_block_list if url != element_value]
 
-        params[
-            'xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/block-list"
+        params['xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/block-list"
         params['element'] = add_argument_list(new_override_block_list, 'block-list', True)
         result = http_request(URL, 'POST', body=params)
         url_filter_output[element_to_change] = new_override_block_list
@@ -2767,8 +2736,7 @@ def panorama_move_rule_command(args: dict):
         if not PRE_POST:
             raise Exception('Please provide the pre_post argument when moving a rule in Panorama instance.')
         else:
-            params[
-                'xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+            params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
     else:
         params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
 
@@ -2826,16 +2794,14 @@ def panorama_create_rule_command(args: dict):
         elif log_forwarding:
             raise Exception('The log_forwarding argument is relevant only for a Palo Alto Panorama instance.')
 
-    params = prepare_security_rule_params(api_action='set', rulename=rulename, source=source,
-                                          destination=destination,
+    params = prepare_security_rule_params(api_action='set', rulename=rulename, source=source, destination=destination,
                                           negate_source=negate_source, negate_destination=negate_destination,
                                           action=action, service=service,
                                           disable=disable, application=application, source_user=source_user,
                                           disable_server_response_inspection=disable_server_response_inspection,
                                           description=description, target=target,
                                           log_forwarding=log_forwarding, tags=tags, category=categories,
-                                          from_=source_zone, to=destination_zone,
-                                          profile_setting=profile_setting)
+                                          from_=source_zone, to=destination_zone, profile_setting=profile_setting)
     result = http_request(
         URL,
         'POST',
@@ -2892,8 +2858,7 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
 def panorama_edit_rule_items(rulename: str, element_to_change: str, element_value: List[str], behaviour: str):
     listable_elements = ['source', 'destination', 'application', 'category', 'source-user', 'service', 'tag']
     if element_to_change not in listable_elements:
-        raise Exception(
-            f'Adding objects is only available for the following Objects types:{listable_elements}')
+        raise Exception(f'Adding objects is only available for the following Objects types:{listable_elements}')
     if element_to_change == 'target' and not DEVICE_GROUP:
         raise Exception('The target argument is relevant only for a Palo Alto Panorama instance.')
 
@@ -2907,8 +2872,7 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
         if not PRE_POST:
             raise Exception('please provide the pre_post argument when editing a rule in Panorama instance.')
         else:
-            params[
-                'xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+            params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
     else:
         params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
     params["xpath"] = f'{params["xpath"]}/' + element_to_change
@@ -2968,8 +2932,7 @@ def panorama_edit_rule_command(args: dict):
 
         if element_to_change in ['action', 'description', 'log-setting']:
             params['element'] = add_argument_open(element_value, element_to_change, False)
-        elif element_to_change in ['source', 'destination', 'application', 'category', 'source-user',
-                                   'service', 'tag']:
+        elif element_to_change in ['source', 'destination', 'application', 'category', 'source-user', 'service', 'tag']:
             element_value = argToList(element_value)
             params['element'] = add_argument_list(element_value, element_to_change, True)
         elif element_to_change == 'target':
@@ -2981,11 +2944,9 @@ def panorama_edit_rule_command(args: dict):
 
         if DEVICE_GROUP:
             if not PRE_POST:
-                raise Exception(
-                    'please provide the pre_post argument when editing a rule in Panorama instance.')
+                raise Exception('please provide the pre_post argument when editing a rule in Panorama instance.')
             else:
-                params[
-                    'xpath'] = XPATH_SECURITY_RULES + PRE_POST + f'/security/rules/entry[@name=\'{rulename}\']'
+                params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + f'/security/rules/entry[@name=\'{rulename}\']'
         else:
             params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
         params['xpath'] += '/' + element_to_change
@@ -3025,8 +2986,7 @@ def panorama_delete_rule_command(rulename: str):
         if not PRE_POST:
             raise Exception('Please provide the pre_post argument when moving a rule in Panorama instance.')
         else:
-            params[
-                'xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+            params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
     else:
         params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
 
@@ -3083,8 +3043,7 @@ def panorama_custom_block_rule_command(args: dict):
     if object_type == 'ip':
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
-                                                  destination=['any'], rulename=rulename + '-from',
-                                                  target=target,
+                                                  destination=['any'], rulename=rulename + '-from', target=target,
                                                   log_forwarding=log_forwarding, tags=tags)
             result = http_request(URL, 'POST', body=params)
         if block_destination:
@@ -3097,8 +3056,7 @@ def panorama_custom_block_rule_command(args: dict):
     elif object_type in ['address-group', 'edl']:
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
-                                                  destination=['any'], rulename=rulename + '-from',
-                                                  target=target,
+                                                  destination=['any'], rulename=rulename + '-from', target=target,
                                                   log_forwarding=log_forwarding, tags=tags)
             result = http_request(URL, 'POST', body=params)
         if block_destination:
@@ -3109,16 +3067,14 @@ def panorama_custom_block_rule_command(args: dict):
         custom_block_output['AddressGroup'] = object_value
 
     elif object_type == 'url-category':
-        params = prepare_security_rule_params(api_action='set', action='drop', source=['any'],
-                                              destination=['any'],
+        params = prepare_security_rule_params(api_action='set', action='drop', source=['any'], destination=['any'],
                                               category=object_value, rulename=rulename, target=target,
                                               log_forwarding=log_forwarding, tags=tags)
         result = http_request(URL, 'POST', body=params)
         custom_block_output['CustomURLCategory'] = object_value
 
     elif object_type == 'application':
-        params = prepare_security_rule_params(api_action='set', action='drop', source=['any'],
-                                              destination=['any'],
+        params = prepare_security_rule_params(api_action='set', action='drop', source=['any'], destination=['any'],
                                               application=object_value, rulename=rulename, target=target,
                                               log_forwarding=log_forwarding, tags=tags)
         result = http_request(URL, 'POST', body=params)
@@ -3168,8 +3124,7 @@ def panorama_list_pcaps_command(args: dict):
     json_result = json.loads(xml2json(result.text))['response']
     if json_result['@status'] != 'success':
         raise Exception('Request to get list of Pcaps Failed.\nStatus code: ' + str(
-            json_result['response']['@code']) + '\nWith message: ' + str(
-            json_result['response']['msg']['line']))
+            json_result['response']['@code']) + '\nWith message: ' + str(json_result['response']['msg']['line']))
 
     dir_listing = json_result['result']['dir-listing']
     if 'file' not in dir_listing:
@@ -3203,9 +3158,8 @@ def validate_search_time(search_time: str) -> str:
         datetime.strptime(search_time, '%Y/%m/%d %H:%M:%S')
         return search_time
     except ValueError as err:
-        raise ValueError(
-            f"Incorrect data format. searchTime should be of: YYYY/MM/DD HH:MM:SS or YYYY/MM/DD.\n"
-            f"Error is: {str(err)}")
+        raise ValueError(f"Incorrect data format. searchTime should be of: YYYY/MM/DD HH:MM:SS or YYYY/MM/DD.\n"
+                         f"Error is: {str(err)}")
 
 
 @logger
@@ -3310,8 +3264,7 @@ def panorama_list_applications(predefined: bool):
     }
     if predefined:
         if major_version < 9:
-            raise Exception(
-                'Listing predefined applications is only available for PAN-OS 9.X and above versions.')
+            raise Exception('Listing predefined applications is only available for PAN-OS 9.X and above versions.')
         else:
             params['xpath'] = '/config/predefined/application'
     else:
@@ -3338,7 +3291,7 @@ def panorama_list_applications_command(predefined: Optional[str] = None):
     """
     List all applications
     """
-    predefined = predefined == 'true'  # type: ignore
+    predefined = predefined == 'true'
     applications_arr = panorama_list_applications(predefined)
     applications_arr_output = prettify_applications_arr(applications_arr)
     headers = ['Id', 'Name', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description']
@@ -3416,8 +3369,7 @@ def panorama_list_edls_command():
         'Contents': edls_arr,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('External Dynamic Lists:', edls_output,
-                                         ['Name', 'Type', 'URL', 'Recurring', 'CertificateProfile',
-                                          'Description'],
+                                         ['Name', 'Type', 'URL', 'Recurring', 'CertificateProfile', 'Description'],
                                          removeNull=True),
         'EntryContext': {
             "Panorama.EDL(val.Name == obj.Name)": edls_output
@@ -3478,8 +3430,7 @@ def panorama_get_edl_command(edl_name: str):
         'Contents': edl,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('External Dynamic List:', edl_output,
-                                         ['Name', 'Type', 'URL', 'Recurring', 'CertificateProfile',
-                                          'Description'],
+                                         ['Name', 'Type', 'URL', 'Recurring', 'CertificateProfile', 'Description'],
                                          None, True),
         'EntryContext': {
             "Panorama.EDL(val.Name == obj.Name)": edl_output
@@ -3488,8 +3439,7 @@ def panorama_get_edl_command(edl_name: str):
 
 
 @logger
-def panorama_create_edl(edl_name: str, url: str, type_: str, recurring: str,
-                        certificate_profile: Optional[str],
+def panorama_create_edl(edl_name: str, url: str, type_: str, recurring: str, certificate_profile: Optional[str],
                         description: Optional[str]):
     params = {
         'action': 'set',
@@ -3498,8 +3448,7 @@ def panorama_create_edl(edl_name: str, url: str, type_: str, recurring: str,
         'key': API_KEY
     }
 
-    params['element'] = add_argument(url, 'url',
-                                     False) + '<recurring><' + recurring + '/></recurring>' + add_argument(
+    params['element'] = add_argument(url, 'url', False) + '<recurring><' + recurring + '/></recurring>' + add_argument(
         certificate_profile, 'certificate-profile', False) + add_argument(description, 'description', False)
 
     result = http_request(
@@ -3842,8 +3791,7 @@ def panorama_register_user_tag_command(args: dict):
     """
     major_version = get_pan_os_major_version()
     if major_version <= 8:
-        raise Exception(
-            'The panorama-register-user-tag command is only available for PAN-OS 9.X and above versions.')
+        raise Exception('The panorama-register-user-tag command is only available for PAN-OS 9.X and above versions.')
     tag = args['tag']
     users = argToList(args['Users'])
 
@@ -3901,8 +3849,7 @@ def panorama_unregister_user_tag_command(args: dict):
     """
     major_version = get_pan_os_major_version()
     if major_version <= 8:
-        raise Exception(
-            'The panorama-unregister-user-tag command is only available for PAN-OS 9.X and above versions.')
+        raise Exception('The panorama-unregister-user-tag command is only available for PAN-OS 9.X and above versions.')
     tag = args['tag']
     users = argToList(args['Users'])
 
@@ -3949,8 +3896,7 @@ def build_traffic_logs_query(source: str, destination: Optional[str], receive_ti
 
 
 @logger
-def panorama_query_traffic_logs(number_of_logs: str, direction: str, query: str, source: str,
-                                destination: str,
+def panorama_query_traffic_logs(number_of_logs: str, direction: str, query: str, source: str, destination: str,
                                 receive_time: str, application: str, to_port: str, action: str):
     params = {
         'type': 'log',
@@ -3961,8 +3907,7 @@ def panorama_query_traffic_logs(number_of_logs: str, direction: str, query: str,
     if query and len(query) > 0:
         params['query'] = query
     else:
-        params['query'] = build_traffic_logs_query(source, destination, receive_time, application, to_port,
-                                                   action)
+        params['query'] = build_traffic_logs_query(source, destination, receive_time, application, to_port, action)
     if number_of_logs:
         params['nlogs'] = number_of_logs
     if direction:
@@ -4004,8 +3949,7 @@ def panorama_query_traffic_logs_command(args: dict):
         else:
             raise Exception('Query traffic logs failed.')
 
-    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response'][
-        'result']:
+    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
         raise Exception('Missing JobID in response.')
     query_traffic_output = {
         'JobID': result['response']['result']['job'],
@@ -4056,8 +4000,7 @@ def panorama_check_traffic_logs_status_command(job_id: str):
         'Status': 'Pending'
     }
 
-    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response'][
-        'result'] \
+    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
             or 'status' not in result['response']['result']['job']:
         raise Exception('Missing JobID status in response.')
     if result['response']['result']['job']['status'] == 'FIN':
@@ -4068,8 +4011,7 @@ def panorama_check_traffic_logs_status_command(job_id: str):
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Query Traffic Logs status:', query_traffic_status_output,
-                                         ['JobID', 'Status'],
+        'HumanReadable': tableToMarkdown('Query Traffic Logs status:', query_traffic_status_output, ['JobID', 'Status'],
                                          removeNull=True),
         'EntryContext': {"Panorama.TrafficLogs(val.JobID == obj.JobID)": query_traffic_status_output}
     })
@@ -4137,8 +4079,7 @@ def panorama_get_traffic_logs_command(job_id: str):
         'Status': 'Pending'
     }
 
-    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response'][
-        'result'] \
+    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
             or 'status' not in result['response']['result']['job']:
         raise Exception('Missing JobID status in response.')
 
@@ -4154,8 +4095,7 @@ def panorama_get_traffic_logs_command(job_id: str):
         })
     else:  # FIN
         query_traffic_logs_output['Status'] = 'Completed'
-        if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response'][
-            'result'] \
+        if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response']['result'] \
                 or 'logs' not in result['response']['result']['log']:
             raise Exception('Missing logs in response.')
 
@@ -4171,8 +4111,7 @@ def panorama_get_traffic_logs_command(job_id: str):
                 'Contents': result,
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': tableToMarkdown('Query Traffic Logs:', pretty_traffic_logs,
-                                                 ['JobID', 'Source', 'SourcePort', 'Destination',
-                                                  'DestinationPort',
+                                                 ['JobID', 'Source', 'SourcePort', 'Destination', 'DestinationPort',
                                                   'Application', 'Action'], removeNull=True),
                 'EntryContext': {"Panorama.TrafficLogs(val.JobID == obj.JobID)": query_traffic_logs_output}
             })
@@ -4253,8 +4192,7 @@ def build_logs_query(address_src: Optional[str], address_dst: Optional[str], ip_
 
 
 @logger
-def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_src: str, address_dst: str,
-                        ip_: str,
+def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_src: str, address_dst: str, ip_: str,
                         zone_src: str, zone_dst: str, time_generated: str, action: str,
                         port_dst: str, rule: str, url: str, filedigest: str):
     params = {
@@ -4312,8 +4250,7 @@ def panorama_query_logs_command(args: dict):
 
     if query and (address_src or address_dst or zone_src or zone_dst
                   or time_generated or action or port_dst or rule or url or filedigest):
-        raise Exception(
-            'Use the free query argument or the fixed search parameters arguments to build your query.')
+        raise Exception('Use the free query argument or the fixed search parameters arguments to build your query.')
 
     result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
                                  zone_src, zone_dst, time_generated, action,
@@ -4326,8 +4263,7 @@ def panorama_query_logs_command(args: dict):
         else:
             raise Exception('Query logs failed.')
 
-    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response'][
-        'result']:
+    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
         raise Exception('Missing JobID in response.')
 
     query_logs_output = {
@@ -4342,8 +4278,7 @@ def panorama_query_logs_command(args: dict):
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Query Logs:', query_logs_output, ['JobID', 'Status'],
-                                         removeNull=True),
+        'HumanReadable': tableToMarkdown('Query Logs:', query_logs_output, ['JobID', 'Status'], removeNull=True),
         'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
     })
 
@@ -4368,8 +4303,7 @@ def panorama_check_logs_status_command(job_id: str):
             'Status': 'Pending'
         }
 
-        if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response'][
-            'result'] \
+        if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
                 or 'status' not in result['response']['result']['job']:
             raise Exception('Missing JobID status in response.')
         if result['response']['result']['job']['status'] == 'FIN':
@@ -4380,8 +4314,7 @@ def panorama_check_logs_status_command(job_id: str):
             'ContentsFormat': formats['json'],
             'Contents': result,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Query Logs status:', query_logs_status_output,
-                                             ['JobID', 'Status'],
+            'HumanReadable': tableToMarkdown('Query Logs status:', query_logs_status_output, ['JobID', 'Status'],
                                              removeNull=True),
             'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_status_output}
         })
@@ -4509,8 +4442,7 @@ def panorama_get_logs_command(args: dict):
             'Status': 'Pending'
         }
 
-        if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response'][
-            'result'] \
+        if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
                 or 'status' not in result['response']['result']['job']:
             raise Exception('Missing JobID status in response.')
 
@@ -4526,9 +4458,8 @@ def panorama_get_logs_command(args: dict):
             })
         else:  # FIN
             query_logs_output['Status'] = 'Completed'
-            if 'response' not in result or 'result' not in result['response'] or 'log' not in \
-                    result['response'][
-                        'result'] \
+            if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response'][
+                'result'] \
                     or 'logs' not in result['response']['result']['log']:
                 raise Exception('Missing logs in response.')
 
@@ -4539,8 +4470,7 @@ def panorama_get_logs_command(args: dict):
                 pretty_logs = prettify_logs(logs['entry'])
                 query_logs_output['Logs'] = pretty_logs
                 human_readable = tableToMarkdown('Query ' + log_type + ' Logs:', query_logs_output['Logs'],
-                                                 ['TimeGenerated', 'SourceAddress', 'DestinationAddress',
-                                                  'Application',
+                                                 ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
                                                   'Action', 'Rule', 'URLOrFilename'], removeNull=True)
             return_results({
                 'Type': entryTypes['note'],
@@ -4592,8 +4522,7 @@ def panorama_security_policy_match(application: Optional[str] = None, category: 
                                    protocol: Optional[str] = None, source: Optional[str] = None,
                                    source_user: Optional[str] = None):
     params = {'type': 'op', 'key': API_KEY,
-              'cmd': build_policy_match_query(application, category, destination, destination_port, from_,
-                                              to_,
+              'cmd': build_policy_match_query(application, category, destination, destination_port, from_, to_,
                                               protocol, source, source_user)}
 
     result = http_request(
@@ -4640,8 +4569,7 @@ def prettify_matching_rules(matching_rules: Union[list, dict]):
 
 def prettify_query_fields(application: Optional[str] = None, category: Optional[str] = None,
                           destination: Optional[str] = None, destination_port: Optional[str] = None,
-                          from_: Optional[str] = None, to_: Optional[str] = None,
-                          protocol: Optional[str] = None,
+                          from_: Optional[str] = None, to_: Optional[str] = None, protocol: Optional[str] = None,
                           source: Optional[str] = None, source_user: Optional[str] = None):
     pretty_query_fields = {'Source': source, 'Destination': destination, 'Protocol': protocol}
     if application:
@@ -4661,8 +4589,7 @@ def prettify_query_fields(application: Optional[str] = None, category: Optional[
 
 def panorama_security_policy_match_command(args: dict):
     if not VSYS:
-        raise Exception(
-            "The 'panorama-security-policy-match' command is only relevant for a Firewall instance.")
+        raise Exception("The 'panorama-security-policy-match' command is only relevant for a Firewall instance.")
 
     application = args.get('application')
     category = args.get('category')
@@ -4674,8 +4601,7 @@ def panorama_security_policy_match_command(args: dict):
     source = args.get('source')
     source_user = args.get('source-user')
 
-    matching_rules = panorama_security_policy_match(application, category, destination, destination_port,
-                                                    from_, to_,
+    matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_, to_,
                                                     protocol, source, source_user)
     if not matching_rules:
         return_results('The query did not match a Security policy.')
@@ -4691,8 +4617,7 @@ def panorama_security_policy_match_command(args: dict):
             'Contents': matching_rules,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Matching Security Policies:', ec_['Rules'],
-                                             ['Name', 'Action', 'From', 'To', 'Source', 'Destination',
-                                              'Application'],
+                                             ['Name', 'Action', 'From', 'To', 'Source', 'Destination', 'Application'],
                                              removeNull=True),
             'EntryContext': {"Panorama.SecurityPolicyMatch(val.Query == obj.Query)": ec_}
         })
@@ -4701,8 +4626,7 @@ def panorama_security_policy_match_command(args: dict):
 ''' Static Routes'''
 
 
-def prettify_static_route(static_route: Dict, virtual_router: str, template: Optional[str] = None) -> Dict[
-    str, str]:
+def prettify_static_route(static_route: Dict, virtual_router: str, template: Optional[str] = None) -> Dict[str, str]:
     pretty_static_route: Dict = {}
 
     if '@name' in static_route:
@@ -4746,8 +4670,7 @@ def prettify_static_route(static_route: Dict, virtual_router: str, template: Opt
     return pretty_static_route
 
 
-def prettify_static_routes(static_routes: Union[dict, list], virtual_router: str,
-                           template: Optional[str] = None):
+def prettify_static_routes(static_routes: Union[dict, list], virtual_router: str, template: Optional[str] = None):
     if not isinstance(static_routes, list):  # handle case of only one static route in a virtual router
         return prettify_static_route(static_routes, virtual_router, template)
 
@@ -4760,8 +4683,7 @@ def prettify_static_routes(static_routes: Union[dict, list], virtual_router: str
 
 
 @logger
-def panorama_list_static_routes(xpath_network: str, virtual_router: str, show_uncommitted: str) -> Dict[
-    str, str]:
+def panorama_list_static_routes(xpath_network: str, virtual_router: str, show_uncommitted: str) -> Dict[str, str]:
     action = 'get' if show_uncommitted else 'show'
     params = {
         'action': action,
@@ -4787,8 +4709,7 @@ def panorama_list_static_routes_command(args: dict):
         human_readable = 'The Virtual Router has does not exist or has no static routes configured.'
         static_routes = virtual_router_object
     else:
-        static_routes = prettify_static_routes(virtual_router_object['static-route']['entry'], virtual_router,
-                                               template)
+        static_routes = prettify_static_routes(virtual_router_object['static-route']['entry'], virtual_router, template)
         table_header = f'Displaying all Static Routes for the Virtual Router: {virtual_router}'
         headers = ['Name', 'Destination', 'NextHop', 'Uncommitted', 'RouteTable', 'Metric', 'BFDprofile']
         human_readable = tableToMarkdown(name=table_header, t=static_routes, headers=headers, removeNull=True)
@@ -4804,8 +4725,7 @@ def panorama_list_static_routes_command(args: dict):
 
 
 @logger
-def panorama_get_static_route(xpath_network: str, virtual_router: str, static_route_name: str) -> Dict[
-    str, str]:
+def panorama_get_static_route(xpath_network: str, virtual_router: str, static_route_name: str) -> Dict[str, str]:
     params = {
         'action': 'get',
         'type': 'config',
@@ -4844,8 +4764,7 @@ def panorama_get_static_route_command(args: dict):
 
 
 @logger
-def panorama_add_static_route(xpath_network: str, virtual_router: str, static_route_name: str,
-                              destination: str,
+def panorama_add_static_route(xpath_network: str, virtual_router: str, static_route_name: str, destination: str,
                               nexthop_type: str, nexthop_value: str, interface: str = None,
                               metric: str = None) -> Dict[str, str]:
     params = {
@@ -4952,8 +4871,7 @@ def panorama_get_predefined_threats_list(target: str):
 
 def panorama_get_predefined_threats_list_command(target: Optional[str] = None):
     result = panorama_get_predefined_threats_list(target)
-    return_results(
-        fileResult('predefined-threats.json', json.dumps(result['response']['result']).encode('utf-8')))
+    return_results(fileResult('predefined-threats.json', json.dumps(result['response']['result']).encode('utf-8')))
 
 
 def panorama_block_vulnerability(args: dict):
@@ -5011,8 +4929,7 @@ def panorama_delete_static_route_command(args: dict):
         'Contents': deleted_static_route,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': f'The static route: {route_name} was deleted. Changes are not committed.',
-        'EntryContext': {"Panorama.StaticRoutes(val.Name == obj.Name)": entry_context}
-        # add key -> deleted: true
+        'EntryContext': {"Panorama.StaticRoutes(val.Name == obj.Name)": entry_context}  # add key -> deleted: true
     })
 
 
@@ -5194,8 +5111,7 @@ def panorama_install_latest_content_update_command(target: Optional[str] = None)
             'Status': 'Pending'
         }
         entry_context = {"Panorama.Content.Install(val.JobID == obj.JobID)": content_install_info}
-        human_readable = tableToMarkdown('Result:', content_install_info, ['JobID', 'Status'],
-                                         removeNull=True)
+        human_readable = tableToMarkdown('Result:', content_install_info, ['JobID', 'Status'], removeNull=True)
 
         return_results({
             'Type': entryTypes['note'],
@@ -5312,8 +5228,7 @@ def panorama_download_panos_version_command(args: dict):
             'JobID': result['response']['result']['job']
         }
         entry_context = {"Panorama.PANOS.Download(val.JobID == obj.JobID)": panos_version_download}
-        human_readable = tableToMarkdown('Result:', panos_version_download, ['JobID', 'Status'],
-                                         removeNull=True)
+        human_readable = tableToMarkdown('Result:', panos_version_download, ['JobID', 'Status'], removeNull=True)
 
         return_results({
             'Type': entryTypes['note'],
@@ -5414,8 +5329,7 @@ def panorama_install_panos_version_command(args: dict):
             'JobID': result['response']['result']['job']
         }
         entry_context = {"Panorama.PANOS.Install(val.JobID == obj.JobID)": panos_install}
-        human_readable = tableToMarkdown('PAN-OS Installation:', panos_install, ['JobID', 'Status'],
-                                         removeNull=True)
+        human_readable = tableToMarkdown('PAN-OS Installation:', panos_install, ['JobID', 'Status'], removeNull=True)
 
         return_results({
             'Type': entryTypes['note'],
@@ -5520,8 +5434,7 @@ def panorama_show_location_ip_command(ip_address: str):
     """
     result = panorama_show_location_ip(ip_address)
 
-    if 'response' not in result or '@status' not in result['response'] or result['response'][
-        '@status'] != 'success':
+    if 'response' not in result or '@status' not in result['response'] or result['response']['@status'] != 'success':
         raise Exception(f'Failed to successfully show the location of the specified ip: {ip_address}.')
 
     if 'response' in result and 'result' in result['response'] and 'entry' in result['response']['result']:
@@ -5544,8 +5457,7 @@ def panorama_show_location_ip_command(ip_address: str):
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(f'IP {ip_address} location:', show_location_output,
-                                         ['ip_address', 'country_name', 'country_code', 'result'],
-                                         removeNull=True),
+                                         ['ip_address', 'country_name', 'country_code', 'result'], removeNull=True),
         'EntryContext': {"Panorama.Location.IP(val.ip_address == obj.ip_address)": show_location_output}
     })
 
@@ -5568,8 +5480,7 @@ def panorama_get_license_command():
     """
     available_licences = []
     result = panorama_get_license()
-    if 'response' not in result or '@status' not in result['response'] or result['response'][
-        '@status'] != 'success':
+    if 'response' not in result or '@status' not in result['response'] or result['response']['@status'] != 'success':
         demisto.debug(str(result))
         raise Exception('Failed to get the information about PAN-OS available licenses and their statuses.')
 
@@ -5586,15 +5497,13 @@ def panorama_get_license_command():
             'Serial': item.get('serial')
         })
 
-    headers = ['Authcode', 'Base-license-name', 'Description', 'Feature', 'Serial', 'Expired', 'Expires',
-               'Issued']
+    headers = ['Authcode', 'Base-license-name', 'Description', 'Feature', 'Serial', 'Expired', 'Expires', 'Issued']
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('PAN-OS Available Licenses', available_licences, headers,
-                                         removeNull=True),
+        'HumanReadable': tableToMarkdown('PAN-OS Available Licenses', available_licences, headers, removeNull=True),
         'EntryContext': {"Panorama.License(val.Feature == obj.Feature)": available_licences}
     })
 
@@ -5721,8 +5630,7 @@ def get_security_profiles_command(security_profile: str = None):
                 'Rules': antivirus_rules
             }]
 
-        human_readable += tableToMarkdown('Antivirus Profiles', virus_content,
-                                          headers=['Name', 'Decoder', 'Rules'],
+        human_readable += tableToMarkdown('Antivirus Profiles', virus_content, headers=['Name', 'Decoder', 'Rules'],
                                           removeNull=True)
         context.update({"Panorama.Antivirus(val.Name == obj.Name)": virus_content})
 
@@ -5858,8 +5766,7 @@ def apply_security_profile(xpath: str, profile_name: str) -> Dict:
     return result
 
 
-def apply_security_profile_command(profile_name: str, profile_type: str, rule_name: str,
-                                   pre_post: str = None):
+def apply_security_profile_command(profile_name: str, profile_type: str, rule_name: str, pre_post: str = None):
     if DEVICE_GROUP:  # Panorama instance
         if not pre_post:
             raise Exception('Please provide the pre_post argument when applying profiles to rules in '
@@ -6054,8 +5961,7 @@ def get_anti_spyware_best_practice_command():
     rules = strict_profile.get('rules', {}).get('entry')
     profile_rules = prettify_profiles_rules(rules)
     human_readable += tableToMarkdown('Anti Spyware Best Practice Rules', profile_rules,
-                                      ['Name', 'Severity', 'Action', 'Category', 'Threat-name'],
-                                      removeNull=True)
+                                      ['Name', 'Severity', 'Action', 'Category', 'Threat-name'], removeNull=True)
 
     return_results({
         'Type': entryTypes['note'],
@@ -6087,8 +5993,7 @@ def get_file_blocking_best_practice() -> Dict:
 
 def get_file_blocking_best_practice_command():
     results = get_file_blocking_best_practice()
-    file_blocking_profile = results.get('response', {}).get('result', {}).get('file-blocking', {}).get(
-        'entry', [])
+    file_blocking_profile = results.get('response', {}).get('result', {}).get('file-blocking', {}).get('entry', [])
 
     strict_profile = next(item for item in file_blocking_profile if item['@name'] == 'strict file blocking')
     file_blocking_rules = strict_profile.get('rules', {}).get('entry', [])
@@ -6130,8 +6035,7 @@ def get_antivirus_best_practice_command():
     antivirus_rules = strict_profile.get('decoder', {}).get('entry', [])
 
     rules = prettify_profiles_rules(antivirus_rules)
-    human_readable = tableToMarkdown('Antivirus Best Practice Profile', rules,
-                                     ['Name', 'Action', 'WildFire-action'],
+    human_readable = tableToMarkdown('Antivirus Best Practice Profile', rules, ['Name', 'Action', 'WildFire-action'],
                                      removeNull=True)
 
     return_results({
@@ -6162,8 +6066,7 @@ def get_vulnerability_protection_best_practice() -> Dict:
 
 def get_vulnerability_protection_best_practice_command():
     results = get_vulnerability_protection_best_practice()
-    vulnerability_protection = results.get('response', {}).get('result', {}).get('vulnerability', {}).get(
-        'entry', [])
+    vulnerability_protection = results.get('response', {}).get('result', {}).get('vulnerability', {}).get('entry', [])
     strict_profile = next(item for item in vulnerability_protection if item['@name'] == 'strict')
     vulnerability_rules = strict_profile.get('rules', {}).get('entry', [])
     rules = prettify_profiles_rules(vulnerability_rules)
@@ -6260,9 +6163,8 @@ def get_wildfire_best_practice_command():
         {'Name': 'script', 'File-size': '20'}
     ]
 
-    human_readable = tableToMarkdown('WildFire Best Practice Profile', rules,
-                                     ['Name', 'Analysis', 'Application',
-                                      'File-type'], removeNull=True)
+    human_readable = tableToMarkdown('WildFire Best Practice Profile', rules, ['Name', 'Analysis', 'Application',
+                                                                               'File-type'], removeNull=True)
     human_readable += tableToMarkdown('Wildfire Best Practice Schedule', wildfire_schedule)
     human_readable += tableToMarkdown('Wildfire SSL Decrypt Settings', ssl_decrypt_settings)
     human_readable += tableToMarkdown('Wildfire System Settings\n report-grayware-file: yes', system_settings,
@@ -6437,42 +6339,30 @@ def get_url_filtering_best_practice_command():
             'log-severity': 'medium',
             'alert': {
                 'member': [
-                    'abortion', 'abused-drugs', 'adult', 'alcohol-and-tobacco', 'auctions',
-                    'business-and-economy',
+                    'abortion', 'abused-drugs', 'adult', 'alcohol-and-tobacco', 'auctions', 'business-and-economy',
                     'computer-and-internet-info', 'content-delivery-networks', 'cryptocurrency', 'dating',
-                    'educational-institutions', 'entertainment-and-arts', 'financial-services', 'gambling',
-                    'games',
+                    'educational-institutions', 'entertainment-and-arts', 'financial-services', 'gambling', 'games',
                     'government', 'grayware', 'health-and-medicine', 'high-risk', 'home-and-garden',
                     'hunting-and-fishing', 'insufficient-content', 'internet-communications-and-telephony',
-                    'internet-portals', 'job-search', 'legal', 'low-risk', 'medium-risk', 'military',
-                    'motor-vehicles',
-                    'music', 'newly-registered-domain', 'news', 'not-resolved', 'nudity',
-                    'online-storage-and-backup',
+                    'internet-portals', 'job-search', 'legal', 'low-risk', 'medium-risk', 'military', 'motor-vehicles',
+                    'music', 'newly-registered-domain', 'news', 'not-resolved', 'nudity', 'online-storage-and-backup',
                     'peer-to-peer', 'personal-sites-and-blogs', 'philosophy-and-political-advocacy',
                     'private-ip-addresses', 'questionable', 'real-estate', 'recreation-and-hobbies',
-                    'reference-and-research', 'religion', 'search-engines', 'sex-education',
-                    'shareware-and-freeware',
-                    'shopping', 'social-networking', 'society', 'sports', 'stock-advice-and-tools',
-                    'streaming-media',
-                    'swimsuits-and-intimate-apparel', 'training-and-tools', 'translation', 'travel',
-                    'weapons',
+                    'reference-and-research', 'religion', 'search-engines', 'sex-education', 'shareware-and-freeware',
+                    'shopping', 'social-networking', 'society', 'sports', 'stock-advice-and-tools', 'streaming-media',
+                    'swimsuits-and-intimate-apparel', 'training-and-tools', 'translation', 'travel', 'weapons',
                     'web-advertisements', 'web-based-email', 'web-hosting']},
             'block': {'member': ['command-and-control', 'copyright-infringement', 'dynamic-dns', 'extremism',
-                                 'hacking', 'malware', 'parked', 'phishing',
-                                 'proxy-avoidance-and-anonymizers',
+                                 'hacking', 'malware', 'parked', 'phishing', 'proxy-avoidance-and-anonymizers',
                                  'unknown']}},
         'alert': {'member': ['abortion', 'abused-drugs', 'adult', 'alcohol-and-tobacco', 'auctions',
-                             'business-and-economy', 'computer-and-internet-info',
-                             'content-delivery-networks',
+                             'business-and-economy', 'computer-and-internet-info', 'content-delivery-networks',
                              'cryptocurrency', 'dating', 'educational-institutions', 'entertainment-and-arts',
-                             'financial-services', 'gambling', 'games', 'government', 'grayware',
-                             'health-and-medicine',
+                             'financial-services', 'gambling', 'games', 'government', 'grayware', 'health-and-medicine',
                              'high-risk', 'home-and-garden', 'hunting-and-fishing', 'insufficient-content',
-                             'internet-communications-and-telephony', 'internet-portals', 'job-search',
-                             'legal',
+                             'internet-communications-and-telephony', 'internet-portals', 'job-search', 'legal',
                              'low-risk', 'medium-risk', 'military', 'motor-vehicles', 'music',
-                             'newly-registered-domain', 'news', 'not-resolved', 'nudity',
-                             'online-storage-and-backup',
+                             'newly-registered-domain', 'news', 'not-resolved', 'nudity', 'online-storage-and-backup',
                              'peer-to-peer', 'personal-sites-and-blogs', 'philosophy-and-political-advocacy',
                              'private-ip-addresses', 'questionable', 'real-estate', 'recreation-and-hobbies',
                              'reference-and-research', 'religion', 'search-engines', 'sex-education',
@@ -6480,9 +6370,8 @@ def get_url_filtering_best_practice_command():
                              'stock-advice-and-tools', 'streaming-media', 'swimsuits-and-intimate-apparel',
                              'training-and-tools', 'translation', 'travel', 'weapons', 'web-advertisements',
                              'web-based-email', 'web-hosting']},
-        'block': {
-            'member': ['command-and-control', 'copyright-infringement', 'dynamic-dns', 'extremism', 'hacking',
-                       'malware', 'parked', 'phishing', 'proxy-avoidance-and-anonymizers', 'unknown']}}
+        'block': {'member': ['command-and-control', 'copyright-infringement', 'dynamic-dns', 'extremism', 'hacking',
+                             'malware', 'parked', 'phishing', 'proxy-avoidance-and-anonymizers', 'unknown']}}
 
     headers_best_practice = {
         'log-http-hdr-xff': 'yes',
@@ -6989,8 +6878,7 @@ def list_configured_user_id_agents_command(args):
     raw_response = list_configured_user_id_agents_request(args, version)
     if raw_response:
         formatted_results = prettify_configured_user_id_agents(raw_response)
-        headers = ['Name', 'Disabled', 'SerialNumber', 'Host', 'Port', 'CollectorName', 'LdapProxy',
-                   'NtlmAuth',
+        headers = ['Name', 'Disabled', 'SerialNumber', 'Host', 'Port', 'CollectorName', 'LdapProxy', 'NtlmAuth',
                    'IpUserMapping']
 
         return_results(
@@ -7079,8 +6967,7 @@ def panorama_upload_content_update_file_command(args: dict):
     shutil.copy(file_path, file_name)
     with open(file_name, 'rb') as file:
         params = {'type': 'import', 'category': category, 'key': API_KEY}
-        response = http_request(uri=URL, method="POST", headers={}, body={}, params=params,
-                                files={'file': file})
+        response = http_request(uri=URL, method="POST", headers={}, body={}, params=params, files={'file': file})
         human_readble = tableToMarkdown("Results", t=response.get('response'))
         content_upload_info = {
             'Message': response['response']['msg'],
@@ -7138,8 +7025,7 @@ def panorama_install_file_content_update_command(args: dict):
             'Status': 'Pending'
         }
         entry_context = {"Panorama.Content.Install(val.JobID == obj.JobID)": content_install_info}
-        human_readable = tableToMarkdown('Result:', content_install_info, ['JobID', 'Status'],
-                                         removeNull=True)
+        human_readable = tableToMarkdown('Result:', content_install_info, ['JobID', 'Status'], removeNull=True)
 
         return_results({
             'Type': entryTypes['note'],
