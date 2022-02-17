@@ -8,12 +8,12 @@ keys = args.get('key')
 if not isinstance(values, list):
     try:
         values = json.loads(values)
-    except:
+    except TypeError:
         pass
     if not isinstance(values, list):
         try:
             values = values.split(",")
-        except:
+        except AttributeError:
             pass
 
 if not isinstance(values, list):
@@ -22,12 +22,12 @@ if not isinstance(values, list):
 if not isinstance(keys, list):
     try:
         keys = json.loads(keys)
-    except:
+    except TypeError:
         pass
     if not isinstance(keys, list):
         try:
             keys = keys.split(",")
-        except:
+        except AttributeError:
             pass
 
 if not isinstance(keys, list):
