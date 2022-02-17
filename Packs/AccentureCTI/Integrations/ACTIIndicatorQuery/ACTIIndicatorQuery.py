@@ -101,7 +101,10 @@ def _extract_analysis_info(res: dict, dbot_score_type: str, reliability: DBotSco
                 last_published = result_content.get('last_published', '')
                 last_published_format = parse_date_string(last_published, DATE_FORMAT)
                 last_seen = result_content.get('last_seen', '')
-                last_seen_format = parse_date_string(last_seen, DATE_FORMAT)
+                if last_seen:
+                    last_seen_format = parse_date_string(last_seen, DATE_FORMAT)
+                else:
+                    last_seen_format = 'no Last Seen details available'
                 analysis_info = {
                     'Name': result_content.get('display_text', ''),
                     'DbotReputation': dbot_score,
@@ -317,7 +320,10 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, 
         last_published = res.get('last_published', '')
         last_published_format = parse_date_string(last_published, DATE_FORMAT)
         last_seen = res.get('last_seen', '')
-        last_seen_format = parse_date_string(last_seen, DATE_FORMAT)
+        if last_seen:
+            last_seen_format = parse_date_string(last_seen, DATE_FORMAT)
+        else:
+            last_seen_format = 'no Last Seen details available'
         analysis_info = {
             'Name': res.get('display_text', ''),
             'DbotReputation': dbot_score,

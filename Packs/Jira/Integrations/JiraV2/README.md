@@ -75,12 +75,13 @@ Queries Jira issues.
 `jira-issue-query`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| query | The JQL query string. | Required | 
-| startAt | The index (integer) of the first issue to return (0-based). | Optional | 
-| maxResults | The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. | Optional | 
-| headers | Display the headers in human readable format. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                     | **Required** |
+|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| query             | The JQL query string.                                                                                                                                                                                                                                                               | Required | 
+| startAt           | The index (integer) of the first issue to return (0-based).                                                                                                                                                                                                                         | Optional | 
+| maxResults        | The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. | Optional | 
+| headers           | Display the headers in human readable format.                                                                                                                                                                                                                                       | Optional | 
+| extraFields       | Specify the result fields.                                                                                                                                                                                                                                                          | Optional | 
 
 
 #### Context Output

@@ -25,6 +25,7 @@ oauth_config:
       - channels:read
       - channels:manage
       - chat:write
+      - chat:write.customize
       - files:write
       - groups:history
       - groups:read

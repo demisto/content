@@ -189,6 +189,7 @@ except Exception:
 CONTENT_RELEASE_VERSION = '0.0.0'
 CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
+PY_VER_MINOR = sys.version_info[1]
 STIX_PREFIX = "STIX "
 # pylint: disable=undefined-variable
 
@@ -6497,8 +6498,7 @@ ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4
 ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'  # noqa: E501
 emailRegex = r'\b[^@]{1,64}@[^@]{1,253}\.[^@]+\b'
 hashRegex = r'\b[0-9a-fA-F]+\b'
-urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
-           r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
+urlRegex = r'(?i)((?:(?:https?|ftps?|hxxps?|sftp|meows):\/\/|www\[?\.\]?|ftp\[?\.\]?|(?:(?:https?|ftps?|hxxps?|sftp|meows):\/\/www\[?\.\]?))(((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)(\[?\.\]?[A-Za-z]{2,6})?)|(([A-Za-z0-9\S]\.|[A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9]\[?\.\]?){1,3}[A-Za-z]{2,6})|(0\[?x\]?[0-9a-fA-F]{8})|([0-7]{4}\.[0-7]{4}\.[0-7]{4}\.[0-7]{4})|([0-9]{1,10}))($|\/\S+|\/$|:[0-9]{1,5}($|\/\S*))|^(((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?))(\/([0-9]|[12][0-9]|3[0-2])\/\S+|\/[A-Za-z]\S*|\/([3-9]{2}|[0-9]{3,})\S*|(:[0-9]{1,5}\/\S+))$)|(([A-Za-z0-9\S]\.|[A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9]\[?\.\]?){1,3}[A-Za-z]{2,6}(((\/\S+))|(:[0-9]{1,5}\/\S+))$)|\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b((\/([0-9]|[1-5][0-9]|6[0-4])\/\S+|\/[A-Za-z]\S*|\/((6[5-9]|[7-9][0-9])|[0-9]{3,}|65)\S*|(:[0-9]{1,5}\/\S+))$))'  # noqa: E501
 cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
@@ -7169,6 +7169,30 @@ H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor'
 
 # Will add only if 'requests' module imported
 if 'requests' in sys.modules:
+    if IS_PY3 and PY_VER_MINOR >= 10:
+        from requests.packages.urllib3.util.ssl_ import create_urllib3_context
+
+        # The ciphers string used to replace default cipher string
+
+        CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:' \
+                         'ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'
+
+        class SSLAdapter(HTTPAdapter):
+            """
+                A wrapper used for https communication to enable ciphers that are commonly used
+                and are not enabled by default
+            """
+
+            def init_poolmanager(self, *args, **kwargs):
+                context = create_urllib3_context(ciphers=CIPHERS_STRING)
+                kwargs['ssl_context'] = context
+                return super(SSLAdapter, self).init_poolmanager(*args, **kwargs)
+
+            def proxy_manager_for(self, *args, **kwargs):
+                context = create_urllib3_context(ciphers=CIPHERS_STRING)
+                kwargs['ssl_context'] = context
+                return super(SSLAdapter, self).proxy_manager_for(*args, **kwargs)
+
     class BaseClient(object):
         """Client to use in integrations with powerful _http_request
         :type base_url: ``str``
@@ -7217,6 +7241,14 @@ if 'requests' in sys.modules:
             self._headers = headers
             self._auth = auth
             self._session = requests.Session()
+
+            # the following condition was added to overcome the security hardening happened in Python 3.10.
+            # https://github.com/python/cpython/pull/25778
+            # https://bugs.python.org/issue43998
+
+            if IS_PY3 and PY_VER_MINOR >= 10 and not verify:
+                self._session.mount('https://', SSLAdapter())
+
             if proxy:
                 ensure_proxy_has_http_prefix()
             else:
@@ -7297,9 +7329,21 @@ if 'requests' in sys.modules:
                     raise_on_redirect=raise_on_redirect,
                     **whitelist_kawargs
                 )
-                adapter = HTTPAdapter(max_retries=retry)
-                self._session.mount('http://', adapter)
-                self._session.mount('https://', adapter)
+                http_adapter = HTTPAdapter(max_retries=retry)
+
+                # the following condition was added to overcome the security hardening happened in Python 3.10.
+                # https://github.com/python/cpython/pull/25778
+                # https://bugs.python.org/issue43998
+
+                if self._verify:
+                    https_adapter = http_adapter
+                elif IS_PY3 and PY_VER_MINOR >= 10:
+                    https_adapter = SSLAdapter(max_retries=retry)
+                else:
+                    https_adapter = http_adapter
+
+                self._session.mount('https://', https_adapter)
+
             except NameError:
                 pass
 
@@ -8638,7 +8682,12 @@ def get_size_of_object(input_object):
     :return: Size of input_object in bytes.
     :rtype: ``int``
     """
-    from collections import deque, Mapping
+    if IS_PY3 and PY_VER_MINOR >= 10:
+        from collections.abc import Mapping
+    else:
+        from collections import Mapping  # type: ignore[no-redef]
+
+    from collections import deque
     from numbers import Number
     # IS_PY3:
     # ZERO_DEPTH_BASES = (str, bytes, Number, range, bytearray) if IS_PY3 else (str, bytes, Number, bytearray)
@@ -8839,6 +8888,93 @@ def shorten_string_for_printing(source_string, max_length=64):
             + '...' \
             + source_string[-extremeties_length:]
         return ret_value
+
+
+class PollResult:
+    """The response object for polling functions. This object contains information about whether to run again, and what
+    the CommandResults are in case of success, or failure.
+
+    :return: PollResult
+    :rtype: ``PollResult``
+
+    """
+    def __init__(self, response, continue_to_poll=False, args_for_next_run=None, partial_result=None):
+        """
+        Constructor for PollResult
+
+        :type response: ``Any``
+        :param response: The response of the command in the event of success,
+        or in case of failure but Polling is false
+
+        :type continue_to_poll: ``Union[bool, Callable]``
+        :param continue_to_poll: An iterable of relevant keys list from the json. Notice we save it as a set in the class
+
+        :type args_for_next_run: ``Dict``
+        :param args_for_next_run: The arguments to use in the next iteration. Will use the input args in case of None
+
+        :type partial_result: ``CommandResults``
+        :param partial_result: CommandResults to return, even though we will poll again
+
+        """
+        self.response = response
+        self.continue_to_poll = continue_to_poll
+        self.args_for_next_run = args_for_next_run
+        self.partial_result = partial_result
+
+
+def polling_function(name, interval=30, timeout=600, poll_message='Fetching Results:', polling_arg_name="polling",
+                     requires_polling_arg=True):
+    """
+    To use on a function that should rerun itself
+    Commands that use this decorator must have a Polling argument, polling: true in yaml,
+    and a hidden hide_polling_output argument.
+    Commands that use this decorator should return a PollResult.
+    Will raise an DemistoException if the server version doesn't support Scheduled Commands (< 6.2.0)
+
+    :type name: ``str``
+    :param name: The name of the command
+
+    :type interval: ``int``
+    :param interval: How many seconds until the next run
+
+    :type timeout: ``int``
+    :param timeout: How long
+
+    :type poll_message: ``str``
+    :param poll_message: The message to display in the war room while polling
+
+    :type requires_polling_arg: ``bool``
+    :param requires_polling_arg: Whether a polling argument should be expected as one of the demisto args
+
+    :return: Decorator for polling functions
+    :rtype: ``Function``
+    """
+
+    def dec(func):
+        def inner(client, args):
+            if not requires_polling_arg or args.get(polling_arg_name):
+                ScheduledCommand.raise_error_if_not_supported()
+                poll_result = func(client, args)
+
+                should_poll = poll_result.continue_to_poll if isinstance(poll_result.continue_to_poll, bool) \
+                    else poll_result.continue_to_poll()
+                if not should_poll:
+                    return poll_result.response
+
+                readable_output = poll_message if not args.get('hide_polling_output') else None
+                poll_args = poll_result.args_for_next_run or args
+                poll_args['hide_polling_output'] = True
+
+                poll_response = poll_result.partial_result or CommandResults(readable_output=readable_output)
+                poll_response.scheduled_command = ScheduledCommand(command=name, next_run_in_seconds=interval,
+                                                                   args=poll_args, timeout_in_seconds=timeout)
+                return poll_response
+            else:
+                return func(client, args).response
+
+        return inner
+
+    return dec
 
 
 ###########################################

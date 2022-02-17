@@ -132,6 +132,7 @@ def prepare_args(command, args):
             'to_recipients': argToList(args.get('to')),
             'cc_recipients': argToList(args.get('cc')),
             'bcc_recipients': argToList(args.get('bcc')),
+            'replyTo': argToList(args.get('replyTo')),
             'subject': args.get('subject', ''),
             'body': email_body,
             'body_type': args.get('body_type', 'html'),
@@ -148,7 +149,10 @@ def prepare_args(command, args):
         return {
             'to_recipients': argToList(args.get('to')),
             'message_id': args.get('message_id', ''),
-            'comment': args.get('comment')
+            'comment': args.get('comment'),
+            'attach_ids': argToList(args.get('attach_ids')),
+            'attach_names': argToList(args.get('attach_names')),
+            'attach_cids': argToList((args.get('attach_cids')))
         }
 
     return args
@@ -584,7 +588,7 @@ class MsGraphClient:
 
     @staticmethod
     def _build_message(to_recipients, cc_recipients, bcc_recipients, subject, body, body_type, flag, importance,
-                       internet_message_headers, attach_ids, attach_names, attach_cids, manual_attachments):
+                       internet_message_headers, attach_ids, attach_names, attach_cids, manual_attachments, replyTo):
         """
         Builds valid message dict.
         For more information https://docs.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
@@ -593,6 +597,7 @@ class MsGraphClient:
             'toRecipients': MsGraphClient._build_recipient_input(to_recipients),
             'ccRecipients': MsGraphClient._build_recipient_input(cc_recipients),
             'bccRecipients': MsGraphClient._build_recipient_input(bcc_recipients),
+            'replyTo': MsGraphClient._build_recipient_input(replyTo),
             'subject': subject,
             'body': MsGraphClient._build_body_input(body=body, body_type=body_type),
             'bodyPreview': body[:255],
@@ -608,7 +613,7 @@ class MsGraphClient:
         return message
 
     @staticmethod
-    def _build_reply(to_recipients, comment):
+    def _build_reply(to_recipients, comment, attach_ids, attach_names, attach_cids):
         """
         Builds the reply message that includes recipients to reply and reply message.
 
@@ -618,12 +623,22 @@ class MsGraphClient:
         :type comment: ``str``
         :param comment: The message to reply.
 
+        :type attach_ids: ``list``
+        :param attach_ids: List of uploaded to War Room regular attachments to send
+
+        :type attach_names: ``list``
+        :param attach_names: List of regular attachments names to send
+
+        :type attach_cids: ``list``
+        :param attach_cids: List of uploaded to War Room inline attachments to send
+
         :return: Returns legal reply message.
         :rtype: ``dict``
         """
         return {
             'message': {
-                'toRecipients': MsGraphClient._build_recipient_input(to_recipients)
+                'toRecipients': MsGraphClient._build_recipient_input(to_recipients),
+                'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids, [])
             },
             'comment': comment
         }
@@ -784,7 +799,7 @@ class MsGraphClient:
 
         return human_readable, ec
 
-    def reply_to(self, to_recipients, comment, message_id):
+    def reply_to(self, to_recipients, comment, message_id, attach_ids, attach_names, attach_cids):
         """
         Sends reply message to recipients.
 
@@ -797,11 +812,20 @@ class MsGraphClient:
         :type message_id: ``str``
         :param message_id: The message id to reply.
 
+        :type attach_ids: ``list``
+        :param attach_ids: List of uploaded to War Room regular attachments to send
+
+        :type attach_names: ``list``
+        :param attach_names: List of regular attachments names to send
+
+        :type attach_cids: ``list``
+        :param attach_cids: List of uploaded to War Room inline attachments to send
+
         :return: String representation of markdown message regarding successful message submission.
         rtype: ``str``
         """
         suffix_endpoint = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/reply'
-        reply = MsGraphClient._build_reply(to_recipients, comment)
+        reply = MsGraphClient._build_reply(to_recipients, comment, attach_ids, attach_names, attach_cids)
         self.ms_client.http_request('POST', suffix_endpoint, json_data=reply, resp_type="text")
 
         return f'### Replied to: {", ".join(to_recipients)} with comment: {comment}'

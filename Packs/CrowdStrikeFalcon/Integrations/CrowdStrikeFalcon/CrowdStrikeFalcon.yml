@@ -414,7 +414,7 @@ script:
       default: false
       defaultValue: read
       description: 'The scope for which to run the command. Possible values are: "read",
-        "write", and "admin".'
+        "write", and "admin". (NOTE: In order to run the CrowdStrike RTR `put` command, it is necessary to pass `scope=admin`.)'
       isArray: false
       name: scope
       predefined:
@@ -2140,6 +2140,12 @@ script:
       name: fetch_query
       required: false
       secret: false
+    - default: false
+      description: A comma separated detections ids for example - ldt:1234:1234,ldt:5678:5678, In case you use this IDs argument fetch_query argument will be ignored.
+      isArray: true
+      name: ids
+      required: false
+      secret: false
     deprecated: false
     description: Lists detection summaries.
     execution: false
@@ -2415,6 +2421,12 @@ script:
       description: The query used to filter the results.
       isArray: false
       name: fetch_query
+      required: false
+      secret: false
+    - default: false
+      description: A comma separated incident ids for example - inc:1234:1234,inc:5678:5678, In case you use this IDs argument fetch_query argument will be ignored.
+      isArray: true
+      name: ids
       required: false
       secret: false
     deprecated: false
@@ -2939,7 +2951,7 @@ script:
     description: Resolve incidents.
     execution: false
     name: cs-falcon-resolve-incident
-  dockerimage: demisto/python3:3.9.9.25564
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: true
   longRunning: false
