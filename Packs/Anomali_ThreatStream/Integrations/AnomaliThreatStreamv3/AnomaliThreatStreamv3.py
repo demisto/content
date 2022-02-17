@@ -1141,7 +1141,7 @@ def get_indicators(client: Client, **kwargs):
     offset = kwargs['offset'] = 0
     url = "v2/intelligence/"
     if 'query' in kwargs:
-        url += f"?{kwargs.pop('query')}"
+        url += f"?q={kwargs.pop('query')}"
     iocs_list = client.http_request("GET", url, params=kwargs).get('objects', None)
     if not iocs_list:
         return 'No indicators found from ThreatStream'
