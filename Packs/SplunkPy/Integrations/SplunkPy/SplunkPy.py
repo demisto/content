@@ -2489,6 +2489,24 @@ def get_store_data(service):
         yield store.data.query(**query)
 
 
+def get_connection_args():
+    """
+    This function gets the connection arguments: host, port, app, and verify.
+
+    Returns: connection args
+    """
+    params = demisto.params()
+    app = params.get('app', '-')
+    connection_args = {
+        'host': params['host'],
+        'port': params['port'],
+        'app': '-' if not app else app,
+        'verify': VERIFY_CERTIFICATE
+    }
+
+    return connection_args
+
+
 def main():
     command = demisto.command()
     if command == 'splunk-parse-raw':
@@ -2498,12 +2516,7 @@ def main():
     proxy = demisto.params().get('proxy')
     use_requests_handler = demisto.params().get('use_requests_handler')
 
-    connection_args = {
-        'host': demisto.params()['host'],
-        'port': demisto.params()['port'],
-        'app': demisto.params().get('app', '-'),
-        'verify': VERIFY_CERTIFICATE
-    }
+    connection_args = get_connection_args()
 
     base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
     auth_token = None

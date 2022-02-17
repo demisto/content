@@ -9,7 +9,7 @@ import sys
 import uuid
 import zipfile
 from datetime import datetime
-from distutils.version import LooseVersion
+from packaging.version import Version
 from enum import IntEnum
 from pprint import pformat
 from threading import Thread
@@ -271,7 +271,7 @@ def check_test_version_compatible_with_server(test, server_version):
     test_to_version = format_version(test.get('toversion', '99.99.99'))
     server_version = format_version(server_version)
 
-    if not LooseVersion(test_from_version) <= LooseVersion(server_version) <= LooseVersion(test_to_version):
+    if not Version(test_from_version) <= Version(server_version) <= Version(test_to_version):
         playbook_id = test.get('playbookID')
         logging.debug(
             f'Test Playbook: {playbook_id} was ignored in the content installation test due to version mismatch '
@@ -363,7 +363,7 @@ def get_new_and_modified_integration_files(branch_name):
     # get changed yaml files (filter only added and modified files)
     file_validator = ValidateManager(skip_dependencies=True)
     file_validator.branch_name = branch_name
-    modified_files, added_files, _, _ = file_validator.get_changed_files_from_git()
+    modified_files, added_files, _, _, _ = file_validator.get_changed_files_from_git()
 
     new_integration_files = [
         file_path for file_path in added_files if
@@ -969,19 +969,6 @@ def get_changed_integrations(build: Build) -> tuple:
     return new_integrations_names, modified_integrations_names
 
 
-def get_pack_ids_to_install():
-    if Build.run_environment == Running.CI_RUN:
-        with open('./artifacts/content_packs_to_install.txt', 'r') as packs_stream:
-            pack_ids = packs_stream.readlines()
-            return [pack_id.rstrip('\n') for pack_id in pack_ids]
-    else:
-        # START CHANGE ON LOCAL RUN #
-        return [
-            'SplunkPy'
-        ]
-        #  END CHANGE ON LOCAL RUN  #
-
-
 def nightly_install_packs(build, install_method=None, pack_path=None, service_account=None):
     threads_list = []
 
@@ -1011,7 +998,7 @@ def install_nightly_pack(build):
 
 
 def install_packs(build, pack_ids=None):
-    pack_ids = get_pack_ids_to_install() if pack_ids is None else pack_ids
+    pack_ids = build.pack_ids_to_install if pack_ids is None else pack_ids
     installed_content_packs_successfully = True
     for server in build.servers:
         try:
@@ -1303,11 +1290,11 @@ def get_non_added_packs_ids(build: Build):
 
     added_files = filter(lambda x: x, added_files.split('\n'))
     added_pack_ids = map(lambda x: x.split('/')[1], added_files)
-    return set(get_pack_ids_to_install()) - set(added_pack_ids)
+    return set(build.pack_ids_to_install) - set(added_pack_ids)
 
 
 def set_marketplace_url(servers, branch_name, ci_build_number):
-    url_suffix = quote_plus(f'{branch_name}/{ci_build_number}')
+    url_suffix = quote_plus(f'{branch_name}/{ci_build_number}/xsoar')
     config_path = 'marketplace.bootstrap.bypass.url'
     config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
     for server in servers:
@@ -1348,7 +1335,7 @@ def update_content_on_servers(build: Build) -> bool:
         both before that update and after the update.
     """
     installed_content_packs_successfully = True
-    if LooseVersion(build.server_numeric_version) < LooseVersion('6.0.0'):
+    if Version(build.server_numeric_version) < Version('6.0.0'):
         update_content_till_v6(build)
     elif not build.is_nightly:
         set_marketplace_url(build.servers, build.branch_name, build.ci_build_number)
@@ -1392,7 +1379,7 @@ def install_packs_pre_update(build: Build) -> bool:
         A boolean that indicates whether the installation was successful or not
     """
     installed_content_packs_successfully = False
-    if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
+    if Version(build.server_numeric_version) >= Version('6.0.0'):
         if build.is_nightly:
             install_nightly_pack(build)
             installed_content_packs_successfully = True

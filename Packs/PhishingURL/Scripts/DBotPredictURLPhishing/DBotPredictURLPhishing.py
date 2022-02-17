@@ -675,7 +675,7 @@ def get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_
     if not urls:
         msg_list.append(MSG_NO_URL_GIVEN)
         return_results(MSG_NO_URL_GIVEN)
-        return
+        return [], msg_list
     urls = get_final_urls(urls, max_urls, model)
     urls = [demisto.executeCommand("UnEscapeURLs", {"input": x})[0]['Contents'] for x in urls]
     if debug:
@@ -739,7 +739,8 @@ def main():
 
         # Get all the URLs on which we will run the model
         urls, msg_list = get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug)
-
+        if not urls:
+            return
         # Run the model and get predictions
         results = [get_prediction_single_url(model, x, force_model, debug) for x in urls]
 

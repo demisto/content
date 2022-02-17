@@ -1,0 +1,31 @@
+commonfields:
+  id: NexposeEmailParser
+  version: -1
+name: NexposeEmailParser
+script: ''
+type: javascript
+tags:
+- nexpose
+- ingestion
+comment: |-
+  Parses nexpose report into a clear table that contain risk score and vulnerability count for each server,
+  And creates a new incident for each server.
+system: true
+args:
+- name: entryID
+  description: ID of the entry containing the Nexpose report. If none is provided,
+    the script will iterate and find a relevant entry.
+- name: minRiskScore
+  description: Minimal Risk Score an item in the report needs to reach in order to
+    trigger an incident. Leave empty to trigger for any risk score.
+- name: minVulnCount
+  description: Minimal Vulnerability Count an item in the report needs to reach in
+    order to trigger an incident. Leave empty to trigger for any count.
+- name: defaultNexposeSeverity
+  description: Severity to be set on triggered incidents
+scripttarget: 0
+dependson:
+  must:
+  - nexpose
+timeout: 0s
+fromversion: 5.0.0

@@ -208,6 +208,14 @@ script:
         Available from Supporting-Files-API version 1.38.0. The FIQL query syntax
         is documented in the TOPdesk tutorial.
       name: query
+    - name: fields
+      description: Only include these specific fields in the response. (default =
+        all)
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
     description: Get list of persons.
     name: topdesk-persons-list
     outputs:
@@ -977,6 +985,14 @@ script:
         Available from Supporting-Files-API version 1.38.0. The FIQL query syntax
         is documented in the TOPdesk tutorial.
       name: query
+    - name: fields
+      description: Only include these specific fields in the response. (default =
+        id, name)
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
     description: Get list of branches.
     name: topdesk-branches-list
     outputs:
@@ -1510,6 +1526,14 @@ script:
     - description: Retrive only the incidents of the given entry type. Supported only
         with new FIQL type queries.
       name: entry_type
+    - name: fields
+      description: Only include these specific fields in the response. (default =
+        all)
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
     description: Get list of incidents.
     name: topdesk-incidents-list
     outputs:
@@ -5826,7 +5850,7 @@ script:
     - contextPath: TOPdesk.Action.Person
       description: Action's person
       type: string
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.9.9.25564
   isfetch: true
   runonce: false
   script: ''

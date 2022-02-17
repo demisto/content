@@ -66,23 +66,31 @@ args:
   name: fromDate
   required: false
   secret: false
-comment: Finds similar incidents based on indicators' similarity. Indicators' contribution to the final score is based on their scarcity.
+- default: false
+  description: Argument for the query of similar incidents.
+  isArray: false
+  name: query
+  required: false
+  secret: false
+comment: Finds similar incidents based on indicators' similarity. Indicators' contribution
+  to the final score is based on their scarcity.
+comment_x2: Finds similar alerts based on indicators' similarity. Indicators' contribution
+  to the final score is based on their scarcity.
 commonfields:
   id: DBotFindSimilarIncidentsByIndicators
   version: -1
   id_x2: DBotFindSimilarAlertsByIndicators
 enabled: true
 name: DBotFindSimilarIncidentsByIndicators
+name_x2: DBotFindSimilarAlertsByIndicators
 script: '-'
 subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/ml:1.0.0.23334
+dockerimage: demisto/ml:1.0.0.25666
 runas: DBotWeakRole
 runonce: false
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
-name_x2: DBotFindSimilarAlertsByIndicators
-comment_x2: Finds similar alerts based on indicators' similarity. Indicators' contribution to the final score is based on their scarcity.

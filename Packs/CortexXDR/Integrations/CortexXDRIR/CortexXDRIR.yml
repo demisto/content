@@ -649,8 +649,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Status of the incident. Valid values are: NEW, UNDER_INVESTIGATION,
-       RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE,
-       RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER.'
+        RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE,
+        RESOLVED_SECURITY_TESTING, RESOLVED_OTHER.'
       isArray: false
       name: status
       predefined:
@@ -785,7 +785,8 @@ script:
     name: xdr-insert-cef-alerts
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -819,7 +820,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -1256,7 +1258,7 @@ script:
       isArray: false
       name: type
       predefined:
-      - REMOTE_TERMINAL
+      - LIVE_TERMINAL
       - RULES
       - AUTH
       - RESPONSE
@@ -1605,14 +1607,15 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
       secret: false
     - default: false
-      description: String that represents a list of hashed files you want to block list.
-        Must be a valid SHA256 hash.
+      description: String that represents a list of hashed files you want to block
+        list. Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
       required: true
@@ -1630,14 +1633,15 @@ script:
     name: xdr-blacklist-files
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
       secret: false
     - default: false
-      description: String that represents a list of hashed files you want to add to allow list.
-        Must be a valid SHA256 hash.
+      description: String that represents a list of hashed files you want to add to
+        allow list. Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
       required: true
@@ -1649,12 +1653,14 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds requested files to allow list if they are not already on block list or allow list.
+    description: Adds requested files to allow list if they are not already on block
+      list or allow list.
     execution: false
     name: xdr-whitelist-files
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -1708,7 +1714,8 @@ script:
     name: xdr-get-quarantine-status
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -1734,7 +1741,8 @@ script:
     name: xdr-restore-file
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -1848,7 +1856,8 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -2292,7 +2301,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -2494,7 +2504,8 @@ script:
       type: number
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -2541,7 +2552,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -2726,7 +2738,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -2764,7 +2777,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -2805,7 +2819,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -2844,7 +2859,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -3005,64 +3021,78 @@ script:
       description: The ID given to the event by the cloud provider, if the ID exists.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.cloud_correlation_id
-      description: The ID the cloud provider is using to aggregate events that are part of the same general event.
+      description: The ID the cloud provider is using to aggregate events that are
+        part of the same general event.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_name_orig
-      description: The name of the operation that occurred, as supplied by the cloud provider.
+      description: The name of the operation that occurred, as supplied by the cloud
+        provider.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_name
       description: The normalized name of the operation performed by the event.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_orig
-      description: Contains the original identity related fields as provided by the cloud provider.
+      description: Contains the original identity related fields as provided by the
+        cloud provider.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_name
       description: The name of the identity that initiated the action.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_uuid
-      description: Same as identity_name but also contains the UUID of the identity if it exists.
+      description: Same as identity_name but also contains the UUID of the identity
+        if it exists.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_type
       description: An enum representing the type of the identity.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_sub_type
-      description: An enum representing the sub-type of the identity, respective to its identity_type.
+      description: An enum representing the sub-type of the identity, respective to
+        its identity_type.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_invoked_by_name
-      description: The name of the identity that invoked the action as it appears in the log.
+      description: The name of the identity that invoked the action as it appears
+        in the log.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_invoked_by_uuid
-      description: The UUID of the identity that invoked the action as it appears in the log.
+      description: The UUID of the identity that invoked the action as it appears
+        in the log.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_invoked_by_type
-      description: An enum that represents the type of identity event that invoked the action.
+      description: An enum that represents the type of identity event that invoked
+        the action.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_invoked_by_sub_type
-      description: An enum that represents the respective sub_type of the type of identity (identity_type) that has invoked the action.
+      description: An enum that represents the respective sub_type of the type of
+        identity (identity_type) that has invoked the action.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_status
       description: Status of whether the operation has succeed or failed, if provided.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_status_orig
-      description: The operation status code as it appears in the log, including lookup from code number to code name.
+      description: The operation status code as it appears in the log, including lookup
+        from code number to code name.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_status_orig_code
       description: The operation status code as it appears in the log.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_status_reason_provided
-      description: Description of the error, if the log record indicates an error and the cloud provider supplied the reason.
+      description: Description of the error, if the log record indicates an error
+        and the cloud provider supplied the reason.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.resource_type
       description: The normalized type of the service that emitted the log row.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.resource_type_orig
-      description: The type of the service that omitted the log as provided by the cloud provider.
+      description: The type of the service that omitted the log as provided by the
+        cloud provider.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.resource_sub_type
-      description: The sub-type respective to the resource_type field, normalized across all cloud providers.
+      description: The sub-type respective to the resource_type field, normalized
+        across all cloud providers.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.resource_sub_type_orig
-      description: The sub-type of the service that emitted this log row as provided by the cloud provider.
+      description: The sub-type of the service that emitted this log row as provided
+        by the cloud provider.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.region
       description: The cloud region of the resource that emitted the log.
@@ -3074,7 +3104,8 @@ script:
       description: The cloud resource referenced in the audit log.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.referenced_resource_name
-      description: Same as referenced_resource but provides only the substring that represents the resource name instead of the full asset ID.
+      description: Same as referenced_resource but provides only the substring that
+        represents the resource name instead of the full asset ID.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.referenced_resources_count
       description: The number of extracted resources referenced in this audit log.
@@ -3109,7 +3140,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.ingestion_time
       description: Ingestion time.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: true
   longRunning: false

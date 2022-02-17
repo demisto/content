@@ -1,0 +1,1 @@
+!create-test-incident-from-file incidents_path=Packs/DeveloperTools/Integrations/CreateIncidents/test_data/incidents.json attachment_path="Packs/DeveloperTools/Integrations/CreateIncidents/test_data/YOU HAVE WON 10000$.eml"

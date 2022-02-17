@@ -51,6 +51,24 @@ In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
 
 ![Setup Account](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/mceclip2.png)
 
+## Required Scopes
+| Function | API to Authorize |
+| -------- | ---------------- |
+| Authorize the next APIs for the service account | [https://www.googleapis.com/auth/admin.directory.user.readonly](https://www.googleapis.com/auth/admin.directory.user.readonly) |
+| Fetch user roles | [https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly](https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly) |
+| Revoke user roles | [https://www.googleapis.com/auth/admin.directory.rolemanagement](https://www.googleapis.com/auth/admin.directory.rolemanagement) |
+| Search user mailboxes | [https://www.googleapis.com/auth/gmail.readonly](https://www.googleapis.com/auth/gmail.readonly) |
+| Delete emails from user mailbox | [https://mail.google.com](https://mail.google.com), [https://www.googleapis.com/auth/gmail.modify](https://www.googleapis.com/auth/gmail.modify) |
+| Fetch user security tokens | [https://www.googleapis.com/auth/admin.directory.user.security](https://www.googleapis.com/auth/admin.directory.user.security) |
+| Block email addresses | [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic) |
+| Get auto-replay messages from a user | [https://mail.google.com](https://mail.google.com), [https://www.googleapis.com/auth/gmail.modify](https://www.googleapis.com/auth/gmail.modify), [https://www.googleapis.com/auth/gmail.readonly](https://www.googleapis.com/auth/gmail.readonly) and [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic) |
+| Set auto-replay messages | [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic) |
+| Hide users from the global directory | [https://www.googleapis.com/auth/admin.directory.user](https://www.googleapis.com/auth/admin.directory.user) |
+| Delegate a user to a mailbox or remove a delegated mail from a mailbox | [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing) |
+| Set a user's password | [https://www.googleapis.com/auth/admin.directory.user](https://www.googleapis.com/auth/admin.directory.user) |
+| Send mails or reply to a mail | [https://www.googleapis.com/auth/gmail.compose](https://www.googleapis.com/auth/gmail.compose) and [https://www.googleapis.com/auth/gmail.send](https://www.googleapis.com/auth/gmail.send) |
+| Add the send as email ID | [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing)  |
+| Add the forwarding address for the user | [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing) |
 ## Configure Gmail on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

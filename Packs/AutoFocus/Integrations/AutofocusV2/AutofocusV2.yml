@@ -407,8 +407,8 @@ script:
     deprecated: false
     description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results
       command with the returned AF Cookie. The AF Cookie expires 120 seconds after
-      the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook
-      is recommended for querying and polling.
+      the search completes. Note that due to an API limitation, passing more than 100 values to an IOC argument (e.g. 100 IPs) might cause a failure. In this case, you will need to iterate over the IPs and run the autofocus-sessions-search-results command for each AF cookie.
+      `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     execution: false
     polling: true
     name: autofocus-search-sessions
@@ -1385,7 +1385,7 @@ script:
     - contextPath: Domain.Name
       description: The domain name.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -1,14 +1,17 @@
-import os
-import shutil
-import dateparser
 from urllib import parse
-from typing import List, Tuple, Dict, Callable, Any, Union, Optional
+
+import shutil
+from typing import List, Tuple, Dict, Callable, Iterable
 
 from CommonServerPython import *
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+INCIDENT = 'incident'
+SIR_INCIDENT = 'sn_si_incident'
+
+SIR_INCIDENT_UNIQUE_FIELDS = ('risk_score', 'attack_vector')
 
 COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
@@ -52,6 +55,14 @@ TICKET_STATES = {
         '3': '3 - Closed',
         '4': '4 - Rejected'
     },
+    SIR_INCIDENT: {
+        '3': 'Closed',
+        '7': 'Cancelled',
+        '10': 'Draft',
+        '16': 'Analysis',
+        '18': 'Contain',
+        '19': 'Eradicate'
+    }
 }
 
 TICKET_APPROVAL = {
@@ -80,6 +91,12 @@ TICKET_IMPACT = {
     '5': '5 - Caregiver'
 }
 
+BUSINESS_IMPACT = {
+    '1': '1 - Critical',
+    '2': '2 - High',
+    '3': '3 - Non-Critical'
+}
+
 SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additional_assignee_list', 'approval_history',
              'approval', 'approval_set', 'assigned_to', 'assignment_group',
              'business_duration', 'business_service', 'business_stc', 'change_type', 'category', 'caller',
@@ -91,7 +108,11 @@ SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additi
              'problem_id', 'reassignment_count', 'reopen_count', 'resolved_at', 'resolved_by', 'rfc',
              'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'sys_updated_by', 'sys_updated_on',
              'time_worked', 'title', 'type', 'urgency', 'user_input', 'watch_list', 'work_end', 'work_notes',
-             'work_notes_list', 'work_start']
+             'work_notes_list', 'work_start', 'business_criticality', 'risk_score']
+
+SIR_OUT_FIELDS = ('description', 'short_description', 'sla_due', 'business_criticality',
+                  'priority', 'state', 'urgency', 'severity', 'closed_at',
+                  'risk_score', 'close_notes', 'attack_vector', 'work_notes')
 
 # Every table in ServiceNow should have those fields
 DEFAULT_RECORD_FIELDS = {
@@ -101,7 +122,6 @@ DEFAULT_RECORD_FIELDS = {
     'sys_created_by': 'CreatedBy',
     'sys_created_on': 'CreatedAt'
 }
-
 
 MIRROR_DIRECTION = {
     'None': None,
@@ -244,7 +264,8 @@ def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
     priority = data.get('priority')
     if priority:
         if isinstance(priority, dict):
-            context['Priority'] = TICKET_PRIORITY.get(str(int(priority.get('value', ''))), str(int(priority.get('value', '')))),
+            context['Priority'] = TICKET_PRIORITY.get(str(int(priority.get('value', ''))),
+                                                      str(int(priority.get('value', '')))),
         else:
             context['Priority'] = TICKET_PRIORITY.get(priority, priority)
     state = data.get('state')
@@ -373,11 +394,13 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
 
     inv_severity = {v: k for k, v in ticket_severity.items()}
     inv_priority = {v: k for k, v in TICKET_PRIORITY.items()}
+    inv_business_impact = {v: k for k, v in BUSINESS_IMPACT.items()}
     states = TICKET_STATES.get(ticket_type)
     inv_states = {v: k for k, v in states.items()} if states else {}
     approval = TICKET_APPROVAL.get(ticket_type)
     inv_approval = {v: k for k, v in approval.items()} if approval else {}
-    fields_to_clear = argToList(args.get('clear_fields', []))  # This argument will contain fields to allow their value empty
+    fields_to_clear = argToList(
+        args.get('clear_fields', []))  # This argument will contain fields to allow their value empty
 
     ticket_fields = {}
     for arg in SNOW_ARGS:
@@ -400,6 +423,8 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
             elif arg == 'change_type':
                 # this change is required in order to use type 'Standard' as well.
                 ticket_fields['type'] = input_arg
+            elif arg == 'business_criticality':
+                ticket_fields[arg] = inv_business_impact.get(input_arg, input_arg)
             else:
                 ticket_fields[arg] = input_arg
         elif template_name and arg in template_name:
@@ -586,7 +611,7 @@ class Client(BaseClient):
         while num_of_tries < max_retries:
             if file:
                 # Not supported in v2
-                url = url.replace('v2', 'v1')
+                url = url.replace('/v2', '/v1')
                 try:
                     file_entry = file['id']
                     file_name = file['name']
@@ -718,6 +743,10 @@ class Client(BaseClient):
         """
         entries = []
         links = []  # type: List[Tuple[str, str]]
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
         attachments_res = self.get_ticket_attachments(ticket_id, sys_created_on)
         if 'result' in attachments_res and len(attachments_res['result']) > 0:
             attachments = attachments_res['result']
@@ -725,8 +754,14 @@ class Client(BaseClient):
                      for attachment in attachments]
 
         for link in links:
-            file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
-                                    proxies=self._proxies)
+            if self.use_oauth:
+                access_token = self.snow_client.get_access_token()
+                headers.update({'Authorization': f'Bearer {access_token}'})
+                file_res = requests.get(link[0], headers=headers, verify=self._verify, proxies=self._proxies)
+            else:
+                file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
+                                        proxies=self._proxies)
+
             if file_res is not None:
                 entries.append(fileResult(link[1], file_res.content))
 
@@ -1987,17 +2022,10 @@ def fetch_incidents(client: Client) -> list:
         except Exception:
             pass
 
-        for k, v in result.items():
-            if isinstance(v, str):
-                labels.append({
-                    'type': k,
-                    'value': v
-                })
-            else:
-                labels.append({
-                    'type': k,
-                    'value': json.dumps(v)
-                })
+        labels = [
+            {'type': k, 'value': v if isinstance(v, str) else json.dumps(v)}
+            for k, v in result.items()
+        ]
 
         severity = severity_map.get(result.get('severity', ''), 0)
 
@@ -2103,10 +2131,23 @@ def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, 
         hr = '### Logged in successfully.\n A refresh token was saved to the integration context. This token will be ' \
              'used to generate a new access token once the current one expires.'
     except Exception as e:
-        return_error(f'Failed to login. Please verify that the provided username and password are correct, and that you '
-                     f'entered the correct client id and client secret in the instance configuration (see ? for'
-                     f'correct usage when using OAuth).\n\n{e}')
+        return_error(
+            f'Failed to login. Please verify that the provided username and password are correct, and that you '
+            f'entered the correct client id and client secret in the instance configuration (see ? for'
+            f'correct usage when using OAuth).\n\n{e}')
     return hr, {}, {}, True
+
+
+def check_assigned_to_field(client: Client, assigned_to: dict) -> Optional[str]:
+    if assigned_to:
+        user_result = client.get('sys_user', assigned_to.get('value'))  # type: ignore[arg-type]
+        user = user_result.get('result', {})
+        if user:
+            user_email = user.get('email')
+            return user_email
+        else:
+            demisto.debug(f'Could not assign user {assigned_to.get("value")} since it does not exist in ServiceNow')
+    return ''
 
 
 def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> Union[List[Dict[str, Any]], str]:
@@ -2173,7 +2214,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     sys_param_offset = args.get('offset', client.sys_param_offset)
 
     sys_param_query = f'element_id={ticket_id}^sys_created_on>' \
-        f'{datetime.fromtimestamp(last_update)}^element=comments^ORelement=work_notes'
+                      f'{datetime.fromtimestamp(last_update)}^element=comments^ORelement=work_notes'
 
     comments_result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
     demisto.debug(f'Comments result is {comments_result}')
@@ -2205,11 +2246,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         group_name = group.get('name')
         ticket['assignment_group'] = group_name
 
-    if assigned_to:
-        user_result = client.get('sys_user', assigned_to.get('value'))
-        user = user_result.get('result', {})
-        user_email = user.get('email')
-        ticket['assigned_to'] = user_email
+    user_assigned = check_assigned_to_field(client, assigned_to)
+    ticket['assigned_to'] = user_assigned
 
     if caller:
         user_result = client.get('sys_user', caller.get('value'))
@@ -2257,13 +2295,12 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     ticket_id = parsed_args.remote_incident_id
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
-        # Closing sc_type ticket. This ticket type can be closed only when changing the ticket state.
-        if (ticket_type == 'sc_task' or ticket_type == 'sc_req_item')\
-                and parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
-            parsed_args.data['state'] = '3'
-        # Closing incident ticket.
-        if ticket_type == 'incident' and parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
-            parsed_args.data['state'] = '7'
+        if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
+            # These ticket types are closed by changing their state.
+            if ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}:
+                parsed_args.data['state'] = '3'
+            elif ticket_type == INCIDENT:  # Closing incident ticket.
+                parsed_args.data['state'] = '7'
 
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
         if not params.get('close_ticket'):
@@ -2318,7 +2355,8 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     incident_type_scheme = SchemeTypeMapping(type_name=client.ticket_type)
     demisto.debug(f'Collecting incident mapping for incident type - "{client.ticket_type}"')
 
-    for field in SNOW_ARGS:
+    out_fields = SIR_OUT_FIELDS if client.ticket_type == SIR_INCIDENT else SNOW_ARGS
+    for field in out_fields:
         incident_type_scheme.add_field(field)
 
     mapping_response = GetMappingFieldsResponse()
@@ -2360,7 +2398,7 @@ def add_custom_fields(params):
     SNOW_ARGS += custom_fields
 
 
-def get_tasks_from_co_human_readable(data: dict) -> dict:
+def get_tasks_from_co_human_readable(data: dict, ticket_type: str) -> dict:
     """Get item human readable.
 
     Args:
@@ -2368,8 +2406,10 @@ def get_tasks_from_co_human_readable(data: dict) -> dict:
 
     Returns:
         item human readable.
+        :param data: the task data
+        :param ticket_type: ticket type
     """
-    states = TICKET_STATES.get("sc_task", {})
+    states = TICKET_STATES.get(ticket_type, {})
     state = data.get('state', {}).get('value')
     item = {
         'ID': data.get('sys_id', {}).get('value', ''),
@@ -2424,7 +2464,7 @@ def get_tasks_for_co_command(client: Client, args: dict) -> CommandResults:
 
     mapped_items = []
     for item in items_list:
-        mapped_items.append(get_tasks_from_co_human_readable(item))
+        mapped_items.append(get_tasks_from_co_human_readable(item, client.ticket_type))
 
     headers = ['ID', 'Name', 'State', 'Description']
     human_readable = tableToMarkdown('ServiceNow Catalog Items', mapped_items, headers=headers,
@@ -2474,7 +2514,7 @@ def create_co_from_template_command(client: Client, args: dict) -> CommandResult
     )
 
 
-def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: list = None) -> dict:
+def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Iterable = tuple()) -> dict:
     """Get co human readable.
 
     Args:
@@ -2494,6 +2534,7 @@ def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: lis
         'System ID': ticket.get('sys_id', {}).get('value', ''),
         'Number': ticket.get('number', {}).get('value', ''),
         'Impact': TICKET_IMPACT.get(str(int(ticket.get('impact', {}).get('value', ''))), ''),
+        'Business Impact': BUSINESS_IMPACT.get(str(ticket.get('business_criticality', {}).get('value', '')), ''),
         'Urgency': ticket.get('urgency', {}).get('display_value', ''),
         'Severity': ticket.get('severity', {}).get('value', ''),
         'Priority': TICKET_PRIORITY.get(str(int(priority)), str(int(priority))),
@@ -2513,6 +2554,8 @@ def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: lis
         'Short Description': ticket.get('short_description', {}).get('value', ''),
         'Additional Comments': ticket.get('comments', {}).get('value', '')
     }
+    for field in additional_fields:
+        item.update({field: ticket.get(field, {}).get('value', '')})
 
     return item
 
@@ -2558,6 +2601,7 @@ def main():
     if version:
         api = f'/api/now/{version}/'
         sc_api = f'/api/sn_sc/{version}/'
+        cr_api = f'/api/sn_chg_rest/{version}/'
     else:
         api = '/api/now/'
         sc_api = '/api/sn_sc/'
@@ -2571,7 +2615,7 @@ def main():
     sysparm_query = params.get('sysparm_query')
     sysparm_limit = int(params.get('fetch_limit', 10))
     timestamp_field = params.get('timestamp_field', 'opened_at')
-    ticket_type = params.get('ticket_type', 'incident')
+    ticket_type = params.get('ticket_type', INCIDENT)
     incident_name = params.get('incident_name', 'number') or 'number'
     get_attachments = params.get('get_attachments', False)
     update_timestamp_field = params.get('update_timestamp_field', 'sys_updated_on') or 'sys_updated_on'

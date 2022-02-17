@@ -2129,7 +2129,7 @@ script:
     - contextPath: CBP.FileRule.ReportOnly
       description: Is this rule "reporting only" or is it also "enforcing".
       type: String
-  dockerimage: demisto/python3:3.9.9.25564
+  dockerimage: demisto/python3:3.10.1.25933
   subtype: python3
   isfetch: true
   runonce: false

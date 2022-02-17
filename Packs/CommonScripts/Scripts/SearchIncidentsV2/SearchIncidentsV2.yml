@@ -102,6 +102,15 @@ args:
   required: false
   secret: false
 - default: false
+  description: |-
+    The number of events to return from the alert JSON. The default is 0, which returns all events.
+    Note that the count is from the head of the list, regardless of event time or other properties.
+  isArray: false
+  name: trimevents
+  required: false
+  secret: false
+  defaultValue: '0'
+- default: false
   description: Number of incidents per page (per fetch)
   isArray: false
   name: size
@@ -119,12 +128,14 @@ comment: |-
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
   For more information, see the section about permissions here:
   https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+comment_x2: Searches alerts.
 commonfields:
   id: SearchIncidentsV2
   version: -1
   id_x2: SearchAlertsV2
 enabled: true
 name: SearchIncidentsV2
+name_x2: SearchAlerts
 outputs:
 - contextPath: foundIncidents.id
   description: A list of incident IDs returned from the query.
@@ -169,12 +180,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.1.25933
 fromversion: 5.0.0
-name_x2: SearchAlerts
-comment_x2: |-
-  Searches alerts.
-
-  This automation runs using the default Limited User role, unless you explicitly change the permissions.
-  For more information, see the section about permissions here:
-  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+tests:
+- No tests (auto formatted)
