@@ -979,37 +979,40 @@ class SlackLogger:
 
 
 async def slack_loop():
-    exception_await_seconds = 1
-    while True:
-        slack_logger = SlackLogger()
-        client = SocketModeClient(
-            app_token=APP_TOKEN,
-            web_client=ASYNC_CLIENT,
-            logger=slack_logger,  # type: ignore
-            auto_reconnect_enabled=True
-        )
-        if not VERIFY_CERT:
-            # SocketModeClient does not respect environment variables for ssl verification.
-            # Instead we use a custom session.
-            session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=VERIFY_CERT))
-            client.aiohttp_client_session = session
-        client.socket_mode_request_listeners.append(listen)  # type: ignore
-        try:
-            await client.connect()
-            demisto.debug("Socket is connected")
-            # After successful connection, we reset the backoff time.
-            exception_await_seconds = 1
-            demisto.debug(f"Resetting exception wait time to {exception_await_seconds}")
-            await asyncio.sleep(float("inf"))
-        except Exception as e:
-            demisto.debug(f"Exception in long running loop, waiting {exception_await_seconds} - {e}")
-            await asyncio.sleep(exception_await_seconds)
-            exception_await_seconds *= 2
-        finally:
+    try:
+        exception_await_seconds = 1
+        while True:
+            slack_logger = SlackLogger()
+            client = SocketModeClient(
+                app_token=APP_TOKEN,
+                web_client=ASYNC_CLIENT,
+                logger=slack_logger,  # type: ignore
+                auto_reconnect_enabled=True
+            )
+            if not VERIFY_CERT:
+                # SocketModeClient does not respect environment variables for ssl verification.
+                # Instead we use a custom session.
+                session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=VERIFY_CERT))
+                client.aiohttp_client_session = session
+            client.socket_mode_request_listeners.append(listen)  # type: ignore
             try:
-                await session.close()
+                await client.connect()
+                demisto.debug("Socket is connected")
+                # After successful connection, we reset the backoff time.
+                exception_await_seconds = 1
+                demisto.debug(f"Resetting exception wait time to {exception_await_seconds}")
+                await asyncio.sleep(float("inf"))
             except Exception as e:
-                demisto.debug(f"Failed to close client. - {e}")
+                demisto.debug(f"Exception in long running loop, waiting {exception_await_seconds} - {e}")
+                await asyncio.sleep(exception_await_seconds)
+                exception_await_seconds *= 2
+            finally:
+                try:
+                    await session.close()
+                except Exception as e:
+                    demisto.debug(f"Failed to close client. - {e}")
+    except Exception as e:
+        demisto.error(f"An error has occurred while trying to create the socket client. {e}")
 
 
 async def handle_listen_error(error: str):
@@ -1027,8 +1030,11 @@ async def start_listening():
     """
     Starts a Slack SocketMode client and checks for mirrored incidents.
     """
-    tasks = [asyncio.ensure_future(slack_loop()), asyncio.ensure_future(long_running_loop())]
-    await asyncio.gather(*tasks)
+    try:
+        tasks = [asyncio.ensure_future(slack_loop()), asyncio.ensure_future(long_running_loop())]
+        await asyncio.gather(*tasks)
+    except Exception as e:
+        demisto.error(f"An error has occurred while gathering the loop tasks. {e}")
 
 
 async def handle_dm(user: dict, text: str, client: AsyncWebClient):
@@ -1328,9 +1334,12 @@ def fetch_context(force_refresh: bool = False) -> dict:
     global CACHED_INTEGRATION_CONTEXT, CACHE_EXPIRY
     now = int(datetime.now(timezone.utc).timestamp() * 1000)
     if (CACHE_EXPIRY <= now) or force_refresh:
-        demisto.debug("Cached context has expired. Fetching new context")
+        demisto.debug(f'Cached context has expired or forced refresh. forced refresh value is {force_refresh}. '
+                      f'Fetching new context')
         CACHE_EXPIRY = now + 300
         CACHED_INTEGRATION_CONTEXT = get_integration_context(SYNC_CONTEXT)
+    else:
+        demisto.debug("Cached context is being used.")
 
     return CACHED_INTEGRATION_CONTEXT
 
@@ -1345,7 +1354,7 @@ def handle_newly_created_channel(creator, channel):
     :return: None
     """
     if BOT_ID == creator:
-        demisto.debug("Found channel created by Bot or Bot User.")
+        demisto.debug("Found channel created by Bot or Bot User. Possible mirrored channel, checking context.")
         if 'mirrors' in CACHED_INTEGRATION_CONTEXT:
             mirrors = json.loads(CACHED_INTEGRATION_CONTEXT['mirrors'])
             if len(mirrors) == 0:
@@ -1401,7 +1410,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         channel = event.get('channel', '')
         thread = event.get('thread_ts', None)
         message = data.get('message', {})
-        action_text = None
+        action_text = ''
         message_ts = message.get('ts', '')
         actions = data.get('actions', [])
 

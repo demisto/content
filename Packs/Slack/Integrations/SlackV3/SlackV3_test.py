@@ -1893,6 +1893,7 @@ async def test_create_incidents_with_labels(mocker):
     assert user_arg == 'demisto_user'
     assert data == 'nice'
 
+
 @pytest.mark.skip(reason="New version will always make the call")
 @pytest.mark.asyncio
 async def test_get_user_by_id_async_user_exists(mocker):
@@ -1980,6 +1981,7 @@ async def test_handle_text(mocker):
     assert entry_args['footer'] == '\n**From Slack**'
 
 
+@pytest.mark.skip(reason="New version means strings will always be handled by a different flow")
 @pytest.mark.asyncio
 async def test_check_entitlement(mocker):
     import SlackV3
@@ -4292,7 +4294,7 @@ def test_fetch_context(mocker, monkeypatch, expiry_time, force_refresh, cached_c
 
     result = SlackV3.fetch_context(force_refresh=force_refresh)
 
-    assert result == INTEGRATION_CONTEXT
+    assert result == INTEGRATION_CONTEXT  # noqa: F821
 
 
 CREATED_CHANNEL_TESTBANK = [
@@ -4383,61 +4385,76 @@ MOCK_USER = AsyncSlackResponse(
 )
 MOCK_INTEGRATION_CONTEXT = [
     {},
-    {'mirrors':
-        json.dumps([
-            {'channel_id': 'NotChannel123'},
-            {'channel_id': 'StillNotChannel123'}
-        ])},
-    {'mirrors':
-        json.dumps([
-            {'channel_id': 'NotChannel123'},
-            {'channel_id': 'StillNotChannel123'},
-            {'channel_id': 'Channel123',
-             'mirror_direction': 'FromDemisto'
-             }
+    {
+        'mirrors': json.dumps([
+            {
+                'channel_id': 'NotChannel123'
+            },
+            {
+                'channel_id': 'StillNotChannel123'
+            }
         ])
     },
-    {'mirrors':
-        json.dumps([
-            {'channel_id': 'NotChannel123',
-             'mirror_direction': 'ToDemisto',
-             'mirrored': False,
-             'investigation_id': 123,
-             'mirror_type': 'mirror I guess',
-             'auto_close': False,
-             'mirror_to': 'sometext'
-             },
-            {'channel_id': 'Channel123',
-             'mirror_direction': 'ToDemisto',
-             'mirrored': True,
-             'investigation_id': 123,
-             'mirror_type': 'mirror I guess',
-             'auto_close': False,
-             'mirror_to': 'sometext'
-             }
+    {
+        'mirrors': json.dumps([
+            {
+                'channel_id': 'NotChannel123'
+            },
+            {
+                'channel_id': 'StillNotChannel123'
+            },
+            {
+                'channel_id': 'Channel123',
+                'mirror_direction': 'FromDemisto'
+            }
         ])
     },
-{'mirrors':
-        json.dumps([
-            {'channel_id': 'NotChannel123',
-             'mirror_direction': 'ToDemisto',
-             'mirrored': False,
-             'investigation_id': 123,
-             'mirror_type': 'mirror I guess',
-             'auto_close': False,
-             'mirror_to': 'sometext'
-             },
-            {'channel_id': 'Channel123',
-             'mirror_direction': 'ToDemisto',
-             'mirrored': False,
-             'investigation_id': 123,
-             'mirror_type': 'mirror I guess',
-             'auto_close': False,
-             'mirror_to': 'sometext'
-             }
+    {
+        'mirrors': json.dumps([
+            {
+                'channel_id': 'NotChannel123',
+                'mirror_direction': 'ToDemisto',
+                'mirrored': False,
+                'investigation_id': 123,
+                'mirror_type': 'mirror I guess',
+                'auto_close': False,
+                'mirror_to': 'sometext'
+            },
+            {
+                'channel_id': 'Channel123',
+                'mirror_direction': 'ToDemisto',
+                'mirrored': True,
+                'investigation_id': 123,
+                'mirror_type': 'mirror I guess',
+                'auto_close': False,
+                'mirror_to': 'sometext'
+            }
+        ])
+    },
+    {
+        'mirrors': json.dumps([
+            {
+                'channel_id': 'NotChannel123',
+                'mirror_direction': 'ToDemisto',
+                'mirrored': False,
+                'investigation_id': 123,
+                'mirror_type': 'mirror I guess',
+                'auto_close': False,
+                'mirror_to': 'sometext'
+            },
+            {
+                'channel_id': 'Channel123',
+                'mirror_direction': 'ToDemisto',
+                'mirrored': False,
+                'investigation_id': 123,
+                'mirror_type': 'mirror I guess',
+                'auto_close': False,
+                'mirror_to': 'sometext'
+            }
         ])
     }
 ]
+
 
 MIRRORS_TEST_BANK = [
     ('Channel123', 'Test text', MOCK_USER, 'No mirrors are found in context. Done processing mirror.',
@@ -4482,7 +4499,7 @@ async def test_process_mirror(mocker, channel_id, text, user, expected_result, c
 
     await SlackV3.process_mirror(channel_id=channel_id, text=text, user=user)
 
-    assert demisto.debug.mock_calls[0][1][0] == expected_result
+    assert demisto.debug.mock_calls[1][1][0] == expected_result
 
 
 ENTITLEMENT_STRING_TEST_BANK = [
