@@ -3012,7 +3012,7 @@ def rtr_kill_process_command(args: dict) -> CommandResults:
         raw_response.append(response)
 
     human_readable = tableToMarkdown(
-        f'{INTEGRATION_NAME} {command_type} command on host {host_id}:', outputs, headers=["Error", "ProcessID"])
+        f'{INTEGRATION_NAME} {command_type} command on host {host_id}:', outputs, headers=["ProcessID", "Error"])
     return CommandResults(raw_response=raw_response, readable_output=human_readable, outputs=outputs,
                           outputs_prefix="CrowdStrike.Command", outputs_key_field="ProcessID")
 
@@ -3068,7 +3068,7 @@ def rtr_remove_file_command(args: dict) -> CommandResults:
     response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids)
     outputs = parse_command_response(response, host_ids)
     human_readable = tableToMarkdown(
-        f'{INTEGRATION_NAME} {command_type} over the file: {file_path}', outputs)
+        f'{INTEGRATION_NAME} {command_type} over the file: {file_path}', outputs, headers=["HostID", "Error"])
     return CommandResults(raw_response=response, readable_output=human_readable, outputs=outputs,
                           outputs_prefix="CrowdStrike.Command", outputs_key_field="HostID")
 
@@ -3129,7 +3129,7 @@ def parse_stdout_response(host_ids, response, command, file_name_suffix=""):
                 current_error = stderr
             return_error(current_error)
         stdout = resource.get('stdout', "")
-        outputs.append({'Stdout': stdout})
+        outputs.append(stdout)
         files.append(fileResult(f"{command}-{host_id}{file_name_suffix}", stdout))
 
     not_found_hosts = set(host_ids) - resources.keys()
