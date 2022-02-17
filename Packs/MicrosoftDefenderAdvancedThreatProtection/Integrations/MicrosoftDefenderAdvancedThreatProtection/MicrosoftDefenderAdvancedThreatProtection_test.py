@@ -2,7 +2,7 @@ import demistomock as demisto
 import json
 import pytest
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
-    print_ip_addresses, get_machine_details_command, HuntingQueryBuilder, assign_params
+    print_ip_addresses, get_machine_details_command, HuntingQueryBuilder, assign_params, DemistoException
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 
@@ -996,7 +996,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a valid credential dumping query
             """
-            expected = 'DeviceProcessEvents\n| where ((FileName has_any ("procdump.exe", "procdump64.exe") and ProcessCommandLine has "lsass") or\n(ProcessCommandLine has "lsass.exe" and (ProcessCommandLine has "-accepteula"or ProcessCommandLine contains "-ma")) ) and ( (DeviceName has_any (("1"))) )\n| project Timestamp, DeviceName, ActionType, FileName, ProcessCommandLine, AccountName, InitiatingProcessIntegrityLevel, InitiatingProcessTokenElevation\n| limit 10'  # noqa: E501
+            expected = 'DeviceProcessEvents\n| where ((FileName has_any ("procdump.exe", "procdump64.exe") and ProcessCommandLine has "lsass") or (ProcessCommandLine has "lsass.exe" and (ProcessCommandLine has "-accepteula"or ProcessCommandLine contains "-ma")) ) and ( (DeviceName has_any (("1"))) )\n| project Timestamp, DeviceName, ActionType, FileName, ProcessCommandLine, AccountName, InitiatingProcessIntegrityLevel, InitiatingProcessTokenElevation\n| limit 10'  # noqa: E501
             lme = HuntingQueryBuilder.LateralMovementEvidence(
                 limit=10,
                 query_operation='or',
@@ -1043,4 +1043,260 @@ class TestHuntingQueryBuilder:
                 device_name='1'
             )
             actual = lme.build_rdp_attempts_query()
+            assert actual == expected
+
+    class TestPersistenceEvidence:
+        def test_build_scheduled_job_query(self):
+            """
+            Tests scheduled job query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_scheduled_job_query
+            Then:
+                - return a scheduled_job query
+            """
+            expected = 'DeviceEvents | where ActionType == "ScheduledTaskCreated" and InitiatingProcessAccountSid != "S-1-5-18" and ( (SHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceName, InitiatingProcessAccountDomain, InitiatingProcessAccountName, AdditionalFields\n| limit 1'  # noqa: E501
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='scheduled_job'
+            )
+            actual = pe.build_scheduled_job_query()
+            assert actual == expected
+
+        def test_registry_entry_query__no_process_cmd(self):
+            """
+            Tests registry entry query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+                - PersistenceEvidence inited with query_purpose registry_entry
+                - PersistenceEvidence inited without process_cmd
+            When:
+                - calling build_registry_entry_query
+            Then:
+                - return a registry_entry query
+            """
+            with pytest.raises(DemistoException):
+                HuntingQueryBuilder.PersistenceEvidence(
+                    limit='1',
+                    query_operation='and',
+                    sha1='1,2',
+                    query_purpose='registry_entry'
+                )
+
+        def test_registry_entry_query(self):
+            """
+            Tests registry entry query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+                - PersistenceEvidence inited with query_purpose registry_entry
+                - PersistenceEvidence inited with process_cmd
+            When:
+                - calling build_registry_entry_query
+            Then:
+                - return a registry_entry query
+            """
+            expected = 'DeviceRegistryEvents | where ActionType == "RegistryValueSet" and ( (InitiatingProcessSHA1 has_any (("1","2"))) and InitiatingProcessCommandLine contains "something" )\n| project Timestamp, DeviceName, RegistryKey, RegistryValueType, PreviousRegistryValueData, RegistryValueName, PreviousRegistryValueData, PreviousRegistryValueName, PreviousRegistryKey, InitiatingProcessFileName\n| limit 1'  # noqa: E501
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='registry_entry',
+                process_cmd='something'
+            )
+            actual = pe.build_registry_entry_query()
+            assert actual == expected
+
+        def test_build_startup_folder_changes_query(self):
+            """
+            Tests startup_folder_changes query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_registry_entry_query
+            Then:
+                - return a registry_entry query
+            """
+            expected = 'DeviceFileEvents | where FolderPath contains @"\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup" and ActionType == "FileCreated" and ( (SHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceName, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine InitiatingProcessFileName\n| limit 1'  # noqa: E501
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='startup_folder_changes',
+            )
+            actual = pe.build_startup_folder_changes_query()
+            assert actual == expected
+
+        def test_build_new_service_created_query(self):
+            """
+            Tests new_service_created query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_new_service_created_query
+            Then:
+                - return a new_service_created query
+            """
+            expected = 'DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Services" and ActionType == "RegistryKeyCreated" and ( (InitiatingProcessSHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceName, ActionType, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit 1'  # noqa: E501
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='new_service_created',
+            )
+            actual = pe.build_new_service_created_query()
+            assert actual == expected
+
+        def test_build_service_updated_query(self):
+            """
+            Tests service_updated query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_service_updated_query
+            Then:
+                - return a service_updated query
+            """
+            expected = 'DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Services" and ActionType has_any ("RegistryValueSet","RegistryKeyCreated") and ( (InitiatingProcessSHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceName, ActionType, RegistryKey, PreviousRegistryKey, RegistryValueName, PreviousRegistryValueName, RegistryValueType, RegistryValueData, PreviousRegistryValueData, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit 1'  # noqa: E501
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='service_updated',
+            )
+            actual = pe.build_service_updated_query()
+            assert actual == expected
+
+        def test_build_file_replaced_query(self):
+            """
+            Tests file_replaced query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_file_replaced_query
+            Then:
+                - return a file_replaced query
+            """
+            expected = 'DeviceFileEvents | where FolderPath contains @"C:\\Program Files" and ActionType == "FileModified" and ( (SHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceName, ActionType, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit 1'  # noqa: E501
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='file_replaced',
+            )
+            actual = pe.build_file_replaced_query()
+            assert actual == expected
+
+        def test_build_new_user_query(self):
+            """
+            Tests new_user query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_new_user_query
+            Then:
+                - return a new_user query
+            """
+            expected = 'DeviceEvents | where ActionType == "UserAccountCreated" and ( (SHA1 has_any (("1","2"))) )\n| project AccountName,DeviceName,Timestamp,AccountSid,AccountDomain,InitiatingProcessAccountName,InitiatingProcessLogonId\n| limit 1'  # noqa: E501
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='new_user',
+            )
+            actual = pe.build_new_user_query()
+            assert actual == expected
+
+        def test_build_new_group_query(self):
+            """
+            Tests new_group query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_new_group_query
+            Then:
+                - return a new_group query
+            """
+            expected = 'DeviceEvents | where ActionType == "SecurityGroupCreated" and ( (SHA1 has_any (("1","2"))) )\n| project AccountName,DeviceName,Timestamp,AccountSid,AccountDomain,InitiatingProcessAccountName,InitiatingProcessLogonId\n| limit 1'  # noqa: E501
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='new_group',
+            )
+            actual = pe.build_new_group_query()
+            assert actual == expected
+
+        def test_build_group_user_change_query(self):
+            """
+            Tests group_user_change query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_group_user_change_query
+            Then:
+                - return a group_user_change query
+            """
+            expected = 'DeviceEvents | where ActionType == "UserAccountAddedToLocalGroup" and ( (SHA1 has_any (("1","2"))) )\n| summarize by AccountSid\n| limit 1'  # noqa: E501
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='group_user_change',
+            )
+            actual = pe.build_group_user_change_query()
+            assert actual == expected
+
+        def test_build_local_firewall_change_query(self):
+            """
+            Tests local_firewall_change query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_local_firewall_change_query
+            Then:
+                - return a local_firewall_change query
+            """
+            expected = 'DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\SharedAccess\\Parameters\\FirewallPolicy" and ( (InitiatingProcessSHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceName, ActionType, RegistryKey, PreviousRegistryKey, RegistryValueName, PreviousRegistryValueName, RegistryValueType, RegistryValueData, PreviousRegistryValueData, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit 1'  # noqa: E501
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='local_firewall_change',
+            )
+            actual = pe.build_local_firewall_change_query()
+            assert actual == expected
+
+        def test_build_host_file_change_query(self):
+            """
+            Tests host_file_change query
+
+            Given:
+                - PersistenceEvidence inited with sha1
+            When:
+                - calling build_host_file_change_query
+            Then:
+                - return a host_file_change query
+            """
+            expected = 'DeviceFileEvents | where FolderPath contains @"C:\\Windows\\System32\\drivers\\etc\\hosts" and ActionType == "FileModified" and ( (InitiatingProcessSHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceName, ActionType, FileName, FolderPath, SHA1, SHA256, MD5, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit 1'  # noqa: E501
+            pe = HuntingQueryBuilder.PersistenceEvidence(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='host_file_change',
+            )
+            actual = pe.build_host_file_change_query()
             assert actual == expected

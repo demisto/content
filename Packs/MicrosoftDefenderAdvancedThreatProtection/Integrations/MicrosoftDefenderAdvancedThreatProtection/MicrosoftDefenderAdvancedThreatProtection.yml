@@ -4608,7 +4608,111 @@ script:
       required: false
       secret: false
     outputs:
-    - contextPath: MicrosoftATP.Hunt.Result
+    - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result
+      description: The query results.
+      type: String
+  - name: microsoft-atp-advanced-hunting-persistence-evidence
+    description: Is there evidence of persistence. By selecting a “query_purpose”
+      argument, a designated query template will be used.
+    deprecated: false
+    arguments:
+    - name: query_purpose
+      auto: PREDEFINED
+      description: By selecting a “query_purpose” argument, a designated query template
+        will be used.
+        "scheduled_job" - Did the process create any scheduled jobs?
+        "registry_entry" - Did it write to the registry? Requires also argument process_cmd to be provided.
+        "startup_folder_changes" - Was anything added to the startup folder?
+        "new_service_created" - Was a new service created?
+        "service_updated" - Was an existing service edited?
+        "file_replaced" - Was a file replaced in program files?
+        "new_user" - Was a new user created? (On the local machine).
+        "new_group" - Was a new group created?
+        "group_user_change" - Was a user added to a group?  (On the local machine)
+        "local_firewall_change" - Was there a change to the local FW rules?
+        "host_file_change" - Was there a change to the hosts file?
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - scheduled_job
+      - registry_entry
+      - startup_folder_changes
+      - new_service_created
+      - service_updated
+      - file_replaced
+      - new_user
+      - new_group
+      - group_user_change
+      - local_firewall_change
+      - host_file_change
+    - name: device_name
+      description: Device name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: file_name
+      description: File name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha1
+      description: SHA1 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha256
+      description: SHA256 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: md5
+      description: MD5 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: device_id
+      description: Device ID to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: query_operation
+      auto: PREDEFINED
+      description: Query operator to use with provided arguments.
+      required: false
+      isArray: false
+      defaultValue: or
+      predefined:
+      - or
+      - and
+    - name: limit
+      description: Max number of results to retrieve.
+      required: false
+      isArray: false
+      defaultValue: "50"
+    - name: time_range
+      description: description
+      required: false
+      isArray: false
+      defaultValue: Time range to look back. Expected syntax is a human readable time
+        range, e.g. 60 minutes, 6 hours, 1 day etc.
+    - default: false
+      defaultValue: "10"
+      description: The amount of time (in seconds) that a request waits for the query
+        response before a timeout occurs.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      description: Proccess command line that initiated the registry entry.
+        Can only be used with "registry_entry" query_purpose.
+      isArray: false
+      name: process_cmd
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result
       description: The query results.
       type: String
   dockerimage: demisto/crypto:1.0.0.24380
