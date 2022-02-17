@@ -2998,7 +2998,7 @@ def remove_duplicates_from_list_arg(args: dict, field: str):
 
 def rtr_kill_process_command(args: dict) -> CommandResults:
     host_id = args.get('host_id')
-    process_ids = remove_duplicates_from_list_arg(args, 'process_id')
+    process_ids = remove_duplicates_from_list_arg(args, 'process_ids')
     command_type = "kill"
     raw_response = []
     host_ids = [host_id]

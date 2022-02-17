@@ -3375,7 +3375,7 @@ Execute an active responder kill command on a single host.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_id | The host ID in which you would like to kill the given process. | Required | 
-| process_id | A comma-separated list of process IDs to kill. | Required | 
+| process_ids | A comma-separated list of process IDs to kill. | Required | 
 
 
 #### Context Output
@@ -3387,7 +3387,7 @@ Execute an active responder kill command on a single host.
 | CrowdStrike.Command.HostID | String | The host ID.                        | 
 
 #### Command example
-```!cs-falcon-rtr-kill-process host_id=15dbb9d8f06b45fe9f61eb46e829d986 process_id=12345,4220,712```
+```!cs-falcon-rtr-kill-process host_id=15dbb9d8f06b45fe9f61eb46e829d986 process_ids=12345,4220,712```
 #### Context Example
 ```json
 {

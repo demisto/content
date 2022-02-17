@@ -2961,7 +2961,7 @@ script:
     - default: false
       description: A comma-separated list of process IDs to kill.
       isArray: true
-      name: process_id
+      name: process_ids
       required: true
       secret: false
     deprecated: false
