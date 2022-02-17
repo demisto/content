@@ -214,11 +214,7 @@ ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_RES = {
     ]
 }
 
-ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_EXPECTED = {
-    "count": 9,
-    "next": "null",
-    "previous": "null",
-    "results": [
+ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_EXPECTED = [
         {
             "id": 165,
             "type": "job_event",
@@ -268,5 +264,4 @@ ANSIBLE_TOWER_JOB_EVENTS_LIST_BY_ID_EXPECTED = {
             "end_line": 0,
             "verbosity": 0
         }
-    ]
-}
+]
