@@ -774,10 +774,10 @@ Add a watchlist group. you can also add an entry to the watchlist.
 | is_case_sensitive | Whether to consider case sensitive on entry values. . Possible values are: false, true. Default is false. | Optional | 
 | data_creation_type | By which entity the data was created by. Possible values are: USER, SYSTEM. Default is USER. | Optional | 
 | value_type | Entries value type. Possible values are: STRING, IP, NUMBER, DATE. Default is STRING. | Optional | 
-| age_out | The time period in which the items will expire from the Watchlist group if there is no activity for that time. For example, "3 days ago","in 2 weeks", "1 month". | Optional | 
+| age_out | The time period in which the items will expire from the Watchlist group if there is no activity for that time. For example, "3 days ago","in 2 weeks", "1 month". By default, the item will never expire from Watchlist. | Optional | 
 | entry_inclusive | Weather if the entry is active or not. Possible values are: false, true. Default is true. | Optional | 
 | entry_value | Entry value. | Optional | 
-| entry_age_out | The time period in which the entry will expire from the Watchlist group if there is no activity for that time. For example, "3 days ago","in 2 weeks", "1 month". | Optional | 
+| entry_age_out | The time period in which the entry will expire from the Watchlist group if there is no activity for that time. For example, "3 days ago","in 2 weeks", "1 month". By default, the item will never expire from Watchlist. | Optional | 
 | entry_count | Entry count. | Optional | 
 | entry_first_seen | The first time the entry was seen (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Optional | 
 | entry_last_seen | The last time the entry was seen. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10". | Optional | 
@@ -853,7 +853,7 @@ Add watch list entry to one or more watch list groups.
 | count | Entry count. | Optional | 
 | triggering_rules | The triggering rules that associate with the entry. Should be a comma separated of rules names. | Optional | 
 | value | The entry value. | Required | 
-| age_out | The time period in which the entry will expire from the Watchlist group if there is no activity for that time. For example, "3 days ago","in 2 weeks", "1 month". | Optional | 
+| age_out | The time period in which the entry will expire from the Watchlist group if there is no activity for that time. For example, "3 days ago","in 2 weeks", "1 month". By default, the item will never expire from Watchlist. | Optional | 
 | last_seen | The last time the entry was seen. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10". | Optional | 
 | first_seen | The first time the entry was seen. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10". | Optional | 
 | data_creation_type | By which entity the data was created by. Possible values are: USER, SYSTEM. Default is USER. | Optional | 
@@ -892,7 +892,7 @@ Update watchlist entry. This command overrides all existing values in the entry?
 | inclusive | whether the entry is active. Possible values are: false, true. Default is true. | Optional | 
 | value | The entry value. | Required | 
 | expired_time | When the entry was expired (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Optional | 
-| age_out | The time period in which the entry will expire from the Watchlist group if there is no activity for that time. For example, "3 days ago","in 2 weeks", "1 month". | Optional | 
+| age_out | The time period in which the entry will expire from the Watchlist group if there is no activity for that time. For example, "3 days ago","in 2 weeks", "1 month". By default, the item will never expire from Watchlist. | Optional | 
 | last_seen | The first time the entry was seen. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10". | Optional | 
 
 
