@@ -60,6 +60,10 @@ configuration:
   name: insecure
   required: false
   type: 8
+- display: Expend evidence data in alerts?
+  name: fetch_evidence
+  required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
   required: false
