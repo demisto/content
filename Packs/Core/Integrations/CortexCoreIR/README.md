@@ -12,7 +12,7 @@ The Cortex Core IR integration uses the Cortex API for detection and response, b
     | Server URL (copy URL from Core - click ? to see more info.) |  | False |
     | API Key ID |  | False |
     | API Key |  | False |
-    | HTTP Timeout | The timeout of the HTTP requests sent to Cortex XDR API \(in seconds\). | False |
+    | HTTP Timeout | The timeout of the HTTP requests sent to Cortex API \(in seconds\). | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 

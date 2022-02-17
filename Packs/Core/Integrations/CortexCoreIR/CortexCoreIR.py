@@ -24,6 +24,166 @@ XSOAR_RESOLVED_STATUS_TO_Core = {
     'Resolved': 'resolved_true_positive',
 }
 
+ALERT_GENERAL_FIELDS = {
+    'detection_modules',
+    'alert_full_description',
+    'matching_service_rule_id',
+    'variation_rule_id',
+    'content_version',
+    'detector_id',
+    'mitre_technique_id_and_name',
+    'silent',
+    'mitre_technique_ids',
+    'activity_first_seet_at',
+    '_type',
+    'dst_association_strength',
+    'alert_description',
+}
+
+ALERT_EVENT_GENERAL_FIELDS = {
+    "_time",
+    "vendor",
+    "event_timestamp",
+    "event_type",
+    "event_id",
+    "cloud_provider",
+    "project",
+    "cloud_provider_event_id",
+    "cloud_correlation_id",
+    "operation_name_orig",
+    "operation_name",
+    "identity_orig",
+    "identity_name",
+    "identity_uuid",
+    "identity_type",
+    "identity_sub_type",
+    "identity_invoked_by_name",
+    "identity_invoked_by_uuid",
+    "identity_invoked_by_type",
+    "identity_invoked_by_sub_type",
+    "operation_status",
+    "operation_status_orig",
+    "operation_status_orig_code",
+    "operation_status_reason_provided",
+    "resource_type",
+    "resource_type_orig",
+    "resource_sub_type",
+    "resource_sub_type_orig",
+    "region",
+    "zone",
+    "referenced_resource",
+    "referenced_resource_name",
+    "referenced_resources_count",
+    "user_agent",
+    "caller_ip",
+    'caller_ip_geolocation',
+    "caller_ip_asn",
+    'caller_project',
+    'raw_log',
+    "log_name",
+    "caller_ip_asn_org",
+    "event_base_id",
+    "ingestion_time",
+}
+
+
+ALERT_EVENT_GENERAL_FIELDS = {
+    "_time",
+    "vendor",
+    "event_timestamp",
+    "event_type",
+    "event_id",
+    "cloud_provider",
+    "project",
+    "cloud_provider_event_id",
+    "cloud_correlation_id",
+    "operation_name_orig",
+    "operation_name",
+    "identity_orig",
+    "identity_name",
+    "identity_uuid",
+    "identity_type",
+    "identity_sub_type",
+    "identity_invoked_by_name",
+    "identity_invoked_by_uuid",
+    "identity_invoked_by_type",
+    "identity_invoked_by_sub_type",
+    "operation_status",
+    "operation_status_orig",
+    "operation_status_orig_code",
+    "operation_status_reason_provided",
+    "resource_type",
+    "resource_type_orig",
+    "resource_sub_type",
+    "resource_sub_type_orig",
+    "region",
+    "zone",
+    "referenced_resource",
+    "referenced_resource_name",
+    "referenced_resources_count",
+    "user_agent",
+    "caller_ip",
+    'caller_ip_geolocation',
+    "caller_ip_asn",
+    'caller_project',
+    'raw_log',
+    "log_name",
+    "caller_ip_asn_org",
+    "event_base_id",
+    "ingestion_time",
+}
+
+ALERT_EVENT_AWS_FIELDS = {
+    "eventVersion",
+    "userIdentity",
+    "eventTime",
+    "eventSource",
+    "eventName",
+    "awsRegion",
+    "sourceIPAddress",
+    "userAgent",
+    "requestID",
+    "eventID",
+    "readOnly",
+    "eventType",
+    "apiVersion",
+    "managementEvent",
+    "recipientAccountId",
+    "eventCategory",
+    "errorCode",
+    "errorMessage",
+    "resources",
+}
+
+ALERT_EVENT_GCP_FIELDS = {
+    "labels",
+    "operation",
+    "protoPayload",
+    "resource",
+    "severity",
+    "timestamp",
+}
+
+ALERT_EVENT_AZURE_FIELDS = {
+    "time",
+    "resourceId",
+    "category",
+    "operationName",
+    "operationVersion",
+    "schemaVersion",
+    "statusCode",
+    "statusText",
+    "callerIpAddress",
+    "correlationId",
+    "identity",
+    "level",
+    "properties",
+    "uri",
+    "protocol",
+    "resourceType",
+    "tenantId",
+}
+
 
 class Client(BaseClient):
 
@@ -878,6 +1038,18 @@ class Client(BaseClient):
                                  data=json.dumps(request_data))
 
         return reply
+
+    def get_original_alerts(self, alert_id_list):
+        res = self._http_request(
+            method='POST',
+            url_suffix='/alerts/get_original_alerts/',
+            json_data={
+                'request_data': {
+                    'alert_id_list': alert_id_list,
+                }
+            },
+        )
+        return res.get('reply', {})
 
     def get_endpoint_device_control_violations(self, endpoint_ids: list, type_of_violation, timestamp_gte: int,
                                                timestamp_lte: int,
@@ -2722,6 +2894,107 @@ def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
     )
 
 
+def decode_dict_values(dict_to_decode: dict):
+    """Decode JSON str values of a given dict.
+
+    Args:
+      dict_to_decode (dict): The dict to decode.
+
+    """
+    for key, value in dict_to_decode.items():
+        # if value is a dictionary, we want to recursively decode it's values
+        if isinstance(value, dict):
+            decode_dict_values(value)
+        # if value is a string, we want to try to decode it, if it cannot be decoded, we will move on.
+        elif isinstance(value, str):
+            try:
+                dict_to_decode[key] = json.loads(value)
+            except ValueError:
+                continue
+
+
+def filter_general_fields(alert: dict) -> dict:
+    """filter only relevant general fields from a given alert.
+
+    Args:
+      alert (dict): The alert to filter
+
+    Returns:
+      dict: The filtered alert
+    """
+
+    updated_alert = {}
+    updated_event = {}
+    for field in ALERT_GENERAL_FIELDS:
+        if field in alert:
+            updated_alert[field] = alert.get(field)
+
+    event = alert.get('raw_abioc', {}).get('event', {})
+    if not event:
+        return_warning('No XDR cloud analytics event.')
+    else:
+        for field in ALERT_EVENT_GENERAL_FIELDS:
+            if field in event:
+                updated_event[field] = event.get(field)
+        updated_alert['event'] = updated_event
+    return updated_alert
+
+
+def filter_vendor_fields(alert: dict):
+    """Remove non relevant fields from the alert event (filter by vendor: Amazon/google/Microsoft)
+
+    Args:
+      alert (dict): The alert to filter
+
+    Returns:
+      dict: The filtered alert
+    """
+    vendor_mapper = {
+        'Amazon': ALERT_EVENT_AWS_FIELDS,
+        'Google': ALERT_EVENT_GCP_FIELDS,
+        'MSFT': ALERT_EVENT_AZURE_FIELDS,
+    }
+    event = alert.get('event', {})
+    vendor = event.get('vendor')
+    if vendor and vendor in vendor_mapper:
+        raw_log = event.get('raw_log', {})
+        if raw_log and isinstance(raw_log, dict):
+            for key in list(raw_log):
+                if key not in vendor_mapper[vendor]:
+                    raw_log.pop(key)
+
+
+def get_original_alerts_command(client: Client, args: Dict) -> CommandResults:
+    alert_id_list = argToList(args.get('alert_ids', []))
+    raw_response = client.get_original_alerts(alert_id_list)
+    reply = copy.deepcopy(raw_response)
+    alerts = reply.get('alerts', [])
+    filtered_alerts = []
+    for i, alert in enumerate(alerts):
+        # decode raw_response
+        try:
+            alert['original_alert_json'] = safe_load_json(alert.get('original_alert_json', ''))
+            # some of the returned JSON fields are double encoded, so it needs to be double-decoded.
+            # example: {"x": "someValue", "y": "{\"z\":\"anotherValue\"}"}
+            decode_dict_values(alert)
+        except Exception:
+            continue
+        # remove original_alert_json field and add its content to alert.
+        alert.update(
+            alert.pop('original_alert_json', None))
+        updated_alert = filter_general_fields(alert)
+        if 'event' in updated_alert:
+            filter_vendor_fields(updated_alert)
+        filtered_alerts.append(updated_alert)
+
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.OriginalAlert',
+        outputs_key_field='internal_id',
+        outputs=filtered_alerts,
+        raw_response=raw_response,
+    )
+
+
 def run_polling_command(client: Client,
                         args: dict,
                         cmd: str,
@@ -3089,6 +3362,9 @@ def main():
 
         elif command == 'core-get-exclusion':
             return_results(get_exclusion_command(client, args))
+
+        elif command == 'core-get-cloud-original-alerts':
+            return_results(get_original_alerts_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

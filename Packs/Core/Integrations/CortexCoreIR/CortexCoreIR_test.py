@@ -2486,3 +2486,31 @@ def test_report_incorrect_wildfire_command(mocker):
     }
     res = report_incorrect_wildfire_command(client=mock_client, args=args)
     assert res.readable_output == f'Reported incorrect WildFire on {file_hash}'
+
+
+def test_get_original_alerts_command(requests_mock):
+    """
+    Given:
+        - Core client
+        - Alert IDs
+    When
+        - Running get_original_alerts_command command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexCoreIR import get_original_alerts_command, Client
+    api_response = load_test_data('./test_data/get_original_alerts_results.json')
+    requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_original_alerts/', json=api_response)
+    client = Client(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'alert_ids': '2',
+    }
+
+    response = get_original_alerts_command(client, args)
+    event = response.outputs[0].get('event', {})
+    assert event.get('_time') == 'DATE'  # assert general filter is correct
+    assert event.get('cloud_provider') == 'AWS'  # assert general filter is correct
+    assert event.get('raw_log', {}).get('userIdentity', {}).get('accountId') == 'ID'  # assert vendor filter is correct

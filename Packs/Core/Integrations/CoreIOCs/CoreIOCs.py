@@ -326,7 +326,7 @@ def iocs_command(client: Client):
 def core_ioc_to_timeline(iocs: List) -> Dict:
     ioc_time_line = {
         'Value': ','.join(iocs),
-        'Message': 'indicator updated in XDR.',
+        'Message': 'indicator updated in Cortex.',
         'Category': 'Integration Update'
     }
     return ioc_time_line

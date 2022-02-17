@@ -15,7 +15,7 @@ configuration:
   name: apikey
   required: false
   type: 4
-- additionalinfo: Map the severity of each indicator that will be synced to Cortex XDR.
+- additionalinfo: Map the severity of each indicator that will be synced to Cortex.
   display: Cortex XDR Severity
   hidden: false
   name: severity
@@ -48,7 +48,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The Cortex XDR - IOCs integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
+description: The Cortex Core - IOCs integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
 display: Indicators detection
 name: Cortex Core - IOC
 script:

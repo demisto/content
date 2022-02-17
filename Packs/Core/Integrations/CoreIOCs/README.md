@@ -1,7 +1,7 @@
-The Cortex XDR - IOCs integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
+The Cortex Core - IOCs integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
 This integration was integrated and tested with version xx of Cortex Core - IOC
 
-## Configure Indicators detection on Cortex XSOAR
+## Configure Indicators detection
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Indicators detection.
@@ -12,7 +12,7 @@ This integration was integrated and tested with version xx of Cortex Core - IOC
     | Server URL (e.g. https://example.net) |  | False |
     | API Key ID |  | False |
     | API Key |  | False |
-    | Cortex XDR Severity | Map the severity of each indicator that will be synced to Cortex XDR. | True |
+    | Cortex XDR Severity | Map the severity of each indicator that will be synced to Cortex. | True |
     | Tags | Supports CSV values. | False |
     | Sync Query | The query used to collect indicators to sync from Cortex. | True |
     | Trust any certificate (not secure) |  | False |
@@ -20,7 +20,7 @@ This integration was integrated and tested with version xx of Cortex Core - IOC
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### core-iocs-sync
 ***
