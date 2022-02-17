@@ -328,7 +328,8 @@ def build_context_url_ok_status(url_information: dict, uri: str, params: dict) -
         outputs_key_field='ID',
         outputs=urlhaus_data,
         raw_response=url_information,
-        indicator=url_indicator)
+        indicator=url_indicator,
+        relationships=relationships)
 
 
 def build_context_url_no_results_status(url_information: dict, uri: str, params: dict) -> CommandResults:
@@ -522,7 +523,8 @@ def run_domain_command(domain: str, params: dict) -> CommandResults:
             outputs_prefix='URLhaus.Domain',
             outputs=urlhaus_data,
             raw_response=domain_information,
-            indicator=domain_indicator)
+            indicator=domain_indicator,
+            relationships=relationships)
     elif domain_information['query_status'] == 'no_results':
         dbot_score = Common.DBotScore(
             indicator=domain,
@@ -664,14 +666,17 @@ def run_file_command(hash: str, params: dict) -> CommandResults:
                                              'MD5': urlhaus_data.get('MD5', ''),
                                              'SHA256': urlhaus_data.get('SHA256', ''),
                                              'First seen': first_seen,
-                                             'Last seen': last_seen
+                                             'Last seen': last_seen,
+                                             'SSDeep': file_information.get('ssdeep'),
+                                             'Type': file_information.get('file_type')
                                          })
         return CommandResults(
             readable_output=human_readable,
             outputs_prefix='URLhaus.File',
             outputs=urlhaus_data,
             raw_response=file_information,
-            indicator=file_indicator)
+            indicator=file_indicator,
+            relationships=relationships)
 
     elif (file_information['query_status'] == 'ok' and not file_information['md5_hash']) or \
             file_information['query_status'] == 'no_results':

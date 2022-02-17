@@ -18,13 +18,9 @@ Determined by the blacklist spamhaus_dbl/surbl of the Domain.
 |-----------------------------------------------------------| --- |
 | spammer_domain/ phishing_domain/ botnet_cc_domain/ listed | Malicious |
 | not listed                                                | Unknown |
-| -                                                         | Benign |
-| unknown                                                   | Unknown |
+| In any other case                                                       | Benign |
 
 ### File
 
 Score is Malicious.
 
-| **Status** | **DBotScore** |
-|---| --- |
-| - | Malicious |

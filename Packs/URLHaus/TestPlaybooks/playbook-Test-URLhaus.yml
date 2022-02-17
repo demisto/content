@@ -163,7 +163,7 @@ tasks:
           right:
             value:
               simple: "5"
-      - - operator: hasLength
+      - - operator: greaterThan
           left:
             value:
               complex:
@@ -178,10 +178,12 @@ tasks:
                       value:
                         simple: http://ekamjewels.com/anklet/WQG1/?i=1
                 accessor: Relationships
+                transformers:
+                - operator: count
             iscontext: true
           right:
             value:
-              simple: "1"
+              simple: "10"
     view: |-
       {
         "position": {
@@ -386,7 +388,7 @@ tasks:
           right:
             value:
               simple: "3"
-      - - operator: hasLength
+      - - operator: greaterThanOrEqual
           left:
             value:
               complex:
@@ -401,10 +403,12 @@ tasks:
                       value:
                         simple: coin-coin-file-9.com
                 accessor: Relationships
+                transformers:
+                - operator: count
             iscontext: true
           right:
             value:
-              simple: "1"
+              simple: "10"
     view: |-
       {
         "position": {
@@ -584,6 +588,27 @@ tasks:
           right:
             value:
               simple: dll
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.SHA256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89
+                accessor: Relationships
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "10"
     view: |-
       {
         "position": {
