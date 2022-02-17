@@ -1700,7 +1700,7 @@ def get_modified_remote_data_command(args: Dict[str, Any]):
     return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
 
 
-def update_detection_request(ids: List[str], status: str):
+def update_detection_request(ids: List[str], status: str) -> Dict:
     if status not in DETECTION_STATUS:
         raise DemistoException(f'CrowdStrike Falcon Error: '
                                f'Status given is {status} and it is not in {DETECTION_STATUS}')
@@ -1724,8 +1724,9 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
         The remote incident id that was modified. This is important when the incident is newly created remotely.
     """
     parsed_args = UpdateRemoteSystemArgs(args)
+    demisto.debug(f'Got the following data {parsed_args.data}, and delta {parsed_args.delta}.')
     if parsed_args.delta:
-        demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
+        demisto.debug(f'Got the following delta keys {list(parsed_args.delta.keys())}.')
 
     try:
         if parsed_args.incident_changed:
@@ -1736,28 +1737,32 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
 
                 result = ''
                 if 'tag' in parsed_args.delta:
-                    current_tags = set(argToList(parsed_args.delta.get('tag')))  # todo check if argtolist
-                    current_data_tags = set(argToList(parsed_args.data.get('tag')))  # todo check if argtolist
-                    prev_tags = current_data_tags
-                    demisto.debug(f'Current tags in XSOAR are {current_tags}, and in remote system {prev_tags}, '
-                                  f'and in data {current_data_tags}.')
+                    current_tags = set(parsed_args.delta.get('tag'))
+                    prev_tags = get_remote_tags()
+                    demisto.debug(f'Current tags in XSOAR are {current_tags}, and in remote system {prev_tags}.')
 
                     # if tag added
                     for tag in current_tags - prev_tags:
-                        result += update_incident_request([parsed_args.remote_incident_id], tag, 'add_tag')
+                        demisto.debug(f'Tag "{tag}" will be added to incident with remote ID {parsed_args.remote_incident_id}'
+                                      f' in remote system.')
+                        result += str(update_incident_request([parsed_args.remote_incident_id], tag, 'add_tag'))
 
                     # if tag deleted
                     for tag in prev_tags - current_tags:
-                        result += update_incident_request([parsed_args.remote_incident_id], tag, 'delete_tag')
+                        demisto.debug(f'Tag "{tag}" will be removed from incident with remote ID {parsed_args.remote_incident_id}'
+                                      f' in remote system.')
+                        result += str(update_incident_request([parsed_args.remote_incident_id], tag, 'delete_tag'))
 
                 if parsed_args.inc_status == IncidentStatus.DONE and CLOSE_IN_CS_FALCON:
-                    demisto.debug(f'Closing incident with remote ID {parsed_args.remote_incident_id} to remote system.')
-                    result += resolve_incident([parsed_args.remote_incident_id], 'Closed')
+                    demisto.debug(f'Closing incident with remote ID {parsed_args.remote_incident_id} in remote system.')
+                    result += str(resolve_incident([parsed_args.remote_incident_id], 'Closed'))
 
                 # status field in CS Falcon is mapped to Source Status field in XSOAR. Don't confuse with state field
                 # todo check with Meital if costumers already use other field for this (was not in the mapper)
-                elif 'sourcestatus' in parsed_args.delta:
-                    result += resolve_incident([parsed_args.remote_incident_id], parsed_args.delta.get('sourcestatus'))
+                elif 'status' in parsed_args.delta:
+                    demisto.debug(f'Incident with remote ID {parsed_args.remote_incident_id} status will change to '
+                                  f'"{parsed_args.data.get("status")}" in remote system.')
+                    result += str(resolve_incident([parsed_args.remote_incident_id], parsed_args.data.get('status')))
 
                 if result:
                     demisto.debug(f'Incident updated successfully. Result: {result}')
@@ -1768,12 +1773,13 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
 
                 if parsed_args.inc_status == IncidentStatus.DONE and CLOSE_IN_CS_FALCON:
                     demisto.debug(f'Closing detection with remote ID {parsed_args.remote_incident_id} in remote system.')
-                    result += update_detection_request([parsed_args.remote_incident_id], 'closed')
+                    result += str(update_detection_request([parsed_args.remote_incident_id], 'closed'))
 
                 # status field in CS Falcon is mapped to State field in XSOAR
-                elif 'state' in parsed_args.delta:
-                    demisto.debug(f'Sending detection with remote ID {parsed_args.remote_incident_id} to remote system.')
-                    result += update_detection_request([parsed_args.remote_incident_id], parsed_args.delta.get('state'))
+                elif 'status' in parsed_args.delta:
+                    demisto.debug(f'Detection with remote ID {parsed_args.remote_incident_id} status will change to '
+                                  f'"{parsed_args.data.get("status")}" in remote system.')
+                    result += str(update_detection_request([parsed_args.remote_incident_id], parsed_args.data.get('status')))
 
                 if result:
                     demisto.debug(f'Detection updated successfully. Result: {result}')
@@ -1782,12 +1788,11 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
                 raise Exception(f'Executed update-remote-system command with undefined id: {parsed_args.remote_incident_id}')
 
         else:
-            demisto.debug(f'Skipping updating remote incident or detection {parsed_args.remote_incident_id} '
-                          f'as it is not changed.')
+            demisto.debug(f"Skipping updating remote incident or detection {parsed_args.remote_incident_id} as it didn't change.")
 
     except Exception as e:
-        demisto.error(f"Error in CrowdStrike Falcon outgoing mirror for incident or detection {parsed_args.remote_incident_id}\n"
-                      f"Error message: {str(e)}")
+        demisto.error(f'Error in CrowdStrike Falcon outgoing mirror for incident or detection {parsed_args.remote_incident_id}. '
+                      f'Error message: {str(e)}')
 
     return parsed_args.remote_incident_id
 
