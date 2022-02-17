@@ -256,7 +256,7 @@ references:
       name: Create ID Set
       when: always
       command: |
-        demisto-sdk create-id-set -o ./Tests/id_set.json
+        demisto-sdk create-id-set -o ./Tests/id_set.json --fail-duplicates
         cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
 
   merge_public_and_private_id_sets: &merge_public_and_private_id_sets

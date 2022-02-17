@@ -30,8 +30,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.0.0",
-    "marketplaces": [
-        "xsoar"
-    ]
+    "fromVersion": "6.0.0"
 }

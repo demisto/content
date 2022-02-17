@@ -1,4 +1,5 @@
 Phishing
+SplunkPy
 remediate
 playbook
 firewalls
@@ -67,6 +68,7 @@ NoneType
 CreateIncidents
 EML
 LastSeen
+Lastline
 IntelGraph
 Accenture
 CTI
@@ -84,3 +86,7 @@ FireEye
 FormatURL
 Gitlab
 GitHub
+TAXII
+Syslog
+DomainTools
+replyTo

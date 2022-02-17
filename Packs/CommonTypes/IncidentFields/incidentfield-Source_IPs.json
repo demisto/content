@@ -1,7 +1,8 @@
 {
   "associatedToAll": false,
   "associatedTypes": [
-    "Qradar Generic"
+    "Qradar Generic",
+    "FW change management"
   ],
   "breachScript": "",
   "caseInsensitive": true,
@@ -34,7 +35,10 @@
   "selectValues": [],
   "sla": 0,
   "system": false,
-  "systemAssociatedTypes": null,
+  "systemAssociatedTypes": [
+    "Qradar Generic",
+    "FW change management"
+  ],
   "threshold": 72,
   "toServerVersion": "",
   "type": "multiSelect",
