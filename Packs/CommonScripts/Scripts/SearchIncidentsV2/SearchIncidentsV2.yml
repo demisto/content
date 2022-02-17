@@ -108,7 +108,7 @@ args:
 - default: false
   description: |-
     The number of events to return from the alert JSON. The default is 0, which returns all events.
-    Note that the trimming is from the top of the list, regardless of event time or other properties.
+    Note that the count is from the head of the list, regardless of event time or other properties.
   isArray: false
   name: trimevents
   required: false
