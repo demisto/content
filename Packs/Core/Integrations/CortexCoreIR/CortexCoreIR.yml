@@ -2438,15 +2438,23 @@ script:
       required: true
       secret: false
     - default: false
-      description: User’s email address.
+      description: User’s email address. Default value is 'XSIAM-Playbooks@paloaltonetowrks.com'.
       isArray: false
       name: email
-      required: true
+      required: false
+      defaultValue: 'XSIAM-Playbooks@paloaltonetowrks.com'
       secret: false
     deprecated: false
-    description: Report false positive to wildfire through Cortex.
+    description: Reports to WildFire about incorrect hash verdict through Cortex.
     execution: true
     name: core-report-incorrect-wildfire
+    outputs:
+      - contextPath: Core.WildFire.file_hash
+        description: String that represents the file’s hash.
+        type: Number
+      - contextPath: Core.WildFire.new_verdict
+        description: The new verdict of the file.
+        type: Number
   - arguments:
       - default: false
         description: Links the response action to the incident that triggered it.
@@ -2534,7 +2542,7 @@ script:
         required: false
         secret: false
     deprecated: false
-    description: Adds exclusion.
+    description: Adds alert exclusion rule based on filterObject.
     execution: false
     name: core-add-exclusion
     outputs:
@@ -2549,7 +2557,7 @@ script:
         required: true
         secret: false
     deprecated: false
-    description: Delete exclusion.
+    description: Delete an alert exclusion rule based on rule ID.
     execution: false
     name: core-delete-exclusion
     outputs:
@@ -2577,7 +2585,7 @@ script:
         secret: false
         defaultValue: '20'
     deprecated: false
-    description: Gets exclusion list.
+    description: Get a list of the alerts exclusion.
     execution: false
     name: core-get-exclusion
     outputs:

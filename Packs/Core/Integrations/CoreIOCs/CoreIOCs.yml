@@ -15,8 +15,7 @@ configuration:
   name: apikey
   required: false
   type: 4
-- additionalinfo: Map the severity of each indicator that will be synced to Cortex
-    XDR.
+- additionalinfo: Map the severity of each indicator that will be synced to Cortex XDR.
   display: Cortex XDR Severity
   hidden: false
   name: severity
@@ -34,8 +33,7 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- additionalinfo: The query used to collect indicators to sync from Cortex XSOAR to
-    Cortex XDR.
+- additionalinfo: The query used to collect indicators to sync from Cortex.
   defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
   display: Sync Query
   hidden: false
@@ -50,10 +48,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Cortex XDR - IOCs integration to sync indicators from Cortex
-  XSOAR to Cortex XDR and back to Cortex XSOAR. Cortex XDR is the world's first detection
-  and response app that natively integrates network, endpoint and cloud data to stop
-  sophisticated attacks.
+description: The Cortex XDR - IOCs integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
 display: Indicators detection
 name: Cortex Core - IOC
 script:
@@ -73,19 +68,18 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Sync your IOC with Cortex XDR and delete the old.
+    description: Sync your IOC with Cortex and delete the previous version.
     execution: false
     name: core-iocs-sync
   - arguments:
     - default: false
-      description: IOCs to push. leave empty to push all recently modified IOCs.the
-        indicators
+      description: IOCs to push. leave empty to push all recently modified IOCs.the indicators
       isArray: true
       name: indicator
       required: false
       secret: false
     deprecated: false
-    description: Push modified IOCs to Cortex XDR.
+    description: Push modified IOCs to Cortex.
     execution: false
     name: core-iocs-push
   - arguments:
@@ -96,13 +90,11 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Set sync time manually (Do not use this command unless you unredstandard
-      the consequences).
+    description: Set sync time manually (Do not use this command unless you unredstandard the consequences).
     execution: false
     name: core-iocs-set-sync-time
   - deprecated: false
-    description: Creates the sync file for the manual process. Run this command when
-      instructed by the XDR support team.
+    description: Creates the sync file for the manual process. Run this command when instructed by the Cortex support team.
     execution: false
     name: core-iocs-create-sync-file
   - arguments:
@@ -113,7 +105,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Enables IOCs in the XDR server.
+    description: Enables IOCs in the Cortex server.
     execution: false
     name: core-iocs-enable
   - arguments:
@@ -124,7 +116,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Disables IOCs in the XDR server.
+    description: Disables IOCs in the Cortex server.
     execution: false
     name: core-iocs-disable
   dockerimage: demisto/python3:3.10.1.25933

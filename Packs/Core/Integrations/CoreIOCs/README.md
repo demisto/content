@@ -1,5 +1,5 @@
-Use the Cortex XDR - IOCs integration to sync indicators from Cortex XSOAR to Cortex XDR and back to Cortex XSOAR. Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
-This integration was integrated and tested with Cortex Core - IOC
+The Cortex XDR - IOCs integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
+This integration was integrated and tested with version xx of Cortex Core - IOC
 
 ## Configure Indicators detection on Cortex XSOAR
 
@@ -9,12 +9,12 @@ This integration was integrated and tested with Cortex Core - IOC
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g. https://example.net) |  | True |
-    | API Key ID |  | True |
-    | API Key |  | True |
+    | Server URL (e.g. https://example.net) |  | False |
+    | API Key ID |  | False |
+    | API Key |  | False |
     | Cortex XDR Severity | Map the severity of each indicator that will be synced to Cortex XDR. | True |
     | Tags | Supports CSV values. | False |
-    | Sync Query | The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR. | True |
+    | Sync Query | The query used to collect indicators to sync from Cortex. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
@@ -24,7 +24,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### core-iocs-sync
 ***
-Sync your IOC with Cortex XDR and delete the old.
+Sync your IOC with Cortex and delete the previous version.
 
 
 #### Base Command
@@ -42,7 +42,7 @@ Sync your IOC with Cortex XDR and delete the old.
 There is no context output for this command.
 ### core-iocs-push
 ***
-Push modified IOCs to Cortex XDR.
+Push modified IOCs to Cortex.
 
 
 #### Base Command
@@ -58,6 +58,12 @@ Push modified IOCs to Cortex XDR.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!core-iocs-push indicator='test.com'```
+#### Human Readable Output
+
+>push done.
+
 ### core-iocs-set-sync-time
 ***
 Set sync time manually (Do not use this command unless you unredstandard the consequences).
@@ -78,7 +84,7 @@ Set sync time manually (Do not use this command unless you unredstandard the con
 There is no context output for this command.
 ### core-iocs-create-sync-file
 ***
-Creates the sync file for the manual process. Run this command when instructed by the XDR support team.
+Creates the sync file for the manual process. Run this command when instructed by the Cortex support team.
 
 
 #### Base Command
@@ -93,7 +99,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 ### core-iocs-enable
 ***
-Enables IOCs in the XDR server.
+Enables IOCs in the Cortex server.
 
 
 #### Base Command
@@ -117,7 +123,7 @@ There is no context output for this command.
 
 ### core-iocs-disable
 ***
-Disables IOCs in the XDR server.
+Disables IOCs in the Cortex server.
 
 
 #### Base Command

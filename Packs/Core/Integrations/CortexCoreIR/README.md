@@ -1,5 +1,4 @@
-Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
-This integration was integrated and tested with Cortex Core - IR
+The Cortex Core IR integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
 
 ## Configure Investigation & Response on Cortex XSOAR
 
@@ -14,7 +13,6 @@ This integration was integrated and tested with Cortex Core - IR
     | API Key ID |  | False |
     | API Key |  | False |
     | HTTP Timeout | The timeout of the HTTP requests sent to Cortex XDR API \(in seconds\). | False |
-    | Sync Incident Owners | For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if you now change the owner back in Cortex XDR, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex XDR. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
@@ -34,12 +32,12 @@ Isolates the specified endpoint.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Links the response action to the triggered incident. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
 | action_id | For polling use. | Optional | 
-| endpoint_id | The endpoint ID (string) to isolate. You can retrieve the string from the core-get-endpoints command. | Required | 
-| suppress_disconnected_endpoint_error | Whether to suppress an error when trying to isolate a disconnected endpoint. When sets to false, an error will be returned. Possible values are: true, false. Default is false. | Optional | 
+| endpoint_id | The endpoint ID (string) to isolate. Retrieve the string from the core-get-endpoints command. | Required | 
+| suppress_disconnected_endpoint_error | Suppress an error when trying to isolate a disconnected endpoint. When set to false, an error is returned. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -60,9 +58,9 @@ Reverses the isolation of an endpoint.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
-| endpoint_id | The endpoint ID (string) for which to reverse the isolation. You can retrieve it from the core-get-endpoints command. | Required | 
-| suppress_disconnected_endpoint_error | Whether to suppress an error when trying to unisolate a disconnected endpoint. When sets to false, an error will be returned. Possible values are: true, false. Default is false. | Optional | 
+| incident_id | Links the response action to the triggered incident. | Optional | 
+| endpoint_id | The endpoint ID (string) to reverse the isolation. Retrieve it from the core-get-endpoints command. | Required | 
+| suppress_disconnected_endpoint_error | Suppress an error when trying to unisolate a disconnected endpoint. When set to false, an error is be returned. Possible values are: true, false. Default is false. | Optional | 
 | action_id | For polling use. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
@@ -144,46 +142,47 @@ Gets a list of endpoints, according to the passed filters. If there are no filte
 #### Context Example
 ```json
 {
-    "Account": [
-        {
-            "Domain": "xdrdummyurl.com",
-            "Username": "xdrdummyurl.com"
-        }
-    ],
-    "Core": {
-        "Endpoint": [
-            {
-                "active_directory": null,
-                "alias": "",
-                "content_release_timestamp": 1643023344000,
-                "content_version": "360-81029",
-                "domain": "xdrdummyurl.com",
-                "endpoint_id": "87ae5fc622604ea4809dd28f01c436d0",
-                "endpoint_name": "dummy_new_name2",
-                "endpoint_status": "DISCONNECTED",
-                "endpoint_type": "AGENT_TYPE_SERVER",
-                "endpoint_version": "1.1.1.1",
-                "first_seen": 1642943216960,
-                "group_name": [],
-                "install_date": 1642943217006,
-                "installation_package": "",
-                "ip": [
-                    "1.1.1.1"
-                ],
-                "is_isolated": "AGENT_UNISOLATED",
-                "isolated_date": null,
-                "last_content_update_time": 1643026320796,
-                "last_seen": 1643026320166,
-                "operational_status": "PROTECTED",
-                "operational_status_description": null,
-                "os_type": "AGENT_OS_WINDOWS",
-                "os_version": "1.1.1",
-                "scan_status": "SCAN_STATUS_NONE",
-                "users": [
-                    "woo@demisto.com"
-                ]
-            }
+  "Account": [
+    {
+      "Domain": "xdrdummyurl.com",
+      "Username": "xdrdummyurl.com"
+    }
+  ],
+  "Core": {
+    "Endpoint": [
+      {
+        "active_directory": null,
+        "alias": "",
+        "content_release_timestamp": 1643023344000,
+        "content_version": "360-81029",
+        "domain": "xdrdummyurl.com",
+        "endpoint_id": "87ae5fc622604ea4809dd28f01c436d0",
+        "endpoint_name": "dummy_new_name2",
+        "endpoint_status": "DISCONNECTED",
+        "endpoint_type": "AGENT_TYPE_SERVER",
+        "endpoint_version": "1.1.1.1",
+        "first_seen": 1642943216960,
+        "group_name": [],
+        "install_date": 1642943217006,
+        "installation_package": "",
+        "ip": [
+          "1.1.1.1"
+        ],
+        "is_isolated": "AGENT_UNISOLATED",
+        "isolated_date": null,
+        "last_content_update_time": 1643026320796,
+        "last_seen": 1643026320166,
+        "operational_status": "PROTECTED",
+        "operational_status_description": null,
+        "os_type": "AGENT_OS_WINDOWS",
+        "os_version": "1.1.1",
+        "scan_status": "SCAN_STATUS_NONE",
+        "users": [
+          "woo@demisto.com"
+        ]
+      }
     ]
+  }
 }
 ```
 
@@ -279,7 +278,7 @@ Creates an installation package. This is an asynchronous call that returns the d
 | name | A string representing the name of the installation package. | Required | 
 | platform | String, valid values are:<br/>• windows <br/>• linux<br/>• macos <br/>• android. Possible values are: windows, linux, macos, android. | Required | 
 | package_type | A string representing the type of package to create.<br/>standalone - An installation for a new agent<br/>upgrade - An upgrade of an agent from ESM. Possible values are: standalone, upgrade. | Required | 
-| agent_version | agent_version returned from core-get-distribution-versions. Not required for Android platfom. | Required | 
+| agent_version | agent_version returned from core-get-distribution-versions. Not required for Android platfoms. | Required | 
 | description | Information about the package. | Optional | 
 
 
@@ -350,7 +349,7 @@ Gets the status of the installation package.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| distribution_ids | A comma-separated list of distribution IDs to get the status of. | Required | 
+| distribution_ids | Status of distribution IDs, in a comma-separated list. | Required | 
 
 
 #### Context Output
@@ -358,7 +357,7 @@ Gets the status of the installation package.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Core.Distribution.id | String | Distribution ID. | 
-| Core.Distribution.status | String | The status of installation package. | 
+| Core.Distribution.status | String | Installation package status. | 
 
 ### core-get-audit-management-logs
 ***
@@ -376,11 +375,11 @@ Gets management logs. You can filter by multiple fields, which will be concatena
 | type | The audit log type. Possible values are: REMOTE_TERMINAL, RULES, AUTH, RESPONSE, INCIDENT_MANAGEMENT, ENDPOINT_MANAGEMENT, ALERT_WHITELIST, PUBLIC_API, DISTRIBUTIONS, STARRED_INCIDENTS, POLICY_PROFILES, DEVICE_CONTROL_PROFILE, HOST_FIREWALL_PROFILE, POLICY_RULES, PROTECTION_POLICY, DEVICE_CONTROL_TEMP_EXCEPTIONS, DEVICE_CONTROL_GLOBAL_EXCEPTIONS, GLOBAL_EXCEPTIONS, MSSP, REPORTING, DASHBOARD, BROKER_VM. | Optional | 
 | sub_type | The audit log subtype. | Optional | 
 | result | Result type. Possible values are: SUCCESS, FAIL, PARTIAL. | Optional | 
-| timestamp_gte | Return logs for which the timestamp is after 'log_time_after'.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
-| timestamp_lte | Return logs for which the timestamp is before the 'log_time_after'.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
+| timestamp_gte | Return logs when the timestamp is after 'log_time_after'.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
+| timestamp_lte | Return logs when the timestamp is before the 'log_time_after'.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
 | page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional | 
 | limit | Maximum number of audit logs to return per page. The default and maximum is 30. Default is 30. | Optional | 
-| sort_by | Specifies the field by which to sort the results. By default the sort is defined as creation-time and DESC. Can be "type", "sub_type", "result", or "timestamp". Possible values are: type, sub_type, result, timestamp. | Optional | 
+| sort_by | Specifies the field by which to sort the results. By default the sort is defined as creation-time and descending. Can be "type", "sub_type", "result", or "timestamp". Possible values are: type, sub_type, result, timestamp. | Optional | 
 | sort_order | The sort order. Can be "asc" (ascending) or "desc" (descending). Default set to "desc". Possible values are: asc, desc. Default is desc. | Optional | 
 
 
@@ -487,24 +486,11 @@ Gets agent event reports. You can filter by multiple fields, which will be conca
 
 #### Command example
 ```!core-get-audit-agent-reports result=Success timestamp_gte="100 days" endpoint_ids=ea303670c76e4ad09600c8b346f7c804 type=Policy limit=2```
-#### Context Example
-```json
-{
-    "Core": {
-        "AuditAgentReports": null
-    }
-}
-```
-
-#### Human Readable Output
-
->### Audit Agent Reports
->**No entries.**
 
 
 ### core-blocklist-files
 ***
-Block lists requested files which have not already been block listed or added to allow list.
+Block lists requested files which have not already been block listed or added to allow lists.
 
 
 #### Base Command
@@ -514,10 +500,10 @@ Block lists requested files which have not already been block listed or added to
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Links the response action to the triggered incident. | Optional | 
 | hash_list | String that represents a list of hashed files you want to block list. Must be a valid SHA256 hash. | Required | 
 | comment | String that represents additional information regarding the action. | Optional | 
-| detailed_response | Whether to response detailed response. default value = false. Possible values are: true, false. Default is false. | Optional | 
+| detailed_response | Choose either regular response or detailed response. Default value = false, regular response. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -564,10 +550,10 @@ Adds requested files to allow list if they are not already on block list or allo
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
-| hash_list | String that represents a list of hashed files you want to add to allow list. Must be a valid SHA256 hash. | Required | 
+| incident_id | Links the response action to the triggered incident. | Optional | 
+| hash_list | String that represents a list of hashed files you want to add to allow lists. Must be a valid SHA256 hash. | Required | 
 | comment | String that represents additional information regarding the action. | Optional | 
-| detailed_response | Whether to response detailed response. default value = false. Possible values are: true, false. Default is false. | Optional | 
+| detailed_response | Choose either regular response or detailed response. Default value = false, regular response. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -614,7 +600,7 @@ Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Links the response action to the triggered incident. | Optional | 
 | endpoint_id_list | List of endpoint IDs. | Required | 
 | file_path | String that represents the path of the file you want to quarantine. | Required | 
 | file_hash | String that represents the file’s hash. Must be a valid SHA256 hash. | Required | 
@@ -638,7 +624,7 @@ Retrieves the quarantine status for a selected file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_id | String the represents the endpoint ID. | Required | 
+| endpoint_id | String that represents the endpoint ID. | Required | 
 | file_hash | String that represents the file hash. Must be a valid SHA256 hash. | Required | 
 | file_path | String that represents the file path. | Required | 
 
@@ -684,7 +670,7 @@ Restores a quarantined file on requested endpoints.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Links the response action to the incident that triggered it. | Optional | 
 | file_hash | String that represents the file in hash. Must be a valid SHA256 hash. | Required | 
 | endpoint_id | String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined. | Optional | 
 | action_id | For polling use. | Optional | 
@@ -697,7 +683,7 @@ Restores a quarantined file on requested endpoints.
 There is no context output for this command.
 ### core-endpoint-scan
 ***
-Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
+Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note that scanning all the endpoints may cause performance issues and latency.
 
 
 #### Base Command
@@ -707,7 +693,7 @@ Runs a scan on a selected endpoint. To scan all endpoints, run this command with
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Links the response action to the triggered incident. | Optional | 
 | endpoint_id_list | List of endpoint IDs. | Optional | 
 | dist_name | Name of the distribution list. | Optional | 
 | gte_first_seen | Epoch timestamp in milliseconds. | Optional | 
@@ -718,9 +704,9 @@ Runs a scan on a selected endpoint. To scan all endpoints, run this command with
 | group_name | Name of the endpoint group. | Optional | 
 | platform | Type of operating system. Possible values are: windows, linux, macos, android. | Optional | 
 | alias | Endpoint alias name. | Optional | 
-| isolate | Whether an endpoint has been isolated. Can be "isolated" or "unisolated". Possible values are: isolated, unisolated. | Optional | 
+| isolate | Choose if an endpoint has been isolated. Select "isolated" or "unisolated". Possible values are: isolated, unisolated. | Optional | 
 | hostname | Name of the host. | Optional | 
-| all | Whether to scan all of the endpoints or not. Default is false. Scanning all of the endpoints may cause performance issues and latency. Possible values are: true, false. Default is false. | Optional | 
+| all | Choose whether to scan all of the endpoints or not. Default is false. Scanning all of the endpoints may cause performance issues and latency. Possible values are: true, false. Default is false. | Optional | 
 | action_id | For polling use. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
@@ -735,7 +721,7 @@ Runs a scan on a selected endpoint. To scan all endpoints, run this command with
 
 ### core-endpoint-scan-abort
 ***
-Cancel the scan of selected endpoints. A scan can only be aborted if the selected endpoints are Pending or In Progress. To scan all endpoints, run the command with the argument all=true. Note that scanning all of the endpoints may cause performance issues and latency.
+Cancel the selected endpoints scan. A scan can only be cancelled if the selected endpoints are Pending or In Progress. To scan all endpoints, run the command with the argument all=true. Note that scanning all of the endpoints may cause performance issues and latency.
 
 
 #### Base Command
@@ -745,7 +731,7 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Links the response action to the incident that triggered it. | Optional | 
 | endpoint_id_list | List of endpoint IDs. | Optional | 
 | dist_name | Name of the distribution list. | Optional | 
 | gte_first_seen | Epoch timestamp in milliseconds. | Optional | 
@@ -756,7 +742,7 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
 | group_name | Name of the endpoint group. | Optional | 
 | platform | Type of operating system. Possible values are: windows, linux, macos, android. | Optional | 
 | alias | Endpoint alias name. | Optional | 
-| isolate | Whether an endpoint has been isolated. Can be "isolated" or "unisolated". Possible values are: isolated, unisolated. | Optional | 
+| isolate | Choose whether an endpoint has been isolated. Select "isolated" or "unisolated". Possible values are: isolated, unisolated. | Optional | 
 | hostname | Name of the host. | Optional | 
 | all | Whether to scan all of the endpoints or not. Default is false. Note that scanning all of the endpoints may cause performance issues and latency. Possible values are: true, false. Default is false. | Optional | 
 
@@ -766,7 +752,7 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Core.endpointScan.actionId | Unknown | The action id of the abort scan request. | 
-| Core.endpointScan.aborted | Boolean | Was the scan aborted. | 
+| Core.endpointScan.aborted | Boolean | Was the scan cancelled. | 
 
 ### core-get-policy
 ***
@@ -780,7 +766,7 @@ Gets the policy name for a specific endpoint.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_id | The endpoint ID. Can be retrieved by running the core-get-endpoints command. | Required | 
+| endpoint_id | The endpoint ID. Retrieve by running the core-get-endpoints command. | Required | 
 
 
 #### Context Output
@@ -808,10 +794,10 @@ Gets a list of scripts available in the scripts library.
 | created_by | A comma-separated list of the users who created the script. | Optional | 
 | limit | The maximum number of scripts returned to the War Room. Default is 50. | Optional | 
 | offset | (Int) Offset in the data set. Default is 0. | Optional | 
-| windows_supported | Whether the script can be executed on a Windows operating system. Possible values are: true, false. | Optional | 
-| linux_supported | Whether the script can be executed on a Linux operating system. Possible values are: true, false. | Optional | 
-| macos_supported | Whether the script can be executed on a Mac operating system. Possible values are: true, false. | Optional | 
-| is_high_risk | Whether the script has a high-risk outcome. Possible values are: true, false. | Optional | 
+| windows_supported | Choose to run the script on a Windows operating system. Possible values are: true, false. | Optional | 
+| linux_supported | Choose to run the script on a Linux operating system. Possible values are: true, false. | Optional | 
+| macos_supported | Choose to run the script on a Mac operating system. Possible values are: true, false. | Optional | 
+| is_high_risk | Choose if the script has a high-risk outcome. Possible values are: true, false. | Optional | 
 
 
 #### Context Output
@@ -824,10 +810,10 @@ Gets a list of scripts available in the scripts library.
 | Core.Scripts.description | string | Description of the script. | 
 | Core.Scripts.modification_date | Unknown | Timestamp of when the script was last modified. | 
 | Core.Scripts.created_by | string | Name of the user who created the script. | 
-| Core.Scripts.windows_supported | boolean | Whether the script can be executed on a Windows operating system. | 
-| Core.Scripts.linux_supported | boolean | Whether the script can be executed on a Linux operating system. | 
-| Core.Scripts.macos_supported | boolean | Whether the script can be executed on Mac operating system. | 
-| Core.Scripts.is_high_risk | boolean | Whether the script has a high-risk outcome. | 
+| Core.Scripts.windows_supported | boolean | Choose to run the script on a Windows operating system. | 
+| Core.Scripts.linux_supported | boolean | Choose to run the script on a Linux operating system. | 
+| Core.Scripts.macos_supported | boolean | Choose to run the script on a Mac operating system. | 
+| Core.Scripts.is_high_risk | boolean | Choose if the script has a high-risk outcome. | 
 | Core.Scripts.script_uid | string | Globally Unique Identifier of the script, used to identify the script when executing. | 
 
 #### Command example
@@ -837,19 +823,97 @@ Gets a list of scripts available in the scripts library.
 {
     "Core": {
         "Scripts": [
-          {
-            "created_by": "Palo Alto Networks",
-            "description": "Delete a file by path",
-            "is_high_risk": true,
-            "linux_supported": true,
-            "macos_supported": true,
-            "modification_date": "2021-05-04T14:33:48",
-            "modification_date_timestamp": 1620138828748,
-            "name": "delete_file",
-            "script_id": 1,
-            "script_uid": "548023b6e4a01ec51a495ba6e5d2a15d",
-            "windows_supported": true
-          }
+            {
+                "created_by": "Palo Alto Networks",
+                "description": "Delete a file by path",
+                "is_high_risk": true,
+                "linux_supported": true,
+                "macos_supported": true,
+                "modification_date": "2021-05-04T14:33:48",
+                "modification_date_timestamp": 1620138828748,
+                "name": "delete_file",
+                "script_id": 1,
+                "script_uid": "548023b6e4a01ec51a495ba6e5d2a15d",
+                "windows_supported": true
+            },
+            {
+                "created_by": "Palo Alto Networks",
+                "description": "Execute list of shell commands",
+                "is_high_risk": true,
+                "linux_supported": true,
+                "macos_supported": true,
+                "modification_date": "2022-01-05T10:14:14",
+                "modification_date_timestamp": 1641377654469,
+                "name": "execute_commands",
+                "script_id": 2,
+                "script_uid": "a6f7683c8e217d85bd3c398f0d3fb6bf",
+                "windows_supported": true
+            },
+            {
+                "created_by": "Palo Alto Networks",
+                "description": "Kill all processes with a CPU usage higher than specified",
+                "is_high_risk": true,
+                "linux_supported": true,
+                "macos_supported": true,
+                "modification_date": "2022-01-05T10:14:14",
+                "modification_date_timestamp": 1641377654480,
+                "name": "process_kill_cpu",
+                "script_id": 6,
+                "script_uid": "3d928a24f61cd3c1116544900c424098",
+                "windows_supported": true
+            },
+            {
+                "created_by": "Palo Alto Networks",
+                "description": "Kill all processes with a RAM usage higher than specified",
+                "is_high_risk": true,
+                "linux_supported": true,
+                "macos_supported": true,
+                "modification_date": "2021-05-04T14:33:48",
+                "modification_date_timestamp": 1620138828795,
+                "name": "process_kill_mem",
+                "script_id": 7,
+                "script_uid": "87d4547df6d4882a3c006ec58c3b8bf4",
+                "windows_supported": true
+            },
+            {
+                "created_by": "Palo Alto Networks",
+                "description": "Kill processes by name",
+                "is_high_risk": true,
+                "linux_supported": true,
+                "macos_supported": true,
+                "modification_date": "2021-05-04T14:33:48",
+                "modification_date_timestamp": 1620138828803,
+                "name": "process_kill_name",
+                "script_id": 8,
+                "script_uid": "fd0a544a99a9421222b4f57a11839481",
+                "windows_supported": true
+            },
+            {
+                "created_by": "Palo Alto Networks",
+                "description": "Delete registry value or delete registry key with all its values",
+                "is_high_risk": true,
+                "linux_supported": false,
+                "macos_supported": false,
+                "modification_date": "2021-05-04T14:33:48",
+                "modification_date_timestamp": 1620138828812,
+                "name": "registry_delete",
+                "script_id": 9,
+                "script_uid": "ad36488a20cdbdd1604ec4bec9da5c41",
+                "windows_supported": true
+            },
+            {
+                "created_by": "Palo Alto Networks",
+                "description": "Set registry value",
+                "is_high_risk": true,
+                "linux_supported": false,
+                "macos_supported": false,
+                "modification_date": "2021-05-04T14:33:48",
+                "modification_date_timestamp": 1620138828829,
+                "name": "registry_set",
+                "script_id": 11,
+                "script_uid": "896392a13b2ef0ae75b3f2396125037d",
+                "windows_supported": true
+            }
         ]
     }
 }
@@ -871,7 +935,7 @@ Gets a list of scripts available in the scripts library.
 
 ### core-delete-endpoints
 ***
-Deletes selected endpoints in the Cortex XDR app. You can delete up to 1000 endpoints.
+Deletes selected endpoints in the Cortex app. You can delete up to 1000 endpoints.
 
 
 #### Base Command
@@ -963,7 +1027,7 @@ Retrieves files from selected endpoints. You can retrieve up to 20 files, from n
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Links the response action to the incident that triggered it. | Optional | 
 | endpoint_ids | Comma-separated list of endpoint IDs. | Required | 
 | windows_file_paths | A comma-separated list of file paths on the Windows platform. | Optional | 
 | linux_file_paths | A comma-separated list of file paths on the Linux platform. | Optional | 
@@ -1044,9 +1108,9 @@ Gets the full definition of a specific script in the scripts library.
 | Core.ScriptMetadata.modification_date | unknown | Timestamp of when the script was last modified. | 
 | Core.ScriptMetadata.created_by | string | Name of the user who created the script. | 
 | Core.ScriptMetadata.is_high_risk | boolean | Whether the script has a high-risk outcome. | 
-| Core.ScriptMetadata.windows_supported | boolean | Whether the script can be executed on a Windows operating system. | 
-| Core.ScriptMetadata.linux_supported | boolean | Whether the script can be executed on a Linux operating system. | 
-| Core.ScriptMetadata.macos_supported | boolean | Whether the script can be executed on a Mac operating system. | 
+| Core.ScriptMetadata.windows_supported | boolean | Choose to run the script on a Windows operating system. | 
+| Core.ScriptMetadata.linux_supported | boolean | Choose to run the script on a Linux operating system. | 
+| Core.ScriptMetadata.macos_supported | boolean | Choose to run the script on a Mac operating system. | 
 | Core.ScriptMetadata.entry_point | string | Name of the entry point selected for the script. An empty string indicates  the script defined as just run. | 
 | Core.ScriptMetadata.script_input | string | Name and type for the specified entry point. | 
 | Core.ScriptMetadata.script_output_type | string | Type of the output. | 
@@ -1208,7 +1272,7 @@ Initiates a new endpoint script execution action using a script from the script 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Links the response action to the incident that triggered it. | Optional | 
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required | 
 | script_uid | Unique identifier of the script. Can be retrieved by running the core-get-scripts command. | Required | 
 | parameters | Dictionary contains the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}. | Optional | 
@@ -1234,9 +1298,9 @@ Initiates a new endpoint script execution action using the provided snippet code
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Links the response action to the incident that triggered it. it. | Optional | 
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required | 
-| snippet_code | Section of a script you want to initiate on an endpoint (e.g., print("7")). | Required | 
+| snippet_code | Section of a script you want to initiate on an endpoint, for example, print("7"). | Required | 
 | action_id | For polling use. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
@@ -1357,7 +1421,7 @@ Initiate a new endpoint script execution of shell commands.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Link the response action to triggered incident. | Optional | 
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required | 
 | commands | Comma-separated list of shell commands to execute. | Required | 
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
@@ -1385,7 +1449,7 @@ Initiates a new endpoint script execution to delete the specified file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Links the response action to the incident that triggered it. | Optional | 
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required | 
 | file_path | Paths of the files to delete, in a comma-separated list. Paths of the files to check for existence. All of the given file paths will run on all of the endpoints. | Required | 
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
@@ -1413,7 +1477,7 @@ Initiates a new endpoint script execution to check if file exists.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Links the response action to the incident that triggered it. | Optional | 
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required | 
 | file_path | Paths of the files to check for existence, in a comma-separated list. All of the given file paths will run on all of the endpoints. | Required | 
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
@@ -1441,7 +1505,7 @@ Initiates a new endpoint script execution kill process.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Links the response action to the incident that triggered it. | Optional | 
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required | 
 | process_name | Names of processes to kill. Will kill all of the given processes on all of the endpoints. | Required | 
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
@@ -1489,7 +1553,7 @@ Returns information about an endpoint.
 
 ### core-report-incorrect-wildfire
 ***
-report FP to wildfire through XDR
+Reports to WildFire about incorrect hash verdict through Cortex.
 
 
 #### Base Command
@@ -1502,12 +1566,16 @@ report FP to wildfire through XDR
 | file_hash | String that represents the file’s hash. Must be a valid SHA256 hash. | Required | 
 | new_verdict | The new verdict of the file. 0 - benign, 1 - malware. Possible values are: 0, 1. | Required | 
 | reason | String that represents the reason of the report. | Required | 
-| email | User’s email address. | Required | 
+| email | User’s email address. Default is XSIAM-Playbooks@paloaltonetowrks.com. | Optional | 
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.WildFire.file_hash | Number | String that represents the file’s hash. | 
+| Core.WildFire.new_verdict | Number | The new verdict of the file. | 
+
 ### core-remove-allowlist-files
 ***
 Removes requested files from allow list.
@@ -1520,7 +1588,7 @@ Removes requested files from allow list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Links the response action to the incident that triggered it. | Optional | 
 | hash_list | String that represents a list of hashed files you want to add to allow list. Must be a valid SHA256 hash. | Required | 
 | comment | String that represents additional information regarding the action. | Optional | 
 
@@ -1566,7 +1634,7 @@ Removes requested files from block list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Links the response action to the incident that triggered it. | Optional | 
 | hash_list | String that represents a list of hashed files you want to add to allow list. Must be a valid SHA256 hash. | Required | 
 | comment | String that represents additional information regarding the action. | Optional | 
 
@@ -1602,7 +1670,7 @@ Removes requested files from block list.
 
 ### core-add-exclusion
 ***
-Adds exclusion.
+Adds alert exclusion rule based on filterObject.
 
 
 #### Base Command
@@ -1631,7 +1699,7 @@ Adds exclusion.
 {
     "Core": {
         "exclusion": {
-            "rule_id": 44
+            "rule_id": 45
         }
     }
 }
@@ -1642,12 +1710,12 @@ Adds exclusion.
 >### Add Exclusion
 >|rule_id|
 >|---|
->| 44 |
+>| 45 |
 
 
 ### core-delete-exclusion
 ***
-Delete exclusion.
+Delete an alert exclusion rule based on rule ID.
 
 
 #### Base Command
@@ -1685,7 +1753,7 @@ Delete exclusion.
 
 ### core-get-exclusion
 ***
-Gets exclusion list.
+Get a list of the alerts exclusion.
 
 
 #### Base Command
@@ -1695,8 +1763,8 @@ Gets exclusion list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_ID | Allows to link the response action to the tenant that triggered it. | Optional | 
-| filterObject | Filter object for the exclusion. example: {"filter":{"AND":[{"SEARCH_FIELD":"alert_category","SEARCH_TYPE":"NEQ","SEARCH_VALUE":"Phishing"}]}}. | Optional | 
+| tenant_ID | Links the response action to the tenant that triggered it. | Optional | 
+| filterObject | Filter object for the exclusion. Example: {"filter":{"AND":[{"SEARCH_FIELD":"alert_category","SEARCH_TYPE":"NEQ","SEARCH_VALUE":"Phishing"}]}}. | Optional | 
 | limit | Limit for the response. You will get the first "limit" exclusions. Default value is 20. Default is 20. | Optional | 
 
 
@@ -1736,7 +1804,7 @@ Gets exclusion list.
                 "ALERT_WHITELIST_BACKWARDS_SCAN_TIMESTAMP": null,
                 "ALERT_WHITELIST_COMMENT": "",
                 "ALERT_WHITELIST_HITS": 0,
-                "ALERT_WHITELIST_ID": 43,
+                "ALERT_WHITELIST_ID": 45,
                 "ALERT_WHITELIST_INDICATOR": {
                     "filter": {
                         "AND": [
@@ -1770,52 +1838,7 @@ Gets exclusion list.
                     }
                 ],
                 "ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS": 0,
-                "ALERT_WHITELIST_MODIFY_TIME": 1644157302128,
-                "ALERT_WHITELIST_NAME": "test1",
-                "ALERT_WHITELIST_PRETTY_USER": "Public API - 3",
-                "ALERT_WHITELIST_STATUS": "ENABLED",
-                "ALERT_WHITELIST_USER": "N/A"
-            },
-            {
-                "ALERT_WHITELIST_BACKWARDS_SCAN_STATUS": "DISABLED",
-                "ALERT_WHITELIST_BACKWARDS_SCAN_TIMESTAMP": null,
-                "ALERT_WHITELIST_COMMENT": "",
-                "ALERT_WHITELIST_HITS": 0,
-                "ALERT_WHITELIST_ID": 44,
-                "ALERT_WHITELIST_INDICATOR": {
-                    "filter": {
-                        "AND": [
-                            {
-                                "SEARCH_FIELD": "alert_category",
-                                "SEARCH_TYPE": "NEQ",
-                                "SEARCH_VALUE": "Phishing"
-                            }
-                        ]
-                    }
-                },
-                "ALERT_WHITELIST_INDICATOR_TEXT": [
-                    {
-                        "data_type": "TEXT",
-                        "dml_type": null,
-                        "entity_map": null,
-                        "pretty_name": "category",
-                        "render_type": "attribute"
-                    },
-                    {
-                        "data_type": null,
-                        "entity_map": null,
-                        "pretty_name": "!=",
-                        "render_type": "operator"
-                    },
-                    {
-                        "data_type": null,
-                        "entity_map": null,
-                        "pretty_name": "Phishing",
-                        "render_type": "value"
-                    }
-                ],
-                "ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS": 0,
-                "ALERT_WHITELIST_MODIFY_TIME": 1644162015295,
+                "ALERT_WHITELIST_MODIFY_TIME": 1645102011552,
                 "ALERT_WHITELIST_NAME": "test1",
                 "ALERT_WHITELIST_PRETTY_USER": "Public API - 3",
                 "ALERT_WHITELIST_STATUS": "ENABLED",
@@ -1831,6 +1854,4 @@ Gets exclusion list.
 >### Exclusion
 >|ALERT_WHITELIST_BACKWARDS_SCAN_STATUS|ALERT_WHITELIST_BACKWARDS_SCAN_TIMESTAMP|ALERT_WHITELIST_COMMENT|ALERT_WHITELIST_HITS|ALERT_WHITELIST_ID|ALERT_WHITELIST_INDICATOR|ALERT_WHITELIST_INDICATOR_TEXT|ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS|ALERT_WHITELIST_MODIFY_TIME|ALERT_WHITELIST_NAME|ALERT_WHITELIST_PRETTY_USER|ALERT_WHITELIST_STATUS|ALERT_WHITELIST_USER|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| DISABLED |  |  | 0 | 43 | filter: {"AND": [{"SEARCH_FIELD": "alert_category", "SEARCH_TYPE": "NEQ", "SEARCH_VALUE": "Phishing"}]} | {'pretty_name': 'category', 'data_type': 'TEXT', 'render_type': 'attribute', 'entity_map': None, 'dml_type': None},<br/>{'pretty_name': '!=', 'data_type': None, 'render_type': 'operator', 'entity_map': None},<br/>{'pretty_name': 'Phishing', 'data_type': None, 'render_type': 'value', 'entity_map': None} | 0 | 1644157302128 | test1 | Public API - 3 | ENABLED | N/A |
->| DISABLED |  |  | 0 | 44 | filter: {"AND": [{"SEARCH_FIELD": "alert_category", "SEARCH_TYPE": "NEQ", "SEARCH_VALUE": "Phishing"}]} | {'pretty_name': 'category', 'data_type': 'TEXT', 'render_type': 'attribute', 'entity_map': None, 'dml_type': None},<br/>{'pretty_name': '!=', 'data_type': None, 'render_type': 'operator', 'entity_map': None},<br/>{'pretty_name': 'Phishing', 'data_type': None, 'render_type': 'value', 'entity_map': None} | 0 | 1644162015295 | test1 | Public API - 3 | ENABLED | N/A |
-
+>| DISABLED |  |  | 0 | 45 | filter: {"AND": [{"SEARCH_FIELD": "alert_category", "SEARCH_TYPE": "NEQ", "SEARCH_VALUE": "Phishing"}]} | {'pretty_name': 'category', 'data_type': 'TEXT', 'render_type': 'attribute', 'entity_map': None, 'dml_type': None},<br/>{'pretty_name': '!=', 'data_type': None, 'render_type': 'operator', 'entity_map': None},<br/>{'pretty_name': 'Phishing', 'data_type': None, 'render_type': 'value', 'entity_map': None} | 0 | 1645102011552 | test1 | Public API - 3 | ENABLED | N/A |
