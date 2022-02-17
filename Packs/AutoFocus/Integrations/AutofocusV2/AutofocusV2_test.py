@@ -525,6 +525,16 @@ def test_search_indicator_command__no_indicator(requests_mock, ioc_type, ioc_val
 
 @pytest.mark.parametrize('range_num,res_count', [(98, 1), (250, 3)])
 def test_search_session(requests_mock, range_num, res_count):
+    """
+    Given:
+        - Large amount of IPs to search sessions on.
+
+    When:
+        - Running the search_session.
+
+    Then:
+        - Validate the search is done for each batch of 100 IPs and the cookies are returned accordingly.
+    """
 
     from AutofocusV2 import search_sessions
 
@@ -540,6 +550,16 @@ def test_search_session(requests_mock, range_num, res_count):
 
 @pytest.mark.parametrize('range_num,res_count', [(98, 1), (250, 3)])
 def test_search_samples(requests_mock, range_num, res_count):
+    """
+    Given:
+        - Large amount of IPs to search samples on.
+
+    When:
+        - Running the search_samples.
+
+    Then:
+        - Validate the search is done for each batch of 100 IPs and the cookies are returned accordingly.
+    """
 
     from AutofocusV2 import search_samples
 
