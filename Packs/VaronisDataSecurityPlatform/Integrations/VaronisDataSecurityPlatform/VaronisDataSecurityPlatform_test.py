@@ -48,7 +48,7 @@ def test_varonis_get_alerts_command(mocker):
         return_value=util_load_json('test_data/varonis_get_alerts_api_response.json')
     )
 
-    result = varonis_get_alerts_command(client, {})
+    result = varonis_get_alerts_command(client, util_load_json("test_data/demisto_args.json"))
     expected_outputs = util_load_json('test_data/varonis_get_alerts_command_output.json')
 
     assert result.outputs_prefix == 'Varonis.Alert'

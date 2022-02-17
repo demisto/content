@@ -166,8 +166,7 @@ class SearchQueryBuilder(object):
 def get_query_range(count: int):
     if count:
         return f'from=0&to={count-1}'
-    else:
-        return ''
+    return ''
 
 
 def get_search_result_path(search_response: List[Any]) -> str:
@@ -198,33 +197,39 @@ def create_output_from_alerts(rows: List[Any]) -> List[str]:
     outputs: List[Any] = []
     for row in rows:
         output = {
-            'ID': row[0],
-            'Name': row[1],
-            'Time': row[2],
-            'Severity': row[3],
-            'Category': row[4],
-            'Country': row[5],
-            'State': row[6],
-            'Status': row[7],
-            'CloseReason': row[8],
-            'BlacklistLocation': row[9],
-            'AbnormalLocation': row[10],
-            'NumOfAlertedEvents': row[11],
-            'UserName': row[12],
-            'By.SamAccountName': row[13],
-            'By.PreivilegedAccountType': row[14],
-            'By.HasFollowUpIndicators': row[15],
-            'On.ContainsFlaggedData': row[16],
-            'On.ContainsSensitiveData': row[17],
-            'On.Platform': row[18],
-            'on.Asset': row[19],
-            'On.FileServerOrDomain': row[20],
-            'Device.Name': row[21],
-            'Device.ContainMaliciousExternalIP': row[22],
-            'Device.IPThreatTypes': row[23]
+            'Varonis.Alert.ID': row[0],
+            'Varonis.Alert.Name': row[1],
+            'Varonis.Alert.Time': row[2],
+            'Varonis.Alert.Severity': row[3],
+            'Varonis.Alert.Category': row[4],
+            'Varonis.Alert.Country': row[5],
+            'Varonis.Alert.State': row[6],
+            'Varonis.Alert.Status': row[7],
+            'Varonis.Alert.CloseReason': row[8],
+            'Varonis.Alert.BlacklistLocation': row[9],
+            'Varonis.Alert.AbnormalLocation': row[10],
+            'Varonis.Alert.NumOfAlertedEvents': row[11],
+            'Varonis.Alert.UserName': row[12],
+            'Varonis.Alert.By.SamAccountName': row[13],
+            'Varonis.Alert.By.PreivilegedAccountType': row[14],
+            'Varonis.Alert.By.HasFollowUpIndicators': row[15],
+            'Varonis.Alert.On.ContainsFlaggedData': row[16],
+            'Varonis.Alert.On.ContainsSensitiveData': row[17],
+            'Varonis.Alert.On.Platform': row[18],
+            'Varonis.Alert.On.Asset': row[19],
+            'Varonis.Alert.On.FileServerOrDomain': row[20],
+            'Varonis.Alert.Device.Name': row[21],
+            'Varonis.Alert.Device.ContainMaliciousExternalIP': row[22],
+            'Varonis.Alert.Device.IPThreatTypes': row[23]
         }
         outputs.append(output)
     return outputs
+
+
+def try_convert(item, converter):
+    if item:
+        return converter(item)
+    return None
 
 
 ''' COMMAND FUNCTIONS '''
@@ -260,9 +265,15 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     threat_model_names = args.get('threat_model_name', None)
     max_results = args.get('max_results', None)
-    start_time = args.get('Start time', None)
-    end_time = args.get('End time', None)
-    alert_statuses = args.get('Alert Status', None)
+    start_time = args.get('Start_time', None)
+    end_time = args.get('End_time', None)
+    alert_statuses = args.get('Alert_Status', None)
+
+    threat_model_names = try_convert(threat_model_names, lambda x: argToList(x))
+    max_results = try_convert(max_results, lambda x: int(x))
+    start_time = try_convert(start_time, lambda x: datetime.fromisoformat(x))
+    end_time = try_convert(end_time, lambda x: datetime.fromisoformat(x))
+    alert_statuses = try_convert(alert_statuses, lambda x: argToList(x))
 
     result = get_alerts(client, alert_statuses, threat_model_names, start_time, end_time, max_results)
     outputs = create_output_from_alerts(result['rows'])
@@ -304,6 +315,7 @@ def main() -> None:
     proxy = demisto.params().get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
+
     try:
         client = Client(
             base_url=base_url,

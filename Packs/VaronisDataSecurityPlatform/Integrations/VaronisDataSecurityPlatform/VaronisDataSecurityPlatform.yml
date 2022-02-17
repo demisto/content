@@ -55,20 +55,20 @@ script:
       secret: false
     - default: false
       isArray: false
-      name: Start time
+      name: Start_time
       description: Start time of the range of alerts
       required: false
       secret: false
     - default: false
       isArray: false
-      name: End time
+      name: End_time
       description: End time of the range of alerts
       required: false
       secret: false
     - default: false
       description: List of required alerts status
       isArray: true
-      name: Alert Status
+      name: Alert_Status
       required: false
       secret: false
     deprecated: false
