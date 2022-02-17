@@ -1,5 +1,5 @@
 FireEye Endpoint Security is an integrated solution that detects what others miss and protects endpoint against known and unknown threats. This  integration provides access to information about endpoints, acquisitions, alerts, indicators, and containment. Customers can extract critical data and effectively operate security operations automated playbook
-This integration was integrated and tested with version xx of FireEyeHX v2
+This integration was integrated and tested with version 6.1.0 of FireEyeHX v2
 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-fireeye-endpoint-security-(hx)-v2).
@@ -944,39 +944,3 @@ Delete a Host Set Policy.
 #### Context Output
 
 There is no context output for this command.
-## Breaking changes from the previous version of this integration - FireEye Endpoint Security (HX) v2
-%%FILL HERE%%
-The following sections list the changes in this version.
-
-### Commands
-#### The following commands were removed in this version:
-* *commandName* - this command was replaced by XXX.
-* *commandName* - this command was replaced by XXX.
-
-### Arguments
-#### The following arguments were removed in this version:
-
-In the *commandName* command:
-* *argumentName* - this argument was replaced by XXX.
-* *argumentName* - this argument was replaced by XXX.
-
-#### The behavior of the following arguments was changed:
-
-In the *commandName* command:
-* *argumentName* - is now required.
-* *argumentName* - supports now comma separated values.
-
-### Outputs
-#### The following outputs were removed in this version:
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
-
-## Additional Considerations for this version
-%%FILL HERE%%
-* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.
