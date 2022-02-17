@@ -11,7 +11,7 @@ requests.packages.urllib3.disable_warnings()
 PARAMS = demisto.params()
 URL = PARAMS.get('server')
 TOKEN = PARAMS.get('token') or (PARAMS.get('credentials') or {}).get('password')
-current_platform = demisto.demistoVersion()['platform']
+current_platform = demisto.demistoVersion().get('platform')
 if not TOKEN and current_platform == 'x2':
     """
     Note: We don't want to get the token from the license if we're on the standard XSOAR platform.
@@ -339,8 +339,6 @@ def hash_list_to_file(hash_list):
 
 
 def test_module():
-    if not TOKEN:
-        return_error("Error: Missing credentials information which is critical for usability.")
     if wildfire_upload_url('https://www.demisto.com')[1]:
         demisto.results('ok')
 
