@@ -14,17 +14,18 @@ comment: 'This script will take in an array of values and an array of keys. It w
 enabled: true
 args:
 - name: value
-  default: true
   description: Values to map (can be list or CSV)
   isArray: true
+  required: true
 - name: key
   description: Keys to map (can be list or CSV)
   isArray: true
+  required: true
 scripttarget: 0
 subtype: python3
 runonce: false
 dockerimage: demisto/python3:3.10.1.25933
 runas: DBotWeakRole
-fromversion: 5.5.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
