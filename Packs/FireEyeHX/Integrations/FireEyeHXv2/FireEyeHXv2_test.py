@@ -111,6 +111,33 @@ def test_assign_host_set_policy_command_failed(demisto_args, expected_results):
 
 UPSERT_COMMAND_DATA_CASES_LIST_POLICY = [
     (
+        {'policyId': 'test', 'hostSetId': 'test'},
+        Exception('400'),
+        'This hostset may already be included in this policy'
+    ),
+    (
+        {'policyId': 'test', 'hostSetId': 'test'},
+        'test',
+        'Success'
+    )
+]
+
+
+@pytest.mark.parametrize('demisto_args, return_mocker, expected_results', UPSERT_COMMAND_DATA_CASES_LIST_POLICY)
+def test_assign_host_set_policy_command(mocker, demisto_args, return_mocker, expected_results):
+
+    from FireEyeHXv2 import assign_host_set_policy_command, Client
+
+    mocker.patch.object(Client, 'assign_host_set_policy_request', side_effect=return_mocker)
+
+    result = assign_host_set_policy_command(Client, demisto_args)
+
+    assert result.readable_output == expected_results
+    pass
+
+
+UPSERT_COMMAND_DATA_CASES_LIST_POLICY = [
+    (
         {'policyId': 11, 'enabled': 'test', 'limit': 5, 'offset': 2},
         {'policy_id': 11, 'enabled': 'test', 'limit': 5, 'offset': 2, 'name': None}
     ),
@@ -1322,6 +1349,33 @@ def test_organize_search_body_query_failed(argForQuery, args, expected_results):
     with pytest.raises(Exception) as e:
         organize_search_body_query(argForQuery, args)
     assert str(e.value) == expected_results
+
+
+UPSERT_COMMAND_DATA_ORGANIZE_SEARCH_BODY = [
+    (
+        ('fieldSearchName', 'test'),
+        {'fieldSearchOperator': 'test', 'fieldSearchValue': 'test,test2,test3'},
+        {'field': 'test', 'operator': 'test', 'value': 'test', 'len': 3}
+    ),
+    (
+        ('dnsHostname', 'test'),
+        {'dnsHostnameOperator': 'test'},
+        {'field': 'DNS Hostname', 'operator': 'test', 'value': 'test', 'len': 1}
+    )
+]
+
+
+@pytest.mark.parametrize('argForQuery, args, expected_results', UPSERT_COMMAND_DATA_ORGANIZE_SEARCH_BODY)
+def test_organize_search_body_query(argForQuery, args, expected_results):
+
+    from FireEyeHXv2 import organize_search_body_query
+
+    result = organize_search_body_query(argForQuery=argForQuery, args=args)
+
+    assert result[0]['field'] == expected_results['field']
+    assert result[0]['operator'] == expected_results['operator']
+    assert result[0]['value'] == expected_results['value']
+    assert len(result) == expected_results['len']
 
 
 UPSERT_COMMAND_DATA_CASES_ONE_FROM_LIST = [
