@@ -54,15 +54,15 @@ script:
       required: false
       secret: false
     - default: false
+      description: Start time of the range of alerts
       isArray: false
       name: Start_time
-      description: Start time of the range of alerts
       required: false
       secret: false
     - default: false
+      description: End time of the range of alerts
       isArray: false
       name: End_time
-      description: End time of the range of alerts
       required: false
       secret: false
     - default: false
@@ -195,6 +195,30 @@ script:
     description: Updating an alert status
     execution: false
     name: varonis-update-alert-status
+  - arguments:
+    - default: false
+      description: Requested alerts
+      isArray: true
+      name: Alert_id
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        The reason the alert was closed. Default options are:
+        - Resolved
+        - Misconfiguration
+        - Threat model disabled or deleted
+        - Account misclassification
+        - Legitimate activity
+        - Other
+      isArray: false
+      name: Close_Reason
+      required: true
+      secret: false
+    deprecated: false
+    description: Closing alert
+    execution: false
+    name: varonis-close-alert
   dockerimage: demisto/ntlm:1.0.0.24037
   feed: false
   isfetch: false
