@@ -3174,6 +3174,64 @@ def add_error_message(failed_hosts, all_requested_hosts):
     return human_readable
 
 
+def is_new_polling_search(args):
+    """
+    Check if the polling func is a new search or in the polling flow.
+    if ids argument in the args dict its mean that the first search is finished and we should run the polling flow
+    """
+    return not args.get('host_ids')
+
+
+def rtr_polling_retrieve_file_command(args: dict):
+    """
+    This function is generically handling the polling flow. In the polling flow, there is always an initial call that
+    starts the uploading to the API (referred here as the 'upload' function) and another call that retrieves the status
+    of that upload (referred here as the 'results' function).
+    The run_polling_command function runs the 'upload' function and returns a ScheduledCommand object that schedules
+    the next 'results' function, until the polling is complete.
+    Args:
+        args: the arguments required to the command being called, under cmd
+    Returns:
+
+    """
+    ScheduledCommand.raise_error_if_not_supported()
+    interval_in_secs = 600
+    # distinguish between the initial run, which is the upload run, and the results run
+    if is_new_polling_search(args):
+        # create new search
+        extended_data = arrange_args_for_upload_func(args)
+        command_results = upload_function(client, **args)
+        outputs = command_results.outputs
+        results_function_args = get_results_function_args(outputs, extended_data, item_type, interval_in_secs)
+        # schedule next poll
+        scheduled_command = ScheduledCommand(
+            command=cmd,
+            next_run_in_seconds=interval_in_secs,
+            args=results_function_args,
+            timeout_in_seconds=6000)
+        command_results.scheduled_command = scheduled_command
+        return command_results
+
+    # not a new search, get search status
+    pop_polling_related_args(args)
+    command_result, status = results_function(client, **args)
+    if not status:
+        # schedule next poll
+        polling_args = {
+            'interval_in_seconds': interval_in_secs,
+            'polling': True,
+            **args
+        }
+        scheduled_command = ScheduledCommand(
+            command=cmd,
+            next_run_in_seconds=interval_in_secs,
+            args=polling_args,
+            timeout_in_seconds=6000)
+
+        command_result = CommandResults(scheduled_command=scheduled_command)
+    return command_result
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is {}'.format(demisto.command()))
@@ -3319,6 +3377,9 @@ def main():
             host_ids = argToList(args.get('host_ids'))
             return_results(rtr_general_command_on_hosts(host_ids, "runscript", full_command,
                                                         execute_run_batch_admin_cmd_with_timer))
+
+        elif command == 'cs-falcon-rtr-retrieve-file':
+            return_results(rtr_polling_retrieve_file_command(args))
 
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
