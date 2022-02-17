@@ -800,7 +800,14 @@ class TestTableToMarkdown:
 
     @staticmethod
     def test_with_json_transformer_func():
-
+        """
+        Given:
+          - Double nested json table.
+        When:
+          - Calling tableToMarkdown with JsonTransformer set to custom function.
+        Then:
+          - The table constructed with the transforming function.
+        """
         def changelog_to_str(json_input):
             return ', '.join(json_input.keys())
 
@@ -814,6 +821,38 @@ class TestTableToMarkdown:
 |name|changelog|
 |---|---|
 | Active Directory Query | 1.0.4, 1.0.5, 1.0.6 |
+"""
+        assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transform_list():
+        """
+        Given:
+          - Neted json table with a list.
+        When:
+          - Calling tableToMarkdown with `is_auto_json_transform=True`.
+        Then:
+          - Transform the list
+        """
+        with open('test_data/nested_data_in_list.json') as f:
+            data_with_list = json.load(f)
+        table = tableToMarkdown("tableToMarkdown test", data_with_list, is_auto_json_transform=True)
+        expected_table = """### tableToMarkdown test
+|Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+|---|---|---|---|---|---|
+| <br>***index***: 0<br>***startTime***: null<br>***endTime***: 2022-02-17T08:22:33.823Z<br>***commandStatus***: Completed<br>***errors***: <br>***command***: {"type": "GetFile", "params": [{"key": "Path", "value": "C:\\\\Users\\\\demisto\\\\Desktop\\\\test.txt"}]} | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+"""
+        assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transform_list_nested():
+        with open('test_data/nested_data_in_list.json') as f:
+            data_with_list = json.load(f)
+        table = tableToMarkdown("tableToMarkdown test", data_with_list, json_transform_mapping={'Commands': JsonTransformer(is_nested=True)})
+        expected_table = """### tableToMarkdown test
+|Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+|---|---|---|---|---|---|
+| <br>***index***: 0<br>***startTime***: null<br>***endTime***: 2022-02-17T08:22:33.823Z<br>***commandStatus***: Completed<br>**command**:<br>	***type***: GetFile<br>	***key***: Path<br>	***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>**command**:<br>	**params**:<br>		***key***: Path<br>		***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>**command**:<br>	***type***: GetFile<br>	***key***: Path<br>	***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>**command**:<br>	**params**:<br>		***key***: Path<br>		***value***: C:\\Users\\demisto\\Desktop\\test.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
 """
         assert expected_table == table
 

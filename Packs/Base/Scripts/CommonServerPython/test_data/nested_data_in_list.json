@@ -1,0 +1,41 @@
+{
+  "Machine Action Id": "5b38733b-ed80-47be-b892-f2ffb52593fd",
+  "MachineId": "f70f9fe6b29cd9511652434919c6530618f06606",
+  "Hostname": "desktop-s2455r9",
+  "Status": "Succeeded",
+  "Creation time": "2022-02-17T08:20:02.6180466Z",
+  "Commands": [
+    {
+      "index": 0,
+      "startTime": null,
+      "endTime": "2022-02-17T08:22:33.823Z",
+      "commandStatus": "Completed",
+      "errors": [],
+      "command": {
+        "type": "GetFile",
+        "params": [
+          {
+            "key": "Path",
+            "value": "C:\\\\Users\\\\demisto\\\\Desktop\\\\test.txt"
+          }
+        ]
+      }
+    },
+    {
+      "index": 1,
+      "startTime": null,
+      "endTime": "2022-02-17T08:22:33.823Z",
+      "commandStatus": "Completed",
+      "errors": [],
+      "command": {
+        "type": "GetFile",
+        "params": [
+          {
+            "key": "Path",
+            "value": "C:\\\\Users\\\\demisto\\\\Desktop\\\\test222.txt"
+          }
+        ]
+      }
+    }
+  ]
+}

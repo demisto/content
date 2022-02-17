@@ -1948,22 +1948,35 @@ class JsonTransformer:
         self.func = func
         self.flatten = flatten
 
+    def find_first_diff(self, lst1, lst2):
+        if lst1 is None or lst2 is None:
+            return -1
+        is_equal = False
+        for i, (l1, l2) in enumerate(zip(lst1, lst2)):
+            if l1 == l2:
+                is_equal = True
+            if l1 != l2:
+                return i
+        if is_equal:
+            return min(len(lst1), len(lst2))
+        return -1
+
     def json_to_str(self, json_input, is_pretty=True):
         if self.func:
             return self.func(json_input)
         if isinstance(json_input, STRING_TYPES):
             return json_input
-        if not isinstance(json_input, dict):
-            return flattenCell(json_input, is_pretty)
         if self.flatten:
+            if not isinstance(json_input, dict):
+                return flattenCell(json_input, is_pretty)
             return '\n'.join(
                 [u'{key}: {val}'.format(key=k, val=flattenCell(v, is_pretty)) for k, v in json_input.items()])  # for BC
 
         str_lst = []
-        prev_path = None
+        prev_path = []
         for path, key, val in self.json_to_path_generator(json_input):
             if path != prev_path:  # need to construct tha `path` string only of it changed from the last one
-                str_path = '\n'.join(["{tabs}**{p}**:".format(p=p, tabs=i * '\t') for i, p in enumerate(path)])
+                str_path = '\n'.join(["{tabs}**{p}**:".format(p=p if not isinstance(p, int) else '-', tabs=i * '\t') for i, p in enumerate(path) if isinstance(p, int) or p not in prev_path])
                 str_lst.append(str_path)
                 prev_path = path
 
@@ -1976,7 +1989,6 @@ class JsonTransformer:
         """
         :type json_input: ``list`` or ``dict``
         :param json_input: The json input to transform
- fca
         :type path: ``List[str]``
         :param path: The path of the key, value pair inside the json
 
@@ -1990,18 +2002,15 @@ class JsonTransformer:
             for k, v in json_input.items():
 
                 if is_in_path or k in self.keys:
-                    if isinstance(v, dict):
+                    if not self.is_nested or isinstance(v, STRING_TYPES):
+                        yield path, k, v
+                    else:
                         for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
                             yield res
-                    else:
-                        yield path, k, v
 
-                if self.is_nested:
-                    for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
-                        yield res
         if isinstance(json_input, list):
-            for item in json_input:
-                for res in self.json_to_path_generator(item, path):  # this is yield from for python2 BC
+            for i, item in enumerate(json_input):
+                for res in self.json_to_path_generator(item, path + [i]):  # this is yield from for python2 BC
                     yield res
 
 
