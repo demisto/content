@@ -3373,7 +3373,7 @@ def main():
             return_results(rtr_read_registry_keys_command(args))
 
         elif command == 'cs-falcon-rtr-list-scheduled-tasks':
-            full_command = f'runscript -Raw=```schtasks /query /fo CSV /v```'
+            full_command = f'runscript -Raw=```schtasks /query /fo LIST /v```'
             host_ids = argToList(args.get('host_ids'))
             return_results(rtr_general_command_on_hosts(host_ids, "runscript", full_command,
                                                         execute_run_batch_admin_cmd_with_timer))
