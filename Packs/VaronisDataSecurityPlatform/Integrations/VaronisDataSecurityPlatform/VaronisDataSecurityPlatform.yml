@@ -47,7 +47,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '1000'
+      defaultValue: '50'
       description: The max number of alerts to retrieve (up to 50)
       isArray: false
       name: max_results
