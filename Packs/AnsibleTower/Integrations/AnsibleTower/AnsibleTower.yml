@@ -1118,103 +1118,6 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: The ID of the job event.
-      isArray: false
-      name: job_id
-      required: true
-      secret: false
-    - default: false
-      defaultValue: '1'
-      description: The page number to retrieve. Default is 1.
-      isArray: false
-      name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
-      description: Page size. Default is 50.
-      isArray: false
-      name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The search query string used to perform a case-insensitive search
-        within all designated text fields of a model.
-      isArray: false
-      name: search
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrieves the list of job events of specific job.
-    execution: false
-    name: ansible-tower-job-events-list-by-id
-    outputs:
-    - contextPath: AnsibleAWX.JobEvents.id
-      description: Database ID for this job event.
-      type: Number
-    - contextPath: AnsibleAWX.JobEvents.type
-      description: Data type for this job event.
-      type: String
-    - contextPath: AnsibleAWX.JobEvents.url
-      description: URL for this job event.
-      type: String
-    - contextPath: AnsibleAWX.JobEvents.created
-      description: Timestamp indicating when this job event was created.
-      type: Date
-    - contextPath: AnsibleAWX.JobEvents.modified
-      description: Timestamp indicating when this job event was last modified.
-      type: Date
-    - contextPath: AnsibleAWX.JobEvents.job
-      description: Job ID.
-      type: Number
-    - contextPath: AnsibleAWX.JobEvents.event
-      description: The specific event. For example, runner_on_failed (Host Failed),
-        runner_on_start (Host Started), etc.
-      type: String
-    - contextPath: AnsibleAWX.JobEvents.counter
-      description: Job event counter.
-      type: Number
-    - contextPath: AnsibleAWX.JobEvents.event_display
-      description: Event display. For example, Playbook Started.
-      type: String
-    - contextPath: AnsibleAWX.JobEvents.event_level
-      description: The event level.
-      type: Number
-    - contextPath: AnsibleAWX.JobEvents.failed
-      description: Whether the job failed.
-      type: Boolean
-    - contextPath: AnsibleAWX.JobEvents.changed
-      description: Whether the job changed.
-      type: Boolean
-    - contextPath: AnsibleAWX.JobEvents.uuid
-      description: UUID of the job event.
-      type: String
-    - contextPath: AnsibleAWX.JobEvents.parent_uuid
-      description: Parent UUID.
-      type: String
-    - contextPath: AnsibleAWX.JobEvents.host
-      description: Host ID associated with the event.
-      type: Number
-    - contextPath: AnsibleAWX.JobEvents.host_name
-      description: Host name associated with the event.
-      type: String
-    - contextPath: AnsibleAWX.JobEvents.playbook
-      description: Playbook name of this job.
-      type: String
-    - contextPath: AnsibleAWX.JobEvents.task
-      description: Task name.
-      type: String
-    - contextPath: AnsibleAWX.JobEvents.stdout
-      description: Standard output of the job.
-      type: String
-    - contextPath: AnsibleAWX.JobEvents.start_line
-      description: Starting line number of the execution.
-      type: Number
-    - contextPath: AnsibleAWX.JobEvents.end_line
-      description: Ending line number of the execution.
-      type: Number
-  - arguments:
-    - default: false
       description: ID of the inventory.
       isArray: false
       name: inventory_id
@@ -1652,6 +1555,103 @@ script:
     - contextPath: AnsibleAWX.AdhocCommand.become_enabled
       description: Whether the ad hoc command become enabled.
       type: Boolean
+  - arguments:
+    - default: false
+      description: The ID of the job event.
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page number to retrieve. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Page size. Default is 50.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: The search query string used to perform a case-insensitive search
+        within all designated text fields of a model.
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the list of job events of specific job.
+    execution: false
+    name: ansible-tower-job-events-list-by-id
+    outputs:
+    - contextPath: AnsibleAWX.JobEvents.id
+      description: Database ID for this job event.
+      type: Number
+    - contextPath: AnsibleAWX.JobEvents.type
+      description: Data type for this job event.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.url
+      description: URL for this job event.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.created
+      description: Timestamp indicating when this job event was created.
+      type: Date
+    - contextPath: AnsibleAWX.JobEvents.modified
+      description: Timestamp indicating when this job event was last modified.
+      type: Date
+    - contextPath: AnsibleAWX.JobEvents.job
+      description: Job ID.
+      type: Number
+    - contextPath: AnsibleAWX.JobEvents.event
+      description: The specific event. For example, runner_on_failed (Host Failed),
+        runner_on_start (Host Started), etc.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.counter
+      description: Job event counter.
+      type: Number
+    - contextPath: AnsibleAWX.JobEvents.event_display
+      description: Event display. For example, Playbook Started.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.event_level
+      description: The event level.
+      type: Number
+    - contextPath: AnsibleAWX.JobEvents.failed
+      description: Whether the job failed.
+      type: Boolean
+    - contextPath: AnsibleAWX.JobEvents.changed
+      description: Whether the job changed.
+      type: Boolean
+    - contextPath: AnsibleAWX.JobEvents.uuid
+      description: UUID of the job event.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.parent_uuid
+      description: Parent UUID.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.host
+      description: Host ID associated with the event.
+      type: Number
+    - contextPath: AnsibleAWX.JobEvents.host_name
+      description: Host name associated with the event.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.playbook
+      description: Playbook name of this job.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.task
+      description: Task name.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.stdout
+      description: Standard output of the job.
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.start_line
+      description: Starting line number of the execution.
+      type: Number
+    - contextPath: AnsibleAWX.JobEvents.end_line
+      description: Ending line number of the execution.
+      type: Number
   dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
