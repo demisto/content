@@ -18,6 +18,15 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 THREAT_MODEL_ENUM_ID = 5821
 ALERT_STATUSES = {'Open': 1, 'Under Investigation': 2, 'Closed': 3}
+CLOSE_REASONS = {
+    'None': 0,
+    'Resolved': 1,
+    'Misconfiguration': 2,
+    'Threat model disabled or deleted': 3,
+    'Account misclassification': 4,
+    'Legitimate activity': 5,
+    'Other': 6
+}
 STATUSES_TO_RETRY = [304, 405]
 ALERT_COLUMNS = [
     'Alert.ID',
@@ -450,19 +459,35 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 
 def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) -> Any:
+    status = args.get('Status', None)
+    statuses = list(filter(lambda name: name != 'Closed', ALERT_STATUSES.keys()))
+    if status not in statuses:
+        raise ValueError(f'status must be one of {statuses}')
+
+    status_id = ALERT_STATUSES[status]
+
+    return varonis_update_alert(CLOSE_REASONS['None'], status_id, client, args)
+
+
+def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> Any:
+    close_reason = args.get('Close_Reason', None)
+    close_reasons = list(filter(lambda name: name != 'None', CLOSE_REASONS.keys()))
+    if close_reason not in close_reasons:
+        raise ValueError(f'close reason must be one of {close_reasons}')
+
+    close_reason_id = CLOSE_REASONS[close_reason]
+
+    return varonis_update_alert(close_reason_id, ALERT_STATUSES['Closed'], client, args)
+
+
+def varonis_update_alert(close_reason_id: int, status_id: int, client: Client, args: Dict[str, Any]) -> Any:
     alert_ids = argToList(args.get('Alert_id'))
     if len(alert_ids) == 0:
         raise ValueError('alert id(s) not specified')
 
-    status = args.get('Status', None)
-    if status not in ('Open', 'Under Investigation'):
-        raise ValueError('status must be either Open or Under Investigation')
-
-    status_id = ALERT_STATUSES[status]
-
     query: Dict[str, Any] = {
         'AlertGuids': alert_ids,
-        'closeReasonId': '0',
+        'closeReasonId': close_reason_id,
         'statusId': status_id
     }
 
@@ -515,7 +540,9 @@ def main() -> None:
         elif demisto.command() == 'varonis-get-alerts':
             return_results(varonis_get_alerts_command(client, demisto.args()))
         elif demisto.command() == 'varonis-update-alert-status':
-            return_results(varonis_update_alert_status_command(client, demisto.args()))
+            varonis_update_alert_status_command(client, demisto.args())
+        elif demisto.command() == 'varonis-close-alert':
+            varonis_close_alert_command(client, demisto.args())
         # TODO: ADD command cases for the commands you will implement
 
     # Log exceptions and return errors
