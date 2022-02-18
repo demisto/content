@@ -4687,6 +4687,9 @@ Installs specific content update file.
 >|JobID|Status|
 >|---|---|
 >| 30 | Pending |
+
+
+
 ### pan-os-platform-get-arp-tables
 ***
 Gets all arp tables from all firewalls in the topology.
@@ -4706,18 +4709,18 @@ Gets all arp tables from all firewalls in the topology.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.ShowArp.Summary.hostid | Unknown |  | 
-| PANOS.ShowArp.Summary.max | Unknown | Maximum supported ARP Entries | 
-| PANOS.ShowArp.Summary.total | Unknown | Total current arp entries | 
-| PANOS.ShowArp.Summary.timeout | Unknown | ARP entry timeout | 
-| PANOS.ShowArp.Summary.dp | Unknown | Firewall dataplane associated with Entry | 
-| PANOS.ShowArp.Result.hostid | Unknown |  | 
-| PANOS.ShowArp.Result.interface | Unknown | Network interface learnt ARP entry | 
-| PANOS.ShowArp.Result.ip | Unknown | layer 3 address | 
-| PANOS.ShowArp.Result.mac | Unknown | Layer 2 address | 
-| PANOS.ShowArp.Result.port | Unknown | Network interface matching entry | 
-| PANOS.ShowArp.Result.status | Unknown | ARP Entry status | 
-| PANOS.ShowArp.Result.ttl | Unknown | Time to Live | 
+| PANOS.ShowArp.Summary.hostid | string | ID of PAN-OS host | 
+| PANOS.ShowArp.Summary.max | string | Maximum supported ARP Entries | 
+| PANOS.ShowArp.Summary.total | string | Total current arp entries | 
+| PANOS.ShowArp.Summary.timeout | string | ARP entry timeout | 
+| PANOS.ShowArp.Summary.dp | string | Firewall dataplane associated with Entry | 
+| PANOS.ShowArp.Result.hostid | string | ID of PAN-OS host | 
+| PANOS.ShowArp.Result.interface | string | Network interface learnt ARP entry | 
+| PANOS.ShowArp.Result.ip | string | layer 3 address | 
+| PANOS.ShowArp.Result.mac | string | Layer 2 address | 
+| PANOS.ShowArp.Result.port | string | Network interface matching entry | 
+| PANOS.ShowArp.Result.status | string | ARP Entry status | 
+| PANOS.ShowArp.Result.ttl | string | Time to Live | 
 
 #### Command example
 ```!pan-os-platform-get-arp-tables```
@@ -4734,7 +4737,7 @@ Gets all arp tables from all firewalls in the topology.
                     "mac": "00:66:4b:da:ce:61",
                     "port": "ethernet1/1",
                     "status": "  c  ",
-                    "ttl": "1783"
+                    "ttl": "1799"
                 },
                 {
                     "hostid": "0111112222333444",
@@ -4743,7 +4746,7 @@ Gets all arp tables from all firewalls in the topology.
                     "mac": "00:0c:29:31:bf:8b",
                     "port": "ethernet1/1",
                     "status": "  c  ",
-                    "ttl": "920"
+                    "ttl": "991"
                 },
                 {
                     "hostid": "0111112222333444",
@@ -4752,7 +4755,7 @@ Gets all arp tables from all firewalls in the topology.
                     "mac": "4c:32:75:c2:b2:49",
                     "port": "ethernet1/1",
                     "status": "  c  ",
-                    "ttl": "462"
+                    "ttl": "533"
                 },
                 {
                     "hostid": "0111112222333444",
@@ -4761,7 +4764,7 @@ Gets all arp tables from all firewalls in the topology.
                     "mac": "28:f0:76:79:63:b0",
                     "port": "ethernet1/1",
                     "status": "  c  ",
-                    "ttl": "1650"
+                    "ttl": "1721"
                 },
                 {
                     "hostid": "0111112222333444",
@@ -4770,7 +4773,7 @@ Gets all arp tables from all firewalls in the topology.
                     "mac": "a8:60:b6:20:ba:5c",
                     "port": "ethernet1/1",
                     "status": "  c  ",
-                    "ttl": "1652"
+                    "ttl": "1723"
                 },
                 {
                     "hostid": "0111112222333444",
@@ -4779,7 +4782,7 @@ Gets all arp tables from all firewalls in the topology.
                     "mac": "20:79:18:93:5a:94",
                     "port": "ethernet1/1",
                     "status": "  c  ",
-                    "ttl": "1748"
+                    "ttl": "19"
                 },
                 {
                     "hostid": "0111112222333444",
@@ -4788,7 +4791,7 @@ Gets all arp tables from all firewalls in the topology.
                     "mac": "68:ff:7b:2e:ef:f2",
                     "port": "ethernet1/1",
                     "status": "  c  ",
-                    "ttl": "1325"
+                    "ttl": "1396"
                 },
                 {
                     "hostid": "0111112222333444",
@@ -4797,7 +4800,7 @@ Gets all arp tables from all firewalls in the topology.
                     "mac": "00:d8:61:52:b2:ee",
                     "port": "ethernet1/1",
                     "status": "  c  ",
-                    "ttl": "723"
+                    "ttl": "794"
                 },
                 {
                     "hostid": "0111112222333444",
@@ -4806,7 +4809,7 @@ Gets all arp tables from all firewalls in the topology.
                     "mac": "00:0c:29:ba:d7:d2",
                     "port": "ethernet1/2",
                     "status": "  c  ",
-                    "ttl": "1426"
+                    "ttl": "1558"
                 }
             ],
             "Summary": [
@@ -4850,10 +4853,10 @@ Pulls all route summary information from the topology
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.ShowRouteSummary.Summary.hostid | Unknown |  | 
-| PANOS.ShowRouteSummary.Summary.total | Unknown | Total routes | 
-| PANOS.ShowRouteSummary.Summary.limit | Unknown | Maximum routes for platform | 
-| PANOS.ShowRouteSummary.Summary.active | Unknown | Active routes in routing table | 
+| PANOS.ShowRouteSummary.Summary.hostid | number | ID of PAN-OS host | 
+| PANOS.ShowRouteSummary.Summary.total | number | Total routes | 
+| PANOS.ShowRouteSummary.Summary.limit | number | Maximum routes for platform | 
+| PANOS.ShowRouteSummary.Summary.active | number | Active routes in routing table | 
 
 #### Command example
 ```!pan-os-platform-get-route-summary```
@@ -4902,18 +4905,18 @@ Pulls all route summary information from the topology
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.ShowRoute.Summary.hostid | Unknown |  | 
-| PANOS.ShowRoute.Summary.interface | Unknown | Next hop interface | 
-| PANOS.ShowRoute.Summary.route_count | Unknown | Total routes seen on virtual router interface | 
-| PANOS.ShowRoute.Result.hostid | Unknown |  | 
-| PANOS.ShowRoute.Result.virtual_router | Unknown | Virtual router this route belongs to | 
-| PANOS.ShowRoute.Result.destination | Unknown | Network destination of route | 
-| PANOS.ShowRoute.Result.nexthop | Unknown | Next hop to destination | 
-| PANOS.ShowRoute.Result.metric | Unknown | Route metric | 
-| PANOS.ShowRoute.Result.flags | Unknown | Route flags | 
-| PANOS.ShowRoute.Result.age | Unknown |  | 
-| PANOS.ShowRoute.Result.interface | Unknown | Next hop interface | 
-| PANOS.ShowRoute.Result.route_table | Unknown |  | 
+| PANOS.ShowRoute.Summary.hostid | string | ID of PAN-OS host | 
+| PANOS.ShowRoute.Summary.interface | string | Next hop interface | 
+| PANOS.ShowRoute.Summary.route_count | number | Total routes seen on virtual router interface | 
+| PANOS.ShowRoute.Result.hostid | string | ID of PAN-OS host | 
+| PANOS.ShowRoute.Result.virtual_router | string | Virtual router this route belongs to | 
+| PANOS.ShowRoute.Result.destination | string | Network destination of route | 
+| PANOS.ShowRoute.Result.nexthop | string | Next hop to destination | 
+| PANOS.ShowRoute.Result.metric | string | Route metric | 
+| PANOS.ShowRoute.Result.flags | string | Route flags | 
+| PANOS.ShowRoute.Result.age | number | Age of the route | 
+| PANOS.ShowRoute.Result.interface | string | Next hop interface | 
+| PANOS.ShowRoute.Result.route_table | string | Which route table this route belongs to | 
 
 #### Command example
 ```!pan-os-platform-get-routes```
@@ -5030,35 +5033,35 @@ Gets information from all PAN-OS systems in the topology.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.ShowSystemInfo.Summary.hostid | Unknown |  | 
-| PANOS.ShowSystemInfo.Summary.ip_address | Unknown | Management IP Address | 
-| PANOS.ShowSystemInfo.Summary.sw_version | Unknown | System software version | 
-| PANOS.ShowSystemInfo.Summary.family | Unknown | Platform family | 
-| PANOS.ShowSystemInfo.Summary.model | Unknown | Platform model | 
-| PANOS.ShowSystemInfo.Summary.uptime | Unknown | Total System uptime | 
-| PANOS.ShowSystemInfo.Summary.hostname | Unknown | System Hostname | 
-| PANOS.ShowSystemInfo.Result.hostid | Unknown |  | 
-| PANOS.ShowSystemInfo.Result.ip_address | Unknown | Management IP Address | 
-| PANOS.ShowSystemInfo.Result.netmask | Unknown | Management Netmask | 
-| PANOS.ShowSystemInfo.Result.mac_address | Unknown | Management MAC address | 
-| PANOS.ShowSystemInfo.Result.uptime | Unknown | Total System uptime | 
-| PANOS.ShowSystemInfo.Result.family | Unknown | Platform family | 
-| PANOS.ShowSystemInfo.Result.model | Unknown | Platform model | 
-| PANOS.ShowSystemInfo.Result.sw_version | Unknown | System software version | 
-| PANOS.ShowSystemInfo.Result.operational_mode | Unknown |  | 
-| PANOS.ShowSystemInfo.Result.ipv6_address | Unknown | Management IPv6 address | 
-| PANOS.ShowSystemInfo.Result.default_gateway | Unknown | Management Default Gateway | 
-| PANOS.ShowSystemInfo.Result.public_ip_address | Unknown |  | 
-| PANOS.ShowSystemInfo.Result.hostname | Unknown |  | 
-| PANOS.ShowSystemInfo.Result.av_version | Unknown | System anti-virus version | 
-| PANOS.ShowSystemInfo.Result.av_release_date | Unknown |  | 
-| PANOS.ShowSystemInfo.Result.app_version | Unknown | App content version | 
-| PANOS.ShowSystemInfo.Result.app_release_date | Unknown | Release date of application content | 
-| PANOS.ShowSystemInfo.Result.threat_version | Unknown | Threat content version | 
-| PANOS.ShowSystemInfo.Result.threat_release_date | Unknown | Release date of threat content | 
-| PANOS.ShowSystemInfo.Result.wildfire_version | Unknown | Wildfire content version | 
-| PANOS.ShowSystemInfo.Result.wildfire_release_date | Unknown | Wildfire release date | 
-| PANOS.ShowSystemInfo.Result.url_filtering_version | Unknown | URL Filtering content version | 
+| PANOS.ShowSystemInfo.Summary.hostid | string | ID of PAN-OS host | 
+| PANOS.ShowSystemInfo.Summary.ip_address | string | Management IP Address | 
+| PANOS.ShowSystemInfo.Summary.sw_version | string | System software version | 
+| PANOS.ShowSystemInfo.Summary.family | string | Platform family | 
+| PANOS.ShowSystemInfo.Summary.model | string | Platform model | 
+| PANOS.ShowSystemInfo.Summary.uptime | string | Total System uptime | 
+| PANOS.ShowSystemInfo.Summary.hostname | string | System Hostname | 
+| PANOS.ShowSystemInfo.Result.hostid | string | ID of PAN-OS host | 
+| PANOS.ShowSystemInfo.Result.ip_address | string | Management IP Address | 
+| PANOS.ShowSystemInfo.Result.netmask | string | Management Netmask | 
+| PANOS.ShowSystemInfo.Result.mac_address | string | Management MAC address | 
+| PANOS.ShowSystemInfo.Result.uptime | string | Total System uptime | 
+| PANOS.ShowSystemInfo.Result.family | string | Platform family | 
+| PANOS.ShowSystemInfo.Result.model | string | Platform model | 
+| PANOS.ShowSystemInfo.Result.sw_version | string | System software version | 
+| PANOS.ShowSystemInfo.Result.operational_mode | string | Current operational mode | 
+| PANOS.ShowSystemInfo.Result.ipv6_address | string | Management IPv6 address | 
+| PANOS.ShowSystemInfo.Result.default_gateway | string | Management Default Gateway | 
+| PANOS.ShowSystemInfo.Result.public_ip_address | string | Firewall Public IP | 
+| PANOS.ShowSystemInfo.Result.hostname | string | Device hostname | 
+| PANOS.ShowSystemInfo.Result.av_version | string | System anti-virus version | 
+| PANOS.ShowSystemInfo.Result.av_release_date | string | Release date of antivirus content | 
+| PANOS.ShowSystemInfo.Result.app_version | string | App content version | 
+| PANOS.ShowSystemInfo.Result.app_release_date | string | Release date of application content | 
+| PANOS.ShowSystemInfo.Result.threat_version | string | Threat content version | 
+| PANOS.ShowSystemInfo.Result.threat_release_date | string | Release date of threat content | 
+| PANOS.ShowSystemInfo.Result.wildfire_version | string | Wildfire content version | 
+| PANOS.ShowSystemInfo.Result.wildfire_release_date | string | Wildfire release date | 
+| PANOS.ShowSystemInfo.Result.url_filtering_version | string | URL Filtering content version | 
 
 #### Command example
 ```!pan-os-platform-get-system-info```
@@ -5087,8 +5090,8 @@ Gets information from all PAN-OS systems in the topology.
                     "sw_version": "10.0.5",
                     "threat_release_date": "",
                     "threat_version": "8475-7000",
-                    "uptime": "21 days, 23:52:00",
-                    "url_filtering_version": "20220218.20004",
+                    "uptime": "22 days, 0:20:49",
+                    "url_filtering_version": "20220218.20012",
                     "wildfire_release_date": "",
                     "wildfire_version": "0"
                 },
@@ -5111,7 +5114,7 @@ Gets information from all PAN-OS systems in the topology.
                     "sw_version": "10.0.7",
                     "threat_release_date": "",
                     "threat_version": "",
-                    "uptime": "3 days, 13:27:18",
+                    "uptime": "3 days, 13:56:06",
                     "url_filtering_version": "",
                     "wildfire_release_date": "",
                     "wildfire_version": "0"
@@ -5125,7 +5128,7 @@ Gets information from all PAN-OS systems in the topology.
                     "ip_address": "2.2.2.2",
                     "model": "PA-VM",
                     "sw_version": "10.0.5",
-                    "uptime": "21 days, 23:52:00"
+                    "uptime": "22 days, 0:20:49"
                 },
                 {
                     "family": "pc",
@@ -5134,7 +5137,7 @@ Gets information from all PAN-OS systems in the topology.
                     "ip_address": "1.1.1.1",
                     "model": "Panorama",
                     "sw_version": "10.0.7",
-                    "uptime": "3 days, 13:27:18"
+                    "uptime": "3 days, 13:56:06"
                 }
             ]
         }
@@ -5147,8 +5150,8 @@ Gets information from all PAN-OS systems in the topology.
 >### PAN-OS System Info
 >|family|hostid|hostname|ip_address|model|sw_version|uptime|
 >|---|---|---|---|---|---|---|
->| vm | 0111112222333444 | vm-lab-fw1 | 2.2.2.2 | PA-VM | 10.0.5 | 21 days, 23:52:00 |
->| pc | 1.1.1.1 | Panorama | 1.1.1.1 | Panorama | 10.0.7 | 3 days, 13:27:18 |
+>| vm | 0111112222333444 | vm-lab-fw1 | 2.2.2.2 | PA-VM | 10.0.5 | 22 days, 0:20:49 |
+>| pc | 1.1.1.1 | Panorama | 1.1.1.1 | Panorama | 10.0.7 | 3 days, 13:56:06 |
 
 
 ### pan-os-platform-get-device-groups
@@ -5170,12 +5173,12 @@ Gets the operational information of the device groups in the topology.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.DeviceGroupOp.hostid | Unknown |  | 
-| PANOS.DeviceGroupOp.serial | Unknown | Serial number of firewall | 
-| PANOS.DeviceGroupOp.connected | Unknown | Whether the firewall is currently connected | 
-| PANOS.DeviceGroupOp.hostname | Unknown | Firewall hostname | 
-| PANOS.DeviceGroupOp.last_commit_all_state_sp | Unknown | Text state of last commit | 
-| PANOS.DeviceGroupOp.name | Unknown | Device group Name | 
+| PANOS.DeviceGroupOp.hostid | string | ID of PAN-OS host | 
+| PANOS.DeviceGroupOp.serial | string | Serial number of firewall | 
+| PANOS.DeviceGroupOp.connected | string | Whether the firewall is currently connected | 
+| PANOS.DeviceGroupOp.hostname | string | Firewall hostname | 
+| PANOS.DeviceGroupOp.last_commit_all_state_sp | string | Text state of last commit | 
+| PANOS.DeviceGroupOp.name | string | Device group Name | 
 
 ### pan-os-platform-get-template-stacks
 ***
@@ -5196,12 +5199,12 @@ Gets the operational information of the template-stacks in the topology.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.TemplateStackOp.hostid | Unknown |  | 
-| PANOS.TemplateStackOp.serial | Unknown | Serial number of firewall | 
-| PANOS.TemplateStackOp.connected | Unknown | Whether the firewall is currently connected | 
-| PANOS.TemplateStackOp.hostname | Unknown | Firewall hostname | 
-| PANOS.TemplateStackOp.last_commit_all_state_tpl | Unknown | Text state of last commit | 
-| PANOS.TemplateStackOp.name | Unknown | Template Stack Name | 
+| PANOS.TemplateStackOp.hostid | string | ID of PAN-OS host | 
+| PANOS.TemplateStackOp.serial | string | Serial number of firewall | 
+| PANOS.TemplateStackOp.connected | string | Whether the firewall is currently connected | 
+| PANOS.TemplateStackOp.hostname | string | Firewall hostname | 
+| PANOS.TemplateStackOp.last_commit_all_state_tpl | string | Text state of last commit | 
+| PANOS.TemplateStackOp.name | string | Template Stack Name | 
 
 #### Command example
 ```!pan-os-platform-get-template-stacks```

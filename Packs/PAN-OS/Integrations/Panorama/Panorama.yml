@@ -4727,11 +4727,13 @@ script:
       type: string
     - contextPath: PANOS.ShowRoute.Result.age
       type: number
+      description: Age of the route
     - contextPath: PANOS.ShowRoute.Result.interface
       description: Next hop interface
       type: string
     - contextPath: PANOS.ShowRoute.Result.route_table
       type: string
+      description: Which route table this route belongs to
   - arguments:
     - default: false
       defaultValue: null
