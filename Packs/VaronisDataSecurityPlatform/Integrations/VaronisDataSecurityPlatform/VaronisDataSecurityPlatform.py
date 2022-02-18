@@ -17,7 +17,6 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 THREAT_MODEL_ENUM_ID = 5821
-REQUESTS_TIMEOUT = 60
 ALERT_STATUSES = {'Open': 1, 'Under Investigation': 2, 'Closed': 3}
 CLOSE_REASONS = {
     'None': 0,
