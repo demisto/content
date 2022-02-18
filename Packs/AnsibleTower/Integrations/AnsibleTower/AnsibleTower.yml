@@ -1019,6 +1019,12 @@ script:
       type: Number
   - arguments:
     - default: false
+      description: The ID of the job event.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
       defaultValue: '1'
       description: The page number to retrieve. Default is 1.
       isArray: false
@@ -1037,12 +1043,6 @@ script:
         within all designated text fields of a model.
       isArray: false
       name: search
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the job event.
-      isArray: false
-      name: id
       required: false
       secret: false
     deprecated: false
