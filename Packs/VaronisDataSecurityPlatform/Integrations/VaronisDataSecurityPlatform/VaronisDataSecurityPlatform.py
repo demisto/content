@@ -504,7 +504,6 @@ def main() -> None:
     :rtype:
     """
 
-    # TODO: make sure you properly handle authentication
     username = demisto.params().get('Username')
     password = demisto.params().get('Password')
 
@@ -536,14 +535,12 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        # TODO: REMOVE the following dummy command case:
         elif demisto.command() == 'varonis-get-alerts':
             return_results(varonis_get_alerts_command(client, demisto.args()))
         elif demisto.command() == 'varonis-update-alert-status':
             varonis_update_alert_status_command(client, demisto.args())
         elif demisto.command() == 'varonis-close-alert':
             varonis_close_alert_command(client, demisto.args())
-        # TODO: ADD command cases for the commands you will implement
 
     # Log exceptions and return errors
     except Exception as e:
