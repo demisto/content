@@ -47,6 +47,9 @@ USE_URL_FILTERING = None
 TEMPLATE = None
 VSYS = ''
 PRE_POST = ''
+OUTPUT_PREFIX = "PANOS."
+UNICODE_FAIL = u'\U0000274c'
+UNICODE_PASS = u'\U00002714\U0000FE0F'
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
@@ -7052,12 +7055,6 @@ class OpCommandError(Exception):
     pass
 
 
-# Globals
-OUTPUT_PREFIX = "PANOS."
-UNICODE_FAIL = u'\U0000274c'
-UNICODE_PASS = u'\U00002714\U0000FE0F'
-
-
 # Best practices
 class BestPractices:
     SPYWARE_ALERT_THRESHOLD = ["medium, low"]
@@ -7627,7 +7624,7 @@ class Topology:
                 if container_name == "shared":
                     if isinstance(container[1], Panorama):
                         return_containers.append(container)
-                if not isinstance(container[1], (Panorama, Firewall))
+                if not isinstance(container[1], (Panorama, Firewall)):
                     if container[1].name == container_name:  # type: ignore
                         return_containers.append(container)
         else:
