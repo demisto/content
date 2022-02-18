@@ -7291,7 +7291,8 @@ class URLFilteringProfile(VersionedPanObject):
 
 def run_op_command(device: Union[Panorama, Firewall], cmd: str, **kwargs) -> Element:
     result: Element = device.op(cmd, **kwargs)
-    if "status" in result:
+    if "status" in result and result.attrib.get("status") != "success":
+        raise OpCommandError
         if result.attrib.get("status") != "success":
             raise OpCommandError
 
@@ -7381,7 +7382,7 @@ class Topology:
         self.ha_pair_serials = ha_pair_dict
 
     def add_device_object(self, device: Union[PanDevice, Panorama, Firewall]):
-        if type(device) is Panorama:
+        if isinstance(device, Panorama):
             # Check if HA is active and if so, what the system state is.
             panorama_ha_state_result: Element = run_op_command(device, "show high-availability state")
             enabled = panorama_ha_state_result.find("./result/enabled")
@@ -7403,7 +7404,7 @@ class Topology:
 
             return
 
-        elif type(device) is Firewall:
+        elif isinstance(device, Firewall):
             self.firewall_objects[device.serial] = device
             return
 
@@ -7446,7 +7447,7 @@ class Topology:
         """
         active_top_level_devices = [x for x in self.top_level_devices() if
                                     x in self.active_devices(device_filter_string)]
-        return active_top_level_devices
+        return [x for x in self.top_level_devices() if x in self.active_devices(device_filter_string)]
 
     @staticmethod
     def filter_devices(devices: dict, filter_str: Optional[str] = None):
@@ -7615,7 +7616,7 @@ class Topology:
             for virtual_system in virtual_systems:
                 containers.append((device, virtual_system))
 
-            if type(device) is Panorama:
+            if isinstance(device, Panorama):
                 # Add the "shared" device if Panorama. Firewalls will always have vsys1
                 containers.append((device, device))
 
@@ -7624,9 +7625,9 @@ class Topology:
         if container_name:
             for container in containers:
                 if container_name == "shared":
-                    if type(container[1]) is Panorama:
+                    if isinstance(container[1], Panorama):
                         return_containers.append(container)
-                if type(container[1]) not in [Panorama, Firewall]:
+                if not isinstance(container[1], (Panorama, Firewall))
                     if container[1].name == container_name:  # type: ignore
                         return_containers.append(container)
         else:
@@ -8378,7 +8379,7 @@ class PanoramaCommand:
         device: Panorama
         result = []
         for device in topology.active_top_level_devices(device_filter_str):
-            if type(device) is Panorama:
+            if isinstance(device, Panorama):
                 response = run_op_command(device, PanoramaCommand.GET_TEMPLATE_STACK_COMMAND)
                 for template_stack_xml in response.findall("./result/template-stack/entry"):
                     template_name = get_element_attribute(template_stack_xml, "name")
