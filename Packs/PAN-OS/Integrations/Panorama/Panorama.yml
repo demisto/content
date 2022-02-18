@@ -4627,6 +4627,7 @@ script:
     name: pan-os-platform-get-arp-tables
     outputs:
     - contextPath: PANOS.ShowArp.Summary.hostid
+      description: ID of PAN-OS host
       type: string
     - contextPath: PANOS.ShowArp.Summary.max
       description: Maximum supported ARP Entries
@@ -4641,6 +4642,7 @@ script:
       description: Firewall dataplane associated with Entry
       type: string
     - contextPath: PANOS.ShowArp.Result.hostid
+      description: ID of PAN-OS host
       type: string
     - contextPath: PANOS.ShowArp.Result.interface
       description: Network interface learnt ARP entry
@@ -4673,6 +4675,7 @@ script:
     name: pan-os-platform-get-route-summary
     outputs:
     - contextPath: PANOS.ShowRouteSummary.Summary.hostid
+      description: ID of PAN-OS host
       type: number
     - contextPath: PANOS.ShowRouteSummary.Summary.total
       description: Total routes
@@ -4696,6 +4699,7 @@ script:
     name: pan-os-platform-get-routes
     outputs:
     - contextPath: PANOS.ShowRoute.Summary.hostid
+      description: ID of PAN-OS host
       type: string
     - contextPath: PANOS.ShowRoute.Summary.interface
       description: Next hop interface
@@ -4704,6 +4708,7 @@ script:
       description: Total routes seen on virtual router interface
       type: number
     - contextPath: PANOS.ShowRoute.Result.hostid
+      description: ID of PAN-OS host
       type: string
     - contextPath: PANOS.ShowRoute.Result.virtual_router
       description: Virtual router this route belongs to
@@ -4740,6 +4745,7 @@ script:
     name: pan-os-platform-get-system-info
     outputs:
     - contextPath: PANOS.ShowSystemInfo.Summary.hostid
+      description: ID of PAN-OS host
       type: string
     - contextPath: PANOS.ShowSystemInfo.Summary.ip_address
       description: Management IP Address
@@ -4760,6 +4766,7 @@ script:
       description: System Hostname
       type: string
     - contextPath: PANOS.ShowSystemInfo.Result.hostid
+      description: ID of PAN-OS host
       type: string
     - contextPath: PANOS.ShowSystemInfo.Result.ip_address
       description: Management IP Address
@@ -4783,6 +4790,7 @@ script:
       description: System software version
       type: string
     - contextPath: PANOS.ShowSystemInfo.Result.operational_mode
+      description: Current operational mode
       type: string
     - contextPath: PANOS.ShowSystemInfo.Result.ipv6_address
       description: Management IPv6 address
@@ -4792,13 +4800,16 @@ script:
       type: string
     - contextPath: PANOS.ShowSystemInfo.Result.public_ip_address
       type: string
+      description: Firewall Public IP
     - contextPath: PANOS.ShowSystemInfo.Result.hostname
       type: string
+      description: Device hostname
     - contextPath: PANOS.ShowSystemInfo.Result.av_version
       description: System anti-virus version
       type: string
     - contextPath: PANOS.ShowSystemInfo.Result.av_release_date
       type: string
+      description: Release date of antivirus content
     - contextPath: PANOS.ShowSystemInfo.Result.app_version
       description: App content version
       type: string
@@ -4833,6 +4844,7 @@ script:
     name: pan-os-platform-get-device-groups
     outputs:
     - contextPath: PANOS.DeviceGroupOp.hostid
+      description: ID of PAN-OS host
       type: string
     - contextPath: PANOS.DeviceGroupOp.serial
       description: Serial number of firewall
@@ -4862,6 +4874,7 @@ script:
     name: pan-os-platform-get-template-stacks
     outputs:
     - contextPath: PANOS.TemplateStackOp.hostid
+      description: ID of PAN-OS host
       type: string
     - contextPath: PANOS.TemplateStackOp.serial
       description: Serial number of firewall
