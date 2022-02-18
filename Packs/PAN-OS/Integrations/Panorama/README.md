@@ -4687,3 +4687,555 @@ Installs specific content update file.
 >|JobID|Status|
 >|---|---|
 >| 30 | Pending |
+### pan-os-platform-get-arp-tables
+***
+Gets all arp tables from all firewalls in the topology.
+
+
+#### Base Command
+
+`pan-os-platform-get-arp-tables`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only show specific hostnames or serial numbers. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ShowArp.Summary.hostid | Unknown |  | 
+| PANOS.ShowArp.Summary.max | Unknown | Maximum supported ARP Entries | 
+| PANOS.ShowArp.Summary.total | Unknown | Total current arp entries | 
+| PANOS.ShowArp.Summary.timeout | Unknown | ARP entry timeout | 
+| PANOS.ShowArp.Summary.dp | Unknown | Firewall dataplane associated with Entry | 
+| PANOS.ShowArp.Result.hostid | Unknown |  | 
+| PANOS.ShowArp.Result.interface | Unknown | Network interface learnt ARP entry | 
+| PANOS.ShowArp.Result.ip | Unknown | layer 3 address | 
+| PANOS.ShowArp.Result.mac | Unknown | Layer 2 address | 
+| PANOS.ShowArp.Result.port | Unknown | Network interface matching entry | 
+| PANOS.ShowArp.Result.status | Unknown | ARP Entry status | 
+| PANOS.ShowArp.Result.ttl | Unknown | Time to Live | 
+
+#### Command example
+```!pan-os-platform-get-arp-tables```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ShowArp": {
+            "Result": [
+                {
+                    "hostid": "0111112222333444",
+                    "interface": "ethernet1/1",
+                    "ip": "192.168.1.1",
+                    "mac": "00:66:4b:da:ce:61",
+                    "port": "ethernet1/1",
+                    "status": "  c  ",
+                    "ttl": "1783"
+                },
+                {
+                    "hostid": "0111112222333444",
+                    "interface": "ethernet1/1",
+                    "ip": "1.1.1.1",
+                    "mac": "00:0c:29:31:bf:8b",
+                    "port": "ethernet1/1",
+                    "status": "  c  ",
+                    "ttl": "920"
+                },
+                {
+                    "hostid": "0111112222333444",
+                    "interface": "ethernet1/1",
+                    "ip": "192.168.1.153",
+                    "mac": "4c:32:75:c2:b2:49",
+                    "port": "ethernet1/1",
+                    "status": "  c  ",
+                    "ttl": "462"
+                },
+                {
+                    "hostid": "0111112222333444",
+                    "interface": "ethernet1/1",
+                    "ip": "192.168.1.155",
+                    "mac": "28:f0:76:79:63:b0",
+                    "port": "ethernet1/1",
+                    "status": "  c  ",
+                    "ttl": "1650"
+                },
+                {
+                    "hostid": "0111112222333444",
+                    "interface": "ethernet1/1",
+                    "ip": "192.168.1.157",
+                    "mac": "a8:60:b6:20:ba:5c",
+                    "port": "ethernet1/1",
+                    "status": "  c  ",
+                    "ttl": "1652"
+                },
+                {
+                    "hostid": "0111112222333444",
+                    "interface": "ethernet1/1",
+                    "ip": "192.168.1.158",
+                    "mac": "20:79:18:93:5a:94",
+                    "port": "ethernet1/1",
+                    "status": "  c  ",
+                    "ttl": "1748"
+                },
+                {
+                    "hostid": "0111112222333444",
+                    "interface": "ethernet1/1",
+                    "ip": "192.168.1.159",
+                    "mac": "68:ff:7b:2e:ef:f2",
+                    "port": "ethernet1/1",
+                    "status": "  c  ",
+                    "ttl": "1325"
+                },
+                {
+                    "hostid": "0111112222333444",
+                    "interface": "ethernet1/1",
+                    "ip": "192.168.1.163",
+                    "mac": "00:d8:61:52:b2:ee",
+                    "port": "ethernet1/1",
+                    "status": "  c  ",
+                    "ttl": "723"
+                },
+                {
+                    "hostid": "0111112222333444",
+                    "interface": "ethernet1/2",
+                    "ip": "10.10.0.12",
+                    "mac": "00:0c:29:ba:d7:d2",
+                    "port": "ethernet1/2",
+                    "status": "  c  ",
+                    "ttl": "1426"
+                }
+            ],
+            "Summary": [
+                {
+                    "dp": "dp0",
+                    "hostid": "0111112222333444",
+                    "max": "1500",
+                    "timeout": "1800",
+                    "total": "9"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS ARP Table
+>|dp|hostid|max|timeout|total|
+>|---|---|---|---|---|
+>| dp0 | 0111112222333444 | 1500 | 1800 | 9 |
+
+
+### pan-os-platform-get-route-summary
+***
+Pulls all route summary information from the topology
+
+
+#### Base Command
+
+`pan-os-platform-get-route-summary`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only show specific hostnames or serial numbers. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ShowRouteSummary.Summary.hostid | Unknown |  | 
+| PANOS.ShowRouteSummary.Summary.total | Unknown | Total routes | 
+| PANOS.ShowRouteSummary.Summary.limit | Unknown | Maximum routes for platform | 
+| PANOS.ShowRouteSummary.Summary.active | Unknown | Active routes in routing table | 
+
+#### Command example
+```!pan-os-platform-get-route-summary```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ShowRouteSummary": {
+            "Summary": [
+                {
+                    "active": 5,
+                    "hostid": "0111112222333444",
+                    "limit": 2500,
+                    "total": 5
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Route Summary
+>|active|hostid|limit|total|
+>|---|---|---|---|
+>| 5 | 0111112222333444 | 2500 | 5 |
+
+
+### pan-os-platform-get-routes
+***
+Pulls all route summary information from the topology
+
+
+#### Base Command
+
+`pan-os-platform-get-routes`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only show specific hostnames or serial numbers. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ShowRoute.Summary.hostid | Unknown |  | 
+| PANOS.ShowRoute.Summary.interface | Unknown | Next hop interface | 
+| PANOS.ShowRoute.Summary.route_count | Unknown | Total routes seen on virtual router interface | 
+| PANOS.ShowRoute.Result.hostid | Unknown |  | 
+| PANOS.ShowRoute.Result.virtual_router | Unknown | Virtual router this route belongs to | 
+| PANOS.ShowRoute.Result.destination | Unknown | Network destination of route | 
+| PANOS.ShowRoute.Result.nexthop | Unknown | Next hop to destination | 
+| PANOS.ShowRoute.Result.metric | Unknown | Route metric | 
+| PANOS.ShowRoute.Result.flags | Unknown | Route flags | 
+| PANOS.ShowRoute.Result.age | Unknown |  | 
+| PANOS.ShowRoute.Result.interface | Unknown | Next hop interface | 
+| PANOS.ShowRoute.Result.route_table | Unknown |  | 
+
+#### Command example
+```!pan-os-platform-get-routes```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ShowRoute": {
+            "Result": [
+                {
+                    "age": null,
+                    "destination": "0.0.0.0/0",
+                    "flags": "A S   ",
+                    "hostid": "0111112222333444",
+                    "interface": "ethernet1/1",
+                    "metric": "10",
+                    "nexthop": "192.168.1.1",
+                    "route_table": "unicast",
+                    "virtual_router": "default"
+                },
+                {
+                    "age": null,
+                    "destination": "10.10.0.0/24",
+                    "flags": "A C   ",
+                    "hostid": "0111112222333444",
+                    "interface": "ethernet1/2",
+                    "metric": "0",
+                    "nexthop": "10.10.0.1",
+                    "route_table": "unicast",
+                    "virtual_router": "default"
+                },
+                {
+                    "age": null,
+                    "destination": "10.10.0.1/32",
+                    "flags": "A H   ",
+                    "hostid": "0111112222333444",
+                    "interface": null,
+                    "metric": "0",
+                    "nexthop": "0.0.0.0",
+                    "route_table": "unicast",
+                    "virtual_router": "default"
+                },
+                {
+                    "age": null,
+                    "destination": "192.168.1.0/24",
+                    "flags": "A C   ",
+                    "hostid": "0111112222333444",
+                    "interface": "ethernet1/1",
+                    "metric": "0",
+                    "nexthop": "192.168.1.139",
+                    "route_table": "unicast",
+                    "virtual_router": "default"
+                },
+                {
+                    "age": null,
+                    "destination": "192.168.1.139/32",
+                    "flags": "A H   ",
+                    "hostid": "0111112222333444",
+                    "interface": null,
+                    "metric": "0",
+                    "nexthop": "0.0.0.0",
+                    "route_table": "unicast",
+                    "virtual_router": "default"
+                }
+            ],
+            "Summary": [
+                {
+                    "hostid": "0111112222333444",
+                    "interface": "ethernet1/1",
+                    "route_count": 2
+                },
+                {
+                    "hostid": "0111112222333444",
+                    "interface": "ethernet1/2",
+                    "route_count": 1
+                },
+                {
+                    "hostid": "0111112222333444",
+                    "interface": null,
+                    "route_count": 2
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Routes
+>|hostid|interface|route_count|
+>|---|---|---|
+>| 0111112222333444 | ethernet1/1 | 2 |
+>| 0111112222333444 | ethernet1/2 | 1 |
+>| 0111112222333444 |  | 2 |
+
+
+### pan-os-platform-get-system-info
+***
+Gets information from all PAN-OS systems in the topology.
+
+
+#### Base Command
+
+`pan-os-platform-get-system-info`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only show specific hostnames or serial numbers. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ShowSystemInfo.Summary.hostid | Unknown |  | 
+| PANOS.ShowSystemInfo.Summary.ip_address | Unknown | Management IP Address | 
+| PANOS.ShowSystemInfo.Summary.sw_version | Unknown | System software version | 
+| PANOS.ShowSystemInfo.Summary.family | Unknown | Platform family | 
+| PANOS.ShowSystemInfo.Summary.model | Unknown | Platform model | 
+| PANOS.ShowSystemInfo.Summary.uptime | Unknown | Total System uptime | 
+| PANOS.ShowSystemInfo.Summary.hostname | Unknown | System Hostname | 
+| PANOS.ShowSystemInfo.Result.hostid | Unknown |  | 
+| PANOS.ShowSystemInfo.Result.ip_address | Unknown | Management IP Address | 
+| PANOS.ShowSystemInfo.Result.netmask | Unknown | Management Netmask | 
+| PANOS.ShowSystemInfo.Result.mac_address | Unknown | Management MAC address | 
+| PANOS.ShowSystemInfo.Result.uptime | Unknown | Total System uptime | 
+| PANOS.ShowSystemInfo.Result.family | Unknown | Platform family | 
+| PANOS.ShowSystemInfo.Result.model | Unknown | Platform model | 
+| PANOS.ShowSystemInfo.Result.sw_version | Unknown | System software version | 
+| PANOS.ShowSystemInfo.Result.operational_mode | Unknown |  | 
+| PANOS.ShowSystemInfo.Result.ipv6_address | Unknown | Management IPv6 address | 
+| PANOS.ShowSystemInfo.Result.default_gateway | Unknown | Management Default Gateway | 
+| PANOS.ShowSystemInfo.Result.public_ip_address | Unknown |  | 
+| PANOS.ShowSystemInfo.Result.hostname | Unknown |  | 
+| PANOS.ShowSystemInfo.Result.av_version | Unknown | System anti-virus version | 
+| PANOS.ShowSystemInfo.Result.av_release_date | Unknown |  | 
+| PANOS.ShowSystemInfo.Result.app_version | Unknown | App content version | 
+| PANOS.ShowSystemInfo.Result.app_release_date | Unknown | Release date of application content | 
+| PANOS.ShowSystemInfo.Result.threat_version | Unknown | Threat content version | 
+| PANOS.ShowSystemInfo.Result.threat_release_date | Unknown | Release date of threat content | 
+| PANOS.ShowSystemInfo.Result.wildfire_version | Unknown | Wildfire content version | 
+| PANOS.ShowSystemInfo.Result.wildfire_release_date | Unknown | Wildfire release date | 
+| PANOS.ShowSystemInfo.Result.url_filtering_version | Unknown | URL Filtering content version | 
+
+#### Command example
+```!pan-os-platform-get-system-info```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ShowSystemInfo": {
+            "Result": [
+                {
+                    "app_release_date": "",
+                    "app_version": "8475-7000",
+                    "av_release_date": "",
+                    "av_version": "0",
+                    "default_gateway": "192.168.1.1",
+                    "family": "vm",
+                    "hostid": "0111112222333444",
+                    "hostname": "vm-lab-fw1",
+                    "ip_address": "2.2.2.2",
+                    "ipv6_address": "unknown",
+                    "mac_address": "00:0c:29:eb:35:ad",
+                    "model": "PA-VM",
+                    "netmask": "255.255.255.0",
+                    "operational_mode": "normal",
+                    "public_ip_address": "unknown",
+                    "sw_version": "10.0.5",
+                    "threat_release_date": "",
+                    "threat_version": "8475-7000",
+                    "uptime": "21 days, 23:52:00",
+                    "url_filtering_version": "20220218.20004",
+                    "wildfire_release_date": "",
+                    "wildfire_version": "0"
+                },
+                {
+                    "app_release_date": "2021/12/06 18:49:44 PST",
+                    "app_version": "8496-7089",
+                    "av_release_date": "",
+                    "av_version": "0",
+                    "default_gateway": "192.168.1.1",
+                    "family": "pc",
+                    "hostid": "1.1.1.1",
+                    "hostname": "Panorama",
+                    "ip_address": "1.1.1.1",
+                    "ipv6_address": "unknown",
+                    "mac_address": "00:0c:29:31:bf:8b",
+                    "model": "Panorama",
+                    "netmask": "255.255.255.0",
+                    "operational_mode": "normal",
+                    "public_ip_address": "unknown",
+                    "sw_version": "10.0.7",
+                    "threat_release_date": "",
+                    "threat_version": "",
+                    "uptime": "3 days, 13:27:18",
+                    "url_filtering_version": "",
+                    "wildfire_release_date": "",
+                    "wildfire_version": "0"
+                }
+            ],
+            "Summary": [
+                {
+                    "family": "vm",
+                    "hostid": "0111112222333444",
+                    "hostname": "vm-lab-fw1",
+                    "ip_address": "2.2.2.2",
+                    "model": "PA-VM",
+                    "sw_version": "10.0.5",
+                    "uptime": "21 days, 23:52:00"
+                },
+                {
+                    "family": "pc",
+                    "hostid": "1.1.1.1",
+                    "hostname": "Panorama",
+                    "ip_address": "1.1.1.1",
+                    "model": "Panorama",
+                    "sw_version": "10.0.7",
+                    "uptime": "3 days, 13:27:18"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS System Info
+>|family|hostid|hostname|ip_address|model|sw_version|uptime|
+>|---|---|---|---|---|---|---|
+>| vm | 0111112222333444 | vm-lab-fw1 | 2.2.2.2 | PA-VM | 10.0.5 | 21 days, 23:52:00 |
+>| pc | 1.1.1.1 | Panorama | 1.1.1.1 | Panorama | 10.0.7 | 3 days, 13:27:18 |
+
+
+### pan-os-platform-get-device-groups
+***
+Gets the operational information of the device groups in the topology.
+
+
+#### Base Command
+
+`pan-os-platform-get-device-groups`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only show specific hostnames or serial numbers. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.DeviceGroupOp.hostid | Unknown |  | 
+| PANOS.DeviceGroupOp.serial | Unknown | Serial number of firewall | 
+| PANOS.DeviceGroupOp.connected | Unknown | Whether the firewall is currently connected | 
+| PANOS.DeviceGroupOp.hostname | Unknown | Firewall hostname | 
+| PANOS.DeviceGroupOp.last_commit_all_state_sp | Unknown | Text state of last commit | 
+| PANOS.DeviceGroupOp.name | Unknown | Device group Name | 
+
+### pan-os-platform-get-template-stacks
+***
+Gets the operational information of the template-stacks in the topology.
+
+
+#### Base Command
+
+`pan-os-platform-get-template-stacks`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only show specific hostnames or serial numbers. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.TemplateStackOp.hostid | Unknown |  | 
+| PANOS.TemplateStackOp.serial | Unknown | Serial number of firewall | 
+| PANOS.TemplateStackOp.connected | Unknown | Whether the firewall is currently connected | 
+| PANOS.TemplateStackOp.hostname | Unknown | Firewall hostname | 
+| PANOS.TemplateStackOp.last_commit_all_state_tpl | Unknown | Text state of last commit | 
+| PANOS.TemplateStackOp.name | Unknown | Template Stack Name | 
+
+#### Command example
+```!pan-os-platform-get-template-stacks```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "TemplateStackOp": [
+            {
+                "connected": "yes",
+                "hostid": "1.1.1.1",
+                "hostname": "vm-lab-fw1",
+                "last_commit_all_state_tpl": "commit succeeded with warnings",
+                "name": "LAB-STACK",
+                "serial": "0111112222333444"
+            },
+            {
+                "connected": "no",
+                "hostid": "1.1.1.1",
+                "hostname": "vm-lab-fw02",
+                "last_commit_all_state_tpl": "commit succeeded with warnings",
+                "name": "LAB-STACK",
+                "serial": "0111112222333455"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Operational Template Stack status
+>|connected|hostid|hostname|last_commit_all_state_tpl|name|serial|
+>|---|---|---|---|---|---|
+>| yes | 1.1.1.1 | vm-lab-fw1 | commit succeeded with warnings | LAB-STACK | 0111112222333444 |
+>| no | 1.1.1.1 | vm-lab-fw02 | commit succeeded with warnings | LAB-STACK | 0111112222333455 |
+
