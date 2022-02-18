@@ -17,6 +17,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 THREAT_MODEL_ENUM_ID = 5821
+REQUESTS_TIMEOUT = 60
 ALERT_STATUSES = {'Open': 1, 'Under Investigation': 2, 'Closed': 3}
 CLOSE_REASONS = {
     'None': 0,
@@ -68,18 +69,6 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     For this HelloWorld implementation, no special attributes defined
     """
-    def __init__(
-            self,
-            base_url,
-            verify=True,
-            proxy=False,
-            ok_codes=tuple(),
-            headers=None,
-            auth=None,
-            timeout=BaseClient.REQUESTS_TIMEOUT,
-    ):
-        super().__init__(base_url, verify, proxy, ok_codes, headers, auth, timeout)
-        self._expires_in = None
 
     def varonis_authenticate(self, username: str, password: str) -> Dict[str, Any]:
         """Gets the authentication token using the '/auth/win' API endpoint and ntlm authentication
