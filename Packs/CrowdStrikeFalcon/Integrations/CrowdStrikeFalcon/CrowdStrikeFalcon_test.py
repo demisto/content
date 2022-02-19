@@ -2722,8 +2722,8 @@ def test_search_custom_iocs_command_filter(requests_mock):
         }]
     }
     requests_mock.get(
-        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27%5D&limit=50',
-        # noqa: E501
+        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}'
+        f'%27%5D&limit=50',  # noqa: E501
         json=ioc_response,
         status_code=200
     )
@@ -2765,8 +2765,8 @@ def test_get_custom_ioc_command_exists(requests_mock):
     }
 
     requests_mock.get(
-        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27%5D&limit=50',
-        # noqa: E501
+        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}'
+        f'%27%5D&limit=50',  # noqa: E501
         json=ioc_response,
         status_code=200,
     )
@@ -2887,16 +2887,17 @@ def test_upload_custom_ioc_command_multiple_values_successful(requests_mock):
     """
     from CrowdStrikeFalcon import upload_custom_ioc_command
     ioc_response = {
-        'resources': [{
-            'id': '4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r',
-            'type': 'md5',
-            'value': 'testmd5',
-            'action': 'prevent',
-            'severity': 'high',
-            'description': 'Eicar file',
-            'created_on': '2020-10-01T09:09:04Z',
-            'modified_on': '2020-10-01T09:09:04Z',
-        },
+        'resources': [
+            {
+                'id': '4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r',
+                'type': 'md5',
+                'value': 'testmd5',
+                'action': 'prevent',
+                'severity': 'high',
+                'description': 'Eicar file',
+                'created_on': '2020-10-01T09:09:04Z',
+                'modified_on': '2020-10-01T09:09:04Z',
+            },
             {
                 'id': '123c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r',
                 'type': 'md5',

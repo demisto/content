@@ -1518,7 +1518,7 @@ def delete_host_groups(host_group_ids: List[str]) -> Dict:
     return response
 
 
-def upload_batch_custom_ioc(ioc_batch: dict) -> dict:
+def upload_batch_custom_ioc(ioc_batch: List[dict]) -> dict:
     """
     Upload a list of IOC
     """
@@ -1847,8 +1847,8 @@ def upload_custom_ioc_command(
     tags = argToList(tags)
     platforms = argToList(platforms)
 
-    iocs_json_batch = create_json_iocs_list(ioc_type, value, action, platforms, severity, source, description, expiration,
-                                       applied_globally, host_groups, tags)
+    iocs_json_batch = create_json_iocs_list(ioc_type, value, action, platforms, severity, source, description,
+                                            expiration, applied_globally, host_groups, tags)
     raw_res = upload_batch_custom_ioc(ioc_batch=iocs_json_batch)
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])
@@ -2999,7 +2999,7 @@ def delete_host_groups_command(host_group_ids: List[str]) -> CommandResults:
 
 
 def upload_batch_custom_ioc_command(
-        multiple_indicators_json: Optional[List[dict]] = None,
+        multiple_indicators_json: str = None,
 ) -> List[dict]:
     """
     :param multiple_indicators_json: A JSON object with list of CS Falcon indicators to upload.

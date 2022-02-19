@@ -55,7 +55,7 @@ def convert_unique_fields(ioc: dict, action: str, host_groups: list, platforms: 
     ioc['action'] = action
     # Note: The platforms arg is mandatory with CS Falcon api
     if not platforms:
-        raise ValueError(f'Platform is required.')
+        raise ValueError('Platform is required.')
     ioc['platforms'] = platforms
 
     ioc['source'] = IOC_SOURCE
