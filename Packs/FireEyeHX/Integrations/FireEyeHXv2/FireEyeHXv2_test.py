@@ -1297,7 +1297,7 @@ UPSERT_COMMAND_DATA_CASES_GET_ALL_ALERTS = [
             }
         ],
         {'sort': None, 'agentId': None, 'limit': 50, 'source': None},
-        {'get_agent_id': 0, 'general_context': 0}
+        {'get_agent_id': 0}
     )
 ]
 
@@ -1310,7 +1310,6 @@ def test_get_all_alerts_command(mocker, demisto_args, return_mocker, call_args, 
     get_agent_id = mocker.patch("FireEyeHXv2.get_agent_id_by_host_name", return_value='test')
     alerts = mocker.patch("FireEyeHXv2.get_alerts", return_value=return_mocker)
     mocker.patch("FireEyeHXv2.tableToMarkdown", return_value='test')
-    general_context = mocker.patch("FireEyeHXv2.general_context_from_event", return_value='test')
     mocker.patch("FireEyeHXv2.get_alert_entry", return_value='test')
 
     get_all_alerts_command(Client, demisto_args)
@@ -1321,7 +1320,6 @@ def test_get_all_alerts_command(mocker, demisto_args, return_mocker, call_args, 
     assert alerts.call_args.args[1].get('source') == call_args['source']
 
     assert get_agent_id.call_count == call_count['get_agent_id']
-    assert general_context.call_count == call_count['general_context']
 
 
 """HELPERS"""

@@ -2214,7 +2214,8 @@ def get_all_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
     registry_key = []
-    indicators = []
+    ips = []
+    files = []
     for alert in alerts:
         if alert["event_type"] == 'regKeyEvent':
             registry_key.append({
@@ -2222,17 +2223,22 @@ def get_all_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResul
                 'Name': alert.get("event_values").get('regKeyEvent/valueName'),
                 'Value': alert.get("event_values").get('regKeyEvent/value')
             })
-        else:
-            indicators.append(general_context_from_event(alert))
+        elif alert["event_type"] == 'fileWriteEvent':
+            files.append(
+                {'Name': alert.get("event_values", {}).get('fileWriteEvent/fileName'),
+                 'md5': alert.get("event_values", {}).get('fileWriteEvent/md5'),
+                 'Extension': alert.get("event_values", {}).get('fileWriteEvent/fileExtension'),
+                 'Path': alert.get("event_values", {}).get('fileWriteEvent/fullPath')}
+            )
+        elif alert["event_type"] == 'ipv4NetworkEvent':
+            ips.append({'Ipv4': alert.get("event_values", {}).get('ipv4NetworkEvent/remoteIP')})
 
-    results_outputs = assign_params(FireEyeHX={"Alerts": alerts}, RegistryKey=registry_key)
+    results_outputs = assign_params(FireEyeHX={"Alerts": alerts}, RegistryKey=registry_key, File=files, Ip=ips)
 
     return CommandResults(
-
         outputs_key_field="_id",
         outputs=results_outputs,
-        readable_output=md_table,
-        indicators=indicators
+        readable_output=md_table
     )
 
 
