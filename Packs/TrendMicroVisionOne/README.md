@@ -19,9 +19,7 @@ Collapses the time it takes to detect, contain, and respond to threats, minimizi
 By automatically correlating threat data from multiple sources, XDR speeds up and removes manual steps involved in investigations and enables security analysts to quickly find the story of an attack. Organizations with an XDR approach stated it would take eight full time employees to replace the data correlation capabilities of XDR and also are 2.6 times less likely to report their team is overwhelmed.
 ## Integrated with third-party systems
 
-As you may have other security tools and technologies
-deployed in your environment, we offer a growing portfolio of open APIs and integrations to third-party systems like SIEM and SOAR solutions, such as Palo Alto Networks Cortex™ XSOAR. Trend Micro Vision One has the ability to fit within these ecosystems and security operations workflows, acquiring meaningful data from your infrastructure to further enrich and
-validate your XDR capabilities.
+As you may have other security tools and technologies deployed in your environment, we offer a growing portfolio of open APIs and integrations to third-party systems, such as Palo Alto Networks Cortex™ XSOAR. Trend Micro Vision One™ has the ability to fit within these ecosystems and security operations workflows, acquiring meaningful data from your infrastructure to further enrich and validate your XDR capabilities.
 
 ---
 
