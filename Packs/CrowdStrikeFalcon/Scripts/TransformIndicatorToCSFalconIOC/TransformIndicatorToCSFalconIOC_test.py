@@ -15,15 +15,15 @@ XSOAR_INDICATOR_FILE = [
      'value': '098f6bcd4621d373cade4e832627b4f6'}]
 
 CS_IOC_FILE = [
-    {'expiration': '2022-02-10T17:02:59.193836+02:00', 'indicatorType': 'md5', 'severity': 'Informational',
-     'value': '098f6bcd4621d373cade4e832627b4f6', 'action': 'no_action', 'platforms': ['mac'], 'applied_globally': True,
-     'source': 'Cortex XSOAR'}]
+    {'expiration': '2022-02-10T17:02:59.193836+02:00', 'type': 'md5', 'severity': 'Informational',
+     'value': '098f6bcd4621d373cade4e832627b4f6', 'action': 'no_action', 'platforms': ['mac'], 'source': 'Cortex XSOAR',
+     'applied_globally': True}]
 
 
 @pytest.mark.parametrize('args, xsoar_indicator, cs_ioc', [
     ({"query": "value=1.2.3.4", "action": "no_action", "platforms": "mac", "applied_globally": True},
      XSOAR_INDICATOR_BY_VALUE, CS_IOC_BY_VALUE),
-    ({"query": "type:File", "action": "no_action", "platforms": "mac", "applied_globally": True}, XSOAR_INDICATOR_FILE,
+    ({"query": "type:File", "action": "notest_get_indicators_by_query_action", "platforms": "mac", "applied_globally": True}, XSOAR_INDICATOR_FILE,
      CS_IOC_FILE)])
 def test_get_indicators_by_query(mocker, args, xsoar_indicator, cs_ioc):
     mocker.patch('TransformIndicatorToCSFalconIOC.execute_command', return_value=xsoar_indicator)
