@@ -16,7 +16,6 @@ class Client(BaseClient):
         """
         Client to use in the IPinfo integration. Uses BaseClient
         """
-        print('hi')
         super().__init__(base_url=base_url, proxy=proxy, verify=verify_certificate)
         self.api_key = api_key
         self.reliability = reliability
