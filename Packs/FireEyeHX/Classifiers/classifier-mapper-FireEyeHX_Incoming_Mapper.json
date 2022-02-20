@@ -31,7 +31,7 @@
                         "transformers": []
                     }
                 },
-                "FireEye Agent Containment State": {
+                "FireEye HX Agent Containment State": {
                     "simple": "agent.containment_state"
                 },
                 "FireEye Match Count": {
@@ -40,7 +40,7 @@
                 "FireEye Matched Time": {
                     "simple": "matched_at"
                 },
-                "FireEye Event Info": {
+                "FireEye HX Event Info": {
                     "complex": {
                         "filters": [],
                         "root": "event_values",

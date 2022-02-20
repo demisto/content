@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "FireEye HX Alert - Classifier",
+    "id": "FireEye HX Alert",
     "keyTypeMap": {
         "/hx/api/v3": "FireEye HX Alert"
     },
