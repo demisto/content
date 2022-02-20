@@ -363,6 +363,8 @@ def incident_to_incident_context(incident):
             :rtype ``dict``
         """
     add_mirroring_fields(incident)
+    if incident.get('status'):
+        incident['status'] = STATUS_NUM_TO_TEXT.get(incident.get('status'))
 
     incident_id = str(incident.get('incident_id'))
     incident_context = {
@@ -1579,17 +1581,19 @@ def get_remote_data_command(args: Dict[str, Any]):
         # updating remote incident
         if remote_args.remote_incident_id[0:3] == 'inc':
             mirrored_data_list = get_incidents_entities([remote_args.remote_incident_id]).get('resources', [])
-            delta: Dict[str, Any] = {'type': 'incident'}
-            for mirrored_data in mirrored_data_list:
-                set_delta(delta, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
+            delta: Dict[str, Any] = {'incident_type': 'incident'}
+            mirrored_data = mirrored_data_list[0]
+            set_delta(delta, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
+            if 'status' in delta:
+                delta['status'] = STATUS_NUM_TO_TEXT.get(delta.get('status'))
 
         # updating remote detection
         elif remote_args.remote_incident_id[0:3] == 'ldt':
             mirrored_data_list = get_detections_entities([remote_args.remote_incident_id]).get('resources', [])
-            delta: Dict[str, Any] = {'type': 'detection'}
-            for mirrored_data in mirrored_data_list:
-                mirrored_data['severity'] = severity_string_to_int(mirrored_data.get('max_severity_displayname'))
-                set_delta(delta, mirrored_data, CS_FALCON_DETECTION_INCOMING_ARGS)
+            delta: Dict[str, Any] = {'incident_type': 'detection'}
+            mirrored_data = mirrored_data_list[0]
+            mirrored_data['severity'] = severity_string_to_int(mirrored_data.get('max_severity_displayname'))
+            set_delta(delta, mirrored_data, CS_FALCON_DETECTION_INCOMING_ARGS)
 
         else:
             raise Exception(f'Executed get-remote-data command with undefined id: {remote_args.remote_incident_id}')
