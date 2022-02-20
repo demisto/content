@@ -1,11 +1,7 @@
-from typing import Dict, Tuple, List, Callable
-
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
 import urllib3
-import traceback
+from typing import Tuple, Callable
+
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -684,7 +680,6 @@ def get_full_report_command(client: Client, ids: list, extended_data: str):
     ids_list = argToList(ids)
     filtered_outputs_list = []
     response_list = []
-    command_result: CommandResults
     is_command_finished: bool = False
 
     for single_id in ids_list:
@@ -718,25 +713,20 @@ def get_full_report_command(client: Client, ids: list, extended_data: str):
 
     filtered_outputs_list_for_hr, hr_fields = arrange_output_for_hr(filtered_outputs_list)
 
-    if not filtered_outputs_list:
-        # if there are no results, the sample is still being analyzed
-        no_results_message = 'There are no results yet, the sample might still being analyzed.' \
-                             ' Please wait to download the report.\n' \
-                             'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.'
-        command_result = CommandResults(
-            outputs_key_field='id',
-            outputs_prefix='csfalconx.resource',
-            outputs=filtered_outputs_list,
-            readable_output=no_results_message,
-            raw_response=[response_list])
+    if filtered_outputs_list:
+        readable_output = tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs_list_for_hr, hr_fields)
     else:
-        command_result = CommandResults(
-            outputs_key_field='id',
-            outputs_prefix='csfalconx.resource',
-            outputs=filtered_outputs_list,
-            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs_list_for_hr, hr_fields),
-            raw_response=[response_list])
+        readable_output = 'There are no results yet, the sample might still being analyzed.' \
+                          ' Please wait to download the report.\n' \
+                          'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.'
 
+    command_result = CommandResults(
+        outputs_key_field='id',
+        outputs_prefix='csfalconx.resource',
+        outputs=filtered_outputs_list,
+        readable_output=readable_output,
+        raw_response=[response_list]
+    )
     return command_result, is_command_finished
 
 
