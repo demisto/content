@@ -21,6 +21,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 MAX_FETCH_DEFAULT = 20
 NUM_OF_RETRIES = 3
 BACKOFF_FACTOR = 1.0
+foo='bar'
 
 ''' CLIENT CLASS '''
 
