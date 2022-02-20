@@ -1301,7 +1301,7 @@ Returns a list of threat indicators.
 | --- | --- | --- |
 | indicator_name | The name of the indicator. | Optional | 
 | limit | The maximum number of indicators to return. Default is 50. | Optional | 
-| next_link | A link that specifies a starting point to use for subsequent calls.<br/>This argument overrides all of the other command arguments. | Optional | 
+| next_link | A link that specifies a starting point to use for subsequent calls.<br/>This argument overrides all of the other command arguments.<br/>Important note: This argument is currently not supported due to an issue in Azure Sentinel API.| Optional | 
 
 
 #### Context Output
@@ -1361,7 +1361,7 @@ Returns a list of threat indicators with specific entities.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of indicators to return. Default is 50. | Optional | 
-| next_link | A link that specifies a starting point to use for subsequent calls.<br/>This argument overrides all of the other command arguments.<br/>There may be no support for pagination. | Optional | 
+| next_link | A link that specifies a starting point to use for subsequent calls.<br/>This argument overrides all of the other command arguments.<br/>Important note: This argument is currently not supported due to an issue in Azure Sentinel API. | Optional | 
 | min_confidence | The minimum confidence number for a threat indicator. | Optional | 
 | max_confidence | The maximum confidence number for a threat indicator. | Optional | 
 | min_valid_until | Minimum valid until value of indicators to query. | Optional | 
