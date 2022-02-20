@@ -1,2 +1,4 @@
 [file:FortiSIEM.yml]
 ignore=IN126
+[file:FortiSIEMV2_description.md]
+ignore=BA114
