@@ -857,6 +857,7 @@ class TestTableToMarkdown:
 """
         assert expected_table == table
 
+
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
 def test_url_to_clickable_markdown(data, expected_data):
     table = url_to_clickable_markdown(data, url_keys=['url', 'links'])
