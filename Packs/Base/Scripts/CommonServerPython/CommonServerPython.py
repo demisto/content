@@ -1963,9 +1963,10 @@ class JsonTransformer:
         str_lst = []
         prev_path = []
         for path, key, val in self.json_to_path_generator(json_input):
-            common_prefix_index = len(os.path.commonprefix((prev_path, path)))
-            path_suffix = path[common_prefix_index:]
             if path != prev_path:  # need to construct tha `path` string only of it changed from the last one
+                common_prefix_index = len(os.path.commonprefix((prev_path, path)))
+                path_suffix = path[common_prefix_index:]
+
                 str_path = []
                 for i, p in enumerate(path_suffix):
                     is_list = isinstance(p, int)
