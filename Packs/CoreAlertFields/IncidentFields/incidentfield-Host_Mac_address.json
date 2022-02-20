@@ -31,28 +31,34 @@
     "x2_fields": "mac",
     "Aliases": [
         {
-          "cliName": "darktracedevicemac",
-          "type": "shortText"
+            "cliName": "darktracedevicemac",
+            "type": "shortText",
+            "name": "Darktrace Device MAC"
         },
         {
-          "cliName": "destinationmacaddress",
-          "type": "multiSelect"
+            "cliName": "destinationmacaddress",
+            "type": "multiSelect",
+            "name": "Destination MAC Address"
         },
         {
-          "cliName": "fireeyenxalerttargetmacaddress",
-          "type": "shortText"
+            "cliName": "fireeyenxalerttargetmacaddress",
+            "type": "shortText",
+            "name": "FireEye NX Alert Target MAC Address"
         },
         {
-          "cliName": "fireeyenxalertvictimmacaddress",
-          "type": "shortText"
+            "cliName": "fireeyenxalertvictimmacaddress",
+            "type": "shortText",
+            "name": "FireEye NX Alert Victim MAC Address"
         },
         {
-          "cliName": "macaddress",
-          "type": "shortText"
+            "cliName": "macaddress",
+            "type": "shortText",
+            "name": ""
         },
         {
-          "cliName": "sourcemacaddress",
-          "type": "shortText"
+            "cliName": "sourcemacaddress",
+            "type": "shortText",
+            "name": "Source MAC Address"
         }
     ]
 }

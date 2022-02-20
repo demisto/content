@@ -28,20 +28,22 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "actor_process_image_name",
+    "x2_fields": "actor_process_image_name",
     "Aliases": [
         {
-          "cliName": "processname",
-          "type": "shortText"
+            "cliName": "processname",
+            "type": "shortText",
+            "name": "Process Name"
         },
-        
         {
-          "cliName": "carbonblackesprocessname",
-          "type": "shortText"
+            "cliName": "carbonblackesprocessname",
+            "type": "shortText",
+            "name": "Carbon Black ES Process Name"
         },
         {
             "cliName": "digitalguardianprocessname",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Digital Guardian Process Name"
         }
     ]
 }

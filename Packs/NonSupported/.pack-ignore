@@ -121,7 +121,7 @@ ignore=IN126
 [file:integration-ProtectWise_3_1_0.yml]
 ignore=IN126
 
-[file:integration-VirusTotal.yml]
+[file:integration-VirusTotal_5_1_0.yml]
 ignore=IN135,IN144,IN145
 
 [file:script-CommonServerUserPowerShell.yml]

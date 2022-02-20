@@ -1,4 +1,4 @@
-[file:integration-RsaNetwitnessSecurityAnalytics.yml]
+[file:RSANetWitnessSecurityAnalytics.yml]
 ignore=IN126,IN145
 
 [file:README.md]
