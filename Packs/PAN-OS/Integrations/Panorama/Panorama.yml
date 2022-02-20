@@ -4628,40 +4628,40 @@ script:
     outputs:
     - contextPath: PANOS.ShowArp.Summary.hostid
       description: ID of PAN-OS host
-      type: string
+      type: String
     - contextPath: PANOS.ShowArp.Summary.max
       description: Maximum supported ARP Entries
-      type: string
+      type: String
     - contextPath: PANOS.ShowArp.Summary.total
       description: Total current arp entries
-      type: string
+      type: String
     - contextPath: PANOS.ShowArp.Summary.timeout
       description: ARP entry timeout
-      type: string
+      type: String
     - contextPath: PANOS.ShowArp.Summary.dp
       description: Firewall dataplane associated with Entry
-      type: string
+      type: String
     - contextPath: PANOS.ShowArp.Result.hostid
       description: ID of PAN-OS host
-      type: string
+      type: String
     - contextPath: PANOS.ShowArp.Result.interface
       description: Network interface learnt ARP entry
-      type: string
+      type: String
     - contextPath: PANOS.ShowArp.Result.ip
       description: layer 3 address
-      type: string
+      type: String
     - contextPath: PANOS.ShowArp.Result.mac
       description: Layer 2 address
-      type: string
+      type: String
     - contextPath: PANOS.ShowArp.Result.port
       description: Network interface matching entry
-      type: string
+      type: String
     - contextPath: PANOS.ShowArp.Result.status
       description: ARP Entry status
-      type: string
+      type: String
     - contextPath: PANOS.ShowArp.Result.ttl
       description: Time to Live
-      type: string
+      type: String
   - arguments:
     - default: false
       defaultValue: null
@@ -4676,16 +4676,16 @@ script:
     outputs:
     - contextPath: PANOS.ShowRouteSummary.Summary.hostid
       description: ID of PAN-OS host
-      type: number
+      type: Number
     - contextPath: PANOS.ShowRouteSummary.Summary.total
       description: Total routes
-      type: number
+      type: Number
     - contextPath: PANOS.ShowRouteSummary.Summary.limit
       description: Maximum routes for platform
-      type: number
+      type: Number
     - contextPath: PANOS.ShowRouteSummary.Summary.active
       description: Active routes in routing table
-      type: number
+      type: Number
   - arguments:
     - default: false
       defaultValue: null
@@ -4700,39 +4700,39 @@ script:
     outputs:
     - contextPath: PANOS.ShowRoute.Summary.hostid
       description: ID of PAN-OS host
-      type: string
+      type: String
     - contextPath: PANOS.ShowRoute.Summary.interface
       description: Next hop interface
-      type: string
+      type: String
     - contextPath: PANOS.ShowRoute.Summary.route_count
       description: Total routes seen on virtual router interface
-      type: number
+      type: Number
     - contextPath: PANOS.ShowRoute.Result.hostid
       description: ID of PAN-OS host
-      type: string
+      type: String
     - contextPath: PANOS.ShowRoute.Result.virtual_router
       description: Virtual router this route belongs to
-      type: string
+      type: String
     - contextPath: PANOS.ShowRoute.Result.destination
       description: Network destination of route
-      type: string
+      type: String
     - contextPath: PANOS.ShowRoute.Result.nexthop
       description: Next hop to destination
-      type: string
+      type: String
     - contextPath: PANOS.ShowRoute.Result.metric
       description: Route metric
-      type: string
+      type: String
     - contextPath: PANOS.ShowRoute.Result.flags
       description: Route flags
-      type: string
+      type: String
     - contextPath: PANOS.ShowRoute.Result.age
-      type: number
+      type: Number
       description: Age of the route
     - contextPath: PANOS.ShowRoute.Result.interface
       description: Next hop interface
-      type: string
+      type: String
     - contextPath: PANOS.ShowRoute.Result.route_table
-      type: string
+      type: String
       description: Which route table this route belongs to
   - arguments:
     - default: false
@@ -4748,91 +4748,91 @@ script:
     outputs:
     - contextPath: PANOS.ShowSystemInfo.Summary.hostid
       description: ID of PAN-OS host
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Summary.ip_address
       description: Management IP Address
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Summary.sw_version
       description: System software version
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Summary.family
       description: Platform family
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Summary.model
       description: Platform model
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Summary.uptime
       description: Total System uptime
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Summary.hostname
       description: System Hostname
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.hostid
       description: ID of PAN-OS host
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.ip_address
       description: Management IP Address
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.netmask
       description: Management Netmask
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.mac_address
       description: Management MAC address
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.uptime
       description: Total System uptime
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.family
       description: Platform family
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.model
       description: Platform model
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.sw_version
       description: System software version
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.operational_mode
       description: Current operational mode
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.ipv6_address
       description: Management IPv6 address
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.default_gateway
       description: Management Default Gateway
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.public_ip_address
-      type: string
+      type: String
       description: Firewall Public IP
     - contextPath: PANOS.ShowSystemInfo.Result.hostname
-      type: string
+      type: String
       description: Device hostname
     - contextPath: PANOS.ShowSystemInfo.Result.av_version
       description: System anti-virus version
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.av_release_date
-      type: string
+      type: String
       description: Release date of antivirus content
     - contextPath: PANOS.ShowSystemInfo.Result.app_version
       description: App content version
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.app_release_date
       description: Release date of application content
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.threat_version
       description: Threat content version
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.threat_release_date
       description: Release date of threat content
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.wildfire_version
       description: Wildfire content version
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.wildfire_release_date
       description: Wildfire release date
-      type: string
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.url_filtering_version
       description: URL Filtering content version
-      type: string
+      type: String
   - arguments:
     - default: false
       defaultValue: null
@@ -4847,22 +4847,22 @@ script:
     outputs:
     - contextPath: PANOS.DeviceGroupOp.hostid
       description: ID of PAN-OS host
-      type: string
+      type: String
     - contextPath: PANOS.DeviceGroupOp.serial
       description: Serial number of firewall
-      type: string
+      type: String
     - contextPath: PANOS.DeviceGroupOp.connected
       description: Whether the firewall is currently connected
-      type: string
+      type: String
     - contextPath: PANOS.DeviceGroupOp.hostname
       description: Firewall hostname
-      type: string
+      type: String
     - contextPath: PANOS.DeviceGroupOp.last_commit_all_state_sp
       description: Text state of last commit
-      type: string
+      type: String
     - contextPath: PANOS.DeviceGroupOp.name
       description: Device group Name
-      type: string
+      type: String
   - arguments:
     - default: false
       defaultValue: null
@@ -4877,22 +4877,22 @@ script:
     outputs:
     - contextPath: PANOS.TemplateStackOp.hostid
       description: ID of PAN-OS host
-      type: string
+      type: String
     - contextPath: PANOS.TemplateStackOp.serial
       description: Serial number of firewall
-      type: string
+      type: String
     - contextPath: PANOS.TemplateStackOp.connected
       description: Whether the firewall is currently connected
-      type: string
+      type: String
     - contextPath: PANOS.TemplateStackOp.hostname
       description: Firewall hostname
-      type: string
+      type: String
     - contextPath: PANOS.TemplateStackOp.last_commit_all_state_tpl
       description: Text state of last commit
-      type: string
+      type: String
     - contextPath: PANOS.TemplateStackOp.name
       description: Template Stack Name
-      type: string
+      type: String
   dockerimage: demisto/pan-os-python
   feed: false
   isfetch: false
