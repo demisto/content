@@ -3014,7 +3014,7 @@ def rtr_kill_process_command(args: dict) -> CommandResults:
     human_readable = tableToMarkdown(
         f'{INTEGRATION_NAME} {command_type} command on host {host_id}:', outputs, headers=["ProcessID", "Error"])
     return CommandResults(raw_response=raw_response, readable_output=human_readable, outputs=outputs,
-                          outputs_prefix="CrowdStrike.Command", outputs_key_field="ProcessID")
+                          outputs_prefix="CrowdStrike.Command.kill", outputs_key_field="ProcessID")
 
 
 def parse_command_response(response, host_ids, process_id=None) -> list:
@@ -3070,7 +3070,7 @@ def rtr_remove_file_command(args: dict) -> CommandResults:
     human_readable = tableToMarkdown(
         f'{INTEGRATION_NAME} {command_type} over the file: {file_path}', outputs, headers=["HostID", "Error"])
     return CommandResults(raw_response=response, readable_output=human_readable, outputs=outputs,
-                          outputs_prefix="CrowdStrike.Command", outputs_key_field="HostID")
+                          outputs_prefix="CrowdStrike.Command.rm", outputs_key_field="HostID")
 
 
 def execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids=None):

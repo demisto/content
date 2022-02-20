@@ -2969,13 +2969,13 @@ script:
     execution: false
     name: cs-falcon-rtr-kill-process
     outputs:
-    - contextPath: CrowdStrike.Command.ProcessID
+    - contextPath: CrowdStrike.Command.kill.ProcessID
       description: The process ID that was killed.
       type: String
-    - contextPath: CrowdStrike.Command.Error
+    - contextPath: CrowdStrike.Command.kill.Error
       description: The error message raised if the command was failed.
       type: string
-    - contextPath: CrowdStrike.Command.HostID
+    - contextPath: CrowdStrike.Command.kill.HostID
       description: The host ID.
       type: String
   - arguments:
@@ -3010,10 +3010,10 @@ script:
     execution: false
     name: cs-falcon-rtr-remove-file
     outputs:
-    - contextPath: CrowdStrike.Command.HostID
+    - contextPath: CrowdStrike.Command.rm.HostID
       description: The host ID.
       type: String
-    - contextPath: CrowdStrike.Command.Error
+    - contextPath: CrowdStrike.Command.rm.Error
       description: The error message raised if the command was failed.
       type: string
   - arguments:
