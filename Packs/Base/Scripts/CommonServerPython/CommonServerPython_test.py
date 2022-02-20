@@ -763,7 +763,7 @@ class TestTableToMarkdown:
 
         with open('test_data/nested_data_example.json') as f:
             nested_data_example = json.load(f)
-        changelog_transformer = JsonTransformer(keys=['releaseNotes', 'released'], is_nested=True)
+        changelog_transformer = JsonTransformer(keys=['releaseNotes', 'released'])
         table_json_transformer = {'changelog': changelog_transformer}
         table = tableToMarkdown("tableToMarkdown test", nested_data_example, headers=['name', 'changelog'],
                                 json_transform_mapping=table_json_transformer)
@@ -786,14 +786,14 @@ class TestTableToMarkdown:
         """
         with open('test_data/complex_nested_data_example.json') as f:
             complex_nested_data_example = json.load(f)
-        changelog_transformer = JsonTransformer(keys=['releaseNotes', 'c'], is_nested=True)
+        changelog_transformer = JsonTransformer(keys=['releaseNotes', 'c'])
         table_json_transformer = {'changelog': changelog_transformer}
         table = tableToMarkdown('tableToMarkdown test', complex_nested_data_example, headers=['name', 'changelog'],
                                 json_transform_mapping=table_json_transformer)
         expected_table = """### tableToMarkdown test
 |name|changelog|
 |---|---|
-| Active Directory Query | **1.0.4**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.4**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>**1.0.5**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.5**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>**1.0.6**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.6**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br> |
+| Active Directory Query | **1.0.4**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br><br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>**1.0.5**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br><br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>**1.0.6**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br><br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br> |
 """
 
         assert expected_table == table
@@ -837,10 +837,10 @@ class TestTableToMarkdown:
         with open('test_data/nested_data_in_list.json') as f:
             data_with_list = json.load(f)
         table = tableToMarkdown("tableToMarkdown test", data_with_list, is_auto_json_transform=True)
-        expected_table = """### tableToMarkdown test
+        expected_table = r"""### tableToMarkdown test
 |Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
 |---|---|---|---|---|---|
-| <br>***index***: 0<br>***startTime***: null<br>***endTime***: 2022-02-17T08:22:33.823Z<br>***commandStatus***: Completed<br>***errors***: <br>***command***: {"type": "GetFile", "params": [{"key": "Path", "value": "C:\\\\Users\\\\demisto\\\\Desktop\\\\test.txt"}]} | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+| **-**<br>	***index***: 0<br>	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>**-**<br>	***index***: 1<br>	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
 """
         assert expected_table == table
 
@@ -852,7 +852,7 @@ class TestTableToMarkdown:
         expected_table = """### tableToMarkdown test
 |Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
 |---|---|---|---|---|---|
-| <br>***index***: 0<br>***startTime***: null<br>***endTime***: 2022-02-17T08:22:33.823Z<br>***commandStatus***: Completed<br>**command**:<br>	***type***: GetFile<br>	***key***: Path<br>	***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>**command**:<br>	**params**:<br>		***key***: Path<br>		***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>**command**:<br>	***type***: GetFile<br>	***key***: Path<br>	***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>**command**:<br>	**params**:<br>		***key***: Path<br>		***value***: C:\\Users\\demisto\\Desktop\\test.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+| **-**<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>**-**<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
 """
         assert expected_table == table
 

@@ -1925,7 +1925,7 @@ class JsonTransformer:
     :return: None
     :rtype: ``None``
     """
-    def __init__(self, flatten=False, keys=None, is_nested=False, func=None):
+    def __init__(self, flatten=False, keys=None, func=None):
         """
         Constructor for JsonTransformer
 
@@ -1935,31 +1935,15 @@ class JsonTransformer:
         :type keys: ``Iterable[str]``
         :param keys: an iterable of relevant keys list from the json. Notice we save it as a set in the class
 
-        :type is_nested: ``bool``
-        :param is_nested: Whether to search in nested keys or not
-
         :type func: ``Callable``
         :param func: A function to parse the json
         """
         if keys is None:
             keys = []
         self.keys = set(keys)
-        self.is_nested = is_nested
         self.func = func
         self.flatten = flatten
 
-    def find_first_diff(self, lst1, lst2):
-        if lst1 is None or lst2 is None:
-            return -1
-        is_equal = False
-        for i, (l1, l2) in enumerate(zip(lst1, lst2)):
-            if l1 == l2:
-                is_equal = True
-            if l1 != l2:
-                return i
-        if is_equal:
-            return min(len(lst1), len(lst2))
-        return -1
 
     def json_to_str(self, json_input, is_pretty=True):
         if self.func:
@@ -1975,8 +1959,17 @@ class JsonTransformer:
         str_lst = []
         prev_path = []
         for path, key, val in self.json_to_path_generator(json_input):
+            common_prefix_index = len(os.path.commonprefix((prev_path, path)))
+            path_suffix = path[common_prefix_index:]
             if path != prev_path:  # need to construct tha `path` string only of it changed from the last one
-                str_path = '\n'.join(["{tabs}**{p}**:".format(p=p if not isinstance(p, int) else '-', tabs=i * '\t') for i, p in enumerate(path) if isinstance(p, int) or p not in prev_path])
+                str_path = []
+                for i, p in enumerate(path_suffix):
+                    is_list = isinstance(p, int)
+                    tabs = (common_prefix_index + i) * '\t'
+                    path_value = p if not is_list else '-'
+                    delim = ':' if not is_list else ''
+                    str_path.append('{tabs}**{path_value}**{delim}'.format(tabs=tabs, path_value=path_value, delim=delim))
+                str_path = '\n'.join(str_path)
                 str_lst.append(str_path)
                 prev_path = path
 
@@ -1992,7 +1985,7 @@ class JsonTransformer:
         :type path: ``List[str]``
         :param path: The path of the key, value pair inside the json
 
-        :rtype ``Tuple[List[str], str, str]``
+        :rtype ``Tuple[List[str + int], str, str]``
         :return:  A tuple. the second and third elements are key, values, and the first is their path in the json
         """
         if path is None:
@@ -2001,12 +1994,11 @@ class JsonTransformer:
         if isinstance(json_input, dict):
             for k, v in json_input.items():
 
-                if is_in_path or k in self.keys:
-                    if not self.is_nested or isinstance(v, STRING_TYPES):
-                        yield path, k, v
-                    else:
-                        for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
-                            yield res
+                if not isinstance(v, dict) and not isinstance(v, list) and (is_in_path or k in self.keys):
+                    yield path, k, v
+                else:
+                    for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
+                        yield res
 
         if isinstance(json_input, list):
             for i, item in enumerate(json_input):
