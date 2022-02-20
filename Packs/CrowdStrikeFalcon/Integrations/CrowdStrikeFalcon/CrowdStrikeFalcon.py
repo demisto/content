@@ -1626,8 +1626,9 @@ def get_remote_data_command(args: Dict[str, Any]):
                     'ContentsFormat': EntryFormat.JSON
                 })
 
-            # 'reopened' is stated in 'status' field for both incidents and detections
-            elif delta.get('status') == 'reopened':
+            # reopened is stated in 'status' field for both incidents (as 'Reopened') and detections (as 'reopened')
+            elif delta.get('status') == 'reopened' or delta.get('status') == 'Reopened':
+                demisto.debug(f'Incident or detection is reopened: {remote_args.remote_incident_id}')
                 entries.append({
                     'Type': EntryType.NOTE,
                     'Contents': {
@@ -1701,6 +1702,7 @@ def get_modified_remote_data_command(args: Dict[str, Any]):
     for detection_id in raw_detections:
         modified_ids_to_mirror.append(str(detection_id))
 
+    demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
     return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
 
 
@@ -1802,11 +1804,8 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
 
 
 def get_previous_tags(remote_incident_id):
-    prev_tags = set()
     incidents_entities = get_incidents_entities([remote_incident_id]).get('resources', [])
-    for incident in incidents_entities:
-        prev_tags.update(incident.get('tags', ''))
-    return prev_tags
+    return set(incidents_entities[0].get('tags', ''))
 
 
 def get_mapping_fields_command() -> GetMappingFieldsResponse:

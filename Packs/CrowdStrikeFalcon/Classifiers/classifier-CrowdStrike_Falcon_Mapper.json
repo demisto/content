@@ -149,9 +149,9 @@
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
 				},
-				"dbotMirrorTags": {
-					"simple": "mirror_tags"
-				}
+                "IncomingMirrorError": {
+                  "simple": "in_mirror_error"
+                }
             }
         },
         "CrowdStrike Falcon Incident": {
@@ -285,9 +285,9 @@
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
 				},
-				"dbotMirrorTags": {
-					"simple": "mirror_tags"
-				}
+                "IncomingMirrorError": {
+                  "simple": "in_mirror_error"
+                }
             }
         },
         "dbot_classification_incident_type_all": {
