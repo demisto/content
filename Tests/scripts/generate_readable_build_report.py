@@ -2,7 +2,7 @@ import os
 import re
 from demisto_sdk.commands.test_content.execute_test_content import _add_pr_comment
 from demisto_sdk.commands.test_content.execute_test_content import ParallelLoggingManager
-from json2html import *
+# from json2html import *
 
 ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
 JOB_ID = os.environ.get('CI_JOB_ID')
@@ -55,7 +55,7 @@ def get_failing_ut():
         # for failed_ut in failed_ut_list:
         #     summary += failed_ut + '\n'
         with open(summary_file, 'a') as f:
-            summary = json2html.convert(json=failed_ut)
+            summary = "hello"  #json2html.convert(json=failed_ut)
             f.write(summary)
         return f'you have {len(failed_ut)} failed unit test on this push.\n'
     return 'no failing unit tests on this one. nice job!\n'
