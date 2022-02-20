@@ -1051,7 +1051,7 @@ def remove_ignored_tests(tests: set, id_set: dict, modified_packs: set) -> set:
     return tests
 
 
-def remove_tests_for_non_supported_packs(tests: set, id_set: dict) -> set:
+def remove_tests_for_non_supported_packs(tests: set, id_set: dict,  marketplace_version: str) -> set:
     """Filters out test playbooks, which belong to one of the following packs:
         - Non XSOAR supported packs
         - DeprecatedContent, NonSupported packs
@@ -1060,7 +1060,7 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: dict) -> set:
         Args:
             tests (set): Tests set to remove the tests to ignore from
             id_set (dict): The id set object
-
+            marketplace_version (str)
         Return:
              set: The filtered tests set
         """
@@ -1072,7 +1072,7 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: dict) -> set:
 
             # We don't want to test playbooks that are not XSOAR supported, belong to the ignored packs or from
             # deprecated packs.
-            should_test, reason = should_test_content_pack(id_set_test_playbook_pack_name)
+            should_test, reason = should_test_content_pack(id_set_test_playbook_pack_name, marketplace_version, id_set)
             if not should_test:
                 tests_that_should_not_be_tested.add(f'{test}: {reason}')
 
@@ -1096,7 +1096,7 @@ def remove_private_tests(tests_without_private_packs):
             tests_without_private_packs.remove(private_test)
 
 
-def filter_tests(tests: set, id_set: dict, modified_packs: set, is_nightly=False) -> set:
+def filter_tests(tests: set, id_set: dict, modified_packs: set, marketplace_version: str, is_nightly=False) -> set:
     """
     Filter tests out from the test set if they are:
     a. Ignored
@@ -1106,14 +1106,15 @@ def filter_tests(tests: set, id_set: dict, modified_packs: set, is_nightly=False
     Args:
         tests (set): Set of tests collected so far.
         id_set (dict): The ID set.
-        remove_private_packs (bool): Whether to remove private packs
         modified_packs: The modified packs.
+        marketplace_version:(str)
     Returns:
         (set): Set of tests without ignored, non supported and deprecated-packs tests.
     """
     tests_with_no_dummy_strings = {test for test in tests if 'no test' not in test.lower()}
     tests_without_ignored = remove_ignored_tests(tests_with_no_dummy_strings, id_set, modified_packs)
-    tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
+    tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set,
+                                                                       marketplace_version)
 
     if is_nightly:
         # Removing private packs' tests from nightly, since they aren't runnable in nightly
@@ -1123,13 +1124,14 @@ def filter_tests(tests: set, id_set: dict, modified_packs: set, is_nightly=False
     return tests_without_non_supported
 
 
-def filter_installed_packs(packs_to_install: set) -> set:
+def filter_installed_packs(packs_to_install: set, marketplace_version: str) -> set:
     """
     Filter only the packs that should get installed by the following conditions:
         - Content pack is not in skipped packs
         - Content pack is not deprecated
     Args:
         packs_to_install (set): Set of installed packs collected so far.
+        marketplace_version (str):
     Returns:
         (set): Set of packs without ignored, skipped and deprecated-packs.
     """
@@ -1137,7 +1139,7 @@ def filter_installed_packs(packs_to_install: set) -> set:
     packs_that_should_not_be_installed = set()
     packs_that_should_be_installed = set()
     for pack in packs_to_install:
-        should_install, reason = should_install_content_pack(pack)
+        should_install, reason = should_install_content_pack(pack, marketplace_version, deepcopy(ID_SET))
         if not should_install:
             packs_that_should_not_be_installed.add(f'{pack}: {reason}')
         else:
@@ -1167,6 +1169,7 @@ def is_documentation_changes_only(files_string: str) -> bool:
 
 def get_test_list_and_content_packs_to_install(files_string,
                                                branch_name,
+                                               marketplace_version,
                                                conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
     """Create a test list that should run"""
@@ -1241,10 +1244,10 @@ def get_test_list_and_content_packs_to_install(files_string,
     packs_to_install = packs_to_install.union(packs_of_collected_tests)
 
     # All filtering out of packs should be done here
-    packs_to_install = filter_installed_packs(packs_to_install)
+    packs_to_install = filter_installed_packs(packs_to_install, marketplace_version)
 
     # All filtering out of tests should be done here
-    tests = filter_tests(tests, id_set, modified_packs)
+    tests = filter_tests(tests, id_set, modified_packs, marketplace_version)
 
     if not tests or changed_common:
         if not tests:
@@ -1380,12 +1383,12 @@ def changed_files_to_string(changed_files):
     return '\n'.join(files_with_status)
 
 
-def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
+def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_version='xsoar'):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
-        packs_to_install = filter_installed_packs(set(os.listdir(constants.PACKS_DIR)))
+        packs_to_install = filter_installed_packs(set(os.listdir(constants.PACKS_DIR)), marketplace_version)
         tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET), is_nightly=True,
-                             modified_packs=set())
+                             modified_packs=set(), marketplace_version=marketplace_version)
         logging.info("Nightly - collected all tests that appear in conf.json and all packs from content repo that "
                      "should be tested")
     else:
@@ -1414,7 +1417,8 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
 
         logging.debug(f'Files string: {files_string}')
 
-        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name)
+        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
+                                                                             marketplace_version)
 
     tests_string = '\n'.join(tests)
     packs_to_install_string = '\n'.join(packs_to_install)
@@ -1455,10 +1459,11 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--skip-save', type=tools.str2bool,
                         help='Skipping saving the test filter file (good for simply doing validation)')
     parser.add_argument('-p', '--changed_pack_path', type=str, help='A string representing the changed files')
+    parser.add_argument('-t', '--marketplace_version', type=str, help='Is xsoar or marketplacev2')
     options = parser.parse_args()
 
     # Create test file based only on committed files
-    create_test_file(options.nightly, options.skip_save, options.changed_pack_path)
+    create_test_file(options.nightly, options.skip_save, options.changed_pack_path, options.marketplace_version)
     if not _FAILED:
         logging.info("Finished test configuration")
         sys.exit(0)
