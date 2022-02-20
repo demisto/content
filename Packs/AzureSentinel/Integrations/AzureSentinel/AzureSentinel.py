@@ -865,9 +865,11 @@ def update_next_link_in_context(result: dict, outputs: dict):
 
 
 def fetch_incidents(client, last_run, first_fetch_time, min_severity):
+    demisto.debug("starting command fetch")
     # Get the last fetch details, if exist
     last_fetch_time = last_run.get('last_fetch_time')
     last_fetch_ids = last_run.get('last_fetch_ids', [])
+    demisto.debug(f"starting fetch, last_fetch_time:{last_fetch_time}, last_fetch_ids: {last_fetch_ids}")
 
     # Handle first time fetch
     if last_fetch_time is None:
@@ -878,17 +880,21 @@ def fetch_incidents(client, last_run, first_fetch_time, min_severity):
 
     latest_created_time = last_fetch_time
     latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
+    demisto.debug(f"the last created time: {latest_created_time}.the latest_created_time_str:{latest_created_time_str}")
     command_args = {'filter': f'properties/createdTimeUtc ge {latest_created_time_str}'}
     command_result = list_incidents_command(client, command_args, is_fetch_incidents=True)
     items = command_result.outputs
     incidents = []
     current_fetch_ids = []
+    demisto.debug(f"number of incidents fetched: {len(items)}")
 
     for incident in items:
         incident_severity = severity_to_level(incident.get('Severity'))
+        demisto.debug(f"incident id: {incident.get('ID')}, severity level:{incident_severity}")
 
         # fetch only incidents that weren't fetched in the last run and their severity is at least min_severity
         if incident.get('ID') not in last_fetch_ids and incident_severity >= min_severity:
+            demisto.debug(f"the incident is being added to Xsoar Dashboard")
             incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
             xsoar_incident = {
                 'name': '[Azure Sentinel] ' + incident.get('Title'),
@@ -899,15 +905,18 @@ def fetch_incidents(client, last_run, first_fetch_time, min_severity):
 
             incidents.append(xsoar_incident)
             current_fetch_ids.append(incident.get('ID'))
-
+            demisto.debug(f"incident created time: {incident_created_time}")
             # Update last run to the latest fetch time
             if incident_created_time > latest_created_time:
                 latest_created_time = incident_created_time
-
+                demisto.debug(f"latest_created_time was changed to: {latest_created_time}")
+    demisto.debug(f"latest_created_time: {latest_created_time}")
     next_run = {
         'last_fetch_time': latest_created_time.strftime(DATE_FORMAT),
         'last_fetch_ids': current_fetch_ids
     }
+    demisto.debug(f"the next run is: {next_run}")
+
     return next_run, incidents
 
 
