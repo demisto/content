@@ -7276,9 +7276,7 @@ class URLFilteringProfile(VersionedPanObject):
 def run_op_command(device: Union[Panorama, Firewall], cmd: str, **kwargs) -> Element:
     result: Element = device.op(cmd, **kwargs)
     if "status" in result and result.attrib.get("status") != "success":
-        raise OpCommandError
-        if result.attrib.get("status") != "success":
-            raise OpCommandError
+        raise OpCommandError(f"Operational command {cmd} failed!")
 
     return result
 
