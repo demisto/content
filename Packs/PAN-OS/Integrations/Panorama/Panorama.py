@@ -1,4 +1,3 @@
-import enum
 from collections import defaultdict
 from dataclasses import dataclass, fields
 from typing import Generator, Callable, Union
@@ -12,12 +11,6 @@ from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedPara
 from panos.panorama import Panorama, DeviceGroup, Template, PanoramaCommitAll
 from panos.firewall import Firewall
 from panos.device import Vsys
-from panos.network import Zone
-from panos.policies import Rulebase, PreRulebase, PostRulebase, SecurityRule
-from panos.objects import (AddressObject, AddressGroup, ServiceObject, ServiceGroup)
-from panos.objects import (LogForwardingProfile, LogForwardingProfileMatchList)
-from panos.objects import (ApplicationObject, SecurityProfileGroup)
-from panos.objects import ApplicationGroup
 from urllib.error import HTTPError
 
 import shutil
