@@ -845,7 +845,7 @@ class TestTableToMarkdown:
         assert expected_table == table
 
     @staticmethod
-    def test_with_json_transform_list_nested():
+    def test_with_json_transform_list_keys():
         with open('test_data/nested_data_in_list.json') as f:
             data_with_list = json.load(f)
         table = tableToMarkdown("tableToMarkdown test", data_with_list,
@@ -856,7 +856,6 @@ class TestTableToMarkdown:
 | **-**<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>**-**<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
 """
         assert expected_table == table
-
 
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
 def test_url_to_clickable_markdown(data, expected_data):
