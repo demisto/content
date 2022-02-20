@@ -95,3 +95,4 @@ hostSetName
 fieldSearchName
 fieldSearchOperator
 fieldSearchValue
+Classifiers
