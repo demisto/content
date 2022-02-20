@@ -2,7 +2,9 @@
   "associatedToAll": false,
   "associatedTypes": [
     "Qradar Generic",
-    "FW change management"
+    "FW change management",
+    "CrowdStrike Falcon Detection",
+    "CrowdStrike Falcon Incident"
   ],
   "breachScript": "",
   "caseInsensitive": true,
@@ -37,7 +39,9 @@
   "system": false,
   "systemAssociatedTypes": [
     "Qradar Generic",
-    "FW change management"
+    "FW change management",
+    "CrowdStrike Falcon Detection",
+    "CrowdStrike Falcon Incident"
   ],
   "threshold": 72,
   "toServerVersion": "",

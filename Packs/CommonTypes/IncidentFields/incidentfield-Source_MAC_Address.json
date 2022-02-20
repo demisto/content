@@ -4,7 +4,9 @@
     "Qradar Generic",
     "FireEye NX IPS Event",
     "FireEye NX Alert",
-    "FireEye EX Alert"
+    "FireEye EX Alert",
+    "CrowdStrike Falcon Detection",
+    "CrowdStrike Falcon Incident"
   ],
   "breachScript": "",
   "caseInsensitive": true,
@@ -37,7 +39,14 @@
   "selectValues": [],
   "sla": 0,
   "system": false,
-  "systemAssociatedTypes": null,
+  "systemAssociatedTypes": [
+    "Qradar Generic",
+    "FireEye NX IPS Event",
+    "FireEye NX Alert",
+    "FireEye EX Alert",
+    "CrowdStrike Falcon Detection",
+    "CrowdStrike Falcon Incident"
+  ],
   "threshold": 72,
   "toServerVersion": "",
   "type": "multiSelect",

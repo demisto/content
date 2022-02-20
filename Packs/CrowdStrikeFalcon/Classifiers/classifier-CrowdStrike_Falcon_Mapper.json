@@ -1,7 +1,7 @@
 {
     "description": "CrowdStrike Falcon Mapper for incidents and detections",
     "feed": false,
-    "id": "CrowdStrike Falcon-Mapper",
+    "id": "CrowdStrike Falcon Mapper",
     "mapping": {
         "CrowdStrike Falcon Detection": {
             "dontMapEventToLabels": true,
@@ -52,19 +52,17 @@
                     "simple": "device.hostname"
                 },
                 "Agent Version": {
-					"simple": "device.agent_version"
-				},
+                    "simple": "device.agent_version"
+                },
                 "File MD5": {
                     "simple": "behaviors.md5"
                 },
                 "MD5": {
-					"complex": null,
-					"simple": "behaviors.md5"
-				},
+                    "simple": "behaviors.md5"
+                },
                 "SHA256": {
-					"complex": null,
-					"simple": "behaviors.sha256"
-				},
+                    "simple": "behaviors.sha256"
+                },
                 "File Name": {
                     "simple": "behaviors.filename"
                 },
@@ -84,11 +82,11 @@
                     "simple": "device.mac_address"
                 },
                 "Event Names": {
-					"simple": "behaviors.display_name"
-				},
+                    "simple": "behaviors.display_name"
+                },
                 "Event Descriptions": {
-					"simple": "behaviors.description"
-				},
+                    "simple": "behaviors.description"
+                },
                 "OS": {
                     "simple": "device.os_version"
                 },
@@ -136,6 +134,81 @@
                             }
                         ]
                     }
+                },
+                "Agents ID": {
+                    "simple": "device.device_id"
+                },
+                "Cloud Provider": {
+                    "simple": "device.service_provider"
+                },
+                "Cloud Resource ID": {
+                    "simple": "device.service_provider_account_id"
+                },
+                "Device Status": {
+                    "simple": "device.status"
+                },
+                "Event Type": {
+                    "simple": "incident_type"
+                },
+                "File Extension": {
+                    "simple": "behaviors.alleged_filetype"
+                },
+                "File Names": {
+                    "simple": "behaviors.filename"
+                },
+                "Objective": {
+                    "simple": "behaviors.objective"
+                },
+                "Org Unit": {
+                    "simple": "hostinfo.active_directory_dn_display"
+                },
+                "Parent Process SHA256": {
+                    "simple": "behaviors.parent_details.parent_sha256"
+                },
+                "Parent process MD5": {
+                    "simple": "behaviors.parent_details.parent_md5"
+                },
+                "Process MD5": {
+                    "simple": "behaviors.md5"
+                },
+                "Process SHA256": {
+                    "simple": "behaviors.sha256"
+                },
+                "Scenario": {
+                    "simple": "behaviors.scenario"
+                },
+                "Source External IPs": {
+                    "simple": "device.external_ip"
+                },
+                "Source IPs": {
+                    "simple": "device.local_ip"
+                },
+                "Source MAC Address": {
+                    "simple": "device.mac_address"
+                },
+                "Source NT Domain": {
+                    "simple": "device.machine_domain"
+                },
+                "Source OS Type": {
+                    "simple": "device.platform_name"
+                },
+                "Source OS Version": {
+                    "simple": "device.os_version"
+                },
+                "Tactic": {
+                    "simple": "behaviors.tactic"
+                },
+                "Tactic ID": {
+                    "simple": "behaviors.tactic_id"
+                },
+                "Technique": {
+                    "simple": "behaviors.technique"
+                },
+                "Technique ID": {
+                    "simple": "behaviors.technique_id"
+                },
+                "Users ID": {
+                    "simple": "behaviors.user_id"
                 }
             }
         },
@@ -167,8 +240,8 @@
                     "simple": "hosts.ou"
                 },
                 "Agent Version": {
-					"simple": "hosts.agent_version"
-				},
+                    "simple": "hosts.agent_version"
+                },
                 "DNS Name": {
                     "simple": "hosts.site_name"
                 },
@@ -254,6 +327,30 @@
                             }
                         ]
                     }
+                },
+                "Device Status": {
+                    "simple": "hosts.status"
+                },
+                "Org Unit": {
+                    "simple": "hosts.ou"
+                },
+                "Source External IPs": {
+                    "simple": "hosts.external_ip"
+                },
+                "Source IPs": {
+                    "simple": "hosts.local_ip"
+                },
+                "Source MAC Address": {
+                    "simple": "hosts.mac_address"
+                },
+                "Source NT Domain": {
+                    "simple": "hosts.machine_domain"
+                },
+                "Source OS Type": {
+                    "simple": "hosts.platform_name"
+                },
+                "Source OS Version": {
+                    "simple": "hosts.os_version"
                 }
             }
         },
