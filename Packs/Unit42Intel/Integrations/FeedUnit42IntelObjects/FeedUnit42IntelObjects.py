@@ -141,7 +141,12 @@ class Client(BaseClient):
                 if len(results) >= limit:
                     return results
             public_tag_name = tag.get('public_tag_name', '')
-            tag_details_response = self.get_tag_details(public_tag_name)
+            try:
+                tag_details_response = self.get_tag_details(public_tag_name)
+            except Exception as e:
+                demisto.debug(f'tag name is: {public_tag_name}, trying to fetch it with no luck. error is {e}\n\n\n'
+                              f'page num is {page_num}'
+                              f'tag_name is {tag.get("tag_name")}')
             results.append(tag_details_response)
         if not is_get_command:
             page_num += 1
