@@ -17,7 +17,7 @@ This playbook does not use any integrations.
 
 ### Commands
 * setIncident
-* panorama-create-rule
+* pan-os-create-rule
 
 ## Playbook Inputs
 ---

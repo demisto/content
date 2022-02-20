@@ -45,7 +45,7 @@ tasks:
       id: 9b462c6e-8e91-4e39-8275-92c1b75e7155
       version: -1
       name: Search for matching security policy?
-      description: A wrapper script for the panorama-security-policy-match command
+      description: A wrapper script for the pan-os-security-policy-match command
         that receives multiple values (array) in the DST, SRC, and port arguments
         and performs the policy match for each combination of the inputs.
       tags:
@@ -244,7 +244,7 @@ tasks:
       - comment
       - comments
       - work_notes
-      script: '|||panorama-create-rule'
+      script: '|||pan-os-create-rule'
       type: regular
       iscommand: true
       brand: ""
@@ -511,7 +511,7 @@ tasks:
       tags:
       - comment
       - comments
-      script: '|||panorama-create-rule'
+      script: '|||pan-os-create-rule'
       type: regular
       iscommand: true
       brand: ""

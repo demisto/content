@@ -13,7 +13,7 @@ This playbook does not use any integrations.
 DeleteContext
 
 ### Commands
-panorama-edit-rule
+pan-os-edit-rule
 
 ## Playbook Inputs
 ---

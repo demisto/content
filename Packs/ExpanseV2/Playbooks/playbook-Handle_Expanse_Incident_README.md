@@ -49,7 +49,7 @@ ExpanseV2
 * expanse-update-issue
 * closeInvestigation
 * setIncident
-* panorama-show-device-version
+* pan-os-show-device-version
 * linkIncidents
 * createNewIncident
 * getList

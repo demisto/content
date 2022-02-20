@@ -18,7 +18,7 @@ ExportToCSV
 * servicenow-update-ticket
 * setIncident
 * servicenow-upload-file
-* panorama-create-rule
+* pan-os-create-rule
 * servicenow-add-link
 * closeInvestigation
 

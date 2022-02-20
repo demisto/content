@@ -14,7 +14,7 @@ IsIntegrationAvailable
 
 ### Commands
 * pan-os-po-get-rules
-* panorama-delete-rule
+* pan-os-delete-rule
 * send-notification
 * send-mail
 * closeInvestigation

@@ -29,7 +29,7 @@ This playbook does not use any sub-playbooks.
 * gcb-ioc-details
 * send-mail
 * whois
-* panorama-register-user-tag
+* pan-os-register-user-tag
 * gcb-assets
 
 ## Playbook Inputs

@@ -280,7 +280,7 @@ tasks:
       version: -1
       name: PAN-OS - Register Tag to User
       description: Apply a tag to a user.
-      script: '|||panorama-register-user-tag'
+      script: '|||pan-os-register-user-tag'
       type: regular
       iscommand: true
       brand: ""
