@@ -84,7 +84,7 @@ script:
       description: Determines whether the host is queued for containment.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.containment_state
-      description: The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu
+      description: The containment state of the host. Possible values normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu
       type: Unknown
     - contextPath: FireEyeHX.Hosts.stats.alerting_conditions
       description: The number of conditions that have alerted for the host.
@@ -161,7 +161,7 @@ script:
       description: Determines whether the host is queued for containment.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.containment_state
-      description: The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu
+      description: The containment state of the host. Possible values normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu
       type: Unknown
     - contextPath: FireEyeHX.Hosts.stats.alerting_conditions
       description: The number of conditions that have alerted for the host.
@@ -241,7 +241,7 @@ script:
       description: Determines whether the host is queued for containment.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.containment_state
-      description: The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu
+      description: The containment state of the host. Possible values normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu
       type: Unknown
     - contextPath: FireEyeHX.Hosts.stats.alerting_conditions
       description: The number of conditions that have alerted for the host.

@@ -52,7 +52,7 @@ Get information on a host associated with an agent.
 | FireEyeHX.Hosts.excluded_from_containment | Unknown | Determines whether the host is excluded from containment. | 
 | FireEyeHX.Hosts.containment_missing_software | Unknown | Boolean value to indicate for containment missing software. | 
 | FireEyeHX.Hosts.containment_queued | Unknown | Determines whether the host is queued for containment. | 
-| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu | 
+| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values: normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu | 
 | FireEyeHX.Hosts.stats.alerting_conditions | Unknown | The number of conditions that have alerted for the host. | 
 | FireEyeHX.Hosts.stats.alerts | Unknown | Total number of alerts, including exploit-detection alerts. | 
 | FireEyeHX.Hosts.stats.exploit_blocks | Unknown | The number of blocked exploits on the host. | 
@@ -95,7 +95,7 @@ Get information on all hosts.
 | FireEyeHX.Hosts.excluded_from_containment | Unknown | Determines whether the host is excluded from containment. | 
 | FireEyeHX.Hosts.containment_missing_software | Unknown | Boolean value to indicate for containment missing software. | 
 | FireEyeHX.Hosts.containment_queued | Unknown | Determines whether the host is queued for containment. | 
-| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu | 
+| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values: normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu | 
 | FireEyeHX.Hosts.stats.alerting_conditions | Unknown | The number of conditions that have alerted for the host. | 
 | FireEyeHX.Hosts.stats.alerts | Unknown | Total number of alerts, including exploit-detection alerts. | 
 | FireEyeHX.Hosts.stats.exploit_blocks | Unknown | The number of blocked exploits on the host. | 
@@ -138,7 +138,7 @@ Apply containment for a specific host, so that it no longer has access to other 
 | FireEyeHX.Hosts.excluded_from_containment | Unknown | Determines whether the host is excluded from containment. | 
 | FireEyeHX.Hosts.containment_missing_software | Unknown | Boolean value to indicate for containment missing software. | 
 | FireEyeHX.Hosts.containment_queued | Unknown | Determines whether the host is queued for containment. | 
-| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu | 
+| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values: normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu | 
 | FireEyeHX.Hosts.stats.alerting_conditions | Unknown | The number of conditions that have alerted for the host. | 
 | FireEyeHX.Hosts.stats.alerts | Unknown | Total number of alerts, including exploit-detection alerts. | 
 | FireEyeHX.Hosts.stats.exploit_blocks | Unknown | The number of blocked exploits on the host. | 

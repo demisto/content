@@ -2696,9 +2696,7 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> List:
 
 def run_polling_command(client, args, cmd, post_func, get_func, t):
 
-
     ScheduledCommand.raise_error_if_not_supported()
-
     interval_in_secs = int(args.get('interval_in_seconds', 60))
     _, is_ready, item_id = post_func(client, args)
     if not is_ready:

@@ -4,7 +4,7 @@
     "modified": "2022-02-13T15:45:49.211304Z",
     "name": "FireEye HX Agent Containment State",
     "ownerOnly": false,
-    "cliName": "fireeyeagentcontainmentstate",
+    "cliName": "fireeyehxagentcontainmentstate",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
