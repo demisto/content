@@ -198,6 +198,32 @@ INBOUND_MESSAGE_FROM_USER = {
 }
 
 
+INBOUND_MESSAGE_FROM_BOT_WITH_BOT_ID = {
+    "token": "HRaWNBI1UXkKjvIntY29juPo",
+    "team_id": "TABQMPKP0",
+    "api_app_id": "A01TXQAGB2P",
+    "event": {
+        "type": "message",
+        "subtype": "This is missing",
+        "text": "This is a bot message\nView it on: <https:\/\/somexsoarserver.com#\/home>",
+        "ts": "1644999987.969789",
+        "username": "I'm a BOT",
+        "icons": {
+            "image_48": "https:\/\/someimage.png"
+        },
+        "bot_id": "W12345678",
+        "channel": "C033HLL3N81",
+        "event_ts": "1644999987.969789",
+        "channel_type": "group"
+    },
+    "type": "event_callback",
+    "event_id": "Ev0337CL1P0D",
+    "event_time": 1644999987,
+    "is_ext_shared_channel": False,
+    "event_context": "4-eyJldCI6Im1lc3NhZ2UiLCJ0aWQiOiJUQUJRTVBLUDAiLCJhaWQiOiJBMDFUWFFBR0IyUCIsImNpZCI6IkMwMzNITEwzTjgxIn0"
+}
+
+
 def test_exception_in_invite_to_mirrored_channel(mocker):
     import SlackV3
     from SlackV3 import check_for_mirrors
@@ -4229,7 +4255,8 @@ def test_pin_message_invalid_thread_id(mocker):
 
 TEST_BANK_MSG = [
     (INBOUND_MESSAGE_FROM_BOT, True),
-    (INBOUND_MESSAGE_FROM_USER, False)
+    (INBOUND_MESSAGE_FROM_USER, False),
+    (INBOUND_MESSAGE_FROM_BOT_WITH_BOT_ID, True)
 ]
 
 
@@ -4239,14 +4266,16 @@ def test_is_bot_message(message, expected_response):
     Given:
         Test Case 1 - A message from a bot
         Test Case 2 - A message from a user
+        Test Case 3 - A message from a bot, but only containing a bot id which matches our bot id.
     When:
         Determining if the message is from a bot
     Then:
         Test Case 1 - Will determine True
         Test Case 2 - Will determine False
+        Test Case 3 - Will determine True
     """
     import SlackV3
-    SlackV3.BOT_ID = 'String'
+    SlackV3.BOT_ID = 'W12345678'
 
     result = SlackV3.is_bot_message(message)
     assert result is expected_response

@@ -126,6 +126,14 @@ def get_current_utc_time() -> datetime:
     return datetime.utcnow()
 
 
+def update_expiry_time() -> float:
+    """
+    Returns:
+        A float representation of a new expiry time with an offset of 300
+    """
+    return int(datetime.now(timezone.utc).timestamp() * 1000) + 300
+
+
 def format_user_not_found_error(user: str) -> str:
     err_str = f'User {user} not found in Slack'
     if DISABLE_CACHING:
@@ -1200,7 +1208,7 @@ def is_bot_message(data: dict) -> bool:
     subtype = data.get('subtype', '')
     message_bot_id = data.get('bot_id', '')
     if subtype == 'bot_message' or message_bot_id or data.get('message', {}).get(
-            'subtype') == 'bot_message' or data.get('event', {}).get('bot_id', None):
+            'subtype') == 'bot_message':
         return True
     elif data.get('event', {}).get('subtype') == 'bot_message':
         return True
@@ -1282,7 +1290,6 @@ async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse):
     :return: None
     """
     integration_context = fetch_context()
-    demisto.info("Fetching context")
     if not integration_context or 'mirrors' not in integration_context:
         demisto.debug("No mirrors are found in context. Done processing mirror.")
         return
@@ -1337,7 +1344,7 @@ def fetch_context(force_refresh: bool = False) -> dict:
     if (CACHE_EXPIRY <= now) or force_refresh:
         demisto.debug(f'Cached context has expired or forced refresh. forced refresh value is {force_refresh}. '
                       f'Fetching new context')
-        CACHE_EXPIRY = now + 300
+        CACHE_EXPIRY = update_expiry_time()
         CACHED_INTEGRATION_CONTEXT = get_integration_context(SYNC_CONTEXT)
     else:
         demisto.debug("Cached context is being used.")
@@ -2539,7 +2546,7 @@ def init_globals(command_name: str = ''):
             set_to_integration_context_with_retries({'bot_user_id': BOT_ID}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
         # Pull initial Cached context and set the Expiry
-        CACHE_EXPIRY = int(datetime.now(timezone.utc).timestamp() * 1000) + 300
+        CACHE_EXPIRY = update_expiry_time()
         CACHED_INTEGRATION_CONTEXT = get_integration_context(SYNC_CONTEXT)
 
 
