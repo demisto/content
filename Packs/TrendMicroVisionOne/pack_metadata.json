@@ -20,5 +20,19 @@
     ],
     "githubUser": [
         "mikedgibson"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts",
+        "CommonTypes"
     ]
 }
