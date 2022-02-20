@@ -92,7 +92,7 @@
     fi
   - source ./venv/bin/activate
   - |
-    if [ -n "${DEMISTO_SDK_NIGHTLY}" || -n "${SDK_REF}" ]; then
+    if [ -n "${DEMISTO_SDK_NIGHTLY}" ] || [ -n "${SDK_REF}" ]; then
       echo "SDK_REF=$SDK_REF"
       [ -z "${SDK_REF}" ] && SDK_REF=master
       echo "Installing SDK from $SDK_REF" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
