@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SplunkPy
+  id: SplunkPy test
   version: -1
 configuration:
 - display: Host - IP (x.x.x.x)
@@ -28,6 +28,18 @@ configuration:
     fetches ES notable events. You can edit this query to fetch other types of events.
     Note, that to fetch ES noatable events, make sure to include the \`notable\` macro
     in your query.
+- defaultvalue: earliest_time
+  display: Earliest occurrence time (The name of the Splunk field whose value defines
+    the query's earliest occurrence time to fetch.)
+  name: earliest_occurrence_time_fieldname
+  required: false
+  type: 0
+- defaultvalue: latest_time
+  display: Latest occurrence time (The name of the Splunk field whose value defines
+    the query's latest occurrence time to fetch.)
+  name: latest_occurrence_time_fieldname
+  required: false
+  type: 0
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
   name: fetch_limit
@@ -194,8 +206,8 @@ configuration:
   additionalinfo: Use this parameter to specify a list of comma separated fields, which
     together are a unique identifier for the events you wish to fetch.
 description: Runs queries on Splunk servers.
-display: SplunkPy
-name: SplunkPy
+display: SplunkPy test
+name: SplunkPy test
 script:
   commands:
   - arguments:
