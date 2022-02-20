@@ -7,14 +7,14 @@ COMMAND_NAME = 'netstat'
 def get_file_name_from_context() -> str:
     file_name = ""
     all_command_files = demisto.get(demisto.context(), CONTEXT_PATH_TO_READ_PROCESS_FILE_NAME_FROM)
-    if all_command_files:
-        ps_files = all_command_files.get(COMMAND_NAME, [])
-        if ps_files:
-            if isinstance(ps_files, list):
+    if all_command_files and isinstance(all_command_files, dict):
+        netstat_files = all_command_files.get(COMMAND_NAME, [])
+        if netstat_files:
+            if isinstance(netstat_files, list):
                 # we want to get the last file name
-                file_name = ps_files[len(ps_files) - 1].get('Filename')
-            elif isinstance(ps_files, dict):
-                file_name = ps_files.get('Filename')
+                file_name = netstat_files[len(netstat_files) - 1].get('Filename')
+            elif isinstance(netstat_files, dict):
+                file_name = netstat_files.get('Filename')
     return file_name
 
 

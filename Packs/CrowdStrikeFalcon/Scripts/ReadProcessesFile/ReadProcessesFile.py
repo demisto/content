@@ -7,7 +7,7 @@ COMMAND_NAME = 'ps'
 def get_file_name_from_context() -> str:
     file_name = ""
     all_command_files = demisto.get(demisto.context(), CONTEXT_PATH_TO_READ_PROCESS_FILE_NAME_FROM)
-    if all_command_files:
+    if all_command_files and isinstance(all_command_files, dict):
         ps_files = all_command_files.get(COMMAND_NAME, [])
         if ps_files:
             if isinstance(ps_files, list):
