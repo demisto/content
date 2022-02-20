@@ -5,19 +5,19 @@ from typing import Generator, Callable, Union
 
 from CommonServerPython import *
 
-import panos.errors  # type: ignore
+import panos.errors
 
 from xml.etree.ElementTree import Element
 from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath  # type: ignore
-from panos.panorama import Panorama, DeviceGroup, Template, PanoramaCommitAll  # type: ignore
-from panos.firewall import Firewall  # type: ignore
-from panos.device import Vsys  # type: ignore
-from panos.network import Zone  # type: ignore
-from panos.policies import Rulebase, PreRulebase, PostRulebase, SecurityRule  # type: ignore
-from panos.objects import (AddressObject, AddressGroup, ServiceObject, ServiceGroup)  # type: ignore
-from panos.objects import (LogForwardingProfile, LogForwardingProfileMatchList)  # type: ignore
-from panos.objects import (ApplicationObject, SecurityProfileGroup)  # type: ignore
-from panos.objects import ApplicationGroup  # type: ignore
+from panos.panorama import Panorama, DeviceGroup, Template, PanoramaCommitAll
+from panos.firewall import Firewall
+from panos.device import Vsys
+from panos.network import Zone
+from panos.policies import Rulebase, PreRulebase, PostRulebase, SecurityRule
+from panos.objects import (AddressObject, AddressGroup, ServiceObject, ServiceGroup)
+from panos.objects import (LogForwardingProfile, LogForwardingProfileMatchList)
+from panos.objects import (ApplicationObject, SecurityProfileGroup)
+from panos.objects import ApplicationGroup
 from urllib.error import HTTPError
 
 import shutil
