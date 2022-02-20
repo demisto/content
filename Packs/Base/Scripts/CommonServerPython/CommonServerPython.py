@@ -1925,7 +1925,7 @@ class JsonTransformer:
     :return: None
     :rtype: ``None``
     """
-    def __init__(self, flatten=False, keys=None, func=None):
+    def __init__(self, flatten=False, keys=None, is_nested=True, func=None):
         """
         Constructor for JsonTransformer
 
@@ -1935,12 +1935,16 @@ class JsonTransformer:
         :type keys: ``Iterable[str]``
         :param keys: an iterable of relevant keys list from the json. Notice we save it as a set in the class
 
+        :type is_nested: ``bool``
+        :param is_nested: Whether to search in nested keys or not
+
         :type func: ``Callable``
         :param func: A function to parse the json
         """
         if keys is None:
             keys = []
         self.keys = set(keys)
+        self.is_nested = is_nested
         self.func = func
         self.flatten = flatten
 
@@ -1982,7 +1986,7 @@ class JsonTransformer:
         """
         :type json_input: ``list`` or ``dict``
         :param json_input: The json input to transform
-        :type path: ``List[str]``
+        :type path: ``List[str + int]``
         :param path: The path of the key, value pair inside the json
 
         :rtype ``Tuple[List[str + int], str, str]``
@@ -1993,13 +1997,21 @@ class JsonTransformer:
         is_in_path = not self.keys or any(p for p in path if p in self.keys)
         if isinstance(json_input, dict):
             for k, v in json_input.items():
+                is_in_keys = is_in_path or k in self.keys
+                if is_in_keys:
+                    if not isinstance(v, dict) and not isinstance(v, list):
+                        yield path, k, v
+                    else:
+                        for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
+                            yield res
 
-                if not isinstance(v, dict) and not isinstance(v, list) and (is_in_path or k in self.keys):
-                    yield path, k, v
-                else:
+                elif self.is_nested:
                     for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
                         yield res
 
+                else:
+                    # if not in keys and no need to search in nested keys - ignore it
+                    pass
         if isinstance(json_input, list):
             for i, item in enumerate(json_input):
                 for res in self.json_to_path_generator(item, path + [i]):  # this is yield from for python2 BC

@@ -730,7 +730,7 @@ class TestTableToMarkdown:
     def test_with_json_transformer_simple():
         with open('test_data/simple_data_example.json') as f:
             simple_data_example = json.load(f)
-        name_transformer = JsonTransformer(keys=['first', 'second'])
+        name_transformer = JsonTransformer(keys=['first', 'second'], is_nested=False)
         json_transformer_mapping = {'name': name_transformer}
         table = tableToMarkdown("tableToMarkdown test", simple_data_example,
                                 json_transform_mapping=json_transformer_mapping)
@@ -763,7 +763,7 @@ class TestTableToMarkdown:
 
         with open('test_data/nested_data_example.json') as f:
             nested_data_example = json.load(f)
-        changelog_transformer = JsonTransformer(keys=['releaseNotes', 'released'])
+        changelog_transformer = JsonTransformer(keys=['releaseNotes', 'released'], is_nested=True)
         table_json_transformer = {'changelog': changelog_transformer}
         table = tableToMarkdown("tableToMarkdown test", nested_data_example, headers=['name', 'changelog'],
                                 json_transform_mapping=table_json_transformer)
@@ -786,7 +786,7 @@ class TestTableToMarkdown:
         """
         with open('test_data/complex_nested_data_example.json') as f:
             complex_nested_data_example = json.load(f)
-        changelog_transformer = JsonTransformer(keys=['releaseNotes', 'c'])
+        changelog_transformer = JsonTransformer(keys=['releaseNotes', 'c'], is_nested=True)
         table_json_transformer = {'changelog': changelog_transformer}
         table = tableToMarkdown('tableToMarkdown test', complex_nested_data_example, headers=['name', 'changelog'],
                                 json_transform_mapping=table_json_transformer)
@@ -848,11 +848,12 @@ class TestTableToMarkdown:
     def test_with_json_transform_list_nested():
         with open('test_data/nested_data_in_list.json') as f:
             data_with_list = json.load(f)
-        table = tableToMarkdown("tableToMarkdown test", data_with_list, json_transform_mapping={'Commands': JsonTransformer(is_nested=True)})
-        expected_table = """### tableToMarkdown test
+        table = tableToMarkdown("tableToMarkdown test", data_with_list,
+                                json_transform_mapping={'Commands': JsonTransformer(keys=('commandStatus', 'command'))})
+        expected_table = r"""### tableToMarkdown test
 |Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
 |---|---|---|---|---|---|
-| **-**<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>**-**<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+| **-**<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>**-**<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
 """
         assert expected_table == table
 
