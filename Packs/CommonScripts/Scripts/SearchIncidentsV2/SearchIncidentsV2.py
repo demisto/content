@@ -1,5 +1,3 @@
-from typing import Dict, List
-import demistomock as demisto
 from CommonServerPython import *
 
 special = ['n', 't', '\\', '"', '\'', '7', 'r']
@@ -67,6 +65,9 @@ def add_incidents_link(data: List):
 def search_incidents(args: Dict):
     if not is_valid_args(args):
         return
+
+    if args.get('trimevents') == '0':
+        args.pop('trimevents')
 
     res: List = execute_command('getIncidents', args, extract_contents=False)
     incident_found: bool = check_if_found_incident(res)
