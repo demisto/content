@@ -43,6 +43,7 @@ SC_INDICATORS_HEADERS = (
 INDICATOR_TYPE_TO_DBOT_TYPE = {
     'FileSha256': DBotScoreType.FILE,
     'FileSha1': DBotScoreType.FILE,
+    'FileMd5': DBotScoreType.FILE,
     'Url': DBotScoreType.URL,
     'DomainName': DBotScoreType.DOMAIN,
     'IpAddress': DBotScoreType.IP,
