@@ -75,6 +75,9 @@ def search_incidents(args: Dict):   # pragma: no cover
         to_date = todate.isoformat()
         args['todate'] = to_date
 
+    if args.get('trimevents') == '0':
+        args.pop('trimevents')
+
     res: List = execute_command('getIncidents', args, extract_contents=False)
     incident_found: bool = check_if_found_incident(res)
     if incident_found is False:

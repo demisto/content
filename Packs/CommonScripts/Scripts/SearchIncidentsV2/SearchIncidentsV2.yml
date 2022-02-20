@@ -108,6 +108,15 @@ args:
   required: false
   secret: false
 - default: false
+  description: |-
+    The number of events to return from the alert JSON. The default is 0, which returns all events.
+    Note that the count is from the head of the list, regardless of event time or other properties.
+  isArray: false
+  name: trimevents
+  required: false
+  secret: false
+  defaultValue: '0'
+- default: false
   description: Number of incidents per page (per fetch)
   isArray: false
   name: size
