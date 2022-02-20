@@ -118,7 +118,8 @@
         {
             "integrations": "FireEyeHX v2",
             "playbookID": "FireEyeHX_v2",
-            "fromversion": "6.2.0"
+            "fromversion": "6.2.0",
+            "timeout": 1200
         },
         {
             "integrations": "FireEyeHX v2",
