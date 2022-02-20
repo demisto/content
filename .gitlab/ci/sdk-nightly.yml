@@ -23,6 +23,8 @@
 
 
 demisto-sdk-nightly:run-unittests-and-lint:
+  tags:
+    - gce
   extends:
     - .run-unittests-and-lint
     - .sdk-nightly-schedule-rule
