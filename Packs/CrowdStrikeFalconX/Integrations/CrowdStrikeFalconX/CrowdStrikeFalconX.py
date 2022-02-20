@@ -1,10 +1,15 @@
-import urllib3
 from typing import Tuple, Callable
+
+import urllib3
 
 from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+DBOT_SCORE_DICT = {'malicious': Common.DBotScore.BAD,
+                   'suspicious': Common.DBotScore.SUSPICIOUS,
+                   'no specific threat': Common.DBotScore.GOOD}
 
 
 def convert_environment_id_string_to_int(
@@ -427,86 +432,114 @@ class Client:
         return self._http_request("Get", url_suffix, params=params)
 
 
-def add_outputs_from_dict(
-        api_current_dict: dict,
+def keep_dict_keys(
+        dictionary: dict,
         fields_to_keep: list
 ) -> dict:
     """
     Filters a dict and keeps only the keys that appears in the given list
-    :param api_current_dict: the origin dict
+    :param dictionary: the origin dict
     :param fields_to_keep: the list which contains the wanted keys
     :return: a dict based on api_current_dict without the keys that doesn't appear in fields_to_keep
     """
-    if not api_current_dict or not fields_to_keep:
-        return {}
-
-    group_outputs = {}
-
-    for field_to_keep in fields_to_keep:
-        if field_to_keep in api_current_dict.keys():
-            group_outputs[field_to_keep] = api_current_dict.get(field_to_keep)
-
-    return group_outputs
+    return {k: v for k, v in dictionary.items() if k in fields_to_keep}
 
 
 def parse_outputs(
-        api_res: dict,
-        meta_fields: list = [],
-        quota_fields: list = [],
-        resources_fields: list = [],
-        sandbox_fields: list = [],
-        extra_sandbox_fields=[],
-) -> Dict[str, dict]:
-    """Parse group data as received from CrowdStrike FalconX API into Demisto's conventions
-    the output from the API is a dict that contains the keys: meta, resources and errors
+        response: dict,
+        reliability: str,
+        meta_fields: Optional[list] = None,
+        quota_fields: Optional[list] = None,
+        resources_fields: Optional[list] = None,
+        sandbox_fields: Optional[list] = None,
+        extra_sandbox_fields: Optional[list] = None,
+) -> tuple[dict[str, dict], tuple[Common.Indicator]]:
+    """Parse group data as received from CrowdStrike FalconX API matching Demisto conventions
+    the output from the API is a dict that contains the keys: meta, resources_list and errors
     the meta contains a "quota" dict
-    the "resources" is an array that contains the sandbox dict
+    the "resources_list" is an array that contains the sandbox dict
     the function filters the wanted params from the api result
-    :param api_res: the api result from the http request
+    :param response: the api result from the http request
     :param meta_fields: the wanted params that appear in the mate section
     :param quota_fields: the wanted params that appear in the quota section
-    :param resources_fields: the wanted params that appear in the resources section
+    :param resources_fields: the wanted params that appear in the resources_list section
     :param sandbox_fields: the wanted params that appear in the sandbox section
     :param extra_sandbox_fields: the wanted params that appear in the extra sandbox section
     :return: a dict based on api_res with the wanted params only
     """
-    api_res_quota, api_res_resources, api_res_sandbox = {}, {}, {}
+
+    # handling default None values
+    meta_fields = meta_fields or []
+    quota_fields = quota_fields or []
+    resources_fields = resources_fields or []
+    sandbox_fields = sandbox_fields or []
+    extra_sandbox_fields = extra_sandbox_fields or []
+
     resources_group_outputs, sandbox_group_outputs, extra_sandbox_group_outputs = {}, {}, {}
 
-    api_res_meta = api_res.get("meta")
-    if api_res_meta:
-        api_res_quota = api_res_meta.get("quota")
+    if api_res_meta := response.get("meta", dict()):
+        api_res_quota = api_res_meta.get("quota", dict())
+    else:
+        api_res_meta = dict()
+        api_res_quota = dict()
 
-    meta_group_outputs = add_outputs_from_dict(api_res_meta, meta_fields)
-    quota_group_outputs = add_outputs_from_dict(api_res_quota, quota_fields)
+    meta_group_outputs = keep_dict_keys(api_res_meta, meta_fields)
+    quota_group_outputs = keep_dict_keys(api_res_quota, quota_fields)
 
-    resources = api_res.get("resources")
-    if resources:
-        # depended on the command, the resources section can be a str list or a list that contains
-        # only one argument which is a dict
-        if type(resources[0]) == dict:
-            api_res_resources = resources[0]
-            resources_group_outputs = add_outputs_from_dict(api_res_resources, resources_fields)
+    if resources_list := response.get("resources_list"):
+        # depends on the command, the resources_list section can be a list[str],
+        # or a list that only contains one argument of type dict
+        if isinstance(resources_list[0], dict):
+            resources = resources_list[0]
+            resources_group_outputs = keep_dict_keys(resources, resources_fields)
 
-            sandbox = api_res_resources.get("sandbox")
-            if api_res_resources and sandbox:
-                api_res_sandbox = sandbox[0]
-                sandbox_group_outputs = add_outputs_from_dict(api_res_sandbox, sandbox_fields)
-                extra_sandbox_group_outputs = add_outputs_from_dict(api_res_sandbox, extra_sandbox_fields)
+            if sandbox := resources.get("sandbox", [[]])[0]:  # todo can sandbox have more than one value?
+                sandbox_group_outputs = keep_dict_keys(sandbox, sandbox_fields)
+                extra_sandbox_group_outputs = keep_dict_keys(sandbox, extra_sandbox_fields)
 
-                if extra_sandbox_group_outputs.get('processes'):
-                    for process in extra_sandbox_group_outputs.get('processes', []):
-                        if process.get('registry'):
-                            process.pop('registry')
+                for process in extra_sandbox_group_outputs.get('processes', []):
+                    if process.get('registry'):
+                        process.pop('registry')
+
+                if sha256 := sandbox.get('sha256'):  # does the `if` make sense here?
+                    dbot = Common.DBotScore(
+                        indicator=sha256,  # todo sha256 or name?
+                        indicator_type=DBotScoreType.FILE,
+                        score=DBOT_SCORE_DICT.get(sandbox.get('verdict'), Common.DBotScore.NONE),
+                        reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+                    )
+
+                    info = {item['id']: item['value'] for item in sandbox.get('version_info', [])}
+
+                    file_type = sandbox.get('file_type_short')
+                    if isinstance(file_type, list):
+                        file_type = ",".join(file_type)
+
+                    indicator = Common.File(dbot_score=dbot,
+                                            name=sandbox.get('submit_name'),
+                                            size=sandbox.get('file_size'),
+                                            file_type=file_type,  # todo comma separated supported by XSOAR?
+                                            company=info.get('CompanyName'),
+                                            product_name=info.get('ProductName'),
+                                            signature=Common.FileSignature(
+                                                authentihash='',  # todo
+                                                copyright='',  # todo
+                                                description=info.get('FileDescription', ''),
+                                                file_version=info.get('FileVersion', ''),
+                                                internal_name=info.get('InternalName', ''),
+                                                original_name=info.get('OriginalFilename', '')
+                                            )
+                                            )
+                else:
+                    indicator = None
         else:
-            # the resources section is a list of strings
-            resources_group_outputs = {"resources": api_res.get("resources")}
+            # the resources_list section is a list of strings
+            resources_group_outputs = {"resources_list": response.get("resources_list")}
 
     if extra_sandbox_group_outputs:
         resources_group_outputs['sandbox'] = extra_sandbox_group_outputs
-    merged_dicts = {**meta_group_outputs, **quota_group_outputs, **resources_group_outputs, **sandbox_group_outputs}
-
-    return merged_dicts
+    merged_dicts = meta_group_outputs | quota_group_outputs | resources_group_outputs | sandbox_group_outputs
+    return merged_dicts, indicator  # todo populate with indicators
 
 
 def test_module(
@@ -540,6 +573,7 @@ def test_module(
 
 def upload_file_command(
         client: Client,
+        reliability: str,
         file: str,
         file_name: str,
         is_confidential: str = "true",
@@ -558,7 +592,7 @@ def upload_file_command(
     response = client.upload_file(file, file_name, is_confidential, comment)
 
     resources_fields = ["file_name", "sha256"]
-    filtered_outputs = parse_outputs(response, resources_fields=resources_fields)
+    filtered_outputs = parse_outputs(response, resources_fields=resources_fields, reliability=reliability)
     if submit_file == 'no':
         return CommandResults(
             outputs_key_field='sha256',
@@ -987,8 +1021,7 @@ def run_polling_command(client, args: dict, cmd: str, upload_function: Callable,
 
 
 def upload_file_with_polling_command(client, args):
-    return run_polling_command(client, args, 'cs-fx-upload-file', upload_file_command,
-                               get_full_report_command, 'FILE')
+    return run_polling_command(client, args, 'cs-fx-upload-file', upload_file_command, get_full_report_command, 'FILE')
 
 
 def submit_uploaded_file_polling_command(client, args):
