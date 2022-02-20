@@ -55,7 +55,7 @@ def get_failing_ut():
         # for failed_ut in failed_ut_list:
         #     summary += failed_ut + '\n'
         with open(summary_file, 'a') as f:
-            summary = "hello"  #json2html.convert(json=failed_ut)
+            summary = "hello"  # json2html.convert(json=failed_ut)
             f.write(summary)
         return f'you have {len(failed_ut)} failed unit test on this push.\n'
     return 'no failing unit tests on this one. nice job!\n'
