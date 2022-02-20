@@ -3013,8 +3013,17 @@ def rtr_kill_process_command(args: dict) -> CommandResults:
 
     human_readable = tableToMarkdown(
         f'{INTEGRATION_NAME} {command_type} command on host {host_id}:', outputs, headers=["ProcessID", "Error"])
+    human_readable += get_human_readable_for_failed_command(outputs, process_ids, "ProcessID")
     return CommandResults(raw_response=raw_response, readable_output=human_readable, outputs=outputs,
                           outputs_prefix="CrowdStrike.Command.kill", outputs_key_field="ProcessID")
+
+
+def get_human_readable_for_failed_command(outputs, required_elements, element_id):
+    failed_elements = {}
+    for output in outputs:
+        if output.get('Error') != 'Success':
+            failed_elements[output.get(element_id)] = output.get('Error')
+    return add_error_message(failed_hosts=failed_elements, all_requested_hosts=required_elements)
 
 
 def parse_command_response(response, host_ids, process_id=None) -> list:
@@ -3069,6 +3078,7 @@ def rtr_remove_file_command(args: dict) -> CommandResults:
     outputs = parse_command_response(response, host_ids)
     human_readable = tableToMarkdown(
         f'{INTEGRATION_NAME} {command_type} over the file: {file_path}', outputs, headers=["HostID", "Error"])
+    human_readable += get_human_readable_for_failed_command(outputs, host_ids, "HostID")
     return CommandResults(raw_response=response, readable_output=human_readable, outputs=outputs,
                           outputs_prefix="CrowdStrike.Command.rm", outputs_key_field="HostID")
 
