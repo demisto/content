@@ -828,32 +828,54 @@ class TestTableToMarkdown:
     def test_with_json_transform_list():
         """
         Given:
-          - Neted json table with a list.
+          - Nested json table with a list.
         When:
           - Calling tableToMarkdown with `is_auto_json_transform=True`.
         Then:
-          - Transform the list
+          - Create a markdown table with the list
         """
         with open('test_data/nested_data_in_list.json') as f:
             data_with_list = json.load(f)
         table = tableToMarkdown("tableToMarkdown test", data_with_list, is_auto_json_transform=True)
-        expected_table = r"""### tableToMarkdown test
+        if IS_PY3:
+            expected_table = ur"""### tableToMarkdown test
+    |Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+    |---|---|---|---|---|---|
+    | **-**<br>	***index***: 0<br>	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>**-**<br>	***index***: 1<br>	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+    """
+        else:
+            expected_table = ur"""### tableToMarkdown test
 |Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
 |---|---|---|---|---|---|
-| **-**<br>	***index***: 0<br>	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>**-**<br>	***index***: 1<br>	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+| **-**<br>	***index***: 0<br>	***commandStatus***: Completed<br>	***startTime***: null<br>	**command**:<br>		**params**:<br>			**-**<br>				***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>				***key***: Path<br><br>		***type***: GetFile<br><br>	***endTime***: 2022-02-17T08:22:33.823Z<br>**-**<br>	***index***: 1<br>	***commandStatus***: Completed<br>	***startTime***: null<br>	**command**:<br>		**params**:<br>			**-**<br>				***value***: C:\\Users\\demisto\\Desktop\\test222.txt<br>				***key***: Path<br><br>		***type***: GetFile<br><br>	***endTime***: 2022-02-17T08:22:33.823Z | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
 """
         assert expected_table == table
 
     @staticmethod
     def test_with_json_transform_list_keys():
+        """
+        Given:
+          - Nested json table with a list.
+        When:
+          - Calling tableToMarkdown with `is_auto_json_transform=True`.
+        Then:
+          - Create a markdown table with the list only with given keys
+        """
         with open('test_data/nested_data_in_list.json') as f:
             data_with_list = json.load(f)
         table = tableToMarkdown("tableToMarkdown test", data_with_list,
                                 json_transform_mapping={'Commands': JsonTransformer(keys=('commandStatus', 'command'))})
-        expected_table = r"""### tableToMarkdown test
+        if IS_PY3:
+            expected_table = ur"""### tableToMarkdown test
+    |Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+    |---|---|---|---|---|---|
+    | **-**<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>**-**<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+    """
+        else:
+            expected_table = ur"""### tableToMarkdown test
 |Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
 |---|---|---|---|---|---|
-| **-**<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>**-**<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+| **-**<br>	***commandStatus***: Completed<br>	**command**:<br>		**params**:<br>			**-**<br>				***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>				***key***: Path<br><br>		***type***: GetFile<br>**-**<br>	***commandStatus***: Completed<br>	**command**:<br>		**params**:<br>			**-**<br>				***value***: C:\\Users\\demisto\\Desktop\\test222.txt<br>				***key***: Path<br><br>		***type***: GetFile | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
 """
         assert expected_table == table
 
