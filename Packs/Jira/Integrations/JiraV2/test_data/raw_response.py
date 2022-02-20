@@ -25,7 +25,7 @@ QUERY_ISSUE_RESPONSE = {
                         "48x48": ""
                     },
                     "displayName": "jon doe",
-                    "emailAddress": "admin@demistodev.com",
+                    "emailAddress": "email",
                     "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=id",
                     "timeZone": "Asia"
                 },
@@ -83,16 +83,16 @@ QUERY_ISSUE_RESPONSE = {
                     "iconUrl": "a",
                     "id": "10001",
                     "name": "Task",
-                    "self": "https://demistodev.atlassian.net/rest/api/2/issuetype/10001",
+                    "self": "https://localhost/rest/api/2/issuetype/10001",
                     "subtask": False
                 },
                 "labels": [],
                 "lastViewed": None,
                 "priority": {
-                    "iconUrl": "https://demistodev.atlassian.net/images/icons/priorities/high.svg",
+                    "iconUrl": "https://localhost/images/icons/priorities/high.svg",
                     "id": "2",
                     "name": "High",
-                    "self": "https://demistodev.atlassian.net/rest/api/2/priority/2"
+                    "self": "https://localhost/rest/api/2/priority/2"
                 },
                 "progress": {
                     "progress": 0,
@@ -109,7 +109,7 @@ QUERY_ISSUE_RESPONSE = {
                     "key": "VIK",
                     "name": "VikTest",
                     "projectTypeKey": "software",
-                    "self": "https://demistodev.atlassian.net/rest/api/2/project/10005",
+                    "self": "https://localhost/rest/api/2/project/10005",
                     "simplified": False
                 },
                 "reporter": {
@@ -122,31 +122,31 @@ QUERY_ISSUE_RESPONSE = {
                         "32x32": "",
                         "48x48": ""
                     },
-                    "displayName": "Meir Wahnon",
-                    "emailAddress": "admin@demistodev.com",
-                    "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=id",
+                    "displayName": "displayName",
+                    "emailAddress": "email",
+                    "self": "https://localhost/rest/api/2/user?accountId=id",
                     "timeZone": "Asia/Jerusalem"
                 },
                 "resolution": {
                     "description": "Work has been completed on this issue.",
                     "id": "10000",
                     "name": "Done",
-                    "self": "https://demistodev.atlassian.net/rest/api/2/resolution/10000"
+                    "self": "https://localhost/rest/api/2/resolution/10000"
                 },
                 "resolutiondate": "2019-05-15T21:04:39.147+0300",
                 "security": None,
                 "status": {
                     "description": "",
-                    "iconUrl": "https://demistodev.atlassian.net/images/icons/status_generic.gif",
+                    "iconUrl": "https://localhost/images/icons/status_generic.gif",
                     "id": "10000",
                     "name": "To Do",
-                    "self": "https://demistodev.atlassian.net/rest/api/2/status/10000",
+                    "self": "https://localhost/rest/api/2/status/10000",
                     "statusCategory": {
                         "colorName": "blue-gray",
                         "id": 2,
                         "key": "new",
                         "name": "To Do",
-                        "self": "https://demistodev.atlassian.net/rest/api/2/statuscategory/2"
+                        "self": "https://localhost/rest/api/2/statuscategory/2"
                     }
                 },
                 "statuscategorychangedate": "2019-05-15T21:24:07.222+0300",
@@ -159,19 +159,19 @@ QUERY_ISSUE_RESPONSE = {
                 "versions": [],
                 "votes": {
                     "hasVoted": False,
-                    "self": "https://demistodev.atlassian.net/rest/api/2/issue/VIK-3/votes",
+                    "self": "https://localhost/rest/api/2/issue/VIK-3/votes",
                     "votes": 0
                 },
                 "watches": {
                     "isWatching": True,
-                    "self": "https://demistodev.atlassian.net/rest/api/2/issue/VIK-3/watchers",
+                    "self": "https://localhost/rest/api/2/issue/VIK-3/watchers",
                     "watchCount": 1
                 },
                 "workratio": -1
             },
             "id": "12652",
             "key": "VIK-3",
-            "self": "https://demistodev.atlassian.net/rest/api/latest/issue/12652"
+            "self": "https://localhost/rest/api/latest/issue/12652"
         }
     ],
     "maxResults": 1,
@@ -233,18 +233,18 @@ GET_ISSUE_RESPONSE = {
              'content': 'https://someurl.com',
              'id': '15451',
              'filename': 'entry_artifact_5@317.json', 'author': {
-                'accountId': 'accoundid',
-                'emailAddress': 'admin@demistodev.com',
+                'accountId': 'accountid',
+                'emailAddress': 'email',
                 'avatarUrls': {
                     '48x48': ''},
-                'displayName': 'Meir Wahnon', 'active': True, 'timeZone': 'Asia/Jerusalem',
+                'displayName': 'displayName', 'active': True, 'timeZone': 'Asia/Jerusalem',
                 'accountType': 'atlassian'},
              'created': '2021-04-04T12:49:42.881+0300', 'size': 8225,
              'mimeType': 'application/json',
              }],
         'aggregatetimeestimate': None, 'summary': 'test master1',
         'creator': {
-            'accountId': 'accoundid',
+            'accountId': 'accountid',
             'accountType': 'atlassian',
             'active': True,
             'avatarUrls': {
@@ -254,8 +254,8 @@ GET_ISSUE_RESPONSE = {
                 '48x48': ''
             },
             'displayName': 'jon doe',
-            'emailAddress': 'admin@demistodev.com',
-            'self': 'https://demistodev.atlassian.net/rest/api/2/user?accountId=id',
+            'emailAddress': 'email',
+            'self': 'https://localhost/rest/api/2/user?accountId=id',
             'timeZone': 'Asia'
         }
     }
@@ -282,11 +282,11 @@ EXPECTED_RESP = {
 }
 
 ATTACHMENT = {
-    "self": "https://demistodev.atlassian.net/rest/api/2/attachment/16188",
+    "self": "https://localhost/rest/api/2/attachment/16188",
     "id": "16188",
     "filename": "test",
     "author": {
-        "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=557058%3Afb80ffc0-b374-4260-99a0"
+        "self": "https://localhost/rest/api/2/user?accountId=557058%3Afb80ffc0-b374-4260-99a0"
                 "-ea0c140a4e76",
         "accountId": "account id",
         "emailAddress": "mail",
@@ -299,5 +299,5 @@ ATTACHMENT = {
     "created": "2021-11-17T12:40:06.700+0200",
     "size": 4,
     "mimeType": "binary/octet-stream",
-    "content": "https://demistodev.atlassian.net/rest/api/2/attachment/content/16188"
+    "content": "https://localhost/rest/api/2/attachment/content/16188"
 }
