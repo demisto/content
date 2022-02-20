@@ -3139,8 +3139,9 @@ def parse_stdout_response(host_ids, response, command, file_name_suffix=""):
                 current_error = stderr
             return_error(current_error)
         stdout = resource.get('stdout', "")
-        outputs.append(stdout)
-        files.append(fileResult(f"{command}-{host_id}{file_name_suffix}", stdout))
+        file_name = f"{command}-{host_id}{file_name_suffix}"
+        outputs.append({'Stdout': stdout, "FileName": file_name})
+        files.append(fileResult(file_name, stdout))
 
     not_found_hosts = set(host_ids) - resources.keys()
     return outputs, files, not_found_hosts
@@ -3162,12 +3163,11 @@ def rtr_read_registry_keys_command(args: dict):
         output, file, not_found_host = parse_stdout_response(host_ids, response, command_type,
                                                              file_name_suffix=registry_key)
         not_found_hosts.update(not_found_host)
-        outputs.append(output)
+        outputs.extend(output)
         files.append(file)
         raw_response.append(response)
 
-    human_readable = tableToMarkdown(
-        f'{INTEGRATION_NAME} {command_type} command on hosts {host_ids}:', outputs, headers="Stdout")
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} {command_type} command on hosts {host_ids}:', outputs)
     human_readable += add_error_message(not_found_hosts, host_ids)
     return [CommandResults(raw_response=raw_response, readable_output=human_readable), files]
 
