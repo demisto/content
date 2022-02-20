@@ -1585,3 +1585,4 @@ script:
 fromversion: 6.0.0
 tests:
 - FireEyeHX_v2
+- FireEyeHXv2_without_polling
