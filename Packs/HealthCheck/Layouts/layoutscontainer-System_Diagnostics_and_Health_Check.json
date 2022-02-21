@@ -186,6 +186,7 @@
                                 "startCol": 2
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -253,6 +254,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -314,6 +316,7 @@
                                 "startCol": 2
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -327,6 +330,7 @@
                         "h": 3,
                         "i": "fwrsfiljze-9391ae10-c212-11eb-9118-13a43afba38c",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -343,6 +347,7 @@
                         "h": 3,
                         "i": "fwrsfiljze-b6f93f80-c212-11eb-9118-13a43afba38c",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -359,6 +364,7 @@
                         "h": 3,
                         "i": "fwrsfiljze-e5261450-c212-11eb-9118-13a43afba38c",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -387,6 +393,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -964,30 +971,6 @@
                     }
                 ],
                 "type": "custom"
-            },
-            {
-                "id": "dhesessq9i",
-                "name": "New tab",
-                "type": "custom",
-                "hidden": false,
-                "sections": [
-                    {
-                        "h": 2,
-                        "i": "fwrsfiljze-6006d7e0-7f82-11ec-ae78-f137171a7bfa",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "General Purpose Dynamic Section",
-                        "query": "f064bc63-3059-4790-87f3-f10a3e6288dd",
-                        "queryType": "script",
-                        "static": false,
-                        "type": "dynamic",
-                        "w": 1,
-                        "x": 0,
-                        "y": 0
-                    }
-                ]
             },
             {
                 "id": "warRoom",
