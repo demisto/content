@@ -405,6 +405,7 @@ def fetch_investigation_command(client: Client, env: str, args=None):
     investigation_id = args.get("id", None)
     page = args.get("page", 0)
     page_size = args.get("page_size", 10)
+    status = args.get("status", [])
 
     fields = """
         id
@@ -417,6 +418,9 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             severity
             message
         }
+        archived_at
+        created_at
+        updated_at
         service_desk_id
         service_desk_type
         latest_activity
@@ -447,18 +451,14 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         result = client.graphql_run(query=query, variables=variables)
     else:
         query = """
-        query investigations {
-            allInvestigations(page: %s, perPage: %s) {
+        query investigations($page: Int, $perPage: Int, $status: [String]) {
+            allInvestigations(page: $page, perPage: $perPage, status: $status) {
                 %s
             }
         }
-        """ % (
-            page,
-            page_size,
-            fields,
-        )
-
-        result = client.graphql_run(query=query)
+        """ % (fields)
+        variables = {"page": page, "perPage": page_size, "status": status}
+        result = client.graphql_run(query=query, variables=variables)
 
     try:
         outputs = [result["data"]["investigation"]] if investigation_id else result["data"]["allInvestigations"]
