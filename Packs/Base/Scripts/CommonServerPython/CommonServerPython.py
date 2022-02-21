@@ -8980,6 +8980,24 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
 def get_fetch_run_time_with_look_back(last_run, first_fetch, look_back=0, timezone=0, date_format='%Y-%m-%dT%H:%M:%S'):
     """
     Gets the time range for fetch
+
+    :type last_run: ``dict``
+    :param last_run: The LastRun object
+
+    :type first_fetch: ``str``
+    :param first_fetch: The first time to fetch, used in the first fetch
+
+    :type look_back: ``int``
+    :param look_back: The time to look back in fetch in minutes
+
+    :type timezone: ``int``
+    :param timezone: The time zone offset in hours
+
+    :type date_format: ``str``
+    :param date_format: The date format
+
+    :return: The time range o fetch in
+    :rtype: ``Tuple``
     """
     last_run_time = last_run and 'time' in last_run and last_run['time']
     now = datetime.utcnow() + timedelta(hours=timezone)
@@ -8998,6 +9016,15 @@ def get_fetch_run_time_with_look_back(last_run, first_fetch, look_back=0, timezo
 def look_for_incidents_in_last_run(last_run, fetch_limit):
     """
     Looks for incident in the LastRun object
+
+    :type last_run: ``dict``
+    :param last_run: The LastRun object
+
+    :type fetch_limit: ``int``
+    :param fetch_limit: The fetch limit
+
+    :return: The Incidents from LastRun
+    :rtype: ``list``
     """
     incidents = []
     if 'incidents' in last_run and len(last_run['incidents']) > 0:
@@ -9010,6 +9037,18 @@ def look_for_incidents_in_last_run(last_run, fetch_limit):
 def get_incidents_from_response(incidents_res, last_run, id_field='id'):
     """
     Remove duplicates incidents from response
+
+    :type incidents_res: ``list``
+    :param incidents_res: The incidents from response
+    
+    :type last_run: ``dict``
+    :param last_run: The LastRun object
+
+    :type id_field: ``str``
+    :param id_field: The incident id field
+
+    :return: The Incidents after filtering duplicates
+    :rtype: ``list``
     """
     found_incidents = last_run.get('found_incident_ids', {})
 
@@ -9024,6 +9063,18 @@ def get_incidents_from_response(incidents_res, last_run, id_field='id'):
 def get_latest_incident_time(incidents, created_time_field, date_format='%Y-%m-%dT%H:%M:%S'):
     """
     Gets the latest incident occurred time
+
+    :type incidents: ``list``
+    :param incidents: List of incidents
+    
+    :type created_time_field: ``str``
+    :param created_time_field: The incident created time field
+
+    :type date_format: ``str``
+    :param date_format: The date format
+
+    :return: The latest incident time
+    :rtype: ``str``
     """
     latest_incident_time = datetime.strptime(incidents[0][created_time_field], date_format)
 
@@ -9038,6 +9089,18 @@ def get_latest_incident_time(incidents, created_time_field, date_format='%Y-%m-%
 def remove_old_incident_ids(found_incidents_ids, current_time, look_back):
     """
     Removes old incident ids
+
+    :type found_incidents_ids: ``dict``
+    :param found_incidents_ids: Dict of incidents ids
+    
+    :type current_time: ``int``
+    :param current_time: The current epoch time
+
+    :type look_back: ``int``
+    :param look_back: The look back time in minutes
+
+    :return: The new incidents ids
+    :rtype: ``dict``
     """
     look_back_in_seconds = look_back * 60
     deletion_threshold_in_seconds = look_back_in_seconds * 2
@@ -9054,6 +9117,36 @@ def remove_old_incident_ids(found_incidents_ids, current_time, look_back):
 def set_next_fetch_run(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back, created_time_field, id_field='id', date_format='%Y-%m-%dT%H:%M:%S'):
     """
     Sets the next run
+
+    :type last_run: ``dict``
+    :param last_run: The LastRun object
+
+    :type incidents: ``list``
+    :param incidents: List of incidents
+
+    :type fetch_limit: ``int``
+    :param fetch_limit: The fetch limit
+
+    :type start_fetch_time: ``str``
+    :param start_fetch_time: The start time to fetch
+
+    :type end_fetch_time: ``str``
+    :param end_fetch_time: The end time to fetch
+
+    :type look_back: ``int``
+    :param look_back: The time to look back in fetch in minutes
+
+    :type created_time_field: ``str``
+    :param created_time_field: The incident created time field
+
+    :type id_field: ``str``
+    :param id_field: The incident id field
+
+    :type date_format: ``str``
+    :param date_format: The date format
+
+    :return: The new last run object and list of incidents
+    :rtype: ``Tuple``
     """
     found_incidents = last_run.get('found_incident_ids', {})
     current_time = int(time.time())
