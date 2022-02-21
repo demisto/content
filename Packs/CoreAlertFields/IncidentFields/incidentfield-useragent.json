@@ -27,16 +27,17 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "user_agent",
+    "x2_fields": "user_agent",
     "Aliases": [
         {
-          "cliName": "googlecloudsccfindingsourcepropertiesuseragent",
-          "type": "shortText"
+            "cliName": "googlecloudsccfindingsourcepropertiesuseragent",
+            "type": "shortText",
+            "name": "GoogleCloudSCC Finding SourceProperties UserAgent"
         },
         {
             "cliName": "proofpointtapuseragent",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Proofpoint TAP User Agent"
         }
-      
     ]
 }
