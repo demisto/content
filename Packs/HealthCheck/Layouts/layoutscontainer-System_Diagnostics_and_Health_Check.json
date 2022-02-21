@@ -810,7 +810,7 @@
                         "w": 1,
                         "x": 0,
                         "y": 0,
-                        "query": "9fcd60a6-8c55-4952-8fc3-d69859296e15",
+                        "query": "HealthCheckNumberOfPartitions",
                         "queryType": "script",
                         "type": "dynamic"
                     },
@@ -828,7 +828,7 @@
                         "w": 1,
                         "x": 1,
                         "y": 0,
-                        "query": "35b85dbe-1eb3-4764-8458-adb4a60241d3",
+                        "query": "HealthCheckNumberOfLargeIncidents",
                         "queryType": "script",
                         "type": "dynamic"
                     },
@@ -846,7 +846,7 @@
                         "w": 1,
                         "x": 2,
                         "y": 0,
-                        "query": "7250278e-1733-422e-8fa5-bf936a27d792",
+                        "query": "HealthCheckNumberOfLargeIOIncidents",
                         "queryType": "script",
                         "type": "dynamic"
                     },
