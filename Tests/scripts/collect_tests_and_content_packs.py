@@ -1051,7 +1051,7 @@ def remove_ignored_tests(tests: set, id_set: dict, modified_packs: set) -> set:
     return tests
 
 
-def remove_tests_for_non_supported_packs(tests: set, id_set: dict,  marketplace_version: str) -> set:
+def remove_tests_for_non_supported_packs(tests: set, id_set: dict, marketplace_version: str) -> set:
     """Filters out test playbooks, which belong to one of the following packs:
         - Non XSOAR supported packs
         - DeprecatedContent, NonSupported packs
