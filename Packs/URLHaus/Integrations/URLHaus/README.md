@@ -1,4 +1,5 @@
-URLhaus has the goal of sharing malicious URLs that are being used for malware distribution.
+URLhaus shares malicious URLs that are being used for malware distribution.
+This integration was integrated and tested with version v1 of URLhaus.
 
 ## Configure URLhaus on Cortex XSOAR
 
@@ -12,6 +13,8 @@ URLhaus has the goal of sharing malicious URLs that are being used for malware d
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
+    | Create relationships |  | False |
+    | Maximum number of relationships to fetch per indicator | Maximal value is 1000. | False |
     | Blacklists appearances threshold |  | False |
     | Compromised (is malicious) |  | False |
     | Number of retries | Determines how many times a command should be retried before raising an error. | False |
@@ -32,23 +35,29 @@ Retrieves URL information from URLhaus.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | URL to query. Vendor does not support non-latin characters. | Required | 
+| url | A comma-separated list of URLs to query. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| URL.Data | string | The URL. Cannot contain non-latin characters. | 
+| URL.Data | string | The URL. | 
 | URL.Malicious.Vendor | string | Vendor that reported the URL as malicious. | 
 | URL.Malicious.Description | string | Description of the malicious URL. | 
-| URLhaus.URL.ID | string | Unique identifier of the URLhaus database entry. | 
-| URLhaus.URL.Status | string | The current status of the URL. | 
-| URLhaus.URL.Host | string | The extracted host of the malware URL \(IP address or domain name/FQDN\). | 
+| URL.Tags | string | A list of tags associated with the queried malware URL. | 
+| URL.Relationships.EntityA | String | The source of the relationship. | 
+| URL.Relationships.EntityB | String | The destination of the relationship. | 
+| URL.Relationships.Relationship | String | The name of the relationship. | 
+| URL.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| URL.Relationships.EntityBType | String | The type of the destination of the relationship. | 
+| URLhaus.URL.ID | String | Unique identifier of the URLhaus database entry. | 
+| URLhaus.URL.Status | String | The current status of the URL. | 
+| URLhaus.URL.Host | String | The extracted host of the malware URL \(IP address or domain name/FQDN\). | 
 | URLhaus.URL.DateAdded | date | Date the URL was added to URLhaus. | 
-| URLhaus.URL.Threat | string | The threat corresponding to this malware URL. | 
+| URLhaus.URL.Threat | String | The threat corresponding to this malware URL. | 
 | URLhaus.URL.Blacklist.Name | String | Name of the block list. | 
-| URLhaus.URL.Tags | string | A list of tags associated with the queried malware URL. | 
+| URLhaus.URL.Tags | String | A list of tags associated with the queried malware URL. | 
 | URLhaus.URL.Payload.Name | String | Payload file name. | 
 | URLhaus.URL.Payload.Type | String | Payload file type. | 
 | URLhaus.URL.Payload.MD5 | String | MD5 hash of the HTTP response body \(payload\). | 
@@ -61,22 +70,36 @@ Retrieves URL information from URLhaus.
 | URLhaus.URL.Blacklist.Status | String | Status of the URL in the block list. | 
 | URLhaus.URL.Payload.VT.Link | String | Link to the VirusTotal report. | 
 
-
-#### Command Example
-```!url url="http://example.com/VMYB-ht_JAQo-gi/INV/99401FORPO/20673114777/US/Outstanding-Invoices/"```
-
+#### Command example
+```!url using-brand=URLhaus url=http://example.com/anklet/WQG1/?i=1```
 #### Context Example
 ```json
 {
     "DBotScore": {
-        "Indicator": "http://example.com/VMYB-ht_JAQo-gi/INV/99401FORPO/20673114777/US/Outstanding-Invoices/",
+        "Indicator": "http://example.com/anklet/WQG1/?i=1",
         "Reliability": "C - Fairly reliable",
-        "Score": 1,
+        "Score": 2,
         "Type": "url",
         "Vendor": "URLhaus"
     },
     "URL": {
-        "Data": "http://example.com/VMYB-ht_JAQo-gi/INV/99401FORPO/20673114777/US/Outstanding-Invoices/"
+        "Data": "http://example.com/anklet/WQG1/?i=1",
+        "Relationships": [
+            {
+                "EntityA": "http://example.com/anklet/WQG1/?i=1",
+                "EntityAType": "URL",
+                "EntityB": "example.com",
+                "EntityBType": "Domain",
+                "Relationship": "hosted-on"
+            }
+        ],
+        "Tags": [
+            "doc",
+            "emotet",
+            "epoch5",
+            "heodo",
+            "malware_download"
+        ]
     },
     "URLhaus": {
         "URL": {
@@ -90,40 +113,25 @@ Retrieves URL information from URLhaus.
                     "Status": "not listed"
                 }
             ],
-            "DateAdded": "2019-01-19T01:33:26",
+            "DateAdded": "2022-01-20T14:11:09",
             "Host": "example.com",
-            "ID": "105821",
+            "ID": "1992762",
             "Payload": [
                 {
-                    "MD5": "cf6bc359bc8a667c1b8d241e9591f392",
-                    "Name": "676860772178.doc",
-                    "Type": "doc",
-                    "VT": {
-                        "Link": "https://www.example.com/file/72820698de9b69166ab226b99ccf70f3f58345b88246f7d5e4e589c21dd44435/analysis/1547876224/",
-                        "Result": 31.03
-                    }
-                },
-                {
-                    "MD5": "aa713b461bd1a4bc07aba59475c9e2b1",
-                    "Name": "PAY845086736936754.doc",
-                    "Type": "doc",
+                    "MD5": "716c3aa1e0da98b6e99cadd60363ae7e",
+                    "Name": "BC-77388.xlsm",
+                    "SHA256": "64c6ba33444e5db3cc9c99613d04fd163ec1971ee5eb90041a17068e37578fc0",
+                    "Type": "xls",
                     "VT": null
-                },
-                {
-                    "MD5": "a7342ea622b093753ee6177a94212613",
-                    "Name": "36985490218.doc",
-                    "Type": "doc",
-                    "VT": {
-                        "Link": "https://www.example.com/file/a0ccb310c7ec618ab516be8b95923254a6724b1a03696ec6dbb6e47c60321391/analysis/1547845755/",
-                        "Result": 21.82
-                    }
-                }                
+              }
             ],
             "Status": "offline",
             "Tags": [
+                "doc",
                 "emotet",
-                "epoch2",
-                "heodo"
+                "epoch5",
+                "heodo",
+                "malware_download"
             ],
             "Threat": "malware_download"
         }
@@ -133,10 +141,10 @@ Retrieves URL information from URLhaus.
 
 #### Human Readable Output
 
->### URLhaus reputation for http:<span>//</span>example.com/VMYB-ht_JAQo-gi/INV/99401FORPO/20673114777/US/Outstanding-Invoices/
+>### URLhaus reputation for http:<span>//</span>example.com/anklet/WQG1/?i=1
 >|Date added|Description|Status|Threat|URLhaus ID|URLhaus link|
 >|---|---|---|---|---|---|
->| 2019-01-19T01:33:26 | Not listed in any block list | offline | malware_download | 105821 | https:<span>//</span>urlhaus.abuse.ch/url/105821/ |
+>| 2022-01-20T14:11:09 | The URL is inactive (offline) and serving no payload | offline | malware_download | 1992762 | https:<span>//</span>urlhaus.abuse.ch/url/1992762/ |
 
 
 ### domain
@@ -151,7 +159,7 @@ Retrieves domain information from URLhaus.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Domain to query. | Required | 
+| domain | A comma-separated list of domains to query. | Required | 
 
 
 #### Context Output
@@ -159,6 +167,12 @@ Retrieves domain information from URLhaus.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Domain.Name | String | The domain name, for example, google.com. | 
+| Domain.Tags | string | A list of tags associated with the queried malware Domain. | 
+| Domain.Relationships.EntityA | String | The source of the relationship. | 
+| Domain.Relationships.EntityB | String | The destination of the relationship. | 
+| Domain.Relationships.Relationship | String | The name of the relationship. | 
+| Domain.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| Domain.Relationships.EntityBType | String | The type of the destination of the relationship. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
@@ -171,10 +185,8 @@ Retrieves domain information from URLhaus.
 | Domain.Malicious.Description | String | Description of the malicious domain. | 
 | URLhaus.Domain.Blacklist.Status | String | Status of the URL in the block list. | 
 
-
-#### Command Example
-```!domain domain="example.com"```
-
+#### Command example
+```!domain using-brand=URLhaus domain=example.com```
 #### Context Example
 ```json
 {
@@ -186,45 +198,42 @@ Retrieves domain information from URLhaus.
         "Vendor": "URLhaus"
     },
     "Domain": {
-        "Name": "example.com"
+        "Name": "example.com",
+        "Relationships": [
+            {
+                "EntityA": "example.com",
+                "EntityAType": "Domain",
+                "EntityB": "http://example.com:443/wp-content/plugins/wp-roilbask/includes/",
+                "EntityBType": "URL",
+                "Relationship": "hosts"
+            }
+        ],
+        "Tags": [
+            "abused_legit_malware"
+        ]
     },
     "URLhaus": {
         "Domain": {
             "Blacklist": {
-                "spamhaus_dbl": "not listed",
+                "spamhaus_dbl": "abused_legit_malware",
                 "surbl": "not listed"
             },
-            "FirstSeen": "2019-01-15T07:09:01",
+            "FirstSeen": "2022-01-27T12:51:03",
             "URL": [
                 {
-                    "date_added": "2019-02-14 18:02:23 UTC",
-                    "id": "124617",
-                    "larted": "true",
-                    "reporter": "JayTHL",
+                    "date_added": "2022-01-28 04:41:03 UTC",
+                    "id": "2010874",
+                    "larted": "false",
+                    "reporter": "Cryptolaemus1",
                     "tags": [
-                        "Loki"
+                        "IcedID"
                     ],
-                    "takedown_time_seconds": "46393",
+                    "takedown_time_seconds": null,
                     "threat": "malware_download",
-                    "url": "http://example.com/jobs/cgi/86010322.jpg",
+                    "url": "http://example.com:443/wp-content/plugins/wp-roilbask/includes/",
                     "url_status": "offline",
-                    "urlhaus_reference": "https://urlhaus.abuse.ch/url/example/"
-                },
-                {
-                    "date_added": "2019-02-14 06:39:08 UTC",
-                    "id": "124195",
-                    "larted": "true",
-                    "reporter": "abuse_ch",
-                    "tags": [
-                        "AZORult",
-                        "exe"
-                    ],
-                    "takedown_time_seconds": "1681",
-                    "threat": "malware_download",
-                    "url": "http://example.com/jobs/cgi/25061013.png",
-                    "url_status": "offline",
-                    "urlhaus_reference": "https://urlhaus.abuse.ch/url/example/"
-                }               
+                    "urlhaus_reference": "https://urlhaus.abuse.ch/url/2010874/"
+                }
             ]
         }
     }
@@ -236,7 +245,7 @@ Retrieves domain information from URLhaus.
 >### URLhaus reputation for example.com
 >|Description|First seen|URLhaus link|
 >|---|---|---|
->| Not listed in any block list | 2019-01-15T07:09:01 | https:<span>//</span>urlhaus.abuse.ch/host/example.com/ |
+>| There is no information about Domain in the blacklist | 2022-01-27T12:51:03 | https:<span>//</span>urlhaus.abuse.ch/host/example.com/ |
 
 
 ### file
@@ -251,7 +260,7 @@ Retrieves file information from URLhaus.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | MD5 hash or SHA256 hash of the file to query. | Required | 
+| file | A comma-separated list of MD5 or SHA256 hashes of the file to query. | Required | 
 
 
 #### Context Output
@@ -261,6 +270,13 @@ Retrieves file information from URLhaus.
 | File.Size | Number | File size \(in bytes\). | 
 | File.MD5 | String | MD5 hash of the file. | 
 | File.SHA256 | String | SHA256 hash of the file. | 
+| File.SSDeep | String | SSDeep of the file. | 
+| File.Type | String | Type of the file. | 
+| File.Relationships.EntityA | String | The source of the relationship. | 
+| File.Relationships.EntityB | String | The destination of the relationship. | 
+| File.Relationships.Relationship | String | The name of the relationship. | 
+| File.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| File.Relationships.EntityBType | String | The type of the destination of the relationship. | 
 | URLhaus.File.MD5 | String | MD5 hash of the file. | 
 | URLhaus.File.SHA256 | String | SHA256 hash of the file. | 
 | URLhaus.File.Type | String | File type guessed by URLhaus, for example: .exe, .doc. | 
@@ -278,37 +294,55 @@ Retrieves file information from URLhaus.
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 
-
-#### Command Example
-```!file file="254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b"```
-
+#### Command example
+```!file using-brand=URLhaus file=7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89```
 #### Context Example
 ```json
 {
+    "DBotScore": {
+        "Indicator": "7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89",
+        "Reliability": "C - Fairly reliable",
+        "Score": 3,
+        "Type": "file",
+        "Vendor": "URLhaus"
+    },
     "File": {
-        "MD5": "a820381c8acf07cfcb4d9b13498db71d",
-        "SHA256": "254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b",
-        "Size": 125952
+        "Malicious": {
+            "Description": "This file is malicious",
+            "Vendor": "URLhaus"
+        },
+        "Relationships": [
+            {
+                "EntityA": "7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89",
+                "EntityAType": "File",
+                "EntityB": "BazaLoader",
+                "EntityBType": "Malware",
+                "Relationship": "indicator-of"
+            }
+        ],
+        "SHA256": "7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89",
+        "SSDeep": "24576:la1QHwgJMrQqj/wAc6QORNx2nAjwkaMm0GV9igWwlnwXQBwfalj21X4GtZ+FdnZ8:vH5qloBMd8A",
+        "Type": "dll"
     },
     "URLhaus": {
         "File": {
-            "DownloadLink": "https://urlhaus-api.abuse.ch/v1/download/254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b/",
-            "FirstSeen": "2019-01-02T12:42:23",
-            "LastSeen": "2019-01-02T13:13:25",
-            "MD5": "a820381c8acf07cfcb4d9b13498db71d",
-            "SHA256": "254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b",
-            "Signature": "Gozi",
-            "Size": 125952,
-            "Type": "exe",
+            "DownloadLink": "https://urlhaus-api.abuse.ch/v1/download/7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89/",
+            "FirstSeen": "2022-01-18T11:18:31",
+            "LastSeen": "2022-01-28T09:36:21",
+            "MD5": "2ff9cce7a08215ded0945de5965d2a0a",
+            "SHA256": "7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89",
+            "Signature": "BazaLoader",
+            "Size": 1816064,
+            "Type": "dll",
             "URL": [
                 {
-                    "filename": null,
-                    "firstseen": "2019-01-02",
-                    "lastseen": "2019-01-02",
-                    "url": "http://185.189.149.164/adobe_update.exe",
-                    "url_id": "100211",
-                    "url_status": "offline",
-                    "urlhaus_reference": "https://urlhaus.abuse.ch/url/example/"
+                    "filename": "DH-1643319814.xll",
+                    "firstseen": "2022-01-27",
+                    "lastseen": null,
+                    "url": "http://www.example.com/wp-content/plugins/wp-roilbask/includes/",
+                    "url_id": "2009726",
+                    "url_status": "online",
+                    "urlhaus_reference": "https://urlhaus.abuse.ch/url/2009726/"
                 }
             ]
         }
@@ -318,10 +352,10 @@ Retrieves file information from URLhaus.
 
 #### Human Readable Output
 
->### URLhaus reputation for SHA256 : 254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b
+>### URLhaus reputation for SHA256 : 7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89
 >|First seen|Last seen|MD5|SHA256|Signature|URLhaus link|
 >|---|---|---|---|---|---|
->| 2019-01-02T12:42:23 | 2019-01-02T13:13:25 | a820381c8acf07cfcb4d9b13498db71d | 254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b | Gozi | https://urlhaus-api.abuse.ch/v1/download/254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b/ |
+>| 2022-01-18T11:18:31 | 2022-01-28T09:36:21 | 2ff9cce7a08215ded0945de5965d2a0a | 7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89 | BazaLoader | https://urlhaus-api.abuse.ch/v1/download/7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89/ |
 
 
 ### urlhaus-download-sample
@@ -354,24 +388,14 @@ Downloads a malware sample from URLhaus.
 | File.MD5 | string | MD5 hash of the file. | 
 | File.Extension | string | File extension. | 
 
+#### Command example
+```!urlhaus-download-sample file=254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b```
+#### Human Readable Output
 
-#### Command Example
-```!urlhaus-download-sample file=254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b using-brand=URLhaus```
-
-#### Context Example
-```json
-{
-    "File": {
-        "EntryID": "147@ed06aeb1-14fd-47b4-8369-e1f0cbdcde56",
-        "Info": "application/x-dosexec",
-        "MD5": "a820381c8acf07cfcb4d9b13498db71d",
-        "Name": "254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b",
-        "SHA1": "15a6cc5c894986aa8079ba0a07ce99778dd57db1",
-        "SHA256": "254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b",
-        "SHA512": "f2c2d1f99286ea4c34d3dcab93aa61ea2b5956d35f928569c3be15f8aefa96aec3e9328c36a4cf3d252c56db5b110325effd0f4dd642c9fe1839fc1268a74d94",
-        "SSDeep": "1536:HL8ZkobQKXYG8I9WHVIIVLfldAjoaEgnell/SYkq59L48eKq0P:gnIHVxtsjp5s/7kq59MP0",
-        "Size": 125952,
-        "Type": "PE32 executable (GUI) Intel 80386, for MS Windows"
-    }
-}
-```
+>```
+>{
+>    "HumanReadable": "No results for SHA256: 254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b",
+>    "HumanReadableFormat": "markdown",
+>    "Type": 1
+>}
+>```
