@@ -12,6 +12,7 @@ you are implementing with your integration
 
 import json
 import io
+from pytest_mock import MockerFixture
 
 from VaronisDataSecurityPlatform import Client, varonis_get_alerts_command, varonis_update_alert_status_command, \
     varonis_close_alert_command
@@ -25,7 +26,7 @@ def util_load_json(path):
 ''' COMMAND UNIT TESTS '''
 
 
-def test_varonis_get_alerts_command(mocker):
+def test_varonis_get_alerts_command(mocker: MockerFixture):
     """
         When:
             - Get alerts from Varonis api
@@ -63,7 +64,7 @@ def test_varonis_get_alerts_command(mocker):
     assert result.outputs == expected_outputs
 
 
-def test_varonis_update_alert_status_command(requests_mock):
+def test_varonis_update_alert_status_command(requests_mock: MockerFixture):
     requests_mock.post('https://test.com/api/alert/alert/SetStatusToAlerts', json=True)
 
     client = Client(
@@ -82,7 +83,7 @@ def test_varonis_update_alert_status_command(requests_mock):
     assert resp is True
 
 
-def test_varonis_close_alert_command(requests_mock):
+def test_varonis_close_alert_command(requests_mock: MockerFixture):
     requests_mock.post('https://test.com/api/alert/alert/SetStatusToAlerts', json=True)
 
     client = Client(

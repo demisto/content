@@ -185,8 +185,12 @@ class SearchQueryBuilder(object):
             'values': []
         }
 
-        for t in threats:
-            rule = next(x for x in rule_enum if x['ruleName'] == t)
+        for threat in threats:
+            rule = next(x for x in rule_enum if x['ruleName'] == threat)
+
+            if not rule:
+                raise ValueError(f'There is no threat model with name {threat}.')
+
             threat_object = {
                 'Alert.Rule.ID': rule['ruleID'],
                 'displayValue': rule['ruleName']
@@ -230,7 +234,10 @@ class SearchQueryBuilder(object):
         }
 
         for status_name in statuses:
-            status_id = status_enum[status_name]
+            status_id = status_enum.get(status_name, None)
+            if not status_id:
+                raise ValueError(f'There is no alert status with name {status_name}.')
+
             status_object = {
                 'Alert.Status.ID': status_id,
                 'displayValue': status_name
@@ -371,7 +378,7 @@ def create_output_from_alerts(rows: List[Any]) -> List[str]:
     return outputs
 
 
-def try_convert(item, converter):
+def try_convert(item, converter, error=None):
     """Try to convert item
 
     :type item: ``Any``
@@ -384,7 +391,12 @@ def try_convert(item, converter):
     :rtype: ``Any``
     """
     if item:
-        return converter(item)
+        try:
+            return converter(item)
+        except Exception as e:
+            if error:
+                raise error
+            raise e
     return None
 
 
@@ -444,9 +456,25 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     alert_statuses = args.get('Alert_Status', None)
 
     threat_model_names = try_convert(threat_model_names, lambda x: argToList(x))
-    max_results = try_convert(max_results, lambda x: int(x))
-    start_time = try_convert(start_time, lambda x: datetime.fromisoformat(x))
-    end_time = try_convert(end_time, lambda x: datetime.fromisoformat(x))
+    max_results = try_convert(
+        max_results,
+        lambda x: int(x),
+        ValueError(f'max_results should be integer, but it is {max_results}.')
+    )
+    start_time = try_convert(
+        start_time,
+        lambda x: datetime.fromisoformat(x),
+        ValueError(f'start_time should be in iso format, but it is {start_time}.')
+    )
+    end_time = try_convert(
+        end_time,
+        lambda x: datetime.fromisoformat(x),
+        ValueError(f'end_time should be in iso format, but it is {start_time}.')
+    )
+
+    if start_time > end_time:
+        raise ValueError(f'start_time should be greater or equal than end_time, {start_time} > {end_time}.')
+
     alert_statuses = try_convert(alert_statuses, lambda x: argToList(x))
 
     result = get_alerts(client, alert_statuses, threat_model_names, start_time, end_time, max_results)
@@ -477,7 +505,7 @@ def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) ->
     status = args.get('Status', None)
     statuses = list(filter(lambda name: name != 'Closed', ALERT_STATUSES.keys()))
     if status not in statuses:
-        raise ValueError(f'status must be one of {statuses}')
+        raise ValueError(f'status must be one of {statuses}.')
 
     status_id = ALERT_STATUSES[status]
 
