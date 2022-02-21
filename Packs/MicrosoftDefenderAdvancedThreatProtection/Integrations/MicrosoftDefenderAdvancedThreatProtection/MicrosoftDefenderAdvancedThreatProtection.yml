@@ -60,7 +60,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Expend evidence data in alerts?
+- display: Fetch Alert Evidence
   name: fetch_evidence
   required: false
   type: 8
