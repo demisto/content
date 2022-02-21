@@ -475,7 +475,7 @@ def parse_outputs(
         result |= keep_dict_keys(api_res_meta, meta_fields)
         result |= keep_dict_keys(api_res_meta.get("quota", {}), quota_fields)
 
-    if resources_list := response.get("resources_list"):
+    if resources_list := response.get("resources"):
         # depends on the command, the resources_list section can be a list[str] or list of only one dict
         if isinstance(resources_list[0], dict):
             resources = resources_list[0]
@@ -494,7 +494,7 @@ def parse_outputs(
 
         else:
             # the resources_list section is a list of strings
-            resources_group_outputs = {"resources_list": response.get("resources_list")}
+            resources_group_outputs = {"resources_list": response.get("resources")}
 
         result |= resources_group_outputs
 
