@@ -12,13 +12,30 @@
     "file": false,
     "updateAfter": 0,
     "mergeContext": false,
-    "manualMapping": {
+    "expiration": 0,
+    "layout": "Intrusion Set",
+    "fromVersion": "5.5.0",
+    "defaultMapping": {
         "aliases": {
             "simple": "IntrusionSet.aliases",
             "complex": null
         },
+        "communitynotes": {
+            "simple": "",
+            "complex": {
+                "root": "IntrusionSet",
+                "filters": [],
+                "accessor": "CommunityNotes",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
         "description": {
-            "simple": "IntrusionSet.description",
+            "simple": "IntrusionSet.Description",
             "complex": null
         },
         "goals": {
@@ -40,9 +57,34 @@
         "stixid": {
             "simple": "IntrusionSet.stixid",
             "complex": null
+        },
+        "tags": {
+            "simple": "",
+            "complex": {
+                "root": "IntrusionSet",
+                "filters": [],
+                "accessor": "Tags",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "trafficlightprotocol": {
+            "simple": "",
+            "complex": {
+                "root": "IntrusionSet",
+                "filters": [],
+                "accessor": "TrafficLightProtocol",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
         }
-    },
-    "expiration": 0,
-    "layout": "Intrusion Set",
-    "fromVersion": "5.5.0"
+    }
 }

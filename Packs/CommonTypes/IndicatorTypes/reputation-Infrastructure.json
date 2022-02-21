@@ -12,13 +12,30 @@
     "file": false,
     "updateAfter": 0,
     "mergeContext": false,
-    "manualMapping": {
+    "expiration": 0,
+    "layout": "Infrastructure",
+    "fromVersion": "5.5.0",
+    "defaultMapping": {
         "aliases": {
             "simple": "Infrastructure.aliases",
             "complex": null
         },
+        "communitynotes": {
+            "simple": "",
+            "complex": {
+                "root": "Infrastructure",
+                "filters": [],
+                "accessor": "IntrusionSet",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
         "description": {
-            "simple": "Infrastructure.description",
+            "simple": "Infrastructure.Description",
             "complex": null
         },
         "infrastructuretypes": {
@@ -32,9 +49,34 @@
         "stixid": {
             "simple": "Infrastructure.stixid",
             "complex": null
+        },
+        "tags": {
+            "simple": "",
+            "complex": {
+                "root": "File",
+                "filters": [],
+                "accessor": "Tags",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "trafficlightprotocol": {
+            "simple": "",
+            "complex": {
+                "root": "Infrastructure",
+                "filters": [],
+                "accessor": "TrafficLightProtocol",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
         }
-    },
-    "expiration": 0,
-    "layout": "Infrastructure",
-    "fromVersion": "5.5.0"
+    }
 }

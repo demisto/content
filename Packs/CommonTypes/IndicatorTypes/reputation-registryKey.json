@@ -1,28 +1,19 @@
 {
-    "id": "registryKey",
+    "id": "Registry Key",
     "version": -1,
     "fromVersion": "5.5.0",
     "modified": "2019-07-18T11:06:36.958983926Z",
-    "sortValues": null,
-    "commitMessage": "",
     "shouldPublish": false,
     "shouldCommit": false,
     "regex": "",
     "details": "Registry Key",
     "prevDetails": "Registry Key",
-    "reputationScriptName": "",
-    "reputationCommand": "",
-    "enhancementScriptNames": [],
     "system": false,
     "locked": false,
     "disabled": false,
     "file": false,
     "updateAfter": 0,
     "mergeContext": false,
-    "formatScript": "",
-    "contextPath": "",
-    "contextValue": "",
-    "excludedBrands": [],
     "expiration": 0,
     "defaultMapping": {
         "namefield": {
@@ -73,10 +64,12 @@
                 "root": "RegistryKey",
                 "filters": [],
                 "accessor": "Associations",
-                "transformers": [{
-                    "operator": "uniq",
-                    "args": {}
-                }]
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
             }
         },
         "reportedby": {
@@ -85,10 +78,12 @@
                 "root": "RegistryKey",
                 "filters": [],
                 "accessor": "ReportedBy",
-                "transformers": [{
-                    "operator": "uniq",
-                    "args": {}
-                }]
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
             }
         },
         "threattypes": {
@@ -97,10 +92,12 @@
                 "root": "RegistryKey",
                 "filters": [],
                 "accessor": "ThreatTypes",
-                "transformers": [{
-                    "operator": "uniq",
-                    "args": {}
-                }]
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
             }
         },
         "trafficlightprotocol": {
@@ -109,10 +106,12 @@
                 "root": "RegistryKey",
                 "filters": [],
                 "accessor": "TrafficLightProtocol",
-                "transformers": [{
-                    "operator": "uniq",
-                    "args": {}
-                }]
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
             }
         },
         "tags": {
@@ -121,14 +120,14 @@
                 "root": "RegistryKey",
                 "filters": [],
                 "accessor": "Tags",
-                "transformers": [{
-                    "operator": "uniq",
-                    "args": {}
-                }]
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
             }
         }
     },
-    "manualMapping": null,
-    "fileHashesPriority": null,
     "layout": "registryKey"
 }

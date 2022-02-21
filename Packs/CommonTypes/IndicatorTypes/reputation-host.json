@@ -1,28 +1,19 @@
 {
-    "id": "hostRep",
+    "id": "Host",
     "version": -1,
     "fromVersion": "5.5.0",
     "modified": "2019-07-18T08:56:16.883284512Z",
-    "sortValues": null,
-    "commitMessage": "",
     "shouldPublish": false,
     "shouldCommit": false,
     "regex": "",
     "details": "Host",
     "prevDetails": "Host",
-    "reputationScriptName": "",
-    "reputationCommand": "",
-    "enhancementScriptNames": [],
     "system": false,
     "locked": false,
     "disabled": false,
     "file": false,
     "updateAfter": 0,
     "mergeContext": false,
-    "formatScript": "",
-    "contextPath": "",
-    "contextValue": "",
-    "excludedBrands": [],
     "expiration": 0,
     "defaultMapping": {
         "biosversion": {
@@ -235,10 +226,12 @@
                 "root": "Host",
                 "filters": [],
                 "accessor": "Associations",
-                "transformers": [{
-                    "operator": "uniq",
-                    "args": {}
-                }]
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
             }
         },
         "reportedby": {
@@ -247,10 +240,12 @@
                 "root": "Host",
                 "filters": [],
                 "accessor": "ReportedBy",
-                "transformers": [{
-                    "operator": "uniq",
-                    "args": {}
-                }]
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
             }
         },
         "threattypes": {
@@ -259,10 +254,12 @@
                 "root": "Host",
                 "filters": [],
                 "accessor": "ThreatTypes",
-                "transformers": [{
-                    "operator": "uniq",
-                    "args": {}
-                }]
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
             }
         },
         "trafficlightprotocol": {
@@ -271,10 +268,12 @@
                 "root": "Host",
                 "filters": [],
                 "accessor": "TrafficLightProtocol",
-                "transformers": [{
-                    "operator": "uniq",
-                    "args": {}
-                }]
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
             }
         },
         "tags": {
@@ -283,14 +282,14 @@
                 "root": "Host",
                 "filters": [],
                 "accessor": "Tags",
-                "transformers": [{
-                    "operator": "uniq",
-                    "args": {}
-                }]
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
             }
         }
     },
-    "manualMapping": null,
-    "fileHashesPriority": null,
     "layout": "hostRep"
 }

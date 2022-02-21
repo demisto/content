@@ -12,25 +12,47 @@
     "file": false,
     "updateAfter": 0,
     "mergeContext": false,
-    "manualMapping": {
+    "expiration": 0,
+    "layout": "Campaign",
+    "fromVersion": "5.5.0",
+    "defaultMapping": {
         "aliases": {
-            "simple": "Campaign.aliases",
+            "simple": "Campaign.Aliases",
+            "complex": null
+        },
+        "communitynotes": {
+            "simple": "Campaign.CommunityNotes",
             "complex": null
         },
         "description": {
-            "simple": "Campaign.description",
+            "simple": "Campaign.Description",
             "complex": null
         },
         "objective": {
-            "simple": "Campaign.objective",
+            "simple": "Campaign.Objective",
             "complex": null
         },
         "stixid": {
-            "simple": "Campaign.stixid",
+            "simple": "Campaign.STIXID",
             "complex": null
+        },
+        "tags": {
+            "simple": "Campaign.Tags",
+            "complex": null
+        },
+        "trafficlightprotocoltlp": {
+            "simple": "",
+            "complex": {
+                "root": "Campaign",
+                "filters": [],
+                "accessor": "TrafficLightProtocol",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
         }
-    },
-    "expiration": 0,
-    "layout": "Campaign",
-    "fromVersion": "5.5.0"
+    }
 }

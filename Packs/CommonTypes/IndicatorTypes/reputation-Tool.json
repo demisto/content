@@ -1,28 +1,72 @@
 {
-    "contextPath": "",
-    "contextValue": "",
-    "defaultMapping": null,
+    "defaultMapping": {
+        "aliases": {
+            "simple": "Tool.aliases",
+            "complex": null
+        },
+        "communitynotes": {
+            "simple": "",
+            "complex": {
+                "root": "Tool",
+                "filters": [],
+                "accessor": "CommunityNotes",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "description": {
+            "simple": "Tool.Description",
+            "complex": null
+        },
+        "killchainphases": {
+            "simple": "Tool.KillChainPhases",
+            "complex": null
+        },
+        "stixid": {
+            "simple": "Tool.STIXID",
+            "complex": null
+        },
+        "tags": {
+            "simple": "",
+            "complex": {
+                "root": "Tool",
+                "filters": [],
+                "accessor": "Tags",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "tooltype": {
+            "simple": "Tool.ToolType",
+            "complex": null
+        },
+        "toolversion": {
+            "simple": "Tool.ToolVersion",
+            "complex": null
+        }
+    },
     "details": "Tool",
-    "legacyNames": ["STIX Tool"],
+    "legacyNames": [
+        "STIX Tool"
+    ],
     "disabled": false,
-    "enhancementScriptNames": [],
-    "excludedBrands": [],
     "expiration": 0,
     "file": false,
-    "fileHashesPriority": null,
-    "formatScript": "",
     "id": "Tool",
     "locked": false,
-    "manualMapping": {},
     "mergeContext": false,
     "regex": "",
-    "reputationCommand": "",
-    "reputationScriptName": "",
-    "sortValues": null,
     "system": false,
     "updateAfter": 0,
     "version": -1,
     "fromVersion": "6.2.0",
     "layout": "STIX Tool"
-
 }
