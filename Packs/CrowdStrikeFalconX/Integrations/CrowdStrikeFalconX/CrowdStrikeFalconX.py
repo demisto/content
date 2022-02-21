@@ -456,15 +456,15 @@ def parse_outputs(
         extra_sandbox_fields: Optional[list] = None,
 ) -> tuple[dict[str, dict], Optional[Common.Indicator]]:
     """Parse group data as received from CrowdStrike FalconX API matching Demisto conventions
-    the output from the API is a dict that contains the keys: meta, resources_list and errors
+    the output from the API is a dict that contains the keys: meta, resources and errors
     the meta contains a "quota" dict
-    the "resources_list" is an array that contains the sandbox dict
+    the "resources" is an array that contains the sandbox dict
     the function filters the wanted params from the api result
     :param response: the api result from the http request
     :param meta_fields: the wanted params that appear in the mate section
     :param reliability: a string representing the assumed reliability of this integration instance
     :param quota_fields: the wanted params that appear in the quota section
-    :param resources_fields: the wanted params that appear in the resources_list section
+    :param resources_fields: the wanted params that appear in the resources section
     :param sandbox_fields: the wanted params that appear in the sandbox section
     :param extra_sandbox_fields: the wanted params that appear in the extra sandbox section
     :return: a dict based on api_res with the wanted params only
@@ -493,8 +493,8 @@ def parse_outputs(
                 indicator = parse_indicator(resources, reliability)
 
         else:
-            # the resources_list section is a list of strings
-            resources_group_outputs = {"resources_list": response.get("resources")}
+            # the resources section is a list of strings
+            resources_group_outputs = {"resources": response.get("resources")}
 
         result |= resources_group_outputs
 
