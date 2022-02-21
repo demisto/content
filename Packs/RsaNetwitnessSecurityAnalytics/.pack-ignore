@@ -6,3 +6,7 @@ ignore=RM106
 
 [file:script-NetwitnessSACreateIncident_README.md]
 ignore=RM106
+
+
+[file:RSANetWitnessSecurityAnalytics_image.png]
+ignore=IM111
