@@ -378,26 +378,20 @@ def generic_ansible(integration_name: str, command: str,
             unhandled_errors.append(each_host_event)
 
     if unhandled_errors:
-        if is_permission_error(unhandled_errors):
-            raise DemistoException(
-                'Got unexpected events from Ansible. '
-                'Make sure the "demisto/ansible-runner" container runs as a root user. '
-                'For futher information, refer to the following guide:\n'
-                'https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-5/cortex-xsoar-admin/'
-                'docker/docker-hardening-guide/run-docker-with-non-root-internal-users.html'
-            )
-        elif all(e['event'] in ['verbose', 'warning', 'system_warning'] for e in unhandled_errors):
+        err = 'Got unexpected events from Ansible.\n'
+        if all(e['event'] in ['verbose', 'warning', 'system_warning'] for e in unhandled_errors):
             # we address such errors only if no expected results were retrieved from ansible runner.
             if not results:
-                raise DemistoException(
-                    'Got unexpected events from Ansible. '
-                    'For more details, run the command in debug mode and review the events '
-                    'returned from ansible runner.'
-                )
+                if is_permission_error(unhandled_errors):
+                    err += 'Make sure the "demisto/ansible-runner" container runs as a root user. ' \
+                           'For futher information, refer to the following guide:\n' \
+                           'https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-5/cortex-xsoar-admin/' \
+                           'docker/docker-hardening-guide/run-docker-with-non-root-internal-users.html'
+                err += '\nTo see the full events details, run the command in debug mode.'
+                raise DemistoException(err)
         else:
             raise DemistoException(
-                'Got unexpected events from Ansible.\n'
-                'Raw data:\n' + json.dumps(unhandled_errors, indent=4)
+                err + 'Raw data is:\n' + json.dumps(unhandled_errors, indent=4)
             )
 
     return CommandResults(

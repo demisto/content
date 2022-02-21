@@ -219,17 +219,17 @@ def test_generic_ansible():
         (
             'verbose',
             "PermissionError: [Errno 13] Permission denied: b'/.ansible'",
-            'Make sure the "demisto/ansible-runner" container runs as a root user'
+            'Make sure the "demisto/ansible-runner" container runs as a root user.'
         ),
         (
             'warning',
             '',
-            'For more details, run the command in debug mode'
+            'To see the full events details, run the command in debug mode.'
         ),
         (
             'runner_on_async_failed',
             '',
-            'Raw data:'
+            'Raw data is:'
         )
     ]
 )
