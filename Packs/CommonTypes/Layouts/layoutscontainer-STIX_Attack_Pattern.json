@@ -1,6 +1,6 @@
 {
     "group": "indicator",
-    "id": "Attack Pattern_copy",
+    "id": "STIX Attack Pattern",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -668,7 +668,7 @@
             }
         ]
     },
-    "name": "Attack Pattern_copy",
+    "name": "Attack Pattern",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

@@ -1,6 +1,6 @@
 {
     "group": "indicator",
-    "id": "Domain Indicator_copy",
+    "id": "domainRepUnified",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -721,7 +721,7 @@
             }
         ]
     },
-    "name": "Domain Indicator_copy",
+    "name": "Domain Indicator",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

@@ -88,7 +88,7 @@ ignore=IF107
 [file:incidentfield-Src.json]
 ignore=IF107
 
-[file:incidentfield-name.json]
+[file:indicatorfield-name.json]
 ignore=IF106
 
 [file:reputation-cve.json]

@@ -1,5 +1,5 @@
 {
-    "id": "File MD5",
+    "id": "hashRep",
     "version": -1,
     "regex": "\\b[a-fA-F\\d]{32}\\b",
     "reputationCommand": "file",

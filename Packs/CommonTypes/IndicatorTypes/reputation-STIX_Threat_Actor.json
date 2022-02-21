@@ -3,7 +3,7 @@
     "disabled": false,
     "expiration": 0,
     "file": false,
-    "id": "STIX Threat Actor",
+    "id": "Threat Actor",
     "locked": false,
     "mergeContext": false,
     "regex": "",

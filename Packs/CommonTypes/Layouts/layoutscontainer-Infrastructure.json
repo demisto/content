@@ -1,6 +1,6 @@
 {
     "group": "indicator",
-    "id": "Infrastructure_copy",
+    "id": "Infrastructure",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -495,7 +495,7 @@
             }
         ]
     },
-    "name": "Infrastructure_copy",
+    "name": "Infrastructure",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

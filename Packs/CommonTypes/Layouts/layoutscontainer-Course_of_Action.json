@@ -1,6 +1,6 @@
 {
     "group": "indicator",
-    "id": "Course of Action_copy",
+    "id": "Course of Action",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -457,7 +457,7 @@
             }
         ]
     },
-    "name": "Course of Action_copy",
+    "name": "Course of Action",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

@@ -1,6 +1,6 @@
 {
     "group": "indicator",
-    "id": "Tool_copy",
+    "id": "STIX Tool",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -490,7 +490,7 @@
             }
         ]
     },
-    "name": "Tool_copy",
+    "name": "Tool",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

@@ -1,7 +1,7 @@
 {
-    "id": "File Indicator_copy",
+    "id": "unifiedFileRep1",
     "group": "indicator",
-    "name": "File Indicator_copy",
+    "name": "File Indicator",
     "version": -1,
     "fromVersion": "6.0.0",
     "indicatorsDetails": {

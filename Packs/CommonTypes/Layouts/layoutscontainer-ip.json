@@ -1,7 +1,7 @@
 {
-    "id": "IP Indicator_copy",
+    "id": "ipRep",
     "group": "indicator",
-    "name": "IP Indicator_copy",
+    "name": "IP Indicator",
     "version": -1,
     "fromVersion": "6.0.0",
     "indicatorsDetails": {

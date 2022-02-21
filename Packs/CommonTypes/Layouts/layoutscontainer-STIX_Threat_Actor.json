@@ -1,6 +1,6 @@
 {
     "group": "indicator",
-    "id": "Threat Actor_copy",
+    "id": "STIX Threat Actor",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -539,7 +539,7 @@
             }
         ]
     },
-    "name": "Threat Actor_copy",
+    "name": "Threat Actor",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

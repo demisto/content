@@ -1,6 +1,6 @@
 {
     "group": "indicator",
-    "id": "Report_copy",
+    "id": "STIX Report",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -403,7 +403,7 @@
             }
         ]
     },
-    "name": "Report_copy",
+    "name": "Report",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

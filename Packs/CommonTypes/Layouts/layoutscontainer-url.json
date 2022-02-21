@@ -1,7 +1,7 @@
 {
-    "id": "URL Indicator_copy",
+    "id": "urlRep",
     "group": "indicator",
-    "name": "URL Indicator_copy",
+    "name": "URL Indicator",
     "indicatorsDetails": {
         "tabs": [
             {

@@ -1,7 +1,7 @@
 {
-    "id": "Email Indicator_copy",
+    "id": "emailRep",
     "group": "indicator",
-    "name": "Email Indicator_copy",
+    "name": "Email Indicator",
     "version": -1,
     "fromVersion": "6.0.0",
     "indicatorsDetails": {

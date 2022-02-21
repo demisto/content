@@ -1,6 +1,6 @@
 {
     "group": "indicator",
-    "id": "Intrusion Set_copy",
+    "id": "Intrusion Set",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -556,7 +556,7 @@
             }
         ]
     },
-    "name": "Intrusion Set_copy",
+    "name": "Intrusion Set",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

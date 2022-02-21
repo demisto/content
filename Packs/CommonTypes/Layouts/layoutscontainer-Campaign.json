@@ -1,6 +1,6 @@
 {
     "group": "indicator",
-    "id": "Campaign_copy",
+    "id": "Campaign",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -477,7 +477,7 @@
             }
         ]
     },
-    "name": "Campaign_copy",
+    "name": "Campaign",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

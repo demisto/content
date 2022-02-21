@@ -1,7 +1,7 @@
 {
-    "id": "CVE Indicator_copy",
+    "id": "cveRep",
     "group": "indicator",
-    "name": "CVE Indicator_copy",
+    "name": "CVE Indicator",
     "version": -1,
     "fromVersion": "6.0.0",
     "indicatorsDetails": {
