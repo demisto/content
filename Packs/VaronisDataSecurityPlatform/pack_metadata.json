@@ -1,6 +1,6 @@
 {
     "name": "Varonis Data Security Platform",
-    "description": "Varonis DSP Rapidly reduce risk, detect abnormal behavior and prove compliance all-in-one",
+    "description": "Streamline alerts, events and related forensic information from Varonis Data Security Platform",
     "support": "developer",
     "currentVersion": "1.0.0",
     "author": "Varonis",
@@ -15,7 +15,16 @@
         "Malware"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Data governance",
+        "Classification",
+        "GDPR",
+        "DSP",
+        "DatAlert",
+        "DatAdvantage",
+        "UBA",
+        "UEBA"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

@@ -33,8 +33,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Varonis DSP Rapidly reduce risk, detect abnormal behavior and prove compliance
-  all-in-one
+description: Streamline alerts and related forensic information from Varonis DSP
 display: Varonis Data Security Platform
 name: VaronisDataSecurityPlatform
 script:
