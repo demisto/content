@@ -1710,13 +1710,7 @@ def update_detection_request(ids: List[str], status: str) -> Dict:
     if status not in DETECTION_STATUS:
         raise DemistoException(f'CrowdStrike Falcon Error: '
                                f'Status given is {status} and it is not in {DETECTION_STATUS}')
-    data = {
-        "status": status,
-        "ids": ids
-    }
-    return http_request(method='PATCH',
-                        url_suffix='/detects/entities/detects/v2',
-                        json=data)
+    return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None)
 
 
 def update_remote_system_command(args: Dict[str, Any]) -> str:
@@ -1782,10 +1776,10 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
                     result += str(update_detection_request([incident_id], 'closed'))
 
                 # status field in CS Falcon is mapped to State field in XSOAR
-                elif 'status' in delta:
-                    demisto.debug(f'Detection with remote ID {incident_id} status will change to '
-                                  f'"{data.get("status")}" in remote system.')
-                    result += str(update_detection_request([incident_id], data.get('status')))
+                elif 'state' in delta:
+                    demisto.debug(f'Detection with remote ID {incident_id} state will change to '
+                                  f'"{data.get("state")}" in remote system.')
+                    result += str(update_detection_request([incident_id], data.get('state')))
 
                 if result:
                     demisto.debug(f'Detection updated successfully. Result: {result}')
