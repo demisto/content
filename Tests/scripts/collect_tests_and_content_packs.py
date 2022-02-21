@@ -1124,7 +1124,7 @@ def filter_tests(tests: set, id_set: dict, modified_packs: set, marketplace_vers
     return tests_without_non_supported
 
 
-def filter_installed_packs(packs_to_install: set, marketplace_version: str) -> set:
+def filter_installed_packs(packs_to_install: set, marketplace_version: str, id_set: dict) -> set:
     """
     Filter only the packs that should get installed by the following conditions:
         - Content pack is not in skipped packs
@@ -1132,6 +1132,7 @@ def filter_installed_packs(packs_to_install: set, marketplace_version: str) -> s
     Args:
         packs_to_install (set): Set of installed packs collected so far.
         marketplace_version (str):
+        id_set (dict):
     Returns:
         (set): Set of packs without ignored, skipped and deprecated-packs.
     """
@@ -1139,7 +1140,7 @@ def filter_installed_packs(packs_to_install: set, marketplace_version: str) -> s
     packs_that_should_not_be_installed = set()
     packs_that_should_be_installed = set()
     for pack in packs_to_install:
-        should_install, reason = should_install_content_pack(pack, marketplace_version, deepcopy(ID_SET))
+        should_install, reason = should_install_content_pack(pack, marketplace_version, id_set)
         if not should_install:
             packs_that_should_not_be_installed.add(f'{pack}: {reason}')
         else:
@@ -1196,7 +1197,7 @@ def get_test_list_and_content_packs_to_install(files_string,
 
     # Check if only README file in file string, if so, no need to create the servers.
     documentation_changes_only = is_documentation_changes_only(files_string)
-    create_filter_envs_file(from_version, to_version, documentation_changes_only=documentation_changes_only)
+    # create_filter_envs_file(from_version, to_version, documentation_changes_only=documentation_changes_only)
 
     tests = set([])
     packs_to_install = set([])
@@ -1244,7 +1245,7 @@ def get_test_list_and_content_packs_to_install(files_string,
     packs_to_install = packs_to_install.union(packs_of_collected_tests)
 
     # All filtering out of packs should be done here
-    packs_to_install = filter_installed_packs(packs_to_install, marketplace_version)
+    packs_to_install = filter_installed_packs(packs_to_install, marketplace_version, id_set)
 
     # All filtering out of tests should be done here
     tests = filter_tests(tests, id_set, modified_packs, marketplace_version)
@@ -1386,7 +1387,8 @@ def changed_files_to_string(changed_files):
 def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_version='xsoar'):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
-        packs_to_install = filter_installed_packs(set(os.listdir(constants.PACKS_DIR)), marketplace_version)
+        packs_to_install = filter_installed_packs(set(os.listdir(constants.PACKS_DIR)), marketplace_version,
+                                                  deepcopy(ID_SET))
         tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET), is_nightly=True,
                              modified_packs=set(), marketplace_version=marketplace_version)
         logging.info("Nightly - collected all tests that appear in conf.json and all packs from content repo that "
