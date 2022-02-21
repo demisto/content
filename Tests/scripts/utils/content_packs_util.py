@@ -53,7 +53,7 @@ def get_pack_supported_marketplace_version(pack_name: str, id_set: dict) -> list
         list of supported marketplace versions
     """
     if id_set:
-        return id_set.get(PACKS_DIR, {}).get(pack_name, {}).get(MARKETPLACE_KEY_PACK_METADATA, [])
+        return id_set.get('Packs', {}).get(pack_name, {}).get(MARKETPLACE_KEY_PACK_METADATA, [])
     else:
         return []
 

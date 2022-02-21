@@ -453,6 +453,11 @@
         "marketplaces": [
           "xsoar"
         ]
+      },
+      "fake_pack": {
+        "marketplaces": [
+          "xsoar"
+        ]
       }
   }
 }
