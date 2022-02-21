@@ -1,6 +1,6 @@
 {
     "associatedTypes": null,
-    "associatedToAll": true,
+    "associatedToAll": false,
     "breachScript": "",
     "caseInsensitive": true,
     "cliName": "stixkillchainphases",
@@ -21,9 +21,7 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "placeholder": "",
-    "propagationLabels": [
-        "all"
-    ],
+    "propagationLabels": [],
     "required": false,
     "script": "",
     "selectValues": [

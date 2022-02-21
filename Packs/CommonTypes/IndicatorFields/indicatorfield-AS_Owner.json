@@ -1,9 +1,6 @@
 {
  "associatedToAll": false,
- "associatedTypes": [
-  "IP",
-  "URL"
- ],
+ "associatedTypes": [],
  "caseInsensitive": true,
  "cliName": "asowner",
  "closeForm": false,

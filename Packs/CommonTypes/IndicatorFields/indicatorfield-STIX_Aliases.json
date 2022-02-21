@@ -1,11 +1,6 @@
 {
     "associatedToAll": false,
-    "associatedTypes": [
-        "STIX Attack Pattern",
-        "STIX Malware",
-        "STIX Tool",
-        "STIX Threat Actor"
-    ],
+    "associatedTypes": [],
     "breachScript": "",
     "caseInsensitive": true,
     "cliName": "stixaliases",

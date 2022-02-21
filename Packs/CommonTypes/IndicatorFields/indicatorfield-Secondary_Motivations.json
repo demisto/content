@@ -51,5 +51,6 @@
     "useAsKpi": false,
     "validationRegex": "",
     "fromVersion": "5.5.0",
-    "version": -1
+    "version": -1,
+    "openEnded": true
 }

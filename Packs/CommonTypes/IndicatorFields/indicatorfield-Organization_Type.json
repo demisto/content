@@ -1,8 +1,6 @@
 {
  "associatedToAll": false,
- "associatedTypes": [
-  "IP"
- ],
+ "associatedTypes": [],
  "caseInsensitive": true,
  "cliName": "organizationtype",
  "closeForm": false,

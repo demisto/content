@@ -23,16 +23,7 @@
     "content": true,
     "group": 2,
     "hidden": false,
-    "associatedTypes": [
-        "MITRE ATT&CK",
-        "Attack Pattern",
-        "Malware",
-        "Tool",
-        "Report",
-        "Campaign",
-        "Course of Action",
-        "Intrusion Set"
-    ],
+    "associatedTypes": [],
     "systemAssociatedTypes": null,
     "associatedToAll": false,
     "unmapped": false,

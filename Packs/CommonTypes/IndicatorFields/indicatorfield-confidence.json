@@ -17,7 +17,7 @@
  "content": true,
  "group": 2,
  "hidden": false,
- "associatedToAll": true,
+ "associatedToAll": false,
  "unmapped": false,
  "unsearchable": false,
  "caseInsensitive": true,

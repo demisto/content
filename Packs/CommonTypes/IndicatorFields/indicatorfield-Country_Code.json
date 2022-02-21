@@ -1,5 +1,5 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
     "caseInsensitive": true,
     "cliName": "countrycode",
     "closeForm": false,
@@ -19,7 +19,7 @@
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "5.5.0"

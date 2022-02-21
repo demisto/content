@@ -1,5 +1,5 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
     "caseInsensitive": true,
     "cliName": "orglevel2",
     "closeForm": false,
