@@ -46,6 +46,7 @@ class Client:
         self.base_url = 'https://urlscan.io/api/v1/'
         self.api_key = api_key
         self.threshold = threshold
+        self.scan_visibility = scan_visibility
         self.use_ssl = use_ssl
         self.reliability = reliability
 
