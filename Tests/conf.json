@@ -917,11 +917,6 @@
             "nightly": true
         },
         {
-            "integrations": "VxStream",
-            "playbookID": "Detonate File - HybridAnalysis - Test",
-            "timeout": 2400
-        },
-        {
             "integrations": "Awake Security",
             "playbookID": "awake_security_test_pb"
         },
@@ -2019,12 +2014,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test",
-            "nightly": true,
-            "is_mockable": false
-        },
-        {
             "integrations": "QRadar_v2",
             "playbookID": "test_Qradar_v2",
             "fromversion": "6.0.0",
@@ -2202,11 +2191,6 @@
             "timeout": 700
         },
         {
-            "integrations": "VxStream",
-            "playbookID": "Test-Detonate URL - Crowdstrike",
-            "timeout": 1200
-        },
-        {
             "playbookID": "Detonate File - Generic Test",
             "timeout": 500
         },
@@ -2242,7 +2226,6 @@
             "nightly": true,
             "integrations": [
                 "McAfee Advanced Threat Defense",
-                "VxStream",
                 "Lastline v2"
             ]
         },
@@ -3344,7 +3327,7 @@
             "integrations": "RSA Archer v2",
             "playbookID": "Archer v2 - Test",
             "fromversion": "5.0.0",
-            "timeout": 600
+            "timeout": 1500
         },
         {
             "integrations": "WootCloud",
@@ -4571,6 +4554,12 @@
             ]
         },
         {
+            "integrations": "CrowdStrike Falcon Sandbox V2",
+            "playbookID": "CrowdstrikeFalconSandbox2 Test",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "playbookID": "Send Email To Recipients",
             "fromversion": "5.0.0",
             "integrations": [
@@ -4994,6 +4983,13 @@
         {
             "playbookID": "TAXII2 Performance Test - Concurrency",
             "fromversion": "6.1.0"
+        },
+        {
+            "playbookID": "HttpV2-test",
+            "fromversion": "6.5.0",
+            "scripts": [
+                "HttpV2"
+            ]
         }
     ],
     "skipped_tests": {
@@ -5119,7 +5115,6 @@
         "EWS_O365_send_mail_test": "Issue 44200",
         "Phishing Investigation - Generic v2 - Campaign Test": "Issue 44740",
         "Cisco Umbrella Test": "Issue 24338",
-        "Archer v2 - Test": "Issue 31653",
         "Azure NSG - Test": "Issue 33217",
         "Unit42 Intel Objects Feed - Test": "Issue 44100"
     },
