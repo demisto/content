@@ -1997,8 +1997,8 @@ class JsonTransformer:
         is_in_path = not self.keys or any(p for p in path if p in self.keys)
         if isinstance(json_input, dict):
             for k, v in json_input.items():
-                is_in_keys = is_in_path or k in self.keys
-                if is_in_keys:
+                if is_in_path or k in self.keys:  # found data to return
+                    # recurse until finding a primitive value
                     if not isinstance(v, dict) and not isinstance(v, list):
                         yield path, k, v
                     else:
@@ -2006,11 +2006,12 @@ class JsonTransformer:
                             yield res
 
                 elif self.is_nested:
+                    # recurse all the json_input to find the relevant data
                     for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
                         yield res
 
                 else:
-                    # if not in keys and no need to search in nested keys - ignore it
+                    # if not in keys and no need to search in nested keys - don't recurse
                     pass
         if isinstance(json_input, list):
             for i, item in enumerate(json_input):
