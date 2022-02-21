@@ -282,4 +282,4 @@ def test_get_device_by_ip(requests_mock):
     }
     outputs = iot_get_device_by_ip(client, args).outputs
 
-    assert outputs == {"hostname":"00:0a:e4:1c:62:26","ip_address":"1.1.1.1","profile_type":"Non_IoT"}
+    assert outputs == {"hostname": "00:0a:e4:1c:62:26", "ip_address": "1.1.1.1", "profile_type": "Non_IoT"}
