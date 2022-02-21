@@ -745,8 +745,8 @@ class TestTableToMarkdown:
             expected_table = u"""### tableToMarkdown test
 |name|value|
 |---|---|
-| <br>***second***: b<br>**first**:<br>	***a***: val | val1 |
-| <br>***second***: d<br>**first**:<br>	***a***: val2 | val2 |
+| ***second***: b<br>**first**:<br>	***a***: val | val1 |
+| ***second***: d<br>**first**:<br>	***a***: val2 | val2 |
 """
         assert expected_table == table
 
@@ -838,16 +838,16 @@ class TestTableToMarkdown:
             data_with_list = json.load(f)
         table = tableToMarkdown("tableToMarkdown test", data_with_list, is_auto_json_transform=True)
         if IS_PY3:
-            expected_table = ur"""### tableToMarkdown test
-    |Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
-    |---|---|---|---|---|---|
-    | **-**<br>	***index***: 0<br>	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>**-**<br>	***index***: 1<br>	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
-    """
-        else:
-            expected_table = ur"""### tableToMarkdown test
+            expected_table = u"""### tableToMarkdown test
 |Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
 |---|---|---|---|---|---|
-| **-**<br>	***index***: 0<br>	***commandStatus***: Completed<br>	***startTime***: null<br>	**command**:<br>		**params**:<br>			**-**<br>				***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>				***key***: Path<br><br>		***type***: GetFile<br><br>	***endTime***: 2022-02-17T08:22:33.823Z<br>**-**<br>	***index***: 1<br>	***commandStatus***: Completed<br>	***startTime***: null<br>	**command**:<br>		**params**:<br>			**-**<br>				***value***: C:\\Users\\demisto\\Desktop\\test222.txt<br>				***key***: Path<br><br>		***type***: GetFile<br><br>	***endTime***: 2022-02-17T08:22:33.823Z | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+| **-**<br>	***index***: 0<br>	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: test.txt<br>**-**<br>	***index***: 1<br>	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+"""
+        else:
+            expected_table = u"""### tableToMarkdown test
+|Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+|---|---|---|---|---|---|
+| **-**<br>	***index***: 0<br>	***commandStatus***: Completed<br>	***startTime***: null<br>	**command**:<br>		**params**:<br>			**-**<br>				***value***: test.txt<br>				***key***: Path<br><br>		***type***: GetFile<br><br>	***endTime***: 2022-02-17T08:22:33.823Z<br>**-**<br>	***index***: 1<br>	***commandStatus***: Completed<br>	***startTime***: null<br>	**command**:<br>		**params**:<br>			**-**<br>				***value***: test222.txt<br>				***key***: Path<br><br>		***type***: GetFile<br><br>	***endTime***: 2022-02-17T08:22:33.823Z | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
 """
         assert expected_table == table
 
@@ -866,16 +866,16 @@ class TestTableToMarkdown:
         table = tableToMarkdown("tableToMarkdown test", data_with_list,
                                 json_transform_mapping={'Commands': JsonTransformer(keys=('commandStatus', 'command'))})
         if IS_PY3:
-            expected_table = ur"""### tableToMarkdown test
-    |Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
-    |---|---|---|---|---|---|
-    | **-**<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>**-**<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: C:\\Users\\demisto\\Desktop\\test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
-    """
-        else:
-            expected_table = ur"""### tableToMarkdown test
+            expected_table = """### tableToMarkdown test
 |Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
 |---|---|---|---|---|---|
-| **-**<br>	***commandStatus***: Completed<br>	**command**:<br>		**params**:<br>			**-**<br>				***value***: C:\\Users\\demisto\\Desktop\\test.txt<br>				***key***: Path<br><br>		***type***: GetFile<br>**-**<br>	***commandStatus***: Completed<br>	**command**:<br>		**params**:<br>			**-**<br>				***value***: C:\\Users\\demisto\\Desktop\\test222.txt<br>				***key***: Path<br><br>		***type***: GetFile | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+| **-**<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: test.txt<br>**-**<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**<br>				***key***: Path<br>				***value***: test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+"""
+        else:
+            expected_table = u"""### tableToMarkdown test
+|Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+|---|---|---|---|---|---|
+| **-**<br>	***commandStatus***: Completed<br>	**command**:<br>		**params**:<br>			**-**<br>				***value***: test.txt<br>				***key***: Path<br><br>		***type***: GetFile<br>**-**<br>	***commandStatus***: Completed<br>	**command**:<br>		**params**:<br>			**-**<br>				***value***: test222.txt<br>				***key***: Path<br><br>		***type***: GetFile | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
 """
         assert expected_table == table
 

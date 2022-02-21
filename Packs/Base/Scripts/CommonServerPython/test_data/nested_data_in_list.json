@@ -16,7 +16,7 @@
         "params": [
           {
             "key": "Path",
-            "value": "C:\\\\Users\\\\demisto\\\\Desktop\\\\test.txt"
+            "value": "test.txt"
           }
         ]
       }
@@ -32,7 +32,7 @@
         "params": [
           {
             "key": "Path",
-            "value": "C:\\\\Users\\\\demisto\\\\Desktop\\\\test222.txt"
+            "value": "test222.txt"
           }
         ]
       }
