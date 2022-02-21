@@ -234,7 +234,7 @@ class TestChangedPlaybook:
                             return_value=(True, ''))
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
         assert filterd_tests == {self.TEST_ID}
-        assert content_packs == {"Base", "DeveloperTools", "CommonPlaybooks", "FakePack"}
+        assert content_packs == {"Base", "DeveloperTools", "CommonPlaybooks"}
 
 
 class TestChangedTestPlaybook:
@@ -427,7 +427,7 @@ class TestChangedIntegrationAndPlaybook:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == set(self.TEST_ID.split('\n'))
-        assert content_packs == {"Base", "DeveloperTools", 'CommonPlaybooks', 'PagerDuty', "FakePack"}
+        assert content_packs == {"Base", "DeveloperTools", 'CommonPlaybooks', 'PagerDuty'}
 
 
 class TestChangedScript:

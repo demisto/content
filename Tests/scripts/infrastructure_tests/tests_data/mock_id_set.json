@@ -428,6 +428,31 @@
         "marketplaces": [
           "xsoar"
         ]
+      },
+      "GreatPack": {
+        "marketplaces": [
+          "xsoar"
+        ]
+      },
+      "CommonPlaybooks": {
+        "marketplaces": [
+          "xsoar"
+        ]
+      },
+      "PagerDuty": {
+        "marketplaces": [
+          "xsoar"
+        ]
+      },
+      "EWS": {
+        "marketplaces": [
+          "xsoar"
+        ]
+      },
+      "pack_a": {
+        "marketplaces": [
+          "xsoar"
+        ]
       }
   }
 }
