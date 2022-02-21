@@ -4555,7 +4555,7 @@
         },
         {
             "integrations": "CrowdStrike Falcon Sandbox V2",
-            "playbookID": "CrowdstrikeFalconSandboxV2 Test",
+            "playbookID": "CrowdstrikeFalconSandbox2 Test",
             "timeout": 500,
             "nightly": true
         },
