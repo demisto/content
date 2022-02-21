@@ -64,7 +64,7 @@ def test_varonis_get_alerts_command(mocker):
 
 
 def test_varonis_update_alert_status_command(requests_mock):
-    requests_mock.post('https://test.com/api/alert/alert/SetStatusToAlerts', json="True")
+    requests_mock.post('https://test.com/api/alert/alert/SetStatusToAlerts', json=True)
 
     client = Client(
         base_url='https://test.com',
@@ -79,11 +79,11 @@ def test_varonis_update_alert_status_command(requests_mock):
 
     resp = varonis_update_alert_status_command(client, args)
 
-    assert resp == "True"
+    assert resp is True
 
 
 def test_varonis_close_alert_command(requests_mock):
-    requests_mock.post('https://test.com/api/alert/alert/SetStatusToAlerts', json="True")
+    requests_mock.post('https://test.com/api/alert/alert/SetStatusToAlerts', json=True)
 
     client = Client(
         base_url='https://test.com',
@@ -98,4 +98,4 @@ def test_varonis_close_alert_command(requests_mock):
 
     resp = varonis_close_alert_command(client, args)
 
-    assert resp == "True"
+    assert resp is True

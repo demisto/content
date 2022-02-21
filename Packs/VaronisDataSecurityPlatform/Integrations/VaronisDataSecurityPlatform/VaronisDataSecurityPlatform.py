@@ -100,8 +100,8 @@ class Client(BaseClient):
         :return: The list of objects required for a search filter
         :rtype: ``List[Any]``
         """
-        respose = self._http_request('GET', f'/api/entitymodel/enum/{enum_id}')
-        return respose
+        response = self._http_request('GET', f'/api/entitymodel/enum/{enum_id}')
+        return response
 
     def varonis_search_alerts(self, query: Dict[str, Any]) -> List[Any]:
         """Creats a search job on the server side. Retrives the path to the results
@@ -137,7 +137,16 @@ class Client(BaseClient):
             status_list_to_retry=STATUSES_TO_RETRY)
         return response
 
-    def varonis_update_alert_status(self, query: Dict[str, Any]) -> Any:
+    def varonis_update_alert_status(self, query: Dict[str, Any]) -> bool:
+        """Update alert status
+
+        :type query: ``Dict[str, Any]``
+        :param query: Update request body
+
+        :return: Result of execution
+        :rtype: ``bool``
+
+        """
         return self._http_request(
             'POST',
             '/api/alert/alert/SetStatusToAlerts',
@@ -186,7 +195,7 @@ class SearchQueryBuilder(object):
         self._filters.append(filter_obj)
 
     def create_time_interval_filter(self, start: datetime, end: datetime):
-        """Add time interval to the search qury
+        """Add time interval to the search query
 
         :type start: ``datetime``
         :param start: Start time
@@ -281,6 +290,9 @@ def get_alerts(
 ) -> Dict[str, Any]:
     """Searches and retrieves alerts
 
+    :type client: ``Client``
+    :param client: Http client
+
     :type statuses: ``List[str]``
     :param statuses: A list of statuses
 
@@ -360,7 +372,7 @@ def create_output_from_alerts(rows: List[Any]) -> List[str]:
 
 
 def try_convert(item, converter):
-    """Try to converst item
+    """Try to convert item
 
     :type item: ``Any``
     :param item: An item to convert
@@ -387,7 +399,7 @@ def test_module(client: Client) -> str:
     Raises exceptions if something goes wrong.
 
     :type client: ``Client``
-    :param Client: client to use
+    :param client: client to use
 
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
@@ -409,7 +421,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     """Get alerts from Varonis DA
 
     :type client: ``Client``
-    :param Client: Http client
+    :param client: Http client
 
     :type args: ``Dict[str, Any]``
     :param args:
@@ -446,7 +458,22 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) -> Any:
+def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) -> bool:
+    """Update Varonis alert status command
+
+    :type client: ``Client``
+    :param client: Http client
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['Status']`` Alert's new status
+        ``args['Alert_id']`` Array of alert ids to be updated
+
+    :return: Result of execution
+    :rtype: ``bool``
+
+    """
     status = args.get('Status', None)
     statuses = list(filter(lambda name: name != 'Closed', ALERT_STATUSES.keys()))
     if status not in statuses:
@@ -454,10 +481,25 @@ def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) ->
 
     status_id = ALERT_STATUSES[status]
 
-    return varonis_update_alert(CLOSE_REASONS['None'], status_id, client, args)
+    return varonis_update_alert(client, CLOSE_REASONS['None'], status_id, argToList(args.get('Alert_id')))
 
 
-def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> Any:
+def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
+    """Close Varonis alert command
+
+    :type client: ``Client``
+    :param client: Http client
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['Close_Reason']`` Alert's close reason
+        ``args['Alert_id']`` Array of alert ids to be closed
+
+    :return: Result of execution
+    :rtype: ``bool``
+
+    """
     close_reason = args.get('Close_Reason', None)
     close_reasons = list(filter(lambda name: name != 'None', CLOSE_REASONS.keys()))
     if close_reason not in close_reasons:
@@ -465,11 +507,28 @@ def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> Any:
 
     close_reason_id = CLOSE_REASONS[close_reason]
 
-    return varonis_update_alert(close_reason_id, ALERT_STATUSES['Closed'], client, args)
+    return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['Closed'], argToList(args.get('Alert_id')))
 
 
-def varonis_update_alert(close_reason_id: int, status_id: int, client: Client, args: Dict[str, Any]) -> Any:
-    alert_ids = argToList(args.get('Alert_id'))
+def varonis_update_alert(client: Client, close_reason_id: int, status_id: int, alert_ids: list) -> bool:
+    """Update Varonis alert. It creates request and pass it to http client
+
+    :type client: ``Client``
+    :param client: Http client
+
+    :type close_reason_id: ``int``
+    :param close_reason_id: close reason enum id
+
+    :type status_id: ``int``
+    :param status_id: status id enum id
+
+    :type alert_ids: ``list``
+    :param alert_ids: list of alert id(s)
+
+    :return: Result of execution
+    :rtype: ``bool``
+
+    """
     if len(alert_ids) == 0:
         raise ValueError('alert id(s) not specified')
 
