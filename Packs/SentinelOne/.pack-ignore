@@ -6,3 +6,6 @@ ignore=RM106
 
 [file:SentinelOne.yml]
 ignore=IN145
+
+[file:SentinelOne_image.png]
+ignore=IM111
