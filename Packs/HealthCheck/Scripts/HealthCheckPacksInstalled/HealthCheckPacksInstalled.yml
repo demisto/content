@@ -2,7 +2,7 @@ comment: Presenting numbers of packs installed
 commonfields:
   id: HealthCheckPacksInstalled
   version: -1
-dockerimage: demisto/python3:3.10.1.25933
+dockerimage: demisto/python3:3.10.1.26972
 enabled: true
 name: HealthCheckPacksInstalled
 runas: DBotWeakRole

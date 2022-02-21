@@ -142,7 +142,7 @@ tasks:
     nexttasks:
       '#none#':
       - "26"
-      - "27"
+      - "39"
     note: false
     quietmode: 0
     separatecontext: false
@@ -845,24 +845,26 @@ tasks:
     scriptarguments:
       Thresholds:
         simple: ${Health Check Thresholds.LargeInvestigations}
+      Append:
+        simple: "True"
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Analyze large investigation
-      id: 185fb491-60af-4c0c-8742-a931f6d0e785
+      id: 23d3d521-a070-4689-88bf-e1f4789f4752
       iscommand: false
       name: Large Investigations
       script: HealthCheckAnalyzeLargeInvestigations
       type: regular
       version: -1
-    taskid: 185fb491-60af-4c0c-8742-a931f6d0e785
+    taskid: 23d3d521-a070-4689-88bf-e1f4789f4752
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 960,
           "y": 2990
         }
       }
@@ -880,25 +882,27 @@ tasks:
     scriptarguments:
       Thresholds:
         simple: ${Health Check Thresholds.LargeInputsOutputs}
+      Append:
+        simple: "True"
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: 'Returns inputs and outputs larger than 1 MB from all Cortex XSOAR
         investigations in the last 6 months '
-      id: 83bca3b8-44a1-4cfc-8fd0-5e0918185bc0
+      id: 011c8f61-0468-4838-8844-2570a46d455b
       iscommand: false
       name: Large inputs and outputs
       script: HealthCheckGetLargestInputsAndOutputsInIncidents
       type: regular
       version: -1
-    taskid: 83bca3b8-44a1-4cfc-8fd0-5e0918185bc0
+    taskid: 011c8f61-0468-4838-8844-2570a46d455b
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 960,
           "y": 3165
         }
       }
@@ -1046,7 +1050,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 960,
           "y": 3340
         }
       }
@@ -1233,6 +1237,110 @@ tasks:
           "y": 1855
         }
       }
+  "38":
+    id: "38"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Collect data from System Diagnostics tool
+      id: 18b28e0b-a92e-4fd8-8fcf-23b8b6929a7a
+      iscommand: false
+      name: DB System Diagnostics
+      script: HealthCheckSystemDiagnostics
+      type: regular
+      version: -1
+    taskid: 18b28e0b-a92e-4fd8-8fcf-23b8b6929a7a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 2830
+        }
+      }
+  "39":
+    id: "39"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c1fb7512-6d0d-4b09-84f1-9f4c47ed36a5
+      iscommand: false
+      name: Database Diagnostics
+      type: title
+      version: -1
+      description: ''
+    taskid: c1fb7512-6d0d-4b09-84f1-9f4c47ed36a5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 2365
+        }
+      }
+  "40":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: DemistoVersion.buildNumber
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "1222475"
+      label: "yes"
+    id: "40"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "38"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Bypass System Diagnostics data for versions older than 6.2
+      id: 05c89412-12b5-4993-83d4-edc862e0ec63
+      iscommand: false
+      name: Version newer than 6.2.0
+      type: condition
+      version: -1
+    taskid: 05c89412-12b5-4993-83d4-edc862e0ec63
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 2670
+        }
+      }
 version: -1
 view: |-
   {
@@ -1240,7 +1348,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3850,
-        "width": 1450,
+        "width": 1490,
         "x": -150,
         "y": 50
       }

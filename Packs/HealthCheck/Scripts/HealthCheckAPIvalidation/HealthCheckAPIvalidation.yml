@@ -4,7 +4,7 @@ comment: |-
 commonfields:
   id: HealthCheckAPIvalidation
   version: -1
-dockerimage: demisto/python3:3.10.1.25933
+dockerimage: demisto/python3:3.10.1.26972
 enabled: true
 name: HealthCheckAPIvalidation
 runas: DBotWeakRole
