@@ -502,10 +502,8 @@ def parse_outputs(
 
 
 def parse_indicator(sandbox: dict, reliability: str) -> Optional[Common.File]:
-    if sha256 := sandbox.get('sha256'):  # does the `if` make sense here?
-        score_field = DBOT_SCORE_DICT.get(sandbox.get('verdict'),
-                                          Common.DBotScore.NONE)
-
+    if sha256 := sandbox.get('sha256'):  # todo does the `if` make sense here?
+        score_field = DBOT_SCORE_DICT.get(sandbox.get('verdict'), Common.DBotScore.NONE)
         dbot = Common.DBotScore(indicator=sha256,  # todo sha256 or name?
                                 indicator_type=DBotScoreType.FILE,
                                 score=score_field,
@@ -532,7 +530,7 @@ def test_module(
 ) -> tuple[str, dict, list]:
     """
     If a client was made then an accesses token was successfully reached,
-    therefor the username and password are valid and a connection was made
+    therefore the username and password are valid and a connection was made
     additionally, checks if not using all the optional quota
     :param client: the client object with an access token
     :return: ok if got a valid accesses token and not all the quota is used at the moment
@@ -580,14 +578,14 @@ def upload_file_command(
     if submit_file == 'no':
         return CommandResults(
             outputs_key_field='sha256',
-            outputs_prefix='csfalconx.resource',
+            outputs_prefix=OUTPUTS_PREFIX,
             outputs=[filtered_outputs],
             readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs),
             raw_response=[response],
             indicators=[indicator])
 
     else:
-        sha256 = str(filtered_outputs.get("sha256"))
+        sha256 = str(filtered_outputs.get("sha256"))  # todo isn't it dangerous? may be None
         return send_uploaded_file_to_sandbox_analysis_command(client, sha256, "160: Windows 10")
 
 
@@ -629,7 +627,7 @@ def send_uploaded_file_to_sandbox_analysis_command(
 
     return CommandResults(
         outputs_key_field='submitted_id',
-        outputs_prefix='csfalconx.resource',
+        outputs_prefix=OUTPUTS_PREFIX,
         outputs=filtered_outputs,
         readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs),
         raw_response=[response],
@@ -674,7 +672,7 @@ def send_url_to_sandbox_analysis_command(
 
     return CommandResults(
         outputs_key_field='submitted_id',
-        outputs_prefix='csfalconx.resource',
+        outputs_prefix=OUTPUTS_PREFIX,
         outputs=[filtered_outputs],
         readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs),
         raw_response=[response],
@@ -747,7 +745,7 @@ def get_full_report_command(client: Client, ids: list, extended_data: str):
 
     command_result = CommandResults(
         outputs_key_field='id',
-        outputs_prefix='csfalconx.resource',
+        outputs_prefix=OUTPUTS_PREFIX,
         outputs=filtered_outputs_list,
         readable_output=readable_output,
         raw_response=[response_list]
@@ -796,7 +794,7 @@ def get_report_summary_command(
     indicators = list(filter(None, indicators))
 
     return CommandResults(outputs_key_field='sha256',  # todo is this still correct?
-                          outputs_prefix='csfalconx.resource',
+                          outputs_prefix=OUTPUTS_PREFIX,
                           outputs=filtered_outputs_list,
                           readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs_list)
                           if filtered_outputs_list else no_outputs_msg,
@@ -833,7 +831,7 @@ def get_analysis_status_command(
     indicators = list(filter(None, indicators))
 
     return CommandResults(outputs_key_field='sha256',  # todo is this still correct?
-                          outputs_prefix='csfalconx.resource',
+                          outputs_prefix=OUTPUTS_PREFIX,
                           outputs=filtered_outputs_list,
                           readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs_list),
                           raw_response=response_list,
@@ -876,7 +874,7 @@ def check_quota_status_command(
 
     filtered_outputs, indicator = parse_outputs(response, client.reliability, quota_fields=quota_fields)
 
-    return CommandResults(outputs_prefix='csfalconx.resource',
+    return CommandResults(outputs_prefix=OUTPUTS_PREFIX,
                           # todo key field?
                           indicators=[indicator] if indicator else [],
                           readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs),
@@ -907,7 +905,7 @@ def find_sandbox_reports_command(
     entry_context = {'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
 
     return CommandResults(outputs_key_field='sha256',  # todo is this still correct?
-                          outputs_prefix='csfalconx.resource',
+                          outputs_prefix=OUTPUTS_PREFIX,
                           outputs=[filtered_outputs],
                           readable_output=tableToMarkdown("CrowdStrike Falcon X response:", [filtered_outputs]),
                           raw_response=response,
