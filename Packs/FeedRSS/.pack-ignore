@@ -2,3 +2,6 @@
 ignore=PB105
 [file:FeedRSS.yml]
 ignore=CJ105
+
+[file:FeedRSS_image.png]
+ignore=IM111
