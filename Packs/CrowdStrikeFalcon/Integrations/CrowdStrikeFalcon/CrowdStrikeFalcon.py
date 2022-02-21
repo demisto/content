@@ -1583,14 +1583,14 @@ def get_remote_data_command(args: Dict[str, Any]):
             mirrored_data_list = get_incidents_entities([remote_args.remote_incident_id]).get('resources', [])
             delta: Dict[str, Any] = {'incident_type': 'incident'}
             mirrored_data = mirrored_data_list[0]
+            if 'status' in mirrored_data:
+                mirrored_data['status'] = STATUS_NUM_TO_TEXT.get(int(str(mirrored_data.get('status'))))
             set_delta(delta, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
-            if 'status' in delta:
-                delta['status'] = STATUS_NUM_TO_TEXT.get(delta.get('status'))
 
         # updating remote detection
         elif remote_args.remote_incident_id[0:3] == 'ldt':
             mirrored_data_list = get_detections_entities([remote_args.remote_incident_id]).get('resources', [])
-            delta: Dict[str, Any] = {'incident_type': 'detection'}
+            delta = {'incident_type': 'detection'}
             mirrored_data = mirrored_data_list[0]
             mirrored_data['severity'] = severity_string_to_int(mirrored_data.get('max_severity_displayname'))
             set_delta(delta, mirrored_data, CS_FALCON_DETECTION_INCOMING_ARGS)
