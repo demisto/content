@@ -132,7 +132,7 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'public'
-      description: The submission visibility, overrides the 'public' argument.
+      description: The submission visibility. If specified, overrides the 'public' parameter.
       predefined:
         - public
         - private
