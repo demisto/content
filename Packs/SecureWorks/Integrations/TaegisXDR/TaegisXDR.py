@@ -357,12 +357,14 @@ def fetch_incidents(client: Client, env: str, args=None):
 
 def fetch_investigation_alerts_command(client: Client, env: str, args=None):
     investigation_id = args.get("id")
+    page = args.get("page", 0)
+    page_size = args.get("page_size", 10)
     if not investigation_id:
         raise ValueError("Cannot fetch investigation, missing investigation_id")
 
     query = """
-    query investigationAlerts($investigation_id: ID!) {
-        investigationAlerts(investigation_id: $investigation_id) {
+    query investigationAlerts($investigation_id: ID!, $page: Int, $perPage: Int) {
+        investigationAlerts(investigation_id: $investigation_id, page: $page, perPage: $perPage) {
             alerts {
                 id
             }
@@ -371,7 +373,7 @@ def fetch_investigation_alerts_command(client: Client, env: str, args=None):
     }
     """
 
-    variables = {"investigation_id": investigation_id}
+    variables = {"page": page, "perPage": page_size, "investigation_id": investigation_id}
 
     result = client.graphql_run(query=query, variables=variables)
 

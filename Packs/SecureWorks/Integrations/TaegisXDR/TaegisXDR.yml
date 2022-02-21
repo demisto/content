@@ -127,6 +127,12 @@ script:
     - name: id
       required: true
       description: The investigation ID related to the alerts
+    - name: page
+      description: Page number of the investigation alerts
+      defaultValue: "0"
+    - name: page_size
+      description: Number of alerts per investigation query
+      defaultValue: "10"
     outputs:
     - contextPath: TaegisXDR.Result
       description: List of alerts related to a Taegis investigation
