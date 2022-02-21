@@ -15,14 +15,9 @@ configuration:
   type: 0
 - display: Name of Varonis user
   hidden: false
-  name: Username
+  name: credentials
   required: true
-  type: 0
-- display: Password for Varonis user
-  hidden: false
-  name: Password
-  required: true
-  type: 0
+  type: 9
 - display: Use system proxy settings
   hidden: false
   name: proxy

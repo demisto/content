@@ -551,8 +551,8 @@ def main() -> None:
     :rtype:
     """
 
-    username = demisto.params().get('Username')
-    password = demisto.params().get('Password')
+    username = demisto.params().get('credentials', {}).get('identifier')
+    password = demisto.params().get('credentials', {}).get('password')
 
     # get the service API url
     base_url = urljoin(demisto.params()['url'], '/DatAdvantage')
