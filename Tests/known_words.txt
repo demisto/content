@@ -41,6 +41,7 @@ regex
 Bambenek
 csv
 Cloudflare
+PenfieldAssign
 DShield
 Feodo
 Blocklist
@@ -89,3 +90,4 @@ GitHub
 TAXII
 Syslog
 DomainTools
+replyTo
