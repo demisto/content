@@ -935,14 +935,16 @@ class TestHuntingQueryBuilder:
                 a='"1"',
                 b='"1","2"',
                 c='',
-                d=None
+                d=None,
+                e=('test_op', '"1","2"')
             )
             actual = HuntingQueryBuilder.build_generic_query('some query', query_params, 'or', 'in')
-            assert len(actual) == 47
+            assert len(actual) == 68
             assert actual[:12] == 'some query ('
             assert '(a in ("1"))' in actual
             assert '(b in ("1","2"))' in actual
             assert 'or' in actual and 'in' in actual
+            assert 'e test_op "1","2"'
 
     class TestLateralMovementEvidence:
         def test_build_network_connections_query(self):
@@ -1299,4 +1301,106 @@ class TestHuntingQueryBuilder:
                 query_purpose='host_file_change',
             )
             actual = pe.build_host_file_change_query()
+            assert actual == expected
+
+    class TestFileOrigin:
+        def test_build_file_origin_query(self):
+            """
+            Tests file origin generic query
+
+            Given:
+                - FileOrigin inited with sha1
+            When:
+                - calling build_file_origin_query
+            Then:
+                - return a file origin query
+            """
+            expected = 'DeviceFileEvents | where ( (SHA1 has_any (("1","2"))) )\n| project Timestamp,FileName,FolderPath, ActionType,DeviceName,MD5,SHA1,SHA256,FileSize,FileOriginUrl,FileOriginIP,InitiatingProcessCommandLine,InitiatingProcessFileName,InitiatingProcessParentFileName\n| limit 1'  # noqa: E501
+            fo = HuntingQueryBuilder.FileOrigin(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+            )
+            actual = fo.build_file_origin_query()
+            assert actual == expected
+
+    class TestProcessDetails:
+        def test_build_parent_process_query(self):
+            """
+            Tests parent process query
+
+            Given:
+                - ProcessDetails inited with sha1
+            When:
+                - calling build_parent_process_query
+            Then:
+                - return a parent process query
+            """
+            expected = 'DeviceProcessEvents | where ( (SHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceId, DeviceName, ActionType, ProcessId, ProcessCommandLine, ProcessCreationTime, AccountSid, AccountName, AccountDomain,InitiatingProcessAccountDomain, InitiatingProcessAccountDomain, InitiatingProcessAccountName, InitiatingProcessAccountSid, InitiatingProcessAccountSid, InitiatingProcessAccountUpn, InitiatingProcessAccountObjectId, InitiatingProcessLogonId, InitiatingProcessIntegrityLevel, InitiatingProcessTokenElevation, InitiatingProcessSHA1, InitiatingProcessSHA256, InitiatingProcessMD5, InitiatingProcessFileName, InitiatingProcessFileSize, InitiatingProcessVersionInfoCompanyName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoProductVersion, InitiatingProcessVersionInfoInternalFileName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessVersionInfoFileDescription, InitiatingProcessId, InitiatingProcessCommandLine, InitiatingProcessCreationTime, InitiatingProcessFolderPath, InitiatingProcessAccountDomain, InitiatingProcessAccountName, InitiatingProcessAccountSid\n| limit 1'  # noqa: E501
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+            )
+            actual = pd.build_parent_process_query()
+            assert actual == expected
+
+        def test_build_grandparent_process_query(self):
+            """
+            Tests grandparent process query
+
+            Given:
+                - ProcessDetails inited with sha1
+            When:
+                - calling build_grandparent_process_query
+            Then:
+                - return a grandparent process query
+            """
+            expected = 'DeviceProcessEvents | where ( (SHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceId, DeviceName, ActionType, ProcessId, ProcessCommandLine, ProcessIntegrityLevel, ProcessCreationTime, AccountSid, AccountName, AccountDomain, AccountObjectId, AccountUpn, InitiatingProcessSHA1, InitiatingProcessSHA256, InitiatingProcessMD5, InitiatingProcessFileName, InitiatingProcessId, InitiatingProcessCreationTime, InitiatingProcessFolderPath, InitiatingProcessParentFileName, InitiatingProcessParentId, InitiatingProcessParentCreationTime\n| limit 1'  # noqa: E501
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+            )
+            actual = pd.build_grandparent_process_query()
+            assert actual == expected
+
+        def test_build_process_details_query(self):
+            """
+            Tests process query
+
+            Given:
+                - ProcessDetails inited with sha1
+            When:
+                - calling build_process_details_query
+            Then:
+                - return a process query
+            """
+            expected = 'DeviceProcessEvents | where ( (SHA1 has_any (("1","2"))) )\n| summarize by SHA1,FileName,SHA256,MD5 | join DeviceFileCertificateInfo on SHA1 | summarize by FileName,SHA1,SHA256,IsSigned,Signer,SignatureType,Issuer,CertificateExpirationTime,IsTrusted,IsRootSignerMicrosoft\n| limit 1'   # noqa: E501
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+            )
+            actual = pd.build_process_details_query()
+            assert actual == expected
+
+        def test_build_beaconing_evidence_query(self):
+            """
+            Tests beaconing evidence query
+
+            Given:
+                - ProcessDetails inited with sha1
+            When:
+                - calling build_beaconing_evidence_query
+            Then:
+                - return a beaconing evidence query
+            """
+            expected = 'DeviceProcessEvents | where ( (InitiatingProcessSHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceId, DeviceName, ActionType, RemoteIP, RemotePort, RemoteUrl, LocalIP, LocalPort, Protocol, LocalIPType, RemoteIPType, InitiatingProcessSHA1, InitiatingProcessSHA256, InitiatingProcessMD5, InitiatingProcessFileName\n| limit 1'   # noqa: E501
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+            )
+            actual = pd.build_beaconing_evidence_query()
             assert actual == expected

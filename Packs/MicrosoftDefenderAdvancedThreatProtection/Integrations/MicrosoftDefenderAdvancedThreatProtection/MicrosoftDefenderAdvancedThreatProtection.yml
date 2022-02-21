@@ -4715,6 +4715,261 @@ script:
     - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result
       description: The query results.
       type: String
+  - name: microsoft-atp-advanced-hunting-file-origin
+    description: How did the file get on the machine. By selecting a “query_purpose”
+      argument, a designated query template will be used.
+    deprecated: false
+    arguments:
+    - name: query_purpose
+      auto: PREDEFINED
+      description: By selecting a “query_purpose” argument, a designated query template
+        will be used.
+        "dropped_file" - Was the file dropped? From where?
+        "created_file" - Created by another File (script, compiled binary).
+        "network_shared" - Shared via network.
+        "execution_chain" - What is the process execution chain.
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - dropped_file
+      - created_file
+      - network_shared
+      - execution_chain
+    - name: device_name
+      description: Device name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: file_name
+      description: File name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha1
+      description: SHA1 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha256
+      description: SHA256 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: md5
+      description: MD5 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: device_id
+      description: Device ID to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: query_operation
+      auto: PREDEFINED
+      description: Query operator to use with provided arguments.
+      required: false
+      isArray: false
+      defaultValue: or
+      predefined:
+      - or
+      - and
+    - name: limit
+      description: Max number of results to retrieve.
+      required: false
+      isArray: false
+      defaultValue: "50"
+    - name: time_range
+      description: description
+      required: false
+      isArray: false
+      defaultValue: Time range to look back. Expected syntax is a human readable time
+        range, e.g. 60 minutes, 6 hours, 1 day etc.
+    - default: false
+      defaultValue: "10"
+      description: The amount of time (in seconds) that a request waits for the query
+        response before a timeout occurs.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MicrosoftATP.HuntFileOrigin.Result
+      description: The query results.
+      type: String
+  - name: microsoft-atp-advanced-hunting-process-details
+    description: Process investigation. By selecting a “query_purpose”
+      argument, a designated query template will be used.
+    deprecated: false
+    arguments:
+    - name: query_purpose
+      auto: PREDEFINED
+      description: By selecting a “query_purpose” argument, a designated query template
+        will be used.
+        "parent_process" - Parent process.
+        "grandparent_process" - Grandparent process.
+        "process_details" - Process hash, path, signature details.
+        "beaconing_evidence" - Does the process appear to be beaconing?
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - parent_process
+      - grandparent_process
+      - process_details
+      - beaconing_evidence
+    - name: device_name
+      description: Device name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: file_name
+      description: File name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha1
+      description: SHA1 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha256
+      description: SHA256 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: md5
+      description: MD5 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: device_id
+      description: Device ID to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: query_operation
+      auto: PREDEFINED
+      description: Query operator to use with provided arguments.
+      required: false
+      isArray: false
+      defaultValue: or
+      predefined:
+      - or
+      - and
+    - name: limit
+      description: Max number of results to retrieve.
+      required: false
+      isArray: false
+      defaultValue: "50"
+    - name: time_range
+      description: description
+      required: false
+      isArray: false
+      defaultValue: Time range to look back. Expected syntax is a human readable time
+        range, e.g. 60 minutes, 6 hours, 1 day etc.
+    - default: false
+      defaultValue: "10"
+      description: The amount of time (in seconds) that a request waits for the query
+        response before a timeout occurs.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result
+      description: The query results.
+      type: String
+  - name: microsoft-atp-advanced-hunting-network-connections
+    description: Network connections investigation. By selecting a “query_purpose”
+      argument, a designated query template will be used.
+    deprecated: false
+    arguments:
+    - name: query_purpose
+      auto: PREDEFINED
+      description: By selecting a “query_purpose” argument, a designated query template
+        will be used.
+        "external_addresses" - Network connections to external addresses.
+        "dns_query" - DNS query.
+        "powershell_execution_process_known" - Has the file executed PowerShell?
+        Query by providing hash or filename or specific processes. At least one of file arguments
+        (file_name, sha1, sha256, md5) is required and one of device arguments (device_name, device_id).
+        "powershell_execution_process_unknown" - Has the file executed PowerShell? Query without specifying processes.
+        No additional arguments are required.
+        "encoded_commands" - Are there commands with base 64 encoding? Only device arguments are required
+        (device_name, device_id), at least one.
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - external_addresses
+      - dns_query
+      - powershell_execution_process_known
+      - powershell_execution_process_unknown
+      - encoded_commands
+    - name: device_name
+      description: Device name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: file_name
+      description: File name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha1
+      description: SHA1 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha256
+      description: SHA256 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: md5
+      description: MD5 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: device_id
+      description: Device ID to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: query_operation
+      auto: PREDEFINED
+      description: Query operator to use with provided arguments.
+      required: false
+      isArray: false
+      defaultValue: or
+      predefined:
+      - or
+      - and
+    - name: limit
+      description: Max number of results to retrieve.
+      required: false
+      isArray: false
+      defaultValue: "50"
+    - name: time_range
+      description: description
+      required: false
+      isArray: false
+      defaultValue: Time range to look back. Expected syntax is a human readable time
+        range, e.g. 60 minutes, 6 hours, 1 day etc.
+    - default: false
+      defaultValue: "10"
+      description: The amount of time (in seconds) that a request waits for the query
+        response before a timeout occurs.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MicrosoftATP.HuntProcessDetails.Result
+      description: The query results.
+      type: String
   dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true
