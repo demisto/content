@@ -3189,7 +3189,7 @@ def cancel_action_command(client, args):
         client.cancel_action(action_id, body)
     except Exception as e:
         if '404' in str(e):
-            raise Exception(f'Action ID {action_id} could not be found. Make sure you entered the correct ID.')
+            raise DemistoException(f'Action ID {action_id} could not be found. Make sure you entered the correct ID.')
         raise
 
     return CommandResults(
