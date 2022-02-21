@@ -4,9 +4,21 @@ import ansible_runner  # pylint: disable=E0401
 import json
 from typing import Dict, cast, List, Union, Any
 
-
-UNEXPECTED_EVENTS = [
-    'verbose'
+UNHANDLED_ERROR_EVENT_TYPES = [
+    # "runner_on_failed" and "runner_on_unreachable" are handled errors
+    "warning",
+    "system_warning",
+    "verbose",
+    "runner_on_error",
+    "runner_on_no_hosts",
+    "runner_on_async_failed",
+    "runner_item_on_failed",
+    "playbook_on_no_hosts_matched",
+    "playbook_on_no_hosts_remaining",
+    "playbook_on_not_import_for_host",
+    "debug",
+    "deprecated",
+    "error"
 ]
 
 # Dict to Markdown Converter adapted from https://github.com/PolBaladas/torsimany/
@@ -229,13 +241,13 @@ def generate_ansible_inventory(args: Dict[str, Any], int_params: Dict[str, Any],
     return inventory, sshkey
 
 
-def is_permission_error(unexpected_events: List[Dict[str, Any]]) -> bool:
-    """ Iterates the unexpected events retrieved from ansible_runner.run() method.
+def is_permission_error(unhandled_errors: List[Dict[str, Any]]) -> bool:
+    """ Iterates the unhandled error events retrieved from ansible_runner.run() method.
     If the stdout property of any of them contains the string "PermissionError: [Errno 13]",
     it indicates that the the docker container runs the command not as a root user.
 
     Args:
-        unexpected_events (List): The list of the unexpected events.
+        unhandled_errors (List): The list of the unexpected events.
 
     Returns:
         bool: Whether or not a permission error message was detected.
@@ -244,7 +256,7 @@ def is_permission_error(unexpected_events: List[Dict[str, Any]]) -> bool:
     def is_permission_error_event(e: Dict[str, Any]) -> bool:
         return e['event'] == 'verbose' and 'PermissionError: [Errno 13]' in e['stdout']
 
-    return any(is_permission_error_event(e) for e in unexpected_events)
+    return any(is_permission_error_event(e) for e in unhandled_errors)
 
 
 def generic_ansible(integration_name: str, command: str,
@@ -313,10 +325,10 @@ def generic_ansible(integration_name: str, command: str,
                            omit_event_data=True, ssh_key=sshkey, module_args=module_args, forks=fork_count)
 
     results = []
-    unexpected_results = []
+    unhandled_errors = []
     outputs_key_field = ''
     for each_host_event in r.events:
-        demisto.debug("%s: %s\n" % (each_host_event['event'], each_host_event))
+        demisto.debug("[%s]: %s\n" % (each_host_event['event'], each_host_event))
         if each_host_event['event'] in ["runner_on_ok", "runner_on_unreachable", "runner_on_failed"]:
 
             # parse results
@@ -362,18 +374,31 @@ def generic_ansible(integration_name: str, command: str,
 
             if each_host_event['event'] in ["runner_on_failed", "runner_on_unreachable"]:
                 return_error(msg)
-        elif each_host_event['event'] in UNEXPECTED_EVENTS:
-            unexpected_results.append(each_host_event)
+        elif each_host_event['event'] in UNHANDLED_ERROR_EVENT_TYPES:
+            unhandled_errors.append(each_host_event)
 
-    if unexpected_results:
-        err = 'Got unexpected events from Ansible. '
-        if is_permission_error(unexpected_results):
-            err += 'Make sure the "demisto/ansible-runner" container runs as a root user. ' \
-                   'For futher information, refer to the following guide:\n' \
-                   'https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-5/cortex-xsoar-admin/' \
-                   'docker/docker-hardening-guide/run-docker-with-non-root-internal-users.html'
-        err += '\nRaw events data:\n' + json.dumps(unexpected_results, indent=4)
-        raise DemistoException(err)
+    if unhandled_errors:
+        if is_permission_error(unhandled_errors):
+            raise DemistoException(
+                'Got unexpected events from Ansible. '
+                'Make sure the "demisto/ansible-runner" container runs as a root user. '
+                'For futher information, refer to the following guide:\n'
+                'https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-5/cortex-xsoar-admin/'
+                'docker/docker-hardening-guide/run-docker-with-non-root-internal-users.html'
+            )
+        elif all(e['event'] in ['verbose', 'warning', 'system_warning'] for e in unhandled_errors):
+            # we address such errors only if no expected results were retrieved from ansible runner.
+            if not results:
+                raise DemistoException(
+                    'Got unexpected events from Ansible. '
+                    'For more details, run the command in debug mode and review the events '
+                    'returned from ansible runner.'
+                )
+        else:
+            raise DemistoException(
+                'Got unexpected events from Ansible.\n'
+                'Raw data:\n' + json.dumps(unhandled_errors, indent=4)
+            )
 
     return CommandResults(
         readable_output=readable_output,
