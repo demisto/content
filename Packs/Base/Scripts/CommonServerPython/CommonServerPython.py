@@ -1960,7 +1960,7 @@ class JsonTransformer:
                 [u'{key}: {val}'.format(key=k, val=flattenCell(v, is_pretty)) for k, v in json_input.items()])  # for BC
 
         str_lst = []
-        prev_path = []
+        prev_path: List[Union[str, int]] = []
         for path, key, val in self.json_to_path_generator(json_input):
             if path != prev_path:  # need to construct tha `path` string only of it changed from the last one
                 common_prefix_index = len(os.path.commonprefix((prev_path, path)))  # type: ignore
