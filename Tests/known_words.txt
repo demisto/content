@@ -1,4 +1,5 @@
 Phishing
+SplunkPy
 remediate
 playbook
 firewalls
@@ -40,6 +41,7 @@ regex
 Bambenek
 csv
 Cloudflare
+PenfieldAssign
 DShield
 Feodo
 Blocklist
@@ -67,6 +69,7 @@ NoneType
 CreateIncidents
 EML
 LastSeen
+Lastline
 IntelGraph
 Accenture
 CTI
@@ -86,3 +89,7 @@ Gitlab
 GitHub
 DomainTools
 Lastline
+TAXII
+Syslog
+DomainTools
+replyTo

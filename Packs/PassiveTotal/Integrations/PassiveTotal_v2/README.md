@@ -1728,7 +1728,7 @@ Retrieves a summary data card associated with the given query.
 >### Data Card Summary
 >|Name|Type|Netblock|Autonomous System Number|Host Provider|Operating System|Data Card Summary|
 >|---|---|---|---|---|---|---|
->| 1.1.1.1 | IP Address | 1.1.1.0/24 | AS13335 - CLOUDFLARENET | Cloudflare | CentOS | Resolutions: [1997](https:<span>//</span>community.pt.com/search/1.1.1.1/resolutions), Services: [3](https:<span>//</span>community.pt.com/search/1.1.1.1/services), Certificates: [3742](https:<span>//</span>community.pt.com/search/1.1.1.1/domaincertificates), Hashes: [1000](https:<span>//</span>community.pt.com/search/1.1.1.1/hashes), Projects: [4](https:<span>//</span>community.pt.com/search/1.1.1.1/projects), Articles: 0, Trackers: [3983](https:<span>//</span>community.pt.com/search/1.1.1.1/trackers), Components: [914](https:<span>//</span>community.pt.com/search/1.1.1.1/components), Host Pairs: [6987](https:<span>//</span>community.pt.com/search/1.1.1.1/hostpairs), Reverse Dns: [5](https:<span>//</span>community.pt.com/search/1.1.1.1/dns), Cookies: [23346](https:<span>//</span>community.pt.com/search/1.1.1.1/cookies) |
+>| 1.1.1.1 | IP Address | 1.1.1.0/24 | AS13335 - CLOUDFLARENET | Cloudflare | CentOS | Resolutions: [1997](https://community.pt.com/search/1.1.1.1/resolutions), Services: [3](https://community.pt.com/search/1.1.1.1/services), Certificates: [3742](https://community.pt.com/search/1.1.1.1/domaincertificates), Hashes: [1000](https://community.pt.com/search/1.1.1.1/hashes), Projects: [4](https://community.pt.com/search/1.1.1.1/projects), Articles: 0, Trackers: [3983](https://community.pt.com/search/1.1.1.1/trackers), Components: [914](https://community.pt.com/search/1.1.1.1/components), Host Pairs: [6987](https://community.pt.com/search/1.1.1.1/hostpairs), Reverse Dns: [5](https://community.pt.com/search/1.1.1.1/dns), Cookies: [23346](https://community.pt.com/search/1.1.1.1/cookies) |
 
 
 ### pt-get-reputation
@@ -1789,7 +1789,7 @@ Gets reputation for a given domain, host or IP.
 >### Reputation Rules
 >|Name|Description|Severity|
 >|---|---|---|
->| [RiskIQ Intel Article](https:<span>//</span>community.pt.com/article/d0bf5d18) | Vermilion Strike: Linux and Windows Re-implementation of Cobalt Strike | 5 |
+>| [RiskIQ Intel Article](https://community.pt.com/article/d0bf5d18) | Vermilion Strike: Linux and Windows Re-implementation of Cobalt Strike | 5 |
 
 
 ### ip
@@ -2198,7 +2198,7 @@ Retrieves the attack surface information of the individual's account.
 >### Attack Surface(s)
 >|ID|Name|High Severity|Medium Severity|Low Severity|
 >|---|---|---|---|---|
->| 88256 | [RiskIQ, Inc.](https:<span>//</span>community.pt.com/attack-surfaces/88256) | 13 observations | 4 observations | 165 observations |
+>| 88256 | [RiskIQ, Inc.](https://community.pt.com/attack-surfaces/88256) | 13 observations | 4 observations | 165 observations |
 
 
 ### pt-list-third-party-attack-surface
@@ -2297,8 +2297,8 @@ Retrieves the attack surface observations by severity level for the given third-
 >### Attack Surface(s)
 >|ID|Name|High Severity|Medium Severity|Low Severity|
 >|---|---|---|---|---|
->| 45998 | [Mitsubishi Corporation](https:<span>//</span>community.pt.com/attack-surfaces/45998) | 3 observations | 35 observations | 92 observations |
->| 371662 | [Aeroflot-Russian Airlines](https:<span>//</span>community.pt.com/attack-surfaces/371662) | 7 observations | 8 observations | 16 observations |
+>| 45998 | [Mitsubishi Corporation](https://community.pt.com/attack-surfaces/45998) | 3 observations | 35 observations | 92 observations |
+>| 371662 | [Aeroflot-Russian Airlines](https://community.pt.com/attack-surfaces/371662) | 7 observations | 8 observations | 16 observations |
 
 
 ### pt-list-third-party-attack-surface-insights

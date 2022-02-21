@@ -1,0 +1,224 @@
+commonfields:
+  id: XFE
+  version: -1
+name: XFE
+display: IBM X-Force Exchange (Deprecated)
+category: Data Enrichment & Threat Intelligence
+deprecated: true
+description: Deprecated. Use the IBM X-Force Exchange v2 integration instead.
+configuration:
+- display: Language
+  name: Language
+  defaultvalue: en-US
+  type: 0
+  required: true
+- display: API Key
+  name: authentication
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: IP Threshold. Minimum risk score for the IP to be consodered malicious
+    (ranges from 1 to 10).
+  name: ipThreshold
+  defaultvalue: "7"
+  type: 0
+  required: false
+- display: URL Threshold. Minimum risk score for the URL to be consodered malicious
+    (ranges from 1 to 10).
+  name: urlThreshold
+  defaultvalue: "7"
+  type: 0
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: URL to be checked
+    - name: long
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Should we return full response with detected malware on the URLs
+      defaultValue: "false"
+    - name: threshold
+      description: If the score is above the given threshold, will be considered malicious.
+        If threshold is not specified, the default URL threshold, as configured in
+        the instance settings, will be used.
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: URL.Malicious.Score
+      description: For malicious URLs, the score from the vendor
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Check the given URL reputation
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: The file hash md5/sha1/sha256 to check
+    - name: long
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Should we return full response
+      defaultValue: "false"
+    outputs:
+    - contextPath: File.MD5
+      description: Bad hash MD5
+    - contextPath: File.SHA1
+      description: Bad hash SHA1
+    - contextPath: File.SHA256
+      description: Bad hash SHA256
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: File.Malicious.Score
+      description: For malicious files, the score from the vendor
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Check file reputation
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP to check
+    - name: long
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Should we return full response
+      defaultValue: "false"
+    - name: threshold
+      description: If the score is above the given threshold, will be considered malicious.
+        If threshold is not specified, the default IP threshold, as configured in
+        the instance settings, will be used.
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IP found
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: IP.Malicious.Score
+      description: For malicious IPs, the score from the vendor
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Check IP reputation
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: The domain to check
+    - name: long
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Should we return full response
+      defaultValue: "false"
+    - name: threshold
+      description: If the score is above the given threshold, will be considered malicious.
+        If threshold is not specified, the default URL threshold, as configured in
+        the instance settings, will be used.
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: URL.Malicious.Score
+      description: For malicious URLs, the score from the vendor
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Check domain reputation
+  - name: cve-search
+    arguments:
+    - name: cveId
+      required: true
+      default: true
+      description: The cve to search for
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE
+    - contextPath: CVE.Published
+      description: The date this was published
+    - contextPath: CVE.Modified
+      description: When CVE was last modified
+    - contextPath: CVE.Description
+      description: The CVE description
+    description: Search for details about the given CVE
+  - name: cve-latest
+    arguments:
+    - name: limit
+      default: true
+      description: The number of results to return
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE
+    - contextPath: CVE.Published
+      description: The date this was published
+    - contextPath: CVE.Modified
+      description: When CVE was last modified
+    - contextPath: CVE.Description
+      description: The CVE description
+    description: Return the latest vulnerabilities found
+  runonce: false
+fromversion: 5.0.0
+tests:
+- No tests - deprecated
