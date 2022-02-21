@@ -8978,6 +8978,9 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
 
 
 def get_fetch_run_time_with_look_back(last_run, first_fetch, look_back=0, timezone=0, date_format='%Y-%m-%dT%H:%M:%S'):
+    """
+    Gets the time range for fetch
+    """
     last_run_time = last_run and 'time' in last_run and last_run['time']
     now = datetime.utcnow() + timedelta(hours=timezone)
     if not last_run_time:
@@ -8993,6 +8996,9 @@ def get_fetch_run_time_with_look_back(last_run, first_fetch, look_back=0, timezo
 
 
 def look_for_incidents_in_last_run(last_run, fetch_limit):
+    """
+    Looks for incident in the LastRun object
+    """
     incidents = []
     if 'incidents' in last_run and len(last_run['incidents']) > 0:
         incidents = last_run['incidents']
@@ -9002,6 +9008,9 @@ def look_for_incidents_in_last_run(last_run, fetch_limit):
 
 
 def get_incidents_from_response(incidents_res, last_run, id_field='id'):
+    """
+    Remove duplicates incidents from response
+    """
     found_incidents = last_run.get('found_incident_ids', {})
 
     incidents = []
@@ -9013,6 +9022,9 @@ def get_incidents_from_response(incidents_res, last_run, id_field='id'):
 
 
 def get_latest_incident_time(incidents, created_time_field, date_format='%Y-%m-%dT%H:%M:%S'):
+    """
+    Gets the latest incident occurred time
+    """
     latest_incident_time = datetime.strptime(incidents[0][created_time_field], date_format)
 
     for incident in incidents:
@@ -9024,6 +9036,9 @@ def get_latest_incident_time(incidents, created_time_field, date_format='%Y-%m-%
 
 
 def remove_old_incident_ids(found_incidents_ids, current_time, look_back):
+    """
+    Removes old incident ids
+    """
     look_back_in_seconds = look_back * 60
     deletion_threshold_in_seconds = look_back_in_seconds * 2
 
@@ -9037,6 +9052,9 @@ def remove_old_incident_ids(found_incidents_ids, current_time, look_back):
 
 
 def set_next_fetch_run(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back, created_time_field, id_field='id', date_format='%Y-%m-%dT%H:%M:%S'):
+    """
+    Sets the next run
+    """
     found_incidents = last_run.get('found_incident_ids', {})
     current_time = int(time.time())
 
