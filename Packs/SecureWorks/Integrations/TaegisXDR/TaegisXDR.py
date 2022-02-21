@@ -8,7 +8,12 @@ from CommonServerPython import *  # noqa: F401
 
 AUTH_ENDPOINT = "/auth/api/v2/auth/token"
 GRAPHQL_ENDPOINT = "/graphql"
-XDR_URL = "https://ctpx.secureworks.com"
+
+ENV_URLS = {
+    "us1": {"api": "https://api.ctpx.secureworks.com", "xdr": "https://ctpx.secureworks.com"},
+    "us2": {"api": "https://api.delta.taegis.secureworks.com", "xdr": "https://delta.taegis.secureworks.com"},
+    "eu": {"api": "https://api.echo.taegis.secureworks.com", "xdr": "https://echo.taegis.secureworks.com"},
+}
 
 INVESTIGATION_STATUSES = set((
     "Open",
@@ -101,7 +106,7 @@ class Client(BaseClient):
 """ COMMANDS """
 
 
-def create_investigation_command(client: Client, args=None):
+def create_investigation_command(client: Client, env: str, args=None):
     query = """
     mutation ($investigation: InvestigationInput!) {
     createInvestigation(investigation: $investigation) {
@@ -120,8 +125,11 @@ def create_investigation_command(client: Client, args=None):
 
     result = client.graphql_run(query=query, variables=variables)
 
-    investigation_url = f"{XDR_URL}/investigations/{result['data']['createInvestigation']['id']}"
-    readable_output = f"## Results\n* Created Investigation: [{result['data']['createInvestigation']['id']}]({investigation_url})"
+    investigation_url = f"{ENV_URLS[env]['xdr']}/investigations/{result['data']['createInvestigation']['id']}"
+    readable_output = f"""
+## Results
+* Created Investigation: [{result['data']['createInvestigation']['id']}]({investigation_url})
+"""
     outputs = result["data"]["createInvestigation"]
 
     results = CommandResults(
@@ -135,7 +143,7 @@ def create_investigation_command(client: Client, args=None):
     return results
 
 
-def fetch_alerts_command(client: Client, args=None):
+def fetch_alerts_command(client: Client, env: str, args=None):
     """
     The results from listing alerts is not always the most recent. It's recommended
         that specific alert IDs are utilized rather than fetching all alerts.
@@ -190,7 +198,7 @@ def fetch_alerts_command(client: Client, args=None):
     if result["data"]["alerts"]:
         readable_output += "\n\n### Alerts\n"
         for alert in result["data"]["alerts"]:
-            readable_output += f"* [{alert['message']}]({XDR_URL}/alerts/{alert['id']})\n"
+            readable_output += f"* [{alert['message']}]({ENV_URLS[env]['xdr']}/alerts/{alert['id']})\n"
 
     outputs = result["data"]["alerts"]
 
@@ -205,7 +213,7 @@ def fetch_alerts_command(client: Client, args=None):
     return results
 
 
-def fetch_investigation_alerts_command(client: Client, args=None):
+def fetch_investigation_alerts_command(client: Client, env: str, args=None):
     investigation_id = args.get("id")
     if not investigation_id:
         raise ValueError("Cannot fetch investigation, missing investigation_id")
@@ -235,7 +243,7 @@ def fetch_investigation_alerts_command(client: Client, args=None):
     if alerts:
         readable_output = "## Investigation Alerts"
         for alert in alerts:
-            readable_output += f"* [{alert['id']}]({XDR_URL}/alerts/{alert['id']})\n"
+            readable_output += f"* [{alert['id']}]({ENV_URLS[env]['xdr']}/alerts/{alert['id']})\n"
     outputs = alerts
 
     results = CommandResults(
@@ -249,7 +257,7 @@ def fetch_investigation_alerts_command(client: Client, args=None):
     return results
 
 
-def fetch_investigation_command(client: Client, args=None):
+def fetch_investigation_command(client: Client, env: str, args=None):
     investigation_id = args.get("id", None)
     page = args.get("page", 0)
     page_size = args.get("page_size", 10)
@@ -316,7 +324,7 @@ def fetch_investigation_command(client: Client, args=None):
     readable_output = f"## Results\nFound {len(outputs)} investigation(s)"
 
     for investigation in outputs:
-        readable_output += f"""\n\n### [{investigation['description']}]({XDR_URL}/investigations/{investigation["id"]})
+        readable_output += f"""\n\n### [{investigation['description']}]({ENV_URLS[env]['xdr']}/investigations/{investigation["id"]})
 * ID: {investigation['id']}
 * Priority: {investigation['priority']}
 * Status: {investigation['status']}
@@ -333,7 +341,7 @@ def fetch_investigation_command(client: Client, args=None):
     return results
 
 
-def update_investigation_command(client: Client, args=None):
+def update_investigation_command(client: Client, env: str, args=None):
     investigation_id = args.get("id")
     if not investigation_id:
         raise ValueError("Cannot fetch investigation without investigation_id defined")
@@ -363,7 +371,7 @@ def update_investigation_command(client: Client, args=None):
 
     result = client.graphql_run(query=query, variables=variables)
 
-    investigation_url = f"{XDR_URL}/investigations/{result['data']['updateInvestigation']['id']}"
+    investigation_url = f"{ENV_URLS[env]['xdr']}/investigations/{result['data']['updateInvestigation']['id']}"
     readable_output = f"## Results\n* Updated Investigation: [{result['data']['updateInvestigation']['id']}]({investigation_url})"
     outputs = result["data"]["updateInvestigation"]
 
@@ -405,27 +413,31 @@ def main():
         "test-module": test_module,
     }
 
+    if command not in commands:
+        raise NotImplementedError(
+            f'The "{command}" command has not been implemented.'
+        )
+
     PARAMS = demisto.params()
     try:
+        environment = PARAMS.get("environment", "us1").lower()
+        if not ENV_URLS.get(environment):
+            return_error(f"Unknown Environment Provided: {environment}")
+
         client = Client(
             client_id=PARAMS.get("client_id"),
             client_secret=PARAMS.get("client_secret"),
-            base_url=PARAMS.get("endpoint"),
+            base_url=ENV_URLS[environment]["api"],
             proxy=PARAMS.get("proxy", False),
             verify=PARAMS.get("verify", True),
         )
         client.auth()
 
-        if command not in commands:
-            raise NotImplementedError(
-                f'The "{command}" command has not been implemented.'
-            )
-
         if command == "test-module":
             result = test_module(client)
             return return_results(result)
         else:
-            return_results(commands[command](client=client, args=demisto.args()))
+            return_results(commands[command](client=client, env=environment, args=demisto.args()))
     except Exception as e:
         error_string = str(e)
         demisto.error(f"Error running command: {e}")

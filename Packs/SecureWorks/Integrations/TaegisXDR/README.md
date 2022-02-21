@@ -7,7 +7,7 @@
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Service URL | The URL to the Taegis API | True |
+    | Taegis Environment | The environment to utilize | True |
     | Client ID | Client ID as described in the [Taegis Documentation](https://docs.ctpx.secureworks.com/apis/api_authenticate/) | True |
     | Client Secret | Client Secret as described in the [Taegis Documentation](https://docs.ctpx.secureworks.com/apis/api_authenticate/) | True |
     | Use system proxy settings | Defines whether the system proxy is used or not | False |

@@ -6,11 +6,15 @@ display: TaegisXDR
 category: Data Enrichment & Threat Intelligence
 description: For integration with the Secureworks Taegis XDR platform
 configuration:
-- display: Service URL
-  name: endpoint
-  defaultvalue: https://api.ctpx.secureworks.com
-  type: 0
+- display: Taegis Environment
+  name: environment
+  type: 15
   required: true
+  options:
+  - US1
+  - US2
+  - EU
+  additionalinfo: Used to determine the URL and API to utilize for your tenant
 - display: Use system proxy settings
   name: proxy
   type: 8
