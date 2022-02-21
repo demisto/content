@@ -1948,7 +1948,6 @@ class JsonTransformer:
         self.func = func
         self.flatten = flatten
 
-
     def json_to_str(self, json_input, is_pretty=True):
         if self.func:
             return self.func(json_input)
@@ -1964,7 +1963,7 @@ class JsonTransformer:
         prev_path = []
         for path, key, val in self.json_to_path_generator(json_input):
             if path != prev_path:  # need to construct tha `path` string only of it changed from the last one
-                common_prefix_index = len(os.path.commonprefix((prev_path, path)))
+                common_prefix_index = len(os.path.commonprefix((prev_path, path)))  # type: ignore
                 path_suffix = path[common_prefix_index:]
 
                 str_path = []
