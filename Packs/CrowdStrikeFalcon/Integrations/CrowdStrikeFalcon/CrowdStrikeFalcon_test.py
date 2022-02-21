@@ -2851,7 +2851,7 @@ def test_upload_custom_ioc_command_successful(requests_mock):
         platforms='mac,linux',
     )
     assert '| 2020-10-01T09:09:04Z | Eicar file | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r |' \
-           in results["HumanReadable"]
+        in results["HumanReadable"]
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
 
