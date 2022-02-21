@@ -53,8 +53,7 @@ script: >-
           account['Username'] = demisto.get(l,'samAccountName')
           account['DisplayName'] = demisto.get(l,'displayName')
           account['Manager'] = demisto.get(l,'manager')
-          account['Groups'] = demisto.get(l,'memberOf').split('<br>') if demisto.get(l,'memberOf')
-  else ''
+          account['Groups'] = demisto.get(l,'memberOf').split('<br>') if demisto.get(l,'memberOf') else ''
           for attr in set(argToList(attrs)) - set(['dn','mail','name','displayName','memberOf']):
               account[attr.title()] = demisto.get(l,attr)
           accounts.append(account)
@@ -277,7 +276,7 @@ tags:
 - enhancement
 - username
 comment: |-
-  Deprecated. Use Active Directory v2, ad-get-user command instead. Use Active Directory to retrieve detailed information about a user account. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).
+  Deprecated. Use the ad-get-user command in the Active Directory v2 integration instead.account['Groups'] = demisto.get( Use Active Directory to retrieve detailed information about a user account. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).
   If no filter is provided, the result will show all users.
 enabled: true
 args:
@@ -360,5 +359,3 @@ dependson:
   - activedir|||ad-search
 fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.24398
-runonce: false
-runas: DBotWeakRole
