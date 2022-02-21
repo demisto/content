@@ -186,7 +186,7 @@ class SearchQueryBuilder(object):
         }
 
         for threat in threats:
-            rule = next(x for x in rule_enum if x['ruleName'] == threat)
+            rule = next((x for x in rule_enum if x['ruleName'] == threat), None)
 
             if not rule:
                 raise ValueError(f'There is no threat model with name {threat}.')
