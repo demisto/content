@@ -2,7 +2,8 @@ from CrowdStrikeFalconX import Client,\
     send_uploaded_file_to_sandbox_analysis_command, send_url_to_sandbox_analysis_command,\
     get_full_report_command, get_report_summary_command, get_analysis_status_command,\
     check_quota_status_command, find_sandbox_reports_command, find_submission_id_command, run_polling_command, \
-    pop_polling_related_args, is_new_polling_search, arrange_args_for_upload_func, remove_polling_related_args
+    pop_polling_related_args, is_new_polling_search, arrange_args_for_upload_func, remove_polling_related_args,\
+    DBotScoreReliability
 from TestsInput.context import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT,\
     GET_FULL_REPORT_CONTEXT, GET_REPORT_SUMMARY_CONTEXT, GET_ANALYSIS_STATUS_CONTEXT, CHECK_QUOTA_STATUS_CONTEXT,\
     FIND_SANDBOX_REPORTS_CONTEXT, FIND_SUBMISSION_ID_CONTEXT, MULTIPLE_ERRORS_RESULT, GET_FULL_REPORT_CONTEXT_EXTENDED
@@ -134,7 +135,7 @@ def test_cs_falconx_commands(command, args, http_response, context, mocker):
     """
     mocker.patch.object(Client, '_generate_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
-                    proxy=False)
+                    proxy=False, reliability=DBotScoreReliability.B)
 
     mocker.patch.object(Client, '_http_request', return_value=http_response)
 

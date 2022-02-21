@@ -24,7 +24,7 @@ configuration:
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: B - Usually reliable
   display: Source Reliability
-  name: feedReliability
+  name: reliability
   options:
   - A - Completely reliable
   - B - Usually reliable
