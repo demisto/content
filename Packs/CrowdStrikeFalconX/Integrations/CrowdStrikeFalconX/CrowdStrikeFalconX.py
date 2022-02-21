@@ -487,8 +487,7 @@ def parse_outputs(
 
                 extra_sandbox_group_outputs = keep_dict_keys(sandbox, extra_sandbox_fields)
                 for process in extra_sandbox_group_outputs.get('processes', []):
-                    if process.get('registry'):
-                        process.pop('registry')
+                    process.pop('registry', None)
                 if extra_sandbox_group_outputs:
                     resources_group_outputs['sandbox'] = extra_sandbox_group_outputs
                 indicator = parse_indicator(resources, reliability)
