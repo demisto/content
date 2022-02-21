@@ -172,7 +172,7 @@ def execute_playbook_command(client: Client, env: str, args=None):
     result = client.graphql_run(query=query, variables=variables)
 
     if not result.get("data"):
-        return_error(f"Failed to execute playbook: {result['errors'][0]['message']}")
+        raise ValueError(f"Failed to execute playbook: {result['errors'][0]['message']}")
 
     execution_url = f"{ENV_URLS[env]['xdr']}/automations/playbook-executions/{result['data']['executePlaybookInstance']['id']}"
     readable_output = f"""
@@ -272,8 +272,22 @@ def fetch_incidents(client: Client, env: str, args=None):
     include_archived = args.get("include_archived", False)
 
     query = """
-    query investigations($page: Int, $perPage: Int, $status: [String], $createdAfter: String, $orderByField: OrderFieldInput, $orderDirection: OrderDirectionInput) {
-        allInvestigations(page: $page, perPage: $perPage, status: $status, createdAfter: $createdAfter, orderByField: $orderByField, orderDirection: $orderDirection) {
+    query investigations(
+          $page: Int,
+          $perPage: Int,
+          $status: [String],
+          $createdAfter: String,
+          $orderByField: OrderFieldInput,
+          $orderDirection: OrderDirectionInput
+      ) {
+          allInvestigations(
+              page: $page,
+              perPage: $perPage,
+              status: $status,
+              createdAfter: $createdAfter,
+              orderByField: $orderByField,
+              orderDirection: $orderDirection
+          ) {
             id
             tenant_id
             description
@@ -378,22 +392,20 @@ def fetch_investigation_alerts_command(client: Client, env: str, args=None):
     result = client.graphql_run(query=query, variables=variables)
 
     if not result.get("data"):
-        return_error(f"Failed to locate investigation: {investigation_id}")
-
-    alerts = result["data"]["investigationAlerts"].get("alerts", [])
-
-    readable_output = f"## Results\nFound {len(alerts)} alerts related to investigation {investigation_id}"
-
-    if alerts:
-        readable_output = "## Investigation Alerts"
+        readable_output = f"## Results\nCould not locate investigation '{investigation_id}'"
+        alerts = []
+    else:
+        alerts = result["data"]["investigationAlerts"].get("alerts", [])
+        readable_output = f"## Results\nFound {len(alerts)} alerts related to investigation {investigation_id}"
+        if alerts:
+            readable_output += "## Investigation Alerts"
         for alert in alerts:
             readable_output += f"* [{alert['id']}]({ENV_URLS[env]['xdr']}/alerts/{alert['id']})\n"
-    outputs = alerts
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.Result",
         outputs_key_field="id",
-        outputs=outputs,
+        outputs=alerts,
         readable_output=readable_output,
         raw_response=result,
     )
@@ -517,12 +529,12 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
     result = client.graphql_run(query=query, variables=variables)
 
     if not result.get("data"):
-        return_error(f"Failed to locate playbook execution: {result['errors'][0]['message']}")
-
-    execution = result['data']["playbookExecution"]
-
-    execution_url = f"{ENV_URLS[env]['xdr']}/automations/playbook-executions/{execution['id']}"
-    readable_output = f"""
+        readable_output = f"## Results\n* Could not locate execution '{execution_id}': {result['errors'][0]['message']}"
+        outputs = {}
+    else:
+        execution = result['data']["playbookExecution"]
+        execution_url = f"{ENV_URLS[env]['xdr']}/automations/playbook-executions/{execution['id']}"
+        readable_output = f"""
 ## Results
 * Playbook Name: {execution['instance']['playbook']['name']}
 * Playbook Instance Name: {execution['instance']['name']}
@@ -536,7 +548,7 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
 {execution['outputs']}
 ```
 """
-    outputs = result["data"]["playbookExecution"]
+        outputs = result["data"]["playbookExecution"]
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.Result",
@@ -624,17 +636,16 @@ def main():
         "test-module": test_module,
     }
 
-    if command not in commands:
-        raise NotImplementedError(
-            f'The "{command}" command has not been implemented.'
-        )
-
     PARAMS = demisto.params()
     try:
+        if command not in commands:
+            raise NotImplementedError(f'The "{command}" command has not been implemented.')
+
         environment = PARAMS.get("environment", "us1").lower()
-        verify_cert = not PARAMS.get("insecure", False)
         if not ENV_URLS.get(environment):
-            return_error(f"Unknown Environment Provided: {environment}")
+            raise ValueError(f"Unknown Environment Provided: {environment}")
+
+        verify_cert = not PARAMS.get("insecure", False)
 
         client = Client(
             client_id=PARAMS.get("client_id"),
