@@ -4,5 +4,8 @@ ignore=IN126,BA108,BA109,IN145,IN124
 [file:README.md]
 ignore=RM106
 
-[file:integration-SentinelOne.yml]
+[file:SentinelOne.yml]
 ignore=IN145
+
+[file:SentinelOne_image.png]
+ignore=IM111
