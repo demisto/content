@@ -2648,7 +2648,7 @@ def test_search_custom_iocs_command_exists(requests_mock):
     )
     results = search_custom_iocs_command()
     assert '| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-01T09:09:04Z | high | md5 | testmd5 |' \
-           in results["HumanReadable"]
+        in results["HumanReadable"]
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
 
@@ -2916,7 +2916,7 @@ def test_upload_custom_ioc_command_duplicate(requests_mock, mocker):
         'resources': [{
             'row': 1,
             'value':
-                'test2.com',
+            'test2.com',
             'type': 'domain',
             'message_type': 'warning',
             'message': f"Warning: Duplicate type: '{ioc_type}' and value: '{ioc_value}' combination."
@@ -2975,7 +2975,6 @@ def test_update_custom_ioc_command(requests_mock):
             'indicators': [{'id': ioc_id, 'severity': updated_severity}]
         }:
             return True
-
     requests_mock.patch(
         f'{SERVER_URL}/iocs/entities/indicators/v1',
         json=ioc_response,
