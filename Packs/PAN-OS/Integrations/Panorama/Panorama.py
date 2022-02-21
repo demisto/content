@@ -8963,12 +8963,7 @@ def run_test_command(func: Callable):
     return_results(func(topology))
 
 
-def run_normal_command(func: Callable,
-                       demisto_args: dict) -> CommandResults:
-    """
-    Calls normal XSOAR commands that return dataclasses, converts the output into CommandResults and then
-    returns to XSOAR.
-    """
+def get_topology() -> Topology:
     demisto_params = convert_params_to_object(demisto.params())
     topology = Topology.build_from_string(
         demisto_params.hostnames,
@@ -8976,8 +8971,10 @@ def run_normal_command(func: Callable,
         demisto_params.credentials.get("password"),
         api_key=demisto_params.api_key
     )
+    return topology
 
-    result = func(topology, **demisto_args)
+
+def dataclasses_to_command_results(result: Any):
     if not result:
         command_result = CommandResults(
             readable_output="No results.",
@@ -9032,23 +9029,6 @@ def run_normal_command(func: Callable,
     )
     return_results(command_result)
     return command_result
-
-
-def run_file_command(func: Callable,
-                     demisto_args: dict) -> dict:
-    """
-    Calls inner functions that return file result objects.
-    """
-    demisto_params = convert_params_to_object(demisto.params())
-    topology = Topology.build_from_string(
-        demisto_params.hostnames,
-        demisto_params.credentials.get("identifier"),
-        demisto_params.credentials.get("password"),
-        api_key=demisto_params.api_key
-    )
-    file_result: dict = func(topology, **demisto_args)
-    return_results(file_result)
-    return file_result
 
 
 def main():
@@ -9419,20 +9399,24 @@ def main():
         elif demisto.command() == 'panorama-install-file-content-update':
             panorama_install_file_content_update_command(args)
 
-        # The following code exists PURELY to supress XSOAR linter errors. This code is
-        # unreachable as these commands are routed via the COMMAND object.
         elif demisto.command() == 'pan-os-platform-get-arp-tables':
-            run_normal_command(get_arp_tables, demisto.args())
+            topology = get_topology()
+            get_arp_tables(topology, **demisto.args())
         elif demisto.command() == 'pan-os-platform-get-route-summary':
-            run_normal_command(get_route_summaries, demisto.args())
+            topology = get_topology()
+            get_route_summaries(topology, **demisto.args())
         elif demisto.command() == 'pan-os-platform-get-routes':
-            run_normal_command(get_routes, demisto.args())
+            topology = get_topology()
+            get_routes(topology, **demisto.args())
         elif demisto.command() == 'pan-os-platform-get-system-info':
-            run_normal_command(get_system_info, demisto.args())
+            topology = get_topology()
+            get_system_info(topology, **demisto.args())
         elif demisto.command() == 'pan-os-platform-get-device-group':
-            run_normal_command(get_device_groups, demisto.args())
+            topology = get_topology()
+            get_device_groups(topology, **demisto.args())
         elif demisto.command() == 'pan-os-platform-get-template-stacks':
-            run_normal_command(get_template_stacks, demisto.args())
+            topology = get_topology()
+            get_template_stacks(topology, **demisto.args())
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
 
