@@ -1,16 +1,17 @@
-comment: Export all Incident, Context and Widget data into Json format output.
+comment: Widget Script to present the number of BoltDB partitions
 commonfields:
-  id: HealthCheckExportSummary
+  id: HealthCheckNumberOfPartitions
   version: -1
 dockerimage: demisto/python3:3.10.1.26972
 enabled: true
-name: HealthCheckExportSummary
+name: HealthCheckNumberOfPartitions
 runas: DBotWeakRole
 runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
-tags: []
+tags:
+- dynamic-section
 type: python
 fromversion: 6.0.0
 tests:

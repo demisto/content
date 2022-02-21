@@ -18,6 +18,6 @@ subtype: python3
 tags: []
 timeout: 600ns
 type: python
-fromversion: 5.5.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
