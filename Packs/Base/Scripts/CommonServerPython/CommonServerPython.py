@@ -1925,7 +1925,7 @@ class JsonTransformer:
     :return: None
     :rtype: ``None``
     """
-    def __init__(self, flatten=False, keys=None, is_nested=True, func=None):
+    def __init__(self, flatten=False, keys=None, is_nested=False, func=None):
         """
         Constructor for JsonTransformer
 
@@ -1962,23 +1962,27 @@ class JsonTransformer:
         str_lst = []
         prev_path = []  # type: ignore
         for path, key, val in self.json_to_path_generator(json_input):
+            str_path = ''
+            full_tabs = '\t' * len(path)
             if path != prev_path:  # need to construct tha `path` string only of it changed from the last one
                 common_prefix_index = len(os.path.commonprefix((prev_path, path)))  # type: ignore
                 path_suffix = path[common_prefix_index:]
 
-                str_path = []
+                str_path_lst = []
                 for i, p in enumerate(path_suffix):
                     is_list = isinstance(p, int)
                     tabs = (common_prefix_index + i) * '\t'
                     path_value = p if not is_list else '-'
-                    delim = ':' if not is_list else ''
-                    str_path.append('{tabs}**{path_value}**{delim}'.format(tabs=tabs, path_value=path_value, delim=delim))
-                str_path = '\n'.join(str_path)
-                str_lst.append(str_path)
+                    delim = ':\n' if not is_list else ''
+                    str_path_lst.append('{tabs}**{path_value}**{delim}'.format(tabs=tabs, path_value=path_value, delim=delim))
+                str_path = ''.join(str_path_lst)
                 prev_path = path
+                if path and isinstance(path[-1], int):
+                    full_tabs = '\t'
+
 
             str_lst.append(
-                '{tabs}***{key}***: {val}'.format(tabs=len(path) * '\t', key=key, val=flattenCell(val, is_pretty)))
+                '{path}{tabs}***{key}***: {val}'.format(path=str_path, tabs=full_tabs, key=key, val=flattenCell(val, is_pretty)))
 
         return '\n'.join(str_lst)
 
