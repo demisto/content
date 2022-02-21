@@ -100,10 +100,11 @@ incident_context = {'name': 'Incident ID: inc:afb5d1512a00480f53e9ad91dc3e4b55:1
                         '"system_manufacturer": "Apple Inc.", "system_product_name": "MacBookPro15,1", '
                         '"modified_timestamp": "2020-05-17T16:59:56Z"}], "created": "2020-05-17T17:30:38Z", '
                         '"start": "2020-05-17T17:30:38Z", "end": "2020-05-17T17:30:38Z", "state": "closed", '
-                        '"status": 20, "name": "Incident on SFO-M-Y81WHJ at 2020-05-17T17:30:38Z", '
+                        '"status": "New", "name": "Incident on SFO-M-Y81WHJ at 2020-05-17T17:30:38Z", '
                         '"description": "Objectives in this incident: Keep Access. '
                         'Techniques: External Remote Services. Involved hosts and end users: SFO-M-Y81WHJ.", '
-                        '"tags": ["Objective/Keep Access"], "fine_score": 38}'}
+                        '"tags": ["Objective/Keep Access"], "fine_score": 38, '
+                        '"mirror_direction": null, "mirror_instance": ""}'}
 
 
 def test_incident_to_incident_context():
