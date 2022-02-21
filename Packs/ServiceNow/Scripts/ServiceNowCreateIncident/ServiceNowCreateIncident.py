@@ -28,7 +28,8 @@ Function to use the query command to retrieve records from the users table.
 def get_user(query):
     user_args = {
         'table_name': 'sys_user',
-        'query': query
+        'query': query,
+        'using': demisto.args().get('using')
     }
 
     user_result = demisto.executeCommand('servicenow-query-table', user_args)[0]
@@ -65,7 +66,8 @@ Function to use the query command to retrieve records from the groups table.
 def get_group(query):
     group_args = {
         'table_name': 'sys_user_group',
-        'query': query
+        'query': query,
+        'using': demisto.args().get('using')
     }
 
     group_result = demisto.executeCommand('servicenow-query-table', group_args)[0]
