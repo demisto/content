@@ -2,7 +2,7 @@
     "name": "Common Playbooks",
     "description": "Frequently used playbooks pack.",
     "support": "xsoar",
-    "currentVersion": "2.1.10",
+    "currentVersion": "2.1.13",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -61,7 +61,7 @@
             "display_name": "Akamai WAF"
         },
         "ImageOCR": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Image OCR"
         },
         "rasterize": {
@@ -81,7 +81,7 @@
             "display_name": "ARIAPacketIntelligence"
         },
         "Phishing": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Phishing"
         },
         "RiskSense": {
@@ -157,7 +157,7 @@
             "display_name": "Rapid7 Nexpose"
         },
         "Active_Directory_Query": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Active Directory Query"
         },
         "CrowdStrikeFalcon": {

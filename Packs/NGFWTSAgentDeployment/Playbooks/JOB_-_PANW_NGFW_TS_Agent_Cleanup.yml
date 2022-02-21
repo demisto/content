@@ -1,0 +1,188 @@
+id: JOB - PANW NGFW TS Agent Cleanup
+inputs: []
+name: JOB - PANW NGFW TS Agent Cleanup
+description: Run this playbook as a job to cleanup disconnected TS Agents
+outputs: []
+starttaskid: '0'
+fromversion: 6.0.0
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Start
+      id: 77c27c7e-a2df-4cd6-8ec1-6a177dfe190c
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 77c27c7e-a2df-4cd6-8ec1-6a177dfe190c
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 65\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: get
+      cmd:
+        simple: <show><config><running></running></config></show>
+      extend-context:
+        simple: TSAgent=.=val.response.result.config.devices.entry.vsys.entry['ts-agent']
+      type:
+        simple: op
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Run any command supported in the API.
+      id: 3943b0f0-ca0d-49dc-8940-304037f1208e
+      iscommand: true
+      name: Get List of TS agents
+      script: '|||panorama'
+      type: regular
+      version: -1
+    taskid: 3943b0f0-ca0d-49dc-8940-304037f1208e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 225\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 109dbb9e-ed14-4e3d-8599-09c77915c636
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 109dbb9e-ed14-4e3d-8599-09c77915c636
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 925\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
+        as Panorama, it also pushes the Policies to the specified Device Group in
+        the instance.
+      id: a3819db3-33b1-49ec-8bac-360780b8597c
+      iscommand: false
+      name: PAN-OS Commit Configuration
+      playbookId: PAN-OS Commit Configuration
+      type: playbook
+      version: -1
+    taskid: a3819db3-33b1-49ec-8bac-360780b8597c
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 720,\n    \"y\": 740\n  }\n}"
+  '9':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: TSAgent
+          operator: isExists
+      label: yes
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '5'
+      yes:
+      - '10'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 77a6fbc0-6e9b-45f5-83d7-67d87fd7cdb7
+      iscommand: false
+      name: TSAgents Exist?
+      description: Check the TS Agent exists on the firewall
+      type: condition
+      version: -1
+    taskid: 77a6fbc0-6e9b-45f5-83d7-67d87fd7cdb7
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 400\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      TSAgent:
+        simple: ${TSAgent.entry}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: bf94bbf2-6db9-468f-8fa3-18d08fbc9e28
+      iscommand: false
+      name: NGFW Remove Offline TS Agent
+      playbookId: NGFW Remove Offline TS Agent
+      description: Playbook to deregister agent
+      type: playbook
+      version: -1
+    taskid: bf94bbf2-6db9-468f-8fa3-18d08fbc9e28
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 720,\n    \"y\": 580\n  }\n}"
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 955,\n      \"width\": 620,\n      \"x\": 480,\n      \"y\": 65\n\
+  \    }\n  }\n}"
+tests:
+- No tests (auto formatted)
