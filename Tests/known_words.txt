@@ -41,6 +41,7 @@ regex
 Bambenek
 csv
 Cloudflare
+PenfieldAssign
 DShield
 Feodo
 Blocklist
