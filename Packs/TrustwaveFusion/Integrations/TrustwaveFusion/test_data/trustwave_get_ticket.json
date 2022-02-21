@@ -1,0 +1,47 @@
+{
+  "assetIds": [],
+  "category": "Threat Detection & Response",
+  "createdBy": "dummyuser",
+  "createdOn": "2021-12-08T17:16:27.000+00:00",
+  "customerId": 765432,
+  "customerName": "Sample Customer",
+  "description": "Ticket description.",
+  "findings": [
+    {
+      "classification": null,
+      "classificationCode": "UnauthorizedAccessOrIntrusionAttempt.",
+      "findingId": "765432:THREAT:@AXv0k6GhG2zTcaogE1vG"
+    }
+  ],
+  "impact": "HIGH",
+  "notes": [
+    {
+      "actor": "dummyuser",
+      "text": "Note A",
+      "timestamp": "2021-12-08T17:16:27.000+00:00"
+    },
+    {
+      "actor": "dummyuser",
+      "text": "Note B",
+      "timestamp": "2021-12-08T17:17:57.000+00:00"
+    },
+    {
+      "actor": "dummy_user",
+      "text": "Note C",
+      "timestamp": "2021-12-09T16:43:31.000+00:00"
+    }
+  ],
+  "number": "INA1976568",
+  "performedBy": "",
+  "priority": "HIGH",
+  "soarActions": null,
+  "soarActionsTaken": null,
+  "status": "ON_HOLD",
+  "subCategory": "Threat Operations",
+  "subject": "Test incident #354",
+  "survey": false,
+  "type": "INCIDENT",
+  "updatedBy": "internal_service",
+  "updatedOn": "2021-12-09T16:43:48.000+00:00",
+  "urgency": "MEDIUM"
+}
