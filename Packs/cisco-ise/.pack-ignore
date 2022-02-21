@@ -1,2 +1,5 @@
 [file:cisco-ise.yml]
 ignore=BA108,BA109
+
+[file:cisco-ise_image.png]
+ignore=IM111
