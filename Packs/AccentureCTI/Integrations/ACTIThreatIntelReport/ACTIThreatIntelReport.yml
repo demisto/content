@@ -64,6 +64,6 @@ script:
   feed: false
   longRunning: false
   longRunningPort: false
-fromversion: 5.5.0
+fromversion: 6.5.0
 tests:
 - ACTI Threat Intelligence Report Test
