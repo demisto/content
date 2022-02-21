@@ -195,13 +195,17 @@ def ip_command(client: Client, args: dict, reliability: DBotScoreReliability, do
 
     for analysis_result in analysis_results:
         analysis_info: dict = analysis_result.get('analysis_info', {})
-        analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
+        analysis_info, iair = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
         dbot = analysis_result.get('dbot')
 
         readable_output = tableToMarkdown('Results', analysis_info)
         indicator = Common.IP(analysis_info.get('Name', ''), dbot)
+        output_context_iair = {
+            'IAIR_links_playbookauto':iair if len(iair)>0 else 'NA'
+        }
         command_results.append(CommandResults(indicator=indicator,
                                               raw_response=res,
+                                              outputs=output_context_iair,
                                               readable_output=readable_output))
 
     for val in no_match_values:
@@ -226,14 +230,17 @@ def url_command(client: Client, args: dict, reliability: DBotScoreReliability, d
 
     for analysis_result in analysis_results:
         analysis_info: dict = analysis_result.get('analysis_info', {})
-        analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
+        analysis_info, iair = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
         dbot = analysis_result.get('dbot')
 
         readable_output = tableToMarkdown('Results', analysis_info)
         indicator = Common.URL(analysis_info.get('Name', ''), dbot)
-
+        output_context_iair = {
+            'IAIR_links_playbookauto':iair if len(iair)>0 else 'NA'
+        }
         command_results.append(CommandResults(indicator=indicator,
                                               raw_response=res,
+                                              outputs=output_context_iair,
                                               readable_output=readable_output))
 
     for val in no_match_values:
@@ -258,14 +265,17 @@ def domain_command(client: Client, args: dict, reliability: DBotScoreReliability
 
     for analysis_result in analysis_results:
         analysis_info: dict = analysis_result.get('analysis_info', {})
-        analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
+        analysis_info, iair = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
         dbot = analysis_result.get('dbot')
 
         readable_output = tableToMarkdown('Results', analysis_info)
         indicator = Common.Domain(analysis_info.get('Name', ''), dbot)
-
+        output_context_iair = {
+            'IAIR_links_playbookauto':iair if len(iair)>0 else 'NA'
+        }
         command_results.append(CommandResults(indicator=indicator,
                                               raw_response=res,
+                                              outputs=output_context_iair,
                                               readable_output=readable_output))
 
     for val in no_match_values:
@@ -333,10 +343,13 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, 
             'LastPublished': str(last_published_format),
             'LastSeen': str(last_seen_format)
         }
-        analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
-
+        analysis_info, iair = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
+        output_context_iair = {
+            'IAIR_links_playbookauto':iair if len(iair)>0 else 'NA'
+        }
     return CommandResults(indicator=indicator,
                           raw_response=res,
+                          outputs=output_context_iair,
                           readable_output=tableToMarkdown('Results', analysis_info))
 
 
@@ -351,13 +364,14 @@ def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, 
 
     Returns:
         analysis_result enriched with intelligence alert and intelligence report information if available for the indicator
+        ia and ir as list for getting IA/IR into context processed by _get_ia_for_indicator function
 
     """
 
     indicator = analysis_info['MD5'] if indicatorTypeHash else analysis_info['Name']
     demisto.debug(f"getting ia for indicator {indicator}")
 
-    alerts, reports = _get_ia_for_indicator(indicator, doc_search_client)
+    alerts, reports, iair = _get_ia_for_indicator(indicator, doc_search_client)
 
     if alerts is not None:
         analysis_info['Intelligence Alerts'] = alerts if len(
@@ -366,7 +380,7 @@ def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, 
         analysis_info['Intelligence Reports'] = reports if len(
             reports) > 0 else 'No Intelligence Report has been linked to this indicator'
 
-    return analysis_info
+    return analysis_info, iair
 
 
 def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
@@ -379,10 +393,11 @@ def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
 
     Returns:
         intelligence alert and intelligence report dictionaries if api has response else None
+        ia and ir as list for getting IA/IR into context
 
     """
 
-    res = {}
+    res = {}; iair=[]
     intelligence_alerts, intelligence_reports = None, None
 
     try:
@@ -395,6 +410,11 @@ def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
         intelligence_reports = {title: IDEFENSE_URL_TEMPLATE.format(
             'intelligence_report', uuid) for title, uuid in reports.items()}
 
+        for ia in alerts.values():
+            iair.append(ia)
+        for ir in reports.values():
+            iair.append(ir)
+        
     except Exception as e:
         if 'Error in API call [403]' in e.args[0]:
             return_results(f"Intelligence Alert & Intelligence Report enrichment (if present) is not possible! As your API token is not eligible to access Document API.\n Error: {str(e)}")                                               # noqa: E501
@@ -402,7 +422,7 @@ def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
         else:
             raise e
 
-    return intelligence_alerts, intelligence_reports
+    return intelligence_alerts, intelligence_reports, iair
 
 
 def main():
