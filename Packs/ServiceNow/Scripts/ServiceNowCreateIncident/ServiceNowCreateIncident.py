@@ -118,6 +118,7 @@ incident_severity = demisto.args().get('severity')
 group_name = demisto.args().get('assigned_group')
 user_name = demisto.args().get('assignee')
 description = demisto.args().get('description')
+using = demisto.args().get('using')
 user_id = None
 group_id = None
 
@@ -147,6 +148,7 @@ if group_id:
     fields.append('assignment_group' + '=' + group_id)
 
 command_args['fields'] = ';'.join(fields)
+command_args['using'] = using
 
 command_res = demisto.executeCommand('servicenow-create-record', command_args)
 result = {}
