@@ -10,6 +10,7 @@ urllib3.disable_warnings()
 DBOT_SCORE_DICT = {'malicious': Common.DBotScore.BAD,
                    'suspicious': Common.DBotScore.SUSPICIOUS,
                    'no specific threat': Common.DBotScore.GOOD}
+OUTPUTS_PREFIX = 'csfalconx.resource'
 
 
 def convert_environment_id_string_to_int(
@@ -936,7 +937,7 @@ def find_submission_id_command(
                                                 resources_fields=resources_fields)
 
     return CommandResults(outputs_key_field='sha256',  # todo is this still correct?
-                          outputs_prefix='csfalconx.resource',
+                          outputs_prefix=OUTPUTS_PREFIX,
                           outputs=filtered_outputs,
                           readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs),
                           raw_response=[response],
