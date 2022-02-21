@@ -1776,10 +1776,10 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
                     result += str(update_detection_request([incident_id], 'closed'))
 
                 # status field in CS Falcon is mapped to State field in XSOAR
-                elif 'state' in delta:
-                    demisto.debug(f'Detection with remote ID {incident_id} state will change to '
-                                  f'"{data.get("state")}" in remote system.')
-                    result += str(update_detection_request([incident_id], data.get('state')))
+                elif 'status' in delta:
+                    demisto.debug(f'Detection with remote ID {incident_id} status will change to '
+                                  f'"{data.get("status")}" in remote system.')
+                    result += str(update_detection_request([incident_id], data.get('status')))
 
                 if result:
                     demisto.debug(f'Detection updated successfully. Result: {result}')
