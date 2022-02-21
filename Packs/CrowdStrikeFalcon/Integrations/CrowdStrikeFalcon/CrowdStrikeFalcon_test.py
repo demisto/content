@@ -2648,7 +2648,7 @@ def test_search_custom_iocs_command_exists(requests_mock):
     )
     results = search_custom_iocs_command()
     assert '| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-01T09:09:04Z | high | md5 | testmd5 |' \
-        in results["HumanReadable"]
+           in results["HumanReadable"]
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
 
@@ -2702,7 +2702,9 @@ def test_search_custom_iocs_command_filter(requests_mock):
         }]
     }
     requests_mock.get(
-        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27%5D&limit=50',  # noqa: E501
+        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27'
+        f'%5D&limit=50',
+        # noqa: E501
         json=ioc_response,
         status_code=200
     )
@@ -2710,7 +2712,8 @@ def test_search_custom_iocs_command_filter(requests_mock):
         types=ioc_type,
         values=ioc_value,
     )
-    assert f'| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-01T09:09:04Z | high | {ioc_type} | {ioc_value} |' in results["HumanReadable"]  # noqa: E501
+    assert f'| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-01T09:09:04Z | high | {ioc_type} | {ioc_value} |' in \
+           results["HumanReadable"]  # noqa: E501
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == ioc_value
 
 
@@ -2743,7 +2746,9 @@ def test_get_custom_ioc_command_exists(requests_mock):
     }
 
     requests_mock.get(
-        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27%5D&limit=50',  # noqa: E501
+        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27'
+        f'%5D&limit=50',
+        # noqa: E501
         json=ioc_response,
         status_code=200,
     )
@@ -2846,7 +2851,7 @@ def test_upload_custom_ioc_command_successful(requests_mock):
         platforms='mac,linux',
     )
     assert '| 2020-10-01T09:09:04Z | Eicar file | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r |' \
-        in results["HumanReadable"]
+           in results["HumanReadable"]
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
 
@@ -2911,7 +2916,7 @@ def test_upload_custom_ioc_command_duplicate(requests_mock, mocker):
         'resources': [{
             'row': 1,
             'value':
-            'test2.com',
+                'test2.com',
             'type': 'domain',
             'message_type': 'warning',
             'message': f"Warning: Duplicate type: '{ioc_type}' and value: '{ioc_value}' combination."
@@ -2970,6 +2975,7 @@ def test_update_custom_ioc_command(requests_mock):
             'indicators': [{'id': ioc_id, 'severity': updated_severity}]
         }:
             return True
+
     requests_mock.patch(
         f'{SERVER_URL}/iocs/entities/indicators/v1',
         json=ioc_response,
@@ -3413,16 +3419,21 @@ def test_list_incident_summaries_command_no_given_ids(requests_mock, mocker):
     from CrowdStrikeFalcon import list_incident_summaries_command
 
     query_response = {"errors": [], "meta": {"pagination": {"limit": 0, "offset": 0, "total": 0},
-    "powered_by": "string", "query_time": 0, "trace_id": "string", "writes": {"resources_affected": 0 }}, "resources": ['id1']}
+                                             "powered_by": "string", "query_time": 0, "trace_id": "string",
+                                             "writes": {"resources_affected": 0}}, "resources": ['id1']}
 
     entity_response = {"errors": [],
-                       "meta": {"pagination": {"limit": 0, "offset": 0,"total": 0}, "powered_by":"string"},
+                       "meta": {"pagination": {"limit": 0, "offset": 0, "total": 0}, "powered_by": "string"},
                        "resources": [{"assigned_to": "Test no ids", "assigned_to_name": "string", "cid": "string",
-                                      "created": "2022-02-21T16:36:57.759Z", "description": "string", "end": "2022-02-21T16:36:57.759Z",
+                                      "created": "2022-02-21T16:36:57.759Z", "description": "string",
+                                      "end": "2022-02-21T16:36:57.759Z",
                                       "events_histogram": [{"count": 0}], "fine_score": 0, "host_ids": ["string"],
-                                      "hosts":[{"agent_load_flags": "string", "tags": ["string"]}], "incident_id":"string", "incident_type":0,
-                                      "lm_host_ids":["string"], "start":"2022-02-21T16:36:57.759Z", "state":"string", "status":0,
-                                      "tactics":["string"], "tags":["string"], "techniques":["string"], "users":["string"], "visibility":0}]}
+                                      "hosts": [{"agent_load_flags": "string", "tags": ["string"]}],
+                                      "incident_id": "string", "incident_type": 0,
+                                      "lm_host_ids": ["string"], "start": "2022-02-21T16:36:57.759Z", "state": "string",
+                                      "status": 0,
+                                      "tactics": ["string"], "tags": ["string"], "techniques": ["string"],
+                                      "users": ["string"], "visibility": 0}]}
 
     requests_mock.get(
         f'{SERVER_URL}/incidents/queries/incidents/v1',
@@ -3455,16 +3466,21 @@ def test_list_incident_summaries_command_with_given_ids(requests_mock, mocker):
     from CrowdStrikeFalcon import list_incident_summaries_command
 
     query_response = {"errors": [], "meta": {"pagination": {"limit": 0, "offset": 0, "total": 0},
-    "powered_by": "string", "query_time": 0, "trace_id": "string", "writes": {"resources_affected": 0 }}, "resources": ['id1']}
+                                             "powered_by": "string", "query_time": 0, "trace_id": "string",
+                                             "writes": {"resources_affected": 0}}, "resources": ['id1']}
 
     entity_response = {"errors": [],
-                       "meta": {"pagination": {"limit": 0, "offset": 0,"total": 0}, "powered_by":"string"},
+                       "meta": {"pagination": {"limit": 0, "offset": 0, "total": 0}, "powered_by": "string"},
                        "resources": [{"assigned_to": "Test with ids", "assigned_to_name": "string", "cid": "string",
-                                      "created": "2022-02-21T16:36:57.759Z", "description": "string", "end": "2022-02-21T16:36:57.759Z",
+                                      "created": "2022-02-21T16:36:57.759Z", "description": "string",
+                                      "end": "2022-02-21T16:36:57.759Z",
                                       "events_histogram": [{"count": 0}], "fine_score": 0, "host_ids": ["string"],
-                                      "hosts":[{"agent_load_flags": "string", "tags": ["string"]}], "incident_id":"string", "incident_type":0,
-                                      "lm_host_ids":["string"], "start":"2022-02-21T16:36:57.759Z", "state":"string", "status":0,
-                                      "tactics":["string"], "tags":["string"], "techniques":["string"], "users":["string"], "visibility":0}]}
+                                      "hosts": [{"agent_load_flags": "string", "tags": ["string"]}],
+                                      "incident_id": "string", "incident_type": 0,
+                                      "lm_host_ids": ["string"], "start": "2022-02-21T16:36:57.759Z", "state": "string",
+                                      "status": 0,
+                                      "tactics": ["string"], "tags": ["string"], "techniques": ["string"],
+                                      "users": ["string"], "visibility": 0}]}
 
     get_incidents_ids_func = requests_mock.get(
         f'{SERVER_URL}/incidents/queries/incidents/v1',
