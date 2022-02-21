@@ -42,7 +42,7 @@ class Client(BaseClient):
         client_secret: str,
         base_url: str,
         proxy: bool = False,
-        verify: bool = False,
+        verify: bool = True,
     ) -> None:
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.base_url = base_url
@@ -630,6 +630,7 @@ def main():
     PARAMS = demisto.params()
     try:
         environment = PARAMS.get("environment", "us1").lower()
+        verify_cert = not PARAMS.get("insecure", False)
         if not ENV_URLS.get(environment):
             return_error(f"Unknown Environment Provided: {environment}")
 
@@ -638,7 +639,7 @@ def main():
             client_secret=PARAMS.get("client_secret"),
             base_url=ENV_URLS[environment]["api"],
             proxy=PARAMS.get("proxy", False),
-            verify=PARAMS.get("verify", True),
+            verify=verify_cert,
         )
         client.auth()
 
