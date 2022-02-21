@@ -143,6 +143,55 @@ def create_investigation_command(client: Client, env: str, args=None):
     return results
 
 
+def execute_playbook_command(client: Client, env: str, args=None):
+    playbook_id = args.get("id")
+    if not playbook_id:
+        raise ValueError("Cannot execute playbook, missing playbook id")
+
+    query = """
+    mutation executePlaybookInstance(
+        $playbookInstanceId: ID!
+        $parameters: JSONObject
+    ) {
+        executePlaybookInstance(
+            playbookInstanceId: $playbookInstanceId
+            parameters: $parameters
+        ) {
+            id
+        }
+    }
+    """
+
+    playbook_inputs = args.get("inputs", {})
+
+    variables = {
+        "playbookInstanceId": playbook_id,
+        "parameters": playbook_inputs,
+    }
+
+    result = client.graphql_run(query=query, variables=variables)
+
+    if not result.get("data"):
+        return_error(f"Failed to execute playbook: {result['errors'][0]['message']}")
+
+    execution_url = f"{ENV_URLS[env]['xdr']}/automations/playbook-executions/{result['data']['executePlaybookInstance']['id']}"
+    readable_output = f"""
+## Results
+* Executed Playbook Instance: [{result['data']['executePlaybookInstance']['id']}]({execution_url})
+"""
+    outputs = result["data"]["executePlaybookInstance"]
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.Result",
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=result,
+    )
+
+    return results
+
+
 def fetch_alerts_command(client: Client, env: str, args=None):
     """
     The results from listing alerts is not always the most recent. It's recommended
@@ -434,6 +483,70 @@ def fetch_investigation_command(client: Client, env: str, args=None):
     return results
 
 
+def fetch_playbook_execution_command(client: Client, env: str, args=None):
+    execution_id = args.get("id")
+    if not execution_id:
+        raise ValueError("Cannot fetch playbook execution, missing execution id")
+
+    query = """
+    query playbookExecution($playbookExecutionId: ID!) {
+      playbookExecution(playbookExecutionId: $playbookExecutionId) {
+        id
+        state
+        instance {
+          name
+          playbook {
+              name
+          }
+        }
+        inputs
+        createdAt
+        updatedAt
+        executionTime
+        outputs
+      }
+    }
+    """
+
+    variables = {
+        "playbookExecutionId": execution_id
+    }
+
+    result = client.graphql_run(query=query, variables=variables)
+
+    if not result.get("data"):
+        return_error(f"Failed to locate playbook execution: {result['errors'][0]['message']}")
+
+    execution = result['data']["playbookExecution"]
+
+    execution_url = f"{ENV_URLS[env]['xdr']}/automations/playbook-executions/{execution['id']}"
+    readable_output = f"""
+## Results
+* Playbook Name: {execution['instance']['playbook']['name']}
+* Playbook Instance Name: {execution['instance']['name']}
+* Executed Playbook Instance: [{execution['id']}]({execution_url})
+* Executed Time: {execution['createdAt']}
+* Run Time: {execution['executionTime']}
+* Execution State: {execution['state']}
+* Execution Outputs:
+
+```
+{execution['outputs']}
+```
+"""
+    outputs = result["data"]["playbookExecution"]
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.Result",
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=result,
+    )
+
+    return results
+
+
 def update_investigation_command(client: Client, env: str, args=None):
     investigation_id = args.get("id")
     if not investigation_id:
@@ -500,9 +613,11 @@ def main():
     commands: Dict[str, Any] = {
         "fetch-incidents": fetch_incidents,
         "taegis-create-investigation": create_investigation_command,
+        "taegis-execute-playbook": execute_playbook_command,
         "taegis-fetch-alerts": fetch_alerts_command,
         "taegis-fetch-investigation": fetch_investigation_command,
         "taegis-fetch-investigation-alerts": fetch_investigation_alerts_command,
+        "taegis-fetch-playbook-execution": fetch_playbook_execution_command,
         "taegis-update-investigation": update_investigation_command,
         "test-module": test_module,
     }
