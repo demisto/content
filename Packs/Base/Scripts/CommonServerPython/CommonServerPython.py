@@ -1980,7 +1980,6 @@ class JsonTransformer:
                 if path and isinstance(path[-1], int):
                     full_tabs = '\t'
 
-
             str_lst.append(
                 '{path}{tabs}***{key}***: {val}'.format(path=str_path, tabs=full_tabs, key=key, val=flattenCell(val, is_pretty)))
 
