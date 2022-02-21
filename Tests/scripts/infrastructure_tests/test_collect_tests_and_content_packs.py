@@ -484,6 +484,7 @@ class TestChangedScript:
             filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
                 files_string='',
                 branch_name='dummy_branch',
+                marketplace_version='xsoar',
                 conf=fake_conf,
                 id_set=fake_id_set
             )
@@ -614,7 +615,7 @@ def get_mock_test_list(get_modified_files_ret=None, mocker=None,
             return_value=get_modified_files_ret
         )
     tests, content_packs = get_test_list_and_content_packs_to_install(
-        git_diff_ret, branch_name, id_set=MOCK_ID_SET, conf=TestConf(MOCK_CONF)
+        git_diff_ret, branch_name, 'xsoar', id_set=MOCK_ID_SET, conf=TestConf(MOCK_CONF)
     )
     return tests, content_packs
 
@@ -664,6 +665,7 @@ def test_skipped_integration_should_not_be_tested(mocker):
     filtered_tests = get_test_list_and_content_packs_to_install(
         files_string='',
         branch_name='dummy_branch',
+        marketplace_version='xsoar',
         conf=TestConf(mock_conf_dict),
         id_set=fake_id_set
     )
@@ -715,6 +717,7 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
         get_test_list_and_content_packs_to_install(
             files_string='',
             branch_name='dummy_branch',
+            marketplace_version='xsoar',
             conf=fake_conf,
             id_set=fake_id_set
         )
@@ -769,6 +772,7 @@ def test_conf_has_modified(mocker):
         get_test_list_and_content_packs_to_install(
             files_string='',
             branch_name='dummy_branch',
+            marketplace_version='xsoar',
             conf=fake_conf,
             id_set=fake_id_set
         )
@@ -834,6 +838,7 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
         filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
             files_string='',
             branch_name='dummy_branch',
+            marketplace_version='xsoar',
             conf=fake_conf,
             id_set=fake_id_set
         )
@@ -915,6 +920,7 @@ class TestExtractMatchingObjectFromIdSet:
             filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
                 files_string='',
                 branch_name='dummy_branch',
+                marketplace_version='xsoar',
                 conf=fake_conf,
                 id_set=fake_id_set
             )
@@ -981,6 +987,7 @@ def test_modified_integration_content_pack_is_collected(mocker):
         filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
             files_string="",
             branch_name="dummy-branch",
+            marketplace_version='xsoar',
             conf=fake_conf,
             id_set=fake_id_set
         )
@@ -1046,6 +1053,7 @@ def test_pack_ignore_test_is_skipped(mocker):
             filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
                 files_string="",
                 branch_name="dummy-branch",
+                marketplace_version='xsoar',
                 conf=fake_conf,
                 id_set=fake_id_set
             )
@@ -1197,7 +1205,7 @@ def test_remove_tests_for_non_supported_packs(tests_to_filter, should_test_conte
                         return_value=should_test_content)
     mocker.patch.object(logging, 'debug')
     filtered_tests = copy.deepcopy(tests_to_filter)
-    res = remove_tests_for_non_supported_packs(tests_to_filter, MOCK_ID_SET)
+    res = remove_tests_for_non_supported_packs(tests_to_filter, MOCK_ID_SET, 'xsoar')
     assert res == expected_result
     if not should_test_content:
         logging.debug.assert_called_once_with(

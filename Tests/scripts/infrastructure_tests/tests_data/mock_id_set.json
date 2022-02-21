@@ -415,5 +415,19 @@
         "pack": "CortexXDR"
       }
     }
-  ]
+  ],
+  "Packs": {
+      "CortexXDR": {
+        "name": "Palo Alto Networks Cortex XDR - Investigation and Response",
+        "current_version": "4.2.18",
+        "marketplaces": [
+          "xsoar"
+        ]
+      },
+      "Partner": {
+        "marketplaces": [
+          "xsoar"
+        ]
+      }
+  }
 }
