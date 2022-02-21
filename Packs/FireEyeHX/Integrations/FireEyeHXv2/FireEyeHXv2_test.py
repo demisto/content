@@ -1564,7 +1564,7 @@ def test_fetch_incidents(mocker, demisto_args, alerts_return, call_count):
     assert setLastRun.call_count == call_count["setLastRun"]
 
 
-UPSERT_COMMAND_DATA_CASES_PARSE_ALERT_TO_INCIDENT = [
+UPSERT_COMMAND_DATA_CASES_RUN_COMMANDS_WITHOUT_POLLING = [
     (
         {"cmd": "fireeye-hx-search"},
         {"search": 1, "data_acquisition": 0, "file_acquisition": 0}
@@ -1580,7 +1580,7 @@ UPSERT_COMMAND_DATA_CASES_PARSE_ALERT_TO_INCIDENT = [
 ]
 
 
-@pytest.mark.parametrize('demisto_args, call_count', UPSERT_COMMAND_DATA_CASES_PARSE_ALERT_TO_INCIDENT)
+@pytest.mark.parametrize('demisto_args, call_count', UPSERT_COMMAND_DATA_CASES_RUN_COMMANDS_WITHOUT_POLLING)
 def test_run_commands_without_polling(mocker, demisto_args, call_count):
 
     from FireEyeHXv2 import run_commands_without_polling, Client

@@ -9,7 +9,7 @@ import re
 import urllib.parse
 import requests
 import traceback
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, Pattern
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -1485,13 +1485,9 @@ def organize_reported_at(reported_at):
         reported_at = timestamp_to_datestring(reported_at, date_format=DATE_FORMAT) + ".000Z"
     else:
         if milisecond < 10:
-            demisto.debug(f"{milisecond} BEFORE MANIPULATION")
             reported_at = reported_at[:-4] + '00' + str(milisecond) + reported_at[-1]
-            demisto.debug(f"{reported_at} AFTER MANIPULATION")
         elif milisecond < 100:
-            demisto.debug(f"{milisecond} BEFORE MANIPULATION")
             reported_at = reported_at[:-4] + '0' + str(milisecond) + reported_at[-1]
-            demisto.debug(f"{milisecond} BEFORE MANIPULATION")
         else:
             reported_at = reported_at[:-4] + str(milisecond) + reported_at[-1]
 
@@ -1511,7 +1507,7 @@ def query_fetch(reported_at=None, first_fetch: str = None):
     return query
 
 
-def parse_alert_to_incident(alert: Dict) -> Dict:
+def parse_alert_to_incident(alert: Dict, pattern: Pattern) -> Dict:
 
     event_type = alert.get('event_type')
     event_type = 'NewEvent' if not event_type else event_type
@@ -1530,7 +1526,7 @@ def parse_alert_to_incident(alert: Dict) -> Dict:
         indicator = event_values.get(event_indicator, '')
 
     incident_name = u'{event_type_parsed}: {indicator}'.format(
-        event_type_parsed=re.sub("([a-z])([A-Z])", "\g<1> \g<2>", event_type).title(),
+        event_type_parsed=pattern.sub("\g<1> \g<2>", event_type).title(),
         indicator=indicator
     )
 
@@ -2682,7 +2678,8 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> List:
     reported_at = alerts[-1].get("reported_at") if alerts else None
 
     # Parse the alerts as the incidents
-    incidents = [parse_alert_to_incident(alert) for alert in alerts]
+    pattern = re.compile("([a-z])([A-Z])")
+    incidents = [parse_alert_to_incident(alert, pattern) for alert in alerts]
 
     # Keeps the last reported_at for next time
     if reported_at is not None:
