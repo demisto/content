@@ -273,7 +273,7 @@ def test_get_device_by_ip(requests_mock):
     Then
     - Ensure the IP is correct and return the device values.
     """
-    mock_response = json.loads('''{"hostname":"00:0a:e4:1c:62:26","ip_address":"1.1.1.1","profile_type":"Non_IoT"}''')
+    mock_response = json.loads('''{"devices":{"hostname":"00:0a:e4:1c:62:26","ip_address":"1.1.1.1","profile_type":"Non_IoT"}}''')
     requests_mock.get('https://test.com/pub/v4.0/device/ip', json=mock_response)
 
     client = Client(base_url='https://test.com/pub/v4.0', tenant_id="foobar", verify=False)
@@ -282,4 +282,4 @@ def test_get_device_by_ip(requests_mock):
     }
     outputs = iot_get_device_by_ip(client, args).outputs
 
-    assert len(outputs) == 1
+    assert outputs == {"hostname":"00:0a:e4:1c:62:26","ip_address":"1.1.1.1","profile_type":"Non_IoT"}
