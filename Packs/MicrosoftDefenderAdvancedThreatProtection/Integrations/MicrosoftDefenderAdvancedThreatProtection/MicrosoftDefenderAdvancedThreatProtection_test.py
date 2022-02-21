@@ -8,7 +8,8 @@ import pytest
 
 from CommonServerPython import DemistoException
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
-    print_ip_addresses, get_machine_details_command
+    print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
+    get_live_response_file_action, put_live_response_file_action
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 
@@ -973,6 +974,109 @@ def test_get_alert_by_id_command(mocker):
     results = get_alert_by_id_command(client_mocker, {'alert_ids': ['1']})
     assert results.outputs[0]['ID'] == '1'
     assert len(results.outputs[0]) == len(ALERT_JSON.keys())
+
+
+FIRST_RUN = {'arguments': "''", 'comment': 'testing',
+             'machine_id': 'machine_id_example', 'scriptName': 'test_script.ps1'}
+SECOND_RUN = {'arguments': "''", 'comment': 'testing',
+              'machine_action_id': 'action_id_example',
+              'machine_id': 'machine_id_example', 'scriptName': 'test_script.ps1'}
+LAST_RUN = {'arguments': "''", 'comment': 'testing',
+            'machine_action_id': 'action_id_example',
+            'machine_id': 'machine_id_example', 'scriptName': 'test_script.ps1'}
+POLLING_CASES = [
+    (FIRST_RUN, '', 'PollingArgs', {'machine_action_id': 'action_id_example', 'interval_in_seconds': 10,
+                                    'polling': True, 'arguments': "''", 'comment': 'testing',
+                                    'machine_id': 'machine_id_example',
+                                    'scriptName': 'test_script.ps1'}),
+    (SECOND_RUN, 'InProgress', 'PollingArgs',
+     {'interval_in_seconds': 10, 'polling': True, 'arguments': "''", 'comment': 'testing',
+      'machine_action_id': 'action_id_example', 'machine_id': 'machine_id_example',
+      'scriptName': 'test_script.ps1'}),
+    (LAST_RUN, 'Succeeded', 'Contents', {'example_outputs': 'outputs'})
+
+]
+
+
+@pytest.mark.parametrize('args,request_status,args_to_compare,expected_results', POLLING_CASES)
+def test_run_script_polling(mocker, args, request_status, args_to_compare, expected_results):
+    import CommonServerPython
+
+    def mock_action_command(client, args):
+        return CommonServerPython.CommandResults(outputs={'action_id': 'action_id_example'})
+
+    def mock_get_status(client, args):
+        return CommonServerPython.CommandResults(
+            outputs={'status': request_status, 'commands': [{'commandStatus': 'Completed'}]})
+
+    def mock_post_process(client, res):
+        assert res == {'commands': [{'commandStatus': 'Completed'}], 'status': 'Succeeded'}
+        return CommonServerPython.CommandResults(outputs={'example_outputs': 'outputs'})
+
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    res = run_polling_command(client_mocker, args, 'microsoft-atp-live-response-run-script', mock_action_command,
+                              mock_get_status, mock_post_process)
+    assert res.to_context()[args_to_compare] == expected_results
+
+
+RUN_SCRIPT_CASES = [
+    (
+        {'machine_id': 'machine_id', 'scriptName': 'test_script.ps1', 'comment': 'testing'},
+        {'Commands': [{'type': 'RunScript', 'params': [{'key': 'ScriptName', 'value': 'test_script.ps1'}]}],
+         'Comment': 'testing'}
+    ),
+    (
+        {'machine_id': 'machine_id', 'scriptName': 'test_script.ps1', 'comment': 'testing', 'arguments': 'example_arg'},
+        {'Commands': [{'type': 'RunScript', 'params': [{'key': 'ScriptName', 'value': 'test_script.ps1'},
+                                                       {'key': 'Args', 'value': 'example_arg'}]}], 'Comment': 'testing'}
+
+    )
+]
+
+
+@pytest.mark.parametrize('args, expected_results', RUN_SCRIPT_CASES)
+def test_run_live_response_script_action(mocker, args, expected_results):
+    create_action_mock = mocker.patch.object(MsClient, 'create_action')
+    run_live_response_script_action(client_mocker, args)
+    assert create_action_mock.call_args[0][1] == expected_results
+
+
+GET_FILE_CASES = [
+    (
+        {'machine_id': 'machine_id',
+         'comment': "testing",
+         'path': "C:\\Users\\example\\Desktop\\test.txt"},
+        {'Commands': [
+            {'type': 'GetFile', 'params': [{'key': 'Path', 'value': 'C:\\Users\\example\\Desktop\\test.txt'}]}],
+            'Comment': 'testing'}
+    ),
+]
+
+
+@pytest.mark.parametrize('args, expected_results', GET_FILE_CASES)
+def test_get_live_response_file_action(mocker, args, expected_results):
+    create_action_mock = mocker.patch.object(MsClient, 'create_action')
+    get_live_response_file_action(client_mocker, args)
+    assert create_action_mock.call_args[0][1] == expected_results
+
+
+PUT_FILE_CASES = [
+    (
+        {'machine_id': 'machine_id',
+         'comment': "testing",
+         'file_name': "test_script.ps1"},
+        {'Commands': [{'type': 'PutFile', 'params': [{'key': 'FileName', 'value': 'test_script.ps1'}]}],
+         'Comment': 'testing'}
+    ),
+]
+
+
+@pytest.mark.parametrize('args, expected_results', PUT_FILE_CASES)
+def test_put_live_response_file_action(mocker, args, expected_results):
+    create_action_mock = mocker.patch.object(MsClient, 'create_action')
+    put_live_response_file_action(client_mocker, args)
+    assert create_action_mock.call_args[0][1] == expected_results
 
 
 ALERTS = [

@@ -4920,6 +4920,365 @@ script:
     - contextPath: MicrosoftATP.Alert.RBACGroupName
       description: The device RBAC group name.
       type: String
+  - arguments:
+      - default: true
+        description: Machine ID to add file to.
+        isArray: false
+        name: machine_id
+        required: true
+        secret: false
+      - default: false
+        description: A comment to associate with the action.
+        isArray: false
+        name: comment
+        required: true
+        secret: false
+      - default: false
+        description: File path to get from device.
+        isArray: false
+        name: path
+        required: true
+        secret: false
+      - default: false
+        description: Action ID to retrieve status and data for.
+        isArray: false
+        name: machine_action_id
+        required: false
+        secret: false
+        deprecated: true
+      - default: false
+        description: interval between polling. Default is 10 seconds. Must be higher than 10.
+        isArray: false
+        name: interval_in_seconds
+        required: false
+        secret: false
+        deprecated: false
+      - default: false
+        description: Timeout for polling. Default is 600 seconds.
+        isArray: false
+        name: timeout_in_seconds
+        required: false
+        secret: false
+        deprecated: false
+    deprecated: false
+    description: 'Collect file from a device. NOTE: Backslashes in path must be escaped.'
+    execution: true
+    polling: true
+    name: microsoft-atp-live-response-get-file
+    outputs:
+    - contextPath: MicrosoftATP.LiveResponseAction.id
+      description: The machine action ID.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.type
+      description: The machine action type.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.title
+      description: The machine action title.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.requestor
+      description: The machine action requestor.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.requestorComment
+      description: The machine action requestorComment.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.status
+      description: The machine action status.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.machineId
+      description: The machine ID.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.computerDnsName
+      description: The computerDnsName.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.creationDateTimeUtc
+      description: The action creationDateTimeUtc.
+      type: Date
+    - contextPath: MicrosoftATP.LiveResponseAction.lastUpdateDateTimeUtc
+      description: The machine action lastUpdateDateTimeUtc.
+      type: Date
+    - contextPath: MicrosoftATP.LiveResponseAction.cancellationRequestor
+      description: The machine action cancellationRequestor.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.cancellationComment
+      description: The machine action cancellationComment.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.cancellationDateTimeUtc
+      description: The cancellationDateTimeUtc.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.errorHResult
+      description: The errorHResult if exists.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.scope
+      description: The action scope.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.externalId
+      description: The machine action externalId.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.requestSource
+      description: The machine action requestSource.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.relatedFileInfo
+      description: The machine action relatedFileInfo.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.index
+      description: The machine action command index.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.startTime
+      description: The machine action command startTime.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.endTime
+      description: The machine action command endTime.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.commandStatus
+      description: The machine action command Status.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.errors
+      description: The machine action command errors if found.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.command.type
+      description: The machine action command type.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.command.params.key
+      description: The machine action command params key.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.command.params.value
+      description: The machine action command params value.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.troubleshootInfo
+      description: The machine action troubleshootInfo.
+      type: String
+  - arguments:
+    - default: true
+      description: Machine ID to add file to.
+      isArray: false
+      name: machine_id
+      required: true
+      secret: false
+    - default: false
+      description: A comment to associate with the action.
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    - default: false
+      description: Script name to run on device
+      isArray: false
+      name: scriptName
+      required: true
+      secret: false
+    - default: false
+      description: Arguments to run the script with
+      isArray: false
+      name: arguments
+      required: false
+      secret: false
+    - default: false
+      description: Action ID to retrieve status and data for.
+      isArray: false
+      name: machine_action_id
+      required: false
+      secret: false
+      deprecated: true
+    - default: false
+      description: interval between polling. Default is 10 seconds. Must be higher than 10.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      deprecated: false
+    - default: false
+      description: Timeout for polling. Default is 600 seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+      deprecated: false
+    deprecated: false
+    description: |-
+      Runs a script from the library on a device. The Args parameter is passed to your script. Timeouts after 10 minutes.
+    execution: true
+    name: microsoft-atp-live-response-run-script
+    polling: true
+    outputs:
+    - contextPath: MicrosoftATP.LiveResponseAction.script_name
+      description: The script name.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.exit_code
+      description: The script exit code.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.script_output
+      description: The script outputs.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.script_errors
+      description: The script errors if found.
+      type: String
+  - arguments:
+      - default: true
+        description: Machine ID to add file to.
+        isArray: false
+        name: machine_id
+        required: true
+        secret: false
+      - default: false
+        description: A comment to associate with the action.
+        isArray: false
+        name: comment
+        required: true
+        secret: false
+      - default: false
+        description: File name to take from library to device.
+        isArray: false
+        name: file_name
+        required: true
+        secret: false
+      - default: false
+        description: Action ID to retrieve status and data for.
+        isArray: false
+        name: machine_action_id
+        required: false
+        secret: false
+        deprecated: true
+      - default: false
+        description: interval between polling. Default is 10 seconds. Must be higher than 10.
+        isArray: false
+        name: interval_in_seconds
+        required: false
+        secret: false
+        deprecated: false
+      - default: false
+        description: Timeout for polling. Default is 600 seconds.
+        isArray: false
+        name: timeout_in_seconds
+        required: false
+        secret: false
+        deprecated: false
+    deprecated: false
+    description: Puts a file from the library to the device. Files are saved in a
+      working folder and are deleted when the device restarts by default.
+    execution: true
+    name: microsoft-atp-live-response-put-file
+    polling: true
+    outputs:
+    - contextPath: MicrosoftATP.LiveResponseAction.id
+      description: The machine action ID.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.type
+      description: The machine action type.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.title
+      description: The machine action title.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.requestor
+      description: The machine action requestor.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.requestorComment
+      description: The machine action requestorComment.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.status
+      description: The machine action status.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.machineId
+      description: The machine ID.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.computerDnsName
+      description: The computerDnsName.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.creationDateTimeUtc
+      description: The action creationDateTimeUtc.
+      type: Date
+    - contextPath: MicrosoftATP.LiveResponseAction.lastUpdateDateTimeUtc
+      description: The machine action lastUpdateDateTimeUtc.
+      type: Date
+    - contextPath: MicrosoftATP.LiveResponseAction.cancellationRequestor
+      description: The machine action cancellationRequestor.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.cancellationComment
+      description: The machine action cancellationComment.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.cancellationDateTimeUtc
+      description: The cancellationDateTimeUtc.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.errorHResult
+      description: The errorHResult if exists.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.scope
+      description: The action scope.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.externalId
+      description: The machine action externalId.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.requestSource
+      description: The machine action requestSource.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.relatedFileInfo
+      description: The machine action relatedFileInfo.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.index
+      description: The machine action command index.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.startTime
+      description: The machine action command startTime.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.endTime
+      description: The machine action command endTime.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.commandStatus
+      description: The machine action command Status.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.errors
+      description: The machine action command errors if found.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.command.type
+      description: The machine action command type.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.command.params.key
+      description: The machine action command params key.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.command.params.value
+      description: The machine action command params value.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.troubleshootInfo
+      description: The machine action troubleshootInfo.
+      type: String
+  - arguments:
+    - default: true
+      description: Action ID to retrieve status and data for.
+      isArray: false
+      name: machine_action_id
+      required: true
+      secret: false
+    - default: false
+      description: A command index to retrieve file for.
+      isArray: false
+      name: command_index
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a result file for a specified action.
+    execution: true
+    name: microsoft-atp-live-response-result
+    outputs:
+    - contextPath: MicrosoftATP.LiveResponseAction
+      description: The machine action ID.
+      type: String
+  - arguments:
+      - default: true
+        description: Action ID to retrieve status and data for.
+        isArray: false
+        name: machine_action_id
+        required: true
+        secret: false
+      - default: false
+        description: A comment to associate with the action.
+        isArray: false
+        name: comment
+        required: true
+        secret: false
+    deprecated: false
+    description: Cancel an action with an unfinished status.
+    execution: true
+    name: microsoft-atp-live-response-cancel-action
+    outputs: []
   dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true
