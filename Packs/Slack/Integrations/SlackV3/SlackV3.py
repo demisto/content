@@ -1354,7 +1354,7 @@ def fetch_context(force_refresh: bool = False) -> dict:
     """
     demisto.info("Fetching context using fetch_context")
     global CACHED_INTEGRATION_CONTEXT, CACHE_EXPIRY
-    now = int(datetime.now(timezone.utc).timestamp() * 1000)
+    now = int(datetime.now(timezone.utc).timestamp())
     if (CACHE_EXPIRY <= now) or force_refresh:
         demisto.debug(f'Cached context has expired or forced refresh. forced refresh value is {force_refresh}. '
                       f'Fetching new context')
