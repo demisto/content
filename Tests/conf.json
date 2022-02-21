@@ -5116,7 +5116,10 @@
         "Phishing Investigation - Generic v2 - Campaign Test": "Issue 44740",
         "Cisco Umbrella Test": "Issue 24338",
         "Azure NSG - Test": "Issue 33217",
-        "Unit42 Intel Objects Feed - Test": "Issue 44100"
+        "Unit42 Intel Objects Feed - Test": "Issue 44100",
+        "Archer v2 - Test": "Issue 31653",
+        "Test_URLhaus": "Issue 46804",
+        "Fetch Indicators Test": "Issue 45490"
     },
     "skipped_integrations": {
         
