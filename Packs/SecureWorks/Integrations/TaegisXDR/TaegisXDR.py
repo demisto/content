@@ -213,6 +213,99 @@ def fetch_alerts_command(client: Client, env: str, args=None):
     return results
 
 
+def fetch_incidents(client: Client, env: str, args=None):
+    """
+    Fetch Taegis Investigations for the use with "Fetch Incidents"
+    """
+    page = args.get("page", 0)
+    page_size = args.get("page_size", 200)
+    status = args.get("status", ["Open", "Active"])
+    include_archived = args.get("include_archived", False)
+
+    query = """
+    query investigations($page: Int, $perPage: Int, $status: [String], $createdAfter: String, $orderByField: OrderFieldInput, $orderDirection: OrderDirectionInput) {
+        allInvestigations(page: $page, perPage: $perPage, status: $status, createdAfter: $createdAfter, orderByField: $orderByField, orderDirection: $orderDirection) {
+            id
+            tenant_id
+            description
+            key_findings
+            alerts {
+                id
+                alert_type
+                severity
+                message
+            }
+            archived_at
+            created_at
+            updated_at
+            service_desk_id
+            service_desk_type
+            latest_activity
+            priority
+            status
+            assets {
+                id
+                hostnames {
+                    id
+                    hostname
+                }
+                tags {
+                    tag
+                }
+            }
+        }
+    }
+    """
+
+    variables = {
+        "orderByField": "created_at",
+        "orderDirection": "asc",
+        "page": page,
+        "perPage": page_size,
+        "status": status
+    }
+
+    last_run = demisto.getLastRun()
+    demisto.debug(f"Last Fetch Incident Run: {last_run}")
+
+    now = datetime.now()
+    start_time = now - timedelta(days=1)  # Default start if first ever run
+    if last_run and "start_time" in last_run:
+        start_time = last_run.get("start_time")
+        variables["createdAfter"] = start_time
+
+    result = client.graphql_run(query=query, variables=variables)
+
+    if result.get("errors") and result["errors"]:
+        raise ValueError(f"Error when fetching investigations: {result['errors'][0]['message']}")
+
+    incidents = []
+    for investigation in result["data"]["allInvestigations"]:
+        # createdAfter really means createdAtOrAfter so skip the duplicate
+        if start_time == investigation["created_at"]:
+            continue
+
+        # Skip archived, if necessary
+        if not include_archived and investigation["archived_at"]:
+            demisto.debug(f"Skipping Archived Investigation: {investigation['description']} ({investigation['id']})")
+            continue
+
+        demisto.debug(f"Found New Investigation: {investigation['description']} ({investigation['id']})")
+        incidents.append({
+            "name": investigation["description"],
+            "occured": investigation["created_at"],
+            "rawJSON": json.dumps(investigation)
+        })
+
+    demisto.debug(f"Located {len(incidents)} Incidents")
+
+    last_run = str(now) if not incidents else incidents[-1]["occured"]
+    demisto.debug(f"Last Run/Incident Time: {last_run}")
+    demisto.setLastRun({"start_time": last_run})
+
+    return incidents
+
+
 def fetch_investigation_alerts_command(client: Client, env: str, args=None):
     investigation_id = args.get("id")
     if not investigation_id:
@@ -405,6 +498,7 @@ def main():
     demisto.info(f'Command being called is {command}')
 
     commands: Dict[str, Any] = {
+        "fetch-incidents": fetch_incidents,
         "taegis-create-investigation": create_investigation_command,
         "taegis-fetch-alerts": fetch_alerts_command,
         "taegis-fetch-investigation": fetch_investigation_command,
