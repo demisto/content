@@ -1,0 +1,24 @@
+comment: Common user defined code that will be merged into each server script when
+  it runs
+commonfields:
+  id: CommonUserServer
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 7bd615fc-89f9-4f68-8a5b-67989b8fc812
+    propagationLabels:
+    - all
+    toServerVersion: ""
+engineinfo: {}
+name: CommonUserServer
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags:
+- infra
+- server
+type: javascript

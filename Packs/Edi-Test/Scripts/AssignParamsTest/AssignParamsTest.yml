@@ -1,0 +1,21 @@
+commonfields:
+  id: b807abe5-7bcc-46f6-821f-b4b16454984a
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 7bd615fc-89f9-4f68-8a5b-67989b8fc812
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.1.25933
+engineinfo: {}
+name: assign_params_test
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags: []
+type: python
