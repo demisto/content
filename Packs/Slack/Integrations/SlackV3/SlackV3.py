@@ -83,6 +83,8 @@ CHANNEL_NOT_FOUND_ERROR_MSG: str
 BOT_ID: str
 CACHED_INTEGRATION_CONTEXT: dict
 CACHE_EXPIRY: float
+MIRRORING_ENABLED: bool
+LONG_RUNNING_ENABLED: bool
 
 ''' HELPER FUNCTIONS '''
 
@@ -115,6 +117,11 @@ def test_module():
 
         CLIENT.chat_postMessage(channel=channel.get('id'), text=message)  # type: ignore
 
+    # Status of mirroring check
+    if MIRRORING_ENABLED and not LONG_RUNNING_ENABLED:
+        demisto.error('Mirroring is enabled, however long running is disabled. For mirrors to work correctly,'
+                      ' long running must be enabled.')
+
     demisto.results('ok')
 
 
@@ -126,12 +133,15 @@ def get_current_utc_time() -> datetime:
     return datetime.utcnow()
 
 
-def update_expiry_time() -> float:
+def next_expiry_time() -> float:
     """
     Returns:
-        A float representation of a new expiry time with an offset of 300
+        A float representation of a new expiry time with an offset of 5 seconds
     """
-    return int(datetime.now(timezone.utc).timestamp() * 1000) + 300
+    now = datetime.now(timezone.utc)
+    unix_timestamp = now.timestamp()
+    unix_timestamp_plus_5_seconds = unix_timestamp + 5
+    return unix_timestamp_plus_5_seconds
 
 
 def format_user_not_found_error(user: str) -> str:
@@ -613,6 +623,9 @@ def mirror_investigation():
     """
     Updates the integration context with a new or existing mirror.
     """
+    if MIRRORING_ENABLED and not LONG_RUNNING_ENABLED:
+        demisto.error('Mirroring is enabled, however long running is disabled. For mirrors to work correctly,'
+                      ' long running must be enabled.')
     mirror_type = demisto.args().get('type', 'all')
     auto_close = demisto.args().get('autoclose', 'true')
     mirror_direction = demisto.args().get('direction', 'both')
@@ -765,7 +778,8 @@ async def long_running_loop():
     while True:
         error = ''
         try:
-            check_for_mirrors()
+            if MIRRORING_ENABLED:
+                check_for_mirrors()
             check_for_unanswered_questions()
             await asyncio.sleep(15)
         except requests.exceptions.ConnectionError as e:
@@ -1344,7 +1358,7 @@ def fetch_context(force_refresh: bool = False) -> dict:
     if (CACHE_EXPIRY <= now) or force_refresh:
         demisto.debug(f'Cached context has expired or forced refresh. forced refresh value is {force_refresh}. '
                       f'Fetching new context')
-        CACHE_EXPIRY = update_expiry_time()
+        CACHE_EXPIRY = next_expiry_time()
         CACHED_INTEGRATION_CONTEXT = get_integration_context(SYNC_CONTEXT)
     else:
         demisto.debug("Cached context is being used.")
@@ -1432,7 +1446,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             return
 
         # Check to see if the event is about a newly handled event.
-        elif event.get('type') == 'channel_created':
+        elif event.get('type') == 'channel_created' and MIRRORING_ENABLED:
             demisto.debug("Found new channel")
             creator = event.get('channel', {}).get('creator', '')
             channel_id = event.get('channel', {}).get('id', '')
@@ -1477,7 +1491,11 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
 
         # If a message has made it here, we need to check if the message is being mirrored. If not, we will ignore it.
         else:
-            await process_mirror(channel, text, user)
+            if MIRRORING_ENABLED:
+                await process_mirror(channel, text, user)
+            else:
+                demisto.debug("Mirroring is not enabled, ignoring.")
+                return
 
         # Reset module health
         demisto.updateModuleHealth("")
@@ -2475,10 +2493,10 @@ def init_globals(command_name: str = ''):
     """
     Initializes global variables according to the integration parameters
     """
-    global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, CACHED_INTEGRATION_CONTEXT
+    global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, CACHED_INTEGRATION_CONTEXT, MIRRORING_ENABLED
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM, BOT_ID, CACHE_EXPIRY
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
-    global PERMITTED_NOTIFICATION_TYPES, COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG
+    global PERMITTED_NOTIFICATION_TYPES, COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, LONG_RUNNING_ENABLED
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -2505,6 +2523,8 @@ def init_globals(command_name: str = ''):
     PAGINATED_COUNT = int(demisto.params().get('paginated_count', '200'))
     ENABLE_DM = demisto.params().get('enable_dm', True)
     PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications', [])
+    MIRRORING_ENABLED = demisto.params().get('mirroring', True)
+    LONG_RUNNING_ENABLED = demisto.params().get('longRunning', True)
     common_channels = demisto.params().get('common_channels', None)
     if common_channels:
         COMMON_CHANNELS = dict(item.split(':') for item in common_channels.split(','))
@@ -2546,7 +2566,7 @@ def init_globals(command_name: str = ''):
             set_to_integration_context_with_retries({'bot_user_id': BOT_ID}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
         # Pull initial Cached context and set the Expiry
-        CACHE_EXPIRY = update_expiry_time()
+        CACHE_EXPIRY = next_expiry_time()
         CACHED_INTEGRATION_CONTEXT = get_integration_context(SYNC_CONTEXT)
 
 
