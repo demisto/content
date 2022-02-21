@@ -277,7 +277,7 @@ def test_fetch_incidents(mocker):
     - run the fetch incidents command using the Client
     Validate The length of the results.
     """
-    mocker.patch('dateparser.parse', return_value="2019-02-23 08:14:21")
+    mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
                     'verify', 'fetch_time', 'sysparm_query', sysparm_limit=10,
                     timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number')
@@ -301,7 +301,7 @@ def test_fetch_incidents_with_attachments(mocker):
     - run the fetch incidents command using the Client
     Validate The length of the results and the attachment content.
     """
-    mocker.patch('dateparser.parse', return_value=("2016-10-10 15:19:57", 'never mind'))
+    mocker.patch('ServiceNowv2.parse_date_range', return_value=("2016-10-10 15:19:57", 'never mind'))
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
                     'verify', 'fetch_time', 'sysparm_query', sysparm_limit=10,
                     timestamp_field='opened_at', ticket_type='incident', get_attachments=True,
@@ -329,7 +329,7 @@ def test_fetch_incidents_with_incident_name(mocker):
     - run the fetch incidents command using the Client
     Validate The length of the results.
     """
-    mocker.patch('dateparser.parse', return_value="2019-02-23 08:14:21")
+    mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
                     'verify', 'fetch_time', 'sysparm_query', sysparm_limit=10,
                     timestamp_field='opened_at', ticket_type='incident',
@@ -541,7 +541,7 @@ def test_test_module(mocker):
     (b)
         Validate that an error is returned, indicating that the `Test` button can't be used when using OAuth 2.0.
     """
-    mocker.patch('dateparser.parse', return_value="2019-02-23 08:14:21")
+    mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
@@ -573,7 +573,7 @@ def test_oauth_test_module(mocker):
     - (a) validate that an error is returned, indicating that the function should be called when using OAuth only.
     - (b) Validate that the instance was configured successfully.
     """
-    mocker.patch('dateparser.parse', return_value="2019-02-23 08:14:21")
+    mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description')
