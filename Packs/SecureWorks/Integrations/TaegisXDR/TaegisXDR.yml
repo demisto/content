@@ -163,8 +163,10 @@ script:
       description: Returns related execution information
     description: Fetch the results of a Taegis playbook instance execution
   dockerimage: demisto/python3:3.9.8.24399
+  isfetch: true
   runonce: false
   subtype: python3
+  isFetchSamples: true
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
