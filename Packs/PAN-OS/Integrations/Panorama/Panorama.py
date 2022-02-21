@@ -8851,7 +8851,7 @@ class FirewallCommand:
 """
 
 
-def test_topology(topology: Topology):
+def test_topology_connectivity(topology: Topology):
     """To get to the test-module command we must connect to the devices, thus no further test is required."""
     if len(topology.firewall_objects) + len(topology.panorama_objects) == 0:
         raise ConnectionError("No firewalls or panorama instances could be connected.")
@@ -8964,6 +8964,9 @@ def run_test_command(func: Callable):
 
 
 def get_topology() -> Topology:
+    """
+    Builds and returns the Topology instance
+    """
     demisto_params = convert_params_to_object(demisto.params())
     topology = Topology.build_from_string(
         demisto_params.hostnames,
@@ -8975,6 +8978,9 @@ def get_topology() -> Topology:
 
 
 def dataclasses_to_command_results(result: Any):
+    """
+    Given a dataclass or list of dataclasses, convert it into a tabular format and finally return CommandResults to demisto.
+    """
     if not result:
         command_result = CommandResults(
             readable_output="No results.",
@@ -9046,8 +9052,8 @@ def main():
         if demisto.command() == 'test-module':
             panorama_test()
             # Test the topology is working as well
-            run_test_command(test_topology)
-
+            topology = get_topology()
+            test_topology_connectivity(topology)
         elif demisto.command() == 'panorama':
             panorama_command(args)
 
