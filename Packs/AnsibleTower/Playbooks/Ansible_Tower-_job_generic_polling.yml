@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 95d002c4-3915-461a-8497-c73e7c4d6cd2
+    taskid: 41211f80-ab03-41b3-8abb-a83e06bc3566
     type: start
     task:
-      id: 95d002c4-3915-461a-8497-c73e7c4d6cd2
+      id: 41211f80-ab03-41b3-8abb-a83e06bc3566
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -30,12 +30,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ae67a29d-5668-4ede-858a-02cc63edd1e3
+    taskid: 53c43873-5710-43ad-81bf-81963629ccf6
     type: condition
     task:
-      id: ae67a29d-5668-4ede-858a-02cc63edd1e3
+      id: 53c43873-5710-43ad-81bf-81963629ccf6
       version: -1
       name: is Ansible Tower enabled?
       description: ''
@@ -78,8 +80,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 200
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -87,12 +89,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: ba3c8ebd-da30-4543-8b4e-364cbd30f618
+    taskid: 51aa51b8-6f4c-464e-87e0-d6d2f1d34ea5
     type: regular
     task:
-      id: ba3c8ebd-da30-4543-8b4e-364cbd30f618
+      id: 51aa51b8-6f4c-464e-87e0-d6d2f1d34ea5
       version: -1
       name: Job template launch
       description: Launch the job template.
@@ -120,8 +124,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 630,
-          "y": 550
+          "x": 162.5,
+          "y": 370
         }
       }
     note: false
@@ -129,12 +133,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: a790e3bd-498d-4c9a-8c4f-3cab436d6122
+    taskid: 415d0af8-5eb3-475f-8c9b-d5afff54402e
     type: title
     task:
-      id: a790e3bd-498d-4c9a-8c4f-3cab436d6122
+      id: 415d0af8-5eb3-475f-8c9b-d5afff54402e
       version: -1
       name: Done
       type: title
@@ -145,8 +151,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 1390
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -154,12 +160,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: ab54f8f8-0e7c-492e-8c85-c44041738ba4
+    taskid: a33406f6-57e6-43a6-81f5-f16092697b32
     type: playbook
     task:
-      id: ab54f8f8-0e7c-492e-8c85-c44041738ba4
+      id: a33406f6-57e6-43a6-81f5-f16092697b32
       version: -1
       name: GenericPolling
       description: |-
@@ -178,8 +186,6 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
       Ids:
         complex:
           root: AnsibleAWX.Job
@@ -193,8 +199,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: AnsibleAWX.Job(val.Job.status !== 'success' | val.Job.status !== 'failed'
-          | val.Job.status !== 'error' | val.Job.status !== 'canceled' ).id
+        simple: AnsibleAWX.Job(val.status !== 'successful').id
     separatecontext: true
     loop:
       iscommand: false
@@ -204,8 +209,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 630,
-          "y": 780
+          "x": 162.5,
+          "y": 545
         }
       }
     note: false
@@ -213,12 +218,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: e2dc36ae-1838-4464-8f58-f422f2916d1a
+    taskid: b89b4843-2c36-4ed8-8ccf-9d0337c01061
     type: regular
     task:
-      id: e2dc36ae-1838-4464-8f58-f422f2916d1a
+      id: b89b4843-2c36-4ed8-8ccf-9d0337c01061
       version: -1
       name: Job output
       description: Retrieves the standard output from running the given job.
@@ -228,7 +235,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "7"
     scriptarguments:
       job_id:
         complex:
@@ -237,12 +244,14 @@ tasks:
       print_output:
         complex:
           root: inputs.show_output
+      text_filter:
+        simple: RECAP
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 630,
-          "y": 990
+          "x": 162.5,
+          "y": 720
         }
       }
     note: false
@@ -250,35 +259,70 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: bd418f5e-49e2-43d0-8c1e-84381ce4773d
+    type: regular
+    task:
+      id: bd418f5e-49e2-43d0-8c1e-84381ce4773d
+      version: -1
+      name: Get Job Events
+      description: Retrieves the list of job events of specific job.
+      script: '|||ansible-tower-job-events-list-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      job_id:
+        simple: ${AnsibleAWX.Job.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1405,
-        "width": 740,
-        "x": 270,
+        "height": 1085,
+        "width": 492.5,
+        "x": 50,
         "y": 50
       }
     }
   }
 inputs:
 - key: job_template_id
-  value: {}
+  value:
+    simple: "34"
   required: true
   description: 'The job template id to launch. '
   playbookInputQuery:
 - key: credentials_id
   value: {}
   required: false
-  description: Select the credentials that allows Tower to access the nodes this job will
-    be run against (if needed).
+  description: Select the credentials that allows Tower to access the nodes this job will be run against (if needed).
   playbookInputQuery:
 - key: Inventory_id
   value: {}
   required: false
-  description: Select the inventory containing the hosts you want this job to manage
-    (if needed).
+  description: Select the inventory containing the hosts you want this job to manage (if needed).
   playbookInputQuery:
 - key: extra_variables
   value: {}
@@ -287,7 +331,7 @@ inputs:
   playbookInputQuery:
 - key: show_output
   value:
-    simple: "False"
+    simple: "true"
   required: false
   description: Print output from the job that is running.
   playbookInputQuery:
@@ -310,10 +354,27 @@ outputs:
   description: Job status
 - contextPath: AnsibleAWX.JobStdout.content
   description: job stdout
-fromversion: 5.0.0
-description: Generic pooling playbook to launch a specific job template. Returns the job
-  status when the job finishes running.
+- contextPath: AnsibleAWX.JobEvents.stdout
+  description: Standard output of the job.
+- contextPath: AnsibleAWX.JobEvents.type
+  description: Data type for this job event.
+- contextPath: AnsibleAWX.JobEvents.id
+  description: Database ID for this job event.
+- contextPath: AnsibleAWX.JobEvents.job
+  description: Job ID.
+- contextPath: AnsibleAWX.JobEvents.host
+  description: Host ID associated with the event.
+- contextPath: AnsibleAWX.JobEvents.task
+  description: Task name.
+- contextPath: AnsibleAWX.JobEvents.start_line
+  description: Starting line number of the execution.
+- contextPath: AnsibleAWX.JobEvents.end_line
+  description: Ending line number of the execution.
+- contextPath: AnsibleAWX.JobEvents.event_data
+  description: Job event data.
+fromversion: 6.0.0
+description: Generic pooling playbook to launch a specific job template. Returns the job status when the job finishes running.
 tests:
- -  No tests
-marketplaces:
-  - xsoar
+- No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}
