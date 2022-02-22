@@ -177,7 +177,7 @@
       - /builds/xsoar/content/artifacts/*
     when: always
   services:
-    - name: docker.artifactory.pan.local/build-tools--image-dind:19.03.12-dind
+    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
       alias: docker
   variables:
     DOCKER_HOST: tcp://docker:2375
