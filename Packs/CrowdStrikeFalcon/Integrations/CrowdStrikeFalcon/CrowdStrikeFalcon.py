@@ -3006,7 +3006,7 @@ def upload_batch_custom_ioc_command(
 
     """
     try:
-        batch_json = json.loads(multiple_indicators_json)
+        batch_json = json.loads(multiple_indicators_json)   # type: ignore
     except json.JSONDecodeError as e:
         raise DemistoException(f'{INTEGRATION_NAME}: The `multiple_indicators_json` argument is not a valid json, {e}.')
 
