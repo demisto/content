@@ -163,7 +163,7 @@ tasks:
           right:
             value:
               simple: "5"
-      - - operator: greaterThan
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -178,12 +178,7 @@ tasks:
                       value:
                         simple: http://ekamjewels.com/anklet/WQG1/?i=1
                 accessor: Relationships
-                transformers:
-                - operator: count
             iscontext: true
-          right:
-            value:
-              simple: "10"
     view: |-
       {
         "position": {
