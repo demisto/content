@@ -183,8 +183,11 @@ def extract_attack_ids(raw_response: dict):
         the attack_ids list of all the attack_ids that exists in the response.
     """
     pulses = dict_safe_get(raw_response, ['pulse_info', 'pulses']) or [{}]
-    atack_ids = [pulse.get('attack_ids') for pulse in pulses if pulse.get('attack_ids')]
-    return atack_ids
+    attack_ids = []
+    for pulse in pulses:
+        if pulse.get('attack_ids'):
+            attack_ids.extend(pulse.get('attack_ids'))
+    return attack_ids
 
 
 def relationships_manager(client: Client, entity_a: str, entity_a_type: str, indicator_type: str, attack_ids: list,
@@ -338,12 +341,12 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
     for ip_ in ips_list:
         raw_response = client.query(section=ip_version,
                                     argument=ip_)
-        print(raw_response)
         if raw_response and raw_response != 404:
             ip_version = FeedIndicatorType.IP if ip_version == 'IPv4' else FeedIndicatorType.IPv6
             relationships = relationships_manager(client, entity_a=ip_, entity_a_type=ip_version,
-                                                   indicator_type=ip_version, indicator=ip_, field_for_passive_dns_rs="hostname",
-                                                   feed_indicator_type_for_passive_dns_rs=FeedIndicatorType.Domain)
+                                                  indicator_type=ip_version, indicator=ip_, field_for_passive_dns_rs="hostname",
+                                                  feed_indicator_type_for_passive_dns_rs=FeedIndicatorType.Domain,
+                                                  attack_ids=extract_attack_ids(raw_response))
 
             dbot_score = Common.DBotScore(indicator=ip_, indicator_type=DBotScoreType.IP,
                                           integration_name=INTEGRATION_NAME,
@@ -402,9 +405,10 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
         raw_response = client.query(section='domain', argument=domain)
         if raw_response and raw_response != 404:
             relationships = relationships_manager(client, entity_a=domain, indicator_type='domain',
-                                                   entity_a_type=FeedIndicatorType.Domain, indicator=domain,
-                                                   field_for_passive_dns_rs='address',
-                                                   feed_indicator_type_for_passive_dns_rs=FeedIndicatorType.IP)
+                                                  entity_a_type=FeedIndicatorType.Domain, indicator=domain,
+                                                  field_for_passive_dns_rs='address',
+                                                  feed_indicator_type_for_passive_dns_rs=FeedIndicatorType.IP,
+                                                  attack_ids=extract_attack_ids(raw_response))
 
             dbot_score = Common.DBotScore(indicator=domain, indicator_type=DBotScoreType.DOMAIN,
                                           integration_name=INTEGRATION_NAME,
