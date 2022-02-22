@@ -19,7 +19,7 @@ import shutil
 import json
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple, Union, Generator, Callable
+from typing import Any, Dict, List, Optional, Tuple, Union, Generator, Callable, ValuesView
 
 import requests
 from urllib.parse import urlparse
@@ -7555,8 +7555,8 @@ class Topology:
     """
 
     def __init__(self):
-        self.panorama_objects: dict = {}
-        self.firewall_objects: dict = {}
+        self.panorama_objects: dict[str, Panorama] = {}
+        self.firewall_objects: dict[str, Firewall] = {}
         self.ha_pair_serials: dict = {}
         self.ha_active_devices: dict = {}
         self.username: str = ""
@@ -7635,6 +7635,18 @@ class Topology:
 
         raise TypeError(f"{type(device)} is not valid as a topology object.")
 
+    def panorama_devices(self) -> ValuesView[Panorama]:
+        """
+        Returns the Panorama objects in the topology
+        """
+        return self.panorama_objects.values()
+
+    def firewall_devices(self) -> ValuesView[Firewall]:
+        """
+        Retunrs the firewall devices in the topology
+        """
+        return self.firewall_objects.values()
+
     def top_level_devices(self) -> Generator[Union[Firewall, Panorama], None, None]:
         """
         Returns a list of the highest level devices. This is normally Panorama, or in a pure NGFW deployment,
@@ -7642,13 +7654,13 @@ class Topology:
         Top level devices may or may not have any children.
         """
         if self.panorama_objects:
-            for value in self.panorama_objects.values():
+            for value in self.panorama_devices():
                 yield value
 
             return
 
         if self.firewall_objects:
-            for value in self.firewall_objects.values():
+            for value in self.firewall_devices():
                 yield value
 
     def active_devices(self, filter_str: str = None) -> Generator[Union[Firewall, Panorama], None, None]:
