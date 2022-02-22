@@ -9653,7 +9653,7 @@ def main():
         elif demisto.command() == 'pan-os-platform-get-system-info':
             topology = get_topology()
             get_system_info(topology, **demisto.args())
-        elif demisto.command() == 'pan-os-platform-get-device-group':
+        elif demisto.command() == 'pan-os-platform-get-device-groups':
             topology = get_topology()
             get_device_groups(topology, **demisto.args())
         elif demisto.command() == 'pan-os-platform-get-template-stacks':
