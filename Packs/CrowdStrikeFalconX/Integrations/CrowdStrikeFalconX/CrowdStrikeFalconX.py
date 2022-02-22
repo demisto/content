@@ -5,8 +5,6 @@ import urllib3
 from CommonServerPython import *
 
 # Disable insecure warnings
-HR_FIELDS = ['sha256', 'environment_description', 'environment_id', 'created_timestamp', 'id', 'submission_type',
-             'threat_score', 'verdict']
 urllib3.disable_warnings()
 
 ResultTuple = NamedTuple('ResultTuple', [('response', dict),
@@ -724,6 +722,9 @@ def get_full_report_command(client: Client, ids: list, extended_data: str):
         "submit_name", "screenshots_artifact_ids", "dns_requests", "contacted_hosts", "contacted_hosts"
     ]
 
+    hr_fields = ['sha256', 'environment_description', 'environment_id', 'created_timestamp', 'id', 'submission_type',
+                 'threat_score', 'verdict']
+
     for single_id in argToList(ids):
         response = client.get_full_report(single_id)
         if response.get('resources'):
@@ -735,7 +736,7 @@ def get_full_report_command(client: Client, ids: list, extended_data: str):
         result = parse_outputs(response, reliability=client.reliability,
                                resources_fields=resources_fields, sandbox_fields=sandbox_fields,
                                extra_sandbox_fields=extra_sandbox_fields)
-        result.output = filter_dictionary(result.output, HR_FIELDS, sort_by_field_list=True)
+        result.output = filter_dictionary(result.output, hr_fields, sort_by_field_list=True)
         results.append(result)
 
     pending_result_readable_output = 'There are no results yet, the sample might still being analyzed.' \
@@ -746,7 +747,7 @@ def get_full_report_command(client: Client, ids: list, extended_data: str):
         CommandResults(outputs_key_field='id',
                        outputs_prefix=OUTPUTS_PREFIX,
                        outputs=result.output,
-                       readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output, HR_FIELDS)
+                       readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output, hr_fields)
                        if result.output else pending_result_readable_output,
                        raw_response=result.response,
                        indicator=result.indicator
@@ -814,8 +815,8 @@ def get_analysis_status_command(
         response = client.get_analysis_status(single_id)
         resources_fields = ['id', 'state', 'created_timestamp']
         sandbox_fields = ["environment_id", "sha256"]
-        result = parse_outputs(response,reliability=client.reliability,
-                                          resources_fields=resources_fields,sandbox_fields=sandbox_fields)
+        result = parse_outputs(response, reliability=client.reliability,
+                               resources_fields=resources_fields, sandbox_fields=sandbox_fields)
         results.append(result)
 
     return [CommandResults(outputs_key_field='id',  # todo is this  correct?
@@ -890,7 +891,7 @@ def find_sandbox_reports_command(
     resources_fields = ['id']
 
     result = parse_outputs(response, reliability=client.reliability,
-                                                resources_fields=resources_fields)  # todo use indicator
+                           resources_fields=resources_fields)  # todo use indicator
     return CommandResults(outputs_key_field='id',
                           outputs_prefix=OUTPUTS_PREFIX,
                           outputs=result.output,
@@ -917,7 +918,7 @@ def find_submission_id_command(
     response = client.find_submission_id(limit, filter, offset, sort)
 
     resources_fields = ['id']
-    result = parse_outputs(response, reliability=client.reliability,resources_fields=resources_fields)
+    result = parse_outputs(response, reliability=client.reliability, resources_fields=resources_fields)
 
     return CommandResults(outputs_key_field='id',
                           outputs_prefix=OUTPUTS_PREFIX,
