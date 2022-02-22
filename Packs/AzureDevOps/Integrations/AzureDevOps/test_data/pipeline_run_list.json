@@ -1,0 +1,65 @@
+{
+  "count": 2,
+  "value": [
+    {
+      "_links": {
+        "self": {
+          "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1/runs/42"
+        },
+        "web": {
+          "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_build/results?buildId=42"
+        },
+        "pipeline.web": {
+          "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_build/definition?definitionId=1"
+        },
+        "pipeline": {
+          "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1?revision=1"
+        }
+      },
+      "pipeline": {
+        "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1?revision=1",
+        "id": "1",
+        "revision": 1,
+        "name": "xsoar",
+        "folder": "\\"
+      },
+      "state": "completed",
+      "result": "failed",
+      "createdDate": "2021-10-26T13:27:14.782838Z",
+      "finishedDate": "2021-10-26T13:27:40.4389578Z",
+      "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1/runs/42",
+      "id": "42",
+      "name": "20211026.7"
+    },
+    {
+      "_links": {
+        "self": {
+          "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1/runs/41"
+        },
+        "web": {
+          "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_build/results?buildId=41"
+        },
+        "pipeline.web": {
+          "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_build/definition?definitionId=1"
+        },
+        "pipeline": {
+          "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1?revision=1"
+        }
+      },
+      "pipeline": {
+        "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1?revision=1",
+        "id": "1",
+        "revision": 1,
+        "name": "xsoar",
+        "folder": "\\"
+      },
+      "state": "completed",
+      "result": "failed",
+      "createdDate": "2021-10-26T11:01:38.6926793Z",
+      "finishedDate": "2021-10-26T11:02:04.9546899Z",
+      "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1/runs/41",
+      "id": "41",
+      "name": "20211026.6"
+    }
+  ]
+}

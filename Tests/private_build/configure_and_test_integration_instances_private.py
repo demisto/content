@@ -139,7 +139,7 @@ def main():
                                                                 pre_update=False,
                                                                 use_mock=False)
     #  Gather tests to add to test pack
-    test_playbooks_from_id_set = build.id_set.get('TestPlaybooks', [])
+    test_playbooks_from_id_set = build.id_set.get('TestPlaybooks', []) if build.id_set else None
     tests_to_add_to_test_pack = find_needed_test_playbook_paths(test_playbooks=test_playbooks_from_id_set,
                                                                 tests_to_run=build.tests_to_run,
                                                                 path_to_content=build.content_root)
@@ -151,7 +151,7 @@ def main():
     install_private_testing_pack(build, private_content_test_zip)
 
     success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
-                                  new_integrations)
+                                  new_integrations, build)
     sleep(30)
     if not success or not installed_content_packs_successfully:
         sys.exit(2)

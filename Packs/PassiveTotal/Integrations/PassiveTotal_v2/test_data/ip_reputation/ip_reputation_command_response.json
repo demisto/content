@@ -1,0 +1,24 @@
+{
+  "score": 100,
+  "classification": "MALICIOUS",
+  "rules": [
+    {
+      "name": "RiskIQ Intel Article",
+      "description": "Current Events to Widespread Campaigns: Pivoting from Samples to Identify Activity",
+      "severity": 5,
+      "link": "https://community.riskiq.com/article/caa35d15"
+    },
+    {
+      "name": "Registrant email provider",
+      "description": "Domain is registered with an email provider that is more likely to register malicious domains",
+      "severity": 3,
+      "link": null
+    },
+    {
+      "name": "Registrar",
+      "description": "Domains registered with this registrar are more likely to be malicious",
+      "severity": 3,
+      "link": null
+    }
+  ]
+}

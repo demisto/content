@@ -1,0 +1,7 @@
+{
+    "authorized": true,
+    "authCode": 0,
+    "authStatus": "AUTHORIZED",
+    "token": "test-token",
+    "tokenTTL": 1800
+}

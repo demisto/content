@@ -84,7 +84,7 @@ There is no context output for this command.
 
 ### proofpoint-tr-block-ip
 ***
-Adds the supplied IP addresses to the specified IP blacklist.
+Adds the supplied IP addresses to the specified IP block list.
 
 
 #### Base Command
@@ -94,9 +94,9 @@ Adds the supplied IP addresses to the specified IP blacklist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | A comma-separated list of IP addresses to blacklist. | Required | 
-| expiration | Date and time when the supplied IP addresses should be removed from the blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z. | Optional | 
-| blacklist_ip | The ID of the IP blacklist. | Required | 
+| ip | A comma-separated list of IP addresses to block list. | Required | 
+| expiration | Date and time when the supplied IP addresses should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z. | Optional | 
+| blacklist_ip | The ID of the IP block list. | Required | 
 
 
 #### Context Output
@@ -112,7 +112,7 @@ There is no context output for this command.
 
 ### proofpoint-tr-block-domain
 ***
-Adds the supplied domains to the specified blacklist.
+Adds the supplied domains to the specified block list.
 
 
 #### Base Command
@@ -122,9 +122,9 @@ Adds the supplied domains to the specified blacklist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | A comma-separated list of domains to add to the blacklist. | Required | 
-| expiration | Date and time when the supplied IP addresses should be removed from the blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z. | Optional | 
-| blacklist_domain | The ID of the domain blacklist. | Required | 
+| domain | A comma-separated list of domains to add to the block list. | Required | 
+| expiration | Date and time when the supplied IP addresses should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z. | Optional | 
+| blacklist_domain | The ID of the domain block list. | Required | 
 
 
 #### Context Output
@@ -194,7 +194,7 @@ There is no context output for this command.
 
 ### proofpoint-tr-block-url
 ***
-Adds the supplied URLs to the specified URL blacklist.
+Adds the supplied URLs to the specified URL block list.
 
 
 #### Base Command
@@ -204,9 +204,9 @@ Adds the supplied URLs to the specified URL blacklist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A comma-separated list of URLs to add to the URL blacklist. | Required | 
-| expiration | Date and time when the supplied URLs should be removed from the blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z. | Optional | 
-| blacklist_url | The ID of the URL blacklist. | Required | 
+| url | A comma-separated list of URLs to add to the URL block list. | Required | 
+| expiration | Date and time when the supplied URLs should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z. | Optional | 
+| blacklist_url | The ID of the URL block list. | Required | 
 
 
 #### Context Output
@@ -222,7 +222,7 @@ There is no context output for this command.
 
 ### proofpoint-tr-block-hash
 ***
-Adds the supplied file hashes to the specified file hash blacklist.
+Adds the supplied file hashes to the specified file hash block list.
 
 
 #### Base Command
@@ -232,9 +232,9 @@ Adds the supplied file hashes to the specified file hash blacklist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | A comma-separated list of file hashes to add to the file hash blacklist. | Required | 
-| expiration | Date and time when the supplied file hashes should be removed from the blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z. | Optional | 
-| blacklist_hash | The ID of the hash blacklist. | Required | 
+| hash | A comma-separated list of file hashes to add to the file hash block list. | Required | 
+| expiration | Date and time when the supplied file hashes should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z. | Optional | 
+| blacklist_hash | The ID of the hash block list. | Required | 
 
 
 #### Context Output
@@ -520,5 +520,34 @@ There is no context output for this command.
 ``` ```
 
 #### Human Readable Output
+
+
+
+
+### proofpoint-tr-close-incident
+***
+Close an incident
+
+#### Base Command
+
+`proofpoint-tr-close-incident`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The ID value of the incident to close | Required | 
+| details | The details for the closure notes | Required | 
+| summary | The summary for the closure notes | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` ```
+
+#### Human Readable Output 
+
 
 

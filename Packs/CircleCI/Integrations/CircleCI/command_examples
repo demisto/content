@@ -1,0 +1,5 @@
+!circleci-workflows-list limit=2
+!circleci-artifacts-list job_number=390115 limit=2
+circleci-workflow-jobs-list workflow_id=f85efae0-cbf4-4b6d-b136-e3db67d41221 limit=2
+!circleci-workflow-last-runs workflow_name=nightly limit=2
+!circleci-trigger-workflow parameters=`{"param1": "value"}`

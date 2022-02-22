@@ -53,7 +53,7 @@ class BuildMock:
         self.ci_build_number = '100'
         self.is_nightly = False
         self.ami_env = 'Server Master'
-        self.servers, self.server_numeric_version = ('8.8.8.8', '6.1.0')
+        self.server_numeric_version = '6.1.0'
         self.secret_conf = {}
         self.username = 'TestUser'
         self.password = 'TestPassword'
@@ -96,7 +96,6 @@ def test_find_needed_test_playbook_paths():
     file_paths = find_needed_test_playbook_paths(test_playbooks=test_playbook_conf,
                                                  tests_to_run=tests_to_run,
                                                  path_to_content='.')
-    assert len(file_paths) == 52
     assert './Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld_Scan-Test.yml' in file_paths
 
 

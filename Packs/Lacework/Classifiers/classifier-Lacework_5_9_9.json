@@ -1,0 +1,199 @@
+{
+    "brandName": "Lacework",
+    "fromVersion": "5.0.0",
+    "toVersion": "5.9.9",
+    "custom": true,
+    "defaultIncidentType": "Lacework Event",
+    "id": "LaceworkClassifier",
+    "keyTypeMap": {},
+    "mapping": {
+        "Lacework Event": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Lacework Event ID": {
+                    "complex": null,
+                    "simple": "EVENT_ID"
+                },
+                "Lacework Event Type": {
+                    "complex": null,
+                    "simple": "EVENT_TYPE"
+                },
+                "Lacework Event Actor": {
+                    "complex": null,
+                    "simple": "EVENT_ACTOR"
+                },
+                "Lacework Event Model": {
+                    "complex": null,
+                    "simple": "EVENT_MODEL"
+                },
+                "Lacework Recommendation Account Alias": {
+                    "complex": {
+                        "accessor": "ACCOUNT_ALIAS",
+                        "filters": [],
+                        "root": "ENTITY_MAP.RecId",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Lacework Recommendation Account ID": {
+                    "complex": {
+                        "accessor": "ACCOUNT_ID",
+                        "filters": [],
+                        "root": "ENTITY_MAP.RecId",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Lacework Recommendation ID": {
+                    "complex": {
+                        "accessor": "REC_ID",
+                        "filters": [],
+                        "root": "ENTITY_MAP.RecId",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Lacework Recommendation Title": {
+                    "complex": {
+                        "accessor": "TITLE",
+                        "filters": [],
+                        "root": "ENTITY_MAP.RecId",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "SEVERITY",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Critical"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "High"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "2"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Medium"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "3"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Low"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "4"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Informational"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "5"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "unclassifiedCases": {},
+    "version": -1
+}

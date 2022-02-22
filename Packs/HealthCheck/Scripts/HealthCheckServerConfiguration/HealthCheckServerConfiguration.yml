@@ -1,0 +1,24 @@
+comment: Collect server configurations and save that into a table field
+commonfields:
+  id: HealthCheckServerConfiguration
+  version: -1
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+name: HealthCheckServerConfiguration
+outputs:
+- contextPath: FileData
+  description: Data read from war room file
+  type: Unknown
+- contextPath: HealthCheck.ActionableItems
+  description: A list of possible actions for improving the system health.
+  type: Unknown
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

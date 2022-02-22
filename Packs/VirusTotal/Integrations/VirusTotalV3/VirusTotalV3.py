@@ -642,7 +642,7 @@ class ScoreCalculator:
             self.logs.append(
                 f'The average of the ranks is {average} and the threshold is {self.domain_popularity_ranking}'
             )
-            if average >= self.domain_popularity_ranking:
+            if average <= self.domain_popularity_ranking:
                 self.logs.append('Indicator is good by popularity ranks.')
                 return True
             else:
@@ -1434,7 +1434,11 @@ def get_whois(whois_string: str) -> defaultdict:
     for line in whois_string.splitlines():
         key: str
         value: str
-        key, value = line.split(sep=':', maxsplit=1)
+        try:
+            key, value = line.split(sep=':', maxsplit=1)
+        except ValueError:
+            demisto.debug(f'Could not unpack Whois string: {line}. Skipping')
+            continue
         key = key.strip()
         value = value.strip()
         if key in whois:

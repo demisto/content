@@ -89,6 +89,9 @@ RESPONSE_TICKET_MIRROR = {'result': [{
     }]
 }
 
+USER_RESPONSE = {
+    'result': {'first_name': 'Oscar', 'email': 'oscar@example.com'}}
+
 
 RESPONSE_CLOSING_TICKET_MIRROR = {'result': [{
     'parent': '', 'made_sla': 'false', 'caused_by': '', 'watch_list': '', 'upon_reject': '',
@@ -3179,6 +3182,12 @@ MIRROR_ENTRIES = [
      'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3'},
     {'type': None, 'category': None, 'contents': 'This is a comment', 'contentsFormat': None,
      'tags': ['comments', 'work_notes'], 'note': True}]
+
+MIRROR_ENTRIES_WITH_EMPTY_USERNAME = [
+    {'Contents': '', 'ContentsFormat': 'text', 'type': 3, 'File': 'test.txt',
+     'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3', 'user': ''},
+    {'type': None, 'category': None, 'contents': 'This is a comment', 'contentsFormat': None,
+     'tags': ['comments', 'work_notes'], 'note': True, 'user': ''}]
 
 OAUTH_PARAMS = {
     'insecure': False,

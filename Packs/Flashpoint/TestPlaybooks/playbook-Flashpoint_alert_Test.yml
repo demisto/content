@@ -1,0 +1,203 @@
+id: Flashpoint_alert-Test
+version: -1
+name: Flashpoint_alert-Test
+description: This playbook uses the Flashpoint Integration and tests flashpoint-alert-list
+  command.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 76658c9b-e09e-4e5c-8712-09102d6d3c89
+    type: start
+    task:
+      id: 76658c9b-e09e-4e5c-8712-09102d6d3c89
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 91fd5f60-e8af-4745-8412-f7495c4cff8b
+    type: regular
+    task:
+      id: 91fd5f60-e8af-4745-8412-f7495c4cff8b
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 95dd2a83-fc36-43ec-8f6c-8c7ca832238f
+    type: regular
+    task:
+      id: 95dd2a83-fc36-43ec-8f6c-8c7ca832238f
+      version: -1
+      name: flashpoint-alert-list
+      description: Retrieves an alert or a list of alerts based on the filter values provided in the command arguments. Yields the alerts from Flashpoint collected sources and the alerts from data exposure.
+      script: '|||flashpoint-alert-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      scroll_id: {}
+      since: {}
+      size: {}
+      until: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 551a4544-1c05-4a2c-8378-c2140ec91c8b
+    type: condition
+    task:
+      id: 551a4544-1c05-4a2c-8378-c2140ec91c8b
+      version: -1
+      name: Verify Outputs
+      description: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Flashpoint.Alerts
+                accessor: alert_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Flashpoint.Alerts
+                accessor: fpid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Flashpoint.Alerts.keyword
+                accessor: keyword_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Flashpoint.Alerts.keyword
+                accessor: keyword_text
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 89cff6f6-848a-43c8-8ba1-0a13071a8686
+    type: title
+    task:
+      id: 89cff6f6-848a-43c8-8ba1-0a13071a8686
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 805,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,57 @@
+[    
+    {
+        "action": "notice",
+        "destination": "ftp.test.com",
+        "destinationDevice": {
+            "did": 257,
+            "hostname": "ftp.test.com",
+            "id": 257,
+            "ip": "10.18.25.51",
+            "ips": [
+                {
+                    "ip": "10.18.25.51",
+                    "sid": 47,
+                    "time": "2021-08-24 11:00:00",
+                    "timems": 1621802800000
+                }
+            ],
+            "os": "Windows NT kernel",
+            "sid": 47,
+            "time": "1550154684000",
+            "typelabel": "Desktop",
+            "typename": "desktop"
+        },
+        "destinationPort": 445,
+        "details": "reason=The operation completed successfully. mimeType=text/plain details=Initial_transfer share_type= version=smb2 result=success, size=4096B",
+        "direction": "out",
+        "eventType": "notice",
+        "mlid": 275,
+        "msg": "share= file=EDIDATA\\testfile version=smb2",
+        "nid": 2505345800,
+        "size": 4096,
+        "source": "ftp.test.com",
+        "sourceDevice": {
+            "did": 1276,
+            "hostname": "ftp.test.com",
+            "id": 1276,
+            "ip": "10.18.45.52",
+            "ips": [
+                {
+                    "ip": "10.18.45.52",
+                    "sid": 9,
+                    "time": "2021-08-24 11:00:00",
+                    "timems": 1621802800000
+                }
+            ],
+            "os": "Windows 7, 8 or 10",
+            "sid": 9,
+            "time": "1552479504000",
+            "typelabel": "Desktop",
+            "typename": "desktop"
+        },
+        "time": "2021-08-24 11:08:21",
+        "timems": 1621803301000,
+        "type": "SMB::ReadSuccess",
+        "uid": "C3ITTD4AhWjMDDOvP101"
+    }
+]

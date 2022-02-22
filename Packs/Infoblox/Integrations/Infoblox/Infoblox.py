@@ -1,9 +1,9 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, Optional, Union, Callable, Any
+from typing import Any, Callable, Dict, Optional, Tuple, Union
+
 import urllib3
 
 # Disable insecure warnings
@@ -142,11 +142,12 @@ class Client(BaseClient):
         request_params = assign_params(address=ip, _max_results=max_results)
         return self._http_request('GET', suffix, params=request_params)
 
-    def list_response_policy_zone_rules(self, zone: Optional[str], max_results: Optional[str],
+    def list_response_policy_zone_rules(self, zone: Optional[str], view: Optional[str], max_results: Optional[str],
                                         next_page_id: Optional[str]) -> Dict:
         """List response policy zones rules by a given zone name.
         Args:
             zone: response policy zone name.
+            view: The DNS view in which the records are located. By default, the 'default' DNS view is searched.
             max_results: maximum number of results.
             next_page_id: ID of the next page to retrieve, if given all other arguments are ignored.
 
@@ -156,7 +157,7 @@ class Client(BaseClient):
         # The server endpoint to request from
         suffix = 'allrpzrecords'
         # Dictionary of params for the request
-        request_params = assign_params(zone=zone, _max_results=max_results, _page_id=next_page_id)
+        request_params = assign_params(zone=zone, view=view, _max_results=max_results, _page_id=next_page_id)
         request_params.update(REQUEST_PARAM_PAGING_FLAG)
         request_params.update(REQUEST_PARAM_LIST_RULES)
 
@@ -193,7 +194,7 @@ class Client(BaseClient):
         return self._http_request('DELETE', suffix)
 
     def create_rpz_rule(self, rule_type: Optional[str], object_type: Optional[str], name: Optional[str],
-                        rp_zone: Optional[str], substitute_name: Optional[str],
+                        rp_zone: Optional[str], view: Optional[str], substitute_name: Optional[str],
                         comment: Optional[str] = None) -> Dict:
         """Creates new response policy zone rule.
         Args:
@@ -201,6 +202,7 @@ class Client(BaseClient):
             object_type: Type of object to assign the rule on.
             name: Rule name.
             rp_zone: The zone to assign the rule.
+            view: The DNS view in which the records are located. By default, the 'default' DNS view is searched.
             substitute_name: The substitute name to assign (In case of substitute domain only)
             comment: A comment for this rule.
         Returns:
@@ -214,7 +216,13 @@ class Client(BaseClient):
         elif rule_type == 'Substitute (domain name)':
             canonical = substitute_name
 
-        data = assign_params(name=name, canonical=canonical, rp_zone=rp_zone, comment=comment)
+        data = assign_params(name=name, rp_zone=rp_zone, view=view, comment=comment)
+        # if rule_type is 'Block (No such domain)', then 'canonical' is '' (empty string) but API still requires 'canonical'
+        data.update(
+            {
+                'canonical': canonical
+            }
+        )
         request_params = REQUEST_PARAM_CREATE_RULE
         suffix = demisto.get(RPZ_RULES_DICT, f'{rule_type}.{object_type}.infoblox_object_type')
 
@@ -392,11 +400,12 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
         Outputs
     """
     zone = args.get('response_policy_zone_name')
+    view = args.get('view')
     max_results = args.get('page_size', 50)
     next_page_id = args.get('next_page_id')
     if not zone and not next_page_id:
         raise DemistoException('To run this command either a zone or a next page ID must be given')
-    raw_response = client.list_response_policy_zone_rules(zone, max_results, next_page_id)
+    raw_response = client.list_response_policy_zone_rules(zone, view, max_results, next_page_id)
     new_next_page_id = raw_response.get('next_page_id')
 
     rules_list = raw_response.get('result')
@@ -420,7 +429,7 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
                 'NextPageID': new_next_page_id}
         })
     human_readable = tableToMarkdown(title, fixed_keys_rule_list,
-                                     headerTransform=pascalToSpace)
+                                     headerTransform=pascalToSpace, removeNull=True)
     return human_readable, context, raw_response
 
 
@@ -510,16 +519,22 @@ def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     rp_zone = args.get('rp_zone')
     comment = args.get('comment')
     substitute_name = args.get('substitute_name')
+    view = args.get('view')
+
+    # need to append 'rp_zone' or else this error is returned: "'<name>'. FQDN must belong to zone '<rp_zone>'."
+    if name and not name.endswith(f'.{rp_zone}'):
+        name = f'{name}.{rp_zone}'
+
     if rule_type == 'Substitute (domain name)' and not substitute_name:
         raise DemistoException('Substitute (domain name) rules requires a substitute name argument')
-    raw_response = client.create_rpz_rule(rule_type, object_type, name, rp_zone, substitute_name, comment)
+    raw_response = client.create_rpz_rule(rule_type, object_type, name, rp_zone, view, substitute_name, comment)
     rule = raw_response.get('result', {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
-    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace, removeNull=True)
     return human_readable, context, raw_response
 
 

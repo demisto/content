@@ -1,4 +1,7 @@
-from SMIME_Messaging import Client, sign_email, encrypt_email_body, verify, decrypt_email_body, sign_and_encrypt
+import pytest
+
+from SMIME_Messaging import Client, sign_email, encrypt_email_body, verify, decrypt_email_body, sign_and_encrypt,\
+    decode_str
 import demistomock as demisto
 
 
@@ -8,6 +11,31 @@ with open('./test_data/signer.pem') as file_:
     public_key = file_.read()
 
 client = Client(private_key, public_key)
+note_msg = 'Note: encoding detection ended with warning: Trying to detect encoding from a tiny portion'
+
+test_data = [
+    (
+        b'Za\xbf\xf3\xb3\xe6 g\xea\xb6l\xb1 ja\xbc\xf1',
+        'Zaæó³ę gź¶l± ja¼ń',
+        note_msg,
+        ''
+    ),
+    (
+        b'Za\xbf\xf3\xb3\xe6 g\xea\xb6l\xb1 ja\xbc\xf1',
+        'Zażółć gęślą jaźń',
+        '',
+        'iso-8859-2'
+    ),
+    (b'\xe3\x81\x8c\xe3\x81\x84\xe3\x83\xa2',
+     'がいモ',
+     note_msg,
+     ''
+     ),
+    (b'\xd7\xa9\xd7\x9c\xd7\x95\xd7\x9d',
+     'שלום',
+     '',
+     '')
+]
 
 
 def test_sign():
@@ -49,6 +77,25 @@ def test_sign_and_encrypt(mocker):
     assert 'MIME-Version: 1.0\nContent-Disposition: attachment; filename="smime.p7m"\n' \
            'Content-Type: application/x-pkcs7-mime; smime-type=enveloped-data; name="smime.p7m"\n' \
            'Content-Transfer-Encoding: base64' in sign_encrypt
+
+
+@pytest.mark.parametrize('decrypted_text_bytes, expected_output, error_msg, encoding', test_data)
+def test_decode_using_chardet(decrypted_text_bytes, expected_output, error_msg, encoding):
+    """
+    Given:
+        - Text in bytes to decode
+
+    When:
+        - searching for the right encoding code
+
+    Then:
+        - Using chardet to find the correct encoding. If confidence of the detected code is under 0.9
+        message to note returned
+
+    """
+    out, msg = decode_str(decrypted_text_bytes, encoding)
+    assert error_msg in msg
+    assert out == expected_output
 
 
 def test_test_module(mocker):

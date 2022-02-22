@@ -1,0 +1,2874 @@
+id: Cofense Triage v3-Test
+version: -1
+name: Cofense Triage v3-Test
+description: This playbook uses Cofense Triage v3 integration and tests all  commands
+  of the integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2c6be862-cf01-4e8e-8a1a-28524ee5391a
+    type: start
+    task:
+      id: 2c6be862-cf01-4e8e-8a1a-28524ee5391a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 7b410444-e2e0-4056-826a-9735fbc5f6e9
+    type: regular
+    task:
+      id: 7b410444-e2e0-4056-826a-9735fbc5f6e9
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 15381aad-ee9f-4e0c-8d3c-bf008dd93e9c
+    type: regular
+    task:
+      id: 15381aad-ee9f-4e0c-8d3c-bf008dd93e9c
+      version: -1
+      name: cofense-threat-indicator-list
+      script: '|||cofense-threat-indicator-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      fields_to_retrieve: {}
+      filter_by: {}
+      id: {}
+      page_number: {}
+      page_size: {}
+      sort_by: {}
+      threat_level: {}
+      threat_source: {}
+      threat_type: {}
+      threat_value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 98c05067-a56a-41d3-865f-190c5ad85898
+    type: condition
+    task:
+      id: 98c05067-a56a-41d3-865f-190c5ad85898
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator.attributes
+                accessor: threat_level
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator.attributes
+                accessor: threat_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator.attributes
+                accessor: threat_value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator.attributes
+                accessor: threat_source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator.attributes
+                accessor: created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator.attributes
+                accessor: updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator.relationships.owner.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator.relationships.owner.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator.relationships.owner.data
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator.relationships.owner.data
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator.relationships.reports.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator.relationships.reports.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator.relationships.comments.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator.relationships.comments.links
+                accessor: related
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: edc8e762-eb7c-4d87-820c-2db936d529fb
+    type: regular
+    task:
+      id: edc8e762-eb7c-4d87-820c-2db936d529fb
+      version: -1
+      name: cofense-report-list
+      script: '|||cofense-report-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 6dc84382-9b00-498b-855f-2f0dba5289cb
+    type: condition
+    task:
+      id: 6dc84382-9b00-498b-855f-2f0dba5289cb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.attributes
+                accessor: location
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.attributes
+                accessor: risk_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.attributes
+                accessor: subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.attributes
+                accessor: received_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.attributes
+                accessor: reported_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.attributes
+                accessor: raw_headers
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.attributes
+                accessor: text_body
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.attributes
+                accessor: html_body
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.attributes
+                accessor: md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.attributes
+                accessor: sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.attributes
+                accessor: match_priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.attributes
+                accessor: processed_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.attributes
+                accessor: created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.attributes
+                accessor: updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.assignee.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.assignee.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.category.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.category.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.cluster.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.cluster.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.reporter.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.reporter.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.attachment_payloads.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.attachment_payloads.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.attachments.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.attachments.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.domains.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.domains.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.headers.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.headers.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.hostnames.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.hostnames.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.urls.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.urls.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.rules.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.urls.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.threat_indicators.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.threat_indicators.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.comments.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.relationships.comments.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.meta.risk_score_summary
+                accessor: integrations
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.meta.risk_score_summary
+                accessor: vip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.meta.risk_score_summary
+                accessor: reporter
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Report.meta.risk_score_summary
+                accessor: rules
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: a3a1e6ac-1998-470f-8fd6-6b54cbf0e6da
+    type: regular
+    task:
+      id: a3a1e6ac-1998-470f-8fd6-6b54cbf0e6da
+      version: -1
+      name: cofense-report-download
+      script: '|||cofense-report-download'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      id:
+        complex:
+          root: Cofense.Report.[0]
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 7ebabc36-e981-4916-8066-a6b77ea5f628
+    type: condition
+    task:
+      id: 7ebabc36-e981-4916-8066-a6b77ea5f628
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA512
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SSDeep
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Info
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Extension
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 6948208a-bb67-42fc-85cf-90c649150269
+    type: regular
+    task:
+      id: 6948208a-bb67-42fc-85cf-90c649150269
+      version: -1
+      name: cofense-category-list
+      script: '|||cofense-category-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      fields_to_retrieve: {}
+      filter_by: {}
+      id: {}
+      is_malicious: {}
+      name: {}
+      page_number: {}
+      page_size: {}
+      score: {}
+      sort_by: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: d9af5e50-3776-4eda-8126-f5182b9e160e
+    type: condition
+    task:
+      id: d9af5e50-3776-4eda-8126-f5182b9e160e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Category
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Category
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Category.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Category.attributes
+                accessor: name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Category.attributes
+                accessor: score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Category.attributes
+                accessor: color
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Category.attributes
+                accessor: created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Category.attributes
+                accessor: updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Category.relationships.one_clicks.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Category.relationships.one_clicks.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Category.relationships.reports.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Category.relationships.reports.links
+                accessor: related
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: bd4b92e8-db54-4eb8-80d6-f8f16aa80ff6
+    type: regular
+    task:
+      id: bd4b92e8-db54-4eb8-80d6-f8f16aa80ff6
+      version: -1
+      name: cofense-rule-list
+      script: '|||cofense-rule-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: ca6e0c49-656d-4c7e-8769-e8bf9f8dd830
+    type: condition
+    task:
+      id: ca6e0c49-656d-4c7e-8769-e8bf9f8dd830
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.attributes
+                accessor: name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.attributes
+                accessor: description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.attributes
+                accessor: priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.attributes
+                accessor: scope
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.attributes
+                accessor: author_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.attributes
+                accessor: rule_context
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.attributes
+                accessor: content
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.attributes
+                accessor: time_to_live
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.attributes
+                accessor: reports_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.attributes
+                accessor: created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.attributes
+                accessor: updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.relationships.cluster_context.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.relationships.cluster_context.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.relationships.report_context.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.relationships.report_context.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.relationships.owner.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.relationships.owner.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.relationships.clusters.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.relationships.clusters.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.relationships.reports.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Rule.relationships.reports.links
+                accessor: related
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 5fc3fd42-ec18-4086-8d6d-ad969e82be42
+    type: regular
+    task:
+      id: 5fc3fd42-ec18-4086-8d6d-ad969e82be42
+      version: -1
+      name: cofense-url-list
+      script: '|||cofense-url-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 5254ad31-6e6d-4be3-84db-e26cf51b81ee
+    type: condition
+    task:
+      id: 5254ad31-6e6d-4be3-84db-e26cf51b81ee
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Url
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Url
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Url.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Url.attributes
+                accessor: url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Url.attributes
+                accessor: created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Url.attributes
+                accessor: updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Url.relationships.domain.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Url.relationships.domain.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Url.relationships.hostname.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Url.relationships.hostname.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Url.relationships.clusters.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Url.relationships.clusters.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Url.relationships.integration_submissions.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Url.relationships.integration_submissions.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Url.relationships.reports.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Url.relationships.reports.links
+                accessor: related
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: edb70664-3991-4687-833d-3ce7e227d27e
+    type: regular
+    task:
+      id: edb70664-3991-4687-833d-3ce7e227d27e
+      version: -1
+      name: cofense-reporter-list
+      script: '|||cofense-reporter-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      email: {}
+      fields_to_retrieve: {}
+      filter_by: {}
+      id: {}
+      page_number: {}
+      page_size: {}
+      reputation_score: {}
+      sort_by: {}
+      vip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: aa65b6c4-a5db-4e5e-8950-55369f20275a
+    type: condition
+    task:
+      id: aa65b6c4-a5db-4e5e-8950-55369f20275a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Reporter
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Reporter
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Reporter.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Reporter.attributes
+                accessor: email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Reporter.attributes
+                accessor: reports_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Reporter.attributes
+                accessor: last_reported_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Reporter.attributes
+                accessor: reputation_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Reporter.attributes
+                accessor: vip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Reporter.attributes
+                accessor: created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Reporter.attributes
+                accessor: updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Reporter.relationships.clusters.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Reporter.relationships.clusters.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Reporter.relationships.reports.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Reporter.relationships.reports.links
+                accessor: related
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 5baea661-1481-43e2-8c3b-7ae14d1dbab6
+    type: regular
+    task:
+      id: 5baea661-1481-43e2-8c3b-7ae14d1dbab6
+      version: -1
+      name: cofense-attachment-payload-list
+      script: '|||cofense-attachment-payload-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      fields_to_retrieve: {}
+      filter_by: {}
+      id: {}
+      page_number: {}
+      page_size: {}
+      risk_score: {}
+      sort_by: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: d246e323-43c7-46de-8c9c-449367039787
+    type: condition
+    task:
+      id: d246e323-43c7-46de-8c9c-449367039787
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.AttachmentPayload
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.AttachmentPayload
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.AttachmentPayload.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.AttachmentPayload.attributes
+                accessor: mime_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.AttachmentPayload.attributes
+                accessor: md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.AttachmentPayload.attributes
+                accessor: sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.AttachmentPayload.attributes
+                accessor: created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.AttachmentPayload.attributes
+                accessor: updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.AttachmentPayload.relationships.attachments.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.AttachmentPayload.relationships.attachments.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.AttachmentPayload.relationships.clusters.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.AttachmentPayload.relationships.attachments.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.AttachmentPayload.relationships.integration_submissions.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.AttachmentPayload.relationships.integration_submissions.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.AttachmentPayload.relationships.reports.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.AttachmentPayload.relationships.reports.links
+                accessor: related
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: bafcd503-3f43-4280-859a-6bcd3745cf78
+    type: regular
+    task:
+      id: bafcd503-3f43-4280-859a-6bcd3745cf78
+      version: -1
+      name: cofense-comment-list
+      script: '|||cofense-comment-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: b27c3c05-4dfd-41f0-8d26-c599ddb02cc5
+    type: condition
+    task:
+      id: b27c3c05-4dfd-41f0-8d26-c599ddb02cc5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes
+                accessor: body_format
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes
+                accessor: body
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes
+                accessor: tags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes
+                accessor: created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes
+                accessor: updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.reported_time
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.srctag
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.received_time
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.from
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.reported_by
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.notes
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.summary
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.malware_families
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.phenotypes
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.message_id
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.reply_to
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.report_url
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.escalation_type
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.stage_1_iocs
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.stage_1_iocs.properties.files
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.stage_1_iocs.properties.infection_ips
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.stage_1_iocs.properties.infection_ips.items
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.stage_1_iocs.properties.infection_urls.items
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.stage_1_iocs.properties.infection_urls
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.brands
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.brands.items
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.vision_results
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.vision_results.properties
+                accessor: results_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.vision_results.properties.query_created
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.vision_results.properties
+                accessor: messages_removed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.vision_results.properties
+                accessor: messages_found
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.subject
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.sent_to
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.stage_2_iocs
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.stage_2_iocs.properties.files
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.stage_2_iocs.properties.md5
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.stage_2_iocs.properties.size
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.stage_2_iocs.properties.payload_ips
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.stage_2_iocs.properties.payload_ips.items
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.stage_2_iocs.properties.payload_urls
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.stage_2_iocs.properties.payload_urls.items
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.stage_2_iocs.properties.c2_ips
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.stage_2_iocs.properties.c2_urls
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.attributes.body.properties.report_id
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.relationships.commentable.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.relationships.commentable.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.relationships.commentable.data
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.relationships.commentable.data
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.relationships.owner.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.relationships.owner.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.relationships.owner.data
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Comment.relationships.owner.data
+                accessor: id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: cabbbd0b-9cec-4339-8bf3-2e6a86b52990
+    type: title
+    task:
+      id: cabbbd0b-9cec-4339-8bf3-2e6a86b52990
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 192d18b3-284e-4918-8fd0-e1b897bdd89a
+    type: regular
+    task:
+      id: 192d18b3-284e-4918-8fd0-e1b897bdd89a
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 6afdc75f-95ec-4ff4-8bd1-06502775a5c7
+    type: regular
+    task:
+      id: 6afdc75f-95ec-4ff4-8bd1-06502775a5c7
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: e274faa5-d76c-4bc5-8e36-fd058f8e9ac7
+    type: regular
+    task:
+      id: e274faa5-d76c-4bc5-8e36-fd058f8e9ac7
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 5185f095-f852-4106-8310-b26765870c6e
+    type: regular
+    task:
+      id: 5185f095-f852-4106-8310-b26765870c6e
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 42bfedd2-ab9d-47d6-8bea-49a641416432
+    type: regular
+    task:
+      id: 42bfedd2-ab9d-47d6-8bea-49a641416432
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 7ae2702f-10ab-4fe7-856a-d461b243d9c8
+    type: regular
+    task:
+      id: 7ae2702f-10ab-4fe7-856a-d461b243d9c8
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 2995966b-f2a4-4326-8c6d-9f7d276064b0
+    type: regular
+    task:
+      id: 2995966b-f2a4-4326-8c6d-9f7d276064b0
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: d3d24a7d-09bb-47af-8bc4-8b991ff5febd
+    type: regular
+    task:
+      id: d3d24a7d-09bb-47af-8bc4-8b991ff5febd
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: dd3610c9-ca15-401b-8c6e-1d58c064de4b
+    type: regular
+    task:
+      id: dd3610c9-ca15-401b-8c6e-1d58c064de4b
+      version: -1
+      name: cofense-cluster-list
+      description: Retrieves clusters based on the filter values provided in the command
+        arguments.
+      script: '|||cofense-cluster-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      created_at: {}
+      fields_to_retrieve: {}
+      filter_by: {}
+      id: {}
+      match_priority: {}
+      page_number: {}
+      page_size: {}
+      sort_by: {}
+      tags: {}
+      total_reports_count: {}
+      updated_at: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 6ee948f1-8ae4-467f-83a4-ae5155347c8c
+    type: condition
+    task:
+      id: 6ee948f1-8ae4-467f-83a4-ae5155347c8c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.attributes
+                accessor: risk_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.attributes
+                accessor: first_reported_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.attributes
+                accessor: oldest_unprocessed_reported_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.attributes
+                accessor: last_received_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.attributes
+                accessor: oldest_unprocessed_reported_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.attributes
+                accessor: last_reported_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.attributes
+                accessor: last_subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.attributes
+                accessor: average_reporter_reputation
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.attributes
+                accessor: match_priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.attributes
+                accessor: host_source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.attributes
+                accessor: unprocessed_reports_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.attributes
+                accessor: processed_reports_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.attributes
+                accessor: total_reports_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.attributes
+                accessor: rules_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.attributes
+                accessor: urls_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.attributes
+                accessor: vip_reporters_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.attributes
+                accessor: created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.relationships.attachment_payloads.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.relationships.attachment_payloads.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.relationships.attachment_payloads.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.relationships.domains.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.relationships.domains.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.relationships.hostnames.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.relationships.hostnames.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.relationships.reports.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.relationships.reports.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.relationships.reporters.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.relationships.reporters.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.relationships.rules.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.relationships.rules.links
+                accessor: related
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.relationships.urls.links
+                accessor: self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Cluster.relationships.urls.links
+                accessor: related
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 09240715-c587-46a8-8946-99cbfa12c267
+    type: regular
+    task:
+      id: 09240715-c587-46a8-8946-99cbfa12c267
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: cde554ec-0d72-4c18-8179-5156c910219f
+    type: regular
+    task:
+      id: cde554ec-0d72-4c18-8179-5156c910219f
+      version: -1
+      name: cofense-report-image-download
+      description: Downloads the image of the report that matches the specified report
+        ID.
+      script: '|||cofense-report-image-download'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      id:
+        complex:
+          root: Cofense.Report.[0]
+          accessor: id
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: bce0e7ad-34cb-4b0d-8f05-5ff299b2ef0b
+    type: condition
+    task:
+      id: bce0e7ad-34cb-4b0d-8f05-5ff299b2ef0b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: InfoFile
+                accessor: Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: InfoFile
+                accessor: EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: InfoFile
+                accessor: Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: InfoFile
+                accessor: Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: InfoFile
+                accessor: Info
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: InfoFile
+                accessor: Extension
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "28_36_yes": 0.53,
+      "40_41_yes": 0.57
+    },
+    "paper": {
+      "dimensions": {
+        "height": 6485,
+        "width": 380,
+        "x": 50,
+        "y": -520
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0

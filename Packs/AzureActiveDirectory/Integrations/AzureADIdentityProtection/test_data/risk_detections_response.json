@@ -1,0 +1,37 @@
+{
+  "@odata.context": "https://graph.microsoft.com/beta/$metadata#riskDetections",
+  "@odata.nextLink": "https://graph.microsoft.com/beta/riskDetections?$skiptoken=dummy_skip_token",
+  "value": [
+    {
+      "activity": "signin",
+      "activityDateTime": "2021-03-30T21:15:41.3107376Z",
+      "additionalInfo": "[{\"Key\":\"userAgent\",\"Value\":\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36\"}]",
+      "correlationId": "dummy_correlation_id",
+      "detectedDateTime": "2021-03-30T21:15:41.3107376Z",
+      "detectionTimingType": "realtime",
+      "id": "dummy_id",
+      "ipAddress": "1.1.1.1",
+      "lastUpdatedDateTime": "2021-05-23T08:20:28.8876241Z",
+      "location": {
+        "city": "Ashburn",
+        "countryOrRegion": "US",
+        "geoCoordinates": {
+          "latitude": 39.0437,
+          "longitude": -77.4742
+        },
+        "state": "Virginia"
+      },
+      "requestId": "dummy_request_id",
+      "riskDetail": "userPerformedSecuredPasswordChange",
+      "riskEventType": "unfamiliarFeatures",
+      "riskLevel": "high",
+      "riskState": "remediated",
+      "riskType": "unfamiliarFeatures",
+      "source": "IdentityProtection",
+      "tokenIssuerType": "AzureAD",
+      "userDisplayName": "Example Exampleson",
+      "userId": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2",
+      "userPrincipalName": "example@demisto.com"
+    }
+  ]
+}

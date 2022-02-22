@@ -196,7 +196,7 @@ script:
   runonce: false
   script: '-'
   type: powershell
-  dockerimage: demisto/powershell-ubuntu:7.1.1.16151
+  dockerimage: demisto/powershell-ubuntu:7.1.3.22304
 fromversion: 5.5.0
 tests:
 - Audit Log - Test

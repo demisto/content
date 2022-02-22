@@ -1,0 +1,4 @@
+## Example of Potential Use Cases
+### Search for potentially fraudulent accounts:
+
+As a company with a social media presence, we need to prevent fraud accounts from impersonating our company in order to protect the corporate reputation. We also want to allow customers to do the same. In order to achieve this, we need a reliable way to detect and report fraudulent accounts. To achieve this, we will create an integration that allows XSOAR to connect to Twitter’s API. We will create a searching feature with customizable filters (such as searching by name, keywords, verified status), to allow us to better find the results we are looking for. As we search for fraud accounts, we will support the ability to add benign accounts to a list to be excluded from further searches. These two means of filtration will allow us to efficiently search for and report fraudulent accounts.

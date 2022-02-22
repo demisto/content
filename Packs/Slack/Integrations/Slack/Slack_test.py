@@ -4359,3 +4359,186 @@ def test_send_message_to_destinations_non_strict():
                   }
               ]"""
     send_message_to_destinations([], "", "", blocks=blocks)  # No destinations, no response
+
+
+class TestFilterConversations:
+    @staticmethod
+    def set_conversation_mock(mocker, get_context=get_integration_context):
+        mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_context)
+        mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+        mocker.patch.object(slack.WebClient, 'api_call', return_value={'channels': js.loads(CONVERSATIONS)})
+
+    def test_filter_conversations_with_name_exists_in_context(self, mocker):
+        """
+        Given:
+        - filter name set to 'general'
+
+        When:
+        - 'general' conversation exists in context
+
+        Then:
+        - Check if the 'general' conversation was returned
+        - Check that no API command was called.
+        """
+        from Slack import filter_conversations
+        self.set_conversation_mock(mocker)
+
+        conversation_name = 'general'
+        conversations = filter_conversations(name=conversation_name)
+
+        # Assertions
+        assert len(conversations) == 1
+        assert conversation_name == conversations[0]['name']
+        assert slack.WebClient.api_call.call_count == 0
+
+    def test_get_conversation_by_name_exists_in_api_call(self, mocker):
+        """
+        Given:
+        - filter name set to 'general'
+
+        When:
+        - 'general' conversation not exists in context, but does in the API
+
+        Then:
+        - Check if the 'general' conversation was returned
+        - Check that a API command was called.
+        """
+
+        def get_context():
+            return {}
+
+        from Slack import filter_conversations
+
+        self.set_conversation_mock(mocker, get_context=get_context)
+
+        conversation_name = 'general'
+        conversations = filter_conversations(name=conversation_name)
+
+        # Assertions
+        assert conversation_name == conversations[0]['name']
+        assert slack.WebClient.api_call.call_count == 1
+
+        # Find that 'general' conversation has been added to context
+        conversations = json.loads(demisto.setIntegrationContext.call_args[0][0]['conversations'])
+        filtered = list(filter(lambda c: c['name'] == conversation_name, conversations))
+        assert filtered, 'Could not find the \'general\' conversation in the context'
+
+    def test_get_conversation_by_name_not_exists(self, mocker):
+        """
+        Given:
+        - Conversation name known not to exist
+
+        When:
+        - Conversation does not exist.
+
+        Then:
+        - Check no conversation was returned.
+        - Check that a API command was called.
+        """
+        from Slack import filter_conversations
+        self.set_conversation_mock(mocker)
+
+        conversation_name = 'no exists'
+        conversations = filter_conversations(name=conversation_name)
+        assert not conversations
+        assert slack.WebClient.api_call.call_count == 1
+
+    def test_filter_conversations_with_regex_name_exists_in_context(self, mocker):
+        """
+        Given:
+        - filter name set to '^general$'
+
+        When:
+        - 'general' conversation exists in context
+
+        Then:
+        - Check if the 'general' conversation was returned
+        - Check that no API command was called.
+        """
+        from Slack import filter_conversations
+        self.set_conversation_mock(mocker)
+
+        conversation_name = '^general$'
+        conversations = filter_conversations(name=conversation_name)
+
+        # Assertions
+        assert len(conversations) == 1
+        assert conversations[0]['name'] == 'general'
+        assert slack.WebClient.api_call.call_count == 0
+
+    def test_filter_conversations_with_no_args(self, mocker):
+        """
+        Given:
+        - No arguments passed to function
+
+        Then:
+        - Check if all conversation were returned
+        """
+        from Slack import filter_conversations
+        self.set_conversation_mock(mocker)
+
+        conversations = filter_conversations()
+
+        assert len(conversations) == len(js.loads(CONVERSATIONS))
+
+    def test_filter_conversations_with_is_archived_false_arg(self, mocker):
+        """
+        Given:
+        - filter is_archived set to False
+
+        Then:
+        - The first conversation's name is 'general'
+        """
+        from Slack import filter_conversations
+        self.set_conversation_mock(mocker)
+
+        conversations = filter_conversations(is_archived=False)
+
+        assert conversations[0]['name'] == 'general'
+
+    def test_filter_conversations_with_is_general_arg(self, mocker):
+        """
+        Given:
+        - filter is_general set to True
+
+        Then:
+        - Only one conversation is returned
+        - The only conversation's name is 'general'
+        """
+        from Slack import filter_conversations
+        self.set_conversation_mock(mocker)
+
+        conversations = filter_conversations(is_general=True)
+
+        assert len(conversations) == 1
+        assert conversations[0]['name'] == 'general'
+
+    def test_filter_conversations_with_is_general_false_arg(self, mocker):
+        """
+        Given:
+        - filter is_general set to False
+
+        Then:
+        - All conversations except one (named 'general') was returned
+        """
+        from Slack import filter_conversations
+        self.set_conversation_mock(mocker)
+
+        conversations = filter_conversations(is_general=False)
+
+        assert len(conversations) == (len(js.loads(CONVERSATIONS)) - 1)
+
+    def test_filter_conversations_with_is_private_false_arg(self, mocker):
+        """
+        Given:
+        - filter is_private set to False
+
+        Then:
+        - The first conversation's name is 'general'
+        """
+        from Slack import filter_conversations
+        self.set_conversation_mock(mocker)
+
+        conversations = filter_conversations(is_private=False)
+
+        assert conversations[0]['name'] == 'general'

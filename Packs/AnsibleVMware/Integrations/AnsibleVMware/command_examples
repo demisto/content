@@ -1,0 +1,142 @@
+!vmware-about-info
+
+!vmware-datacenter datacenter_name="DC1" state="present"
+
+!vmware-cluster datacenter="DC1" cluster_name="cluster" enable_ha="False" enable_drs="False" enable_vsan="False"
+!vmware-cluster-drs datacenter="DC1" cluster_name="cluster" enable_drs="False"
+!vmware-cluster-ha datacenter="DC1" cluster_name="cluster" enable_ha="False"
+!vmware-cluster-vsan datacenter="DC1" cluster_name="cluster" enable_vsan="False"
+!vmware-cluster-info datacenter="DC1"
+
+!vmware-host datacenter_name="DC1" cluster_name="cluster" esxi_hostname="esxi01" esxi_username="root" esxi_password="PASSWORD" state="present"
+!vmware-host-acceptance cluster_name="cluster" acceptance_level="community" state="present"
+!vmware-host-active-directory esxi_hostname="esxi01" ad_domain="example.local" ad_user="adjoin" ad_password="Password123$" ad_state="present"
+!vmware-host-capability-info cluster_name="cluster"
+!vmware-host-config-info cluster_name="cluster"
+!vmware-host-config-manager cluster_name="cluster" options="{'Config.HostAgent.log.level': 'info'}"
+!vmware-host-datastore datastore_name="datastore1" datastore_type="vmfs" vmfs_device_name="naa.6000c29d140dea19fc681e3e1b190c46" vmfs_version="6" esxi_hostname="esxi01" state="present"
+!vmware-host-dns-info cluster_name="cluster"
+!vmware-host-facts
+!vmware-host-feature-info cluster_name="cluster"
+!vmware-host-firewall-info cluster_name="cluster"
+!vmware-host-firewall-manager cluster_name="cluster" rules="{{ [{'name': 'vvold', 'enabled': True}] }}"
+!vmware-host-hyperthreading esxi_hostname="esxi01" state="enabled"
+!vmware-host-ipv6 esxi_hostname="esxi01" state="enabled"
+!vmware-host-kernel-manager esxi_hostname="esxi01" kernel_module_name="tcpip4" kernel_module_option="ipv6=0"
+!vmware-host-lockdown esxi_hostname="esxi01" state="present"
+!vmware-host-ntp esxi_hostname="esxi01" ntp_servers="{{ ['0.pool.ntp.org', '1.pool.ntp.org'] }}"
+!vmware-host-ntp-info cluster_name="cluster"
+!vmware-host-package-info cluster_name="cluster"
+!vmware-host-powermgmt-policy esxi_hostname="esxi01" policy="high-performance"
+!vmware-host-powerstate esxi_hostname="esxi01" state="power-up-from-standby"
+!vmware-host-scanhba esxi_hostname="esxi01" refresh_storage="True"
+!vmware-host-service-info cluster_name="cluster"
+!vmware-host-service-manager cluster_name="cluster" service_name="ntpd" state="present"
+!vmware-host-snmp community="test" state="enabled"
+!vmware-host-ssl-info cluster_name="cluster"
+!vmware-host-vmhba-info cluster_name="cluster"
+!vmware-host-vmnic-info cluster_name="cluster"
+!vmware-cfg-backup state="saved" dest="/tmp/" esxi_hostname="esxi01"
+
+!vmware-datastore-cluster datacenter_name="DC1" datastore_cluster_name="Storage_Cluster" state="present"
+!vmware-datastore-info datacenter_name="DC1"
+!vmware-datastore-maintenancemode datastore="datastore1" state="present"
+
+!vmware-dns-config change_hostname_to="esxi01" domainname="foo.org" dns_servers="{{ ['8.8.8.8', '8.8.4.4'] }}"
+
+!vmware-drs-group cluster_name="cluster" datacenter_name="DC1" group_name="TEST_VM_01" vms="Sample_VM" state="present"
+!vmware-drs-group-info datacenter="DC1"
+!vmware-drs-rule-info cluster_name="cluster"
+
+!vmware-dvswitch datacenter="DC1" switch="dvSwitch" version="6.0.0" mtu="9000" uplink_quantity="2" discovery_protocol="lldp" discovery_operation="both" state="present"
+!vmware-dvs-host esxi_hostname="esxi01" switch_name="dvSwitch" vmnics="vmnic1" state="present"
+!vmware-dvs-portgroup portgroup_name="vlan-123-portrgoup" switch_name="dvSwitch" vlan_id="123" num_ports="120" portgroup_type="earlyBinding" state="present"
+!vmware-dvs-portgroup-find dvswitch="dvSwitch"
+!vmware-dvs-portgroup-info datacenter="DC1"
+
+!vmware-dvswitch-lacp switch="dvSwitch" support_mode="enhanced"
+!vmware-dvswitch-nioc switch="dvSwitch" version="version3" resources="{{ [{'name': 'vmotion', 'limit': -1, 'reservation': 128, 'shares_level': 'normal'}, {'name': 'vsan', 'limit': -1, 'shares_level': 'custom', 'shares': 99, 'reservation': 256}] }}" state="present"
+!vmware-dvswitch-pvlans switch="dvSwitch" primary_pvlans="{{ [{'primary_pvlan_id': 1}, {'primary_pvlan_id': 4}] }}" secondary_pvlans="{{ [{'primary_pvlan_id': 1, 'secondary_pvlan_id': 2, 'pvlan_type': 'isolated'}, {'primary_pvlan_id': 1, 'secondary_pvlan_id': 3, 'pvlan_type': 'community'}, {'primary_pvlan_id': 4, 'secondary_pvlan_id': 5, 'pvlan_type': 'community'}] }}"
+!vmware-dvswitch-uplink-pg switch="dvSwitch" name="dvSwitch-DVUplinks" advanced="{{ {'port_config_reset_at_disconnect': True, 'block_override': True, 'vendor_config_override': False, 'vlan_override': False, 'netflow_override': False, 'traffic_filter_override': False} }}" vlan_trunk_range="0-4094" netflow_enabled="False" block_all_ports="False"
+
+!vmware-evc-mode datacenter_name="DC1" cluster_name="cluster" evc_mode="intel-merom" state="present"
+
+!vmware-folder-info datacenter="DC1"
+
+
+!vmware-guest folder="/DC1/vm/" name="test_vm_0001" state="poweredon" guest_id="centos64Guest" esxi_hostname="esxi01" disk="{{ [{'size_gb': 1, 'type': 'thin', 'datastore': 'datastore1'}] }}" hardware="{{ {'memory_mb': 512, 'num_cpus': 1, 'scsi': 'paravirtual'} }}" networks="{{ [{'name': 'VM Network', 'mac': 'aa:bb:dd:aa:00:14', 'ip': '10.10.10.100', 'netmask': '255.255.255.0', 'device_type': 'vmxnet3'}] }}" datacenter="DC1"
+!vmware-guest-boot-info name="test_vm_0001"
+!vmware-guest-boot-manager name="test_vm_0001" boot_delay="2000" enter_bios_setup="True" boot_retry_enabled="True" boot_retry_delay="22300" boot_firmware="bios" secure_boot_enabled="False" boot_order="['floppy', 'cdrom', 'ethernet', 'disk']"
+!vmware-guest-custom-attribute-defs state="present" attribute_key="custom_attr_def_1"
+!vmware-guest-custom-attributes name="test_vm_0001" state="present" attributes="[{'name': 'MyAttribute', 'value': 'MyValue'}]"
+!vmware-guest-customization-info
+!vmware-guest-disk datacenter="DC1" name="test_vm_0001" disk="{{ [{'size_mb': 10, 'type': 'thin', 'datastore': 'datacluster0', 'state': 'present', 'scsi_controller': 1, 'unit_number': 1, 'scsi_type': 'paravirtual'}, {'size_gb': 1, 'type': 'eagerzeroedthick', 'state': 'present', 'autoselect_datastore': True, 'scsi_controller': 2, 'scsi_type': 'buslogic', 'unit_number': 12}, {'size': '10Gb', 'type': 'eagerzeroedthick', 'state': 'present', 'autoselect_datastore': True, 'scsi_controller': 2, 'scsi_type': 'buslogic', 'unit_number': 1}] }}"
+!vmware-guest-disk-info datacenter="DC1" name="test_vm_0001"
+!vmware-guest-find name="test_vm_0001"
+!vmware-guest-info datacenter="DC1" name="test_vm_0001"
+!vmware-guest-move datacenter="DC1" name="test_vm_0001" dest_folder="/DC1/vm"
+!vmware-guest-network datacenter="DC1" name="test-vm" gather_network_info="False" networks="{{ [{'name': 'VM Network', 'state': 'new', 'manual_mac': '00:50:56:11:22:33'}, {'state': 'present', 'device_type': 'e1000e', 'manual_mac': '00:50:56:44:55:66'}, {'state': 'present', 'label': 'Network adapter 3', 'connected': False}, {'state': 'absent', 'mac': '00:50:56:44:55:77'}]  }}"
+!vmware-guest-powerstate folder="/DC1/vm/my_folder" name="test_vm_0001" state="powered-off"
+!vmware-guest-screenshot datacenter="DC1" folder="my_folder" name="test_vm_0001" local_path="/tmp/"
+!vmware-guest-sendkey datacenter="DC1" folder="my_folder" name="test_vm_0001" keys_send="{{ ['TAB', 'TAB', 'ENTER'] }}"
+!vmware-guest-snapshot datacenter="DC1" folder="/DC1/vm/" name="test_vm_0001" state="present" snapshot_name="snap1" description="snap1_description"
+!vmware-guest-snapshot-info datacenter="DC1" name="test_vm_0001"
+!vmware-guest-tools-upgrade datacenter="DC1" name="test_vm_0001"
+!vmware-guest-tools-wait
+!vmware-guest-video datacenter="DC1" name="test-vm" gather_video_facts="False" use_auto_detect="False" display_number="2" video_memory_mb="8.0" enable_3D="True" renderer_3D="automatic" memory_3D_mb="512"
+!vmware-guest-vnc folder="/DC1/vm" name="test_vm_0001" vnc_port="5990" vnc_password="vNc5ecr3t" datacenter="DC1" state="present"
+
+!vmware-vm-info
+
+!vmware-local-role-info
+!vmware-local-role-manager local_role_name="vmware_qa" state="present"
+!vmware-local-user-info
+!vmware-local-user-manager local_user_name="foo"
+
+!vmware-maintenancemode esxi_hostname="esxi01" vsan="ensureObjectAccessibility" evacuate="True" timeout="3600" state="present"
+!vmware-migrate-vmk esxi_hostname="esxi01" device="vmk1" current_switch_name="temp_vswitch" current_portgroup_name="esx-mgmt" migrate_switch_name="dvSwitch" migrate_portgroup_name="Management"
+!vmware-object-role-permission role="Admin" principal="user_bob" object_name="services" state="present"
+
+!vmware-portgroup switch="vSwitch0" portgroup="test" vlan_id="123" cluster_name="cluster"
+!vmware-portgroup-info cluster_name="cluster"
+
+!vmware-resource-pool datacenter="DC1" cluster="cluster" resource_pool="rp" mem_shares="normal" mem_limit="-1" mem_reservation="0" mem_expandable_reservations="True" cpu_shares="normal" cpu_limit="-1" cpu_reservation="0" cpu_expandable_reservations="True" state="present"
+!vmware-resource-pool-info
+
+!vmware-tag category_id="urn:vmomi:InventoryServiceCategory:e785088d-6981-4b1c-9fb8-1100c3e1f742:GLOBAL" tag_name="Sample_Tag_0002" tag_description="Sample Description" state="present"
+!vmware-tag-info
+
+!vmware-tag-manager tag_names="{{ ['Sample_Tag_0002', 'Category_0001:Sample_Tag_0003'] }}" object_name="Fedora_VM" object_type="VirtualMachine" state="add"
+!vmware-target-canonical-info target_id="7" esxi_hostname="esxi_hostname"
+!vmware-vcenter-settings database="{'max_connections': 50, 'task_cleanup': True, 'task_retention': 30, 'event_cleanup': True, 'event_retention': 30}" runtime_settings="{'unique_id': 1, 'managed_address': '{{ ansible_default_ipv4.address }}', 'vcenter_server_name': '192.168.1.107'}" user_directory="{'timeout': 60, 'query_limit': True, 'query_limit_size': 5000, 'validation': True, 'validation_period': 1440}" mail="{'server': 'mail.example.com', 'sender': 'vcenter@192.168.1.107'}" snmp_receivers="{'snmp_receiver_1_url': 'localhost', 'snmp_receiver_1_enabled': True, 'snmp_receiver_1_port': 162, 'snmp_receiver_1_community': 'public'}" timeout_settings="{'normal_operations': 30, 'long_operations': 120}" logging_options="info"
+!vmware-vcenter-statistics interval_past_day="{'enabled': True, 'interval_minutes': 5, 'save_for_days': 1, 'level': 1}" interval_past_week="{'enabled': True, 'level': 1}" interval_past_month="{'enabled': True, 'level': 1}" interval_past_year="{'enabled': True, 'save_for_years': 1, 'level': 1}"
+
+!vmware-vm-host-drs-rule cluster_name="cluster" drs_rule_name="drs_rule_host_aff_0001" host_group_name="DC0_C0_HOST_GR1" vm_group_name="DC0_C0_VM_GR1" mandatory="True" enabled="True" affinity_rule="True"
+
+
+!vmware-content-library-manager library_name="test-content-lib" library_description="Library with Datastore Backing" library_type="local" datastore_name="datastore" state="present"
+!vmware-content-library-info
+!vmware-content-deploy-template template="rhel_test_template" datastore="datastore1" folder="vm" datacenter="DC1" name="Sample_VM" state="present"
+
+!vmware-category category_name="Sample_Cat_0001" category_description="Sample Description" category_cardinality="multiple" state="present"
+!vmware-category-info
+
+!vmware-vm-shell datacenter="DC1" folder="/DC1/vm" vm_id="test_vm_0001" vm_username="root" vm_password="superSecret" vm_shell="/bin/echo" vm_shell_args=" $var >> myFile " vm_shell_env="['PATH=/bin', 'VAR=test']" vm_shell_cwd="/tmp"
+!vmware-vm-storage-policy-info
+!vmware-vm-vm-drs-rule cluster_name="cluster" vms="['vm1', 'vm2']" drs_rule_name="vm1-vm2-affinity-rule-001" enabled="True" mandatory="True" affinity_rule="True"
+!vmware-vm-vss-dvs-migrate vm_name="test_vm_0001" dvportgroup_name="{{ distributed_portgroup_name }}"
+!vmware-vmkernel esxi_hostname="esxi01" vswitch_name="vSwitch0" portgroup_name="PG_0001" network="{'type': 'static', 'ip_address': '1.1.1.1', 'subnet_mask': '255.255.255.0'}" state="present" enable_mgmt="True"
+!vmware-vmkernel-info cluster_name="cluster"
+!vmware-vmkernel-ip-config vmk_name="vmk0" ip_address="10.0.0.10" subnet_mask="255.255.255.0"
+!vmware-vmotion vm_name="vm_name_as_per_vcenter" destination_host="destination_host_as_per_vcenter"
+!vmware-vsan-cluster
+!vmware-vspan-session switch_name="dvSwitch" state="present" name="Basic Session" enabled="True" description="Example description" source_port_transmitted="817" source_port_received="817" destination_port="815"
+
+!vmware-vswitch switch="vswitch_name" nics="vmnic1" mtu="9000" esxi_hostname="esxi01"
+!vmware-vswitch-info cluster_name="cluster"
+
+!vmware-vsphere-file host="esxi01" datacenter="DC1 Someplace" datastore="datastore1" path="some/remote/file" state="touch"
+!vmware-vcenter-extension extension_key="{{ extension_key }}" version="1.0" company="Acme" name="Acme Extension" description="acme management" email="user@example.com" url="https://10.0.0.1/ACME-vSphere-web-plugin-1.0.zip" ssl_thumbprint="{{ ssl_thumbprint }}" state="present"
+!vmware-vcenter-extension-info
+!vmware-vcenter-folder datacenter_name="DC1" folder_name="sample_vm_folder" folder_type="vm" state="present"
+!vmware-vcenter-license license="f600d-21ae3-5592b-249e0-cc341" state="present"

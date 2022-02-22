@@ -68,7 +68,7 @@ script: '-'
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.7.2.214
+dockerimage: demisto/python3:3.9.8.24399
 subtype: python3
 tests:
 - Cherwell Example Scripts - test

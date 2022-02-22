@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <p>Use the AbuseIPDB integration to report and identify IP addresses that have been associated with malicious activity online.</p>
 <h2>Use Cases</h2>
-<p>Check, Report, and get Blacklist of top malicious IPs.</p>
+<p>Check, Report, and get block list of top malicious IPs.</p>
 <h2>Configure AbuseIPDB on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -131,6 +131,16 @@
 <td style="width: 58px;">unknown</td>
 <td style="width: 414px;">The Detections that led to the verdict</td>
 </tr>
+<tr>
+<td style="width: 271px;">AbuseIPDB.IP.UsageType</td>
+<td style="width: 55px;">String</td>
+<td style="width: 414px;">Usage type of the IP.</td>
+</tr>
+<tr>
+<td style="width: 271px;">AbuseIPDB.IP.Domain</td>
+<td style="width: 55px;">String</td>
+<td style="width: 414px;">Domain of the IP.</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
@@ -237,6 +247,16 @@
 <td style="width: 55px;">unknown</td>
 <td style="width: 414px;">The Detections that led to the verdict</td>
 </tr>
+<tr>
+<td style="width: 271px;">AbuseIPDB.IP.UsageType</td>
+<td style="width: 55px;">String</td>
+<td style="width: 414px;">Usage type of the IP.</td>
+</tr>
+<tr>
+<td style="width: 271px;">AbuseIPDB.IP.Domain</td>
+<td style="width: 55px;">String</td>
+<td style="width: 414px;">Domain of the IP.</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
@@ -325,7 +345,7 @@
 <tr>
 <td style="width: 288px;">AbuseIPDB.Blacklist</td>
 <td style="width: 141px;">unknown</td>
-<td style="width: 311px;">List of blacklisted IPs</td>
+<td style="width: 311px;">List of IPs on block list</td>
 </tr>
 </tbody>
 </table>

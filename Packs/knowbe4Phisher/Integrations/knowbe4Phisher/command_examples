@@ -1,0 +1,6 @@
+phisher-message-list id=00a43d65-5802-4df6-9c3c-f7d2024ddb0b
+phisher-message-list include_events=True
+phisher-create-comment id=00a43d65-5802-4df6-9c3c-f7d2024ddb0b comment="Test Comment"
+phisher-update-message id=00a43d65-5802-4df6-9c3c-f7d2024ddb0b category=THREAT severity=MEDIUM status=IN_REVIEW
+phisher-tags-create id=00a43d65-5802-4df6-9c3c-f7d2024ddb0b tags="Tag1, Tag2"
+phisher-tags-delete id=00a43d65-5802-4df6-9c3c-f7d2024ddb0b tags="Tag2"

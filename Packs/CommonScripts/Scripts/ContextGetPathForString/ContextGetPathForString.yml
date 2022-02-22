@@ -1,0 +1,21 @@
+commonfields:
+  id: ContextGetPathForString
+  version: -1
+name: ContextGetPathForString
+script: ''
+type: javascript
+tags: []
+comment: Searches for string in context and returns context path, returns null if
+  not found.
+enabled: true
+args:
+- name: path
+  description: Path in context to search the string in. If path is not given, search
+    will be in the whole context.
+- name: str
+  required: true
+  description: String to search for in context
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- No tests

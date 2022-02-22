@@ -3,7 +3,6 @@ import json
 import time
 import traceback
 from copy import deepcopy
-from threading import Lock
 from typing import Callable, Dict, List, Optional
 from urllib import parse
 
@@ -19,6 +18,7 @@ from CommonServerUserPython import *
 urllib3.disable_warnings()
 
 """ ADVANCED GLOBAL PARAMETERS """
+REQUEST_TIMEOUT = 30                # number of seconds to wait for a request result
 SAMPLE_SIZE = 2                     # number of samples to store in integration context
 EVENTS_INTERVAL_SECS = 15           # interval between events polling
 EVENTS_FAILURE_LIMIT = 3            # amount of consecutive failures events fetch will tolerate
@@ -26,12 +26,12 @@ FAILURE_SLEEP = 15           # sleep between consecutive failures events fetch
 FETCH_SLEEP = 60                    # sleep between fetches
 BATCH_SIZE = 100                    # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10   # max amount of IPs to enrich per offense
-LOCK_WAIT_TIME = 0.5                # time to wait for lock.acquire
 MAX_WORKERS = 8                     # max concurrent workers used for events enriching
 DOMAIN_ENRCH_FLG = "True"           # when set to true, will try to enrich offense and assets with domain names
 RULES_ENRCH_FLG = "True"            # when set to true, will try to enrich offense with rule names
 MAX_FETCH_EVENT_RETIRES = 3         # max iteration to try search the events of an offense
 SLEEP_FETCH_EVENT_RETIRES = 10      # sleep between iteration to try search the events of an offense
+DEFAULT_EVENTS_TIMEOUT = 30         # default timeout for the events in minutes
 
 ADVANCED_PARAMETER_NAMES = [
     "EVENTS_INTERVAL_SECS",
@@ -45,6 +45,8 @@ ADVANCED_PARAMETER_NAMES = [
     "RULES_ENRCH_FLG",
     "MAX_FETCH_EVENT_RETIRES",
     "SLEEP_FETCH_EVENT_RETIRES",
+    "REQUEST_TIMEOUT",
+    "DEFAULT_EVENTS_TIMEOUT"
 ]
 
 """ GLOBAL VARS """
@@ -55,6 +57,7 @@ API_USERNAME = "_api_token_key"
 TERMINATING_SEARCH_STATUSES = {"CANCELED", "ERROR", "COMPLETED"}
 EVENT_TIME_FIELDS = ["starttime"]
 ASSET_TIME_FIELDS = ['created', 'last_reported', 'first_seen_scanner', 'last_seen_scanner']
+ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
 EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
 
 
@@ -187,7 +190,6 @@ class QRadarClient:
         )
         if not (self._username and self._password):
             raise Exception("Please provide a username/password or an API token.")
-        self.lock = Lock()
 
     @property
     def server(self):
@@ -222,6 +224,7 @@ class QRadarClient:
                 verify=self._use_ssl,
                 data=data,
                 auth=auth,
+                timeout=REQUEST_TIMEOUT
             )
             res.raise_for_status()
         except HTTPError:
@@ -484,10 +487,14 @@ class QRadarClient:
         """
         Converts closing reason id to name
         """
-        if not closing_reasons:
-            closing_reasons = self.get_closing_reasons(
-                include_deleted=True, include_reserved=True
-            )
+        if closing_reasons is None:
+            try:
+                closing_reasons = self.get_closing_reasons(
+                    include_deleted=True, include_reserved=True
+                )
+            except Exception as e:
+                demisto.error(f"Encountered an issue while getting offense closing reasons: {e}")
+                closing_reasons = {}
         for closing_reason in closing_reasons:
             if closing_reason["id"] == closing_id:
                 return closing_reason["text"]
@@ -497,8 +504,12 @@ class QRadarClient:
         """
         Converts offense type id to name
         """
-        if not offense_types:
-            offense_types = self.get_offense_types()
+        if offense_types is None:
+            try:
+                offense_types = self.get_offense_types()
+            except Exception as e:
+                demisto.error(f"Encountered an issue while getting offense types: {e}")
+                offense_types = []
         if offense_types:
             for o_type in offense_types:
                 if o_type["id"] == offense_type_id:
@@ -639,17 +650,11 @@ def epoch_to_iso(ms_passed_since_epoch):
     return ms_passed_since_epoch
 
 
-def print_debug_msg(msg, lock: Lock = None):
+def print_debug_msg(msg):
     """
-    Prints a debug message with QRadarMsg prefix, while handling lock.acquire (if available)
+    Prints a debug message with QRadarMsg prefix
     """
-    debug_msg = f"QRadarMsg - {msg}"
-    if lock:
-        if lock.acquire(timeout=LOCK_WAIT_TIME):
-            demisto.debug(debug_msg)
-            lock.release()
-    else:
-        demisto.debug(debug_msg)
+    demisto.debug(f"QRadarMsg - {msg}")
 
 
 def filter_dict_null(d):
@@ -759,9 +764,7 @@ def enrich_offense_with_events(
             offense, additional_where, events_columns, events_limit, client,
         )
     except Exception as e:
-        print_debug_msg(
-            f"Failed events fetch for offense {offense['id']}: {str(e)}.", client.lock,
-        )
+        print_debug_msg(f"Failed events fetch for offense {offense['id']}: {str(e)}.")
         return offense
 
 
@@ -777,9 +780,6 @@ def perform_offense_events_enrichment(
                 enrich offense with event
         return offense
     """
-    if is_reset_triggered(client.lock):
-        return offense
-
     # decreasing 1 minute from the start_time to avoid the case where the minute queried in the start_time and the
     # end_time is equal
     offense_start_time = offense["start_time"] - 60 * 1000
@@ -788,7 +788,7 @@ def perform_offense_events_enrichment(
         f"{additional_where} limit {events_limit} START '{offense_start_time}'"
     )
     events_query = {"headers": "", "query_expression": query_expression}
-    print_debug_msg(f'Starting events fetch for offense {offense["id"]}.', client.lock)
+    print_debug_msg(f'Starting events fetch for offense {offense["id"]}.')
     try:
         # retry to check if we got all the event (its not an error retry)
         for i in range(MAX_FETCH_EVENT_RETIRES):
@@ -804,10 +804,7 @@ def perform_offense_events_enrichment(
                 break
             time.sleep(SLEEP_FETCH_EVENT_RETIRES)
     except Exception as e:
-        print_debug_msg(
-            f'Failed fetching event for offense {offense["id"]}: {str(e)}.',
-            client.lock,
-        )
+        demisto.error(f'Failed fetching event for offense {offense["id"]}: {str(e)}.')
     finally:
         return offense
 
@@ -825,18 +822,13 @@ def try_poll_offense_events_with_retry(
     start_time = time.time()
     while not (query_status in TERMINATING_SEARCH_STATUSES or failures >= max_retries):
         try:
-            if is_reset_triggered(client.lock):
-                return []
-
             raw_search = client.get_search(search_id)
             query_status = raw_search.get("status")
             # failures are relevant only when consecutive
             failures = 0
             if query_status in TERMINATING_SEARCH_STATUSES:
                 raw_search_results = client.get_search_results(search_id)
-                print_debug_msg(
-                    f"Events fetched for offense {offense_id}.", client.lock
-                )
+                print_debug_msg(f"Events fetched for offense {offense_id}.")
                 events = raw_search_results.get("events", [])
                 for event in events:
                     try:
@@ -850,15 +842,12 @@ def try_poll_offense_events_with_retry(
                 # prepare next run
                 elapsed = time.time() - start_time
                 if elapsed >= FETCH_SLEEP:  # print status debug every fetch sleep (or after)
-                    print_debug_msg(
-                        f"Still fetching offense {offense_id} events, search_id: {search_id}.",
-                        client.lock,
-                    )
+                    print_debug_msg(f"Still fetching offense {offense_id} events, search_id: {search_id}.")
                     start_time = time.time()
                 time.sleep(EVENTS_INTERVAL_SECS)
         except Exception as e:
-            print_debug_msg(f"Error while fetching offense {offense_id} events, search_id: {search_id}. "
-                            f"Error details: {str(e)}")
+            demisto.error(f"Error while fetching offense {offense_id} events, search_id: {search_id}. "
+                          f"Error details: {str(e)}")
             failures += 1
             if failures < max_retries:
                 time.sleep(FAILURE_SLEEP)
@@ -895,6 +884,31 @@ def try_create_search_with_retry(client, events_query, offense, max_retries=None
     return query_status, search_id
 
 
+def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str]) -> int:
+    """
+    Receives the highest offense ID saved from last run, and user query.
+    Checks if user query has a limitation for a minimum ID.
+    If such ID exists, returns the maximum between 'highest_offense_id' and the minimum ID
+    limitation received by the user query.
+    Args:
+        highest_offense_id (int): Minimum ID to fetch offenses by from last run.
+        user_query (Optional[str]): User query for QRadar service.
+
+    Returns:
+        (int): The Minimum ID to fetch offenses by.
+    """
+    if user_query:
+        id_query = ID_QUERY_REGEX.search(user_query)
+        if id_query:
+            id_query_raw = id_query.group(0)
+            operator = '>=' if '>=' in id_query_raw else '>'
+            # safe to int parse without catch because regex checks for number
+            user_offense_id = int(id_query.group(0).split(operator)[1].strip())
+            user_lowest_offense_id = user_offense_id if operator == '>' else user_offense_id - 1
+            return max(highest_offense_id, user_lowest_offense_id)
+    return highest_offense_id
+
+
 def fetch_raw_offenses(client: QRadarClient, offense_id, user_query):
     """
     Use filter frames based on id ranges: "id>offense_id AND id<(offense_id+incidents_per_fetch)"
@@ -905,19 +919,10 @@ def fetch_raw_offenses(client: QRadarClient, offense_id, user_query):
              yes - fetch with increments until manage to fetch (or until limit is reached - dead condition)
              no  - finish fetch-incidents
     """
-    # try to adjust start_offense_id to user_query start offense id
-    try:
-        if isinstance(user_query, str) and "id>" in user_query:
-            user_offense_id = int(user_query.split("id>")[1].split(" ")[0])
-            if user_offense_id > offense_id:
-                offense_id = user_offense_id
-    except ValueError:
-        pass
-
-    # fetch offenses
+    offense_id = get_minimum_id_to_fetch(offense_id, user_query)
     raw_offenses, fetch_query = seek_fetchable_offenses(client, offense_id, user_query)
     if raw_offenses:
-        print_debug_msg(f"Fetched {fetch_query}successfully.", client.lock)
+        print_debug_msg(f"Fetched {fetch_query} successfully.")
 
     return raw_offenses
 
@@ -930,17 +935,16 @@ def seek_fetchable_offenses(client: QRadarClient, start_offense_id, user_query):
     fetch_query = ""
     lim_id = None
     latest_offense_fnd = False
+    tries = 1
     while not latest_offense_fnd:
-        end_offense_id = int(start_offense_id) + client.offenses_per_fetch + 1
+        end_offense_id = int(start_offense_id) + (client.offenses_per_fetch * tries) + 1
         fetch_query = "id>{0} AND id<{1} {2}".format(
             start_offense_id,
             end_offense_id,
             "AND ({})".format(user_query) if user_query else "",
         )
         print_debug_msg(f"Fetching {fetch_query}.")
-        raw_offenses = client.get_offenses(
-            _range="0-{0}".format(client.offenses_per_fetch - 1), _filter=fetch_query
-        )
+        raw_offenses = client.get_offenses(_filter=fetch_query)
         if raw_offenses:
             latest_offense_fnd = True
         else:
@@ -953,10 +957,17 @@ def seek_fetchable_offenses(client: QRadarClient, start_offense_id, user_query):
                     )
                 lim_id = lim_offense[0]["id"]  # if there's no id, raise exception
             if lim_id >= end_offense_id:  # increment the search until we reach limit
-                start_offense_id += client.offenses_per_fetch
+                start_offense_id += (client.offenses_per_fetch * tries)
+                tries += 1
+                if tries % 10 == 0:
+                    last_run = get_integration_context(SYNC_CONTEXT)
+                    last_run["id"] = end_offense_id
+                    set_integration_context(last_run, sync=SYNC_CONTEXT)
             else:
                 latest_offense_fnd = True
-    return raw_offenses, fetch_query
+    if isinstance(raw_offenses, list):
+        raw_offenses.reverse()
+    return raw_offenses[:client.offenses_per_fetch], fetch_query
 
 
 def fetch_incidents_long_running_samples():
@@ -964,21 +975,17 @@ def fetch_incidents_long_running_samples():
     return last_run.get("samples", [])  # type: ignore [attr-defined]
 
 
-def is_reset_triggered(lock, handle_reset=False):
+def is_reset_triggered():
     """
     Returns if reset signal is set. If handle_reset=True, will also reset the integration context
     """
-    if lock.acquire(timeout=LOCK_WAIT_TIME):
-        ctx = get_integration_context(SYNC_CONTEXT)
-        if ctx and RESET_KEY in ctx:
-            if handle_reset:
-                print_debug_msg("Reset fetch-incidents.")
-                set_integration_context(
-                    {"samples": ctx.get("samples", [])}, sync=SYNC_CONTEXT
-                )
-            lock.release()
-            return True
-        lock.release()
+    ctx = get_integration_context(SYNC_CONTEXT)
+    if ctx and RESET_KEY in ctx:
+        print_debug_msg("Reset fetch-incidents.")
+        set_integration_context(
+            {"samples": ctx.get("samples", [])}, sync=SYNC_CONTEXT
+        )
+        return True
     return False
 
 
@@ -999,8 +1006,6 @@ def fetch_incidents_long_running_events(
 
     if len(raw_offenses) == 0:
         return
-    if isinstance(raw_offenses, list):
-        raw_offenses.reverse()
     for offense in raw_offenses:
         offense_id = max(offense_id, offense["id"])
     enriched_offenses = []
@@ -1017,10 +1022,19 @@ def fetch_incidents_long_running_events(
                 events_limit=events_limit,
             )
         )
-    for future in concurrent.futures.as_completed(futures):
-        enriched_offenses.append(future.result())
-
-    if is_reset_triggered(client.lock, handle_reset=True):
+    try:
+        for future in concurrent.futures.as_completed(futures, timeout=DEFAULT_EVENTS_TIMEOUT * 60):
+            enriched_offenses.append(future.result())
+    except concurrent.futures.TimeoutError:
+        print_debug_msg("Timed out while waiting for events")
+        raw_offenses_ids = {offense['id'] for offense in raw_offenses} or set()
+        enriched_offenses_ids = {offense['id'] for offense in enriched_offenses} or set()
+        missing_ids = raw_offenses_ids - enriched_offenses_ids
+        if missing_ids:
+            for offense in raw_offenses:
+                if offense['id'] in missing_ids:
+                    enriched_offenses.append(offense)
+    if is_reset_triggered():
         return
 
     enriched_offenses.sort(key=lambda offense: offense.get("id", 0))
@@ -1058,8 +1072,6 @@ def fetch_incidents_long_running_no_events(
     raw_offenses = fetch_raw_offenses(client, offense_id, user_query)
     if len(raw_offenses) == 0:
         return
-    if isinstance(raw_offenses, list):
-        raw_offenses.reverse()
 
     for offense in raw_offenses:
         offense_id = max(offense_id, offense["id"])
@@ -1070,7 +1082,7 @@ def fetch_incidents_long_running_no_events(
         print_debug_msg("Enriched offenses successfully.")
 
     # handle reset signal
-    if is_reset_triggered(client.lock, handle_reset=True):
+    if is_reset_triggered():
         return
 
     incidents_batch = create_incidents(raw_offenses, incident_type)
@@ -1150,10 +1162,18 @@ def enrich_offense_result(
     domain_ids = set()
     rule_ids = set()
     if isinstance(response, list):
-        type_dict = client.get_offense_types()
-        closing_reason_dict = client.get_closing_reasons(
-            include_deleted=True, include_reserved=True
-        )
+        try:
+            type_dict = client.get_offense_types()
+        except Exception as e:
+            demisto.error(f"Encountered an issue while getting offense types: {e}")
+            type_dict = {}
+        try:
+            closing_reason_dict = client.get_closing_reasons(
+                include_deleted=True, include_reserved=True
+            )
+        except Exception as e:
+            demisto.error(f"Encountered an issue while getting offense closing reasons: {e}")
+            closing_reason_dict = {}
         for offense in response:
             offense["LinkToOffense"] = f"{client.server}/console/do/sem/offensesummary?" \
                                        f"appName=Sem&pageId=OffenseSummary&summaryId={offense.get('id')}"
@@ -1186,14 +1206,18 @@ def enrich_offense_result(
     return response
 
 
-def enrich_offense_res_with_domain_names(client, domain_ids, response):
+def enrich_offense_res_with_domain_names(client, domain_ids, offenses):
     """
     Add domain_name to the offense and assets results
     """
     domain_filter = 'id=' + 'or id='.join(str(domain_ids).replace(' ', '').split(','))[1:-1]
-    domains = client.get_devices(_filter=domain_filter)
+    try:
+        domains = client.get_devices(_filter=domain_filter)
+    except Exception as e:
+        demisto.error(f"Encountered an issue while getting offense domain names: {e}")
+        return
     domain_names = {d['id']: d['name'] for d in domains}
-    for offense in response:
+    for offense in offenses:
         if 'domain_id' in offense:
             offense['domain_name'] = domain_names.get(offense['domain_id'], '')
         if 'assets' in offense:
@@ -1202,14 +1226,18 @@ def enrich_offense_res_with_domain_names(client, domain_ids, response):
                     asset['domain_name'] = domain_names.get(asset['domain_id'], '')
 
 
-def enrich_offense_res_with_rule_names(client, rule_ids, response):
+def enrich_offense_res_with_rule_names(client, rule_ids, offenses):
     """
     Add name to the offense rules
     """
     rule_filter = 'id=' + 'or id='.join(str(rule_ids).replace(' ', '').split(','))[1:-1]
-    rules = client.get_rules(_filter=rule_filter)
+    try:
+        rules = client.get_rules(_filter=rule_filter)
+    except Exception as e:
+        demisto.error(f"Encountered an issue while getting offenses rules: {e}")
+        return
     rule_names = {r['id']: r['name'] for r in rules}
-    for offense in response:
+    for offense in offenses:
         if 'rules' in offense and isinstance(offense['rules'], list):
             for rule in offense['rules']:
                 if 'id' in rule:
@@ -1256,6 +1284,8 @@ def enrich_offenses_with_assets_and_source_destination_addresses(
                     assets = get_assets_for_offense(client, assets_ips)
                     if assets:
                         offense["assets"] = assets
+    except Exception as e:
+        demisto.error(f'Failed to enrich offenses with assets and source destination addresses. {e}')
     finally:
         return offenses
 
@@ -2004,7 +2034,7 @@ def fetch_loop_with_events(
 ):
     while True:
         try:
-            is_reset_triggered(client.lock, handle_reset=True)
+            is_reset_triggered()
 
             print_debug_msg("Starting fetch loop with events.")
             fetch_incidents_long_running_events(
@@ -2026,7 +2056,7 @@ def fetch_loop_with_events(
 def fetch_loop_no_events(client: QRadarClient, incident_type, user_query, ip_enrich, asset_enrich):
     while True:
         try:
-            is_reset_triggered(client.lock, handle_reset=True)
+            is_reset_triggered()
 
             print_debug_msg("Starting fetch loop with no events.")
             fetch_incidents_long_running_no_events(
@@ -2319,6 +2349,7 @@ def main():
         elif command == "fetch-incidents":
             demisto.incidents(fetch_incidents_long_running_samples())
         elif command == "long-running-execution":
+            support_multithreading()
             long_running_main(
                 client,
                 incident_type,

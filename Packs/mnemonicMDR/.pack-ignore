@@ -1,11 +1,11 @@
 [file:Pull_Case_Metadata_-_Argus_Managed_Defence.yml]
-ignore=PB106,PB114
+ignore=PB106,PB115
 
 [file:pack_metadata.json]
 ignore=PA125
 
 [file:ArgusManagedDefence.yml]
-ignore=BA109
+ignore=BA109,IN145
 
 [file:classifier-Argus_Case_Mapper.json]
 ignore=BA101

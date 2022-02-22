@@ -1,0 +1,18 @@
+{
+    "description": "Classifies Guardicore incidents.",
+    "defaultIncidentType": "Guardicore Incident",
+    "feed": false,
+    "id": "Guardicore classifier",
+    "name": "Guardicore classifier",
+    "keyTypeMap": {},
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

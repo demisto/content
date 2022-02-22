@@ -28,7 +28,18 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Returns all investigations larger than 1 MB from all Cortex XSOAR.
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: "WARNING: Setting this argument to true might result in CPU and RAM issues. Set to true to allow the script to run even though it was deprecated."
+  isArray: false
+  name: ignore_deprecated
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+comment: Deprecated. Use System Diagonstics page instead (available from version 6.2.0). Returns all investigations larger than 1 MB from all Cortex XSOAR.
 commonfields:
   id: GetLargestInvestigations
   version: -1
@@ -41,5 +52,6 @@ tags:
 - widget
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.6.12176
+dockerimage: demisto/python3:3.9.7.24076
 fromversion: 6.0.0
+deprecated: true

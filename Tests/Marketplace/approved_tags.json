@@ -27,6 +27,7 @@
 		"Scam",
 		"Security",
 		"Security Analytics",
+		"Private Offer",
 		"Simulation",
 		"Spam",
 		"TIM",
@@ -40,6 +41,7 @@
 		"New",
 		"Trending",
 		"Relationship",
-		"Elasticsearch"
+		"Elasticsearch",
+		"Iron Bank"
 	]
 }

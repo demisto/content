@@ -1,0 +1,31 @@
+{
+  "GoogleCloudSCC.CloudAsset.Resource(val.name && val.name == obj.name)": [
+    {
+      "name": "//cloudresourcemanager.googleapis.com/projects/123456789000",
+      "assetType": "cloudresourcemanager.googleapis.com/Project",
+      "resource": {
+        "version": "v1",
+        "discoveryDocumentUri": "https://cloudresourcemanager.googleapis.com/$discovery/rest?version=v1",
+        "discoveryName": "Project",
+        "parent": "//cloudresourcemanager.googleapis.com/organizations/123456789000",
+        "data": {
+          "projectId": "dummyapp-2c",
+          "projectNumber": "123456789000",
+          "createTime": "2020-03-16T17:53:04.036Z",
+          "parent": {
+            "type": "organization",
+            "id": "123456789000"
+          },
+          "lifecycleState": "ACTIVE",
+          "name": "DummyApp"
+        }
+      },
+      "ancestors": [
+        "projects/123456789000",
+        "organizations/123456789000"
+      ],
+      "updateTime": "2020-03-16T17:53:06.767269Z",
+      "readTime": "2021-06-11T06:46:18.234481666Z"
+    }
+  ]
+}

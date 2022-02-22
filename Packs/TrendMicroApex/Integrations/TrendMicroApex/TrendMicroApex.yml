@@ -982,7 +982,7 @@ script:
     - contextPath: TrendMicroApex.InvestigationResult.errorServers
       description: Error response if server communication is unsuccessful.
       type: String
-  dockerimage: demisto/pycef:1.0.0.19330
+  dockerimage: demisto/pycef:1.0.0.23290
   feed: false
   isfetch: false
   longRunning: false

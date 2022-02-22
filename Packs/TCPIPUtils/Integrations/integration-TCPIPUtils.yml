@@ -118,4 +118,5 @@ script:
     - contextPath: IP.WHOIS
       description: WHOIS result for the IP
     description: Get information about IP (ASN, WHOIS, country, city). When information is available, returns a JSON with details)
+  dockerimage: demisto/python:2.7.18.20958
 fromversion: 5.0.0

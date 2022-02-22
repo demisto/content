@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p><span>Use the Palo Alto Networks Traps integration to initiate scans, retrieve files from events, isolate endpoints, quarantine files, and manage the whitelist and blacklist.</span></p>
+<p><span>Deprecated. Use CortexXDR instead. Use the Palo Alto Networks Traps integration to initiate scans, retrieve files from events, isolate endpoints, quarantine files, and manage the allow list and block list.</span></p>
 <h2>Traps Playbooks</h2>
 <ul>
 <li>Traps Retrieve And Download Files</li>
@@ -40,9 +40,9 @@
 <li><a href="#h_c4951f1a-5b1b-4012-8f27-373ee83cd8e0" target="_self">Scan an endpoint: traps-endpoint-scan</a></li>
 <li><a href="#h_aff0ef39-1af6-4777-a375-f946e5e295f1" target="_self">Modify details for an event: traps-event-update</a></li>
 <li><a href="#h_4e113a1b-d46a-4b84-8083-98b4b54626f3" target="_self">Modify details for multiple events: traps-event-bulk-update-status</a></li>
-<li><a href="#h_ba1cf623-1363-40e4-b77b-6e0d96b9aaae" target="_self">Add a file hash to the blacklist: traps-hash-blacklist</a></li>
-<li><a href="#h_3c467ab9-13ec-46d4-8d51-5d207d462c92" target="_self">Remove a file hash from the blacklist: traps-hash-blacklist-remove</a></li>
-<li><a href="#h_10e63ba1-0e9e-4a5f-8840-a0b1dd752d0c" target="_self">Return a file hash to the blacklist: traps-hashes-blacklist-status</a></li>
+<li><a href="#h_ba1cf623-1363-40e4-b77b-6e0d96b9aaae" target="_self">Add a file hash to the block list: traps-hash-blacklist</a></li>
+<li><a href="#h_3c467ab9-13ec-46d4-8d51-5d207d462c92" target="_self">Remove a file hash from the block list: traps-hash-blacklist-remove</a></li>
+<li><a href="#h_10e63ba1-0e9e-4a5f-8840-a0b1dd752d0c" target="_self">Return a file hash to the block list: traps-hashes-blacklist-status</a></li>
 <li><a href="#h_2b3c9090-99ed-473a-9818-9f7f28046e54" target="_self">Quarantine an event: traps-event-quarantine</a></li>
 <li><a href="#h_a469746d-6210-4d13-b7cd-7e79b37fce4b" target="_self">Isolate an endpoint: traps-endpoint-isolate</a></li>
 <li><a href="#h_e26af638-bd84-416d-9642-aaae647dab5a" target="_self">Get the result of a quarantine operation: traps-event-quarantine-result</a></li>
@@ -218,10 +218,6 @@
 </tr>
 </tbody>
 </table>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_7dd4af9c-4191-42ce-b8fe-801542f08a51">2. Execute a file retrieve operation / SAM on an agent</h3>
 <hr>
 <p>Executes a file retrieve operation / SAM on the specified agent.</p>
@@ -313,10 +309,6 @@
 </tr>
 </tbody>
 </table>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_c4951f1a-5b1b-4012-8f27-373ee83cd8e0">3. Scan an endpoint</h3>
 <hr>
 <p>Performs a scan operation on the specified endpoint.</p>
@@ -397,10 +389,6 @@
 </tr>
 </tbody>
 </table>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_aff0ef39-1af6-4777-a375-f946e5e295f1">4. Modify details for an event</h3>
 <hr>
 <p>Modifies the status and adds a comment to an existing event.</p>
@@ -442,10 +430,6 @@
 <h5>Human Readable Output</h5>
 <h3>Event: 53edb3fa9a3b4b83bcf168390a2ec08d was updated</h3>
 <h5>New status: new</h5>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_4e113a1b-d46a-4b84-8083-98b4b54626f3">5. Modify details for multiple events</h3>
 <hr>
 <p>Modifies the status of multiple events.</p>
@@ -504,13 +488,9 @@
 </tr>
 </tbody>
 </table>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
-<h3 id="h_ba1cf623-1363-40e4-b77b-6e0d96b9aaae">6. Add a file hash to the blacklist</h3>
+<h3 id="h_ba1cf623-1363-40e4-b77b-6e0d96b9aaae">6. Add a file hash to the block list</h3>
 <hr>
-<p>Adds the specified file hash to the blacklist.</p>
+<p>Adds the specified file hash to the block list.</p>
 <h5>Base Command</h5>
 <p><code>traps-hash-blacklist</code></p>
 <h5>Input</h5>
@@ -525,7 +505,7 @@
 <tbody>
 <tr>
 <td style="width: 192px;">hash_id</td>
-<td style="width: 409px;">The SHA256 hash to add to the blacklist.</td>
+<td style="width: 409px;">The SHA256 hash to add to the block list.</td>
 <td style="width: 107px;">Required</td>
 </tr>
 </tbody>
@@ -566,13 +546,9 @@
 </pre>
 <h5>Human Readable Output</h5>
 <h4>Successfully blacklisted: 1111111111111111111111111111111111111111111111111111111111111111</h4>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
-<h3 id="h_3c467ab9-13ec-46d4-8d51-5d207d462c92">7. Remove a file hash from the blacklist</h3>
+<h3 id="h_3c467ab9-13ec-46d4-8d51-5d207d462c92">7. Remove a file hash from the block list</h3>
 <hr>
-<p>Removes the specified file hash from the blacklist.</p>
+<p>Removes the specified file hash from the block list.</p>
 <h5>Base Command</h5>
 <p><code>traps-hash-blacklist-remove</code></p>
 <h5>Input</h5>
@@ -587,7 +563,7 @@
 <tbody>
 <tr>
 <td style="width: 173px;">hash_id</td>
-<td style="width: 438px;">The SHA256 hash to remove from the blacklist.</td>
+<td style="width: 438px;">The SHA256 hash to remove from the block list.</td>
 <td style="width: 97px;">Required</td>
 </tr>
 </tbody>
@@ -628,14 +604,10 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<h4>Successfully removed 1111111111111111111111111111111111111111111111111111111111111111 from blacklist</h4>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
-<h3 id="h_10e63ba1-0e9e-4a5f-8840-a0b1dd752d0c">8. Return a file hash to the blacklist</h3>
+<h4>Successfully removed 1111111111111111111111111111111111111111111111111111111111111111 from block list</h4>
+<h3 id="h_10e63ba1-0e9e-4a5f-8840-a0b1dd752d0c">8. Return a file hash to the block list</h3>
 <hr>
-<p>Returns the blacklist status of the specified file hashes.</p>
+<p>Returns the block list status of the specified file hashes.</p>
 <h5>Base Command</h5>
 <p><code>traps-hashes-blacklist-status</code></p>
 <h5>Input</h5>
@@ -650,7 +622,7 @@
 <tbody>
 <tr>
 <td style="width: 140px;">hash_ids</td>
-<td style="width: 497px;">A comma-separated list of SHA256 file hashes for which to return the blacklist status.</td>
+<td style="width: 497px;">A comma-separated list of SHA256 file hashes for which to return the block list status.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 </tbody>
@@ -669,7 +641,7 @@
 <tr>
 <td style="width: 182px;">Traps.File.BlacklistStatus</td>
 <td style="width: 41px;">String</td>
-<td style="width: 485px;">The blacklist status of the file hash. Can be "blacklisted" or "none".</td>
+<td style="width: 485px;">The block list status of the file hash. Can be "blacklisted" or "none".</td>
 </tr>
 <tr>
 <td style="width: 182px;">Traps.File.SHA256</td>
@@ -716,10 +688,6 @@
 </tr>
 </tbody>
 </table>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_2b3c9090-99ed-473a-9818-9f7f28046e54">9. Quarantine an event</h3>
 <hr>
 <p>Creates a quarantine entry for the specified event.</p>
@@ -802,10 +770,6 @@
 </tr>
 </tbody>
 </table>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_a469746d-6210-4d13-b7cd-7e79b37fce4b">10. Isolate an endpoint</h3>
 <hr>
 <p>Isolates the specified endpoint.</p>
@@ -886,10 +850,6 @@
 </tr>
 </tbody>
 </table>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_e26af638-bd84-416d-9642-aaae647dab5a">11. Get the result of a quarantine operation</h3>
 <hr>
 <p>Returns the result of the specified quarantine operation.</p>
@@ -978,10 +938,6 @@
 </tr>
 </tbody>
 </table>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_84666544-eab3-4d4b-88cf-3e5d2f6bf281">12. Get the result of an isolate operation</h3>
 <hr>
 <p>Returns the status of the specified endpoint isolate operation.</p>
@@ -1040,10 +996,6 @@
 </pre>
 <h5>Human Readable Output</h5>
 <h3>Isolate status is: finished</h3>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_494733b8-f5c5-4236-84d4-a72ac01a3e6e">13. Get the results of an endpoint file retrieve operation</h3>
 <hr>
 <p>Returns the result of the endpoint file retrieve operation.</p>
@@ -1082,10 +1034,6 @@
 </pre>
 <h5>Human Readable Output</h5>
 <h3>File retrieval status is: finished</h3>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_47027a19-92a6-4513-bd07-0aa1769f42ab">14. Get the results of an endpoint scan operation</h3>
 <hr>
 <p>Returns the results of an endpoint scan operation.</p>
@@ -1182,8 +1130,4 @@
 </tr>
 </tbody>
 </table>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h2> </h2>

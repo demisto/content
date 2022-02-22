@@ -1,5 +1,5 @@
-[file:integration-VirusTotal_5.5.yml]
-ignore=IN135
+[file:VirusTotal.yml]
+ignore=IN135,IN144,IN145
 
 [file:VirusTotal_V3_Premium.yml]
 ignore=BA108,BA109

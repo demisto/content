@@ -7,5 +7,5 @@ There are 2 application authentication methods available:
 
 Depending on the authentication method that you use, the integration parameters might change.
 
-To allow access to Microsoft Graph Files, an administrator has to approve the Demisto app using the [admin consent flow](https://oproxy.demisto.ninja/ms-graph-files).
+To allow access to O365 File Management (Onedrive/Sharepoint/Teams), an administrator has to approve the Demisto app using the [admin consent flow](https://oproxy.demisto.ninja/ms-graph-files).
 After authorizing the Demisto app, you receive an ID, Token, and Key, all of which need to be entered to the corresponding fields when configuring the integration instance.

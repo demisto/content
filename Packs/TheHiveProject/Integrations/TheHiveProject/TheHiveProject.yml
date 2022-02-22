@@ -12,6 +12,10 @@ configuration:
   type: 0
   required: true
   additionalinfo: Ensure to include the port number with the URL (e.g. http://IP_OF_VM:9000)
+- display: API Key
+  name: apiKey
+  type: 4
+  required: true
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -20,18 +24,21 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: API Key
-  name: apiKey
-  type: 4
-  required: true
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
   required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
   required: false
+  type: 0
+  defaultvalue: 7 days
+- defaultvalue: '50'
+  display: The maximum amount of incidents to fetch at once
+  name: max_fetch
+  required: false
+  type: 0
 - display: Case mirroring
   name: mirror
   type: 15
@@ -43,10 +50,13 @@ configuration:
   - Both
   additionalinfo: Select whether you would like cases to mirror in, out, in both directions
     or disabled.
-- display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  defaultvalue: "1"
-  type: 19
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
   required: false
 script:
   script: ''
@@ -55,305 +65,288 @@ script:
   - name: thehive-list-cases
     arguments:
     - name: limit
-      description: Limit the number of results
+      description: Limit the number of returned results.
     outputs:
     - contextPath: TheHive.Cases._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.customFields
-      description: Custom Fields
+      description: Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case.
     - contextPath: TheHive.Cases.caseId
-      description: Case ID
+      description: The order of the case.
       type: number
     - contextPath: TheHive.Cases.flag
-      description: Flagged
+      description: A boolean flag used for filtering.
       type: boolean
     - contextPath: TheHive.Cases.startDate
-      description: Start date
+      description: Datetime the case was started on, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.status
-      description: Status
+      description: Status of the case.
       type: string
     - contextPath: TheHive.Cases.owner
-      description: Owner
+      description: Owner of the case.
       type: string
     - contextPath: TheHive.Cases.tlp
-      description: TLP
+      description: Traffic Light Protocol designation for the case.
       type: number
     - contextPath: TheHive.Cases.title
-      description: Title
+      description: Title of the case.
       type: string
     - contextPath: TheHive.Cases.tags
-      description: Tags
+      description: Tags added to the case.
     - contextPath: TheHive.Cases._type
-      description: _type
+      description: Type of the case.
       type: string
     - contextPath: TheHive.Cases._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.id
-      description: ID
+      description: The ID of the case.
       type: string
     - contextPath: TheHive.Cases.createdAt
-      description: Created at
+      description: Datetime the case was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.description
-      description: Description
+      description: Description of the case.
       type: string
     - contextPath: TheHive.Cases.severity
-      description: Severity
+      description: Severity of the case.
       type: number
     - contextPath: TheHive.Cases.pap
-      description: PAP
+      description: Permissible Actions Protocol (PAP), used to indicate what kind of action is allowed.
       type: number
     - contextPath: TheHive.Cases.createdBy
-      description: Created by
+      description: The user who created the case.
       type: string
     - contextPath: TheHive.Cases.tasks._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.tasks.flag
-      description: Flagged
+      description: A boolean flag used for filtering.
       type: boolean
     - contextPath: TheHive.Cases.tasks.order
-      description: Order
+      description: The order of the task.
       type: number
     - contextPath: TheHive.Cases.tasks.status
-      description: Status
+      description: Status of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.title
-      description: Title
+      description: Title of the task.
       type: string
     - contextPath: TheHive.Cases.tasks._type
-      description: _type
+      description: Type of the task.
       type: string
     - contextPath: TheHive.Cases.tasks._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases.tasks._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.tasks.id
-      description: ID
+      description: The ID of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.createdAt
-      description: Created at
+      description: Datetime the task was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.createdBy
-      description: Created by
+      description: The user who created the task.
       type: string
     - contextPath: TheHive.Cases.tasks.group
-      description: Group
+      description: Group of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.message
-      description: Message
+      description: Log message.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.startDate
-      description: Start date
+      description: Datetime the log was started on, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.logs.status
-      description: Status
+      description: Status of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.owner
-      description: Owner
+      description: Owner of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._type
-      description: Type
+      description: Type of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases.tasks.logs._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.tasks.logs.id
-      description: ID
+      description: The ID of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.createdAt
-      description: Created at
+      description: Datetime the task log was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.logs.createdBy
-      description: Created by
+      description: The user who created the log.
       type: string
     description: List cases.
   - name: thehive-get-case
     arguments:
     - name: id
       required: true
-      description: ID
+      description: ID of the case.
     outputs:
     - contextPath: TheHive.Cases._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.customFields
-      description: Custom Fields
+      description: Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case.
     - contextPath: TheHive.Cases.caseId
-      description: Case ID
+      description: The order of the case.
       type: number
     - contextPath: TheHive.Cases.flag
-      description: Flagged
+      description: A boolean flag used for filtering.
       type: boolean
     - contextPath: TheHive.Cases.startDate
-      description: Start date
+      description: Datetime the case was started on, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.status
-      description: Status
+      description: Status of the case.
       type: string
     - contextPath: TheHive.Cases.owner
-      description: Owner
+      description: Owner of the case.
       type: string
     - contextPath: TheHive.Cases.tlp
-      description: TLP
+      description: Traffic Light Protocol designation for the case.
       type: number
     - contextPath: TheHive.Cases.title
-      description: Title
+      description: Title of the case.
       type: string
     - contextPath: TheHive.Cases.tags
-      description: Tags
+      description: Tags added to the case.
     - contextPath: TheHive.Cases._type
-      description: _type
+      description: Type of the case.
       type: string
     - contextPath: TheHive.Cases._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.id
-      description: ID
+      description: The ID of the case.
       type: string
     - contextPath: TheHive.Cases.createdAt
-      description: Created at
+      description: Datetime the case was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.description
-      description: Description
+      description: Description of the case.
       type: string
     - contextPath: TheHive.Cases.severity
-      description: Severity
+      description: Severity of the case.
       type: number
     - contextPath: TheHive.Cases.pap
-      description: PAP
+      description: Permissible Actions Protocol (PAP), used to indicate what kind of action is allowed.
       type: number
     - contextPath: TheHive.Cases.createdBy
-      description: Created by
+      description: The user who created the case.
       type: string
     - contextPath: TheHive.Cases.tasks._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.tasks.flag
-      description: Flagged
+      description: A boolean flag used for filtering.
       type: boolean
     - contextPath: TheHive.Cases.tasks.order
-      description: Order
+      description: The order of the task.
       type: number
     - contextPath: TheHive.Cases.tasks.status
-      description: Status
+      description: Status of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.title
-      description: Title
+      description: Title of the task.
       type: string
     - contextPath: TheHive.Cases.tasks._type
-      description: _type
+      description: Type of the task.
       type: string
     - contextPath: TheHive.Cases.tasks._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases.tasks._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.tasks.id
-      description: ID
+      description: The ID of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.createdAt
-      description: Created at
+      description: Datetime the task was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.createdBy
-      description: Created by
+      description: The user who created the task.
       type: string
     - contextPath: TheHive.Cases.tasks.group
-      description: Group
+      description: Group of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.message
-      description: Message
+      description: Log message.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.startDate
-      description: Start date
+      description: Datetime the log was started on, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.logs.status
-      description: Status
+      description: Status of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.owner
-      description: Owner
+      description: Owner of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._type
-      description: Type
+      description: Type of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases.tasks.logs._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.tasks.logs.id
-      description: ID
+      description: The ID of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.createdAt
-      description: Created at
+      description: Datetime the task log was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.logs.createdBy
-      description: Created by
+      description: The user who created the log.
       type: string
     description: Get a case
   - name: thehive-search-cases
+    deprecated: true
     arguments:
     - name: title
-      description: Title
+      description: Title of the case.
     - name: description
-      description: Description
+      description: Description of the case.
     - name: severity
       auto: PREDEFINED
       predefined:
       - "1"
       - "2"
       - "3"
-      description: 'Severity (defaul = 2: medium)'
+      description: 'Severity of the case (default = 2: medium)'
     - name: startDate
-      description: Start date
+      description: Datetime the case was started on, for example, 2018-06-29 08:15:27.243860.
     - name: owner
-      description: Owner
+      description: Owner of the case.
     - name: flag
       auto: PREDEFINED
       predefined:
       - "false"
       - "true"
-      description: Flag of the case (default is false)
+      description: A boolean flag used for filtering (default is false).
     - name: tlp
       auto: PREDEFINED
       predefined:
@@ -361,9 +354,9 @@ script:
       - "1"
       - "2"
       - "3"
-      description: 'TLP (default is 2: amber)'
+      description: 'Traffic Light Protocol designation for the case (default is 2: amber).'
     - name: tags
-      description: Case tags
+      description: Tags added to the case.
     - name: resolutionStatus
       auto: PREDEFINED
       predefined:
@@ -372,184 +365,175 @@ script:
       - TruePositive
       - Other
       - Duplicated
-      description: Resolution status (Indeterminate, FalsePositive, TruePositive,
-        Other or Duplicated)
+      description: Resolution status of the case (Indeterminate, FalsePositive, TruePositive,
+        Other or Duplicated).
     - name: impactStatus
       auto: PREDEFINED
       predefined:
       - NoImpact
       - WithImpact
       - NotApplicable
-      description: Impact status
+      description: Impact status of the case.
     - name: summary
-      description: Summary
+      description: Summary of the case.
     - name: endDate
-      description: End date
+      description: Datetime the case ended, for example, 2018-06-29 08:15:27.243860.
     - name: metrics
-      description: Metrics
+      description: Metrics of the case.
     - name: query
-      description: Raw query (for use with v4 upwards)
+      description: Raw query (for use with v4 of TheHive Project and upwards).
     outputs:
     - contextPath: TheHive.Cases._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.customFields
-      description: Custom Fields
+      description: Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case.
     - contextPath: TheHive.Cases.caseId
-      description: Case ID
+      description: The order of the case.
       type: number
     - contextPath: TheHive.Cases.flag
-      description: Flagged
+      description: A boolean flag used for filtering.
       type: boolean
     - contextPath: TheHive.Cases.startDate
-      description: Start date
+      description: Datetime the case was started on, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.status
-      description: Status
+      description: Status of the case.
       type: string
     - contextPath: TheHive.Cases.owner
-      description: Owner
+      description: Owner of the case.
       type: string
     - contextPath: TheHive.Cases.tlp
-      description: TLP
+      description: Traffic Light Protocol designation for the case.
       type: number
     - contextPath: TheHive.Cases.title
-      description: Title
+      description: Title of the case.
       type: string
     - contextPath: TheHive.Cases.tags
-      description: Tags
+      description: Tags added to the case.
     - contextPath: TheHive.Cases._type
-      description: _type
+      description: Type of the case.
       type: string
     - contextPath: TheHive.Cases._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.id
-      description: ID
+      description: The ID of the case.
       type: string
     - contextPath: TheHive.Cases.createdAt
-      description: Created at
+      description: Datetime the case was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.description
-      description: Description
+      description: Description of the case.
       type: string
     - contextPath: TheHive.Cases.severity
-      description: Severity
+      description: Severity of the case.
       type: number
     - contextPath: TheHive.Cases.pap
-      description: PAP
+      description: Permissible Actions Protocol (PAP), used to indicate what kind of action is allowed.
       type: number
     - contextPath: TheHive.Cases.createdBy
-      description: Created by
+      description: The user who created the case.
       type: string
     - contextPath: TheHive.Cases.tasks._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.tasks.flag
-      description: Flagged
+      description: A boolean flag used for filtering.
       type: boolean
     - contextPath: TheHive.Cases.tasks.order
-      description: Order
+      description: The order of the task.
       type: number
     - contextPath: TheHive.Cases.tasks.status
-      description: Status
+      description: Status of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.title
-      description: Title
+      description: Title of the task.
       type: string
     - contextPath: TheHive.Cases.tasks._type
-      description: _type
+      description: Type of the task.
       type: string
     - contextPath: TheHive.Cases.tasks._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases.tasks._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.tasks.id
-      description: ID
+      description: The ID of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.createdAt
-      description: Created at
+      description: Datetime the task was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.createdBy
-      description: Created by
+      description: The user who created the task.
       type: string
     - contextPath: TheHive.Cases.tasks.group
-      description: Group
+      description: Group of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.message
-      description: Message
+      description: Log message.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.startDate
-      description: Start date
+      description: Datetime the log was started on, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.logs.status
-      description: Status
+      description: Status of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.owner
-      description: Owner
+      description: Owner of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._type
-      description: Type
+      description: Type of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases.tasks.logs._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.tasks.logs.id
-      description: ID
+      description: The ID of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.createdAt
-      description: Created at
+      description: Datetime the task log was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.logs.createdBy
-      description: Created by
+      description: The user who created the log.
       type: string
     description: Search cases
   - name: thehive-update-case
     arguments:
     - name: id
       required: true
-      description: ID
+      description: ID of the case.
     - name: title
-      description: Title
+      description: Title of the case.
     - name: description
-      description: Description
+      description: Description of the case.
     - name: severity
       auto: PREDEFINED
       predefined:
       - "1"
       - "2"
       - "3"
-      description: Severity
+      description: Severity of the case.
     - name: startDate
-      description: Start date
+      description: Datetime the case was started on, for example, 2018-06-29 08:15:27.243860.
     - name: owner
-      description: Owner
+      description: Owner of the case.
     - name: flag
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Flag
+      description: A boolean flag used for filtering.
     - name: tlp
       auto: PREDEFINED
       predefined:
@@ -557,9 +541,9 @@ script:
       - GREEN
       - AMBER
       - RED
-      description: TLP
+      description: Traffic Light Protocol designation for the case.
     - name: tags
-      description: Tags (can be CSV)
+      description: Tags added to the case.
     - name: resolutionStatus
       auto: PREDEFINED
       predefined:
@@ -568,188 +552,179 @@ script:
       - TruePositive
       - Other
       - Duplicated
-      description: Resolution status
+      description: Resolution status of the case.
     - name: impactStatus
       auto: PREDEFINED
       predefined:
       - NoImpact
       - WithImpact
       - NotApplicable
-      description: Impact status
+      description: Impact status of the case.
     - name: summary
-      description: Summary
+      description: Summary of the case.
     - name: endDate
-      description: End date
+      description: Datetime the case ended, for example, 2018-06-29 08:15:27.243860.
     - name: metrics
-      description: Metrics
+      description: Metrics of the case.
     - name: status
       auto: PREDEFINED
       predefined:
       - Open
       - Resolved
       - Deleted
-      description: Status
+      description: Status of the case.
     outputs:
     - contextPath: TheHive.Cases._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.customFields
-      description: Custom Fields
+      description: Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case.
     - contextPath: TheHive.Cases.caseId
-      description: Case ID
+      description: The order of the case.
       type: number
     - contextPath: TheHive.Cases.flag
-      description: Flagged
+      description: A boolean flag used for filtering.
       type: boolean
     - contextPath: TheHive.Cases.startDate
-      description: Start date
+      description: Datetime the case was started on, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.status
-      description: Status
+      description: Status of the case.
       type: string
     - contextPath: TheHive.Cases.owner
-      description: Owner
+      description: Owner of the case.
       type: string
     - contextPath: TheHive.Cases.tlp
-      description: TLP
+      description: Traffic Light Protocol designation for the case.
       type: number
     - contextPath: TheHive.Cases.title
-      description: Title
+      description: Title of the case.
       type: string
     - contextPath: TheHive.Cases.tags
-      description: Tags
+      description: Tags added to the case.
     - contextPath: TheHive.Cases._type
-      description: _type
+      description: Type of the case.
       type: string
     - contextPath: TheHive.Cases._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.id
-      description: ID
+      description: The ID of the case.
       type: string
     - contextPath: TheHive.Cases.createdAt
-      description: Created at
+      description: Datetime the case was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.description
-      description: Description
+      description: Description of the case.
       type: string
     - contextPath: TheHive.Cases.severity
-      description: Severity
+      description: Severity of the case.
       type: number
     - contextPath: TheHive.Cases.pap
-      description: PAP
+      description: Permissible Actions Protocol (PAP), used to indicate what kind of action is allowed.
       type: number
     - contextPath: TheHive.Cases.createdBy
-      description: Created by
+      description: The user who created the case.
       type: string
     - contextPath: TheHive.Cases.tasks._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.tasks.flag
-      description: Flagged
+      description: A boolean flag used for filtering.
       type: boolean
     - contextPath: TheHive.Cases.tasks.order
-      description: Order
+      description: The order of the task.
       type: number
     - contextPath: TheHive.Cases.tasks.status
-      description: Status
+      description: Status of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.title
-      description: Title
+      description: Title of the task.
       type: string
     - contextPath: TheHive.Cases.tasks._type
-      description: _type
+      description: Type of the task.
       type: string
     - contextPath: TheHive.Cases.tasks._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases.tasks._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.tasks.id
-      description: ID
+      description: The ID of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.createdAt
-      description: Created at
+      description: Datetime the task was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.createdBy
-      description: Created by
+      description: The user who created the task.
       type: string
     - contextPath: TheHive.Cases.tasks.group
-      description: Group
+      description: Group of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.message
-      description: Message
+      description: Log message.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.startDate
-      description: Start date
+      description: Datetime the log was started on, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.logs.status
-      description: Status
+      description: Status of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.owner
-      description: Owner
+      description: Owner of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._type
-      description: Type
+      description: Type of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases.tasks.logs._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.tasks.logs.id
-      description: ID
+      description: The ID of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.createdAt
-      description: Created at
+      description: Datetime the task log was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.logs.createdBy
-      description: Created by
+      description: The user who created the log.
       type: string
     description: Update a case
   - name: thehive-create-case
     arguments:
     - name: title
       required: true
-      description: Title
+      description: Title of the case.
     - name: description
       required: true
-      description: Description
+      description: Description of the case.
     - name: severity
       auto: PREDEFINED
       predefined:
       - "1"
       - "2"
       - "3"
-      description: Severity 9default = 2)
+      description: Severity of the case (default = 2).
     - name: startDate
-      description: Start date (default = now)
+      description: Datetime the case was started on, for example, 2018-06-29 08:15:27.243860.
     - name: owner
       required: true
-      description: Owner
+      description: Owner of the case.
     - name: flag
       auto: PREDEFINED
       predefined:
       - "false"
       - "true"
-      description: Flag (defaul = false)
+      description: A boolean flag used for filtering (default = false).
     - name: tlp
       auto: PREDEFINED
       predefined:
@@ -757,159 +732,191 @@ script:
       - "1"
       - "2"
       - "3"
-      description: TLP (default = 2)
+      description: Traffic Light Protocol designation for the case (default = 2).
     - name: tags
-      description: Tags (can be CSV)
+      description: Tags added to the case.
     - name: resolutionStatus
-      description: Resolution status
+      description: Resolution status of the case.
     - name: impactStatus
       auto: PREDEFINED
       predefined:
       - NoImpact
       - WithImpact
       - qNotApplicable
-      description: Imapct status
+      description: Impact status of the case.
     - name: summary
-      description: Summary
+      description: Summary of the case.
     - name: endDate
-      description: End date
+      description: Datetime the case ended, for example, 2018-06-29 08:15:27.243860.
     - name: metrics
-      description: Metrics
+      description: Metrics of the case.
     outputs:
     - contextPath: TheHive.Cases._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.customFields
-      description: Custom Fields
+      description: Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case.
     - contextPath: TheHive.Cases.caseId
-      description: Case ID
+      description: The order of the case.
       type: number
     - contextPath: TheHive.Cases.flag
-      description: Flagged
+      description: A boolean flag used for filtering.
       type: boolean
     - contextPath: TheHive.Cases.startDate
-      description: Start date
+      description: Datetime the case was started on, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.status
-      description: Status
+      description: Status of the case.
       type: string
     - contextPath: TheHive.Cases.owner
-      description: Owner
+      description: Owner of the case.
       type: string
     - contextPath: TheHive.Cases.tlp
-      description: TLP
+      description: Traffic Light Protocol designation for the case.
       type: number
     - contextPath: TheHive.Cases.title
-      description: Title
+      description: Title of the case.
       type: string
     - contextPath: TheHive.Cases.tags
-      description: Tags
+      description: Tags added to the case.
     - contextPath: TheHive.Cases._type
-      description: _type
+      description: Type of the case.
       type: string
     - contextPath: TheHive.Cases._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.id
-      description: ID
+      description: The ID of the case.
       type: string
     - contextPath: TheHive.Cases.createdAt
-      description: Created at
+      description: Datetime the case was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.description
-      description: Description
+      description: Description of the case.
       type: string
     - contextPath: TheHive.Cases.severity
-      description: Severity
+      description: Severity of the case.
       type: number
     - contextPath: TheHive.Cases.pap
-      description: PAP
+      description: Permissible Actions Protocol (PAP), used to indicate what kind of action is allowed.
       type: number
     - contextPath: TheHive.Cases.createdBy
-      description: Created by
+      description: The user who created the case.
       type: string
     - contextPath: TheHive.Cases.tasks._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.tasks.flag
-      description: Flagged
+      description: A boolean flag used for filtering.
       type: boolean
     - contextPath: TheHive.Cases.tasks.order
-      description: Order
+      description: The order of the task.
       type: number
     - contextPath: TheHive.Cases.tasks.status
-      description: Status
+      description: Status of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.title
-      description: Title
+      description: Title of the task.
       type: string
     - contextPath: TheHive.Cases.tasks._type
-      description: _type
+      description: Type of the task.
       type: string
     - contextPath: TheHive.Cases.tasks._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases.tasks._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.tasks.id
-      description: ID
+      description: The ID of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.createdAt
-      description: Created at
+      description: Datetime the task was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.createdBy
-      description: Created by
+      description: The user who created the task.
       type: string
     - contextPath: TheHive.Cases.tasks.group
-      description: Group
+      description: Group of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.message
-      description: Message
+      description: Log message.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.startDate
-      description: Start date
+      description: Datetime the log was started on, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.logs.status
-      description: Status
+      description: Status of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.owner
-      description: Owner
+      description: Owner of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._type
-      description: Type
+      description: Type of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases.tasks.logs._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.tasks.logs.id
-      description: ID
+      description: The ID of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.createdAt
-      description: Created at
+      description: Datetime the task log was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.logs.createdBy
-      description: Created by
+      description: The user who created the log.
       type: string
     description: Create a new case
+  - name: thehive-create-task
+    arguments:
+    - name: id
+      required: true
+      description: Case ID 
+    - name: title
+      required: true
+      description: Title of the case.
+    - name: description
+      description: Description
+    - name: startDate
+      description: Datetime the task was started on, for example, 2018-06-29 08:15:27.243860.
+    outputs:
+    - contextPath: TheHive.Tasks.status
+      description: Status of the task.
+      type: string
+    - contextPath: TheHive.TasKs.title
+      description: Title of the task.
+      type: string
+    - contextPath: TheHive.Tasks.id
+      description: The ID of the task.
+      type: string
+    - contextPath: TheHive.Tasks.createdAt
+      description: Datetime the task was created, for example, 2018-06-29 08:15:27.243860.
+      type: number
+    - contextPath: TheHive.Tasks._type
+      description: Type of the task.
+      type: string
+    - contextPath: TheHive.Tasks.createdBy
+      description: The user who created the task.
+      type: string
+    - contextPath: TheHive.Tasks.group
+      description: Group of the task.
+      type: string
+    - contextPath: TheHive.Tasks.flag
+      description: A boolean flag used for filtering.
+      type: boolean
+    - contextPath: TheHive.Tasks.order
+      description: The order of the task.
+      type: int
+    description: Create a new task
   - name: thehive-remove-case
     arguments:
     - name: id
@@ -924,250 +931,236 @@ script:
       defaultValue: "false"
     description: Removes a case
   - name: thehive-get-linked-cases
+    deprecated: true
     arguments:
     - name: id
       required: true
       description: Case ID
     outputs:
     - contextPath: TheHive.Cases._routing
-      description: Routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases._parent
-      description: Parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.customFields
-      description: Custom Fields
+      description: Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case.
     - contextPath: TheHive.Cases.caseId
-      description: Case ID
+      description: The order of the case.
       type: number
     - contextPath: TheHive.Cases.flag
-      description: Flagged
+      description: A boolean flag used for filtering.
       type: boolean
     - contextPath: TheHive.Cases.startDate
-      description: Start date
+      description: Datetime the case was started on, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.status
-      description: Status
+      description: Status of the case.
       type: string
     - contextPath: TheHive.Cases.owner
-      description: Owner
+      description: Owner of the case.
       type: string
     - contextPath: TheHive.Cases.tlp
-      description: TLP
+      description: Traffic Light Protocol designation for the case.
       type: number
     - contextPath: TheHive.Cases.title
-      description: Title
+      description: Title of the case.
       type: string
     - contextPath: TheHive.Cases.tags
-      description: Tags
+      description: Tags added to the case.
     - contextPath: TheHive.Cases._type
-      description: Type
+      description: Type of the case.
       type: string
     - contextPath: TheHive.Cases._version
-      description: Version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases._id
-      description: ID
-      type: string
     - contextPath: TheHive.Cases.id
-      description: ID
+      description: The ID of the case.
       type: string
     - contextPath: TheHive.Cases.createdAt
-      description: Created at
+      description: Datetime the case was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.description
-      description: Description
+      description: Description of the case.
       type: string
     - contextPath: TheHive.Cases.severity
-      description: Severity
+      description: Severity of the case.
       type: number
     - contextPath: TheHive.Cases.pap
-      description: PAP
+      description: Permissible Actions Protocol (PAP), used to indicate what kind of action is allowed.
       type: number
     - contextPath: TheHive.Cases.createdBy
-      description: Created by
+      description: The user who created the case.
       type: string
     - contextPath: TheHive.Cases.tasks._routing
-      description: Routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks._parent
-      description: Parent ID
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.tasks.flag
-      description: Flagged
+      description: A boolean flag used for filtering.
       type: boolean
     - contextPath: TheHive.Cases.tasks.order
-      description: Order
+      description: The order of the task.
       type: number
     - contextPath: TheHive.Cases.tasks.status
-      description: Status
+      description: Status of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.title
-      description: Title
+      description: Title of the task.
       type: string
     - contextPath: TheHive.Cases.tasks._type
-      description: Type
+      description: Type of the task.
       type: string
     - contextPath: TheHive.Cases.tasks._version
-      description: Version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases.tasks._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.tasks.id
-      description: ID
+      description: The ID of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.createdAt
-      description: Created at
+      description: Datetime the task was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.createdBy
-      description: Created by
+      description: The user who created the task.
       type: string
     - contextPath: TheHive.Cases.tasks.group
-      description: Group
+      description: Group of the task.
       type: string
     description: Get linked cases
   - name: thehive-merge-cases
     arguments:
     - name: firstCaseID
       required: true
-      description: First case ID
+      description: ID of the first case.
     - name: secondCaseID
       required: true
-      description: Second case ID
+      description: ID of the second case.
     outputs:
     - contextPath: TheHive.Cases._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.customFields
-      description: Custom Fields
+      description: Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case.
     - contextPath: TheHive.Cases.caseId
-      description: Case ID
+      description: The order of the case.
       type: number
     - contextPath: TheHive.Cases.flag
-      description: Flagged
+      description: A boolean flag used for filtering.
       type: boolean
     - contextPath: TheHive.Cases.startDate
-      description: Start date
+      description: Datetime the case was started on, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.status
-      description: Status
+      description: Status of the case.
       type: string
     - contextPath: TheHive.Cases.owner
-      description: Owner
+      description: Owner of the case.
       type: string
     - contextPath: TheHive.Cases.tlp
-      description: TLP
+      description: Traffic Light Protocol designation for the case.
       type: number
     - contextPath: TheHive.Cases.title
-      description: Title
+      description: Title of the case.
       type: string
     - contextPath: TheHive.Cases.tags
-      description: Tags
+      description: Tags added to the case.
     - contextPath: TheHive.Cases._type
-      description: _type
+      description: Type of the case.
       type: string
     - contextPath: TheHive.Cases._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.id
-      description: ID
+      description: The ID of the case.
       type: string
     - contextPath: TheHive.Cases.createdAt
-      description: Created at
+      description: Datetime the case was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.description
-      description: Description
+      description: Description of the case.
       type: string
     - contextPath: TheHive.Cases.severity
-      description: Severity
+      description: Severity of the case.
       type: number
     - contextPath: TheHive.Cases.pap
-      description: PAP
+      description: Permissible Actions Protocol (PAP), used to indicate what kind of action is allowed.
       type: number
     - contextPath: TheHive.Cases.createdBy
-      description: Created by
+      description: The user who created the case.
       type: string
     - contextPath: TheHive.Cases.tasks._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.tasks.flag
-      description: Flagged
+      description: A boolean flag used for filtering.
       type: boolean
     - contextPath: TheHive.Cases.tasks.order
-      description: Order
+      description: The order of the task.
       type: number
     - contextPath: TheHive.Cases.tasks.status
-      description: Status
+      description: Status of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.title
-      description: Title
+      description: Title of the task.
       type: string
     - contextPath: TheHive.Cases.tasks._type
-      description: _type
+      description: Type of the task.
       type: string
     - contextPath: TheHive.Cases.tasks._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases.tasks._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.tasks.id
-      description: ID
+      description: The ID of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.createdAt
-      description: Created at
+      description: Datetime the task was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.createdBy
-      description: Created by
+      description: The user who created the task.
       type: string
     - contextPath: TheHive.Cases.tasks.group
-      description: Group
+      description: Group of the task.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.message
-      description: Message
+      description: Log message.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.startDate
-      description: Start date
+      description: Datetime the log was started on, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.logs.status
-      description: Status
+      description: Status of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.owner
-      description: Owner
+      description: Owner of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._type
-      description: Type
+      description: Type of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Cases.tasks.logs._id
-      description: _id
-      type: string
     - contextPath: TheHive.Cases.tasks.logs.id
-      description: ID
+      description: The ID of the log.
       type: string
     - contextPath: TheHive.Cases.tasks.logs.createdAt
-      description: Created at
+      description: Datetime the task log was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Cases.tasks.logs.createdBy
-      description: Created by
+      description: The user who created the log.
       type: string
     description: Merges 2 cases
   - name: thehive-get-case-tasks
@@ -1183,82 +1176,77 @@ script:
       description: Task ID
     outputs:
     - contextPath: TheHive.Tasks._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Tasks._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Tasks.flag
-      description: Flagged
+      description: A boolean flag used for filtering.
       type: boolean
     - contextPath: TheHive.Tasks.order
-      description: Order
+      description: The order of the task.
       type: number
     - contextPath: TheHive.Tasks.status
-      description: Status
+      description: Status of the task.
       type: string
     - contextPath: TheHive.Tasks.title
-      description: Title
+      description: Title of the task.
       type: string
     - contextPath: TheHive.Tasks._type
-      description: _type
+      description: Type of the task.
       type: string
     - contextPath: TheHive.Tasks._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Tasks._id
-      description: _id
-      type: string
     - contextPath: TheHive.Tasks.id
-      description: ID
+      description: The ID of the task.
       type: string
     - contextPath: TheHive.Tasks.createdAt
-      description: Created at
+      description: Datetime the task was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Tasks.createdBy
-      description: Created by
+      description: The user who created the task.
       type: string
     - contextPath: TheHive.Tasks.group
-      description: Group
+      description: Group of the task.
       type: string
     - contextPath: TheHive.Tasks.logs.message
-      description: Message
+      description: Log message.
       type: string
     - contextPath: TheHive.Tasks.logs._routing
-      description: _routing
+      description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
       type: string
     - contextPath: TheHive.Tasks.logs._parent
-      description: _parent
+      description: The direct parent level object which the current object belongs to.
       type: string
     - contextPath: TheHive.Tasks.logs.startDate
-      description: Start date
+      description: Datetime the log was started on, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Tasks.logs.status
-      description: Status
+      description: Status of the log.
       type: string
     - contextPath: TheHive.Tasks.logs.owner
-      description: Owner
+      description: Owner of the log.
       type: string
     - contextPath: TheHive.Tasks.logs._type
-      description: Type
+      description: Type of the log.
       type: string
     - contextPath: TheHive.Tasks.logs._version
-      description: _version
+      description: The version of TheHive Project.
       type: number
-    - contextPath: TheHive.Tasks.logs._id
-      description: _id
-      type: string
     - contextPath: TheHive.Tasks.logs.id
-      description: ID
+      description: The ID of the log.
       type: string
     - contextPath: TheHive.Tasks.logs.createdAt
-      description: Created at
+      description: Datetime the task log was created, for example, 2018-06-29 08:15:27.243860.
       type: number
     - contextPath: TheHive.Tasks.logs.createdBy
-      description: Task ID
+      description: The user who created the task.
       type: string
     description: Get a specific task.
   - name: thehive-get-attachment
+    deprecated: true
     arguments:
     - name: id
       required: true
@@ -1273,7 +1261,7 @@ script:
       required: true
       description: Task ID
     - name: title
-      description: Title
+      description: Title of the task.
     - name: status
       auto: PREDEFINED
       predefined:
@@ -1281,68 +1269,70 @@ script:
       - InProgress
       - Completed
       - Cancel
-      description: Status
+      description: Status of the task.
     - name: flag
       auto: PREDEFINED
       predefined:
       - "false"
       - "true"
-      description: Flag
+      description: A boolean flag used for filtering.
     - name: owner
-      description: Owner
-    - name: description
-      description: Description
+      description: Owner of the task.
     - name: startDate
-      description: Start date
+      description: Datetime the task was started on, for example, 2018-06-29 08:15:27.243860.
     - name: endDate
-      description: End date
+      description: Datetime the case ended, for example, 2018-06-29 08:15:27.243860.
     description: Updates a task.
   - name: thehive-list-users
     arguments: []
-    description: Get a list of users
+    description: Get a list of users.
   - name: thehive-get-user
     arguments:
     - name: id
       required: true
-      description: User ID
+      description: User ID.
     description: Get a single user
   - name: thehive-create-local-user
     arguments:
     - name: login
       required: true
-      description: Login username
+      description: Username login.
     - name: name
       required: true
-      description: Name
+      description: Name of the user.
     - name: roles
-      required: true
-      description: 'Roles (CSV: can be read, write, admin)'
+      description: 'Roles (CSV: can be read, write, admin).'
       defaultValue: read
     - name: password
       required: true
-      description: Password
+      description: Password.
     - name: profile
-      description: Profile name (only used with TheHive Project v4 onwards)
+      description: Profile name (only used with TheHive Project v4 and onwards).
     description: Create a new user
   - name: thehive-block-user
     arguments:
     - name: id
       required: true
-      description: User ID
+      description: User ID.
     description: Block a user
   - name: thehive-list-observables
     arguments:
     - name: id
-      description: Case ID
+      description: Case ID.
+      required: true
     description: List observables for a case.
+    outputs:
+    - contextPath: TheHive.Observables
+      description: List of observables for a case.
+      type: string
   - name: thehive-create-observable
     arguments:
     - name: id
       required: true
-      description: Case ID
+      description: Case ID.
     - name: data
       required: true
-      description: Data
+      description: Data of the observable.
     - name: dataType
       required: true
       auto: PREDEFINED
@@ -1362,13 +1352,13 @@ script:
       - uri_path
       - url
       - user-agent
-      description: Data type
+      description: Data type of the observable.
       defaultValue: other
     - name: message
       required: true
-      description: Message
+      description: Observable message.
     - name: startDate
-      description: Start date
+      description: Datetime the observable was started on, for example, 2018-06-29 08:15:27.243860.
     - name: tlp
       auto: PREDEFINED
       predefined:
@@ -1376,28 +1366,28 @@ script:
       - GREEN
       - AMBER
       - RED
-      description: TLP
+      description: Traffic Light Protocol designation for the observable.
     - name: ioc
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Is IOC?
+      description: Is the observable an IOC?
     - name: status
       auto: PREDEFINED
       predefined:
       - Ok
       - Deleted
-      description: Status
+      description: Status of the observable.
     description: Creates an observable.
   - name: thehive-update-observable
     arguments:
     - name: id
       required: true
-      description: Observable ID
+      description: Observable ID.
     - name: message
       required: true
-      description: Message
+      description: Observable message.
     - name: tlp
       auto: PREDEFINED
       predefined:
@@ -1405,20 +1395,20 @@ script:
       - GREEN
       - AMBER
       - RED
-      description: TLP
+      description: Traffic Light Protocol designation for the observable.
     - name: ioc
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Is IOC?
+      description: Is the observable an IOC?
     - name: status
       auto: PREDEFINED
       predefined:
       - Ok
       - Deleted
-      description: Status
-    description: Update an observable
+      description: Status of the observable.
+    description: Update an observable.
   - name: get-mapping-fields
     arguments: []
     description: Returns the list of fields.
@@ -1434,14 +1424,14 @@ script:
       the current incident, and should be used for debugging purposes.
   - name: thehive-get-version
     arguments: []
-    description: Displays the version of TheHive Project
+    description: Displays the version of TheHive Project.
   - name: get-modified-remote-data
     arguments: []
     description: Gets the list of incidents that were modified since the last update
       time. Note that this method is here for debugging purposes. The get-modified-remote-data
       command is used as part of a Mirroring feature, which is available from version
       6.1.
-  dockerimage: demisto/python3:3.9.4.19537
+  dockerimage: demisto/python3:3.10.1.25933
   isfetch: true
   runonce: false
   subtype: python3
@@ -1450,4 +1440,4 @@ script:
   isremotesyncout: true
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- Playbook_TheHiveProject_Test

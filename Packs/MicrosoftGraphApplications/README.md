@@ -3,6 +3,6 @@ An application provides authorization access to your APIs. An instance of the ap
 
 
 ## What does this pack do?
-The **Microsoft Graph Applications** integration enables you to:
+The **Azure Active Directory Applications** integration enables you to:
 - Retrieve a detailed list of service principals.
 - Remove a service principal from the directory.

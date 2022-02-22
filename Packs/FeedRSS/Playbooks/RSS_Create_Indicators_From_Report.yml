@@ -1,0 +1,366 @@
+id: RSS Create Indicators From Report
+version: -1
+name: RSS Create Indicators From Report
+description: "The playbook:\n1. Extracts indicators from Threat intel reports.\n2.
+  Creates relationships between the extracted indicators and the report.\n3. Runs
+  enrich indicators command on the extracted indicators. \n\nCortex XSOAR recommends
+  that you configure a job to execute this playbook. \n\n1. Configure a job that will
+  run the *RSS Create Indicators From Report* playbook. \n      1. Select the *Triggered
+  by delta in feed* option.\n      2. Select the feed on which to run the job.\n   \n\n2.
+  Configure input to the *RSS Create Indicators From Report* playbook:\n   \n    -
+  From the context data input: Tag name - the indicator will be tagged with this value
+  when the playbook finishes processing and all the indicators are extracted and relationships
+  created.\n   \n    - From the indicators: Create a query to include only new report
+  indicators that were not processed yet. Recommended query: \"type:Report -tags:{Tag
+  name configured from the context data input} -tags:in_process\". \n   The playbook
+  tags all indicators with the \"in_process\" tag when it starts running, and removes
+  the tag when the playbook ends.\n   If you want the playbook to run on a specific
+  instance (a specific feed), add the following filter to the query: *sourceInstances:\"{the
+  selected instance}\"*.\n\nNote that if you selected the *Triggered by delta in feed*
+  option when configuring the Job, the “Run only on new and modified indicators” playbook
+  option is automatically selected.\n"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f6d8ee66-a39e-46fa-8f70-6f686014c91a
+    type: start
+    task:
+      id: f6d8ee66-a39e-46fa-8f70-6f686014c91a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 69e5ebe7-b993-4633-8855-406ca88d43fe
+    type: playbook
+    task:
+      id: 69e5ebe7-b993-4633-8855-406ca88d43fe
+      version: -1
+      name: Extract and Create Relationships
+      description: Extract and enrich indicators
+      playbookName: Extract and Create Relationships
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      indicator_value:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Report
+          accessor: value
+      raw_content:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Report
+          accessor: CustomFields.rssfeedrawcontent
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 6e8f8f7c-380e-4092-827b-84083111a243
+    type: regular
+    task:
+      id: 6e8f8f7c-380e-4092-827b-84083111a243
+      version: -1
+      name: Tag report as "processed"
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: ${inputs.tag}
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Report
+          accessor: value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 946382a7-5ef7-40d6-8735-4d492e4f11f6
+    type: regular
+    task:
+      id: 946382a7-5ef7-40d6-8735-4d492e4f11f6
+      version: -1
+      name: Tag reports "in process"
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: in_process
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Report
+          accessor: value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 484315bb-bcfb-4838-8783-ef5304b62760
+    type: regular
+    task:
+      id: 484315bb-bcfb-4838-8783-ef5304b62760
+      version: -1
+      name: Remove tag "in process"
+      description: commands.local.cmd.remove.values.to.indicator.multi.select.field
+      script: Builtin|||removeIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: in_process
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Report
+          accessor: value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: fc4676ba-8352-42e5-8adb-2d1a4358d225
+    type: title
+    task:
+      id: fc4676ba-8352-42e5-8adb-2d1a4358d225
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 9389b85f-a08b-4b82-8833-e5bad240f456
+    type: condition
+    task:
+      id: 9389b85f-a08b-4b82-8833-e5bad240f456
+      version: -1
+      name: Is Report Type
+      description: Check if there is indicators from Report type
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: Report
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1110,
+        "width": 380,
+        "x": 50,
+        "y": -130
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: |-
+    Filter all Report indicators which haven't been processed. Please make sure to add "-tags:in_process " to the query in order to filter out the reports that are in process and "-tags:{tag_name_given_as_input}" to filter out all processed reports .
+    For example, if the tag input is "processed" the query should be: "type:Report -tags:processed -tags:in_process"
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: true
+- key: tag
+  value:
+    simple:
+  required: false
+  description: The tag which will be added to each processed report.
+  playbookInputQuery:
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

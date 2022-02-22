@@ -84,6 +84,111 @@ ATTACK_PATTERN_DATA = [
      "x_mitre_version": "1.0"}
 ]
 
+INVALID_ATTACK_PATTERN_STRUCTURE = [
+{"created": "2018-08-03T19:54:02.821Z", "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+     "description": "Windows Management",
+     "external_references": [
+         {
+             "description": "Ballenthin",
+             "source_name": "FireEye WMI 2015",
+             "url": "example.com"
+         },
+         {
+             "external_id": "T1047", "source_name": "mitre-attack",
+             "url": "https://attack.mitre.org/techniques/T1047"
+         },
+         {
+             "description": "Microsoft. (n.d.). Windows Management Instrumentation. Retrieved April 27, 2016.",
+             "source_name": "MSDN WMI",
+             "url": "https://msdn.microsoft.com/en-us/library/aa394582.aspx"
+         },
+         {
+             "description": "Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016.",
+             "source_name": "TechNet RPC",
+             "url": "https://technet.microsoft.com/en-us/library/cc787851.aspx"
+         },
+         {
+             "description": "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016.",
+             "source_name": "Wikipedia SMB",
+             "url": "https://en.wikipedia.org/wiki/Server_Message_Block"
+         }
+     ],
+     "id": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+     "kill_chain_phases": [{"kill_chain_name": "lockheed", "phase_name": "installation"},
+                           {"kill_chain_name": "mitre-attack", "phase_name": "execution"}],
+     "modified": "2020-05-12T13:02:30.000000Z", "name": "T1047 Windows Management Instrumentation",
+     "object_marking_refs": ["marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"], "type": "attack-pattern",
+     "x_mitre_data_sources": ["Authentication logs", "Netflow/Enclave netflow", "Process command-line parameters",
+                              "Process monitoring"], "x_mitre_detection": [
+        "Monitor network traffic"],
+     "x_mitre_permissions_required": ["Administrator", "User"], "x_mitre_platforms": ["Windows"],
+     "x_mitre_remote_support": "true", "x_mitre_system_requirements": ["WMI service"],
+     "x_mitre_version": "1.0"}
+]
+
+
+SUB_TECHNIQUE_DATA = [
+    {
+        "type": "attack-pattern",
+        "id": "attack-pattern--4bed873f-0b7d-41d4-b93a-b6905d1f90b0",
+        "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+        "created": "2020-03-06T21:11:11.225Z",
+        "modified": "2021-04-01T15:48:28.345Z",
+        "name": "T1497.003: Time Based Evasion",
+        "description": "Adversaries may employ various time-based methods to detect and avoid virtualization.",
+        "kill_chain_phases": [],
+        "external_references": [
+            {
+                "source_name": "mitre-attack",
+                "url": "https://attack.mitre.org/techniques/T1497/003",
+                "external_id": "T1497.003"
+            }
+        ],
+        "object_marking_refs": [
+            "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
+        ],
+        "x_mitre_detection": "Time-based evasion will likely occur in the first steps of an operation.",
+        "x_mitre_platforms": [
+            "Linux",
+            "macOS",
+            "Windows"
+        ],
+        "x_mitre_data_sources": [
+            "Command: Command Execution",
+            "Process: OS API Execution",
+            "Process: Process Creation"
+        ],
+        "x_mitre_is_subtechnique": 'true',
+        "x_mitre_defense_bypassed": [
+            "Anti-virus",
+            "Host forensic analysis",
+            "Signature-based detection",
+            "Static File Analysis"
+        ],
+        "x_mitre_contributors": [
+            "Deloitte Threat Library Team"
+        ],
+        "x_mitre_version": "1.1",
+        "x_panw_parent_technique": "Virtualization/Sandbox Evasion",
+        "x_panw_parent_technique_subtechnique": "Virtualization/Sandbox Evasion: Time Based Evasion"
+    }
+]
+
+SUB_TECHNIQUE_INDICATOR = [{'fields': {'description': 'Adversaries may employ various time-based methods '
+                                                      'to detect and avoid virtualization.',
+                                       'firstseenbysource': '2020-03-06T21:11:11.225Z',
+                                       'killchainphases': [],
+                                       'mitreid': 'T1497.003',
+                                       'modified': '2021-04-01T15:48:28.345Z',
+                                       'operatingsystemrefs': ['Linux', 'macOS', 'Windows'],
+                                       'publications': [],
+                                       'reportedby': 'Unit42',
+                                       'stixid': 'attack-pattern--4bed873f-0b7d-41d4-b93a-b6905d1f90b0',
+                                       'tags': ['T1497.003']},
+                            'score': 2,
+                            'type': 'Attack Pattern',
+                            'value': 'Virtualization/Sandbox Evasion: Time Based Evasion'}]
+
 MALWARE_DATA = [
     {"created": "2019-10-11T16:13:15.086Z",
      "description": " Xbash is an all-in-one Linux malware formed botnet and ransomware developed by Iron cybercrime"
@@ -117,7 +222,11 @@ RELATIONSHIP_DATA = [
     {"created": "2019-10-11T18:43:46.039Z", "id": "relationship--001323c2-fc4f-4d4a-914c-2d556fc585a8",
      "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
      "source_ref": "indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be",
-     "target_ref": "malware--00811855-d9b9-420d-9bd6-8fd63fbd335a", "type": "relationship"}
+     "target_ref": "malware--00811855-d9b9-420d-9bd6-8fd63fbd335a", "type": "relationship"},
+    {"created": "2019-10-11T18:43:46.039Z", "id": "relationship--001323c2-fc4f-4d4a-914c-2d556fc585a8",
+     "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
+     "source_ref": "indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be",
+     "target_ref": 'attack-pattern--4bed873f-0b7d-41d4-b93a-b6905d1f90b0', "type": "relationship"}
 ]
 
 RELATIONSHIP_OBJECTS = [{'entityA': 'http://91.218.114.31/yyxtqylcto',
@@ -141,7 +250,19 @@ RELATIONSHIP_OBJECTS = [{'entityA': 'http://91.218.114.31/yyxtqylcto',
                                     'lastseenbysource': '2020-05-12T13:02:30.000000Z'},
                          'name': 'indicated-by',
                          'reverseName': 'indicator-of',
-                         'type': 'IndicatorToIndicator'}]
+                         'type': 'IndicatorToIndicator'},
+                        {'entityA': '92.63.32.52',
+                         'entityAFamily': 'Indicator',
+                         'entityAType': 'IP',
+                         'entityB': 'Virtualization/Sandbox Evasion: Time Based Evasion',
+                         'entityBFamily': 'Indicator',
+                         'entityBType': 'Attack Pattern',
+                         'fields': {'firstseenbysource': '2019-10-11T18:43:46.039Z',
+                                    'lastseenbysource': '2020-05-12T13:02:30.000000Z'},
+                         'name': 'indicated-by',
+                         'reverseName': 'indicator-of',
+                         'type': 'IndicatorToIndicator'}
+                        ]
 
 ID_TO_OBJ_RELATIONS = {
     "indicator--010bb9ad-5686-485d-97e5-93c2187e56ce": {
@@ -251,6 +372,7 @@ INDICATORS_RESULT = {'fields': {'firstseenbysource': '2019-07-30T09:29:07.724Z',
                                             "'c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839']",
                                  'type': 'indicator',
                                  'valid_from': '2019-07-30T09:29:07.724Z'},
+                     'score': 3,
                      'type': 'File',
                      'value': 'c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839'}
 
@@ -290,6 +412,13 @@ ID_TO_OBJECT = {
         "type": "malware",
         "id": "malware--53e619f7-936e-4f40-b518-9d3000102d44",
         "name": "Maze",
+    },
+    "attack-pattern--4bed873f-0b7d-41d4-b93a-b6905d1f90b0": {
+        "type": "attack-pattern",
+        "id": "attack-pattern--4bed873f-0b7d-41d4-b93a-b6905d1f90b0",
+        "name": "T1497.003: Time Based Evasion",
+        "x_mitre_is_subtechnique": True,
+        "x_panw_parent_technique_subtechnique": "Virtualization/Sandbox Evasion: Time Based Evasion"
     }
 }
 
@@ -449,7 +578,7 @@ DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST = {
                                   'lastseenbysource': '2020-05-12T13:02:30.000000Z'},
                        'name': 'indicated-by',
                        'reverseName': 'indicator-of',
-                       'type': 'IndicatorToIndicator'}],
+                       'type': 'IndicatorToIndicator'}, {}],
     'value': '$$DummyIndicator$$'}
 
 INTRUSION_SET_DATA = [

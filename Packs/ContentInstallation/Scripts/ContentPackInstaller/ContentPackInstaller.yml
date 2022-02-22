@@ -1,0 +1,48 @@
+args:
+- default: false
+  description: Information about the packs to install including pack ID and version.
+  isArray: true
+  name: packs_data
+  required: true
+  secret: false
+- default: false
+  description: The key in which the pack ID is stored.
+  isArray: false
+  name: pack_id_key
+  required: true
+  secret: false
+- default: false
+  description: The key in which the pack version is stored. Enter "latest" to update
+    all packs to the latest version.
+  isArray: false
+  name: pack_version_key
+  required: true
+  secret: false
+commonfields:
+  id: ContentPackInstaller
+  version: -1
+enabled: false
+name: ContentPackInstaller
+comment: Content packs installer from marketplace.
+outputs:
+- contextPath: ContentPackInstaller.packname
+  description: The name of the pack.
+  type: Unknown
+- contextPath: ContentPackInstaller.packversion
+  description: The version of the pack.
+  type: Unknown
+- contextPath: ContentPackInstaller.installationstatus
+  description: The installation status of the pack.
+  type: Unknown
+script: '-'
+subtype: python3
+system: false
+tags:
+- configuration
+- Content Management
+timeout: 600ns
+type: python
+dockerimage: demisto/xsoar-tools:1.0.0.25924
+tests:
+- ContentPackInstaller_Test
+fromversion: 6.0.0

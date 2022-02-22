@@ -1,0 +1,217 @@
+id: Block Domain - Symantec Messaging Gateway
+version: -1
+name: Block Domain - Symantec Messaging Gateway
+description: |-
+  This playbook blocks domains using Symantec Messaging Gateway.
+  The playbook checks whether the Symantec Messaging Gateway integration is enabled, whether the Domain input has been provided and if so, blocks the domain.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1ff15490-2b31-4e36-896d-faddb7a98b9d
+    type: start
+    task:
+      id: 1ff15490-2b31-4e36-896d-faddb7a98b9d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: cc4526d7-39ab-42ac-8569-feb37fa265fe
+    type: condition
+    task:
+      id: cc4526d7-39ab-42ac-8569-feb37fa265fe
+      version: -1
+      name: Is Symantec Messaging Gateway enabled?
+      description: Verify that there is a valid instance of Check Point Firewall enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Symantec Messaging Gateway
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 9d558c50-4945-45c7-81f2-15c7b130c38a
+    type: regular
+    task:
+      id: 9d558c50-4945-45c7-81f2-15c7b130c38a
+      version: -1
+      name: Block Domain
+      description: Adds domain to the Local Bad Sender Domains group.
+      script: '|||smg-block-domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: f3e2e096-cec3-4658-8bd0-517a7d4521fb
+    type: title
+    task:
+      id: f3e2e096-cec3-4658-8bd0-517a7d4521fb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 90796878-1467-44fd-8bf6-55a869bd827d
+    type: condition
+    task:
+      id: 90796878-1467-44fd-8bf6-55a869bd827d
+      version: -1
+      name: Check if Domain input was provided
+      description: Check whether the necessary inputs were provided
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_yes": 0.5,
+      "4_1_yes": 0.63
+    },
+    "paper": {
+      "dimensions": {
+        "height": 805,
+        "width": 380,
+        "x": 450,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value: {}
+  required: false
+  description: The Domain to block.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

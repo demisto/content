@@ -1,4 +1,5 @@
 Use the Palo Alto Networks Threat Vault to research the latest threats (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation firewalls can detect and prevent.
+TIM customers that upgraded to version 6.2 or above, can have the API Key pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
 
 ## Configure Palo Alto Networks Threat Vault on Cortex XSOAR
 
@@ -824,14 +825,14 @@ Initiates an antispyware signature search.
 >### Signature search are showing 10 of 5385 results:
 >|signatureId|signatureName|domainName|category|
 >|---|---|---|---|
->| 44101494 | generic:mail-google.com.co | mail-google.com.co | malware |
->| 45245562 | generic:ogle.com.shufaren.com.cn | www.google.com.shufaren.com.cn | malware |
->| 60834054 | generic:ent.buyers-exporters.com | verify.google.com.drive.viewdocument.buyers-exporters.com | malware |
->| 60834216 | generic:ew.alibabatradegroup.com | www.google.com-document-view.alibabatradegroup.com | malware |
->| 63218626 | generic:counts.google.com-sl.com | accounts.google.com-sl.com | malware |
->| 69081944 | None:firstpagegoogle.com.au | firstpagegoogle.com.au | malware |
->| 70722314 | generic:plus.google.com.sxn.us | plus.google.com.sxn.us | malware |
->| 82194404 | generic:chinagoogle.com.cn | chinagoogle.com.cn | malware |
->| 83804135 | generic:google.com.im | google.com.im | malware |
->| 84099818 | generic:sjvxsn.shhitmobil.com.ua | documents.google.com.hjkeme3fxcncyygkfmsjvxsn.shhitmobil.com.ua | malware |
+>| 44101494 | generic:mail-google.com.co | `mail-google.com.co` | malware |
+>| 45245562 | generic:ogle.com.shufaren.com.cn | `www.google.com.shufaren.com.cn` | malware |
+>| 60834054 | generic:ent.buyers-exporters.com | `verify.google.com.drive.viewdocument.buyers-exporters.com`| malware |
+>| 60834216 | generic:ew.alibabatradegroup.com | `www.google.com-document-view.alibabatradegroup.com` | malware |
+>| 63218626 | generic:counts.google.com-sl.com | `accounts.google.com-sl.com` | malware |
+>| 69081944 | None:firstpagegoogle.com.au | `firstpagegoogle.com.au` | malware |
+>| 70722314 | generic:plus.google.com.sxn.us | `plus.google.com.sxn.us` | malware |
+>| 82194404 | generic:chinagoogle.com.cn | `chinagoogle.com.cn` | malware |
+>| 83804135 | generic:google.com.im | `google.com.im` | malware |
+>| 84099818 | generic:sjvxsn.shhitmobil.com.ua | `documents.google.com.hjkeme3fxcncyygkfmsjvxsn.shhitmobil.com.ua` | malware |
 

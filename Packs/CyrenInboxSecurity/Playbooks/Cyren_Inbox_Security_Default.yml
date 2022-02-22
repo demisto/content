@@ -1,0 +1,795 @@
+description: 'Processes Cyren Incidents, sets resolutions, and applies remediations
+  to end-user mailboxes.'
+id: Cyren Inbox Security Default
+inputs: []
+name: Cyren Inbox Security Default
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Start of Playbook
+      id: 9082edc2-d441-4815-84c4-ae9108b0d5f8
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 9082edc2-d441-4815-84c4-ae9108b0d5f8
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 40
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.cyrenremediationstatus
+          operator: isEqualString
+          right:
+            value:
+              simple: remediated
+      label: Remediated
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      Remediated:
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if this incident has already been remediated.
+      id: b13dbfd3-c09c-4498-85c7-11e2f1093d2d
+      iscommand: false
+      name: Is Not Remediated
+      type: condition
+      version: -1
+    taskid: b13dbfd3-c09c-4498-85c7-11e2f1093d2d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      Close Incident:
+      - "8"
+      Resolve and Remediate:
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Based on your analysis, should this incident be resolved with a
+        definitive "Phishing" or "Clean" designation, and optionally remediate end-user
+        mailboxes?
+      id: dad5596f-471d-4ff7-8561-76ec29d8349a
+      iscommand: false
+      name: Resolve and remediate?
+      type: condition
+      version: -1
+    taskid: dad5596f-471d-4ff7-8561-76ec29d8349a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 620
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Unknown
+      closeReason: {}
+      cyrencaseid:
+        simple: ${incident.cyrencaseid}
+      cyrenfeedbackdetails: {}
+      cyrenfeedbackindicators: {}
+      cyrenincidentid:
+        simple: ${incident.cyrenincidentid}
+      cyrenmessagedetails: {}
+      cyrenreportedby: {}
+      cyrenthreatindicators: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 1391dc0c-32d0-444f-864d-92be69b77563
+      iscommand: true
+      name: Close an Unknnown
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 1391dc0c-32d0-444f-864d-92be69b77563
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 620
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Phishing
+      closeReason: {}
+      cyrencaseid:
+        simple: ${incident.cyrencaseid}
+      cyrenfeedbackdetails: {}
+      cyrenfeedbackindicators: {}
+      cyrenincidentid:
+        simple: ${incident.cyrenincidentid}
+      cyrenmessagedetails: {}
+      cyrenreportedby: {}
+      cyrenthreatindicators: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: b30fa683-d71e-49b8-8b4f-d0cc788ea21c
+      iscommand: true
+      name: Close as Phishing
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: b30fa683-d71e-49b8-8b4f-d0cc788ea21c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -790,
+          "y": 1375
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      CLEAN:
+      - "10"
+      PHISHING:
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Resolve this incident as phishing or clean
+      id: 47081bfa-783b-44a3-8e5d-11231c5470c2
+      iscommand: false
+      name: Resolve as?
+      type: condition
+      version: -1
+    taskid: 47081bfa-783b-44a3-8e5d-11231c5470c2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 790
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Unknown
+      closeReason: {}
+      cyrencaseid:
+        simple: ${incident.cyrencaseid}
+      cyrenfeedbackdetails: {}
+      cyrenfeedbackindicators: {}
+      cyrenincidentid:
+        simple: ${incident.cyrenincidentid}
+      cyrenmessagedetails: {}
+      cyrenreportedby: {}
+      cyrenthreatindicators: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 6b19c8c9-fe4b-44ff-8132-f02cc23d2e53
+      iscommand: true
+      name: Close an Unknnown
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 6b19c8c9-fe4b-44ff-8132-f02cc23d2e53
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 790
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      Apply Rules:
+      - "13"
+      Do Not Modify Mailboxes:
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Should remediation rules be applied to user mailboxes for this
+        phishing incident?
+      id: 20181207-1050-4be4-83f0-e3a3943e459c
+      iscommand: false
+      name: Phishing with actions?
+      type: condition
+      version: -1
+    taskid: 20181207-1050-4be4-83f0-e3a3943e459c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -520,
+          "y": 960
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      Apply Rules:
+      - "19"
+      "NO":
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Should remediation rules be applied to user mailboxes for this
+        clean incident?
+      id: 04bbe63a-4109-4a8a-88d1-de0f5ed50806
+      iscommand: false
+      name: Clean with actions?
+      type: condition
+      version: -1
+    taskid: 04bbe63a-4109-4a8a-88d1-de0f5ed50806
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 960
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      actions:
+        simple: ADD_BANNER
+      case_id:
+        simple: ${incident.cyrencaseid}
+      instance_name:
+        simple: ${incident.sourceInstance}
+      resolution:
+        simple: phishing
+      resolution_reason:
+        simple: Identified phishing URL
+      resolution_reason_text:
+        simple: XSOAR analyst resolved as  phishing with actions
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: resolving case and remediate incidents
+      id: 29b81650-e8f0-4ec9-870d-712296a8c070
+      iscommand: true
+      name: Resolve as phishing with actions
+      script: '|||cyren-resolve-and-remediate'
+      type: regular
+      version: -1
+    taskid: 29b81650-e8f0-4ec9-870d-712296a8c070
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -790,
+          "y": 1150
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      actions: {}
+      case_id:
+        simple: ${incident.cyrencaseid}
+      instance_name:
+        simple: ${incident.sourceInstance}
+      resolution:
+        simple: phishing
+      resolution_reason:
+        simple: Identified phishing URL
+      resolution_reason_text:
+        simple: XSOAR analyst resolved as  phishing without actions
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: resolving case and remediate incidents
+      id: 2a1573cb-f47a-410e-8317-be9978817bb9
+      iscommand: true
+      name: Resolve as phishing without actions
+      script: '|||cyren-resolve-and-remediate'
+      type: regular
+      version: -1
+    taskid: 2a1573cb-f47a-410e-8317-be9978817bb9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 1140
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Phishing
+      closeReason: {}
+      cyrencaseid:
+        simple: ${incident.cyrencaseid}
+      cyrenfeedbackdetails: {}
+      cyrenfeedbackindicators: {}
+      cyrenincidentid:
+        simple: ${incident.cyrenincidentid}
+      cyrenmessagedetails: {}
+      cyrenreportedby: {}
+      cyrenthreatindicators: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: dd5e4868-f21d-415f-8786-4c214b0555a6
+      iscommand: true
+      name: Close as Phishing
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: dd5e4868-f21d-415f-8786-4c214b0555a6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 1375
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      actions:
+        simple: REMOVE_BANNER
+      case_id:
+        simple: ${incident.cyrencaseid}
+      instance_name:
+        simple: ${incident.sourceInstance}
+      resolution:
+        simple: clean
+      resolution_reason: {}
+      resolution_reason_text:
+        simple: XSOAR analyst resolved as  clean with actions
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: resolving case and remediate incidents
+      id: a225a298-b734-434c-885f-8d90df19ffa8
+      iscommand: true
+      name: Resolve as clean with actions
+      script: '|||cyren-resolve-and-remediate'
+      type: regular
+      version: -1
+    taskid: a225a298-b734-434c-885f-8d90df19ffa8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1140
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      actions:
+        simple: MOVE_TO_INBOX
+      case_id:
+        simple: ${incident.cyrencaseid}
+      instance_name:
+        simple: ${incident.sourceInstance}
+      resolution:
+        simple: clean
+      resolution_reason: {}
+      resolution_reason_text:
+        simple: XSOAR analyst resolved as  clean without actions
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: resolving case and remediate incidents
+      id: 262f3576-606e-43d7-846b-8d1fda2793bc
+      iscommand: true
+      name: Resolve as clean without actions
+      script: '|||cyren-resolve-and-remediate'
+      type: regular
+      version: -1
+    taskid: 262f3576-606e-43d7-846b-8d1fda2793bc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1140
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Clean
+      closeReason: {}
+      cyrencaseid:
+        simple: ${incident.cyrencaseid}
+      cyrenfeedbackdetails: {}
+      cyrenfeedbackindicators: {}
+      cyrenincidentid:
+        simple: ${incident.cyrenincidentid}
+      cyrenmessagedetails: {}
+      cyrenreportedby: {}
+      cyrenthreatindicators: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 4616558e-65b4-493d-8057-8c5100f5e707
+      iscommand: true
+      name: Close as Clean
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 4616558e-65b4-493d-8057-8c5100f5e707
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1375
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Clean
+      closeReason: {}
+      cyrencaseid:
+        simple: ${incident.cyrencaseid}
+      cyrenfeedbackdetails: {}
+      cyrenfeedbackindicators: {}
+      cyrenincidentid:
+        simple: ${incident.cyrenincidentid}
+      cyrenmessagedetails: {}
+      cyrenreportedby: {}
+      cyrenthreatindicators: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: a8d9495a-14a7-47a6-8795-51384473dc78
+      iscommand: true
+      name: Close as Clean
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: a8d9495a-14a7-47a6-8795-51384473dc78
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1375
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: End of playbook
+      id: 8d0625f6-9360-42f6-8d0e-132e374c64f4
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 8d0625f6-9360-42f6-8d0e-132e374c64f4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1770
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Analyst decision to close
+      id: 98431915-2da3-4ebf-871b-d09cf5a057cd
+      iscommand: false
+      name: Analyst determined remediation
+      type: title
+      version: -1
+    taskid: 98431915-2da3-4ebf-871b-d09cf5a057cd
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 1375
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Already remediated, system close
+      id: 0e417e41-d41b-41c1-8820-5649887c879e
+      iscommand: false
+      name: System Remediated
+      type: title
+      version: -1
+    taskid: 0e417e41-d41b-41c1-8820-5649887c879e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 1375
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Cyren Inbox Security
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      id: 123e5ee4-c3b7-46b7-851e-e92b95627a31
+      iscommand: false
+      name: Is Integration Available
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: 123e5ee4-c3b7-46b7-851e-e92b95627a31
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 230
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_#default#": 0.48,
+      "1_3_Remediated": 0.36,
+      "26_23_#default#": 0.21
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1795,
+        "width": 2910,
+        "x": -790,
+        "y": 40
+      }
+    }
+  }
+tests:
+- No Test
+fromversion: 6.0.0

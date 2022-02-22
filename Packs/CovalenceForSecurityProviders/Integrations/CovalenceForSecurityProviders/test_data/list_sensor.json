@@ -1,0 +1,25 @@
+[
+  {
+    "id": "10000000-0000-0000-0000-000000000000",
+    "name": "External Sources",
+    "isAuthorized": false,
+    "listeningInterfaces": [],
+    "isNetflowGenerator": true,
+    "bytesIn": null,
+    "bytesOut": null,
+    "lastActive": null
+  },
+  {
+    "id": "4ebd0208-8328-5d69-8c44-ec50939c0967",
+    "name": "1.1.1.1",
+    "isAuthorized": true,
+    "listeningInterfaces": [
+      "eth0",
+      "eth1"
+    ],
+    "isNetflowGenerator": false,
+    "bytesIn": 3255422060,
+    "bytesOut": 1108304139,
+    "lastActive": null
+  }
+]

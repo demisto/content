@@ -1,0 +1,32 @@
+{
+    "id": "incident_campaignmutualindicators",
+    "version": -1,
+    "modified": "2021-10-04T08:29:05.41238855Z",
+    "name": "Campaign Mutual Indicators",
+    "ownerOnly": false,
+    "cliName": "campaignmutualindicators",
+    "type": "markdown",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "fieldCalcScript": "GetCampaignIndicatorsByIncidentId",
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Phishing",
+        "Phishing Campaign"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

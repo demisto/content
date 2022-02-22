@@ -8,6 +8,8 @@
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_SDK_NIGHTLY == "true"'
       when: always
 
+.change-file-ids: &change-file-ids
+  - python3 ./Tests/scripts/sdk_nightly_change_json_file_fields.py Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json name
 
 .upload-entities-to-cortex-xsoar: &upload-entities-to-cortex-xsoar
   - section_start "Upload Entities to Cortex XSOAR" --collapsed
@@ -20,11 +22,10 @@
   - section_end "Upload Entities to Cortex XSOAR"
 
 
-#### Commented Out Until Resolve Running Docker in Docker #### 
-# demisto-sdk-nightly:run-unittests-and-lint:
-#   extends:
-#     - .run-unittests-and-lint
-#     - .sdk-nightly-schedule-rule
+demisto-sdk-nightly:run-unittests-and-lint:
+  extends:
+    - .run-unittests-and-lint
+    - .sdk-nightly-schedule-rule
 
 
 demisto-sdk-nightly:run-validations:
@@ -34,7 +35,9 @@ demisto-sdk-nightly:run-validations:
 
 
 demisto_sdk_nightly:check_idset_dependent_commands:
-  extends: 
+  tags:
+    - gke
+  extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
   stage: unittests-and-validations
@@ -48,7 +51,6 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - demisto-sdk secrets --post-commit --ignore-entropy
     - section_end "Secrets Detection"
     - section_start "Update Conf" --collapsed
-    - python3 ./Tests/scripts/update_conf_json.py >> $ARTIFACTS_FOLDER/logs/update_conf_json.log 2>&1
     - cp ./Tests/conf.json $ARTIFACTS_FOLDER
     - section_end "Update Conf"
     - !reference [.create-id-set]
@@ -81,7 +83,9 @@ demisto_sdk_nightly:check_idset_dependent_commands:
 
 
 demisto-sdk-nightly:create-instance:
-  extends: 
+  tags:
+    - gke
+  extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
   variables:
@@ -98,6 +102,8 @@ demisto-sdk-nightly:create-instance:
 
 
 demisto-sdk-nightly:run-commands-against-instance:
+  tags:
+    - gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
@@ -135,6 +141,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     - section_start "Run Lint" --collapsed
     - demisto-sdk lint -i Packs/HelloWorld/
     - section_end "Run Lint"
+    - *change-file-ids
     - *upload-entities-to-cortex-xsoar
     - section_start "Destroy instances"
     - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
@@ -142,6 +149,8 @@ demisto-sdk-nightly:run-commands-against-instance:
 
 
 demisto-sdk-nightly:fan-in:
+  tags:
+    - gke
   stage: fan-in
   extends:
     - .sdk-nightly-schedule-rule-always

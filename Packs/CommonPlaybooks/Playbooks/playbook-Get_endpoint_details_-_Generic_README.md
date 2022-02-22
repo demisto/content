@@ -43,4 +43,4 @@ endpoint
 
 ## Playbook Image
 ---
-![Get endpoint details - Generic](https://github.com/demisto/content/raw/ee07059dc8769d6f5652a4a07b668d63266cafaf/Packs/CommonPlaybooks/doc_files/Get_endpoint_details_-_Generic.png)
+![Get endpoint details - Generic](https://raw.githubusercontent.com/demisto/content/7138d5c3ca780a7d385623aff3f63f113845c36b/Packs/CommonPlaybooks/doc_files/Get_endpoint_details_-_Generic.png)

@@ -1,0 +1,223 @@
+{
+  "@odata.context": "https://graph.microsoft.com/beta/$metadata#riskyUsers('dummy_user_id')/history",
+  "value": [
+    {
+      "id": "dummy_user_id637571860258849619",
+      "isDeleted": "False",
+      "isProcessing": "False",
+      "riskLevel": "high",
+      "riskState": "atRisk",
+      "riskDetail": "none",
+      "riskLastUpdatedDateTime": "2021-05-21T09:27:05.8849619Z",
+      "userDisplayName": "dummy_user_name",
+      "userPrincipalName": "example@demisto.com",
+      "userId": "dummy_user_id",
+      "initiatedBy": "None",
+      "activity": {
+        "eventTypes": [
+          "unfamiliarFeatures"
+        ],
+        "riskEventTypes": [
+          "unfamiliarFeatures"
+        ],
+        "detail": "None"
+      }
+    },
+    {
+      "id": "dummy_user_id637579558855706894",
+      "isDeleted": "False",
+      "isProcessing": "False",
+      "riskLevel": "low",
+      "riskState": "atRisk",
+      "riskDetail": "none",
+      "riskLastUpdatedDateTime": "2021-05-30T07:18:05.5706894Z",
+      "userDisplayName": "dummy_user_name",
+      "userPrincipalName": "example@demisto.com",
+      "userId": "dummy_user_id",
+      "initiatedBy": "None",
+      "activity": {
+        "eventTypes": [
+          "unfamiliarFeatures"
+        ],
+        "riskEventTypes": [
+          "unfamiliarFeatures"
+        ],
+        "detail": "None"
+      }
+    },
+    {
+      "id": "dummy_user_id637581817194185440",
+      "isDeleted": "False",
+      "isProcessing": "False",
+      "riskLevel": "low",
+      "riskState": "atRisk",
+      "riskDetail": "none",
+      "riskLastUpdatedDateTime": "2021-06-01T22:01:59.418544Z",
+      "userDisplayName": "dummy_user_name",
+      "userPrincipalName": "example@demisto.com",
+      "userId": "dummy_user_id",
+      "initiatedBy": "None",
+      "activity": {
+        "eventTypes": [
+          "unfamiliarFeatures"
+        ],
+        "riskEventTypes": [
+          "unfamiliarFeatures"
+        ],
+        "detail": "None"
+      }
+    },
+    {
+      "id": "dummy_user_id637617844902084332",
+      "isDeleted": "False",
+      "isProcessing": "False",
+      "riskLevel": "low",
+      "riskState": "atRisk",
+      "riskDetail": "none",
+      "riskLastUpdatedDateTime": "2021-07-13T14:48:10.2084332Z",
+      "userDisplayName": "dummy_user_name",
+      "userPrincipalName": "example@demisto.com",
+      "userId": "dummy_user_id",
+      "initiatedBy": "None",
+      "activity": {
+        "eventTypes": [
+          "unfamiliarFeatures"
+        ],
+        "riskEventTypes": [
+          "unfamiliarFeatures"
+        ],
+        "detail": "None"
+      }
+    },
+    {
+      "id": "dummy_user_id",
+      "isDeleted": "False",
+      "isProcessing": "False",
+      "riskLevel": "medium",
+      "riskState": "atRisk",
+      "riskDetail": "none",
+      "riskLastUpdatedDateTime": "2021-07-13T16:28:20.74949Z",
+      "userDisplayName": "dummy_user_name",
+      "userPrincipalName": "example@demisto.com",
+      "userId": "dummy_user_id",
+      "initiatedBy": "None",
+      "activity": {
+        "eventTypes": [
+          "unfamiliarFeatures",
+          "mcasImpossibleTravel"
+        ],
+        "riskEventTypes": [
+          "unfamiliarFeatures",
+          "mcasImpossibleTravel"
+        ],
+        "detail": "None"
+      }
+    },
+    {
+      "id": "dummy_user_id637573546620000000",
+      "isDeleted": "False",
+      "isProcessing": "False",
+      "riskLevel": "none",
+      "riskState": "remediated",
+      "riskDetail": "userPerformedSecuredPasswordChange",
+      "riskLastUpdatedDateTime": "2021-05-23T08:17:42Z",
+      "userDisplayName": "dummy_user_name",
+      "userPrincipalName": "example@demisto.com",
+      "userId": "dummy_user_id",
+      "initiatedBy": "",
+      "activity": {
+        "eventTypes": [],
+        "riskEventTypes": [],
+        "detail": "userPerformedSecuredPasswordChange"
+      }
+    },
+    {
+      "id": "dummy_user_id637580439207803793",
+      "isDeleted": "False",
+      "isProcessing": "False",
+      "riskLevel": "low",
+      "riskState": "atRisk",
+      "riskDetail": "none",
+      "riskLastUpdatedDateTime": "2021-05-31T07:45:20.7803793Z",
+      "userDisplayName": "dummy_user_name",
+      "userPrincipalName": "example@demisto.com",
+      "userId": "dummy_user_id",
+      "initiatedBy": "None",
+      "activity": {
+        "eventTypes": [
+          "mcasImpossibleTravel"
+        ],
+        "riskEventTypes": [
+          "mcasImpossibleTravel"
+        ],
+        "detail": "None"
+      }
+    },
+    {
+      "id": "dummy_user_id637588246283692301",
+      "isDeleted": "False",
+      "isProcessing": "False",
+      "riskLevel": "low",
+      "riskState": "atRisk",
+      "riskDetail": "none",
+      "riskLastUpdatedDateTime": "2021-06-09T08:37:08.3692301Z",
+      "userDisplayName": "dummy_user_name",
+      "userPrincipalName": "example@demisto.com",
+      "userId": "dummy_user_id",
+      "initiatedBy": "None",
+      "activity": {
+        "eventTypes": [
+          "unfamiliarFeatures"
+        ],
+        "riskEventTypes": [
+          "unfamiliarFeatures"
+        ],
+        "detail": "None"
+      }
+    },
+    {
+      "id": "dummy_user_id637597636382264783",
+      "isDeleted": "False",
+      "isProcessing": "False",
+      "riskLevel": "low",
+      "riskState": "atRisk",
+      "riskDetail": "none",
+      "riskLastUpdatedDateTime": "2021-06-20T05:27:18.2264783Z",
+      "userDisplayName": "dummy_user_name",
+      "userPrincipalName": "example@demisto.com",
+      "userId": "dummy_user_id",
+      "initiatedBy": "None",
+      "activity": {
+        "eventTypes": [
+          "mcasImpossibleTravel"
+        ],
+        "riskEventTypes": [
+          "mcasImpossibleTravel"
+        ],
+        "detail": "None"
+      }
+    },
+    {
+      "id": "dummy_user_id637600753627454017",
+      "isDeleted": "False",
+      "isProcessing": "False",
+      "riskLevel": "low",
+      "riskState": "atRisk",
+      "riskDetail": "none",
+      "riskLastUpdatedDateTime": "2021-06-23T20:02:42.7454017Z",
+      "userDisplayName": "dummy_user_name",
+      "userPrincipalName": "example@demisto.com",
+      "userId": "dummy_user_id",
+      "initiatedBy": "None",
+      "activity": {
+        "eventTypes": [
+          "unfamiliarFeatures"
+        ],
+        "riskEventTypes": [
+          "unfamiliarFeatures"
+        ],
+        "detail": "None"
+      }
+    }
+  ]
+}

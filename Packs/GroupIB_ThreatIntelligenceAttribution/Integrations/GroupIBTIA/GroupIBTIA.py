@@ -1,9 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 """ IMPORTS """
 
 import json
+from datetime import datetime, timedelta
 from typing import Dict, Generator, List, Optional, Tuple, Union
 
 import dateparser
@@ -26,18 +28,18 @@ MAPPING: dict = {
         "indicators":
             [
                 {
-                    "main_field": "cnc_url", "main_field_type": "URL"
+                    "main_field": "cnc.url", "main_field_type": "URL"
                 },
                 {
-                    "main_field": "cnc_domain", "main_field_type": "Domain"
+                    "main_field": "cnc.domain", "main_field_type": "Domain"
                 },
                 {
-                    "main_field": "cnc_ipv4_ip", "main_field_type": "IP",
-                    "add_fields": ["cnc_ipv4_asn", "cnc_ipv4_countryName", "cnc_ipv4_region"],
+                    "main_field": "cnc.ipv4.ip", "main_field_type": "IP",
+                    "add_fields": ["cnc.ipv4.asn", "cnc.ipv4.countryName", "cnc.ipv4.region"],
                     "add_fields_types": ["asn", "geocountry", "geolocation"]
                 },
                 {
-                    "main_field": "client_ipv4_ip",
+                    "main_field": "client.ipv4.ip",
                 }
             ]
     },
@@ -45,29 +47,38 @@ MAPPING: dict = {
         "date":
             "dateDetected",
         "name":
-            "cardInfo_number",
+            "cardInfo.number",
         "prefix":
             "Compromised Card",
         "indicators":
             [
                 {
-                    "main_field": "cnc_url", "main_field_type": "URL"
+                    "main_field": "cnc.url", "main_field_type": "URL"
                 },
                 {
-                    "main_field": "cnc_domain", "main_field_type": "Domain"
+                    "main_field": "cnc.domain", "main_field_type": "Domain"
                 },
                 {
-                    "main_field": "cnc_ipv4_ip", "main_field_type": "IP",
-                    "add_fields": ["cnc_ipv4_asn", "cnc_ipv4_countryName", "cnc_ipv4_region"],
+                    "main_field": "cnc.ipv4.ip", "main_field_type": "IP",
+                    "add_fields": ["cnc.ipv4.asn", "cnc.ipv4.countryName", "cnc.ipv4.region"],
                     "add_fields_types": ["asn", "geocountry", "geolocation"]
                 }
             ]
+    },
+    "compromised/breached": {
+        "date":
+            "uploadTime",
+        "name":
+            "email",
+        "prefix":
+            "Data Breach",
+        "indicators": []
     },
     "bp/phishing": {
         "date":
             "dateDetected",
         "name":
-            "phishingDomain_domain",
+            "phishingDomain.domain",
         "prefix":
             "Phishing",
         "indicators":
@@ -76,10 +87,12 @@ MAPPING: dict = {
                     "main_field": "url", "main_field_type": "URL"
                 },
                 {
-                    "main_field": "phishingDomain_domain", "main_field_type": "Domain"
+                    "main_field": "phishingDomain.domain", "main_field_type": "Domain",
+                    "add_fields": ["phishingDomain.registrar"],
+                    "add_fields_types": ["registrarname"]
                 },
                 {
-                    "main_field": "ipv4_ip", "main_field_type": "IP"
+                    "main_field": "ipv4.ip", "main_field_type": "IP"
                 }
             ]
     },
@@ -94,6 +107,27 @@ MAPPING: dict = {
             [
                 {
                     "main_field": "emails", "main_field_type": "Email"
+                }
+            ]
+    },
+    "bp/domain": {
+        "date":
+            "ts_create",
+        "name":
+            "attrs.domain",
+        "prefix":
+            "Phishing Domain",
+        "indicators":
+            [
+                {
+                    "main_field": "attrs.domain", "main_field_type": "Domain",
+                    "add_fields": ["phishingDomain.registrar"],
+                    "add_fields_types": ["registrarname"]
+                },
+                {
+                    "main_field": "attrs.server_ip", "main_field_type": "IP",
+                    "add_fields": ["attrs.server_ip_asn", "attrs.server_ip_country_name", "attrs.server_ip_region"],
+                    "add_fields_types": ["asn", "geocountry", "geolocation"]
                 }
             ]
     },
@@ -139,54 +173,54 @@ MAPPING: dict = {
         "indicators":
             [
                 {
-                    "main_field": "cnc_url", "main_field_type": "URL",
+                    "main_field": "cnc.url", "main_field_type": "URL",
                 },
                 {
-                    "main_field": "cnc_domain", "main_field_type": "Domain",
+                    "main_field": "cnc.domain", "main_field_type": "Domain",
                 },
                 {
-                    "main_field": "cnc_ipv4_ip", "main_field_type": "IP",
-                    "add_fields": ["cnc_ipv4_asn", "cnc_ipv4_countryName", "cnc_ipv4_region"],
+                    "main_field": "cnc.ipv4.ip", "main_field_type": "IP",
+                    "add_fields": ["cnc.ipv4.asn", "cnc.ipv4.countryName", "cnc.ipv4.region"],
                     "add_fields_types": ["asn", "geocountry", "geolocation"]
                 }
             ]
     },
     "compromised/imei": {
         "name":
-            "device_imei",
+            "device.imei",
         "prefix":
             "Compromised IMEI",
         "indicators":
             [
                 {
-                    "main_field": "cnc_url", "main_field_type": "URL",
+                    "main_field": "cnc.url", "main_field_type": "URL",
                 },
                 {
-                    "main_field": "cnc_domain", "main_field_type": "Domain",
+                    "main_field": "cnc.domain", "main_field_type": "Domain",
                 },
                 {
-                    "main_field": "cnc_ipv4_ip", "main_field_type": "IP",
-                    "add_fields": ["cnc_ipv4_asn", "cnc_ipv4_countryName", "cnc_ipv4_region"],
+                    "main_field": "cnc.ipv4.ip", "main_field_type": "IP",
+                    "add_fields": ["cnc.ipv4.asn", "cnc.ipv4.countryName", "cnc.ipv4.region"],
                     "add_fields_types": ["asn", "geocountry", "geolocation"]
                 }
             ]
     },
     "attacks/ddos": {
         "name":
-            "target_ipv4_ip",
+            "target.ipv4.ip",
         "prefix":
             "Attacks DDoS",
         "indicators":
             [
                 {
-                    "main_field": "cnc_url", "main_field_type": "URL",
+                    "main_field": "cnc.url", "main_field_type": "URL",
                 },
                 {
-                    "main_field": "cnc_domain", "main_field_type": "Domain",
+                    "main_field": "cnc.domain", "main_field_type": "Domain",
                 },
                 {
-                    "main_field": "cnc_ipv4_ip", "main_field_type": "IP",
-                    "add_fields": ["cnc_ipv4_asn", "cnc_ipv4_countryName", "cnc_ipv4_region"],
+                    "main_field": "cnc.ipv4.ip", "main_field_type": "IP",
+                    "add_fields": ["cnc.ipv4.asn", "cnc.ipv4.countryName", "cnc.ipv4.region"],
                     "add_fields_types": ["asn", "geocountry", "geolocation"]
                 },
             ]
@@ -205,15 +239,15 @@ MAPPING: dict = {
                     "main_field": "targetDomain", "main_field_type": "Domain",
                 },
                 {
-                    "main_field": "targetIp_ip", "main_field_type": "IP",
-                    "add_fields": ["targetIp_asn", "targetIp_countryName", "targetIp_region"],
+                    "main_field": "targetIp.ip", "main_field_type": "IP",
+                    "add_fields": ["targetIp.asn", "targetIp.countryName", "targetIp.region"],
                     "add_fields_types": ["asn", "geocountry", "geolocation"]
                 }
             ]
     },
     "attacks/phishing": {
         "name":
-            "phishingDomain_domain",
+            "phishingDomain.domain",
         "prefix":
             "Phishing",
         "indicators":
@@ -222,13 +256,13 @@ MAPPING: dict = {
                     "main_field": "url", "main_field_type": "URL",
                 },
                 {
-                    "main_field": "phishingDomain_domain", "main_field_type": "Domain",
-                    "add_fields": ["phishingDomain_registrar"],
+                    "main_field": "phishingDomain.domain", "main_field_type": "Domain",
+                    "add_fields": ["phishingDomain.registrar"],
                     "add_fields_types": ["registrarname"]
                 },
                 {
-                    "main_field": "ipv4_ip", "main_field_type": "IP",
-                    "add_fields": ["ipv4_asn", "ipv4_countryName", "ipv4_region"],
+                    "main_field": "ipv4.ip", "main_field_type": "IP",
+                    "add_fields": ["ipv4.asn", "ipv4.countryName", "ipv4.region"],
                     "add_fields_types": ["asn", "geocountry", "geolocation"]
                 }
             ]
@@ -251,21 +285,21 @@ MAPPING: dict = {
         "indicators":
             [
                 {
-                    "main_field": "indicators_params_ipv4", "main_field_type": "IP",
+                    "main_field": "indicators.params.ipv4", "main_field_type": "IP",
                 },
                 {
-                    "main_field": "indicators_params_domain", "main_field_type": "Domain",
+                    "main_field": "indicators.params.domain", "main_field_type": "Domain",
                 },
                 {
-                    "main_field": "indicators_params_url", "main_field_type": "URL",
+                    "main_field": "indicators.params.url", "main_field_type": "URL",
                 },
                 {
-                    "main_field": "indicators_params_hashes_md5", "main_field_type": "File",
+                    "main_field": "indicators.params.hashes.md5", "main_field_type": "File",
                     "add_fields":
                     [
-                        "indicators_params_name", "indicators_params_hashes_md5",
-                        "indicators_params_hashes_sha1",
-                        "indicators_params_hashes_sha256", "indicators_params_size"
+                        "indicators.params.name", "indicators.params.hashes.md5",
+                        "indicators.params.hashes.sha1",
+                        "indicators.params.hashes.sha256", "indicators.params.size"
                     ],
                     "add_fields_types": ["gibfilename", "md5", "sha1", "sha256", "size"]
                 }
@@ -277,21 +311,21 @@ MAPPING: dict = {
         "indicators":
             [
                  {
-                     "main_field": "indicators_params_ipv4", "main_field_type": "IP",
+                     "main_field": "indicators.params.ipv4", "main_field_type": "IP",
                  },
                 {
-                     "main_field": "indicators_params_domain", "main_field_type": "Domain",
+                     "main_field": "indicators.params.domain", "main_field_type": "Domain",
                  },
                 {
-                     "main_field": "indicators_params_url", "main_field_type": "URL",
+                     "main_field": "indicators.params.url", "main_field_type": "URL",
                  },
                 {
-                     "main_field": "indicators_params_hashes_md5", "main_field_type": "File",
+                     "main_field": "indicators.params.hashes.md5", "main_field_type": "File",
                      "add_fields":
                          [
-                             "indicators_params_name", "indicators_params_hashes_md5",
-                             "indicators_params_hashes_sha1",
-                             "indicators_params_hashes_sha256", "indicators_params_size"
+                             "indicators.params.name", "indicators.params.hashes.md5",
+                             "indicators.params.hashes.sha1",
+                             "indicators.params.hashes.sha256", "indicators.params.size"
                          ],
                      "add_fields_types": ["gibfilename", "md5", "sha1", "sha256", "size"]
                  }
@@ -299,49 +333,49 @@ MAPPING: dict = {
     },
     "suspicious_ip/tor_node": {
         "name":
-            "ipv4_ip",
+            "ipv4.ip",
         "prefix":
             "Suspicious IP Tor Node",
         "indicators":
             [
                 {
-                    "main_field": "ipv4_ip", "main_field_type": "IP",
-                    "add_fields": ["ipv4_asn", "ipv4_countryName", "ipv4_region"],
+                    "main_field": "ipv4.ip", "main_field_type": "IP",
+                    "add_fields": ["ipv4.asn", "ipv4.countryName", "ipv4.region"],
                     "add_fields_types": ["asn", "geocountry", "geolocation"]
                 }
             ]
     },
     "suspicious_ip/open_proxy": {
         "name":
-            "ipv4_ip",
+            "ipv4.ip",
         "prefix":
             "Suspicious IP Open Proxy",
         "indicators":
             [
                 {
-                    "main_field": "ipv4_ip", "main_field_type": "IP",
-                    "add_fields": ["ipv4_asn", "ipv4_countryName", "ipv4_region"],
+                    "main_field": "ipv4.ip", "main_field_type": "IP",
+                    "add_fields": ["ipv4.asn", "ipv4.countryName", "ipv4.region"],
                     "add_fields_types": ["asn", "geocountry", "geolocation"]
                 }
             ]
     },
     "suspicious_ip/socks_proxy": {
         "name":
-            "ipv4_ip",
+            "ipv4.ip",
         "prefix":
             "Suspicious IP Socks Proxy",
         "indicators":
             [
                 {
-                    "main_field": "ipv4_ip", "main_field_type": "IP",
-                    "add_fields": ["ipv4_asn", "ipv4_countryName", "ipv4_region"],
+                    "main_field": "ipv4.ip", "main_field_type": "IP",
+                    "add_fields": ["ipv4.asn", "ipv4.countryName", "ipv4.region"],
                     "add_fields_types": ["asn", "geocountry", "geolocation"]
                 }
             ]
     },
     "malware/cnc": {
         "name":
-            "ipv4_ip",
+            "ipv4.ip",
         "prefix":
             "Malware CNC",
         "indicators":
@@ -353,8 +387,8 @@ MAPPING: dict = {
                     "main_field": "domain", "main_field_type": "Domain"
                 },
                 {
-                    "main_field": "ipv4_ip", "main_field_type": "IP",
-                    "add_fields": ["ipv4_asn", "ipv4_countryName", "ipv4_region"],
+                    "main_field": "ipv4.ip", "main_field_type": "IP",
+                    "add_fields": ["ipv4.asn", "ipv4.countryName", "ipv4.region"],
                     "add_fields_types": ["asn", "geocountry", "geolocation"]
                 }
             ]
@@ -368,7 +402,7 @@ MAPPING: dict = {
             [
                 {
                     "main_field": "id", "main_field_type": "CVE",
-                    "add_fields": ["cvss_score", "description", "dateLastSeen", "datePublished"],
+                    "add_fields": ["cvss.score", "description", "dateLastSeen", "datePublished"],
                     "add_fields_types": ["cvss", "cvedescription", "cvemodified", "published"]
                 }
             ]
@@ -377,6 +411,25 @@ MAPPING: dict = {
     "apt/threat_actor": {"prefix": "Threat Actor"}
 }
 
+STATUS_CODE_MSGS = {
+    401: "Bad Credentials",
+    403: "Something is wrong with your account, please, contact GIB.",
+    404: "Not found. There is no such data on server.",
+    500: "There are some troubles on server with your request.",
+    301: "Verify that your public IP is whitelisted by Group IB.",
+    302: "Verify that your public IP is whitelisted by Group IB."
+}
+
+LEGACY_HEADERS = {
+    "Accept": "application/json",
+    'Connection': 'Keep-Alive',
+    'Keep-Alive': "30"
+}
+
+TIMEOUT = 60.
+RETRIES = 4
+STATUS_LIST_TO_RETRY = [429, 500]
+
 
 class Client(BaseClient):
     """
@@ -384,8 +437,8 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def create_update_generator(self, collection_name: str, date_from: Optional[str] = None,
-                                seq_update: Union[int, str] = None, limit: int = 200) -> Generator:
+    def _create_update_generator(self, collection_name: str, max_requests: int,
+                                 date_from: Optional[str] = None, seq_update: Union[int, str] = None) -> Generator:
         """
         Creates generator of lists with feeds class objects for an update session
         (feeds are sorted in ascending order) `collection_name` with set parameters.
@@ -400,24 +453,195 @@ class Client(BaseClient):
         in the database and "becomes relevant" again.
 
         :param collection_name: collection to update.
+        :param max_requests: a maximum number of requests to API.
         :param date_from: start date of update session.
         :param seq_update: identification number from which to start the session.
-        :param limit: size of portion in iteration.
         """
-
+        requests_count = 0
         while True:
-            params = {"df": date_from, "limit": limit, "seqUpdate": seq_update}
-            params = {key: value for key, value in params.items() if value}
-            portion = self._http_request(method="GET", url_suffix=collection_name + "/updated", params=params,
-                                         timeout=60., retries=4, status_list_to_retry=[429, 500])
+            if requests_count >= max_requests:
+                break
+
+            params = {"df": date_from, "seqUpdate": seq_update}
+            params = assign_params(**params)
+            portion = self._http_request(method="GET", url_suffix=collection_name + "/updated",
+                                         params=params, timeout=TIMEOUT, retries=RETRIES,
+                                         status_list_to_retry=STATUS_LIST_TO_RETRY)
             if portion.get("count") == 0:
                 break
             seq_update = portion.get("seqUpdate")
             date_from = None
-            yield portion.get("items")
+            requests_count += 1
 
-    def create_search_generator(self, collection_name: str, date_from: str = None, date_to: str = None,
-                                limit: int = 200, query: str = None) -> Generator:
+            yield portion.get("items"), seq_update
+
+    def _create_search_generator(self, collection_name: str, max_requests: int, date_to: str = None,
+                                 page: int = 0, starting_date_from: str = None,
+                                 starting_date_to: str = None) -> Generator:
+        """
+        Creates generator of lists with feeds for the search session for ingestion purpose
+        (feeds are sorted in descending order) for `collection_name` with set parameters. This version solves problem
+        with a large number of feeds with the same date.
+
+        :param collection_name: collection to search.
+        :param max_requests: a maximum number of requests to API.
+        :param date_to: current search location.
+        :param page: number of pages from start.
+        :param starting_date_from: global down border for a session.
+        :param starting_date_to: global upper border for a session.
+        """
+
+        requests_count = 0
+        result_id = None
+        no_data_flag = 0
+        while True:
+            if requests_count >= max_requests or no_data_flag:
+                break
+
+            if page and not result_id:
+                k = 0
+                while k != page:
+                    if result_id:
+                        params = {'resultId': result_id}
+                    else:
+                        params = {'df': starting_date_from, 'dt': date_to}
+                    params = assign_params(**params)
+                    portion = self._http_request(method="GET", url_suffix=collection_name,
+                                                 params=params, timeout=TIMEOUT, retries=RETRIES,
+                                                 status_list_to_retry=STATUS_LIST_TO_RETRY)
+                    result_id = portion.get("resultId")
+                    k += 1
+
+            if result_id:
+                params = {'resultId': result_id}
+            else:
+                params = {'df': starting_date_from, 'dt': date_to}
+            params = assign_params(**params)
+            portion = self._http_request(method="GET", url_suffix=collection_name,
+                                         params=params, timeout=TIMEOUT, retries=RETRIES,
+                                         status_list_to_retry=STATUS_LIST_TO_RETRY)
+
+            requests_count += 1
+            data = portion.get('items')
+            if len(data) < 100:
+                no_data_flag = 1
+                page = 0
+                starting_date_from = (dateparser.parse(starting_date_to) + timedelta(seconds=1)).strftime(DATE_FORMAT)
+                starting_date_to = datetime.now().strftime(DATE_FORMAT)
+                date_to = starting_date_to
+            else:
+                if data[0].get("uploadTime") == data[-1].get("uploadTime"):
+                    page += 1
+                else:
+                    result_id = None
+                    page = 0
+                    for i in range(len(data) - 1, -1, -1):
+                        if data[i].get("uploadTime") != data[-1].get("uploadTime"):
+                            date_to = (dateparser.parse(
+                                data[i].get("uploadTime")) - timedelta(seconds=1)).strftime(DATE_FORMAT)
+                            data = data[:i + 1:]
+                            break
+
+            last_fetch = {"starting_date_from": starting_date_from, "page": page,
+                          "starting_date_to": starting_date_to, "current_date_to": date_to}
+            yield data, last_fetch
+
+    def _create_legacy_generator(self, action: str, max_requests: int, last: Optional[str] = None) -> Generator:
+        """
+        Legacy generator is similar to update generator.
+
+        :param action: collection to search.
+        :param max_requests: a maximum number of requests to API.
+        :param last: identification number from which to start the session.
+        """
+        requests_count = 0
+        while True:
+            if requests_count >= max_requests:
+                break
+
+            params = {"action": action, "last": last, "module": "get", "lang": 3}
+            params = assign_params(**params)
+            portion = self._http_request(method="GET", full_url="https://bt.group-ib.com",
+                                         headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
+                                         status_list_to_retry=STATUS_LIST_TO_RETRY)
+            if portion.get("status") != 200:
+                if portion.get("status") in STATUS_CODE_MSGS:
+                    raise DemistoException(STATUS_CODE_MSGS[portion.get("status")])
+                else:
+                    raise DemistoException(
+                        "Something is wrong, status code {0} for request to APIv1".format(portion.get("status"))
+                    )
+            portion = portion.get("data")
+
+            if portion.get("count") == 0:
+                break
+            last = portion.get("last")
+            requests_count += 1
+
+            yield portion.get("new"), last
+
+    def _legacy_get_last(self, date_from, action):
+        """
+        Get last for a certain date.
+
+        :param action: collection to search.
+        :param date_from: date to get the "last" identifier.
+        """
+        params = {"action": "get_last", "date": date_from, "module": "get", "type": action}
+        params = assign_params(**params)
+        resp = self._http_request(method="GET", full_url="https://bt.group-ib.com",
+                                  headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
+                                  status_list_to_retry=STATUS_LIST_TO_RETRY)
+        if resp.get("status") != 200:
+            if resp.get("status") in STATUS_CODE_MSGS:
+                raise DemistoException(STATUS_CODE_MSGS[resp.get("status")])
+            else:
+                raise DemistoException(
+                    "Something is wrong, status code {0} for request to APIv1".format(resp.get("status"))
+                )
+        last = resp.get("data")
+        return last
+
+    def create_poll_generator(self, collection_name: str, max_requests: int, **kwargs):
+        """
+        Interface to work with different types of indicators.
+        """
+
+        # Handle first time fetch
+        date_from = None
+        last_fetch = kwargs.get("last_fetch")
+        if not last_fetch:
+            date_from = dateparser.parse(kwargs.get("first_fetch_time"))
+            if date_from is None:
+                raise DemistoException('Inappropriate first_fetch format, '
+                                       'please use something like this: 2020-01-01 or January 1 2020 or 3 days')
+            date_from = date_from.strftime('%Y-%m-%d')
+
+        if collection_name == "compromised/breached":
+            # we need the isinstance check for BC because it used to be a string
+            if last_fetch and isinstance(last_fetch, dict):
+                starting_date_from = last_fetch.get("starting_date_from")
+                starting_date_to = last_fetch.get("starting_date_to")
+                date_to = last_fetch.get("current_date_to")
+                page = last_fetch.get("page", 0)
+            else:
+                starting_date_from = date_from
+                starting_date_to = datetime.now().strftime(DATE_FORMAT)
+                date_to = starting_date_to
+                page = 0
+            return self._create_search_generator(collection_name=collection_name, max_requests=max_requests,
+                                                 date_to=date_to, page=page, starting_date_from=starting_date_from,
+                                                 starting_date_to=starting_date_to)
+        elif collection_name == "bp/domain":
+            if not last_fetch:
+                last_fetch = self._legacy_get_last(date_from=date_from, action="domain")
+            return self._create_legacy_generator(action="domain", max_requests=max_requests, last=last_fetch)
+        else:
+            return self._create_update_generator(collection_name=collection_name, max_requests=max_requests,
+                                                 date_from=date_from, seq_update=last_fetch)
+
+    def create_manual_generator(self, collection_name: str, date_from: str = None,
+                                date_to: str = None, query: str = None) -> Generator:
         """
         Creates generator of lists with feeds for the search session
         (feeds are sorted in descending order) for `collection_name` with set parameters.
@@ -425,19 +649,19 @@ class Client(BaseClient):
         :param collection_name: collection to search.
         :param date_from: start date of search session.
         :param date_to: end date of search session.
-        :param limit: size of portion in iteration.
         :param query: query to search.
         """
 
         result_id = None
         while True:
-            params = {'df': date_from, 'dt': date_to, 'limit': limit, 'resultId': result_id, 'q': query}
-            params = {key: value for key, value in params.items() if value}
+            params = {'df': date_from, 'dt': date_to, 'resultId': result_id, 'q': query}
+            params = assign_params(**params)
             portion = self._http_request(method="GET", url_suffix=collection_name,
-                                         params=params, timeout=60., retries=4, status_list_to_retry=[429, 500])
+                                         params=params, timeout=TIMEOUT, retries=RETRIES,
+                                         status_list_to_retry=STATUS_LIST_TO_RETRY)
             if portion.get('count') > 2000:
                 raise DemistoException('Portion is too large (count > 2000), this can cause timeout in Demisto.'
-                                       'Please, change or set date_from/date_to arguments.')
+                                       'Please, change or set date_from/date_to arguments or change query.')
             if len(portion.get('items')) == 0:
                 break
             result_id = portion.get("resultId")
@@ -451,19 +675,45 @@ class Client(BaseClient):
         :param collection_name: in what collection to search.
         :param feed_id: id of feed to search.
         """
-        portion = self._http_request(method="GET", url_suffix=collection_name + "/" + feed_id, timeout=60.,
-                                     retries=4, backoff_factor=random.random() * 10 + 1,
-                                     status_list_to_retry=[429, 500])
+        portion = self._http_request(method="GET", url_suffix=collection_name + "/" + feed_id, timeout=TIMEOUT,
+                                     retries=RETRIES, status_list_to_retry=STATUS_LIST_TO_RETRY,
+                                     backoff_factor=random.random() * 10 + 1)
 
         return portion
 
     def get_available_collections(self):
         """
-        Gets list of available collections from GIB Ti&A API.
+        Gets list of available collections from GIB TI&A API.
         """
-        response = self._http_request(method="GET", url_suffix="sequence_list", timeout=60.,
-                                      retries=4, status_list_to_retry=[429, 500])
+        response = self._http_request(method="GET", url_suffix="sequence_list",
+                                      timeout=TIMEOUT, retries=RETRIES,
+                                      status_list_to_retry=STATUS_LIST_TO_RETRY)
         buffer_list = list(response.get("list").keys())
+
+        try:
+            self._http_request(method="GET", url_suffix="compromised/breached", params={"limit": 1},
+                               timeout=TIMEOUT, retries=RETRIES, status_list_to_retry=STATUS_LIST_TO_RETRY)
+            buffer_list.append("compromised/breached")
+        except Exception:
+            pass
+
+        # legacy collection
+        try:
+            params = {"action": "get_last", "date": datetime.now().strftime("%Y-%m-%d"),
+                      "module": "get", "type": "domain"}
+            response = self._http_request(method="GET", full_url="https://bt.group-ib.com",
+                                          headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
+                                          status_list_to_retry=STATUS_LIST_TO_RETRY)
+            last = response.get("data")
+            params = {"action": "domain", "last": last, "module": "get"}
+            portion = self._http_request(method="GET", full_url="https://bt.group-ib.com",
+                                         headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
+                                         status_list_to_retry=STATUS_LIST_TO_RETRY)
+            if portion.get("status") == 200:
+                buffer_list.append("bp/domain")
+        except Exception:
+            pass
+
         collections_list = []
         for key in MAPPING:
             if key in buffer_list:
@@ -471,9 +721,9 @@ class Client(BaseClient):
         return {"collections": collections_list}, buffer_list
 
     def search_by_query(self, q):
-        results = self._http_request(method="GET", url_suffix="search",
-                                     params={'q': q}, timeout=60., retries=4,
-                                     status_list_to_retry=[429, 500])
+        results = self._http_request(method="GET", url_suffix="search", params={'q': q},
+                                     timeout=TIMEOUT, retries=RETRIES,
+                                     status_list_to_retry=STATUS_LIST_TO_RETRY)
         return results
 
 
@@ -500,7 +750,7 @@ def find_element_by_key(obj, key):
     Recursively finds element or elements in dict.
     """
 
-    path = key.split("_", 1)
+    path = key.split(".", 1)
     if len(path) == 1:
         if isinstance(obj, list):
             return [i.get(path[0]) for i in obj if i not in ["255.255.255.255", "0.0.0.0", ""]]
@@ -612,7 +862,7 @@ def find_iocs_in_feed(feed: Dict, collection_name: str) -> List:
         main_field = find_element_by_key(feed, i["main_field"])
         main_field_type = i["main_field_type"]
         add_fields = []
-        add_fields_list = i.get("add_fields", []) + ["evaluation_severity"]
+        add_fields_list = i.get("add_fields", []) + ["evaluation.severity"]
         add_fields_types = i.get("add_fields_types", []) + ["severity"]
         for j in add_fields_list:
             add_fields.append(find_element_by_key(feed, j))
@@ -762,32 +1012,23 @@ def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: st
 
     :return: next_run will be last_run in the next fetch-incidents; incidents and indicators will be created in Demisto.
     """
-
     incidents = []
     next_run: Dict[str, Dict[str, Union[int, Any]]] = {"last_fetch": {}}
     for collection_name in incident_collections:
         last_fetch = last_run.get("last_fetch", {}).get(collection_name)
 
-        # Handle first time fetch
-        date_from = None
-        seq_update = None
-        if not last_fetch:
-            date_from = dateparser.parse(first_fetch_time)
-            if date_from is None:
-                raise DemistoException('Inappropriate first_fetch format, '
-                                       'please use something like this: 2020-01-01 or January 1 2020 or 3 days')
-            date_from = date_from.strftime('%Y-%m-%d')
-        else:
-            seq_update = last_fetch
-
-        portions = client.create_update_generator(collection_name=collection_name,
-                                                  date_from=date_from, seq_update=seq_update)
-        k = 0
-        for portion in portions:
+        portions = client.create_poll_generator(collection_name=collection_name, max_requests=requests_count,
+                                                last_fetch=last_fetch, first_fetch_time=first_fetch_time)
+        for portion, last_fetch in portions:
             for feed in portion:
                 mapping = MAPPING.get(collection_name, {})
-                seq_update = feed.get("seqUpdate")
-                feed.update({"name": mapping.get("prefix", "") + ": " + find_element_by_key(feed, mapping.get("name"))})
+                if collection_name == "compromised/breached":
+                    feed.update({"name": mapping.get("prefix", "") + ": " + ', '.join(find_element_by_key(feed,
+                                                                                                          mapping.get("name")))})
+                else:
+                    feed.update({"name": mapping.get("prefix", "") + ": " + str(find_element_by_key(feed,
+                                                                                                    mapping.get("name")))})
+
                 feed.update({"gibType": collection_name})
 
                 severity = feed.get("evaluation", {}).get("severity")
@@ -816,16 +1057,13 @@ def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: st
                     "rawJSON": json.dumps(feed)
                 }
                 incidents.append(incident)
-            k += 1
-            if k >= requests_count:
-                break
 
-        next_run["last_fetch"][collection_name] = seq_update
+        next_run["last_fetch"][collection_name] = last_fetch
 
     return next_run, incidents
 
 
-def get_available_collection_command(client: Client, args):
+def get_available_collections_command(client: Client, args):
     """
     Returns list of available collections to context and War Room.
 
@@ -867,7 +1105,8 @@ def get_info_by_id_command(collection_name: str):
             else:
                 coll_name = "hi/" + coll_name
             result = client.search_feed_by_id(coll_name, id_)
-            del result["displayOptions"]
+            if "displayOptions" in result:
+                del result["displayOptions"]
 
         else:
             result = client.search_feed_by_id(coll_name, id_)
@@ -875,7 +1114,9 @@ def get_info_by_id_command(collection_name: str):
                 del result["isFavourite"]
             if "isHidden" in result:
                 del result["isHidden"]
-        del result["seqUpdate"]
+
+        if "seqUpdate" in result:
+            del result["seqUpdate"]
 
         indicators: List[CommandResults] = []
         if coll_name not in ["apt/threat_actor", "hi/threat_actor"]:
@@ -886,7 +1127,12 @@ def get_info_by_id_command(collection_name: str):
                 result["indicatorToolRelationships"], result["indicatorsIds"], \
                 result["indicators"]
 
-        main_table_data, additional_tables = transform_function(result)
+        if coll_name == "compromised/breached":
+            if "updateTime" in result:
+                del result["updateTime"]
+            main_table_data, additional_tables = result, []
+        else:
+            main_table_data, additional_tables = transform_function(result)
         results.append(CommandResults(
             outputs_prefix="GIBTIA.{0}".format(MAPPING.get(coll_name, {}).get("prefix", "").replace(" ", "")),
             outputs_key_field="id",
@@ -953,7 +1199,7 @@ def local_search_command(client: Client, args: Dict):
     else:
         date_to_parsed = date_to
 
-    portions = client.create_search_generator(collection_name=collection_name, query=query,
+    portions = client.create_manual_generator(collection_name=collection_name, query=query,
                                               date_from=date_from_parsed, date_to=date_to_parsed)
     result_list = []
     name = MAPPING.get(collection_name, {}).get('name')
@@ -999,13 +1245,15 @@ def main():
             verify=verify_certificate,
             auth=(username, password),
             proxy=proxy,
-            headers={"Accept": "*/*"})
+            headers={"Accept": "*/*"}
+        )
 
         commands = {
             "gibtia-get-compromised-account-info": get_info_by_id_command("compromised/account"),
             "gibtia-get-compromised-card-info": get_info_by_id_command("compromised/card"),
             "gibtia-get-compromised-mule-info": get_info_by_id_command("compromised/mule"),
             "gibtia-get-compromised-imei-info": get_info_by_id_command("compromised/imei"),
+            "gibtia-get-compromised-breached-info": get_info_by_id_command("compromised/breached"),
             "gibtia-get-phishing-kit-info": get_info_by_id_command("attacks/phishing_kit"),
             "gibtia-get-phishing-info": get_info_by_id_command("attacks/phishing"),
             "gibtia-get-osi-git-leak-info": get_info_by_id_command("osi/git_leak"),
@@ -1020,7 +1268,7 @@ def main():
             "gibtia-get-suspicious-ip-socks-proxy-info": get_info_by_id_command("suspicious_ip/socks_proxy"),
             "gibtia-get-malware-targeted-malware-info": get_info_by_id_command("malware/targeted_malware"),
             "gibtia-get-malware-cnc-info": get_info_by_id_command("malware/cnc"),
-            "gibtia-get-available-collections": get_available_collection_command,
+            "gibtia-get-available-collections": get_available_collections_command,
             "gibtia-global-search": global_search_command,
             "gibtia-local-search": local_search_command
         }

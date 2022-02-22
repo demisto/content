@@ -455,7 +455,7 @@ script:
       description: Whether the event is suppressed.
       type: number
     description: Get events
-  dockerimage: demisto/zabbix:1.0.0.7067
+  dockerimage: demisto/zabbix:1.0.0.24041
   isfetch: false
   longRunning: false
   longRunningPort: false

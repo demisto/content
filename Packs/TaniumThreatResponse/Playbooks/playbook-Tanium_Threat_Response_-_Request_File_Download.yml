@@ -3,7 +3,7 @@ id: Tanium Threat Response - Request File Download
 version: -1
 fromversion: "5.0.0"
 name: Tanium Threat Response - Request File Download
-description: Request file download from Tanium.
+description: Request file download from Tanium Threat Response.
 starttaskid: "0"
 tasks:
   "0":

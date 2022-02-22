@@ -20,8 +20,8 @@ except ImportError:
 requests.packages.urllib3.disable_warnings()
 
 '''GLOBAL VARS'''
-BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
-                                'For your own safety we did not perform this scan...'
+BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist, ' \
+                                'we will not scan it.'
 BRAND = 'urlscan.io'
 
 """ RELATIONSHIP TYPE"""
@@ -193,6 +193,12 @@ def urlscan_submit_url(client):
             submission_dict['visibility'] = 'public'
 
     submission_dict['url'] = demisto.args().get('url')
+
+    if demisto.args().get('useragent'):
+        submission_dict['customagent'] = demisto.args().get('useragent')
+    elif demisto.params().get('useragent'):
+        submission_dict['customagent'] = demisto.params().get('useragent')
+
     sub_json = json.dumps(submission_dict)
     wait = int(demisto.args().get('wait', 5))
     retries = int(demisto.args().get('retries', 0))
@@ -368,7 +374,7 @@ def format_results(client, uuid):
     if 'overall' in scan_verdicts:
         human_readable['Malicious URLs Found'] = scan_stats['malicious']
         if scan_verdicts['overall'].get('malicious'):
-            human_readable['Malicious'] = 'Malicious'
+            human_readable['Verdict'] = 'Malicious'
             url_cont['Data'] = demisto.args().get('url')
             cont['Data'] = demisto.args().get('url')
             dbot_score['Indicator'] = demisto.args().get('url')
@@ -384,7 +390,7 @@ def format_results(client, uuid):
             dbot_score['Indicator'] = demisto.args().get('url')
             dbot_score['Score'] = 0
             dbot_score['Type'] = 'url'
-            human_readable['Malicious'] = 'Benign'
+            human_readable['Verdict'] = 'Unknown'
         dbot_score['Reliability'] = client.reliability
     if 'urlscan' in scan_verdicts and 'tags' in scan_verdicts['urlscan']:
         url_cont['Tags'] = scan_verdicts['urlscan']['tags']

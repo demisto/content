@@ -1,8 +1,8 @@
-Use the Microsoft Graph Identity and Access integration to manage roles and members.
-## Configure MicrosoftGraphIdentityandAccess on Cortex XSOAR
+Use the Azure Active Directory Identity And Access integration to manage roles and members.
+## Configure Azure Active Directory Identity and Access on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for MicrosoftGraphIdentityandAccess.
+2. Search for Azure Active Directory Identity and Access.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
@@ -48,18 +48,18 @@ Lists the roles in the directory.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of results to fetch. Default is 10. | Optional | 
+| limit | Maximum number of results to fetch. Default is 10. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphIdentity.Role.deletedDateTime | Date | The time when a role was deleted. Displays only if a role was deleted. | 
-| MSGraphIdentity.Role.description | String | The description of the directory role. | 
-| MSGraphIdentity.Role.displayName | String | The display name of the directory role. | 
-| MSGraphIdentity.Role.id | String | The unique identifier of the directory role. | 
-| MSGraphIdentity.Role.roleTemplateId | String | The ID of the directory role template on which the role is based. | 
+| MSGraphIdentity.Role.deletedDateTime | Date | The time when a role was deleted. Displays only if a role was deleted. |
+| MSGraphIdentity.Role.description | String | The description of the directory role. |
+| MSGraphIdentity.Role.displayName | String | The display name of the directory role. |
+| MSGraphIdentity.Role.id | String | The unique identifier of the directory role. |
+| MSGraphIdentity.Role.roleTemplateId | String | The ID of the directory role template on which the role is based. |
 
 
 #### Command Example
@@ -100,18 +100,18 @@ Activates a role by its template ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| role_template_id | ID of the role template to activate. Can be retrieved using the msgraph-identity-directory-roles-list command. | Required | 
+| role_template_id | ID of the role template to activate. Can be retrieved using the msgraph-identity-directory-roles-list command. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphIdentity.Role.deletedDateTime | Date | The time when the role was deleted. Displays only if the role was deleted. | 
-| MSGraphIdentity.Role.description | String | The description of the directory role. | 
-| MSGraphIdentity.Role.displayName | String | The display name of the directory role. | 
-| MSGraphIdentity.Role.id | String | The unique identifier of the directory role. | 
-| MSGraphIdentity.Role.roleTemplateId | String | The ID of the directory role template on which this role is based. | 
+| MSGraphIdentity.Role.deletedDateTime | Date | The time when the role was deleted. Displays only if the role was deleted. |
+| MSGraphIdentity.Role.description | String | The description of the directory role. |
+| MSGraphIdentity.Role.displayName | String | The display name of the directory role. |
+| MSGraphIdentity.Role.id | String | The unique identifier of the directory role. |
+| MSGraphIdentity.Role.roleTemplateId | String | The ID of the directory role template on which this role is based. |
 
 
 #### Command Example
@@ -152,16 +152,16 @@ Gets all members in a role ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| role_id | The ID of the application for which to get its role members list. Can be retrieved using the msgraph-identity-directory-roles-list command. | Required | 
-| limit | The maximum number of members to fetch. Default is 10. | Optional | 
+| role_id | The ID of the application for which to get its role members list. Can be retrieved using the msgraph-identity-directory-roles-list command. | Required |
+| limit | The maximum number of members to fetch. Default is 10. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphIdentity.RoleMember.user_id | String | The unique identifier of the user in the role. | 
-| MSGraphIdentity.RoleMember.role_id | String | The unique identifier of the role specified in the input. | 
+| MSGraphIdentity.RoleMember.user_id | String | The unique identifier of the user in the role. |
+| MSGraphIdentity.RoleMember.role_id | String | The unique identifier of the role specified in the input. |
 
 
 #### Command Example
@@ -202,8 +202,8 @@ Adds a user to a role.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| role_id | The ID of the role to add the user to. Can be retrieved using the msgraph-identity-directory-roles-list command. | Required | 
-| user_id | The ID of the user to add to the role. Can be retrieved using the msgraph-identity-directory-role-members-list command. | Required | 
+| role_id | The ID of the role to add the user to. Can be retrieved using the msgraph-identity-directory-roles-list command. | Required |
+| user_id | The ID of the user to add to the role. Can be retrieved using the msgraph-identity-directory-role-members-list command. | Required |
 
 
 #### Context Output
@@ -229,8 +229,8 @@ Removes a user from a role.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| role_id | ID of the role from which to remove the user. Can be retrieved using the msgraph-identity-directory-roles-list command. | Required | 
-| user_id | ID of the user to remove from the role. Can be retrieved using the msgraph-identity-directory-role-members-list command. | Required | 
+| role_id | ID of the role from which to remove the user. Can be retrieved using the msgraph-identity-directory-roles-list command. | Required |
+| user_id | ID of the user to remove from the role. Can be retrieved using the msgraph-identity-directory-role-members-list command. | Required |
 
 
 #### Context Output

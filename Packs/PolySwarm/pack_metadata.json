@@ -2,7 +2,7 @@
     "name": "PolySwarm",
     "description": "Real-time threat intelligence from a crowdsourced network of security experts and antivirus companies.",
     "support": "partner",
-    "currentVersion": "2.0.1",
+    "currentVersion": "2.0.2",
     "author": "PolySwarm",
     "url": "",
     "email": "support@polyswarm.io",
@@ -16,5 +16,9 @@
     "githubUser": [
         "JavierBotella"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

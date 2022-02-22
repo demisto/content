@@ -20,7 +20,7 @@
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li>
-<strong>Server URL</strong>: the Elasticsearch server to which the integration connects.</li>
+<strong>Server URL</strong>: the Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. By default this is 9200.</li>
 <li>
 <strong>Username and password</strong>: to log in to the server.</li>
 </ul>

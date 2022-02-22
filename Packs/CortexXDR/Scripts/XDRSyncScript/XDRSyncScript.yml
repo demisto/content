@@ -213,7 +213,7 @@ outputs:
 - contextPath: PaloAltoNetworksXDR.Incident.status
   description: |-
     Current status of the incident:
-    "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_other"
+    "new","under_investigation","resolved_threat_handled","resolved_true_positive", "resolved_security_testing","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_other"
   type: String
 - contextPath: PaloAltoNetworksXDR.Incident.severity
   description: Calculated severity of the incident. Can be "low","medium",or "high".
@@ -444,7 +444,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/python3:3.9.7.24076
 fromversion: 6.0.0
 deprecated: true
 tests:

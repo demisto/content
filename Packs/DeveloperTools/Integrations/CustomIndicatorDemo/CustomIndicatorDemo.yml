@@ -1,0 +1,27 @@
+category: Vulnerability Management
+commonfields:
+  id: CustomIndicatorDemo
+  version: -1
+configuration: []
+description: This is a demo integration that demonstrates the usage of the CustomIndicator helper class.
+display: CustomIndicatorDemo
+name: CustomIndicatorDemo
+script:
+  commands:
+  - deprecated: false
+    description: 'This command demonstrates the usage of the CustomIndicator helper class.'
+    execution: false
+    name: test-custom-indicator
+    outputs:
+    - contextPath: Demo.Result.Output
+      description: 'Dummy output.'
+      type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.1.25933
+fromversion: 5.5.0
+tests:
+  - playbook-CustomIndicatorDemo-test

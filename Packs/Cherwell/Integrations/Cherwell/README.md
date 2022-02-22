@@ -1,5577 +1,2749 @@
-<!-- HTML_DOC -->
-<div class="cl-preview-section">
-<p>Cherwell is a cloud-based IT service management solution.</p>
-</div>
-<div class="cl-preview-section">
-<h2 id="configure-cherwell-on-demisto">Configure Cherwell on Cortex XSOAR</h2>
-</div>
-<div class="cl-preview-section">
-<ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for Cherwell.</li>
-<li>Click <strong>Add instance</strong> to create and configure a new integration instance.
-<ul>
-<li>
-<strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>URL (example: <a href="https://my.domain.com/">https://my.domain.com</a>)</strong></li>
-<li><strong>Username</strong></li>
-<li><strong>Client id</strong></li>
-<li><strong>Trust any certificate (not secure)</strong></li>
-<li><strong>Use system proxy</strong></li>
-<li><strong>First fetch timestamp ( <time>, e.g., 12 hours, 7 days)</time></strong></li>
-<li><strong>CSV list of objects to fetch. The default is incident, for example: incident,problem,service)</strong></li>
-<li><strong>Max results to fetch (defualt is 30)</strong></li>
-<li><strong>Advanced Query to fetch</strong></li>
-<li><strong>Fetch attachments (include attachements in fetch process)</strong></li>
-</ul>
-</li>
-<li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
-</ol>
-</div>
-<div class="cl-preview-section">
-<h2 id="commands">Commands</h2>
-</div>
-<div class="cl-preview-section">
-<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
-</div>
-<div class="cl-preview-section">
-<ol>
-<li><a href="#create-a-business-object" target="_self">Create a business object: cherwell-create-business-object</a></li>
-<li><a href="#update-a-business-object" target="_self">Update a business object: cherwell-update-business-object</a></li>
-<li><a href="#delete-a-business-object" target="_self">Delete a business object: cherwell-delete-business-object</a></li>
-<li><a href="#get-information-for-a-business-object" target="_self">Get information for a business object: cherwell-get-business-object</a></li>
-<li><a href="#download-attachments-for-a-business-object" target="_self">Download attachments for a business object: cherwell-download-attachments</a></li>
-<li><a href="#upload-an-attachment-to-a-business-object" target="_self">Upload an attachment to a business object: cherwell-upload-attachment</a></li>
-<li><a href="#link-related-business-objects" target="_self">Link related business objects: cherwell-link-business-objects</a></li>
-<li><a href="#unlink-related-business-objects" target="_self">Unlink related business objects: cherwell-unlink-business-objects</a></li>
-<li><a href="#get-information-for-business-object-attachments" target="_self">Get information for business object attachments: cherwell-get-attachments-info</a></li>
-<li><a href="#remove-an-attachment-from-a-business-object" target="_self">Remove an attachment from a business object: cherwell-remove-attachment</a></li>
-<li><a href="#query-a-business-object" target="_self">Query a business object: cherwell-query-business-object</a></li>
-<li><a href="#get-information-for-a-field" target="_self">Get information for a field: cherwell-get-field-info</a></li>
-<li><a href="#run-a-saved-search" target="_self">Run a saved search: cherwell-run-saved-search</a></li>
-<li><a href="#get-a-business-object-id" target="_self">Get a business object ID: cherwell-get-business-object-id</a></li>
-</ol>
-</div>
-<div class="cl-preview-section">
-<h3 id="create-a-business-object">1. Create a business object</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Creates a business object.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>cherwell-create-business-object</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 138px;"><strong>Argument Name</strong></th>
-<th style="width: 527px;"><strong>Description</strong></th>
-<th style="width: 75px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 138px;">type</td>
-<td style="width: 527px;">Business object type, for example: “Incident”.</td>
-<td style="width: 75px;">Required</td>
-</tr>
-<tr>
-<td style="width: 138px;">json</td>
-<td style="width: 527px;">Data JSON containing the relevant fields and their values, for example:<br> {“title”: “some value”}).</td>
-<td style="width: 75px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 378px;"><strong>Path</strong></th>
-<th style="width: 73px;"><strong>Type</strong></th>
-<th style="width: 289px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 378px;">Cherwell.BusinessObjects.RecordId</td>
-<td style="width: 73px;">String</td>
-<td style="width: 289px;">Business object record ID.</td>
-</tr>
-<tr>
-<td style="width: 378px;">Cherwell.BusinessObjects.PublicId</td>
-<td style="width: 73px;">String</td>
-<td style="width: 289px;">Business object public ID.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>cherwell-create-business-object type=incident json=`{"Priority": "3", "CustomerDisplayName": "Playbook customer", "Description": "This incident was created by Cherwell documentation script"}</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-example">Context Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>{
-    "Cherwell.BusinessObjects": {
-        "RecordId": "944b6c9333fea00cf4a25b40b08542bdcb4db64327", 
-        "PublicId": "10222"
-    }
-}
-</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-<h3 id="new-incident-was-created">New Incident was created</h3>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table border="2">
-<thead>
-<tr>
-<th>Public Id</th>
-<th>Record Id</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>10222</td>
-<td>944b6c9333fea00cf4a25b40b08542bdcb4db64327</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h3 id="update-a-business-object">2. Update a business object</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Update a business object with the specified fields.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-1">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>cherwell-update-business-object</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-1">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 168px;"><strong>Argument Name</strong></th>
-<th style="width: 485px;"><strong>Description</strong></th>
-<th style="width: 87px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 168px;">type</td>
-<td style="width: 485px;">Business object type, for example: “Incident”.</td>
-<td style="width: 87px;">Required</td>
-</tr>
-<tr>
-<td style="width: 168px;">json</td>
-<td style="width: 485px;">Data JSON containing the relevant fields and their values.</td>
-<td style="width: 87px;">Required</td>
-</tr>
-<tr>
-<td style="width: 168px;">id_value</td>
-<td style="width: 485px;">Public ID or record ID.</td>
-<td style="width: 87px;">Required</td>
-</tr>
-<tr>
-<td style="width: 168px;">id_type</td>
-<td style="width: 485px;">Type of ID.</td>
-<td style="width: 87px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-1">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table border="2">
-<thead>
-<tr>
-<th><strong>Path</strong></th>
-<th><strong>Type</strong></th>
-<th><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Cherwell.BusinessObjects.RecordId</td>
-<td>String</td>
-<td>Business object record ID.</td>
-</tr>
-<tr>
-<td>Cherwell.BusinessObjects.PublicId</td>
-<td>Unknown</td>
-<td>Business object public ID.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-1">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>cherwell-update-business-object id_type=public_id id_value=10216 json={“Priority”:“3”} type=incident</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-example-1">Context Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>{
-    "Cherwell.BusinessObjects": {
-        "RecordId": "944b6c68c70cb404b1066e4ff4bde663f8ade81c52", 
-        "PublicId": "10216"
-    }
-}
-</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-1">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-<h3 id="incident-10216-was-updated">Incident 10216 was updated</h3>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table border="2">
-<thead>
-<tr>
-<th>Public Id</th>
-<th>Record Id</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>10216</td>
-<td>944b6c68c70cb404b1066e4ff4bde663f8ade81c52</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h3 id="delete-a-business-object">3. Delete a business object</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Deletes a given business object.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-2">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>cherwell-delete-business-object</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-2">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 177px;"><strong>Argument Name</strong></th>
-<th style="width: 462px;"><strong>Description</strong></th>
-<th style="width: 101px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 177px;">type</td>
-<td style="width: 462px;">Business object type, for example: “Incident”.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-<tr>
-<td style="width: 177px;">id_value</td>
-<td style="width: 462px;">Public ID or record ID.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-<tr>
-<td style="width: 177px;">id_type</td>
-<td style="width: 462px;">Type of ID.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-2">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<p>There is no context output for this command.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-2">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>cherwell-delete-business-object id_type=public_id id_value=10194 type=incident</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-2">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-<h3 id="record-10194-of-type-incident-was-deleted.">Record 10194 of type incident was deleted.</h3>
-</div>
-<div class="cl-preview-section">
-<h3 id="get-information-for-a-business-object">4. Get information for a business object</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Gets a business object by an ID.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-3">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>cherwell-get-business-object</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-3">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 178px;"><strong>Argument Name</strong></th>
-<th style="width: 461px;"><strong>Description</strong></th>
-<th style="width: 101px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 178px;">type</td>
-<td style="width: 461px;">Business object type, for example: “Incident”.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-<tr>
-<td style="width: 178px;">id_value</td>
-<td style="width: 461px;">Public ID or record ID.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-<tr>
-<td style="width: 178px;">id_type</td>
-<td style="width: 461px;">Type of ID.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-3">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<p>There is no context output for this command.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-3">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>cherwell-get-business-object id_type=public_id id_value=10216 type=incident</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-example-2">Context Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>{
-    "Cherwell.BusinessObjects": {
-        "Service": "Account Management", 
-        "LastModByID": "944856551f982d9572dcf549a4a5d8811f02075fd5", 
-        "CreatedByEmail": "", 
-        "Comments": "", 
-        "ShowAllServices": "False", 
-        "RecurringIncident": "False", 
-        "ReviewByDeadline": "", 
-        "PortalAffectsPrimaryFunction": "False", 
-        "CustomerTypeID": "", 
-        "NextStatusOneStep": "&lt;Trebuchet&gt;&lt;ActionInfoDef ID=\"93d9abdb6242", 
-        "OwnedByManager": "", 
-        "Level3EscalationTeam": "", 
-        "Stat_IncidentEscalated": "False", 
-        "TasksOnHold": "False", 
-        "Stat_SLAResolutionBreached": "False", 
-        "NextStatusText": "Begin Work", 
-        "SLA_Key": "_Incident", 
-        "CIDowntimeInMinutes": "0", 
-        "Withdraw": "False", 
-        "CustomerSubscriptionLevel": "", 
-        "CombinedKB": "", 
-        "SCTFired": "False", 
-        "PublicId": "10216", 
-        "SCTRecID": "", 
-        "Stat_DateTimeReOpened": "", 
-        "SLAIDForCI": "", 
-        "CreatedDuring": "Only on weekends", 
-        "ApprovalBlockID": "", 
-        "TotalSTCTimeInMinutes": "0", 
-        "OwnedBy": "", 
-        "CloseDescription": "", 
-        "SLANameForCustomer": "", 
-        "Impact": "", 
-        "PortalAltContactInfo": "", 
-        "Stat_DateTimeAssigned": "", 
-        "Stat_ResponseTime": "0", 
-        "DefaultTeam": "", 
-        "PendingReason": "", 
-        "SLAName": "Corporate", 
-        "SLAResponseWarning": "4/29/2019 9:45 AM", 
-        "Priority": "3", 
-        "Source": "Phone", 
-        "Location": "", 
-        "LinkedSLAs": " ,  , ", 
-        "ServiceCatalogTemplateName": "", 
-        "ServiceCartID": "", 
-        "CustomerDisplayName": "Playbook customer", 
-        "ClosedBy": "", 
-        "ClonedIncident": "False", 
-        "ChangeID": "", 
-        "CreatedDateTime": "4/28/2019 1:39 PM", 
-        "NextStatus": "In Progress", 
-        "StatusID": "938729d99cb110f2a6c3e5488ead246422a7cd115f", 
-        "ConfigItemTypeID": "", 
-        "STCTimeInMinutes": "0", 
-        "LastModifiedDateTime": "4/28/2019 1:57 PM", 
-        "ConfigItemRecID": "", 
-        "PendingStartDateTime": "", 
-        "MajorIncidentID": "", 
-        "ServiceID": "9389f6f40e1ab014733fa341dab8e03b0d3c380b07", 
-        "WasCIDown": "False", 
-        "Urgency": "", 
-        "Stat_SLAResponseWarning": "False", 
-        "Stat_DateTimeInProgress": "", 
-        "Stat_FirstCallResolution": "False", 
-        "ServiceEntitlements": "Platinum, Gold, Silver, Corporate", 
-        "IncidentchildRecID": "", 
-        "ClonedIncidentID": "", 
-        "CreatedBy": "API User", 
-        "SLAID": "938aad773b01d0140385e84d19aa5205c5acf8c839", 
-        "ClosedOn1stCall": "False", 
-        "Category": "", 
-        "SubcategoryID": "", 
-        "Stat_SLAResolutionGood": "False", 
-        "SmartClassifySearchString": "", 
-        "MajorIncidentRecID": "", 
-        "LinkedProblem": "", 
-        "TotalTasks": "1", 
-        "TasksClosed": "False", 
-        "PortalAffectsMultipleUsers": "False", 
-        "ShowContactInformation": "False", 
-        "SLATargetTimeID": "", 
-        "Status": "New", 
-        "CIDownEndDateTime": "", 
-        "TotalTaskTime": "0", 
-        "Level2EscalationComplete": "True", 
-        "Stat_SLAResponseGood": "False", 
-        "PendingPreviousStatus": "", 
-        "SLAIDForCustomer": "", 
-        "Stat_DateTimeResponded": "", 
-        "CartItemID": "", 
-        "RequesterDepartment": "", 
-        "IncidentchildID": "", 
-        "RecordId": "944b6c68c70cb404b1066e4ff4bde663f8ade81c52", 
-        "ReasonForBreach": "", 
-        "ClosedDateTime": "", 
-        "LastModTimeStamp": "", 
-        "Subcategory": "", 
-        "MajorIncident": "False", 
-        "Level3EscalationComplete": "True", 
-        "TasksInProgress": "False", 
-        "SLANameForService": "", 
-        "IncidentType": "Incident", 
-        "Stat_SLAResponseBreached": "False", 
-        "CIDownStartDateTime": "", 
-        "IncidentDurationInDays": "0.01", 
-        "CreatedByID": "944856551f982d9572dcf549a4a5d8811f02075fd5", 
-        "RecID": "944b6c68c70cb404b1066e4ff4bde663f8ade81c52", 
-        "SLAResolveByDeadline": "5/1/2019 1:39 PM", 
-        "SpecificsTypeId": "9398862125defd58a8deea46fe88acc411a96e2b00", 
-        "Cause": "", 
-        "Stat_IncidentReopened": "False", 
-        "SLANameForCI": "", 
-        "Stat_DateTimeResolved": "", 
-        "Description": "Example scripts test playbook", 
-        "Stat_NumberOfTouches": "10", 
-        "OwnedByTeam": "", 
-        "SLAIDForService": "", 
-        "BreachNotes": "", 
-        "Cost": "0", 
-        "CustomerRecID": "944b37889fdb5a0e8f519b422095314c29cdbca16a", 
-        "ConfigItemType": "", 
-        "IncidentID": "10216", 
-        "ConfigItemDisplayName": "", 
-        "SLAResolutionWarning": "5/1/2019 1:24 PM", 
-        "Stat_DateTimeClosed": "", 
-        "ClosedByID": "", 
-        "Stat_24x7ElapsedTime": "0", 
-        "Level2EscalationTeam": "", 
-        "SLARespondByDeadline": "4/29/2019 10:00 AM", 
-        "OwnedByID": "", 
-        "LastModBy": "API User", 
-        "Stat_NumberOfEscalations": "0", 
-        "StatusDesc": "", 
-        "PendingEndDateTime": "", 
-        "Stat_SLAResolutionWarning": "False", 
-        "TaskClosedCount": "0", 
-        "ServiceCustomerIsEntitled": "True", 
-        "OwnedByTeamID": "", 
-        "IncidentDurationInHours": "0.3"
-    }
-}
-</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-3">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-<h3 id="incident-10216">Incident: 10216</h3>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table border="2">
-<thead>
-<tr>
-<th>Rec ID</th>
-<th>Incident ID</th>
-<th>Created Date Time</th>
-<th>Created During</th>
-<th>Created By</th>
-<th>Created By ID</th>
-<th>Status</th>
-<th>Status Desc</th>
-<th>Service</th>
-<th>Category</th>
-<th>Subcategory</th>
-<th>Specifics Type Id</th>
-<th>Description</th>
-<th>Impact</th>
-<th>Urgency</th>
-<th>Priority</th>
-<th>Closed Date Time</th>
-<th>Closed By</th>
-<th>Closed By ID</th>
-<th>Cost</th>
-<th>Last Mod Time Stamp</th>
-<th>Owned By Team</th>
-<th>Owned By Team ID</th>
-<th>Owned By</th>
-<th>Owned By ID</th>
-<th>Customer Type ID</th>
-<th>Customer Rec ID</th>
-<th>Close Description</th>
-<th>Linked Problem</th>
-<th>Last Modified Date Time</th>
-<th>Last Mod By</th>
-<th>Last Mod By ID</th>
-<th>Config Item Type ID</th>
-<th>Config Item Rec ID</th>
-<th>In cident Duration In Days</th>
-<th>Incident Type</th>
-<th>SLA Respond By Deadline</th>
-<th>SLAID</th>
-<th>SLA Name</th>
-<th>SLA Target Time ID</th>
-<th>SLA Resolve By Deadline</th>
-<th>Closed On 1 St Call</th>
-<th>Source</th>
-<th>Change ID</th>
-<th>In cident Duration In Hours</th>
-<th>Customer Display Name</th>
-<th>Owned By Manager</th>
-<th>Created By Email</th>
-<th>Pending Reason</th>
-<th>Review By Deadline</th>
-<th>Stat _ Number Of Touches</th>
-<th>Stat _ First Call Resolution</th>
-<th>Stat _ Incident Escalated</th>
-<th>Stat _ Number Of Escalations</th>
-<th>Stat _24 X 7 Elapsed Time</th>
-<th>Stat _ Incident Reopened</th>
-<th>Stat _ Date Time Responded</th>
-<th>Stat _ Response Time</th>
-<th>Stat _SLA Response Breached</th>
-<th>Stat _SLA Resolution Breached</th>
-<th>Service ID</th>
-<th>Pending Previous Status</th>
-<th>Portal Affects Primary Function</th>
-<th>Portal Affects Multiple Users</th>
-<th>Portal Alt Contact Info</th>
-<th>SLAID For Customer</th>
-<th>SLAID For Service</th>
-<th>SLAID For CI</th>
-<th>Linked SL As</th>
-<th>SLA Name For CI</th>
-<th>SLA Name For Customer</th>
-<th>SLA Name For Service</th>
-<th>Reason For Breach</th>
-<th>Config Item Display Name</th>
-<th>Breach Notes</th>
-<th>Show All Services</th>
-<th>Show Contact Information</th>
-<th>Service Entitlements</th>
-<th>Service Customer Is Entitled</th>
-<th>Combined KB</th>
-<th>Total Tasks</th>
-<th>Stat _SLA Resolution Warning</th>
-<th>Stat _SLA Response Warning</th>
-<th>Stat _SLA Resolution Good</th>
-<th>Stat _SLA Response Good</th>
-<th>Stat _ Date Time Assigned</th>
-<th>Stat _ Date Time In Progress</th>
-<th>Stat _ Date Time Resolved</th>
-<th>Stat _ Date Time Closed</th>
-<th>Stat _ Date Time Re Opened</th>
-<th>SLA Response Warning</th>
-<th>SLA Resolution Warning</th>
-<th>Pending Start Date Time</th>
-<th>Pending End Date Time</th>
-<th>STC Time In Minutes</th>
-<th>Total STC Time In Minutes</th>
-<th>Location</th>
-<th>Next Status</th>
-<th>Next Status Text</th>
-<th>Next Status One Step</th>
-<th>SLA_ Key</th>
-<th>Status ID</th>
-<th>Subcategory ID</th>
-<th>Smart Classify Search String</th>
-<th>Total Task Time</th>
-<th>Config Item Type</th>
-<th>Approval Block ID</th>
-<th>Cloned Incident ID</th>
-<th>Recurring Incident</th>
-<th>Was CI Down</th>
-<th>CI Down Start Date Time</th>
-<th>CI Down End Date Time</th>
-<th>Major Incident</th>
-<th>Major Incident Rec ID</th>
-<th>Major Incident ID</th>
-<th>Incidentchild ID</th>
-<th>Incidentchild Rec ID</th>
-<th>Cause</th>
-<th>Cloned Incident</th>
-<th>Comments</th>
-<th>CI Downtime In Minutes</th>
-<th>Withdraw</th>
-<th>Customer Subscription Level</th>
-<th>Service Cart ID</th>
-<th>Cart Item ID</th>
-<th>SCT Rec ID</th>
-<th>Tasks In Progress</th>
-<th>Tasks Closed</th>
-<th>Task Closed Count</th>
-<th>Tasks On Hold</th>
-<th>SCT Fired</th>
-<th>Requester Department</th>
-<th>Level 2 Escalation Complete</th>
-<th>Level 3 Escalation Complete</th>
-<th>Default Team</th>
-<th>Level 2 Escalation Team</th>
-<th>Level 3 Escalation Team</th>
-<th>Service Catalog Template Name</th>
-<th>Public Id</th>
-<th>Record Id</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>944b6c68c70cb404b1066e4ff4bde663f8ade81c52</td>
-<td>10216</td>
-<td>4/28/2019 1:39 PM</td>
-<td>Only on weekends</td>
-<td>API User</td>
-<td>944856551f982d9572dcf549a4a5d8811f02075fd5</td>
-<td>New</td>
-<td> </td>
-<td>Account Management</td>
-<td> </td>
-<td> </td>
-<td>9398862125defd58a8deea46fe88acc411a96e2b00</td>
-<td>Example scripts test playbook</td>
-<td> </td>
-<td> </td>
-<td>3</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>0</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>944b37889fdb5a0e8f519b422095314c29cdbca16a</td>
-<td> </td>
-<td> </td>
-<td>4/28/2019 1:57 PM</td>
-<td>API User</td>
-<td>944856551f982d9572dcf549a4a5d8811f02075fd5</td>
-<td> </td>
-<td> </td>
-<td>0.01</td>
-<td>Incident</td>
-<td>4/29/2019 10:00 AM</td>
-<td>938aad773b01d0140385e84d19aa5205c5acf8c839</td>
-<td>Corporate</td>
-<td> </td>
-<td>5/1/2019 1:39 PM</td>
-<td>False</td>
-<td>Phone</td>
-<td> </td>
-<td>0.3</td>
-<td>Playbook customer</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>10</td>
-<td>False</td>
-<td>False</td>
-<td>0</td>
-<td>0</td>
-<td>False</td>
-<td> </td>
-<td>0</td>
-<td>False</td>
-<td>False</td>
-<td>9389f6f40e1ab014733fa341dab8e03b0d3c380b07</td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>, ,</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td>Platinum, Gold, Silver, Corporate</td>
-<td>True</td>
-<td> </td>
-<td>1</td>
-<td>False</td>
-<td>False</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>4/29/2019 9:45 AM</td>
-<td>5/1/2019 1:24 PM</td>
-<td> </td>
-<td> </td>
-<td>0</td>
-<td>0</td>
-<td> </td>
-<td>In Progress</td>
-<td>Begin Work</td>
-<td>&lt;ActionInfoDef ID="93d9abdb6242</td>
-<td>_Incident</td>
-<td>938729d99cb110f2a6c3e5488ead246422a7cd115f</td>
-<td> </td>
-<td> </td>
-<td>0</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td> </td>
-<td>0</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td>0</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td>True</td>
-<td>True</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>10216</td>
-<td>944b6c68c70cb404b1066e4ff4bde663f8ade81c52</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h3 id="download-attachments-for-a-business-object">5. Download attachments for a business object</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Downloads imported attachements from a specified business object.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-4">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>cherwell-download-attachments</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-4">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 183px;"><strong>Argument Name</strong></th>
-<th style="width: 456px;"><strong>Description</strong></th>
-<th style="width: 101px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 183px;">type</td>
-<td style="width: 456px;">Business object type, for example: “Incident”.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-<tr>
-<td style="width: 183px;">id_type</td>
-<td style="width: 456px;">Type of ID.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-<tr>
-<td style="width: 183px;">id_value</td>
-<td style="width: 456px;">Public ID or record ID.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-4">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 115px;"><strong>Path</strong></th>
-<th style="width: 218px;"><strong>Type</strong></th>
-<th style="width: 407px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 115px;">File</td>
-<td style="width: 218px;">Unknown</td>
-<td style="width: 407px;">File result entries.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-4">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>cherwell-download-attachments id_type=public_id id_value=10216 type=incident</pre>
-</div>
-<div class="cl-preview-section">
-<h3 id="upload-an-attachment-to-a-business-object">6. Upload an attachment to a business object</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Uploads an attachment to a specified business object.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-5">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>cherwell-upload-attachment</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-5">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 177px;"><strong>Argument Name</strong></th>
-<th style="width: 462px;"><strong>Description</strong></th>
-<th style="width: 101px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 177px;">type</td>
-<td style="width: 462px;">Business object type, for example: “Incident”.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-<tr>
-<td style="width: 177px;">id_type</td>
-<td style="width: 462px;">Type of ID.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-<tr>
-<td style="width: 177px;">id_value</td>
-<td style="width: 462px;">Public ID or record ID.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-<tr>
-<td style="width: 177px;">file_entry_id</td>
-<td style="width: 462px;">File entry ID.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-5">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 372px;"><strong>Path</strong></th>
-<th style="width: 37px;"><strong>Type</strong></th>
-<th style="width: 331px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 372px;">Cherwell.UploadedAttachments.AttachmentFileId</td>
-<td style="width: 37px;">String</td>
-<td style="width: 331px;">AttachmentFileId to use to get information about the attachment.</td>
-</tr>
-<tr>
-<td style="width: 372px;">Cherwell.UploadedAttachments.BusinessObjectType</td>
-<td style="width: 37px;">String</td>
-<td style="width: 331px;">Business object type, for example: “Incident”.</td>
-</tr>
-<tr>
-<td style="width: 372px;">Cherwell.UploadedAttachments.PublicId</td>
-<td style="width: 37px;">String</td>
-<td style="width: 331px;">Public ID.</td>
-</tr>
-<tr>
-<td style="width: 372px;">Cherwell.UploadedAttachments.RecordId</td>
-<td style="width: 37px;">String</td>
-<td style="width: 331px;">Record ID.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-5">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>cherwell-upload-attachment file_entry_id=87@674 id_type=public_id id_value=10216 type=incident</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-example-3">Context Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>{
-    "Cherwell.UploadedAttachments": {
-        "BusinessObjectType": "incident", 
-        "AttachmentFileId": "944b6c9346d83133b838a64629b29964206a1dae6b", 
-        "PublicId": "10216"
-    }
-}
-</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-4">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-<h3 id="attachment-944b6c9346d83133b838a64629b29964206a1dae6b-was-successfully-attached-to-incident-10216">Attachment: 944b6c9346d83133b838a64629b29964206a1dae6b, was successfully attached to incident 10216</h3>
-</div>
-<div class="cl-preview-section">
-<h3 id="link-related-business-objects">7. Link related business objects</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Links business objects that are related.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-6">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>cherwell-link-business-objects</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-6">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table>
-<thead>
-<tr>
-<th><strong>Argument Name</strong></th>
-<th><strong>Description</strong></th>
-<th><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>parent_type</td>
-<td>Parent business object type name.</td>
-<td>Required</td>
-</tr>
-<tr>
-<td>parent_record_id</td>
-<td>Parent business object record ID.</td>
-<td>Required</td>
-</tr>
-<tr>
-<td>child_type</td>
-<td>Child business object type name.</td>
-<td>Required</td>
-</tr>
-<tr>
-<td>child_record_id</td>
-<td>Child business object record ID.</td>
-<td>Required</td>
-</tr>
-<tr>
-<td>relationship_id</td>
-<td>Relationship ID.</td>
-<td>Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-6">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<p>There is no context output for this command.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-6">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>cherwell-link-business-objects relationship_id=9369187528b417b4a17aaa4646b7f7a78b3c821be9 parent_type=incident child_type=task parent_record_id=944b6c68c70cb404b1066e4ff4bde663f8ade81c52 child_record_id=944b6a8c455a91041f71fb42e2b085e1db50b0c57c</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-5">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-<h3 id="incident-944b6c68c70cb404b1066e4ff4bde663f8ade81c52-and-task-944b6a8c455a91041f71fb42e2b085e1db50b0c57c-were-linked">Incident 944b6c68c70cb404b1066e4ff4bde663f8ade81c52 and Task 944b6a8c455a91041f71fb42e2b085e1db50b0c57c were linked</h3>
-</div>
-<div class="cl-preview-section">
-<h3 id="unlink-related-business-objects">8. Unlink related business objects</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Unlinks business objects that are linked and related.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-7">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>cherwell-unlink-business-objects</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-7">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 219px;"><strong>Argument Name</strong></th>
-<th style="width: 401px;"><strong>Description</strong></th>
-<th style="width: 120px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 219px;">parent_type</td>
-<td style="width: 401px;">Parent business object type name.</td>
-<td style="width: 120px;">Required</td>
-</tr>
-<tr>
-<td style="width: 219px;">parent_record_id</td>
-<td style="width: 401px;">Parent business object record ID.</td>
-<td style="width: 120px;">Required</td>
-</tr>
-<tr>
-<td style="width: 219px;">child_type</td>
-<td style="width: 401px;">Child business object type name.</td>
-<td style="width: 120px;">Required</td>
-</tr>
-<tr>
-<td style="width: 219px;">child_record_id</td>
-<td style="width: 401px;">Child business object record ID.</td>
-<td style="width: 120px;">Required</td>
-</tr>
-<tr>
-<td style="width: 219px;">relationship_id</td>
-<td style="width: 401px;">Relationship ID.</td>
-<td style="width: 120px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-7">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<p>There is no context output for this command.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-7">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>cherwell-unlink-business-objects relationship_id=9369187528b417b4a17aaa4646b7f7a78b3c821be9 parent_type=incident child_type=task parent_record_id=944b6c68c70cb404b1066e4ff4bde663f8ade81c52 child_record_id=944b6a8c455a91041f71fb42e2b085e1db50b0c57c</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-6">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-<h3 id="incident-944b6c68c70cb404b1066e4ff4bde663f8ade81c52-and-task-944b6a8c455a91041f71fb42e2b085e1db50b0c57c-were-unlinked">Incident 944b6c68c70cb404b1066e4ff4bde663f8ade81c52 and Task 944b6a8c455a91041f71fb42e2b085e1db50b0c57c were unlinked</h3>
-</div>
-<div class="cl-preview-section">
-<h3 id="get-information-for-business-object-attachments">9. Get information for business object attachments</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Gets information for business object attachments.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-8">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>cherwell-get-attachments-info</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-8">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 188px;"><strong>Argument Name</strong></th>
-<th style="width: 451px;"><strong>Description</strong></th>
-<th style="width: 101px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 188px;">type</td>
-<td style="width: 451px;">Business object type, for example: “Incident”.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-<tr>
-<td style="width: 188px;">id_type</td>
-<td style="width: 451px;">Type of ID.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-<tr>
-<td style="width: 188px;">id_value</td>
-<td style="width: 451px;">Public ID or record ID.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-<tr>
-<td style="width: 188px;">attachment_type</td>
-<td style="width: 451px;">Type of attachment.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-8">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 368px;"><strong>Path</strong></th>
-<th style="width: 39px;"><strong>Type</strong></th>
-<th style="width: 333px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 368px;">Cherwell.AttachmentsInfo.AttachmentFiledId</td>
-<td style="width: 39px;">String</td>
-<td style="width: 333px;">Attachment field ID.</td>
-</tr>
-<tr>
-<td style="width: 368px;">Cherwell.AttachmentsInfo.FileName</td>
-<td style="width: 39px;">String</td>
-<td style="width: 333px;">File name.</td>
-</tr>
-<tr>
-<td style="width: 368px;">Cherwell.AttachmentsInfo.AttachmentId</td>
-<td style="width: 39px;">String</td>
-<td style="width: 333px;">Attachment ID.</td>
-</tr>
-<tr>
-<td style="width: 368px;">Cherwell.AttachmentsInfo.BusinessObjectType</td>
-<td style="width: 39px;">String</td>
-<td style="width: 333px;">Business object type, for example: “Incident”.</td>
-</tr>
-<tr>
-<td style="width: 368px;">Cherwell.AttachmentsInfo.BusinessObjectPublicId</td>
-<td style="width: 39px;">String</td>
-<td style="width: 333px;">Business object public ID.</td>
-</tr>
-<tr>
-<td style="width: 368px;">Cherwell.AttachmentsInfo.BusinessObjectRecordId</td>
-<td style="width: 39px;">String</td>
-<td style="width: 333px;">Business object record ID.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-8">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>cherwell-get-attachments-info id_type=public_id id_value=10216 type=incident attachment_type=imported</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-example-4">Context Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>{
-    "Cherwell.AttachmentsInfo": [
-        {
-            "AttachmentFiledId": "944b6c8f48465818fb3a9c4f51837002dea63691e2", 
-            "FileName": "Cherwell 2.txt", 
-            "AttachmentId": "944b6c8f4806110229bd134a829dd04b9d81f4e06c", 
-            "BusinessObjectPublicId": "10216", 
-            "BusinessObjectType": "incident"
-        }, 
-        {
-            "AttachmentFiledId": "944b6c9346d83133b838a64629b29964206a1dae6b", 
-            "FileName": "Cherwell 2.txt", 
-            "AttachmentId": "944b6c93462aff7a93cc1c4d16a4bb2f9326ad58fe", 
-            "BusinessObjectPublicId": "10216", 
-            "BusinessObjectType": "incident"
+Cloud-based IT service management solution
+This integration was integrated and tested with version 10.1.1 of Cherwell
+
+## Configure Cherwell on Cortex XSOAR
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Cherwell.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | URL (example: https://my.domain.com) | True |
+    | Username | True |
+    | Password | True |
+    | Client id | True |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
+    | CSV list of objects to fetch. The default is incident, for example: incident,problem,service) | False |
+    | Max results to fetch (defualt is 30) | False |
+    | Advanced Query to fetch (see integration detailed instructions) | False |
+    | Fetch attachments (include attachements in fetch process) | False |
+    | Fetch incidents | False |
+    | Incident type | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+## Commands
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### cherwell-create-business-object
+***
+Creates a business object.
+
+
+#### Base Command
+
+`cherwell-create-business-object`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type |  Business object type, for example: "Incident". . | Required | 
+| json | Data JSON containing the relevant fields and their values, for example:<br/>{"title": "some value"}). | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cherwell.BusinessObjects.RecordId | String | Business object record ID.  | 
+| Cherwell.BusinessObjects.PublicId | String | Business object public ID.  | 
+
+
+#### Command Example
+```!cherwell-create-business-object type=incident json={"Priority": "3", "CustomerDisplayName": "demisto admin", "Description": "This incident was created by Cherwell test playbook","Service":"Enterprise Apps","Category":"PeopleSoft","Subcategory":"Submit Incident"}```
+
+#### Context Example
+```json
+{
+    "Cherwell": {
+        "BusinessObjects": {
+            "PublicId": "102384",
+            "RecordId": "947571cec8a5b5f03850c940c2bf6ca2bf116ffce9"
         }
-    ]
-}
-</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-7">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-<h3 id="incident-10216-attachments">Incident 10216 attachments:</h3>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table border="2">
-<thead>
-<tr>
-<th>Attachment Filed Id</th>
-<th>File Name</th>
-<th>Attachment Id</th>
-<th>Business Object Type</th>
-<th>Business Object Public Id</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>944b6c8f48465818fb3a9c4f51837002dea63691e2</td>
-<td>Cherwell 2.txt</td>
-<td>944b6c8f4806110229bd134a829dd04b9d81f4e06c</td>
-<td>incident</td>
-<td>10216</td>
-</tr>
-<tr>
-<td>944b6c9346d83133b838a64629b29964206a1dae6b</td>
-<td>Cherwell 2.txt</td>
-<td>944b6c93462aff7a93cc1c4d16a4bb2f9326ad58fe</td>
-<td>incident</td>
-<td>10216</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h3 id="remove-an-attachment-from-a-business-object">10. Remove an attachment from a business object</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Remove an attachment from the specified business object.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-9">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>cherwell-remove-attachment</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-9">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 188px;"><strong>Argument Name</strong></th>
-<th style="width: 451px;"><strong>Description</strong></th>
-<th style="width: 101px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 188px;">type</td>
-<td style="width: 451px;">Business object type, for example: “Incident”.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-<tr>
-<td style="width: 188px;">id_type</td>
-<td style="width: 451px;">Type of ID.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-<tr>
-<td style="width: 188px;">id_value</td>
-<td style="width: 451px;">Public ID or record ID.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-<tr>
-<td style="width: 188px;">attachment_id</td>
-<td style="width: 451px;">Attachment ID to remove.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-9">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<p>There is no context output for this command.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-9">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>cherwell-remove-attachment id_type=public_id attachment_id=944b6ac2597ce4050531c6471c8aca352c699f2394 id_value=10216 type=incident</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-8">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-<h3 id="attachment-944b6ac2597ce4050531c6471c8aca352c699f2394-was-successfully-removed-from-incident-10216">Attachment: 944b6ac2597ce4050531c6471c8aca352c699f2394, was successfully removed from incident 10216</h3>
-</div>
-<div class="cl-preview-section">
-<h3 id="query-a-business-object">11. Query a business object</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Runs advanced queries to search in a specified business object.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-10">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>cherwell-query-business-object</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-10">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 141px;"><strong>Argument Name</strong></th>
-<th style="width: 528px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 141px;">type</td>
-<td style="width: 528px;">Business object type, for example: “Incident”.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 141px;">query</td>
-<td style="width: 528px;">The query to run. A CSV list of filters such that each filter is of the form: [“field_name”,“operator”,“value”] and operator is one of: ‘eq’=equal, ‘gt’=grater-than, ‘lt’=less-than, ‘contains’, ‘startwith’. Special characters shoud be escaped.<br> Example: <code>[["CreatedDateTime":"gt":"4/10/2019 3:10:12 PM"]["Priority","eq","1"]]</code>.<br> NOTE: If multiple filters are received for the same field name, an ‘OR’ operation between the filters will be performed, if the field names are different an ‘AND’ operation will be performed.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 141px;">max_results</td>
-<td style="width: 528px;">Maximum number of results to pull.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-10">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<p>There is no context output for this command.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-10">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>cherwell-query-business-object query=[[“Description”,“eq”,“This incident was created by Cherwell documentation script”]] type=incident</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-example-5">Context Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>{
-    "Cherwell.QueryResults": [
-        {
-            "Service": "", 
-            "LastModByID": "944856551f982d9572dcf549a4a5d8811f02075fd5", 
-            "CreatedByEmail": "", 
-            "Comments": "", 
-            "ShowAllServices": "False", 
-            "RecurringIncident": "False", 
-            "ReviewByDeadline": "1/1/1900 12:00:00 AM", 
-            "PortalAffectsPrimaryFunction": "False", 
-            "CustomerTypeID": "", 
-            "NextStatusOneStep": "&lt;Trebuchet&gt;&lt;ActionInfoDef ID=\"93d9abdb6242", 
-            "OwnedByManager": "", 
-            "Level3EscalationTeam": "", 
-            "Stat_IncidentEscalated": "False", 
-            "TasksOnHold": "False", 
-            "Stat_SLAResolutionBreached": "False", 
-            "NextStatusText": "Begin Work", 
-            "SLA_Key": "_Incident", 
-            "CIDowntimeInMinutes": "0.00", 
-            "Withdraw": "False", 
-            "CustomerSubscriptionLevel": "", 
-            "CombinedKB": "", 
-            "SCTFired": "False", 
-            "PublicId": "10195", 
-            "SCTRecID": "", 
-            "Stat_DateTimeReOpened": "", 
-            "SLAIDForCI": "", 
-            "CreatedDuring": "Only on weekends", 
-            "ApprovalBlockID": "", 
-            "TotalSTCTimeInMinutes": "0", 
-            "OwnedBy": "", 
-            "CloseDescription": "", 
-            "SLANameForCustomer": "", 
-            "Impact": "", 
-            "PortalAltContactInfo": "", 
-            "Stat_DateTimeAssigned": "", 
-            "Stat_ResponseTime": "0", 
-            "DefaultTeam": "", 
-            "PendingReason": "", 
-            "SLAName": "Corporate", 
-            "SLAResponseWarning": "4/29/2019 9:45:00 AM", 
-            "Priority": "3", 
-            "Source": "Phone", 
-            "Location": "", 
-            "LinkedSLAs": " ,  , ", 
-            "ServiceCatalogTemplateName": "", 
-            "ServiceCartID": "", 
-            "CustomerDisplayName": "Playbook customer", 
-            "ClosedBy": "", 
-            "ClonedIncident": "", 
-            "ChangeID": "", 
-            "CreatedDateTime": "4/28/2019 10:46:00 AM", 
-            "NextStatus": "In Progress", 
-            "StatusID": "938729d99cb110f2a6c3e5488ead246422a7cd115f", 
-            "ConfigItemTypeID": "", 
-            "STCTimeInMinutes": "0", 
-            "LastModifiedDateTime": "4/28/2019 10:46:00 AM", 
-            "ConfigItemRecID": "", 
-            "PendingStartDateTime": "", 
-            "MajorIncidentID": "", 
-            "ServiceID": "", 
-            "WasCIDown": "False", 
-            "Urgency": "", 
-            "Stat_SLAResponseWarning": "False", 
-            "Stat_DateTimeInProgress": "", 
-            "Stat_FirstCallResolution": "False", 
-            "ServiceEntitlements": "", 
-            "IncidentchildRecID": "", 
-            "ClonedIncidentID": "", 
-            "CreatedBy": "API User", 
-            "SLAID": "938aad773b01d0140385e84d19aa5205c5acf8c839", 
-            "ClosedOn1stCall": "False", 
-            "Category": "", 
-            "SubcategoryID": "", 
-            "Stat_SLAResolutionGood": "False", 
-            "SmartClassifySearchString": "", 
-            "MajorIncidentRecID": "", 
-            "LinkedProblem": "", 
-            "TotalTasks": "0.00", 
-            "TasksClosed": "False", 
-            "PortalAffectsMultipleUsers": "False", 
-            "ShowContactInformation": "False", 
-            "SLATargetTimeID": "", 
-            "Status": "New", 
-            "CIDownEndDateTime": "", 
-            "TotalTaskTime": "0.00", 
-            "Level2EscalationComplete": "True", 
-            "Stat_SLAResponseGood": "False", 
-            "PendingPreviousStatus": "", 
-            "SLAIDForCustomer": "", 
-            "Stat_DateTimeResponded": "", 
-            "CartItemID": "", 
-            "RequesterDepartment": "", 
-            "IncidentchildID": "", 
-            "RecordId": "944b6ad2180700e3d4006d4b61813cac3f6c505f21", 
-            "ReasonForBreach": "", 
-            "ClosedDateTime": "", 
-            "LastModTimeStamp": "Byte[] Array", 
-            "Subcategory": "", 
-            "MajorIncident": "False", 
-            "Level3EscalationComplete": "True", 
-            "TasksInProgress": "False", 
-            "SLANameForService": "", 
-            "IncidentType": "Incident", 
-            "Stat_SLAResponseBreached": "False", 
-            "CIDownStartDateTime": "", 
-            "IncidentDurationInDays": "0.00", 
-            "CreatedByID": "944856551f982d9572dcf549a4a5d8811f02075fd5", 
-            "RecID": "944b6ad2180700e3d4006d4b61813cac3f6c505f21", 
-            "SLAResolveByDeadline": "5/1/2019 10:46:00 AM", 
-            "SpecificsTypeId": "9398862125defd58a8deea46fe88acc411a96e2b00", 
-            "Cause": "", 
-            "Stat_IncidentReopened": "False", 
-            "SLANameForCI": "", 
-            "Stat_DateTimeResolved": "", 
-            "Description": "This incident was created by Cherwell documentation script", 
-            "Stat_NumberOfTouches": "2", 
-            "OwnedByTeam": "", 
-            "BusinessObjectId": "6dd53665c0c24cab86870a21cf6434ae", 
-            "SLAIDForService": "", 
-            "BreachNotes": "", 
-            "Cost": "0.00", 
-            "CustomerRecID": "944b37889fdb5a0e8f519b422095314c29cdbca16a", 
-            "ConfigItemType": "", 
-            "IncidentID": "10195", 
-            "ConfigItemDisplayName": "", 
-            "SLAResolutionWarning": "5/1/2019 10:31:00 AM", 
-            "Stat_DateTimeClosed": "", 
-            "ClosedByID": "", 
-            "Stat_24x7ElapsedTime": "0", 
-            "Level2EscalationTeam": "", 
-            "SLARespondByDeadline": "4/29/2019 10:00:00 AM", 
-            "OwnedByID": "", 
-            "LastModBy": "API User", 
-            "Stat_NumberOfEscalations": "0", 
-            "StatusDesc": "", 
-            "PendingEndDateTime": "", 
-            "Stat_SLAResolutionWarning": "False", 
-            "TaskClosedCount": "0", 
-            "ServiceCustomerIsEntitled": "False", 
-            "OwnedByTeamID": "", 
-            "IncidentDurationInHours": "0.00"
-        }, 
-        {
-            "Service": "", 
-            "LastModByID": "944856551f982d9572dcf549a4a5d8811f02075fd5", 
-            "CreatedByEmail": "", 
-            "Comments": "", 
-            "ShowAllServices": "False", 
-            "RecurringIncident": "False", 
-            "ReviewByDeadline": "1/1/1900 12:00:00 AM", 
-            "PortalAffectsPrimaryFunction": "False", 
-            "CustomerTypeID": "", 
-            "NextStatusOneStep": "&lt;Trebuchet&gt;&lt;ActionInfoDef ID=\"93d9abdb6242", 
-            "OwnedByManager": "", 
-            "Level3EscalationTeam": "", 
-            "Stat_IncidentEscalated": "False", 
-            "TasksOnHold": "False", 
-            "Stat_SLAResolutionBreached": "False", 
-            "NextStatusText": "Begin Work", 
-            "SLA_Key": "_Incident", 
-            "CIDowntimeInMinutes": "0.00", 
-            "Withdraw": "False", 
-            "CustomerSubscriptionLevel": "", 
-            "CombinedKB": "", 
-            "SCTFired": "False", 
-            "PublicId": "10196", 
-            "SCTRecID": "", 
-            "Stat_DateTimeReOpened": "", 
-            "SLAIDForCI": "", 
-            "CreatedDuring": "Only on weekends", 
-            "ApprovalBlockID": "", 
-            "TotalSTCTimeInMinutes": "0", 
-            "OwnedBy": "", 
-            "CloseDescription": "", 
-            "SLANameForCustomer": "", 
-            "Impact": "", 
-            "PortalAltContactInfo": "", 
-            "Stat_DateTimeAssigned": "", 
-            "Stat_ResponseTime": "0", 
-            "DefaultTeam": "", 
-            "PendingReason": "", 
-            "SLAName": "Corporate", 
-            "SLAResponseWarning": "4/29/2019 9:45:00 AM", 
-            "Priority": "3", 
-            "Source": "Phone", 
-            "Location": "", 
-            "LinkedSLAs": " ,  , ", 
-            "ServiceCatalogTemplateName": "", 
-            "ServiceCartID": "", 
-            "CustomerDisplayName": "Playbook customer", 
-            "ClosedBy": "", 
-            "ClonedIncident": "", 
-            "ChangeID": "", 
-            "CreatedDateTime": "4/28/2019 10:49:04 AM", 
-            "NextStatus": "In Progress", 
-            "StatusID": "938729d99cb110f2a6c3e5488ead246422a7cd115f", 
-            "ConfigItemTypeID": "", 
-            "STCTimeInMinutes": "0", 
-            "LastModifiedDateTime": "4/28/2019 10:49:04 AM", 
-            "ConfigItemRecID": "", 
-            "PendingStartDateTime": "", 
-            "MajorIncidentID": "", 
-            "ServiceID": "", 
-            "WasCIDown": "False", 
-            "Urgency": "", 
-            "Stat_SLAResponseWarning": "False", 
-            "Stat_DateTimeInProgress": "", 
-            "Stat_FirstCallResolution": "False", 
-            "ServiceEntitlements": "", 
-            "IncidentchildRecID": "", 
-            "ClonedIncidentID": "", 
-            "CreatedBy": "API User", 
-            "SLAID": "938aad773b01d0140385e84d19aa5205c5acf8c839", 
-            "ClosedOn1stCall": "False", 
-            "Category": "", 
-            "SubcategoryID": "", 
-            "Stat_SLAResolutionGood": "False", 
-            "SmartClassifySearchString": "", 
-            "MajorIncidentRecID": "", 
-            "LinkedProblem": "", 
-            "TotalTasks": "0.00", 
-            "TasksClosed": "False", 
-            "PortalAffectsMultipleUsers": "False", 
-            "ShowContactInformation": "False", 
-            "SLATargetTimeID": "", 
-            "Status": "New", 
-            "CIDownEndDateTime": "", 
-            "TotalTaskTime": "0.00", 
-            "Level2EscalationComplete": "True", 
-            "Stat_SLAResponseGood": "False", 
-            "PendingPreviousStatus": "", 
-            "SLAIDForCustomer": "", 
-            "Stat_DateTimeResponded": "", 
-            "CartItemID": "", 
-            "RequesterDepartment": "", 
-            "IncidentchildID": "", 
-            "RecordId": "944b6ad94320debe6d94f14c9eab770ccbf16ab981", 
-            "ReasonForBreach": "", 
-            "ClosedDateTime": "", 
-            "LastModTimeStamp": "Byte[] Array", 
-            "Subcategory": "", 
-            "MajorIncident": "False", 
-            "Level3EscalationComplete": "True", 
-            "TasksInProgress": "False", 
-            "SLANameForService": "", 
-            "IncidentType": "Incident", 
-            "Stat_SLAResponseBreached": "False", 
-            "CIDownStartDateTime": "", 
-            "IncidentDurationInDays": "0.00", 
-            "CreatedByID": "944856551f982d9572dcf549a4a5d8811f02075fd5", 
-            "RecID": "944b6ad94320debe6d94f14c9eab770ccbf16ab981", 
-            "SLAResolveByDeadline": "5/1/2019 10:49:04 AM", 
-            "SpecificsTypeId": "9398862125defd58a8deea46fe88acc411a96e2b00", 
-            "Cause": "", 
-            "Stat_IncidentReopened": "False", 
-            "SLANameForCI": "", 
-            "Stat_DateTimeResolved": "", 
-            "Description": "This incident was created by Cherwell documentation script", 
-            "Stat_NumberOfTouches": "2", 
-            "OwnedByTeam": "", 
-            "BusinessObjectId": "6dd53665c0c24cab86870a21cf6434ae", 
-            "SLAIDForService": "", 
-            "BreachNotes": "", 
-            "Cost": "0.00", 
-            "CustomerRecID": "944b37889fdb5a0e8f519b422095314c29cdbca16a", 
-            "ConfigItemType": "", 
-            "IncidentID": "10196", 
-            "ConfigItemDisplayName": "", 
-            "SLAResolutionWarning": "5/1/2019 10:34:04 AM", 
-            "Stat_DateTimeClosed": "", 
-            "ClosedByID": "", 
-            "Stat_24x7ElapsedTime": "0", 
-            "Level2EscalationTeam": "", 
-            "SLARespondByDeadline": "4/29/2019 10:00:00 AM", 
-            "OwnedByID": "", 
-            "LastModBy": "API User", 
-            "Stat_NumberOfEscalations": "0", 
-            "StatusDesc": "", 
-            "PendingEndDateTime": "", 
-            "Stat_SLAResolutionWarning": "False", 
-            "TaskClosedCount": "0", 
-            "ServiceCustomerIsEntitled": "False", 
-            "OwnedByTeamID": "", 
-            "IncidentDurationInHours": "0.00"
-        }, 
-        {
-            "Service": "", 
-            "LastModByID": "944856551f982d9572dcf549a4a5d8811f02075fd5", 
-            "CreatedByEmail": "", 
-            "Comments": "", 
-            "ShowAllServices": "False", 
-            "RecurringIncident": "False", 
-            "ReviewByDeadline": "1/1/1900 12:00:00 AM", 
-            "PortalAffectsPrimaryFunction": "False", 
-            "CustomerTypeID": "", 
-            "NextStatusOneStep": "&lt;Trebuchet&gt;&lt;ActionInfoDef ID=\"93d9abdb6242", 
-            "OwnedByManager": "", 
-            "Level3EscalationTeam": "", 
-            "Stat_IncidentEscalated": "False", 
-            "TasksOnHold": "False", 
-            "Stat_SLAResolutionBreached": "False", 
-            "NextStatusText": "Begin Work", 
-            "SLA_Key": "_Incident", 
-            "CIDowntimeInMinutes": "0.00", 
-            "Withdraw": "False", 
-            "CustomerSubscriptionLevel": "", 
-            "CombinedKB": "", 
-            "SCTFired": "False", 
-            "PublicId": "10197", 
-            "SCTRecID": "", 
-            "Stat_DateTimeReOpened": "", 
-            "SLAIDForCI": "", 
-            "CreatedDuring": "Only on weekends", 
-            "ApprovalBlockID": "", 
-            "TotalSTCTimeInMinutes": "0", 
-            "OwnedBy": "", 
-            "CloseDescription": "", 
-            "SLANameForCustomer": "", 
-            "Impact": "", 
-            "PortalAltContactInfo": "", 
-            "Stat_DateTimeAssigned": "", 
-            "Stat_ResponseTime": "0", 
-            "DefaultTeam": "", 
-            "PendingReason": "", 
-            "SLAName": "Corporate", 
-            "SLAResponseWarning": "4/29/2019 9:45:00 AM", 
-            "Priority": "3", 
-            "Source": "Phone", 
-            "Location": "", 
-            "LinkedSLAs": " ,  , ", 
-            "ServiceCatalogTemplateName": "", 
-            "ServiceCartID": "", 
-            "CustomerDisplayName": "Playbook customer", 
-            "ClosedBy": "", 
-            "ClonedIncident": "", 
-            "ChangeID": "", 
-            "CreatedDateTime": "4/28/2019 10:50:14 AM", 
-            "NextStatus": "In Progress", 
-            "StatusID": "938729d99cb110f2a6c3e5488ead246422a7cd115f", 
-            "ConfigItemTypeID": "", 
-            "STCTimeInMinutes": "0", 
-            "LastModifiedDateTime": "4/28/2019 10:50:14 AM", 
-            "ConfigItemRecID": "", 
-            "PendingStartDateTime": "", 
-            "MajorIncidentID": "", 
-            "ServiceID": "", 
-            "WasCIDown": "False", 
-            "Urgency": "", 
-            "Stat_SLAResponseWarning": "False", 
-            "Stat_DateTimeInProgress": "", 
-            "Stat_FirstCallResolution": "False", 
-            "ServiceEntitlements": "", 
-            "IncidentchildRecID": "", 
-            "ClonedIncidentID": "", 
-            "CreatedBy": "API User", 
-            "SLAID": "938aad773b01d0140385e84d19aa5205c5acf8c839", 
-            "ClosedOn1stCall": "False", 
-            "Category": "", 
-            "SubcategoryID": "", 
-            "Stat_SLAResolutionGood": "False", 
-            "SmartClassifySearchString": "", 
-            "MajorIncidentRecID": "", 
-            "LinkedProblem": "", 
-            "TotalTasks": "0.00", 
-            "TasksClosed": "False", 
-            "PortalAffectsMultipleUsers": "False", 
-            "ShowContactInformation": "False", 
-            "SLATargetTimeID": "", 
-            "Status": "New", 
-            "CIDownEndDateTime": "", 
-            "TotalTaskTime": "0.00", 
-            "Level2EscalationComplete": "True", 
-            "Stat_SLAResponseGood": "False", 
-            "PendingPreviousStatus": "", 
-            "SLAIDForCustomer": "", 
-            "Stat_DateTimeResponded": "", 
-            "CartItemID": "", 
-            "RequesterDepartment": "", 
-            "IncidentchildID": "", 
-            "RecordId": "944b6adc04cf7a9815eca846cab074f00ec7f9e4e1", 
-            "ReasonForBreach": "", 
-            "ClosedDateTime": "", 
-            "LastModTimeStamp": "Byte[] Array", 
-            "Subcategory": "", 
-            "MajorIncident": "False", 
-            "Level3EscalationComplete": "True", 
-            "TasksInProgress": "False", 
-            "SLANameForService": "", 
-            "IncidentType": "Incident", 
-            "Stat_SLAResponseBreached": "False", 
-            "CIDownStartDateTime": "", 
-            "IncidentDurationInDays": "0.00", 
-            "CreatedByID": "944856551f982d9572dcf549a4a5d8811f02075fd5", 
-            "RecID": "944b6adc04cf7a9815eca846cab074f00ec7f9e4e1", 
-            "SLAResolveByDeadline": "5/1/2019 10:50:14 AM", 
-            "SpecificsTypeId": "9398862125defd58a8deea46fe88acc411a96e2b00", 
-            "Cause": "", 
-            "Stat_IncidentReopened": "False", 
-            "SLANameForCI": "", 
-            "Stat_DateTimeResolved": "", 
-            "Description": "This incident was created by Cherwell documentation script", 
-            "Stat_NumberOfTouches": "2", 
-            "OwnedByTeam": "", 
-            "BusinessObjectId": "6dd53665c0c24cab86870a21cf6434ae", 
-            "SLAIDForService": "", 
-            "BreachNotes": "", 
-            "Cost": "0.00", 
-            "CustomerRecID": "944b37889fdb5a0e8f519b422095314c29cdbca16a", 
-            "ConfigItemType": "", 
-            "IncidentID": "10197", 
-            "ConfigItemDisplayName": "", 
-            "SLAResolutionWarning": "5/1/2019 10:35:14 AM", 
-            "Stat_DateTimeClosed": "", 
-            "ClosedByID": "", 
-            "Stat_24x7ElapsedTime": "0", 
-            "Level2EscalationTeam": "", 
-            "SLARespondByDeadline": "4/29/2019 10:00:00 AM", 
-            "OwnedByID": "", 
-            "LastModBy": "API User", 
-            "Stat_NumberOfEscalations": "0", 
-            "StatusDesc": "", 
-            "PendingEndDateTime": "", 
-            "Stat_SLAResolutionWarning": "False", 
-            "TaskClosedCount": "0", 
-            "ServiceCustomerIsEntitled": "False", 
-            "OwnedByTeamID": "", 
-            "IncidentDurationInHours": "0.00"
-        }, 
-        {
-            "Service": "", 
-            "LastModByID": "944856551f982d9572dcf549a4a5d8811f02075fd5", 
-            "CreatedByEmail": "", 
-            "Comments": "", 
-            "ShowAllServices": "False", 
-            "RecurringIncident": "False", 
-            "ReviewByDeadline": "1/1/1900 12:00:00 AM", 
-            "PortalAffectsPrimaryFunction": "False", 
-            "CustomerTypeID": "", 
-            "NextStatusOneStep": "&lt;Trebuchet&gt;&lt;ActionInfoDef ID=\"93d9abdb6242", 
-            "OwnedByManager": "", 
-            "Level3EscalationTeam": "", 
-            "Stat_IncidentEscalated": "False", 
-            "TasksOnHold": "False", 
-            "Stat_SLAResolutionBreached": "False", 
-            "NextStatusText": "Begin Work", 
-            "SLA_Key": "_Incident", 
-            "CIDowntimeInMinutes": "0.00", 
-            "Withdraw": "False", 
-            "CustomerSubscriptionLevel": "", 
-            "CombinedKB": "", 
-            "SCTFired": "False", 
-            "PublicId": "10198", 
-            "SCTRecID": "", 
-            "Stat_DateTimeReOpened": "", 
-            "SLAIDForCI": "", 
-            "CreatedDuring": "Only on weekends", 
-            "ApprovalBlockID": "", 
-            "TotalSTCTimeInMinutes": "0", 
-            "OwnedBy": "", 
-            "CloseDescription": "", 
-            "SLANameForCustomer": "", 
-            "Impact": "", 
-            "PortalAltContactInfo": "", 
-            "Stat_DateTimeAssigned": "", 
-            "Stat_ResponseTime": "0", 
-            "DefaultTeam": "", 
-            "PendingReason": "", 
-            "SLAName": "Corporate", 
-            "SLAResponseWarning": "4/29/2019 9:45:00 AM", 
-            "Priority": "3", 
-            "Source": "Phone", 
-            "Location": "", 
-            "LinkedSLAs": " ,  , ", 
-            "ServiceCatalogTemplateName": "", 
-            "ServiceCartID": "", 
-            "CustomerDisplayName": "Playbook customer", 
-            "ClosedBy": "", 
-            "ClonedIncident": "", 
-            "ChangeID": "", 
-            "CreatedDateTime": "4/28/2019 10:50:37 AM", 
-            "NextStatus": "In Progress", 
-            "StatusID": "938729d99cb110f2a6c3e5488ead246422a7cd115f", 
-            "ConfigItemTypeID": "", 
-            "STCTimeInMinutes": "0", 
-            "LastModifiedDateTime": "4/28/2019 10:50:37 AM", 
-            "ConfigItemRecID": "", 
-            "PendingStartDateTime": "", 
-            "MajorIncidentID": "", 
-            "ServiceID": "", 
-            "WasCIDown": "False", 
-            "Urgency": "", 
-            "Stat_SLAResponseWarning": "False", 
-            "Stat_DateTimeInProgress": "", 
-            "Stat_FirstCallResolution": "False", 
-            "ServiceEntitlements": "", 
-            "IncidentchildRecID": "", 
-            "ClonedIncidentID": "", 
-            "CreatedBy": "API User", 
-            "SLAID": "938aad773b01d0140385e84d19aa5205c5acf8c839", 
-            "ClosedOn1stCall": "False", 
-            "Category": "", 
-            "SubcategoryID": "", 
-            "Stat_SLAResolutionGood": "False", 
-            "SmartClassifySearchString": "", 
-            "MajorIncidentRecID": "", 
-            "LinkedProblem": "", 
-            "TotalTasks": "0.00", 
-            "TasksClosed": "False", 
-            "PortalAffectsMultipleUsers": "False", 
-            "ShowContactInformation": "False", 
-            "SLATargetTimeID": "", 
-            "Status": "New", 
-            "CIDownEndDateTime": "", 
-            "TotalTaskTime": "0.00", 
-            "Level2EscalationComplete": "True", 
-            "Stat_SLAResponseGood": "False", 
-            "PendingPreviousStatus": "", 
-            "SLAIDForCustomer": "", 
-            "Stat_DateTimeResponded": "", 
-            "CartItemID": "", 
-            "RequesterDepartment": "", 
-            "IncidentchildID": "", 
-            "RecordId": "944b6adcea4815e9e43fd64fa691d39ec58eb78db3", 
-            "ReasonForBreach": "", 
-            "ClosedDateTime": "", 
-            "LastModTimeStamp": "Byte[] Array", 
-            "Subcategory": "", 
-            "MajorIncident": "False", 
-            "Level3EscalationComplete": "True", 
-            "TasksInProgress": "False", 
-            "SLANameForService": "", 
-            "IncidentType": "Incident", 
-            "Stat_SLAResponseBreached": "False", 
-            "CIDownStartDateTime": "", 
-            "IncidentDurationInDays": "0.00", 
-            "CreatedByID": "944856551f982d9572dcf549a4a5d8811f02075fd5", 
-            "RecID": "944b6adcea4815e9e43fd64fa691d39ec58eb78db3", 
-            "SLAResolveByDeadline": "5/1/2019 10:50:37 AM", 
-            "SpecificsTypeId": "9398862125defd58a8deea46fe88acc411a96e2b00", 
-            "Cause": "", 
-            "Stat_IncidentReopened": "False", 
-            "SLANameForCI": "", 
-            "Stat_DateTimeResolved": "", 
-            "Description": "This incident was created by Cherwell documentation script", 
-            "Stat_NumberOfTouches": "2", 
-            "OwnedByTeam": "", 
-            "BusinessObjectId": "6dd53665c0c24cab86870a21cf6434ae", 
-            "SLAIDForService": "", 
-            "BreachNotes": "", 
-            "Cost": "0.00", 
-            "CustomerRecID": "944b37889fdb5a0e8f519b422095314c29cdbca16a", 
-            "ConfigItemType": "", 
-            "IncidentID": "10198", 
-            "ConfigItemDisplayName": "", 
-            "SLAResolutionWarning": "5/1/2019 10:35:37 AM", 
-            "Stat_DateTimeClosed": "", 
-            "ClosedByID": "", 
-            "Stat_24x7ElapsedTime": "0", 
-            "Level2EscalationTeam": "", 
-            "SLARespondByDeadline": "4/29/2019 10:00:00 AM", 
-            "OwnedByID": "", 
-            "LastModBy": "API User", 
-            "Stat_NumberOfEscalations": "0", 
-            "StatusDesc": "", 
-            "PendingEndDateTime": "", 
-            "Stat_SLAResolutionWarning": "False", 
-            "TaskClosedCount": "0", 
-            "ServiceCustomerIsEntitled": "False", 
-            "OwnedByTeamID": "", 
-            "IncidentDurationInHours": "0.00"
-        }, 
-        {
-            "Service": "", 
-            "LastModByID": "944856551f982d9572dcf549a4a5d8811f02075fd5", 
-            "CreatedByEmail": "", 
-            "Comments": "", 
-            "ShowAllServices": "False", 
-            "RecurringIncident": "False", 
-            "ReviewByDeadline": "1/1/1900 12:00:00 AM", 
-            "PortalAffectsPrimaryFunction": "False", 
-            "CustomerTypeID": "", 
-            "NextStatusOneStep": "&lt;Trebuchet&gt;&lt;ActionInfoDef ID=\"93d9abdb6242", 
-            "OwnedByManager": "", 
-            "Level3EscalationTeam": "", 
-            "Stat_IncidentEscalated": "False", 
-            "TasksOnHold": "False", 
-            "Stat_SLAResolutionBreached": "False", 
-            "NextStatusText": "Begin Work", 
-            "SLA_Key": "_Incident", 
-            "CIDowntimeInMinutes": "0.00", 
-            "Withdraw": "False", 
-            "CustomerSubscriptionLevel": "", 
-            "CombinedKB": "", 
-            "SCTFired": "False", 
-            "PublicId": "10199", 
-            "SCTRecID": "", 
-            "Stat_DateTimeReOpened": "", 
-            "SLAIDForCI": "", 
-            "CreatedDuring": "Only on weekends", 
-            "ApprovalBlockID": "", 
-            "TotalSTCTimeInMinutes": "0", 
-            "OwnedBy": "", 
-            "CloseDescription": "", 
-            "SLANameForCustomer": "", 
-            "Impact": "", 
-            "PortalAltContactInfo": "", 
-            "Stat_DateTimeAssigned": "", 
-            "Stat_ResponseTime": "0", 
-            "DefaultTeam": "", 
-            "PendingReason": "", 
-            "SLAName": "Corporate", 
-            "SLAResponseWarning": "4/29/2019 9:45:00 AM", 
-            "Priority": "3", 
-            "Source": "Phone", 
-            "Location": "", 
-            "LinkedSLAs": " ,  , ", 
-            "ServiceCatalogTemplateName": "", 
-            "ServiceCartID": "", 
-            "CustomerDisplayName": "Playbook customer", 
-            "ClosedBy": "", 
-            "ClonedIncident": "", 
-            "ChangeID": "", 
-            "CreatedDateTime": "4/28/2019 10:52:09 AM", 
-            "NextStatus": "In Progress", 
-            "StatusID": "938729d99cb110f2a6c3e5488ead246422a7cd115f", 
-            "ConfigItemTypeID": "", 
-            "STCTimeInMinutes": "0", 
-            "LastModifiedDateTime": "4/28/2019 10:52:09 AM", 
-            "ConfigItemRecID": "", 
-            "PendingStartDateTime": "", 
-            "MajorIncidentID": "", 
-            "ServiceID": "", 
-            "WasCIDown": "False", 
-            "Urgency": "", 
-            "Stat_SLAResponseWarning": "False", 
-            "Stat_DateTimeInProgress": "", 
-            "Stat_FirstCallResolution": "False", 
-            "ServiceEntitlements": "", 
-            "IncidentchildRecID": "", 
-            "ClonedIncidentID": "", 
-            "CreatedBy": "API User", 
-            "SLAID": "938aad773b01d0140385e84d19aa5205c5acf8c839", 
-            "ClosedOn1stCall": "False", 
-            "Category": "", 
-            "SubcategoryID": "", 
-            "Stat_SLAResolutionGood": "False", 
-            "SmartClassifySearchString": "", 
-            "MajorIncidentRecID": "", 
-            "LinkedProblem": "", 
-            "TotalTasks": "0.00", 
-            "TasksClosed": "False", 
-            "PortalAffectsMultipleUsers": "False", 
-            "ShowContactInformation": "False", 
-            "SLATargetTimeID": "", 
-            "Status": "New", 
-            "CIDownEndDateTime": "", 
-            "TotalTaskTime": "0.00", 
-            "Level2EscalationComplete": "True", 
-            "Stat_SLAResponseGood": "False", 
-            "PendingPreviousStatus": "", 
-            "SLAIDForCustomer": "", 
-            "Stat_DateTimeResponded": "", 
-            "CartItemID": "", 
-            "RequesterDepartment": "", 
-            "IncidentchildID": "", 
-            "RecordId": "944b6ae081fc6b7a7f28144ce5b844ceada8cb9c10", 
-            "ReasonForBreach": "", 
-            "ClosedDateTime": "", 
-            "LastModTimeStamp": "Byte[] Array", 
-            "Subcategory": "", 
-            "MajorIncident": "False", 
-            "Level3EscalationComplete": "True", 
-            "TasksInProgress": "False", 
-            "SLANameForService": "", 
-            "IncidentType": "Incident", 
-            "Stat_SLAResponseBreached": "False", 
-            "CIDownStartDateTime": "", 
-            "IncidentDurationInDays": "0.00", 
-            "CreatedByID": "944856551f982d9572dcf549a4a5d8811f02075fd5", 
-            "RecID": "944b6ae081fc6b7a7f28144ce5b844ceada8cb9c10", 
-            "SLAResolveByDeadline": "5/1/2019 10:52:09 AM", 
-            "SpecificsTypeId": "9398862125defd58a8deea46fe88acc411a96e2b00", 
-            "Cause": "", 
-            "Stat_IncidentReopened": "False", 
-            "SLANameForCI": "", 
-            "Stat_DateTimeResolved": "", 
-            "Description": "This incident was created by Cherwell documentation script", 
-            "Stat_NumberOfTouches": "2", 
-            "OwnedByTeam": "", 
-            "BusinessObjectId": "6dd53665c0c24cab86870a21cf6434ae", 
-            "SLAIDForService": "", 
-            "BreachNotes": "", 
-            "Cost": "0.00", 
-            "CustomerRecID": "944b37889fdb5a0e8f519b422095314c29cdbca16a", 
-            "ConfigItemType": "", 
-            "IncidentID": "10199", 
-            "ConfigItemDisplayName": "", 
-            "SLAResolutionWarning": "5/1/2019 10:37:09 AM", 
-            "Stat_DateTimeClosed": "", 
-            "ClosedByID": "", 
-            "Stat_24x7ElapsedTime": "0", 
-            "Level2EscalationTeam": "", 
-            "SLARespondByDeadline": "4/29/2019 10:00:00 AM", 
-            "OwnedByID": "", 
-            "LastModBy": "API User", 
-            "Stat_NumberOfEscalations": "0", 
-            "StatusDesc": "", 
-            "PendingEndDateTime": "", 
-            "Stat_SLAResolutionWarning": "False", 
-            "TaskClosedCount": "0", 
-            "ServiceCustomerIsEntitled": "False", 
-            "OwnedByTeamID": "", 
-            "IncidentDurationInHours": "0.00"
-        }, 
-        {
-            "Service": "", 
-            "LastModByID": "944856551f982d9572dcf549a4a5d8811f02075fd5", 
-            "CreatedByEmail": "", 
-            "Comments": "", 
-            "ShowAllServices": "False", 
-            "RecurringIncident": "False", 
-            "ReviewByDeadline": "1/1/1900 12:00:00 AM", 
-            "PortalAffectsPrimaryFunction": "False", 
-            "CustomerTypeID": "", 
-            "NextStatusOneStep": "&lt;Trebuchet&gt;&lt;ActionInfoDef ID=\"93d9abdb6242", 
-            "OwnedByManager": "", 
-            "Level3EscalationTeam": "", 
-            "Stat_IncidentEscalated": "False", 
-            "TasksOnHold": "False", 
-            "Stat_SLAResolutionBreached": "False", 
-            "NextStatusText": "Begin Work", 
-            "SLA_Key": "_Incident", 
-            "CIDowntimeInMinutes": "0.00", 
-            "Withdraw": "False", 
-            "CustomerSubscriptionLevel": "", 
-            "CombinedKB": "", 
-            "SCTFired": "False", 
-            "PublicId": "10200", 
-            "SCTRecID": "", 
-            "Stat_DateTimeReOpened": "", 
-            "SLAIDForCI": "", 
-            "CreatedDuring": "Only on weekends", 
-            "ApprovalBlockID": "", 
-            "TotalSTCTimeInMinutes": "0", 
-            "OwnedBy": "", 
-            "CloseDescription": "", 
-            "SLANameForCustomer": "", 
-            "Impact": "", 
-            "PortalAltContactInfo": "", 
-            "Stat_DateTimeAssigned": "", 
-            "Stat_ResponseTime": "0", 
-            "DefaultTeam": "", 
-            "PendingReason": "", 
-            "SLAName": "Corporate", 
-            "SLAResponseWarning": "4/29/2019 9:45:00 AM", 
-            "Priority": "3", 
-            "Source": "Phone", 
-            "Location": "", 
-            "LinkedSLAs": " ,  , ", 
-            "ServiceCatalogTemplateName": "", 
-            "ServiceCartID": "", 
-            "CustomerDisplayName": "Playbook customer", 
-            "ClosedBy": "", 
-            "ClonedIncident": "", 
-            "ChangeID": "", 
-            "CreatedDateTime": "4/28/2019 10:54:10 AM", 
-            "NextStatus": "In Progress", 
-            "StatusID": "938729d99cb110f2a6c3e5488ead246422a7cd115f", 
-            "ConfigItemTypeID": "", 
-            "STCTimeInMinutes": "0", 
-            "LastModifiedDateTime": "4/28/2019 10:54:10 AM", 
-            "ConfigItemRecID": "", 
-            "PendingStartDateTime": "", 
-            "MajorIncidentID": "", 
-            "ServiceID": "", 
-            "WasCIDown": "False", 
-            "Urgency": "", 
-            "Stat_SLAResponseWarning": "False", 
-            "Stat_DateTimeInProgress": "", 
-            "Stat_FirstCallResolution": "False", 
-            "ServiceEntitlements": "", 
-            "IncidentchildRecID": "", 
-            "ClonedIncidentID": "", 
-            "CreatedBy": "API User", 
-            "SLAID": "938aad773b01d0140385e84d19aa5205c5acf8c839", 
-            "ClosedOn1stCall": "False", 
-            "Category": "", 
-            "SubcategoryID": "", 
-            "Stat_SLAResolutionGood": "False", 
-            "SmartClassifySearchString": "", 
-            "MajorIncidentRecID": "", 
-            "LinkedProblem": "", 
-            "TotalTasks": "0.00", 
-            "TasksClosed": "False", 
-            "PortalAffectsMultipleUsers": "False", 
-            "ShowContactInformation": "False", 
-            "SLATargetTimeID": "", 
-            "Status": "New", 
-            "CIDownEndDateTime": "", 
-            "TotalTaskTime": "0.00", 
-            "Level2EscalationComplete": "True", 
-            "Stat_SLAResponseGood": "False", 
-            "PendingPreviousStatus": "", 
-            "SLAIDForCustomer": "", 
-            "Stat_DateTimeResponded": "", 
-            "CartItemID": "", 
-            "RequesterDepartment": "", 
-            "IncidentchildID": "", 
-            "RecordId": "944b6ae5343bba7bc4c4fc43709d223378c3ae6dcb", 
-            "ReasonForBreach": "", 
-            "ClosedDateTime": "", 
-            "LastModTimeStamp": "Byte[] Array", 
-            "Subcategory": "", 
-            "MajorIncident": "False", 
-            "Level3EscalationComplete": "True", 
-            "TasksInProgress": "False", 
-            "SLANameForService": "", 
-            "IncidentType": "Incident", 
-            "Stat_SLAResponseBreached": "False", 
-            "CIDownStartDateTime": "", 
-            "IncidentDurationInDays": "0.00", 
-            "CreatedByID": "944856551f982d9572dcf549a4a5d8811f02075fd5", 
-            "RecID": "944b6ae5343bba7bc4c4fc43709d223378c3ae6dcb", 
-            "SLAResolveByDeadline": "5/1/2019 10:54:10 AM", 
-            "SpecificsTypeId": "9398862125defd58a8deea46fe88acc411a96e2b00", 
-            "Cause": "", 
-            "Stat_IncidentReopened": "False", 
-            "SLANameForCI": "", 
-            "Stat_DateTimeResolved": "", 
-            "Description": "This incident was created by Cherwell documentation script", 
-            "Stat_NumberOfTouches": "2", 
-            "OwnedByTeam": "", 
-            "BusinessObjectId": "6dd53665c0c24cab86870a21cf6434ae", 
-            "SLAIDForService": "", 
-            "BreachNotes": "", 
-            "Cost": "0.00", 
-            "CustomerRecID": "944b37889fdb5a0e8f519b422095314c29cdbca16a", 
-            "ConfigItemType": "", 
-            "IncidentID": "10200", 
-            "ConfigItemDisplayName": "", 
-            "SLAResolutionWarning": "5/1/2019 10:39:10 AM", 
-            "Stat_DateTimeClosed": "", 
-            "ClosedByID": "", 
-            "Stat_24x7ElapsedTime": "0", 
-            "Level2EscalationTeam": "", 
-            "SLARespondByDeadline": "4/29/2019 10:00:00 AM", 
-            "OwnedByID": "", 
-            "LastModBy": "API User", 
-            "Stat_NumberOfEscalations": "0", 
-            "StatusDesc": "", 
-            "PendingEndDateTime": "", 
-            "Stat_SLAResolutionWarning": "False", 
-            "TaskClosedCount": "0", 
-            "ServiceCustomerIsEntitled": "False", 
-            "OwnedByTeamID": "", 
-            "IncidentDurationInHours": "0.00"
-        }, 
-        {
-            "Service": "", 
-            "LastModByID": "944856551f982d9572dcf549a4a5d8811f02075fd5", 
-            "CreatedByEmail": "", 
-            "Comments": "", 
-            "ShowAllServices": "False", 
-            "RecurringIncident": "False", 
-            "ReviewByDeadline": "1/1/1900 12:00:00 AM", 
-            "PortalAffectsPrimaryFunction": "False", 
-            "CustomerTypeID": "", 
-            "NextStatusOneStep": "&lt;Trebuchet&gt;&lt;ActionInfoDef ID=\"93d9abdb6242", 
-            "OwnedByManager": "", 
-            "Level3EscalationTeam": "", 
-            "Stat_IncidentEscalated": "False", 
-            "TasksOnHold": "False", 
-            "Stat_SLAResolutionBreached": "False", 
-            "NextStatusText": "Begin Work", 
-            "SLA_Key": "_Incident", 
-            "CIDowntimeInMinutes": "0.00", 
-            "Withdraw": "False", 
-            "CustomerSubscriptionLevel": "", 
-            "CombinedKB": "", 
-            "SCTFired": "False", 
-            "PublicId": "10221", 
-            "SCTRecID": "", 
-            "Stat_DateTimeReOpened": "", 
-            "SLAIDForCI": "", 
-            "CreatedDuring": "Only on weekends", 
-            "ApprovalBlockID": "", 
-            "TotalSTCTimeInMinutes": "0", 
-            "OwnedBy": "", 
-            "CloseDescription": "", 
-            "SLANameForCustomer": "", 
-            "Impact": "", 
-            "PortalAltContactInfo": "", 
-            "Stat_DateTimeAssigned": "", 
-            "Stat_ResponseTime": "0", 
-            "DefaultTeam": "", 
-            "PendingReason": "", 
-            "SLAName": "Corporate", 
-            "SLAResponseWarning": "4/29/2019 9:45:00 AM", 
-            "Priority": "3", 
-            "Source": "Phone", 
-            "Location": "", 
-            "LinkedSLAs": " ,  , ", 
-            "ServiceCatalogTemplateName": "", 
-            "ServiceCartID": "", 
-            "CustomerDisplayName": "Playbook customer", 
-            "ClosedBy": "", 
-            "ClonedIncident": "", 
-            "ChangeID": "", 
-            "CreatedDateTime": "4/28/2019 1:55:55 PM", 
-            "NextStatus": "In Progress", 
-            "StatusID": "938729d99cb110f2a6c3e5488ead246422a7cd115f", 
-            "ConfigItemTypeID": "", 
-            "STCTimeInMinutes": "0", 
-            "LastModifiedDateTime": "4/28/2019 1:55:55 PM", 
-            "ConfigItemRecID": "", 
-            "PendingStartDateTime": "", 
-            "MajorIncidentID": "", 
-            "ServiceID": "", 
-            "WasCIDown": "False", 
-            "Urgency": "", 
-            "Stat_SLAResponseWarning": "False", 
-            "Stat_DateTimeInProgress": "", 
-            "Stat_FirstCallResolution": "False", 
-            "ServiceEntitlements": "", 
-            "IncidentchildRecID": "", 
-            "ClonedIncidentID": "", 
-            "CreatedBy": "API User", 
-            "SLAID": "938aad773b01d0140385e84d19aa5205c5acf8c839", 
-            "ClosedOn1stCall": "False", 
-            "Category": "", 
-            "SubcategoryID": "", 
-            "Stat_SLAResolutionGood": "False", 
-            "SmartClassifySearchString": "", 
-            "MajorIncidentRecID": "", 
-            "LinkedProblem": "", 
-            "TotalTasks": "0.00", 
-            "TasksClosed": "False", 
-            "PortalAffectsMultipleUsers": "False", 
-            "ShowContactInformation": "False", 
-            "SLATargetTimeID": "", 
-            "Status": "New", 
-            "CIDownEndDateTime": "", 
-            "TotalTaskTime": "0.00", 
-            "Level2EscalationComplete": "True", 
-            "Stat_SLAResponseGood": "False", 
-            "PendingPreviousStatus": "", 
-            "SLAIDForCustomer": "", 
-            "Stat_DateTimeResponded": "", 
-            "CartItemID": "", 
-            "RequesterDepartment": "", 
-            "IncidentchildID": "", 
-            "RecordId": "944b6c8f3610a630a0feb04bae8d72e73760921611", 
-            "ReasonForBreach": "", 
-            "ClosedDateTime": "", 
-            "LastModTimeStamp": "Byte[] Array", 
-            "Subcategory": "", 
-            "MajorIncident": "False", 
-            "Level3EscalationComplete": "True", 
-            "TasksInProgress": "False", 
-            "SLANameForService": "", 
-            "IncidentType": "Incident", 
-            "Stat_SLAResponseBreached": "False", 
-            "CIDownStartDateTime": "", 
-            "IncidentDurationInDays": "0.00", 
-            "CreatedByID": "944856551f982d9572dcf549a4a5d8811f02075fd5", 
-            "RecID": "944b6c8f3610a630a0feb04bae8d72e73760921611", 
-            "SLAResolveByDeadline": "5/1/2019 1:55:55 PM", 
-            "SpecificsTypeId": "9398862125defd58a8deea46fe88acc411a96e2b00", 
-            "Cause": "", 
-            "Stat_IncidentReopened": "False", 
-            "SLANameForCI": "", 
-            "Stat_DateTimeResolved": "", 
-            "Description": "This incident was created by Cherwell documentation script", 
-            "Stat_NumberOfTouches": "2", 
-            "OwnedByTeam": "", 
-            "BusinessObjectId": "6dd53665c0c24cab86870a21cf6434ae", 
-            "SLAIDForService": "", 
-            "BreachNotes": "", 
-            "Cost": "0.00", 
-            "CustomerRecID": "944b37889fdb5a0e8f519b422095314c29cdbca16a", 
-            "ConfigItemType": "", 
-            "IncidentID": "10221", 
-            "ConfigItemDisplayName": "", 
-            "SLAResolutionWarning": "5/1/2019 1:40:55 PM", 
-            "Stat_DateTimeClosed": "", 
-            "ClosedByID": "", 
-            "Stat_24x7ElapsedTime": "0", 
-            "Level2EscalationTeam": "", 
-            "SLARespondByDeadline": "4/29/2019 10:00:00 AM", 
-            "OwnedByID": "", 
-            "LastModBy": "API User", 
-            "Stat_NumberOfEscalations": "0", 
-            "StatusDesc": "", 
-            "PendingEndDateTime": "", 
-            "Stat_SLAResolutionWarning": "False", 
-            "TaskClosedCount": "0", 
-            "ServiceCustomerIsEntitled": "False", 
-            "OwnedByTeamID": "", 
-            "IncidentDurationInHours": "0.00"
-        }, 
-        {
-            "Service": "", 
-            "LastModByID": "944856551f982d9572dcf549a4a5d8811f02075fd5", 
-            "CreatedByEmail": "", 
-            "Comments": "", 
-            "ShowAllServices": "False", 
-            "RecurringIncident": "False", 
-            "ReviewByDeadline": "1/1/1900 12:00:00 AM", 
-            "PortalAffectsPrimaryFunction": "False", 
-            "CustomerTypeID": "", 
-            "NextStatusOneStep": "&lt;Trebuchet&gt;&lt;ActionInfoDef ID=\"93d9abdb6242", 
-            "OwnedByManager": "", 
-            "Level3EscalationTeam": "", 
-            "Stat_IncidentEscalated": "False", 
-            "TasksOnHold": "False", 
-            "Stat_SLAResolutionBreached": "False", 
-            "NextStatusText": "Begin Work", 
-            "SLA_Key": "_Incident", 
-            "CIDowntimeInMinutes": "0.00", 
-            "Withdraw": "False", 
-            "CustomerSubscriptionLevel": "", 
-            "CombinedKB": "", 
-            "SCTFired": "False", 
-            "PublicId": "10222", 
-            "SCTRecID": "", 
-            "Stat_DateTimeReOpened": "", 
-            "SLAIDForCI": "", 
-            "CreatedDuring": "Only on weekends", 
-            "ApprovalBlockID": "", 
-            "TotalSTCTimeInMinutes": "0", 
-            "OwnedBy": "", 
-            "CloseDescription": "", 
-            "SLANameForCustomer": "", 
-            "Impact": "", 
-            "PortalAltContactInfo": "", 
-            "Stat_DateTimeAssigned": "", 
-            "Stat_ResponseTime": "0", 
-            "DefaultTeam": "", 
-            "PendingReason": "", 
-            "SLAName": "Corporate", 
-            "SLAResponseWarning": "4/29/2019 9:45:00 AM", 
-            "Priority": "3", 
-            "Source": "Phone", 
-            "Location": "", 
-            "LinkedSLAs": " ,  , ", 
-            "ServiceCatalogTemplateName": "", 
-            "ServiceCartID": "", 
-            "CustomerDisplayName": "Playbook customer", 
-            "ClosedBy": "", 
-            "ClonedIncident": "", 
-            "ChangeID": "", 
-            "CreatedDateTime": "4/28/2019 1:57:37 PM", 
-            "NextStatus": "In Progress", 
-            "StatusID": "938729d99cb110f2a6c3e5488ead246422a7cd115f", 
-            "ConfigItemTypeID": "", 
-            "STCTimeInMinutes": "0", 
-            "LastModifiedDateTime": "4/28/2019 1:57:37 PM", 
-            "ConfigItemRecID": "", 
-            "PendingStartDateTime": "", 
-            "MajorIncidentID": "", 
-            "ServiceID": "", 
-            "WasCIDown": "False", 
-            "Urgency": "", 
-            "Stat_SLAResponseWarning": "False", 
-            "Stat_DateTimeInProgress": "", 
-            "Stat_FirstCallResolution": "False", 
-            "ServiceEntitlements": "", 
-            "IncidentchildRecID": "", 
-            "ClonedIncidentID": "", 
-            "CreatedBy": "API User", 
-            "SLAID": "938aad773b01d0140385e84d19aa5205c5acf8c839", 
-            "ClosedOn1stCall": "False", 
-            "Category": "", 
-            "SubcategoryID": "", 
-            "Stat_SLAResolutionGood": "False", 
-            "SmartClassifySearchString": "", 
-            "MajorIncidentRecID": "", 
-            "LinkedProblem": "", 
-            "TotalTasks": "0.00", 
-            "TasksClosed": "False", 
-            "PortalAffectsMultipleUsers": "False", 
-            "ShowContactInformation": "False", 
-            "SLATargetTimeID": "", 
-            "Status": "New", 
-            "CIDownEndDateTime": "", 
-            "TotalTaskTime": "0.00", 
-            "Level2EscalationComplete": "True", 
-            "Stat_SLAResponseGood": "False", 
-            "PendingPreviousStatus": "", 
-            "SLAIDForCustomer": "", 
-            "Stat_DateTimeResponded": "", 
-            "CartItemID": "", 
-            "RequesterDepartment": "", 
-            "IncidentchildID": "", 
-            "RecordId": "944b6c9333fea00cf4a25b40b08542bdcb4db64327", 
-            "ReasonForBreach": "", 
-            "ClosedDateTime": "", 
-            "LastModTimeStamp": "Byte[] Array", 
-            "Subcategory": "", 
-            "MajorIncident": "False", 
-            "Level3EscalationComplete": "True", 
-            "TasksInProgress": "False", 
-            "SLANameForService": "", 
-            "IncidentType": "Incident", 
-            "Stat_SLAResponseBreached": "False", 
-            "CIDownStartDateTime": "", 
-            "IncidentDurationInDays": "0.00", 
-            "CreatedByID": "944856551f982d9572dcf549a4a5d8811f02075fd5", 
-            "RecID": "944b6c9333fea00cf4a25b40b08542bdcb4db64327", 
-            "SLAResolveByDeadline": "5/1/2019 1:57:37 PM", 
-            "SpecificsTypeId": "9398862125defd58a8deea46fe88acc411a96e2b00", 
-            "Cause": "", 
-            "Stat_IncidentReopened": "False", 
-            "SLANameForCI": "", 
-            "Stat_DateTimeResolved": "", 
-            "Description": "This incident was created by Cherwell documentation script", 
-            "Stat_NumberOfTouches": "2", 
-            "OwnedByTeam": "", 
-            "BusinessObjectId": "6dd53665c0c24cab86870a21cf6434ae", 
-            "SLAIDForService": "", 
-            "BreachNotes": "", 
-            "Cost": "0.00", 
-            "CustomerRecID": "944b37889fdb5a0e8f519b422095314c29cdbca16a", 
-            "ConfigItemType": "", 
-            "IncidentID": "10222", 
-            "ConfigItemDisplayName": "", 
-            "SLAResolutionWarning": "5/1/2019 1:42:37 PM", 
-            "Stat_DateTimeClosed": "", 
-            "ClosedByID": "", 
-            "Stat_24x7ElapsedTime": "0", 
-            "Level2EscalationTeam": "", 
-            "SLARespondByDeadline": "4/29/2019 10:00:00 AM", 
-            "OwnedByID": "", 
-            "LastModBy": "API User", 
-            "Stat_NumberOfEscalations": "0", 
-            "StatusDesc": "", 
-            "PendingEndDateTime": "", 
-            "Stat_SLAResolutionWarning": "False", 
-            "TaskClosedCount": "0", 
-            "ServiceCustomerIsEntitled": "False", 
-            "OwnedByTeamID": "", 
-            "IncidentDurationInHours": "0.00"
-        }
-    ]
-}
-</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-9">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-<h3 id="query-results">Query Results</h3>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table border="2">
-<thead>
-<tr>
-<th>Rec ID</th>
-<th>Incident ID</th>
-<th>Created Date Time</th>
-<th>Created During</th>
-<th>Created By</th>
-<th>Created By ID</th>
-<th>Status</th>
-<th>Status Desc</th>
-<th>Service</th>
-<th>Category</th>
-<th>Subcategory</th>
-<th>Specifics Type Id</th>
-<th>Description</th>
-<th>Impact</th>
-<th>Urgency</th>
-<th>Priority</th>
-<th>Closed Date Time</th>
-<th>Closed By</th>
-<th>Closed By ID</th>
-<th>Cost</th>
-<th>Last Mod Time Stamp</th>
-<th>Owned By Team</th>
-<th>Owned By Team ID</th>
-<th>Owned By</th>
-<th>Owned By ID</th>
-<th>Customer Type ID</th>
-<th>Customer Rec ID</th>
-<th>Close Description</th>
-<th>Linked Problem</th>
-<th>Last Modified Date Time</th>
-<th>Last Mod By</th>
-<th>Last Mod By ID</th>
-<th>Config Item Type ID</th>
-<th>Config Item Rec ID</th>
-<th>In cident Duration In Days</th>
-<th>Incident Type</th>
-<th>SLA Respond By Deadline</th>
-<th>SLAID</th>
-<th>SLA Name</th>
-<th>SLA Target Time ID</th>
-<th>SLA Resolve By Deadline</th>
-<th>Closed On 1 St Call</th>
-<th>Source</th>
-<th>Change ID</th>
-<th>In cident Duration In Hours</th>
-<th>Customer Display Name</th>
-<th>Owned By Manager</th>
-<th>Created By Email</th>
-<th>Pending Reason</th>
-<th>Review By Deadline</th>
-<th>Stat _ Number Of Touches</th>
-<th>Stat _ First Call Resolution</th>
-<th>Stat _ Incident Escalated</th>
-<th>Stat _ Number Of Escalations</th>
-<th>Stat _24 X 7 Elapsed Time</th>
-<th>Stat _ Incident Reopened</th>
-<th>Stat _ Date Time Responded</th>
-<th>Stat _ Response Time</th>
-<th>Stat _SLA Response Breached</th>
-<th>Stat _SLA Resolution Breached</th>
-<th>Service ID</th>
-<th>Pending Previous Status</th>
-<th>Portal Affects Primary Function</th>
-<th>Portal Affects Multiple Users</th>
-<th>Portal Alt Contact Info</th>
-<th>SLAID For Customer</th>
-<th>SLAID For Service</th>
-<th>SLAID For CI</th>
-<th>Linked SL As</th>
-<th>SLA Name For CI</th>
-<th>SLA Name For Customer</th>
-<th>SLA Name For Service</th>
-<th>Reason For Breach</th>
-<th>Config Item Display Name</th>
-<th>Breach Notes</th>
-<th>Show All Services</th>
-<th>Show Contact Information</th>
-<th>Service Entitlements</th>
-<th>Service Customer Is Entitled</th>
-<th>Combined KB</th>
-<th>Total Tasks</th>
-<th>Stat _SLA Resolution Warning</th>
-<th>Stat _SLA Response Warning</th>
-<th>Stat _SLA Resolution Good</th>
-<th>Stat _SLA Response Good</th>
-<th>Stat _ Date Time Assigned</th>
-<th>Stat _ Date Time In Progress</th>
-<th>Stat _ Date Time Resolved</th>
-<th>Stat _ Date Time Closed</th>
-<th>Stat _ Date Time Re Opened</th>
-<th>SLA Response Warning</th>
-<th>SLA Resolution Warning</th>
-<th>Pending Start Date Time</th>
-<th>Pending End Date Time</th>
-<th>STC Time In Minutes</th>
-<th>Total STC Time In Minutes</th>
-<th>Location</th>
-<th>Next Status</th>
-<th>Next Status Text</th>
-<th>Next Status One Step</th>
-<th>SLA_ Key</th>
-<th>Status ID</th>
-<th>Subcategory ID</th>
-<th>Smart Classify Search String</th>
-<th>Total Task Time</th>
-<th>Config Item Type</th>
-<th>Approval Block ID</th>
-<th>Cloned Incident ID</th>
-<th>Recurring Incident</th>
-<th>Was CI Down</th>
-<th>CI Down Start Date Time</th>
-<th>CI Down End Date Time</th>
-<th>Major Incident</th>
-<th>Major Incident Rec ID</th>
-<th>Major Incident ID</th>
-<th>Incidentchild ID</th>
-<th>Incidentchild Rec ID</th>
-<th>Cause</th>
-<th>Cloned Incident</th>
-<th>Comments</th>
-<th>CI Downtime In Minutes</th>
-<th>Withdraw</th>
-<th>Customer Subscription Level</th>
-<th>Service Cart ID</th>
-<th>Cart Item ID</th>
-<th>SCT Rec ID</th>
-<th>Tasks In Progress</th>
-<th>Tasks Closed</th>
-<th>Task Closed Count</th>
-<th>Tasks On Hold</th>
-<th>SCT Fired</th>
-<th>Requester Department</th>
-<th>Level 2 Escalation Complete</th>
-<th>Level 3 Escalation Complete</th>
-<th>Default Team</th>
-<th>Level 2 Escalation Team</th>
-<th>Level 3 Escalation Team</th>
-<th>Service Catalog Template Name</th>
-<th>Business Object Id</th>
-<th>Public Id</th>
-<th>Record Id</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>944b6ad2180700e3d4006d4b61813cac3f6c505f21</td>
-<td>10195</td>
-<td>4/28/2019 10:46:00 AM</td>
-<td>Only on weekends</td>
-<td>API User</td>
-<td>944856551f982d9572dcf549a4a5d8811f02075fd5</td>
-<td>New</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>9398862125defd58a8deea46fe88acc411a96e2b00</td>
-<td>This incident was created by Cherwell documentation script</td>
-<td> </td>
-<td> </td>
-<td>3</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>Byte[] Array</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>944b37889fdb5a0e8f519b422095314c29cdbca16a</td>
-<td> </td>
-<td> </td>
-<td>4/28/2019 10:46:00 AM</td>
-<td>API User</td>
-<td>944856551f982d9572dcf549a4a5d8811f02075fd5</td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>Incident</td>
-<td>4/29/2019 10:00:00 AM</td>
-<td>938aad773b01d0140385e84d19aa5205c5acf8c839</td>
-<td>Corporate</td>
-<td> </td>
-<td>5/1/2019 10:46:00 AM</td>
-<td>False</td>
-<td>Phone</td>
-<td> </td>
-<td>0.00</td>
-<td>Playbook customer</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>1/1/1900 12:00:00 AM</td>
-<td>2</td>
-<td>False</td>
-<td>False</td>
-<td>0</td>
-<td>0</td>
-<td>False</td>
-<td> </td>
-<td>0</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>, ,</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td>False</td>
-<td> </td>
-<td>0.00</td>
-<td>False</td>
-<td>False</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>4/29/2019 9:45:00 AM</td>
-<td>5/1/2019 10:31:00 AM</td>
-<td> </td>
-<td> </td>
-<td>0</td>
-<td>0</td>
-<td> </td>
-<td>In Progress</td>
-<td>Begin Work</td>
-<td>&lt;ActionInfoDef ID="93d9abdb6242</td>
-<td>_Incident</td>
-<td>938729d99cb110f2a6c3e5488ead246422a7cd115f</td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td>0</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td>True</td>
-<td>True</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>6dd53665c0c24cab86870a21cf6434ae</td>
-<td>10195</td>
-<td>944b6ad2180700e3d4006d4b61813cac3f6c505f21</td>
-</tr>
-<tr>
-<td>944b6ad94320debe6d94f14c9eab770ccbf16ab981</td>
-<td>10196</td>
-<td>4/28/2019 10:49:04 AM</td>
-<td>Only on weekends</td>
-<td>API User</td>
-<td>944856551f982d9572dcf549a4a5d8811f02075fd5</td>
-<td>New</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>9398862125defd58a8deea46fe88acc411a96e2b00</td>
-<td>This incident was created by Cherwell documentation script</td>
-<td> </td>
-<td> </td>
-<td>3</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>Byte[] Array</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>944b37889fdb5a0e8f519b422095314c29cdbca16a</td>
-<td> </td>
-<td> </td>
-<td>4/28/2019 10:49:04 AM</td>
-<td>API User</td>
-<td>944856551f982d9572dcf549a4a5d8811f02075fd5</td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>Incident</td>
-<td>4/29/2019 10:00:00 AM</td>
-<td>938aad773b01d0140385e84d19aa5205c5acf8c839</td>
-<td>Corporate</td>
-<td> </td>
-<td>5/1/2019 10:49:04 AM</td>
-<td>False</td>
-<td>Phone</td>
-<td> </td>
-<td>0.00</td>
-<td>Playbook customer</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>1/1/1900 12:00:00 AM</td>
-<td>2</td>
-<td>False</td>
-<td>False</td>
-<td>0</td>
-<td>0</td>
-<td>False</td>
-<td> </td>
-<td>0</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>, ,</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td>False</td>
-<td> </td>
-<td>0.00</td>
-<td>False</td>
-<td>False</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>4/29/2019 9:45:00 AM</td>
-<td>5/1/2019 10:34:04 AM</td>
-<td> </td>
-<td> </td>
-<td>0</td>
-<td>0</td>
-<td> </td>
-<td>In Progress</td>
-<td>Begin Work</td>
-<td>&lt;ActionInfoDef ID="93d9abdb6242</td>
-<td>_Incident</td>
-<td>938729d99cb110f2a6c3e5488ead246422a7cd115f</td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td>0</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td>True</td>
-<td>True</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>6dd53665c0c24cab86870a21cf6434ae</td>
-<td>10196</td>
-<td>944b6ad94320debe6d94f14c9eab770ccbf16ab981</td>
-</tr>
-<tr>
-<td>944b6adc04cf7a9815eca846cab074f00ec7f9e4e1</td>
-<td>10197</td>
-<td>4/28/2019 10:50:14 AM</td>
-<td>Only on weekends</td>
-<td>API User</td>
-<td>944856551f982d9572dcf549a4a5d8811f02075fd5</td>
-<td>New</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>9398862125defd58a8deea46fe88acc411a96e2b00</td>
-<td>This incident was created by Cherwell documentation script</td>
-<td> </td>
-<td> </td>
-<td>3</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>Byte[] Array</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>944b37889fdb5a0e8f519b422095314c29cdbca16a</td>
-<td> </td>
-<td> </td>
-<td>4/28/2019 10:50:14 AM</td>
-<td>API User</td>
-<td>944856551f982d9572dcf549a4a5d8811f02075fd5</td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>Incident</td>
-<td>4/29/2019 10:00:00 AM</td>
-<td>938aad773b01d0140385e84d19aa5205c5acf8c839</td>
-<td>Corporate</td>
-<td> </td>
-<td>5/1/2019 10:50:14 AM</td>
-<td>False</td>
-<td>Phone</td>
-<td> </td>
-<td>0.00</td>
-<td>Playbook customer</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>1/1/1900 12:00:00 AM</td>
-<td>2</td>
-<td>False</td>
-<td>False</td>
-<td>0</td>
-<td>0</td>
-<td>False</td>
-<td> </td>
-<td>0</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>, ,</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td>False</td>
-<td> </td>
-<td>0.00</td>
-<td>False</td>
-<td>False</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>4/29/2019 9:45:00 AM</td>
-<td>5/1/2019 10:35:14 AM</td>
-<td> </td>
-<td> </td>
-<td>0</td>
-<td>0</td>
-<td> </td>
-<td>In Progress</td>
-<td>Begin Work</td>
-<td>&lt;ActionInfoDef ID="93d9abdb6242</td>
-<td>_Incident</td>
-<td>938729d99cb110f2a6c3e5488ead246422a7cd115f</td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td>0</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td>True</td>
-<td>True</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>6dd53665c0c24cab86870a21cf6434ae</td>
-<td>10197</td>
-<td>944b6adc04cf7a9815eca846cab074f00ec7f9e4e1</td>
-</tr>
-<tr>
-<td>944b6adcea4815e9e43fd64fa691d39ec58eb78db3</td>
-<td>10198</td>
-<td>4/28/2019 10:50:37 AM</td>
-<td>Only on weekends</td>
-<td>API User</td>
-<td>944856551f982d9572dcf549a4a5d8811f02075fd5</td>
-<td>New</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>9398862125defd58a8deea46fe88acc411a96e2b00</td>
-<td>This incident was created by Cherwell documentation script</td>
-<td> </td>
-<td> </td>
-<td>3</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>Byte[] Array</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>944b37889fdb5a0e8f519b422095314c29cdbca16a</td>
-<td> </td>
-<td> </td>
-<td>4/28/2019 10:50:37 AM</td>
-<td>API User</td>
-<td>944856551f982d9572dcf549a4a5d8811f02075fd5</td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>Incident</td>
-<td>4/29/2019 10:00:00 AM</td>
-<td>938aad773b01d0140385e84d19aa5205c5acf8c839</td>
-<td>Corporate</td>
-<td> </td>
-<td>5/1/2019 10:50:37 AM</td>
-<td>False</td>
-<td>Phone</td>
-<td> </td>
-<td>0.00</td>
-<td>Playbook customer</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>1/1/1900 12:00:00 AM</td>
-<td>2</td>
-<td>False</td>
-<td>False</td>
-<td>0</td>
-<td>0</td>
-<td>False</td>
-<td> </td>
-<td>0</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>, ,</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td>False</td>
-<td> </td>
-<td>0.00</td>
-<td>False</td>
-<td>False</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>4/29/2019 9:45:00 AM</td>
-<td>5/1/2019 10:35:37 AM</td>
-<td> </td>
-<td> </td>
-<td>0</td>
-<td>0</td>
-<td> </td>
-<td>In Progress</td>
-<td>Begin Work</td>
-<td>&lt;ActionInfoDef ID="93d9abdb6242</td>
-<td>_Incident</td>
-<td>938729d99cb110f2a6c3e5488ead246422a7cd115f</td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td>0</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td>True</td>
-<td>True</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>6dd53665c0c24cab86870a21cf6434ae</td>
-<td>10198</td>
-<td>944b6adcea4815e9e43fd64fa691d39ec58eb78db3</td>
-</tr>
-<tr>
-<td>944b6ae081fc6b7a7f28144ce5b844ceada8cb9c10</td>
-<td>10199</td>
-<td>4/28/2019 10:52:09 AM</td>
-<td>Only on weekends</td>
-<td>API User</td>
-<td>944856551f982d9572dcf549a4a5d8811f02075fd5</td>
-<td>New</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>9398862125defd58a8deea46fe88acc411a96e2b00</td>
-<td>This incident was created by Cherwell documentation script</td>
-<td> </td>
-<td> </td>
-<td>3</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>Byte[] Array</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>944b37889fdb5a0e8f519b422095314c29cdbca16a</td>
-<td> </td>
-<td> </td>
-<td>4/28/2019 10:52:09 AM</td>
-<td>API User</td>
-<td>944856551f982d9572dcf549a4a5d8811f02075fd5</td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>Incident</td>
-<td>4/29/2019 10:00:00 AM</td>
-<td>938aad773b01d0140385e84d19aa5205c5acf8c839</td>
-<td>Corporate</td>
-<td> </td>
-<td>5/1/2019 10:52:09 AM</td>
-<td>False</td>
-<td>Phone</td>
-<td> </td>
-<td>0.00</td>
-<td>Playbook customer</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>1/1/1900 12:00:00 AM</td>
-<td>2</td>
-<td>False</td>
-<td>False</td>
-<td>0</td>
-<td>0</td>
-<td>False</td>
-<td> </td>
-<td>0</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>, ,</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td>False</td>
-<td> </td>
-<td>0.00</td>
-<td>False</td>
-<td>False</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>4/29/2019 9:45:00 AM</td>
-<td>5/1/2019 10:37:09 AM</td>
-<td> </td>
-<td> </td>
-<td>0</td>
-<td>0</td>
-<td> </td>
-<td>In Progress</td>
-<td>Begin Work</td>
-<td>&lt;ActionInfoDef ID="93d9abdb6242</td>
-<td>_Incident</td>
-<td>938729d99cb110f2a6c3e5488ead246422a7cd115f</td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td>0</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td>True</td>
-<td>True</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>6dd53665c0c24cab86870a21cf6434ae</td>
-<td>10199</td>
-<td>944b6ae081fc6b7a7f28144ce5b844ceada8cb9c10</td>
-</tr>
-<tr>
-<td>944b6ae5343bba7bc4c4fc43709d223378c3ae6dcb</td>
-<td>10200</td>
-<td>4/28/2019 10:54:10 AM</td>
-<td>Only on weekends</td>
-<td>API User</td>
-<td>944856551f982d9572dcf549a4a5d8811f02075fd5</td>
-<td>New</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>9398862125defd58a8deea46fe88acc411a96e2b00</td>
-<td>This incident was created by Cherwell documentation script</td>
-<td> </td>
-<td> </td>
-<td>3</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>Byte[] Array</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>944b37889fdb5a0e8f519b422095314c29cdbca16a</td>
-<td> </td>
-<td> </td>
-<td>4/28/2019 10:54:10 AM</td>
-<td>API User</td>
-<td>944856551f982d9572dcf549a4a5d8811f02075fd5</td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>Incident</td>
-<td>4/29/2019 10:00:00 AM</td>
-<td>938aad773b01d0140385e84d19aa5205c5acf8c839</td>
-<td>Corporate</td>
-<td> </td>
-<td>5/1/2019 10:54:10 AM</td>
-<td>False</td>
-<td>Phone</td>
-<td> </td>
-<td>0.00</td>
-<td>Playbook customer</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>1/1/1900 12:00:00 AM</td>
-<td>2</td>
-<td>False</td>
-<td>False</td>
-<td>0</td>
-<td>0</td>
-<td>False</td>
-<td> </td>
-<td>0</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>, ,</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td>False</td>
-<td> </td>
-<td>0.00</td>
-<td>False</td>
-<td>False</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>4/29/2019 9:45:00 AM</td>
-<td>5/1/2019 10:39:10 AM</td>
-<td> </td>
-<td> </td>
-<td>0</td>
-<td>0</td>
-<td> </td>
-<td>In Progress</td>
-<td>Begin Work</td>
-<td>&lt;ActionInfoDef ID="93d9abdb6242</td>
-<td>_Incident</td>
-<td>938729d99cb110f2a6c3e5488ead246422a7cd115f</td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td>0</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td>True</td>
-<td>True</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>6dd53665c0c24cab86870a21cf6434ae</td>
-<td>10200</td>
-<td>944b6ae5343bba7bc4c4fc43709d223378c3ae6dcb</td>
-</tr>
-<tr>
-<td>944b6c8f3610a630a0feb04bae8d72e73760921611</td>
-<td>10221</td>
-<td>4/28/2019 1:55:55 PM</td>
-<td>Only on weekends</td>
-<td>API User</td>
-<td>944856551f982d9572dcf549a4a5d8811f02075fd5</td>
-<td>New</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>9398862125defd58a8deea46fe88acc411a96e2b00</td>
-<td>This incident was created by Cherwell documentation script</td>
-<td> </td>
-<td> </td>
-<td>3</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>Byte[] Array</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>944b37889fdb5a0e8f519b422095314c29cdbca16a</td>
-<td> </td>
-<td> </td>
-<td>4/28/2019 1:55:55 PM</td>
-<td>API User</td>
-<td>944856551f982d9572dcf549a4a5d8811f02075fd5</td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>Incident</td>
-<td>4/29/2019 10:00:00 AM</td>
-<td>938aad773b01d0140385e84d19aa5205c5acf8c839</td>
-<td>Corporate</td>
-<td> </td>
-<td>5/1/2019 1:55:55 PM</td>
-<td>False</td>
-<td>Phone</td>
-<td> </td>
-<td>0.00</td>
-<td>Playbook customer</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>1/1/1900 12:00:00 AM</td>
-<td>2</td>
-<td>False</td>
-<td>False</td>
-<td>0</td>
-<td>0</td>
-<td>False</td>
-<td> </td>
-<td>0</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>, ,</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td>False</td>
-<td> </td>
-<td>0.00</td>
-<td>False</td>
-<td>False</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>4/29/2019 9:45:00 AM</td>
-<td>5/1/2019 1:40:55 PM</td>
-<td> </td>
-<td> </td>
-<td>0</td>
-<td>0</td>
-<td> </td>
-<td>In Progress</td>
-<td>Begin Work</td>
-<td>&lt;ActionInfoDef ID="93d9abdb6242</td>
-<td>_Incident</td>
-<td>938729d99cb110f2a6c3e5488ead246422a7cd115f</td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td>0</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td>True</td>
-<td>True</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>6dd53665c0c24cab86870a21cf6434ae</td>
-<td>10221</td>
-<td>944b6c8f3610a630a0feb04bae8d72e73760921611</td>
-</tr>
-<tr>
-<td>944b6c9333fea00cf4a25b40b08542bdcb4db64327</td>
-<td>10222</td>
-<td>4/28/2019 1:57:37 PM</td>
-<td>Only on weekends</td>
-<td>API User</td>
-<td>944856551f982d9572dcf549a4a5d8811f02075fd5</td>
-<td>New</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>9398862125defd58a8deea46fe88acc411a96e2b00</td>
-<td>This incident was created by Cherwell documentation script</td>
-<td> </td>
-<td> </td>
-<td>3</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>Byte[] Array</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>944b37889fdb5a0e8f519b422095314c29cdbca16a</td>
-<td> </td>
-<td> </td>
-<td>4/28/2019 1:57:37 PM</td>
-<td>API User</td>
-<td>944856551f982d9572dcf549a4a5d8811f02075fd5</td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>Incident</td>
-<td>4/29/2019 10:00:00 AM</td>
-<td>938aad773b01d0140385e84d19aa5205c5acf8c839</td>
-<td>Corporate</td>
-<td> </td>
-<td>5/1/2019 1:57:37 PM</td>
-<td>False</td>
-<td>Phone</td>
-<td> </td>
-<td>0.00</td>
-<td>Playbook customer</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>1/1/1900 12:00:00 AM</td>
-<td>2</td>
-<td>False</td>
-<td>False</td>
-<td>0</td>
-<td>0</td>
-<td>False</td>
-<td> </td>
-<td>0</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>, ,</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td>False</td>
-<td> </td>
-<td>0.00</td>
-<td>False</td>
-<td>False</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>4/29/2019 9:45:00 AM</td>
-<td>5/1/2019 1:42:37 PM</td>
-<td> </td>
-<td> </td>
-<td>0</td>
-<td>0</td>
-<td> </td>
-<td>In Progress</td>
-<td>Begin Work</td>
-<td>&lt;ActionInfoDef ID="93d9abdb6242</td>
-<td>_Incident</td>
-<td>938729d99cb110f2a6c3e5488ead246422a7cd115f</td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>0.00</td>
-<td>False</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>False</td>
-<td>False</td>
-<td>0</td>
-<td>False</td>
-<td>False</td>
-<td> </td>
-<td>True</td>
-<td>True</td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td> </td>
-<td>6dd53665c0c24cab86870a21cf6434ae</td>
-<td>10222</td>
-<td>944b6c9333fea00cf4a25b40b08542bdcb4db64327</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h3 id="get-information-for-a-field">12. Get information for a field</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Gets information for a field, by one of its properties (Name, Display Name or id)</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-11">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>cherwell-get-field-info</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-11">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 157px;"><strong>Argument Name</strong></th>
-<th style="width: 499px;"><strong>Description</strong></th>
-<th style="width: 84px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 157px;">type</td>
-<td style="width: 499px;">Business object type, for example: “Incident”.</td>
-<td style="width: 84px;">Required</td>
-</tr>
-<tr>
-<td style="width: 157px;">field_property</td>
-<td style="width: 499px;">Field property to search by (Name, Display Name, or Field id)</td>
-<td style="width: 84px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-11">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 234px;"><strong>Path</strong></th>
-<th style="width: 39px;"><strong>Type</strong></th>
-<th style="width: 467px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 234px;">Cherwell.FieldInfo.DisplayName</td>
-<td style="width: 39px;">String</td>
-<td style="width: 467px;">Field display name (as it displays in the Cherwell UI).</td>
-</tr>
-<tr>
-<td style="width: 234px;">Cherwell.FieldInfo.FieldId</td>
-<td style="width: 39px;">String</td>
-<td style="width: 467px;">Field ID.</td>
-</tr>
-<tr>
-<td style="width: 234px;">Cherwell.FieldInfo.Name</td>
-<td style="width: 39px;">String</td>
-<td style="width: 467px;">The name to use when working with business object commands.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-11">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>cherwell-get-field-info field_property=CreatedDateTime type=incident</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-example-6">Context Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>{
-    "Cherwell.FieldInfo": {
-        "FieldId": "c1e86f31eb2c4c5f8e8615a5189e9b19", 
-        "DisplayName": "Created Date Time", 
-        "Name": "CreatedDateTime"
     }
 }
-</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-10">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-<h3 id="field-info">Field info:</h3>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table border="2">
-<thead>
-<tr>
-<th>Display Name</th>
-<th>Name</th>
-<th>Field Id</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Created Date Time</td>
-<td>CreatedDateTime</td>
-<td>c1e86f31eb2c4c5f8e8615a5189e9b19</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h3 id="run-a-saved-search">13. Run a saved search</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Returns the results of a saved search.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-12">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>cherwell-run-saved-search</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-12">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 155px;"><strong>Argument Name</strong></th>
-<th style="width: 514px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 155px;">association_id</td>
-<td style="width: 514px;">Business object association ID for the saved search.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 155px;">scope</td>
-<td style="width: 514px;">Scope name or ID for the saved search</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 155px;">scope_owner</td>
-<td style="width: 514px;">Scope owner ID for the saved search. Use “(None)” when no scope owner exists.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 155px;">search_name</td>
-<td style="width: 514px;">Name of the saved search.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-12">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<p>There is no context output for this command.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-12">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>cherwell-run-saved-search association_id=9355d5ed41e384ff345b014b6cb1c6e748594aea5b scope=Global scope_owner=(None) search_name="All Tasks"</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-example-7">Context Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>{
-    "Cherwell.SearchOperation": [
-        {
-            "Status": "Closed", 
-            "PublicId": "10072", 
-            "Description": "", 
-            "Title": "GUI", 
-            "RecordId": "9449a066635e9e9b3f38444cf5a630ee2724a469b9", 
-            "TaskID": "10072", 
-            "OwnedBy": "Cherwell Admin", 
-            "BusinessObjectId": "942e71e8c5c493f3e5f2f54f5c9c086719b6bc8d83"
-        }, 
-        {
-            "Status": "Closed", 
-            "PublicId": "10080", 
-            "Description": "task description", 
-            "Title": "task title", 
-            "RecordId": "9449a0862f42722b78b5634c9dbade02e280e52f11", 
-            "TaskID": "10080", 
-            "OwnedBy": "Cherwell Admin", 
-            "BusinessObjectId": "942e71e8c5c493f3e5f2f54f5c9c086719b6bc8d83"
-        }, 
-        {
-            "Status": "Closed", 
-            "PublicId": "10081", 
-            "Description": "task description", 
-            "Title": "task title", 
-            "RecordId": "9449a08a3efcf1db28326d4dafa22479c37fe09cd5", 
-            "TaskID": "10081", 
-            "OwnedBy": "Cherwell Admin", 
-            "BusinessObjectId": "942e71e8c5c493f3e5f2f54f5c9c086719b6bc8d83"
-        }, 
-        {
-            "Status": "Closed", 
-            "PublicId": "10082", 
-            "Description": "", 
-            "Title": "cghgf", 
-            "RecordId": "9449b9f04d4b994ccdca0a4f098e92228145c4e72c", 
-            "TaskID": "10082", 
-            "OwnedBy": "Cherwell Admin", 
-            "BusinessObjectId": "942e71e8c5c493f3e5f2f54f5c9c086719b6bc8d83"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10119", 
-            "Description": "", 
-            "Title": "title", 
-            "RecordId": "944b39a51c706dde2ab37841388cc820859dea8456", 
-            "TaskID": "10119", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "942e71e8c5c493f3e5f2f54f5c9c086719b6bc8d83"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10001", 
-            "Description": "ttt", 
-            "Title": "uuut", 
-            "RecordId": "9448a4870ffab3ba7ee6724e3ebfa36f011d965145", 
-            "TaskID": "10001", 
-            "OwnedBy": "Cherwell Admin", 
-            "BusinessObjectId": "942e71e8c5c493f3e5f2f54f5c9c086719b6bc8d83"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10002", 
-            "Description": "", 
-            "Title": "eqqeqeqe", 
-            "RecordId": "9448afb815536a7b3127834539994b9f53c3703ed0", 
-            "TaskID": "10002", 
-            "OwnedBy": "Cherwell Admin", 
-            "BusinessObjectId": "942e71e8c5c493f3e5f2f54f5c9c086719b6bc8d83"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10021", 
-            "Description": "", 
-            "Title": "test title", 
-            "RecordId": "944977ef42c01c601cb8e745bba719b4a6895f3de4", 
-            "TaskID": "10021", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10022", 
-            "Description": "", 
-            "Title": "test title", 
-            "RecordId": "944977f301ccf86baf57eb4c52b4bea85b3682f925", 
-            "TaskID": "10022", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10024", 
-            "Description": "", 
-            "Title": "test title", 
-            "RecordId": "9449781896704cd401241b488589c69789bee0fb11", 
-            "TaskID": "10024", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10043", 
-            "Description": "task description", 
-            "Title": "task title", 
-            "RecordId": "94499f411b9c13ea5ca97f43da8c94e7328c38be36", 
-            "TaskID": "10043", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10053", 
-            "Description": "task description", 
-            "Title": "task title", 
-            "RecordId": "94499f7bb2f1a12ba2987345e8b067a431a57b07e6", 
-            "TaskID": "10053", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10057", 
-            "Description": "task description", 
-            "Title": "task title", 
-            "RecordId": "94499f8d63397d8d0a5b5045e495316875a0b631c0", 
-            "TaskID": "10057", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10068", 
-            "Description": "task description", 
-            "Title": "task title", 
-            "RecordId": "94499ff511585f36be6b1341a88ac1c73c22d8c8fe", 
-            "TaskID": "10068", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "942e71e8c5c493f3e5f2f54f5c9c086719b6bc8d83"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10033", 
-            "Description": "task description", 
-            "Title": "task title", 
-            "RecordId": "94499f0468196077abf8c0400da0657dead40d7b6f", 
-            "TaskID": "10033", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10120", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b39f4c1306780e78c8041acb93ffbc41fdbd8bc", 
-            "TaskID": "10120", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10121", 
-            "Description": "Test task generated from scripts test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b4393f40916105fe65849c49965481628eea295", 
-            "TaskID": "10121", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10122", 
-            "Description": "Test task generated from scripts test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b439a962359c8824b334fdf8a2bcc40c303a4eb", 
-            "TaskID": "10122", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10123", 
-            "Description": "Test task generated from scripts test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b44510919158936d66a4e5286837c47b25d613c", 
-            "TaskID": "10123", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10127", 
-            "Description": "Test task generated from scripts test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b446f7562049be9f7d44b0783b9644876ab03e5", 
-            "TaskID": "10127", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10129", 
-            "Description": "Test task generated from scripts test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b44894e5d712c9592d5412fb83c546fac5c9688", 
-            "TaskID": "10129", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10134", 
-            "Description": "Test task generated from scripts test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b44a44b6d0c4fb99eb14353a05e5ebda7efb5dc", 
-            "TaskID": "10134", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10139", 
-            "Description": "Test task generated from scripts test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b44d7740f60dc87aa0b4ef6889bd786fb2a2a74", 
-            "TaskID": "10139", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10140", 
-            "Description": "Test task generated from scripts test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b44dbb6c03845eb370644db9ac7d26dd71fad5c", 
-            "TaskID": "10140", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10141", 
-            "Description": "Test task generated from scripts test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b44de9bb7a424100d104f61be2d0374109f8f91", 
-            "TaskID": "10141", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10144", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b6991f263b08e435a334b02b43492d8dfefb268", 
-            "TaskID": "10144", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10145", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b699e91d6c12cd473cd4a1e963bf60da43025de", 
-            "TaskID": "10145", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10146", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b69a268eff7406469e040d2938fbf16bfe85b44", 
-            "TaskID": "10146", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10149", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b69a91fcaef0837f77d485c9c528f8509d9716b", 
-            "TaskID": "10149", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10150", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b69e47d417d8f8b27b242de8fc03f268a173f66", 
-            "TaskID": "10150", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10151", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b69e9f44759a3738d0a4b699e90b50c1b8d6904", 
-            "TaskID": "10151", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10152", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b6a8c455a91041f71fb42e2b085e1db50b0c57c", 
-            "TaskID": "10152", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10086", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b2a2e2265573607dc504d938b9cd1b7b5beb486", 
-            "TaskID": "10086", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10087", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b2a5cbd9b699c445ae34871b467788b1120540d", 
-            "TaskID": "10087", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10088", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b2a6e2338721062328f4101bba9db35a61f8f12", 
-            "TaskID": "10088", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10089", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b2a767fb644f94a92854ee9838b2adf0a845d65", 
-            "TaskID": "10089", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10091", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b2ca7824f846faff5a24f518568fcd7156032f9", 
-            "TaskID": "10091", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10092", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b2ceb13f1b5836a1a754f66bc4caf74e8e2a4f3", 
-            "TaskID": "10092", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10093", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b2d2b96859578d6bcae49ef859d45b952d4eed1", 
-            "TaskID": "10093", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10094", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b2d2d9bc03300e8c70344d89690885e8506c608", 
-            "TaskID": "10094", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10095", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b2d4d9bc7ab3df904794b8d934c75ccecfa7c48", 
-            "TaskID": "10095", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10096", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b2d675563cdc4e9cc964c02b35a57b2a869906e", 
-            "TaskID": "10096", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10097", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b2d7172a44b3bee37e84ef78c619b66e7481a50", 
-            "TaskID": "10097", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10098", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b2d7f6d7fda754e799a4cc19e5a04ece36c49b6", 
-            "TaskID": "10098", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10099", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b2d8a3c57191395d24c4f3ab5d551509e71e611", 
-            "TaskID": "10099", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10100", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b2d8e7993b1c823cb55460783bc17f6ee308531", 
-            "TaskID": "10100", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10101", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b2d96470c230f9679af40e1947ed535416993dd", 
-            "TaskID": "10101", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10102", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b2da3d661eca663e8f3495ca6f94453887c9004", 
-            "TaskID": "10102", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10103", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b36cef67a7d923c0ac545dbb5a0430ec0230d09", 
-            "TaskID": "10103", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10104", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b36d7f68da49c3d1ea149b0bdbe199adc79f5f3", 
-            "TaskID": "10104", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10105", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b36db46e1ec76e7f2ab49adb58a13d9d14a3f9f", 
-            "TaskID": "10105", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10106", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b36ecb3b22b624e678b4109bc4fea7bb5a84191", 
-            "TaskID": "10106", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10107", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b36f90e1f8067ee66a74c6d93fc6d15c3e64d95", 
-            "TaskID": "10107", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10108", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b37a575da3f72f135204cc7bccf9ed8308e9817", 
-            "TaskID": "10108", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10109", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b37dbb8a901685a75e44e77bebec4ea21e28eef", 
-            "TaskID": "10109", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10110", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b37e32adba0e59643224d35b5236508eba1298f", 
-            "TaskID": "10110", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10111", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b37e5ef64a18ad4804e499d99da4eed9d04b4b2", 
-            "TaskID": "10111", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10112", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b37e9a646b27b22fda84570be3dfb80da3d2d00", 
-            "TaskID": "10112", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10113", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b37eb4c381f52d524c94e4d99c71d11608683ae", 
-            "TaskID": "10113", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10114", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b37fa73d701a44c2e544cd88c21b4a4004cc1d0", 
-            "TaskID": "10114", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10115", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b38078bd4c37cde06e34b26bf97ded4482a40d1", 
-            "TaskID": "10115", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10116", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b3810de1534bee1d65f4e56a13f25d7d948e55d", 
-            "TaskID": "10116", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10117", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b38fd81e400b60a207d428ab9919cdcc8672261", 
-            "TaskID": "10117", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
-        }, 
-        {
-            "Status": "New", 
-            "PublicId": "10118", 
-            "Description": "Test task generated from test playbook", 
-            "Title": "Test task", 
-            "RecordId": "944b39100884e09063bfb5435faaeb99bbd12675fd", 
-            "TaskID": "10118", 
-            "OwnedBy": "", 
-            "BusinessObjectId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b"
+```
+
+#### Human Readable Output
+
+>### New Incident was created
+>|Public Id|Record Id|
+>|---|---|
+>| 102384 | 947571cec8a5b5f03850c940c2bf6ca2bf116ffce9 |
+
+
+### cherwell-update-business-object
+***
+Update a business object with the specified fields.
+
+
+#### Base Command
+
+`cherwell-update-business-object`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type |  Business object type, for example: "Incident". . | Required | 
+| json | Data JSON containing the relevant fields and their values. | Required | 
+| id_value | Public ID or record ID. | Required | 
+| id_type | Type of ID. Possible values are: public_id, record_id. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cherwell.BusinessObjects.RecordId | String | Business object record ID.  | 
+| Cherwell.BusinessObjects.PublicId | Unknown | Business object public ID.  | 
+
+
+#### Command Example
+```!cherwell-update-business-object type=incident id_type=public_id id_value=102383 json={"Priority": "1"}```
+
+#### Context Example
+```json
+{
+    "Cherwell": {
+        "BusinessObjects": {
+            "PublicId": "102383",
+            "RecordId": "94757184cce46253b3ab694ae58289b64d0cd867ce"
         }
-    ]
-}
-</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-11">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-<h3 id="all-tasks-results">All Tasks results:</h3>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table border="2">
-<thead>
-<tr>
-<th>Task ID</th>
-<th>Title</th>
-<th>Owned By</th>
-<th>Status</th>
-<th>Description</th>
-<th>Business Object Id</th>
-<th>Public Id</th>
-<th>Record Id</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>10072</td>
-<td>GUI</td>
-<td>Cherwell Admin</td>
-<td>Closed</td>
-<td> </td>
-<td>942e71e8c5c493f3e5f2f54f5c9c086719b6bc8d83</td>
-<td>10072</td>
-<td>9449a066635e9e9b3f38444cf5a630ee2724a469b9</td>
-</tr>
-<tr>
-<td>10080</td>
-<td>task title</td>
-<td>Cherwell Admin</td>
-<td>Closed</td>
-<td>task description</td>
-<td>942e71e8c5c493f3e5f2f54f5c9c086719b6bc8d83</td>
-<td>10080</td>
-<td>9449a0862f42722b78b5634c9dbade02e280e52f11</td>
-</tr>
-<tr>
-<td>10081</td>
-<td>task title</td>
-<td>Cherwell Admin</td>
-<td>Closed</td>
-<td>task description</td>
-<td>942e71e8c5c493f3e5f2f54f5c9c086719b6bc8d83</td>
-<td>10081</td>
-<td>9449a08a3efcf1db28326d4dafa22479c37fe09cd5</td>
-</tr>
-<tr>
-<td>10082</td>
-<td>cghgf</td>
-<td>Cherwell Admin</td>
-<td>Closed</td>
-<td> </td>
-<td>942e71e8c5c493f3e5f2f54f5c9c086719b6bc8d83</td>
-<td>10082</td>
-<td>9449b9f04d4b994ccdca0a4f098e92228145c4e72c</td>
-</tr>
-<tr>
-<td>10119</td>
-<td>title</td>
-<td> </td>
-<td>New</td>
-<td> </td>
-<td>942e71e8c5c493f3e5f2f54f5c9c086719b6bc8d83</td>
-<td>10119</td>
-<td>944b39a51c706dde2ab37841388cc820859dea8456</td>
-</tr>
-<tr>
-<td>10001</td>
-<td>uuut</td>
-<td>Cherwell Admin</td>
-<td>New</td>
-<td>ttt</td>
-<td>942e71e8c5c493f3e5f2f54f5c9c086719b6bc8d83</td>
-<td>10001</td>
-<td>9448a4870ffab3ba7ee6724e3ebfa36f011d965145</td>
-</tr>
-<tr>
-<td>10002</td>
-<td>eqqeqeqe</td>
-<td>Cherwell Admin</td>
-<td>New</td>
-<td> </td>
-<td>942e71e8c5c493f3e5f2f54f5c9c086719b6bc8d83</td>
-<td>10002</td>
-<td>9448afb815536a7b3127834539994b9f53c3703ed0</td>
-</tr>
-<tr>
-<td>10021</td>
-<td>test title</td>
-<td> </td>
-<td>New</td>
-<td> </td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10021</td>
-<td>944977ef42c01c601cb8e745bba719b4a6895f3de4</td>
-</tr>
-<tr>
-<td>10022</td>
-<td>test title</td>
-<td> </td>
-<td>New</td>
-<td> </td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10022</td>
-<td>944977f301ccf86baf57eb4c52b4bea85b3682f925</td>
-</tr>
-<tr>
-<td>10024</td>
-<td>test title</td>
-<td> </td>
-<td>New</td>
-<td> </td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10024</td>
-<td>9449781896704cd401241b488589c69789bee0fb11</td>
-</tr>
-<tr>
-<td>10043</td>
-<td>task title</td>
-<td> </td>
-<td>New</td>
-<td>task description</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10043</td>
-<td>94499f411b9c13ea5ca97f43da8c94e7328c38be36</td>
-</tr>
-<tr>
-<td>10053</td>
-<td>task title</td>
-<td> </td>
-<td>New</td>
-<td>task description</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10053</td>
-<td>94499f7bb2f1a12ba2987345e8b067a431a57b07e6</td>
-</tr>
-<tr>
-<td>10057</td>
-<td>task title</td>
-<td> </td>
-<td>New</td>
-<td>task description</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10057</td>
-<td>94499f8d63397d8d0a5b5045e495316875a0b631c0</td>
-</tr>
-<tr>
-<td>10068</td>
-<td>task title</td>
-<td> </td>
-<td>New</td>
-<td>task description</td>
-<td>942e71e8c5c493f3e5f2f54f5c9c086719b6bc8d83</td>
-<td>10068</td>
-<td>94499ff511585f36be6b1341a88ac1c73c22d8c8fe</td>
-</tr>
-<tr>
-<td>10033</td>
-<td>task title</td>
-<td> </td>
-<td>New</td>
-<td>task description</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10033</td>
-<td>94499f0468196077abf8c0400da0657dead40d7b6f</td>
-</tr>
-<tr>
-<td>10120</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10120</td>
-<td>944b39f4c1306780e78c8041acb93ffbc41fdbd8bc</td>
-</tr>
-<tr>
-<td>10121</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from scripts test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10121</td>
-<td>944b4393f40916105fe65849c49965481628eea295</td>
-</tr>
-<tr>
-<td>10122</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from scripts test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10122</td>
-<td>944b439a962359c8824b334fdf8a2bcc40c303a4eb</td>
-</tr>
-<tr>
-<td>10123</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from scripts test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10123</td>
-<td>944b44510919158936d66a4e5286837c47b25d613c</td>
-</tr>
-<tr>
-<td>10127</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from scripts test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10127</td>
-<td>944b446f7562049be9f7d44b0783b9644876ab03e5</td>
-</tr>
-<tr>
-<td>10129</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from scripts test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10129</td>
-<td>944b44894e5d712c9592d5412fb83c546fac5c9688</td>
-</tr>
-<tr>
-<td>10134</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from scripts test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10134</td>
-<td>944b44a44b6d0c4fb99eb14353a05e5ebda7efb5dc</td>
-</tr>
-<tr>
-<td>10139</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from scripts test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10139</td>
-<td>944b44d7740f60dc87aa0b4ef6889bd786fb2a2a74</td>
-</tr>
-<tr>
-<td>10140</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from scripts test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10140</td>
-<td>944b44dbb6c03845eb370644db9ac7d26dd71fad5c</td>
-</tr>
-<tr>
-<td>10141</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from scripts test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10141</td>
-<td>944b44de9bb7a424100d104f61be2d0374109f8f91</td>
-</tr>
-<tr>
-<td>10144</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10144</td>
-<td>944b6991f263b08e435a334b02b43492d8dfefb268</td>
-</tr>
-<tr>
-<td>10145</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10145</td>
-<td>944b699e91d6c12cd473cd4a1e963bf60da43025de</td>
-</tr>
-<tr>
-<td>10146</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10146</td>
-<td>944b69a268eff7406469e040d2938fbf16bfe85b44</td>
-</tr>
-<tr>
-<td>10149</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10149</td>
-<td>944b69a91fcaef0837f77d485c9c528f8509d9716b</td>
-</tr>
-<tr>
-<td>10150</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10150</td>
-<td>944b69e47d417d8f8b27b242de8fc03f268a173f66</td>
-</tr>
-<tr>
-<td>10151</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10151</td>
-<td>944b69e9f44759a3738d0a4b699e90b50c1b8d6904</td>
-</tr>
-<tr>
-<td>10152</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10152</td>
-<td>944b6a8c455a91041f71fb42e2b085e1db50b0c57c</td>
-</tr>
-<tr>
-<td>10086</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10086</td>
-<td>944b2a2e2265573607dc504d938b9cd1b7b5beb486</td>
-</tr>
-<tr>
-<td>10087</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10087</td>
-<td>944b2a5cbd9b699c445ae34871b467788b1120540d</td>
-</tr>
-<tr>
-<td>10088</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10088</td>
-<td>944b2a6e2338721062328f4101bba9db35a61f8f12</td>
-</tr>
-<tr>
-<td>10089</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10089</td>
-<td>944b2a767fb644f94a92854ee9838b2adf0a845d65</td>
-</tr>
-<tr>
-<td>10091</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10091</td>
-<td>944b2ca7824f846faff5a24f518568fcd7156032f9</td>
-</tr>
-<tr>
-<td>10092</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10092</td>
-<td>944b2ceb13f1b5836a1a754f66bc4caf74e8e2a4f3</td>
-</tr>
-<tr>
-<td>10093</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10093</td>
-<td>944b2d2b96859578d6bcae49ef859d45b952d4eed1</td>
-</tr>
-<tr>
-<td>10094</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10094</td>
-<td>944b2d2d9bc03300e8c70344d89690885e8506c608</td>
-</tr>
-<tr>
-<td>10095</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10095</td>
-<td>944b2d4d9bc7ab3df904794b8d934c75ccecfa7c48</td>
-</tr>
-<tr>
-<td>10096</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10096</td>
-<td>944b2d675563cdc4e9cc964c02b35a57b2a869906e</td>
-</tr>
-<tr>
-<td>10097</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10097</td>
-<td>944b2d7172a44b3bee37e84ef78c619b66e7481a50</td>
-</tr>
-<tr>
-<td>10098</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10098</td>
-<td>944b2d7f6d7fda754e799a4cc19e5a04ece36c49b6</td>
-</tr>
-<tr>
-<td>10099</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10099</td>
-<td>944b2d8a3c57191395d24c4f3ab5d551509e71e611</td>
-</tr>
-<tr>
-<td>10100</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10100</td>
-<td>944b2d8e7993b1c823cb55460783bc17f6ee308531</td>
-</tr>
-<tr>
-<td>10101</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10101</td>
-<td>944b2d96470c230f9679af40e1947ed535416993dd</td>
-</tr>
-<tr>
-<td>10102</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10102</td>
-<td>944b2da3d661eca663e8f3495ca6f94453887c9004</td>
-</tr>
-<tr>
-<td>10103</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10103</td>
-<td>944b36cef67a7d923c0ac545dbb5a0430ec0230d09</td>
-</tr>
-<tr>
-<td>10104</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10104</td>
-<td>944b36d7f68da49c3d1ea149b0bdbe199adc79f5f3</td>
-</tr>
-<tr>
-<td>10105</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10105</td>
-<td>944b36db46e1ec76e7f2ab49adb58a13d9d14a3f9f</td>
-</tr>
-<tr>
-<td>10106</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10106</td>
-<td>944b36ecb3b22b624e678b4109bc4fea7bb5a84191</td>
-</tr>
-<tr>
-<td>10107</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10107</td>
-<td>944b36f90e1f8067ee66a74c6d93fc6d15c3e64d95</td>
-</tr>
-<tr>
-<td>10108</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10108</td>
-<td>944b37a575da3f72f135204cc7bccf9ed8308e9817</td>
-</tr>
-<tr>
-<td>10109</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10109</td>
-<td>944b37dbb8a901685a75e44e77bebec4ea21e28eef</td>
-</tr>
-<tr>
-<td>10110</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10110</td>
-<td>944b37e32adba0e59643224d35b5236508eba1298f</td>
-</tr>
-<tr>
-<td>10111</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10111</td>
-<td>944b37e5ef64a18ad4804e499d99da4eed9d04b4b2</td>
-</tr>
-<tr>
-<td>10112</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10112</td>
-<td>944b37e9a646b27b22fda84570be3dfb80da3d2d00</td>
-</tr>
-<tr>
-<td>10113</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10113</td>
-<td>944b37eb4c381f52d524c94e4d99c71d11608683ae</td>
-</tr>
-<tr>
-<td>10114</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10114</td>
-<td>944b37fa73d701a44c2e544cd88c21b4a4004cc1d0</td>
-</tr>
-<tr>
-<td>10115</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10115</td>
-<td>944b38078bd4c37cde06e34b26bf97ded4482a40d1</td>
-</tr>
-<tr>
-<td>10116</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10116</td>
-<td>944b3810de1534bee1d65f4e56a13f25d7d948e55d</td>
-</tr>
-<tr>
-<td>10117</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10117</td>
-<td>944b38fd81e400b60a207d428ab9919cdcc8672261</td>
-</tr>
-<tr>
-<td>10118</td>
-<td>Test task</td>
-<td> </td>
-<td>New</td>
-<td>Test task generated from test playbook</td>
-<td>9355d5ed41e384ff345b014b6cb1c6e748594aea5b</td>
-<td>10118</td>
-<td>944b39100884e09063bfb5435faaeb99bbd12675fd</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h3 id="get-a-business-object-id">14. Get a business object ID</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Gets a general business object ID by name.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-13">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>cherwell-get-business-object-id</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-13">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 301px;"><strong>Argument Name</strong></th>
-<th style="width: 303px;"><strong>Description</strong></th>
-<th style="width: 136px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 301px;">business_object_name</td>
-<td style="width: 303px;">Business object name.</td>
-<td style="width: 136px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-13">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 465px;"><strong>Path</strong></th>
-<th style="width: 63px;"><strong>Type</strong></th>
-<th style="width: 212px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 465px;">Cherwell.BusinessObjectInfo.BusinessObjectId</td>
-<td style="width: 63px;">String</td>
-<td style="width: 212px;">Business object ID.</td>
-</tr>
-<tr>
-<td style="width: 465px;">Cherwell.BusinessObjectInfo.BusinessObjectName</td>
-<td style="width: 63px;">String</td>
-<td style="width: 212px;">Business object name.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-13">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>cherwell-get-business-object-id business_object_name=incident</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-example-8">Context Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>{
-    "Cherwell.BusinessObjectInfo": {
-        "BusinessObjectName": "incident", 
-        "BusinessObjectId": "6dd53665c0c24cab86870a21cf6434ae"
     }
 }
-</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-12">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-<h3 id="business-object-info">Business Object Info:</h3>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table border="2">
-<thead>
-<tr>
-<th>Business Object Id</th>
-<th>Business Object Name</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>6dd53665c0c24cab86870a21cf6434ae</td>
-<td>incident</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+```
+
+#### Human Readable Output
+
+>### Incident 102383 was updated
+>|Public Id|Record Id|
+>|---|---|
+>| 102383 | 94757184cce46253b3ab694ae58289b64d0cd867ce |
+
+
+### cherwell-delete-business-object
+***
+Deletes a given business object.
+
+
+#### Base Command
+
+`cherwell-delete-business-object`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type |  Business object type, for example: "Incident". . | Required | 
+| id_value | Public ID or record ID. | Required | 
+| id_type | Type of ID. Possible values are: public_id, record_id. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!cherwell-delete-business-object id_type=record_id id_value=94757184cce46253b3ab694ae58289b64d0cd867ce type=incident```
+
+#### Human Readable Output
+
+>### Record 94757184cce46253b3ab694ae58289b64d0cd867ce of type incident was deleted.
+
+### cherwell-get-business-object
+***
+Gets a business object by an ID.
+
+
+#### Base Command
+
+`cherwell-get-business-object`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type |  Business object type, for example: "Incident". . | Required | 
+| id_value | Public ID or record ID. | Required | 
+| id_type | Type of ID. Possible values are: record_id, public_id. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!cherwell-get-business-object type=incident id_type=public_id id_value=102383```
+
+#### Context Example
+```json
+{
+    "Cherwell": {
+        "BusinessObjects": {
+            "ApprovalBlockID": "",
+            "AssignedTeam": "1st Level Support",
+            "AssignedTeamID": "9365b4e90592c81e3b7a024555a6c0094ba77e8773",
+            "AssignedTo": "",
+            "AssignedToID": "",
+            "AssignedToManager": "",
+            "Barcode": "",
+            "BreachNotes": "",
+            "CIDownEndDateTime": "",
+            "CIDownStartDateTime": "",
+            "CIDowntimeInMinutes": "0",
+            "CallSource": "Phone",
+            "CartItemID": "",
+            "Category": "PeopleSoft",
+            "Cause": "",
+            "ChangeID": "",
+            "ClonedIncident": "False",
+            "ClonedIncidentID": "",
+            "CloseDescription": "",
+            "ClosedBy": "",
+            "ClosedByID": "",
+            "ClosedDateTime": "",
+            "ClosedOn1stCall": "False",
+            "CombinedKB": "",
+            "Comments": "",
+            "ConfigItemDisplayName": "",
+            "ConfigItemRecID": "",
+            "ConfigItemType": "",
+            "ConfigItemTypeID": "",
+            "Cost": "0",
+            "CreatedBy": "demisto admin",
+            "CreatedByEmail": "user1@mail.com",
+            "CreatedByID": "9365b511f78906c1fe83644c3fb33e9ec1466f7d90",
+            "CreatedDateTime": "7/22/2021 12:22 PM",
+            "CreatedDuring": "8 to 5 Monday thru Friday",
+            "CustomerDepartment": "Accounting",
+            "CustomerDisplayName": "demisto admin",
+            "CustomerRecID": "9365da817530b0bfee892a48fb8815654c6071af03",
+            "CustomerSubscriptionLevel": "",
+            "CustomerTypeID": "",
+            "DefaultTeam": "1st Level Support",
+            "Description": "This incident was created by Cherwell test playbook-\r\n-\r\nThis is from the REST API-\r\n-\r\nThis is from the REST API",
+            "DescriptionSentimentValue": "2",
+            "EmailNotifications": "",
+            "ISMSAuditsID": "",
+            "Impact": "",
+            "IncidentDurationInDays": "0.02",
+            "IncidentDurationInHours": "0.53",
+            "IncidentID": "102383",
+            "IncidentType": "Service Request",
+            "IncidentchildID": "",
+            "IncidentchildRecID": "",
+            "KnowledgeArticleID": "",
+            "LastModBy": "demisto admin",
+            "LastModByID": "9365b511f78906c1fe83644c3fb33e9ec1466f7d90",
+            "LastModTimeStamp": "",
+            "LastModifiedDateTime": "7/22/2021 12:53 PM",
+            "Level2EscalationComplete": "False",
+            "Level2EscalationTeam": "2nd Level Support",
+            "Level3EscalationComplete": "False",
+            "Level3EscalationTeam": "3rd Level Support",
+            "LinkedProblem": "",
+            "LinkedSLAs": "93838607346b42be7074af487d9171ea9f948b7204 ,  , ",
+            "LinkedToProblem": "False",
+            "Location": "",
+            "MajorIncident": "False",
+            "MajorIncidentID": "",
+            "MajorIncidentRecID": "",
+            "NetworkEventID": "",
+            "NextStatus": "In Progress",
+            "NextStatusOneStep": "ActionInfoDef ID=\"93d9abdb6242",
+            "NextStatusText": "Begin Work",
+            "OnBehalfOf": "False",
+            "PendingEndDateTime": "",
+            "PendingPreviousStatus": "",
+            "PendingReason": "",
+            "PendingStartDateTime": "",
+            "PickedUpDateTime": "",
+            "PortalAffectsMultipleUsers": "False",
+            "PortalAffectsPrimaryFunction": "False",
+            "PortalAltContactInfo": "",
+            "Priority": "3",
+            "PublicId": "102383",
+            "RecID": "94757184cce46253b3ab694ae58289b64d0cd867ce",
+            "RecordId": "94757184cce46253b3ab694ae58289b64d0cd867ce",
+            "RecurringIncident": "False",
+            "Reopened": "False",
+            "Requester": "",
+            "RequesterDepartment": "Accounting",
+            "RequesterEmail": "",
+            "RequesterID": "",
+            "ReviewByDeadline": "",
+            "SCTFired": "False",
+            "SCTRecID": "",
+            "SLAID": "93838607346b42be7074af487d9171ea9f948b7204",
+            "SLAIDForCI": "",
+            "SLAIDForCustomer": "93838607346b42be7074af487d9171ea9f948b7204",
+            "SLAIDForService": "",
+            "SLAName": "Platinum",
+            "SLANameForCI": "",
+            "SLANameForCustomer": "Platinum",
+            "SLANameForService": "",
+            "SLAResolutionWarning": "7/26/2021 12:07 PM",
+            "SLAResolveByDeadline": "7/26/2021 12:22 PM",
+            "SLARespondByDeadline": "7/22/2021 4:22 PM",
+            "SLAResponseWarning": "7/22/2021 4:07 PM",
+            "SLATargetTimeID": "",
+            "SLA_Key": "Platinum_Service Request",
+            "STCTimeInMinutes": "0",
+            "SecurityEventID": "",
+            "Service": "Enterprise Apps",
+            "ServiceCartID": "",
+            "ServiceCatalogTemplateName": "",
+            "ServiceCustomerIsEntitled": "True",
+            "ServiceEntitlements": "Platinum, Gold, Silver, Corporate",
+            "ServiceID": "9389f689ed2a47e91de7954ecb8f2fe733af0ecb06",
+            "ShowAllServices": "False",
+            "ShowContactInformation": "False",
+            "SkillID": "9454f50880a42d63b93ce142d58fbbe97de1b3d672",
+            "SmartClassifySearchString": "Submit Incident",
+            "SpecificsTypeId": "9398862125defd58a8deea46fe88acc411a96e2b00",
+            "Stat_24x7ElapsedTime": "0",
+            "Stat_DateTimeAssigned": "",
+            "Stat_DateTimeClosed": "",
+            "Stat_DateTimeInProgress": "",
+            "Stat_DateTimeReOpened": "",
+            "Stat_DateTimeResolved": "",
+            "Stat_DateTimeResponded": "",
+            "Stat_FirstCallResolution": "False",
+            "Stat_IncidentEscalated": "False",
+            "Stat_IncidentReopened": "False",
+            "Stat_NumberOfEscalations": "0",
+            "Stat_NumberOfTouches": "4",
+            "Stat_ResponseTime": "0",
+            "Stat_SLAResolutionBreached": "False",
+            "Stat_SLAResolutionGood": "False",
+            "Stat_SLAResolutionWarning": "False",
+            "Stat_SLAResponseBreached": "False",
+            "Stat_SLAResponseGood": "False",
+            "Stat_SLAResponseWarning": "False",
+            "Status": "New",
+            "StatusDesc": "",
+            "StatusID": "938729d99cb110f2a6c3e5488ead246422a7cd115f",
+            "StatusOrder": "1",
+            "Subcategory": "Submit Incident",
+            "SubcategoryID": "",
+            "TaskClosedCount": "0",
+            "TasksClosed": "False",
+            "TasksInProgress": "False",
+            "TasksOnHold": "False",
+            "TotalSTCTimeInMinutes": "0",
+            "TotalTaskTime": "0",
+            "TotalTasks": "0",
+            "Urgency": "",
+            "WaitTime": "0",
+            "WalkUpSupportLocation": "",
+            "WasCIDown": "False",
+            "Withdraw": "False"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Incident: 102383
+>|Approval Block ID|Assigned Team|Assigned Team ID|Assigned To|Assigned To ID|Assigned To Manager|Barcode|Breach Notes|CI Down End Date Time|CI Down Start Date Time|CI Downtime In Minutes|Call Source|Cart Item ID|Category|Cause|Change ID|Cloned Incident|Cloned Incident ID|Close Description|Closed By|Closed By ID|Closed Date Time|Closed On 1 St Call|Combined KB|Comments|Config Item Display Name|Config Item Rec ID|Config Item Type|Config Item Type ID|Cost|Created By|Created By Email|Created By ID|Created Date Time|Created During|Customer Department|Customer Display Name|Customer Rec ID|Customer Subscription Level|Customer Type ID|Default Team|Description|Description Sentiment Value|Email Notifications|ISMS Audits ID|Impact|In cident Duration In Days|In cident Duration In Hours|Incident ID|Incident Type|Incidentchild ID|Incidentchild Rec ID|Knowledge Article ID|Last Mod By|Last Mod By ID|Last Mod Time Stamp|Last Modified Date Time|Level 2 Escalation Complete|Level 2 Escalation Team|Level 3 Escalation Complete|Level 3 Escalation Team|Linked Problem|Linked SL As|Linked To Problem|Location|Major Incident|Major Incident ID|Major Incident Rec ID|Network Event ID|Next Status|Next Status One Step|Next Status Text|On Behalf Of|Pending End Date Time|Pending Previous Status|Pending Reason|Pending Start Date Time|Picked Up Date Time|Portal Affects Multiple Users|Portal Affects Primary Function|Portal Alt Contact Info|Priority|Public Id|Rec ID|Record Id|Recurring Incident|Reopened|Requester|Requester Department|Requester Email|Requester ID|Review By Deadline|SCT Fired|SCT Rec ID|SLAID|SLAID For CI|SLAID For Customer|SLAID For Service|SLA Name|SLA Name For CI|SLA Name For Customer|SLA Name For Service|SLA Resolution Warning|SLA Resolve By Deadline|SLA Respond By Deadline|SLA Response Warning|SLA Target Time ID|SLA_ Key|STC Time In Minutes|Security Event ID|Service|Service Cart ID|Service Catalog Template Name|Service Customer Is Entitled|Service Entitlements|Service ID|Show All Services|Show Contact Information|Skill ID|Smart Classify Search String|Specifics Type Id|Stat _24 X 7 Elapsed Time|Stat _ Date Time Assigned|Stat _ Date Time Closed|Stat _ Date Time In Progress|Stat _ Date Time Re Opened|Stat _ Date Time Resolved|Stat _ Date Time Responded|Stat _ First Call Resolution|Stat _ Incident Escalated|Stat _ Incident Reopened|Stat _ Number Of Escalations|Stat _ Number Of Touches|Stat _ Response Time|Stat _SLA Resolution Breached|Stat _SLA Resolution Good|Stat _SLA Resolution Warning|Stat _SLA Response Breached|Stat _SLA Response Good|Stat _SLA Response Warning|Status|Status Desc|Status ID|Status Order|Subcategory|Subcategory ID|Task Closed Count|Tasks Closed|Tasks In Progress|Tasks On Hold|Total STC Time In Minutes|Total Task Time|Total Tasks|Urgency|Wait Time|Walk Up Support Location|Was CI Down|Withdraw|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  |  |  | 0 | Phone |  | PeopleSoft |  |  | False |  |  |  |  |  | False |  |  |  |  |  |  | 0 | demisto admin | user1@mail.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/22/2021 12:22 PM | 8 to 5 Monday thru Friday | Accounting | demisto admin | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook-<br/>-<br/>This is from the REST API-<br/>-<br/>This is from the REST API | 2 |  |  |  | 0.02 | 0.53 | 102383 | Service Request |  |  |  | demisto admin | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 |  | 7/22/2021 12:53 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102383 | 94757184cce46253b3ab694ae58289b64d0cd867ce | 94757184cce46253b3ab694ae58289b64d0cd867ce | False | False |  | Accounting |  |  |  | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/26/2021 12:07 PM | 7/26/2021 12:22 PM | 7/22/2021 4:22 PM | 7/22/2021 4:07 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 4 | 0 | False | False | False | False | False | False | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0 | 0 |  | 0 |  | False | False |
+
+
+### cherwell-download-attachments
+***
+Downloads imported attachements from a specified business object.
+
+
+#### Base Command
+
+`cherwell-download-attachments`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type |  Business object type, for example: "Incident". . | Required | 
+| id_type | Type of ID. Possible values are: public_id, record_id. | Required | 
+| id_value | Public ID or record ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File | Unknown | File result entries. | 
+
+
+#### Command Example
+```!cherwell-download-attachments type=incident id_type=public_id id_value=102383```
+
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "13537@f0716e08-9825-481c-8938-8e0a91a20557",
+        "Extension": "jpg",
+        "Info": "image/jpeg",
+        "MD5": "4f12aef086cb181a9c6404bd28fe2a6f",
+        "Name": "60X80.jpg",
+        "SHA1": "df71c946e1a6c48e00a6376ebb2475f818c7f255",
+        "SHA256": "cb27126f168aa69740b87f581a1af467c1f12ceabf3ff9ee56f2c142b1b8a41e",
+        "SHA512": "70d3eab2ff2b64aa298e63b91809ca0ee76514c5895c145cd7f538baf58078dc3948bb263c5783647e9ab61fe20f32a4adb34f5d88c7a418a1a36a982c85e4b5",
+        "SSDeep": "98304:cHwUVx2eChpJLQEnnE0wsMtEgWilmMPhGxNXnFVfM+3:Iwax2xppnctTAMPhWxr5",
+        "Size": 4187889,
+        "Type": "JPEG image data, Exif standard: [TIFF image data, big-endian, direntries=9, model=FC1102, software=Google, height=0, datetime=2020:06:13 23:02:58, orientation=upper-left, description=DCIM/101MEDIA/DJI_0284.JPG, width=0], baseline, precision 8, 2750x3667, frames 3"
+    }
+}
+```
+
+#### Human Readable Output
+
+
+
+### cherwell-upload-attachment
+***
+Uploads an attachment to a specified business object.
+
+
+#### Base Command
+
+`cherwell-upload-attachment`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type |  Business object type, for example: "Incident". . | Required | 
+| id_type | Type of ID. Possible values are: record_id, public_id. | Required | 
+| id_value | Public ID or record ID. | Required | 
+| file_entry_id | File entry ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cherwell.UploadedAttachments.AttachmentFileId | String | AttachmentFileId to use to get information about the attachment. attachment | 
+| Cherwell.UploadedAttachments.BusinessObjectType | String |  Business object type, for example: "Incident".  | 
+| Cherwell.UploadedAttachments.PublicId | String | Public ID.  | 
+| Cherwell.UploadedAttachments.RecordId | String | Record ID. | 
+
+
+#### Command Example
+```!cherwell-upload-attachment file_entry_id=13570@f0716e08-9825-481c-8938-8e0a91a20557 type=incident id_type=public_id id_value=102383```
+
+#### Context Example
+```json
+{
+    "Cherwell": {
+        "UploadedAttachments": {
+            "AttachmentFileId": "947571fbce24025d9bee3b42d99e6eb4dd887100f4",
+            "BusinessObjectType": "incident",
+            "PublicId": "102383"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Attachment: 947571fbce24025d9bee3b42d99e6eb4dd887100f4, was successfully attached to incident 102383
+
+### cherwell-link-business-objects
+***
+Links business objects that are related.
+
+
+#### Base Command
+
+`cherwell-link-business-objects`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| parent_type | Parent business object type name. | Required | 
+| parent_record_id | Parent business object record ID. | Required | 
+| child_type | Child business object type name. | Required | 
+| child_record_id | Child business object record ID. | Required | 
+| relationship_id | Relationship ID. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!cherwell-link-business-objects parent_type=incident child_type=task relationship_id=9369187528b417b4a17aaa4646b7f7a78b3c821be9 child_record_id=94757210152427ef6ff98741a9a1c01d9fbe80545d parent_record_id=94757184cce46253b3ab694ae58289b64d0cd867ce```
+
+#### Human Readable Output
+
+>### Incident 94757184cce46253b3ab694ae58289b64d0cd867ce and Task 94757210152427ef6ff98741a9a1c01d9fbe80545d were linked
+
+### cherwell-unlink-business-objects
+***
+Unlinks business objects that are linked and related.
+
+
+#### Base Command
+
+`cherwell-unlink-business-objects`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| parent_type | Parent business object type name. | Required | 
+| parent_record_id | Parent business object record ID. | Required | 
+| child_type | Child business object type name. | Required | 
+| child_record_id | Child business object record ID. | Required | 
+| relationship_id | Relationship ID. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!cherwell-unlink-business-objects parent_type=incident child_type=task relationship_id=9369187528b417b4a17aaa4646b7f7a78b3c821be9 child_record_id=94757210152427ef6ff98741a9a1c01d9fbe80545d parent_record_id=94757184cce46253b3ab694ae58289b64d0cd867ce```
+
+#### Human Readable Output
+
+>### Incident 94757184cce46253b3ab694ae58289b64d0cd867ce and Task 94757210152427ef6ff98741a9a1c01d9fbe80545d were unlinked
+
+### cherwell-get-attachments-info
+***
+Gets information for business object attachments.
+
+
+#### Base Command
+
+`cherwell-get-attachments-info`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type |  Business object type, for example: "Incident". . | Required | 
+| id_type | Type of ID. Possible values are: record_id, public_id. | Required | 
+| id_value | Public ID or record ID. | Required | 
+| attachment_type | Type of attachment. Possible values are: linked, imported, url. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cherwell.AttachmentsInfo.AttachmentFiledId | String | Attachment field ID. | 
+| Cherwell.AttachmentsInfo.FileName | String | File name. | 
+| Cherwell.AttachmentsInfo.AttachmentId | String | Attachment ID. | 
+| Cherwell.AttachmentsInfo.BusinessObjectType | String |  Business object type, for example: "Incident".  | 
+| Cherwell.AttachmentsInfo.BusinessObjectPublicId | String | Business object public ID. | 
+| Cherwell.AttachmentsInfo.BusinessObjectRecordId | String | Business object record ID. | 
+
+
+#### Command Example
+```!cherwell-get-attachments-info attachment_type=imported type=incident id_type=public_id id_value=102383```
+
+#### Context Example
+```json
+{
+    "Cherwell": {
+        "AttachmentsInfo": [
+            {
+                "AttachmentFiledId": "9475718f7de6f1508ca8704bd9b83d215763f567d1",
+                "AttachmentId": "9475718f7e153c3d751b5046b389eeba6df7d6d778",
+                "BusinessObjectPublicId": "102383",
+                "BusinessObjectType": "incident",
+                "FileName": "60X80.jpg"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Incident 102383 attachments:
+>|Attachment Filed Id|Attachment Id|Business Object Public Id|Business Object Type|File Name|
+>|---|---|---|---|---|
+>| 9475718f7de6f1508ca8704bd9b83d215763f567d1 | 9475718f7e153c3d751b5046b389eeba6df7d6d778 | 102383 | incident | 60X80.jpg |
+
+
+### cherwell-remove-attachment
+***
+Remove the attachment from the specified business object.
+
+
+#### Base Command
+
+`cherwell-remove-attachment`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type |  Business object type, for example: "Incident". . | Required | 
+| id_type | Type of ID. Possible values are: record_id, public_id. | Required | 
+| id_value | Public ID or record ID. | Required | 
+| attachment_id | Attachment ID to reomve. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!cherwell-remove-attachment type=incident id_type=public_id id_value=102383 attachment_id=9475718f7e153c3d751b5046b389eeba6df7d6d778```
+
+#### Human Readable Output
+
+>### Attachment: 9475718f7e153c3d751b5046b389eeba6df7d6d778, was successfully removed from incident 102383
+
+### cherwell-query-business-object
+***
+Runs advanced queries to search in a specified business object.
+
+
+#### Base Command
+
+`cherwell-query-business-object`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type |  Business object type, for example: "Incident". . | Required | 
+| query | The query to run. A CSV list of filters such that each filter is of the form: ["field_name","operator","value"] and operator is one of: 'eq'=equal, 'gt'=grater-than, 'lt'=less-than, 'contains', 'startwith'. Special characters should be escaped.<br/>Example: `[["CreatedDateTime":"gt":"4/10/2019 3:10:12 PM"]["Priority","eq","1"]]`. <br/>NOTE: If multiple filters are received for the same field name, an 'OR' operation between the filters will be performed, if the field names are different an 'AND' operation will be performed. | Required | 
+| max_results | Maximum number of results to pull. Default is 30. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!cherwell-query-business-object type=incident query=[["Description","eq","This incident was created by Cherwell test playbook"]]```
+
+#### Context Example
+```json
+{
+    "Cherwell": {
+        "QueryResults": [
+            {
+                "ApprovalBlockID": "",
+                "AssignedTeam": "1st Level Support",
+                "AssignedTeamID": "9365b4e90592c81e3b7a024555a6c0094ba77e8773",
+                "AssignedTo": "",
+                "AssignedToID": "",
+                "AssignedToManager": "",
+                "Barcode": "",
+                "BreachNotes": "",
+                "BusinessObjectId": "6dd53665c0c24cab86870a21cf6434ae",
+                "CIDownEndDateTime": "",
+                "CIDownStartDateTime": "",
+                "CIDowntimeInMinutes": "0.00",
+                "CallSource": "Phone",
+                "CartItemID": "",
+                "Category": "PeopleSoft",
+                "Cause": "",
+                "ChangeID": "",
+                "ClonedIncident": "",
+                "ClonedIncidentID": "",
+                "CloseDescription": "",
+                "ClosedBy": "",
+                "ClosedByID": "",
+                "ClosedDateTime": "",
+                "ClosedOn1stCall": "False",
+                "CombinedKB": "",
+                "Comments": "",
+                "ConfigItemDisplayName": "",
+                "ConfigItemRecID": "",
+                "ConfigItemType": "",
+                "ConfigItemTypeID": "",
+                "Cost": "0.00",
+                "CreatedBy": "demisto admin",
+                "CreatedByEmail": "user1@mail.com",
+                "CreatedByID": "9365b511f78906c1fe83644c3fb33e9ec1466f7d90",
+                "CreatedDateTime": "7/21/2021 11:00:09 AM",
+                "CreatedDuring": "8 to 5 Monday thru Friday",
+                "CustomerDepartment": "Accounting",
+                "CustomerDisplayName": "demisto admin",
+                "CustomerRecID": "9365da817530b0bfee892a48fb8815654c6071af03",
+                "CustomerSubscriptionLevel": "",
+                "CustomerTypeID": "",
+                "DefaultTeam": "1st Level Support",
+                "Description": "This incident was created by Cherwell test playbook",
+                "DescriptionSentimentValue": "1",
+                "EmailNotifications": "",
+                "ISMSAuditsID": "",
+                "Impact": "",
+                "IncidentDurationInDays": "0.17",
+                "IncidentDurationInHours": "4.00",
+                "IncidentID": "102379",
+                "IncidentType": "Service Request",
+                "IncidentchildID": "",
+                "IncidentchildRecID": "",
+                "KnowledgeArticleID": "",
+                "LastModBy": "Cherwell Admin",
+                "LastModByID": "93546560c6334c3c105d17437c843b9557775b2e0c",
+                "LastModTimeStamp": "Byte[] Array",
+                "LastModifiedDateTime": "7/21/2021 3:00:15 PM",
+                "Level2EscalationComplete": "False",
+                "Level2EscalationTeam": "2nd Level Support",
+                "Level3EscalationComplete": "False",
+                "Level3EscalationTeam": "3rd Level Support",
+                "LinkedProblem": "",
+                "LinkedSLAs": "93838607346b42be7074af487d9171ea9f948b7204 ,  , ",
+                "LinkedToProblem": "False",
+                "Location": "",
+                "MajorIncident": "False",
+                "MajorIncidentID": "",
+                "MajorIncidentRecID": "",
+                "NetworkEventID": "",
+                "NextStatus": "In Progress",
+                "NextStatusOneStep": "ActionInfoDef ID=\"93d9abdb6242",
+                "NextStatusText": "Begin Work",
+                "OnBehalfOf": "False",
+                "PendingEndDateTime": "",
+                "PendingPreviousStatus": "",
+                "PendingReason": "",
+                "PendingStartDateTime": "",
+                "PickedUpDateTime": "",
+                "PortalAffectsMultipleUsers": "False",
+                "PortalAffectsPrimaryFunction": "False",
+                "PortalAltContactInfo": "",
+                "Priority": "3",
+                "PublicId": "102379",
+                "RecID": "947563943db20d178bf122451b8946535670196726",
+                "RecordId": "947563943db20d178bf122451b8946535670196726",
+                "RecurringIncident": "False",
+                "Reopened": "False",
+                "Requester": "",
+                "RequesterDepartment": "Accounting",
+                "RequesterEmail": "",
+                "RequesterID": "",
+                "ReviewByDeadline": "1/1/1900 12:00:00 AM",
+                "SCTFired": "False",
+                "SCTRecID": "",
+                "SLAID": "93838607346b42be7074af487d9171ea9f948b7204",
+                "SLAIDForCI": "",
+                "SLAIDForCustomer": "93838607346b42be7074af487d9171ea9f948b7204",
+                "SLAIDForService": "",
+                "SLAName": "Platinum",
+                "SLANameForCI": "",
+                "SLANameForCustomer": "Platinum",
+                "SLANameForService": "",
+                "SLAResolutionWarning": "7/23/2021 10:45:09 AM",
+                "SLAResolveByDeadline": "7/23/2021 11:00:09 AM",
+                "SLARespondByDeadline": "7/21/2021 3:00:09 PM",
+                "SLAResponseWarning": "7/21/2021 2:45:09 PM",
+                "SLATargetTimeID": "",
+                "SLA_Key": "Platinum_Service Request",
+                "STCTimeInMinutes": "0",
+                "SecurityEventID": "",
+                "Service": "Enterprise Apps",
+                "ServiceCartID": "",
+                "ServiceCatalogTemplateName": "",
+                "ServiceCustomerIsEntitled": "True",
+                "ServiceEntitlements": "Platinum, Gold, Silver, Corporate",
+                "ServiceID": "9389f689ed2a47e91de7954ecb8f2fe733af0ecb06",
+                "ShowAllServices": "False",
+                "ShowContactInformation": "False",
+                "SkillID": "9454f50880a42d63b93ce142d58fbbe97de1b3d672",
+                "SmartClassifySearchString": "Submit Incident",
+                "SpecificsTypeId": "9398862125defd58a8deea46fe88acc411a96e2b00",
+                "Stat_24x7ElapsedTime": "0",
+                "Stat_DateTimeAssigned": "",
+                "Stat_DateTimeClosed": "",
+                "Stat_DateTimeInProgress": "",
+                "Stat_DateTimeReOpened": "",
+                "Stat_DateTimeResolved": "",
+                "Stat_DateTimeResponded": "",
+                "Stat_FirstCallResolution": "False",
+                "Stat_IncidentEscalated": "False",
+                "Stat_IncidentReopened": "False",
+                "Stat_NumberOfEscalations": "0",
+                "Stat_NumberOfTouches": "5",
+                "Stat_ResponseTime": "0",
+                "Stat_SLAResolutionBreached": "False",
+                "Stat_SLAResolutionGood": "False",
+                "Stat_SLAResolutionWarning": "False",
+                "Stat_SLAResponseBreached": "True",
+                "Stat_SLAResponseGood": "False",
+                "Stat_SLAResponseWarning": "True",
+                "Status": "New",
+                "StatusDesc": "",
+                "StatusID": "938729d99cb110f2a6c3e5488ead246422a7cd115f",
+                "StatusOrder": "1",
+                "Subcategory": "Submit Incident",
+                "SubcategoryID": "",
+                "TaskClosedCount": "0",
+                "TasksClosed": "False",
+                "TasksInProgress": "False",
+                "TasksOnHold": "False",
+                "TotalSTCTimeInMinutes": "0",
+                "TotalTaskTime": "0.00",
+                "TotalTasks": "0.00",
+                "Urgency": "",
+                "WaitTime": "0",
+                "WalkUpSupportLocation": "",
+                "WasCIDown": "False",
+                "Withdraw": "False"
+            },
+            {
+                "ApprovalBlockID": "",
+                "AssignedTeam": "1st Level Support",
+                "AssignedTeamID": "9365b4e90592c81e3b7a024555a6c0094ba77e8773",
+                "AssignedTo": "",
+                "AssignedToID": "",
+                "AssignedToManager": "",
+                "Barcode": "",
+                "BreachNotes": "",
+                "BusinessObjectId": "6dd53665c0c24cab86870a21cf6434ae",
+                "CIDownEndDateTime": "",
+                "CIDownStartDateTime": "",
+                "CIDowntimeInMinutes": "0.00",
+                "CallSource": "Phone",
+                "CartItemID": "",
+                "Category": "PeopleSoft",
+                "Cause": "",
+                "ChangeID": "",
+                "ClonedIncident": "",
+                "ClonedIncidentID": "",
+                "CloseDescription": "",
+                "ClosedBy": "",
+                "ClosedByID": "",
+                "ClosedDateTime": "",
+                "ClosedOn1stCall": "False",
+                "CombinedKB": "",
+                "Comments": "",
+                "ConfigItemDisplayName": "",
+                "ConfigItemRecID": "",
+                "ConfigItemType": "",
+                "ConfigItemTypeID": "",
+                "Cost": "0.00",
+                "CreatedBy": "demisto admin",
+                "CreatedByEmail": "user1@mail.com",
+                "CreatedByID": "9365b511f78906c1fe83644c3fb33e9ec1466f7d90",
+                "CreatedDateTime": "7/21/2021 11:01:52 AM",
+                "CreatedDuring": "8 to 5 Monday thru Friday",
+                "CustomerDepartment": "Accounting",
+                "CustomerDisplayName": "demisto admin",
+                "CustomerRecID": "9365da817530b0bfee892a48fb8815654c6071af03",
+                "CustomerSubscriptionLevel": "",
+                "CustomerTypeID": "",
+                "DefaultTeam": "1st Level Support",
+                "Description": "This incident was created by Cherwell test playbook",
+                "DescriptionSentimentValue": "1",
+                "EmailNotifications": "",
+                "ISMSAuditsID": "",
+                "Impact": "",
+                "IncidentDurationInDays": "0.17",
+                "IncidentDurationInHours": "4.00",
+                "IncidentID": "102380",
+                "IncidentType": "Service Request",
+                "IncidentchildID": "",
+                "IncidentchildRecID": "",
+                "KnowledgeArticleID": "",
+                "LastModBy": "Cherwell Admin",
+                "LastModByID": "93546560c6334c3c105d17437c843b9557775b2e0c",
+                "LastModTimeStamp": "Byte[] Array",
+                "LastModifiedDateTime": "7/21/2021 3:02:01 PM",
+                "Level2EscalationComplete": "False",
+                "Level2EscalationTeam": "2nd Level Support",
+                "Level3EscalationComplete": "False",
+                "Level3EscalationTeam": "3rd Level Support",
+                "LinkedProblem": "",
+                "LinkedSLAs": "93838607346b42be7074af487d9171ea9f948b7204 ,  , ",
+                "LinkedToProblem": "False",
+                "Location": "",
+                "MajorIncident": "False",
+                "MajorIncidentID": "",
+                "MajorIncidentRecID": "",
+                "NetworkEventID": "",
+                "NextStatus": "In Progress",
+                "NextStatusOneStep": "ActionInfoDef ID=\"93d9abdb6242",
+                "NextStatusText": "Begin Work",
+                "OnBehalfOf": "False",
+                "PendingEndDateTime": "",
+                "PendingPreviousStatus": "",
+                "PendingReason": "",
+                "PendingStartDateTime": "",
+                "PickedUpDateTime": "",
+                "PortalAffectsMultipleUsers": "False",
+                "PortalAffectsPrimaryFunction": "False",
+                "PortalAltContactInfo": "",
+                "Priority": "1",
+                "PublicId": "102380",
+                "RecID": "94756398453cbed47f9b19434e91e320b92cb47d3d",
+                "RecordId": "94756398453cbed47f9b19434e91e320b92cb47d3d",
+                "RecurringIncident": "False",
+                "Reopened": "False",
+                "Requester": "",
+                "RequesterDepartment": "Accounting",
+                "RequesterEmail": "",
+                "RequesterID": "",
+                "ReviewByDeadline": "1/1/1900 12:00:00 AM",
+                "SCTFired": "False",
+                "SCTRecID": "",
+                "SLAID": "93838607346b42be7074af487d9171ea9f948b7204",
+                "SLAIDForCI": "",
+                "SLAIDForCustomer": "93838607346b42be7074af487d9171ea9f948b7204",
+                "SLAIDForService": "",
+                "SLAName": "Platinum",
+                "SLANameForCI": "",
+                "SLANameForCustomer": "Platinum",
+                "SLANameForService": "",
+                "SLAResolutionWarning": "7/21/2021 2:56:52 PM",
+                "SLAResolveByDeadline": "7/21/2021 3:01:52 PM",
+                "SLARespondByDeadline": "7/21/2021 11:26:52 AM",
+                "SLAResponseWarning": "7/21/2021 11:11:52 AM",
+                "SLATargetTimeID": "",
+                "SLA_Key": "Platinum_Service Request",
+                "STCTimeInMinutes": "0",
+                "SecurityEventID": "",
+                "Service": "Enterprise Apps",
+                "ServiceCartID": "",
+                "ServiceCatalogTemplateName": "",
+                "ServiceCustomerIsEntitled": "True",
+                "ServiceEntitlements": "Platinum, Gold, Silver, Corporate",
+                "ServiceID": "9389f689ed2a47e91de7954ecb8f2fe733af0ecb06",
+                "ShowAllServices": "False",
+                "ShowContactInformation": "False",
+                "SkillID": "9454f50880a42d63b93ce142d58fbbe97de1b3d672",
+                "SmartClassifySearchString": "Submit Incident",
+                "SpecificsTypeId": "9398862125defd58a8deea46fe88acc411a96e2b00",
+                "Stat_24x7ElapsedTime": "0",
+                "Stat_DateTimeAssigned": "",
+                "Stat_DateTimeClosed": "",
+                "Stat_DateTimeInProgress": "",
+                "Stat_DateTimeReOpened": "",
+                "Stat_DateTimeResolved": "",
+                "Stat_DateTimeResponded": "",
+                "Stat_FirstCallResolution": "False",
+                "Stat_IncidentEscalated": "False",
+                "Stat_IncidentReopened": "False",
+                "Stat_NumberOfEscalations": "0",
+                "Stat_NumberOfTouches": "11",
+                "Stat_ResponseTime": "0",
+                "Stat_SLAResolutionBreached": "True",
+                "Stat_SLAResolutionGood": "False",
+                "Stat_SLAResolutionWarning": "True",
+                "Stat_SLAResponseBreached": "True",
+                "Stat_SLAResponseGood": "False",
+                "Stat_SLAResponseWarning": "True",
+                "Status": "New",
+                "StatusDesc": "",
+                "StatusID": "938729d99cb110f2a6c3e5488ead246422a7cd115f",
+                "StatusOrder": "1",
+                "Subcategory": "Submit Incident",
+                "SubcategoryID": "",
+                "TaskClosedCount": "0",
+                "TasksClosed": "False",
+                "TasksInProgress": "False",
+                "TasksOnHold": "False",
+                "TotalSTCTimeInMinutes": "0",
+                "TotalTaskTime": "0.00",
+                "TotalTasks": "0.00",
+                "Urgency": "",
+                "WaitTime": "0",
+                "WalkUpSupportLocation": "",
+                "WasCIDown": "False",
+                "Withdraw": "False"
+            },
+            {
+                "ApprovalBlockID": "",
+                "AssignedTeam": "1st Level Support",
+                "AssignedTeamID": "9365b4e90592c81e3b7a024555a6c0094ba77e8773",
+                "AssignedTo": "",
+                "AssignedToID": "",
+                "AssignedToManager": "",
+                "Barcode": "",
+                "BreachNotes": "",
+                "BusinessObjectId": "6dd53665c0c24cab86870a21cf6434ae",
+                "CIDownEndDateTime": "",
+                "CIDownStartDateTime": "",
+                "CIDowntimeInMinutes": "0.00",
+                "CallSource": "Phone",
+                "CartItemID": "",
+                "Category": "PeopleSoft",
+                "Cause": "",
+                "ChangeID": "",
+                "ClonedIncident": "",
+                "ClonedIncidentID": "",
+                "CloseDescription": "",
+                "ClosedBy": "",
+                "ClosedByID": "",
+                "ClosedDateTime": "",
+                "ClosedOn1stCall": "False",
+                "CombinedKB": "",
+                "Comments": "",
+                "ConfigItemDisplayName": "",
+                "ConfigItemRecID": "",
+                "ConfigItemType": "",
+                "ConfigItemTypeID": "",
+                "Cost": "0.00",
+                "CreatedBy": "demisto admin",
+                "CreatedByEmail": "user1@mail.com",
+                "CreatedByID": "9365b511f78906c1fe83644c3fb33e9ec1466f7d90",
+                "CreatedDateTime": "7/21/2021 1:11:19 PM",
+                "CreatedDuring": "8 to 5 Monday thru Friday",
+                "CustomerDepartment": "Accounting",
+                "CustomerDisplayName": "demisto admin",
+                "CustomerRecID": "9365da817530b0bfee892a48fb8815654c6071af03",
+                "CustomerSubscriptionLevel": "",
+                "CustomerTypeID": "",
+                "DefaultTeam": "1st Level Support",
+                "Description": "This incident was created by Cherwell test playbook",
+                "DescriptionSentimentValue": "1",
+                "EmailNotifications": "",
+                "ISMSAuditsID": "",
+                "Impact": "",
+                "IncidentDurationInDays": "0.79",
+                "IncidentDurationInHours": "19.00",
+                "IncidentID": "102381",
+                "IncidentType": "Service Request",
+                "IncidentchildID": "",
+                "IncidentchildRecID": "",
+                "KnowledgeArticleID": "",
+                "LastModBy": "Cherwell Admin",
+                "LastModByID": "93546560c6334c3c105d17437c843b9557775b2e0c",
+                "LastModTimeStamp": "Byte[] Array",
+                "LastModifiedDateTime": "7/22/2021 8:11:20 AM",
+                "Level2EscalationComplete": "False",
+                "Level2EscalationTeam": "2nd Level Support",
+                "Level3EscalationComplete": "False",
+                "Level3EscalationTeam": "3rd Level Support",
+                "LinkedProblem": "",
+                "LinkedSLAs": "93838607346b42be7074af487d9171ea9f948b7204 ,  , ",
+                "LinkedToProblem": "False",
+                "Location": "",
+                "MajorIncident": "False",
+                "MajorIncidentID": "",
+                "MajorIncidentRecID": "",
+                "NetworkEventID": "",
+                "NextStatus": "In Progress",
+                "NextStatusOneStep": "ActionInfoDef ID=\"93d9abdb6242",
+                "NextStatusText": "Begin Work",
+                "OnBehalfOf": "False",
+                "PendingEndDateTime": "",
+                "PendingPreviousStatus": "",
+                "PendingReason": "",
+                "PendingStartDateTime": "",
+                "PickedUpDateTime": "",
+                "PortalAffectsMultipleUsers": "False",
+                "PortalAffectsPrimaryFunction": "False",
+                "PortalAltContactInfo": "",
+                "Priority": "3",
+                "PublicId": "102381",
+                "RecID": "947564c7add241eb40f5ff40f5a026147a9fc0d47d",
+                "RecordId": "947564c7add241eb40f5ff40f5a026147a9fc0d47d",
+                "RecurringIncident": "False",
+                "Reopened": "False",
+                "Requester": "",
+                "RequesterDepartment": "Accounting",
+                "RequesterEmail": "",
+                "RequesterID": "",
+                "ReviewByDeadline": "1/1/1900 12:00:00 AM",
+                "SCTFired": "False",
+                "SCTRecID": "",
+                "SLAID": "93838607346b42be7074af487d9171ea9f948b7204",
+                "SLAIDForCI": "",
+                "SLAIDForCustomer": "93838607346b42be7074af487d9171ea9f948b7204",
+                "SLAIDForService": "",
+                "SLAName": "Platinum",
+                "SLANameForCI": "",
+                "SLANameForCustomer": "Platinum",
+                "SLANameForService": "",
+                "SLAResolutionWarning": "7/23/2021 12:56:19 PM",
+                "SLAResolveByDeadline": "7/23/2021 1:11:19 PM",
+                "SLARespondByDeadline": "7/22/2021 8:11:19 AM",
+                "SLAResponseWarning": "7/21/2021 4:56:19 PM",
+                "SLATargetTimeID": "",
+                "SLA_Key": "Platinum_Service Request",
+                "STCTimeInMinutes": "0",
+                "SecurityEventID": "",
+                "Service": "Enterprise Apps",
+                "ServiceCartID": "",
+                "ServiceCatalogTemplateName": "",
+                "ServiceCustomerIsEntitled": "True",
+                "ServiceEntitlements": "Platinum, Gold, Silver, Corporate",
+                "ServiceID": "9389f689ed2a47e91de7954ecb8f2fe733af0ecb06",
+                "ShowAllServices": "False",
+                "ShowContactInformation": "False",
+                "SkillID": "9454f50880a42d63b93ce142d58fbbe97de1b3d672",
+                "SmartClassifySearchString": "Submit Incident",
+                "SpecificsTypeId": "9398862125defd58a8deea46fe88acc411a96e2b00",
+                "Stat_24x7ElapsedTime": "0",
+                "Stat_DateTimeAssigned": "",
+                "Stat_DateTimeClosed": "",
+                "Stat_DateTimeInProgress": "",
+                "Stat_DateTimeReOpened": "",
+                "Stat_DateTimeResolved": "",
+                "Stat_DateTimeResponded": "",
+                "Stat_FirstCallResolution": "False",
+                "Stat_IncidentEscalated": "False",
+                "Stat_IncidentReopened": "False",
+                "Stat_NumberOfEscalations": "0",
+                "Stat_NumberOfTouches": "5",
+                "Stat_ResponseTime": "0",
+                "Stat_SLAResolutionBreached": "False",
+                "Stat_SLAResolutionGood": "False",
+                "Stat_SLAResolutionWarning": "False",
+                "Stat_SLAResponseBreached": "True",
+                "Stat_SLAResponseGood": "False",
+                "Stat_SLAResponseWarning": "True",
+                "Status": "New",
+                "StatusDesc": "",
+                "StatusID": "938729d99cb110f2a6c3e5488ead246422a7cd115f",
+                "StatusOrder": "1",
+                "Subcategory": "Submit Incident",
+                "SubcategoryID": "",
+                "TaskClosedCount": "0",
+                "TasksClosed": "False",
+                "TasksInProgress": "False",
+                "TasksOnHold": "False",
+                "TotalSTCTimeInMinutes": "0",
+                "TotalTaskTime": "0.00",
+                "TotalTasks": "0.00",
+                "Urgency": "",
+                "WaitTime": "0",
+                "WalkUpSupportLocation": "",
+                "WasCIDown": "False",
+                "Withdraw": "False"
+            },
+            {
+                "ApprovalBlockID": "",
+                "AssignedTeam": "1st Level Support",
+                "AssignedTeamID": "9365b4e90592c81e3b7a024555a6c0094ba77e8773",
+                "AssignedTo": "",
+                "AssignedToID": "",
+                "AssignedToManager": "",
+                "Barcode": "",
+                "BreachNotes": "",
+                "BusinessObjectId": "6dd53665c0c24cab86870a21cf6434ae",
+                "CIDownEndDateTime": "",
+                "CIDownStartDateTime": "",
+                "CIDowntimeInMinutes": "0.00",
+                "CallSource": "Phone",
+                "CartItemID": "",
+                "Category": "PeopleSoft",
+                "Cause": "",
+                "ChangeID": "",
+                "ClonedIncident": "",
+                "ClonedIncidentID": "",
+                "CloseDescription": "",
+                "ClosedBy": "",
+                "ClosedByID": "",
+                "ClosedDateTime": "",
+                "ClosedOn1stCall": "False",
+                "CombinedKB": "",
+                "Comments": "",
+                "ConfigItemDisplayName": "",
+                "ConfigItemRecID": "",
+                "ConfigItemType": "",
+                "ConfigItemTypeID": "",
+                "Cost": "0.00",
+                "CreatedBy": "demisto admin",
+                "CreatedByEmail": "user1@mail.com",
+                "CreatedByID": "9365b511f78906c1fe83644c3fb33e9ec1466f7d90",
+                "CreatedDateTime": "7/22/2021 12:22:27 PM",
+                "CreatedDuring": "8 to 5 Monday thru Friday",
+                "CustomerDepartment": "Accounting",
+                "CustomerDisplayName": "demisto admin",
+                "CustomerRecID": "9365da817530b0bfee892a48fb8815654c6071af03",
+                "CustomerSubscriptionLevel": "",
+                "CustomerTypeID": "",
+                "DefaultTeam": "1st Level Support",
+                "Description": "This incident was created by Cherwell test playbook",
+                "DescriptionSentimentValue": "1",
+                "EmailNotifications": "",
+                "ISMSAuditsID": "",
+                "Impact": "",
+                "IncidentDurationInDays": "0.00",
+                "IncidentDurationInHours": "0.00",
+                "IncidentID": "102382",
+                "IncidentType": "Service Request",
+                "IncidentchildID": "",
+                "IncidentchildRecID": "",
+                "KnowledgeArticleID": "",
+                "LastModBy": "demisto admin",
+                "LastModByID": "9365b511f78906c1fe83644c3fb33e9ec1466f7d90",
+                "LastModTimeStamp": "Byte[] Array",
+                "LastModifiedDateTime": "7/22/2021 12:22:31 PM",
+                "Level2EscalationComplete": "False",
+                "Level2EscalationTeam": "2nd Level Support",
+                "Level3EscalationComplete": "False",
+                "Level3EscalationTeam": "3rd Level Support",
+                "LinkedProblem": "",
+                "LinkedSLAs": "93838607346b42be7074af487d9171ea9f948b7204 ,  , ",
+                "LinkedToProblem": "False",
+                "Location": "",
+                "MajorIncident": "False",
+                "MajorIncidentID": "",
+                "MajorIncidentRecID": "",
+                "NetworkEventID": "",
+                "NextStatus": "In Progress",
+                "NextStatusOneStep": "ActionInfoDef ID=\"93d9abdb6242",
+                "NextStatusText": "Begin Work",
+                "OnBehalfOf": "False",
+                "PendingEndDateTime": "",
+                "PendingPreviousStatus": "",
+                "PendingReason": "",
+                "PendingStartDateTime": "",
+                "PickedUpDateTime": "",
+                "PortalAffectsMultipleUsers": "False",
+                "PortalAffectsPrimaryFunction": "False",
+                "PortalAltContactInfo": "",
+                "Priority": "3",
+                "PublicId": "102382",
+                "RecID": "947571842387f6d7df118546e29cac13df2afafebc",
+                "RecordId": "947571842387f6d7df118546e29cac13df2afafebc",
+                "RecurringIncident": "False",
+                "Reopened": "False",
+                "Requester": "",
+                "RequesterDepartment": "Accounting",
+                "RequesterEmail": "",
+                "RequesterID": "",
+                "ReviewByDeadline": "1/1/1900 12:00:00 AM",
+                "SCTFired": "False",
+                "SCTRecID": "",
+                "SLAID": "93838607346b42be7074af487d9171ea9f948b7204",
+                "SLAIDForCI": "",
+                "SLAIDForCustomer": "93838607346b42be7074af487d9171ea9f948b7204",
+                "SLAIDForService": "",
+                "SLAName": "Platinum",
+                "SLANameForCI": "",
+                "SLANameForCustomer": "Platinum",
+                "SLANameForService": "",
+                "SLAResolutionWarning": "7/26/2021 12:07:27 PM",
+                "SLAResolveByDeadline": "7/26/2021 12:22:27 PM",
+                "SLARespondByDeadline": "7/22/2021 4:22:27 PM",
+                "SLAResponseWarning": "7/22/2021 4:07:27 PM",
+                "SLATargetTimeID": "",
+                "SLA_Key": "Platinum_Service Request",
+                "STCTimeInMinutes": "0",
+                "SecurityEventID": "",
+                "Service": "Enterprise Apps",
+                "ServiceCartID": "",
+                "ServiceCatalogTemplateName": "",
+                "ServiceCustomerIsEntitled": "True",
+                "ServiceEntitlements": "Platinum, Gold, Silver, Corporate",
+                "ServiceID": "9389f689ed2a47e91de7954ecb8f2fe733af0ecb06",
+                "ShowAllServices": "False",
+                "ShowContactInformation": "False",
+                "SkillID": "9454f50880a42d63b93ce142d58fbbe97de1b3d672",
+                "SmartClassifySearchString": "Submit Incident",
+                "SpecificsTypeId": "9398862125defd58a8deea46fe88acc411a96e2b00",
+                "Stat_24x7ElapsedTime": "0",
+                "Stat_DateTimeAssigned": "",
+                "Stat_DateTimeClosed": "",
+                "Stat_DateTimeInProgress": "",
+                "Stat_DateTimeReOpened": "",
+                "Stat_DateTimeResolved": "",
+                "Stat_DateTimeResponded": "",
+                "Stat_FirstCallResolution": "False",
+                "Stat_IncidentEscalated": "False",
+                "Stat_IncidentReopened": "False",
+                "Stat_NumberOfEscalations": "0",
+                "Stat_NumberOfTouches": "1",
+                "Stat_ResponseTime": "0",
+                "Stat_SLAResolutionBreached": "False",
+                "Stat_SLAResolutionGood": "False",
+                "Stat_SLAResolutionWarning": "False",
+                "Stat_SLAResponseBreached": "False",
+                "Stat_SLAResponseGood": "False",
+                "Stat_SLAResponseWarning": "False",
+                "Status": "New",
+                "StatusDesc": "",
+                "StatusID": "938729d99cb110f2a6c3e5488ead246422a7cd115f",
+                "StatusOrder": "1",
+                "Subcategory": "Submit Incident",
+                "SubcategoryID": "",
+                "TaskClosedCount": "0",
+                "TasksClosed": "False",
+                "TasksInProgress": "False",
+                "TasksOnHold": "False",
+                "TotalSTCTimeInMinutes": "0",
+                "TotalTaskTime": "0.00",
+                "TotalTasks": "0.00",
+                "Urgency": "",
+                "WaitTime": "0",
+                "WalkUpSupportLocation": "",
+                "WasCIDown": "False",
+                "Withdraw": "False"
+            },
+            {
+                "ApprovalBlockID": "",
+                "AssignedTeam": "1st Level Support",
+                "AssignedTeamID": "9365b4e90592c81e3b7a024555a6c0094ba77e8773",
+                "AssignedTo": "",
+                "AssignedToID": "",
+                "AssignedToManager": "",
+                "Barcode": "",
+                "BreachNotes": "",
+                "BusinessObjectId": "6dd53665c0c24cab86870a21cf6434ae",
+                "CIDownEndDateTime": "",
+                "CIDownStartDateTime": "",
+                "CIDowntimeInMinutes": "0.00",
+                "CallSource": "Phone",
+                "CartItemID": "",
+                "Category": "PeopleSoft",
+                "Cause": "",
+                "ChangeID": "",
+                "ClonedIncident": "",
+                "ClonedIncidentID": "",
+                "CloseDescription": "",
+                "ClosedBy": "",
+                "ClosedByID": "",
+                "ClosedDateTime": "",
+                "ClosedOn1stCall": "False",
+                "CombinedKB": "",
+                "Comments": "",
+                "ConfigItemDisplayName": "",
+                "ConfigItemRecID": "",
+                "ConfigItemType": "",
+                "ConfigItemTypeID": "",
+                "Cost": "0.00",
+                "CreatedBy": "demisto admin",
+                "CreatedByEmail": "user1@mail.com",
+                "CreatedByID": "9365b511f78906c1fe83644c3fb33e9ec1466f7d90",
+                "CreatedDateTime": "7/22/2021 12:54:18 PM",
+                "CreatedDuring": "8 to 5 Monday thru Friday",
+                "CustomerDepartment": "Accounting",
+                "CustomerDisplayName": "demisto admin",
+                "CustomerRecID": "9365da817530b0bfee892a48fb8815654c6071af03",
+                "CustomerSubscriptionLevel": "",
+                "CustomerTypeID": "",
+                "DefaultTeam": "1st Level Support",
+                "Description": "This incident was created by Cherwell test playbook",
+                "DescriptionSentimentValue": "1",
+                "EmailNotifications": "",
+                "ISMSAuditsID": "",
+                "Impact": "",
+                "IncidentDurationInDays": "0.00",
+                "IncidentDurationInHours": "0.00",
+                "IncidentID": "102384",
+                "IncidentType": "Service Request",
+                "IncidentchildID": "",
+                "IncidentchildRecID": "",
+                "KnowledgeArticleID": "",
+                "LastModBy": "demisto admin",
+                "LastModByID": "9365b511f78906c1fe83644c3fb33e9ec1466f7d90",
+                "LastModTimeStamp": "Byte[] Array",
+                "LastModifiedDateTime": "7/22/2021 12:54:18 PM",
+                "Level2EscalationComplete": "False",
+                "Level2EscalationTeam": "2nd Level Support",
+                "Level3EscalationComplete": "False",
+                "Level3EscalationTeam": "3rd Level Support",
+                "LinkedProblem": "",
+                "LinkedSLAs": "93838607346b42be7074af487d9171ea9f948b7204 ,  , ",
+                "LinkedToProblem": "False",
+                "Location": "",
+                "MajorIncident": "False",
+                "MajorIncidentID": "",
+                "MajorIncidentRecID": "",
+                "NetworkEventID": "",
+                "NextStatus": "In Progress",
+                "NextStatusOneStep": "ActionInfoDef ID=\"93d9abdb6242",
+                "NextStatusText": "Begin Work",
+                "OnBehalfOf": "False",
+                "PendingEndDateTime": "",
+                "PendingPreviousStatus": "",
+                "PendingReason": "",
+                "PendingStartDateTime": "",
+                "PickedUpDateTime": "",
+                "PortalAffectsMultipleUsers": "False",
+                "PortalAffectsPrimaryFunction": "False",
+                "PortalAltContactInfo": "",
+                "Priority": "3",
+                "PublicId": "102384",
+                "RecID": "947571cec8a5b5f03850c940c2bf6ca2bf116ffce9",
+                "RecordId": "947571cec8a5b5f03850c940c2bf6ca2bf116ffce9",
+                "RecurringIncident": "False",
+                "Reopened": "False",
+                "Requester": "",
+                "RequesterDepartment": "Accounting",
+                "RequesterEmail": "",
+                "RequesterID": "",
+                "ReviewByDeadline": "1/1/1900 12:00:00 AM",
+                "SCTFired": "False",
+                "SCTRecID": "",
+                "SLAID": "93838607346b42be7074af487d9171ea9f948b7204",
+                "SLAIDForCI": "",
+                "SLAIDForCustomer": "93838607346b42be7074af487d9171ea9f948b7204",
+                "SLAIDForService": "",
+                "SLAName": "Platinum",
+                "SLANameForCI": "",
+                "SLANameForCustomer": "Platinum",
+                "SLANameForService": "",
+                "SLAResolutionWarning": "7/26/2021 12:39:18 PM",
+                "SLAResolveByDeadline": "7/26/2021 12:54:18 PM",
+                "SLARespondByDeadline": "7/22/2021 4:54:18 PM",
+                "SLAResponseWarning": "7/22/2021 4:39:18 PM",
+                "SLATargetTimeID": "",
+                "SLA_Key": "Platinum_Service Request",
+                "STCTimeInMinutes": "0",
+                "SecurityEventID": "",
+                "Service": "Enterprise Apps",
+                "ServiceCartID": "",
+                "ServiceCatalogTemplateName": "",
+                "ServiceCustomerIsEntitled": "True",
+                "ServiceEntitlements": "Platinum, Gold, Silver, Corporate",
+                "ServiceID": "9389f689ed2a47e91de7954ecb8f2fe733af0ecb06",
+                "ShowAllServices": "False",
+                "ShowContactInformation": "False",
+                "SkillID": "9454f50880a42d63b93ce142d58fbbe97de1b3d672",
+                "SmartClassifySearchString": "Submit Incident",
+                "SpecificsTypeId": "9398862125defd58a8deea46fe88acc411a96e2b00",
+                "Stat_24x7ElapsedTime": "0",
+                "Stat_DateTimeAssigned": "",
+                "Stat_DateTimeClosed": "",
+                "Stat_DateTimeInProgress": "",
+                "Stat_DateTimeReOpened": "",
+                "Stat_DateTimeResolved": "",
+                "Stat_DateTimeResponded": "",
+                "Stat_FirstCallResolution": "False",
+                "Stat_IncidentEscalated": "False",
+                "Stat_IncidentReopened": "False",
+                "Stat_NumberOfEscalations": "0",
+                "Stat_NumberOfTouches": "1",
+                "Stat_ResponseTime": "0",
+                "Stat_SLAResolutionBreached": "False",
+                "Stat_SLAResolutionGood": "False",
+                "Stat_SLAResolutionWarning": "False",
+                "Stat_SLAResponseBreached": "False",
+                "Stat_SLAResponseGood": "False",
+                "Stat_SLAResponseWarning": "False",
+                "Status": "New",
+                "StatusDesc": "",
+                "StatusID": "938729d99cb110f2a6c3e5488ead246422a7cd115f",
+                "StatusOrder": "1",
+                "Subcategory": "Submit Incident",
+                "SubcategoryID": "",
+                "TaskClosedCount": "0",
+                "TasksClosed": "False",
+                "TasksInProgress": "False",
+                "TasksOnHold": "False",
+                "TotalSTCTimeInMinutes": "0",
+                "TotalTaskTime": "0.00",
+                "TotalTasks": "0.00",
+                "Urgency": "",
+                "WaitTime": "0",
+                "WalkUpSupportLocation": "",
+                "WasCIDown": "False",
+                "Withdraw": "False"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Query Results
+>|Approval Block ID|Assigned Team|Assigned Team ID|Assigned To|Assigned To ID|Assigned To Manager|Barcode|Breach Notes|Business Object Id|CI Down End Date Time|CI Down Start Date Time|CI Downtime In Minutes|Call Source|Cart Item ID|Category|Cause|Change ID|Cloned Incident|Cloned Incident ID|Close Description|Closed By|Closed By ID|Closed Date Time|Closed On 1 St Call|Combined KB|Comments|Config Item Display Name|Config Item Rec ID|Config Item Type|Config Item Type ID|Cost|Created By|Created By Email|Created By ID|Created Date Time|Created During|Customer Department|Customer Display Name|Customer Rec ID|Customer Subscription Level|Customer Type ID|Default Team|Description|Description Sentiment Value|Email Notifications|ISMS Audits ID|Impact|In cident Duration In Days|In cident Duration In Hours|Incident ID|Incident Type|Incidentchild ID|Incidentchild Rec ID|Knowledge Article ID|Last Mod By|Last Mod By ID|Last Mod Time Stamp|Last Modified Date Time|Level 2 Escalation Complete|Level 2 Escalation Team|Level 3 Escalation Complete|Level 3 Escalation Team|Linked Problem|Linked SL As|Linked To Problem|Location|Major Incident|Major Incident ID|Major Incident Rec ID|Network Event ID|Next Status|Next Status One Step|Next Status Text|On Behalf Of|Pending End Date Time|Pending Previous Status|Pending Reason|Pending Start Date Time|Picked Up Date Time|Portal Affects Multiple Users|Portal Affects Primary Function|Portal Alt Contact Info|Priority|Public Id|Rec ID|Record Id|Recurring Incident|Reopened|Requester|Requester Department|Requester Email|Requester ID|Review By Deadline|SCT Fired|SCT Rec ID|SLAID|SLAID For CI|SLAID For Customer|SLAID For Service|SLA Name|SLA Name For CI|SLA Name For Customer|SLA Name For Service|SLA Resolution Warning|SLA Resolve By Deadline|SLA Respond By Deadline|SLA Response Warning|SLA Target Time ID|SLA_ Key|STC Time In Minutes|Security Event ID|Service|Service Cart ID|Service Catalog Template Name|Service Customer Is Entitled|Service Entitlements|Service ID|Show All Services|Show Contact Information|Skill ID|Smart Classify Search String|Specifics Type Id|Stat _24 X 7 Elapsed Time|Stat _ Date Time Assigned|Stat _ Date Time Closed|Stat _ Date Time In Progress|Stat _ Date Time Re Opened|Stat _ Date Time Resolved|Stat _ Date Time Responded|Stat _ First Call Resolution|Stat _ Incident Escalated|Stat _ Incident Reopened|Stat _ Number Of Escalations|Stat _ Number Of Touches|Stat _ Response Time|Stat _SLA Resolution Breached|Stat _SLA Resolution Good|Stat _SLA Resolution Warning|Stat _SLA Response Breached|Stat _SLA Response Good|Stat _SLA Response Warning|Status|Status Desc|Status ID|Status Order|Subcategory|Subcategory ID|Task Closed Count|Tasks Closed|Tasks In Progress|Tasks On Hold|Total STC Time In Minutes|Total Task Time|Total Tasks|Urgency|Wait Time|Walk Up Support Location|Was CI Down|Withdraw|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  | 6dd53665c0c24cab86870a21cf6434ae |  |  | 0.00 | Phone |  | PeopleSoft |  |  |  |  |  |  |  |  | False |  |  |  |  |  |  | 0.00 | demisto admin | user1@mail.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/21/2021 11:00:09 AM | 8 to 5 Monday thru Friday | Accounting | demisto admin | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook | 1 |  |  |  | 0.17 | 4.00 | 102379 | Service Request |  |  |  | Cherwell Admin | 93546560c6334c3c105d17437c843b9557775b2e0c | Byte[] Array | 7/21/2021 3:00:15 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102379 | 947563943db20d178bf122451b8946535670196726 | 947563943db20d178bf122451b8946535670196726 | False | False |  | Accounting |  |  | 1/1/1900 12:00:00 AM | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/23/2021 10:45:09 AM | 7/23/2021 11:00:09 AM | 7/21/2021 3:00:09 PM | 7/21/2021 2:45:09 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 5 | 0 | False | False | False | True | False | True | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0.00 | 0.00 |  | 0 |  | False | False |
+>|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  | 6dd53665c0c24cab86870a21cf6434ae |  |  | 0.00 | Phone |  | PeopleSoft |  |  |  |  |  |  |  |  | False |  |  |  |  |  |  | 0.00 | demisto admin | user1@mail.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/21/2021 11:01:52 AM | 8 to 5 Monday thru Friday | Accounting | demisto admin | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook | 1 |  |  |  | 0.17 | 4.00 | 102380 | Service Request |  |  |  | Cherwell Admin | 93546560c6334c3c105d17437c843b9557775b2e0c | Byte[] Array | 7/21/2021 3:02:01 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 1 | 102380 | 94756398453cbed47f9b19434e91e320b92cb47d3d | 94756398453cbed47f9b19434e91e320b92cb47d3d | False | False |  | Accounting |  |  | 1/1/1900 12:00:00 AM | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/21/2021 2:56:52 PM | 7/21/2021 3:01:52 PM | 7/21/2021 11:26:52 AM | 7/21/2021 11:11:52 AM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 11 | 0 | True | False | True | True | False | True | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0.00 | 0.00 |  | 0 |  | False | False |
+>|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  | 6dd53665c0c24cab86870a21cf6434ae |  |  | 0.00 | Phone |  | PeopleSoft |  |  |  |  |  |  |  |  | False |  |  |  |  |  |  | 0.00 | demisto admin | user1@mail.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/21/2021 1:11:19 PM | 8 to 5 Monday thru Friday | Accounting | demisto admin | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook | 1 |  |  |  | 0.79 | 19.00 | 102381 | Service Request |  |  |  | Cherwell Admin | 93546560c6334c3c105d17437c843b9557775b2e0c | Byte[] Array | 7/22/2021 8:11:20 AM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102381 | 947564c7add241eb40f5ff40f5a026147a9fc0d47d | 947564c7add241eb40f5ff40f5a026147a9fc0d47d | False | False |  | Accounting |  |  | 1/1/1900 12:00:00 AM | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/23/2021 12:56:19 PM | 7/23/2021 1:11:19 PM | 7/22/2021 8:11:19 AM | 7/21/2021 4:56:19 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 5 | 0 | False | False | False | True | False | True | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0.00 | 0.00 |  | 0 |  | False | False |
+>|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  | 6dd53665c0c24cab86870a21cf6434ae |  |  | 0.00 | Phone |  | PeopleSoft |  |  |  |  |  |  |  |  | False |  |  |  |  |  |  | 0.00 | demisto admin | user1@mail.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/22/2021 12:22:27 PM | 8 to 5 Monday thru Friday | Accounting | demisto admin | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook | 1 |  |  |  | 0.00 | 0.00 | 102382 | Service Request |  |  |  | demisto admin | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | Byte[] Array | 7/22/2021 12:22:31 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102382 | 947571842387f6d7df118546e29cac13df2afafebc | 947571842387f6d7df118546e29cac13df2afafebc | False | False |  | Accounting |  |  | 1/1/1900 12:00:00 AM | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/26/2021 12:07:27 PM | 7/26/2021 12:22:27 PM | 7/22/2021 4:22:27 PM | 7/22/2021 4:07:27 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 1 | 0 | False | False | False | False | False | False | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0.00 | 0.00 |  | 0 |  | False | False |
+>|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  | 6dd53665c0c24cab86870a21cf6434ae |  |  | 0.00 | Phone |  | PeopleSoft |  |  |  |  |  |  |  |  | False |  |  |  |  |  |  | 0.00 | demisto admin | user1@mail.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/22/2021 12:54:18 PM | 8 to 5 Monday thru Friday | Accounting | demisto admin | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook | 1 |  |  |  | 0.00 | 0.00 | 102384 | Service Request |  |  |  | demisto admin | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | Byte[] Array | 7/22/2021 12:54:18 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102384 | 947571cec8a5b5f03850c940c2bf6ca2bf116ffce9 | 947571cec8a5b5f03850c940c2bf6ca2bf116ffce9 | False | False |  | Accounting |  |  | 1/1/1900 12:00:00 AM | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/26/2021 12:39:18 PM | 7/26/2021 12:54:18 PM | 7/22/2021 4:54:18 PM | 7/22/2021 4:39:18 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 1 | 0 | False | False | False | False | False | False | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0.00 | 0.00 |  | 0 |  | False | False |
+
+
+### cherwell-get-field-info
+***
+Gets information for a field, by one of its properties (Name, Display Name, or id).
+
+
+#### Base Command
+
+`cherwell-get-field-info`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type |  Business object type, for example: "Incident". . | Required | 
+| field_property | Field property to search by (Name, DIsplay Name or Field id). | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cherwell.FieldInfo.DisplayName | String | Field display name \(as it displays in the Cherwell UI\). | 
+| Cherwell.FieldInfo.FieldId | String | Field ID. | 
+| Cherwell.FieldInfo.Name | String | The name to use when working with business object commands. | 
+
+
+#### Command Example
+```!cherwell-get-field-info type=incident field_property=Customer Display Name```
+
+#### Context Example
+```json
+{
+    "Cherwell": {
+        "FieldInfo": {
+            "DisplayName": "Customer Display Name",
+            "FieldId": "93734aaff77b19d1fcfd1d4b4aba1b0af895f25788",
+            "Name": "CustomerDisplayName"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Field info:
+>|Display Name|Field Id|Name|
+>|---|---|---|
+>| Customer Display Name | 93734aaff77b19d1fcfd1d4b4aba1b0af895f25788 | CustomerDisplayName |
+
+
+### cherwell-run-saved-search
+***
+Returns the results of a saved search.
+
+
+#### Base Command
+
+`cherwell-run-saved-search`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| association_id | Business object association ID for the saved search. | Required | 
+| scope | Scope name or ID for the saved search. | Required | 
+| scope_owner | Scope owner ID for the saved search. Use "(None)" when no scope owner exists. | Required | 
+| search_name | Name of the saved search. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### cherwell-get-business-object-id
+***
+Get a general business object id by name
+
+
+#### Base Command
+
+`cherwell-get-business-object-id`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| business_object_name | Business object name. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cherwell.BusinessObjectInfo.BusinessObjectId | String | Business object ID. | 
+| Cherwell.BusinessObjectInfo.BusinessObjectName | String | Business object name. | 
+
+
+#### Command Example
+```!cherwell-get-business-object-id business_object_name=incident```
+
+#### Context Example
+```json
+{
+    "Cherwell": {
+        "BusinessObjectInfo": {
+            "BusinessObjectId": "6dd53665c0c24cab86870a21cf6434ae",
+            "BusinessObjectName": "incident"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Business Object Info:
+>|Business Object Id|Business Object Name|
+>|---|---|
+>| 6dd53665c0c24cab86870a21cf6434ae | incident |
+
+
+### cherwell-get-business-object-summary
+***
+Get business object summary by name or ID.
+
+
+#### Base Command
+
+`cherwell-get-business-object-summary`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the business object. | Optional | 
+| id | The ID of the business object. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cherwell.BusinessObjectSummary.supporting | Boolean | Whether the business object is a supporting business object or not. | 
+| Cherwell.BusinessObjectSummary.major | Boolean | Whether the business object is a major business object or not. | 
+| Cherwell.BusinessObjectSummary.group | Boolean | Whether the business object is a group business object or not. | 
+| Cherwell.BusinessObjectSummary.name | String | The name of the business object. | 
+| Cherwell.BusinessObjectSummary.stateFieldId | String | The ID of the business object state field. | 
+| Cherwell.BusinessObjectSummary.busObId | String | The ID of the business object. | 
+| Cherwell.BusinessObjectSummary.states | String | The valid states of the business object. | 
+| Cherwell.BusinessObjectSummary.lookup | Boolean | Whether the object is a lookup object or not. | 
+| Cherwell.BusinessObjectSummary.displayName | String | The display name of the business object. | 
+| Cherwell.BusinessObjectSummary.firstRecIdField | String | The ID value of the first business object record ID (RecID) field. | 
+| Cherwell.BusinessObjectSummary.recIdFields | String | The IDs of business object record ID (RecID) fields. | 
+
+
+#### Command Example
+```!cherwell-get-business-object-summary name=task```
+
+#### Context Example
+```json
+{
+    "Cherwell": {
+        "BusinessObjectSummary": {
+            "busObId": "9446978f53c84aef2835904a7ab96cfc882efe030c",
+            "displayName": "Task",
+            "firstRecIdField": "9355d5ed41677b1e9c897e4fa9b4065d34319187f0",
+            "group": true,
+            "groupSummaries": [
+                {
+                    "busObId": "9355d5ed41e384ff345b014b6cb1c6e748594aea5b",
+                    "displayName": "Work Item",
+                    "firstRecIdField": "9355d5ed41677b1e9c897e4fa9b4065d34319187f0",
+                    "group": false,
+                    "groupSummaries": [],
+                    "lookup": false,
+                    "major": false,
+                    "name": "Work_Item",
+                    "recIdFields": "9355d5ed41677b1e9c897e4fa9b4065d34319187f0",
+                    "stateFieldId": "9368f0fb7b744108a666984c21afc932562eb7dc16",
+                    "states": "New,In Progress,Closed,Acknowledged",
+                    "supporting": true
+                }
+            ],
+            "lookup": false,
+            "major": false,
+            "name": "Task",
+            "recIdFields": "9355d5ed41677b1e9c897e4fa9b4065d34319187f0",
+            "stateFieldId": "9368f0fb7b744108a666984c21afc932562eb7dc16",
+            "states": "New,In Progress,Closed,Acknowledged",
+            "supporting": false
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Business Object Summary:
+>|Bus Ob Id|Display Name|First Rec Id Field|Group|Group Summaries|Lookup|Major|Name|Rec Id Fields|State Field Id|States|Supporting|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 9446978f53c84aef2835904a7ab96cfc882efe030c | Task | 9355d5ed41677b1e9c897e4fa9b4065d34319187f0 | true | {'firstRecIdField': '9355d5ed41677b1e9c897e4fa9b4065d34319187f0', 'groupSummaries': [], 'recIdFields': '9355d5ed41677b1e9c897e4fa9b4065d34319187f0', 'stateFieldId': '9368f0fb7b744108a666984c21afc932562eb7dc16', 'states': 'New,In Progress,Closed,Acknowledged', 'busObId': '9355d5ed41e384ff345b014b6cb1c6e748594aea5b', 'displayName': 'Work Item', 'group': False, 'lookup': False, 'major': False, 'name': 'Work_Item', 'supporting': True} | false | false | Task | 9355d5ed41677b1e9c897e4fa9b4065d34319187f0 | 9368f0fb7b744108a666984c21afc932562eb7dc16 | New,In Progress,Closed,Acknowledged | false |
+
+
+### cherwell-get-one-step-actions-for-business-object
+***
+Get One-Step Actions by business object ID.
+
+
+#### Base Command
+
+`cherwell-get-one-step-actions-for-business-object`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| busobjectid | The ID of the business object. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cherwell.OneStepActions.BusinessObjectId | String | The ID of the business object. | 
+| Cherwell.OneStepActions.Actions | Unknown | The business object actions. | 
+
+
+#### Command Example
+```!cherwell-get-one-step-actions-for-business-object busobjectid=6dd53665c0c24cab86870a21cf6434ae```
+
+#### Context Example
+```json
+{
+    "Cherwell": {
+        "OneStepActions": {
+            "Actions": {
+                "Buttons": [
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Launches Skype to contact the Customer.",
+                        "displayName": "Call Contact",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs._48x48.mobilephone3.png",
+                        "id": "9389e70ed88b73a6b1393948a0951e25993cff6c66",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Call Contact",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:9389e70ed88b73a6b1393948a0951e25993cff6c66#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Abandons the incident and opens the default dashboard",
+                        "displayName": "Cancel Incident",
+                        "galleryImage": "",
+                        "id": "944414556cbeebd3bf521840bdad54264072e6e430",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Cancel Incident",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:944414556cbeebd3bf521840bdad54264072e6e430#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Creates a Task with a Status of In-Progress and prompts the user for a Title, Description and Time Spent.  Used primarily in iCherwell",
+                        "displayName": "Create a Task with Time Spent",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs._32x32.alarmclock.png",
+                        "id": "93dfb3fc4f3339c24f199d4eed888d50a2da3e2908",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Crear una tarea con el tiempo dedicado",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93dfb3fc4f3339c24f199d4eed888d50a2da3e2908#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "",
+                        "displayName": "Create and Send Survey",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Common.SubReport.ico",
+                        "id": "943a2f7631f172ade8507347a5ada7b2a39daec900",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Create and Send Survey",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:943a2f7631f172ade8507347a5ada7b2a39daec900#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Changes the Incident Status to Pending and creates a Change Request Record from the current Incident. Prompts User to select a reason and enter a short title for the Change, and links the Change Request to the Incident.",
+                        "displayName": "Create Change from Incident",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Editors.BusObEditor-Lifecycle.png",
+                        "id": "9378b5149c22e1173219ac42a699f88b881885bc11",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Create Change from Incident",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:9378b5149c22e1173219ac42a699f88b881885bc11#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Creates a Problem Record from the Incident.  Adds the Problem to the Problem Management Queue.",
+                        "displayName": "Create Problem from Incident",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs.trafficlight_on.ico",
+                        "id": "935ecc5e96f6f2e26994e445dd8be9fef86252399e",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Cria um problema de um incidente",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:935ecc5e96f6f2e26994e445dd8be9fef86252399e#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Creates a Change Request Record from the current Incident.",
+                        "displayName": "Create Standard Change from Incident",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Editors.BusObEditor-Lifecycle.png",
+                        "id": "93e2938fd4d656b25516ba41b986365596101e39a5",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Create Standard Change from Incident",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93e2938fd4d656b25516ba41b986365596101e39a5#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Conditional expression One-Step that shows a Configuration Map",
+                        "displayName": "Impacted CI's Button Actions",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Editors.WidgetEditor_ScatterChart.png",
+                        "id": "93dfe7325dd236465ec873418e97ca948f738974a0",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Impacted CIs Button Actions",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93dfe7325dd236465ec873418e97ca948f738974a0#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Creates a new Knowledge Article (KA) populated with the Categorization,  Description and Solution/Workaround from the Incident.",
+                        "displayName": "Nominate for KB",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Common.Knowledge.KnowledgeViewCurrent.png",
+                        "id": "9365abfe787a1bce3282c446a9ae9914204703a7fe",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Nominate for KB",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:9365abfe787a1bce3282c446a9ae9914204703a7fe#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Creates a Task time tracking entry and prompts the User for time spent and task completion details. Sets the Task Close Code to Completed.",
+                        "displayName": "Track Task Time Against Incident",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs._32x32.alarmclock.png",
+                        "id": "93d4ee5220e714428a9a4f4189a329409e69e48056",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Marcar tempo da tarefa contra o incidente",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93d4ee5220e714428a9a4f4189a329409e69e48056#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    }
+                ],
+                "Config Item Tasks": [
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Pings the Primary CI (specified on the Incident Form) using the IP Address provided in the CI details.",
+                        "displayName": "Ping System",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs.workstation_network.ico",
+                        "id": "9379e37ed996514927afa143658d9d46c06b3f1558",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Ping System",
+                        "parentFolder": "9386dfed35b006a71b4e6c42d2b6b2fe8c0a16fea5",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:9379e37ed996514927afa143658d9d46c06b3f1558#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Launches Remote Desktop Connection (MSTSC.exe) to the selected CI.  Assumes the current User has rights to use remote desktop and remote connections are configured on the target CI.",
+                        "displayName": "RDP to Primary CI",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs._48x48.workstation_network.png",
+                        "id": "939850e292d4b54454e9d8471db023c97db04ec279",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "RDP to Primary CI",
+                        "parentFolder": "9386dfed35b006a71b4e6c42d2b6b2fe8c0a16fea5",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:939850e292d4b54454e9d8471db023c97db04ec279#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Reboots the Primary CI (specified on the Incident Form), and then updates the Close Description field to track that the CI was rebooted.",
+                        "displayName": "Reboot Computer",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Common.Views.workplace2.png",
+                        "id": "936592312d5676ab8accd94673a45ceaa41777e31e",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Reboot Computer",
+                        "parentFolder": "9386dfed35b006a71b4e6c42d2b6b2fe8c0a16fea5",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:936592312d5676ab8accd94673a45ceaa41777e31e#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Sets password for selected User or Customer to \"ChangeMe,\" and sets account to active if locked out. Updates Incident Form to indicate that password was reset and changes Status to Resolved.",
+                        "displayName": "Reset Password",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs.workstation_network.ico",
+                        "id": "935467d76aacbb0fe7317345f58cc75e38c6640e38",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Reset Password",
+                        "parentFolder": "9386dfed35b006a71b4e6c42d2b6b2fe8c0a16fea5",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:935467d76aacbb0fe7317345f58cc75e38c6640e38#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    }
+                ],
+                "Global": [
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Launches Remote Desktop Connection (MSTSC.exe) to the selected CI.  Assumes the current User has rights to use remote desktop and remote connections are configured on the target CI.",
+                        "displayName": "RDP to Primary CI",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs._48x48.workstation_network.png",
+                        "id": "939850e292d4b54454e9d8471db023c97db04ec279",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "RDP to Primary CI",
+                        "parentFolder": "9386dfed35b006a71b4e6c42d2b6b2fe8c0a16fea5",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:939850e292d4b54454e9d8471db023c97db04ec279#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Pings the Primary CI (specified on the Incident Form) using the IP Address provided in the CI details.",
+                        "displayName": "Ping System",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs.workstation_network.ico",
+                        "id": "9379e37ed996514927afa143658d9d46c06b3f1558",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Ping System",
+                        "parentFolder": "9386dfed35b006a71b4e6c42d2b6b2fe8c0a16fea5",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:9379e37ed996514927afa143658d9d46c06b3f1558#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Reboots the Primary CI (specified on the Incident Form), and then updates the Close Description field to track that the CI was rebooted.",
+                        "displayName": "Reboot Computer",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Common.Views.workplace2.png",
+                        "id": "936592312d5676ab8accd94673a45ceaa41777e31e",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Reboot Computer",
+                        "parentFolder": "9386dfed35b006a71b4e6c42d2b6b2fe8c0a16fea5",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:936592312d5676ab8accd94673a45ceaa41777e31e#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Clones information from the current Incident into a new Incident Record. Populates the Description, Call Source, Categorization, and Priority fields with information from the cloned record.",
+                        "displayName": "Clone Current Incident",
+                        "galleryImage": "",
+                        "id": "9389f945cc0784caad651a491db626b6baf78bb19c",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Clone Current Incident",
+                        "parentFolder": "",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:9389f945cc0784caad651a491db626b6baf78bb19c#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Displays a popup message if the individual selected as the Incident Owner is out of the office (as defined in the UserInfo Time-off dates).",
+                        "displayName": "Not Available",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs._32x32.about.png",
+                        "id": "93b2c31172b273237c7311487b9c6eace6fcdef071",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Not Available",
+                        "parentFolder": "",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93b2c31172b273237c7311487b9c6eace6fcdef071#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Launches Skype to contact the Customer.",
+                        "displayName": "Call Contact",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs._48x48.mobilephone3.png",
+                        "id": "9389e70ed88b73a6b1393948a0951e25993cff6c66",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Call Contact",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:9389e70ed88b73a6b1393948a0951e25993cff6c66#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Changes the Incident Status to Pending and creates a Change Request Record from the current Incident. Prompts User to select a reason and enter a short title for the Change, and links the Change Request to the Incident.",
+                        "displayName": "Create Change from Incident",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Editors.BusObEditor-Lifecycle.png",
+                        "id": "9378b5149c22e1173219ac42a699f88b881885bc11",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Create Change from Incident",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:9378b5149c22e1173219ac42a699f88b881885bc11#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Creates and sends an e-mail to a Customer that her request for a new employee computer is denied. Attaches the e-mail to the Incident History Record.",
+                        "displayName": "New Employee Request Denied",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs._32x32.mail2.png",
+                        "id": "93d5744310efa377c99eac4cd6a029e203095cfdf6",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "New Employee Request Denied",
+                        "parentFolder": "9386dfe9a8b61715d6adac4b2eaf97ea07f8c59026",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93d5744310efa377c99eac4cd6a029e203095cfdf6#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Create a new Journal - Note entry for Incident.  Used primarily in iCherwell.",
+                        "displayName": "Create a Journal Note Entry for Incident",
+                        "galleryImage": "",
+                        "id": "93dfb39503a41fb67670734ef495fd0c34216726de",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Create a Journal Note Entry for Incident",
+                        "parentFolder": "",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93dfb39503a41fb67670734ef495fd0c34216726de#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Creates a Task with a Status of In-Progress and prompts the user for a Title, Description and Time Spent.  Used primarily in iCherwell",
+                        "displayName": "Create a Task with Time Spent",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs._32x32.alarmclock.png",
+                        "id": "93dfb3fc4f3339c24f199d4eed888d50a2da3e2908",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Crear una tarea con el tiempo dedicado",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93dfb3fc4f3339c24f199d4eed888d50a2da3e2908#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Creates Tasks for new employee items and adds request to New Request Queue.",
+                        "displayName": "New Employee Tasks",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.People.woman1.ico",
+                        "id": "93b51a73bd4eabbc7d81614d06ab3de5fd9ad4756b",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "New Employee Tasks",
+                        "parentFolder": "9386dfe9a8b61715d6adac4b2eaf97ea07f8c59026",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93b51a73bd4eabbc7d81614d06ab3de5fd9ad4756b#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Creates a Change Request Record from the current Incident.",
+                        "displayName": "Create Standard Change from Incident",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Editors.BusObEditor-Lifecycle.png",
+                        "id": "93e2938fd4d656b25516ba41b986365596101e39a5",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Create Standard Change from Incident",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93e2938fd4d656b25516ba41b986365596101e39a5#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Changes the Incident Status from Resolved to Reopened, and clears the resolution fields that are used with the Email Monitor. Sets the Resolved Time in minutes and the Total STC Time in minutes to restart the SLA Clock.",
+                        "displayName": "Reopen Incident",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Common.Unlock32.png",
+                        "id": "93c28182ecc977b3dab73446549d977a008cd84ad2",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Reopen Incident",
+                        "parentFolder": "93a78f732e67cfbcf4df6c4276a48c2bb32443dfa7",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93c28182ecc977b3dab73446549d977a008cd84ad2#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Sets password for selected User or Customer to \"ChangeMe,\" and sets account to active if locked out. Updates Incident Form to indicate that password was reset and changes Status to Resolved.",
+                        "displayName": "Reset Password",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs.workstation_network.ico",
+                        "id": "935467d76aacbb0fe7317345f58cc75e38c6640e38",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Reset Password",
+                        "parentFolder": "9386dfed35b006a71b4e6c42d2b6b2fe8c0a16fea5",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:935467d76aacbb0fe7317345f58cc75e38c6640e38#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Creates a Task time tracking entry and prompts the User for time spent and task completion details. Sets the Task Close Code to Completed.",
+                        "displayName": "Track Task Time Against Incident",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs._32x32.alarmclock.png",
+                        "id": "93d4ee5220e714428a9a4f4189a329409e69e48056",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Marcar tempo da tarefa contra o incidente",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93d4ee5220e714428a9a4f4189a329409e69e48056#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Sets the Incident Status to Resolved.  Used for Mobile Apps.",
+                        "displayName": "Set Incident Status to Resolved",
+                        "galleryImage": "",
+                        "id": "93dcaa69fd0dee94e4f1f24cb6b86395bfb5cdbe77",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Set Incident Status to Resolved",
+                        "parentFolder": "",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93dcaa69fd0dee94e4f1f24cb6b86395bfb5cdbe77#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Conditional expression One-Step that shows a Configuration Map",
+                        "displayName": "Impacted CI's Button Actions",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Editors.WidgetEditor_ScatterChart.png",
+                        "id": "93dfe7325dd236465ec873418e97ca948f738974a0",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Impacted CIs Button Actions",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93dfe7325dd236465ec873418e97ca948f738974a0#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Closes an Incident Record as a duplicate of another Incident. Prompts the User to enter the number (RecID) of the Incident that it duplicates.",
+                        "displayName": "Close as Duplicate",
+                        "galleryImage": "",
+                        "id": "938737bddabf85fd0c881a4c26b93982d9411e91ef",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Close as Duplicate",
+                        "parentFolder": "9386dfe936b88eacef32394c0c8a148924c6a10eca",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:938737bddabf85fd0c881a4c26b93982d9411e91ef#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "",
+                        "displayName": "Close Request",
+                        "galleryImage": "",
+                        "id": "93c281891b5c3819fe72934f6da3ca31efa03f7023",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Close Request",
+                        "parentFolder": "",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93c281891b5c3819fe72934f6da3ca31efa03f7023#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Sets the Incident Priority to 1.  Used for iCherwell and Android Mobile Apps.",
+                        "displayName": "Set Incident to Priority One",
+                        "galleryImage": "",
+                        "id": "93dcaa73f25bd4c232c8b94ca1b29a0a63b5d4ee4b",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Set Incident to Priority One",
+                        "parentFolder": "",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93dcaa73f25bd4c232c8b94ca1b29a0a63b5d4ee4b#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Creates a new Knowledge Article (KA) populated with the Categorization,  Description and Solution/Workaround from the Incident.",
+                        "displayName": "Nominate for KB",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Common.Knowledge.KnowledgeViewCurrent.png",
+                        "id": "9365abfe787a1bce3282c446a9ae9914204703a7fe",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Nominate for KB",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:9365abfe787a1bce3282c446a9ae9914204703a7fe#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Creates a follow-up e-mail to send the Customer regarding a question or update about the Incident. Allows the User to edit the e-mail before clicking Send. Attaches the e-mail to the Incident History Record.",
+                        "displayName": "Follow-up E-mail",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs._32x32.mail2.png",
+                        "id": "9344807867705870519cd54caf852e8600e42ed537",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "FollowUp EMail",
+                        "parentFolder": "",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:9344807867705870519cd54caf852e8600e42ed537#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "When 3 days lapse from the last modified date time, sends a reminder e-mail to the Incident Owner to follow up with the Customer.",
+                        "displayName": "SLA Escalate if not Touched in 3 Days",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs._32x32.mail2.png",
+                        "id": "93a606bfdcaf4fa68bf8284a7d8e195bae5e851992",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "SLA Escalate if not Touched in 3 Days",
+                        "parentFolder": "93a78f732e67cfbcf4df6c4276a48c2bb32443dfa7",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93a606bfdcaf4fa68bf8284a7d8e195bae5e851992#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Makes the current user the owner of the Incident. \nChanges the Incident status from new to assigned.",
+                        "displayName": "Take Ownership",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.People._48x48.user2.png",
+                        "id": "93d50acaac30f5fe73aef345cf923763d34f756c0c",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Take Ownership",
+                        "parentFolder": "93a78f732e67cfbcf4df6c4276a48c2bb32443dfa7",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93d50acaac30f5fe73aef345cf923763d34f756c0c#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "",
+                        "displayName": "Escalate to Level 3",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.People.users2.ico",
+                        "id": "940794577aeb1e8265242c452eb83401abcefda781",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Escalate to Level 3",
+                        "parentFolder": "93a78f732e67cfbcf4df6c4276a48c2bb32443dfa7",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:940794577aeb1e8265242c452eb83401abcefda781#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "",
+                        "displayName": "Escalation Complete",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.People.users3.ico",
+                        "id": "940794cdb072fb6649a9fc49b8b3ce3f77760c9964",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Escalation Complete",
+                        "parentFolder": "93a78f732e67cfbcf4df6c4276a48c2bb32443dfa7",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:940794cdb072fb6649a9fc49b8b3ce3f77760c9964#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Creates escalation task to predefined level 2 and level 3 teams based on data in Incident Subcategory table.",
+                        "displayName": "Escalation to Level 2 and 3",
+                        "galleryImage": "",
+                        "id": "93f72f43c5c4979d75c5f547e795400ef411cb8a6b",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Invite pour le d\u00e9tails de la transmission au troisi\u00e8me",
+                        "parentFolder": "93a78f732e67cfbcf4df6c4276a48c2bb32443dfa7",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93f72f43c5c4979d75c5f547e795400ef411cb8a6b#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Creates a Problem Record from the Incident.  Adds the Problem to the Problem Management Queue.",
+                        "displayName": "Create Problem from Incident",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs.trafficlight_on.ico",
+                        "id": "935ecc5e96f6f2e26994e445dd8be9fef86252399e",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Cria um problema de um incidente",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:935ecc5e96f6f2e26994e445dd8be9fef86252399e#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "",
+                        "displayName": "Create Incident",
+                        "galleryImage": "",
+                        "id": "93dbbd9b58b12daa093a9944d8a356e57cefd7d277",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Crear incidencia",
+                        "parentFolder": "9386dfe936b88eacef32394c0c8a148924c6a10eca",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93dbbd9b58b12daa093a9944d8a356e57cefd7d277#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "",
+                        "displayName": "Filter SCTs",
+                        "galleryImage": "",
+                        "id": "9411e83cb4677257b43dd24021aae88c85a3213805",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Filtrar SCTs",
+                        "parentFolder": "",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:9411e83cb4677257b43dd24021aae88c85a3213805#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Converts an Incident into a Major Incident",
+                        "displayName": "Convert into Major Incident",
+                        "galleryImage": "",
+                        "id": "94434b2049907a382f535b4004a442ebae3c1af753",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Convert into Major Incident",
+                        "parentFolder": "",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:94434b2049907a382f535b4004a442ebae3c1af753#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Abandons the incident and opens the default dashboard",
+                        "displayName": "Cancel Incident",
+                        "galleryImage": "",
+                        "id": "944414556cbeebd3bf521840bdad54264072e6e430",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Cancel Incident",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:944414556cbeebd3bf521840bdad54264072e6e430#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Opens the current record",
+                        "displayName": "Go to Record",
+                        "galleryImage": "",
+                        "id": "9445b97b516056a1278bb1483bb5c7f93e08e4635a",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Go to Record",
+                        "parentFolder": "",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:9445b97b516056a1278bb1483bb5c7f93e08e4635a#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "",
+                        "displayName": "Requester Follow Up Email",
+                        "galleryImage": "",
+                        "id": "9450a0600c044e15f723d349958b5dec22924863e8",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Requester Follow Up Email",
+                        "parentFolder": "",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:9450a0600c044e15f723d349958b5dec22924863e8#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Creates an e-mail to the Customer that her Incident was resolved. Allows the User to edit the e-mail before clicking Send. Attaches the e-mail to the Incident History Record.",
+                        "displayName": "Resolved Confirmation",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs._32x32.mail2.png",
+                        "id": "9454250878f3b7ff56de064ca781b2787105c8e667",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Confirma\u00e7\u00e3o de resolu\u00e7\u00e3o",
+                        "parentFolder": "",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:9454250878f3b7ff56de064ca781b2787105c8e667#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "",
+                        "displayName": "Recommended Assignee",
+                        "galleryImage": "",
+                        "id": "9454e641d3819fbf16c6394037af3814de18670bf8",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Recommended Assignee",
+                        "parentFolder": "",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:9454e641d3819fbf16c6394037af3814de18670bf8#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "",
+                        "displayName": "Create and Send Survey",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Common.SubReport.ico",
+                        "id": "943a2f7631f172ade8507347a5ada7b2a39daec900",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Create and Send Survey",
+                        "parentFolder": "9386dfe7e0a85ff749cfe74aea867ee52ee2cd1cf1",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:943a2f7631f172ade8507347a5ada7b2a39daec900#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "",
+                        "displayName": "Sample Onestep Called from API",
+                        "galleryImage": "",
+                        "id": "947509fc528a451570e6c14223a9a8ca12b0856fc2",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Sample Onestep Called from API",
+                        "parentFolder": "",
+                        "parentIsScopeFolder": true,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:947509fc528a451570e6c14223a9a8ca12b0856fc2#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    }
+                ],
+                "Record Templates": [
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Closes an Incident Record as a duplicate of another Incident. Prompts the User to enter the number (RecID) of the Incident that it duplicates.",
+                        "displayName": "Close as Duplicate",
+                        "galleryImage": "",
+                        "id": "938737bddabf85fd0c881a4c26b93982d9411e91ef",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Close as Duplicate",
+                        "parentFolder": "9386dfe936b88eacef32394c0c8a148924c6a10eca",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:938737bddabf85fd0c881a4c26b93982d9411e91ef#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "",
+                        "displayName": "Create Incident",
+                        "galleryImage": "",
+                        "id": "93dbbd9b58b12daa093a9944d8a356e57cefd7d277",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Crear incidencia",
+                        "parentFolder": "9386dfe936b88eacef32394c0c8a148924c6a10eca",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93dbbd9b58b12daa093a9944d8a356e57cefd7d277#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    }
+                ],
+                "Service Request Models": [
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Creates and sends an e-mail to a Customer that her request for a new employee computer is denied. Attaches the e-mail to the Incident History Record.",
+                        "displayName": "New Employee Request Denied",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs._32x32.mail2.png",
+                        "id": "93d5744310efa377c99eac4cd6a029e203095cfdf6",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "New Employee Request Denied",
+                        "parentFolder": "9386dfe9a8b61715d6adac4b2eaf97ea07f8c59026",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93d5744310efa377c99eac4cd6a029e203095cfdf6#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Creates Tasks for new employee items and adds request to New Request Queue.",
+                        "displayName": "New Employee Tasks",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.People.woman1.ico",
+                        "id": "93b51a73bd4eabbc7d81614d06ab3de5fd9ad4756b",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "New Employee Tasks",
+                        "parentFolder": "9386dfe9a8b61715d6adac4b2eaf97ea07f8c59026",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93b51a73bd4eabbc7d81614d06ab3de5fd9ad4756b#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    }
+                ],
+                "Workflow Actions": [
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "",
+                        "displayName": "Escalate to Level 3",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.People.users2.ico",
+                        "id": "940794577aeb1e8265242c452eb83401abcefda781",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Escalate to Level 3",
+                        "parentFolder": "93a78f732e67cfbcf4df6c4276a48c2bb32443dfa7",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:940794577aeb1e8265242c452eb83401abcefda781#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "",
+                        "displayName": "Escalation Complete",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.People.users3.ico",
+                        "id": "940794cdb072fb6649a9fc49b8b3ce3f77760c9964",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Escalation Complete",
+                        "parentFolder": "93a78f732e67cfbcf4df6c4276a48c2bb32443dfa7",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:940794cdb072fb6649a9fc49b8b3ce3f77760c9964#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Creates escalation task to predefined level 2 and level 3 teams based on data in Incident Subcategory table.",
+                        "displayName": "Escalation to Level 2 and 3",
+                        "galleryImage": "",
+                        "id": "93f72f43c5c4979d75c5f547e795400ef411cb8a6b",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Invite pour le d\u00e9tails de la transmission au troisi\u00e8me",
+                        "parentFolder": "93a78f732e67cfbcf4df6c4276a48c2bb32443dfa7",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93f72f43c5c4979d75c5f547e795400ef411cb8a6b#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Changes the Incident Status from Resolved to Reopened, and clears the resolution fields that are used with the Email Monitor. Sets the Resolved Time in minutes and the Total STC Time in minutes to restart the SLA Clock.",
+                        "displayName": "Reopen Incident",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Common.Unlock32.png",
+                        "id": "93c28182ecc977b3dab73446549d977a008cd84ad2",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Reopen Incident",
+                        "parentFolder": "93a78f732e67cfbcf4df6c4276a48c2bb32443dfa7",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93c28182ecc977b3dab73446549d977a008cd84ad2#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "When 3 days lapse from the last modified date time, sends a reminder e-mail to the Incident Owner to follow up with the Customer.",
+                        "displayName": "SLA Escalate if not Touched in 3 Days",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.BusObs._32x32.mail2.png",
+                        "id": "93a606bfdcaf4fa68bf8284a7d8e195bae5e851992",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "SLA Escalate if not Touched in 3 Days",
+                        "parentFolder": "93a78f732e67cfbcf4df6c4276a48c2bb32443dfa7",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93a606bfdcaf4fa68bf8284a7d8e195bae5e851992#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    },
+                    {
+                        "association": "6dd53665c0c24cab86870a21cf6434ae",
+                        "description": "Makes the current user the owner of the Incident. \nChanges the Incident status from new to assigned.",
+                        "displayName": "Take Ownership",
+                        "galleryImage": "[PlugIn]Images;Trebuchet.PlugIn.Images.Images.Public.People._48x48.user2.png",
+                        "id": "93d50acaac30f5fe73aef345cf923763d34f756c0c",
+                        "links": [],
+                        "localizedScopeName": "Global",
+                        "name": "Take Ownership",
+                        "parentFolder": "93a78f732e67cfbcf4df6c4276a48c2bb32443dfa7",
+                        "parentIsScopeFolder": false,
+                        "scope": "Global",
+                        "scopeOwner": "(None)",
+                        "standInKey": "DefType:OneStepDef#Scope:Global#Id:93d50acaac30f5fe73aef345cf923763d34f756c0c#Owner:6dd53665c0c24cab86870a21cf6434ae"
+                    }
+                ]
+            },
+            "BusinessObjectId": "6dd53665c0c24cab86870a21cf6434ae"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Global one-step actions:
+>|Name|Display Name|Description|Id|Association|Stand In Key|
+>|---|---|---|---|---|---|
+>| RDP to Primary CI | RDP to Primary CI | Launches Remote Desktop Connection (MSTSC.exe) to the selected CI.  Assumes the current User has rights to use remote desktop and remote connections are configured on the target CI. | 939850e292d4b54454e9d8471db023c97db04ec279 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:939850e292d4b54454e9d8471db023c97db04ec279#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Ping System | Ping System | Pings the Primary CI (specified on the Incident Form) using the IP Address provided in the CI details. | 9379e37ed996514927afa143658d9d46c06b3f1558 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9379e37ed996514927afa143658d9d46c06b3f1558#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Reboot Computer | Reboot Computer | Reboots the Primary CI (specified on the Incident Form), and then updates the Close Description field to track that the CI was rebooted. | 936592312d5676ab8accd94673a45ceaa41777e31e | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:936592312d5676ab8accd94673a45ceaa41777e31e#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Clone Current Incident | Clone Current Incident | Clones information from the current Incident into a new Incident Record. Populates the Description, Call Source, Categorization, and Priority fields with information from the cloned record. | 9389f945cc0784caad651a491db626b6baf78bb19c | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9389f945cc0784caad651a491db626b6baf78bb19c#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Not Available | Not Available | Displays a popup message if the individual selected as the Incident Owner is out of the office (as defined in the UserInfo Time-off dates). | 93b2c31172b273237c7311487b9c6eace6fcdef071 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93b2c31172b273237c7311487b9c6eace6fcdef071#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Call Contact | Call Contact | Launches Skype to contact the Customer. | 9389e70ed88b73a6b1393948a0951e25993cff6c66 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9389e70ed88b73a6b1393948a0951e25993cff6c66#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Create Change from Incident | Create Change from Incident | Changes the Incident Status to Pending and creates a Change Request Record from the current Incident. Prompts User to select a reason and enter a short title for the Change, and links the Change Request to the Incident. | 9378b5149c22e1173219ac42a699f88b881885bc11 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9378b5149c22e1173219ac42a699f88b881885bc11#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| New Employee Request Denied | New Employee Request Denied | Creates and sends an e-mail to a Customer that her request for a new employee computer is denied. Attaches the e-mail to the Incident History Record. | 93d5744310efa377c99eac4cd6a029e203095cfdf6 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93d5744310efa377c99eac4cd6a029e203095cfdf6#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Create a Journal Note Entry for Incident | Create a Journal Note Entry for Incident | Create a new Journal - Note entry for Incident.  Used primarily in iCherwell. | 93dfb39503a41fb67670734ef495fd0c34216726de | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93dfb39503a41fb67670734ef495fd0c34216726de#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Crear una tarea con el tiempo dedicado | Create a Task with Time Spent | Creates a Task with a Status of In-Progress and prompts the user for a Title, Description and Time Spent.  Used primarily in iCherwell | 93dfb3fc4f3339c24f199d4eed888d50a2da3e2908 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93dfb3fc4f3339c24f199d4eed888d50a2da3e2908#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| New Employee Tasks | New Employee Tasks | Creates Tasks for new employee items and adds request to New Request Queue. | 93b51a73bd4eabbc7d81614d06ab3de5fd9ad4756b | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93b51a73bd4eabbc7d81614d06ab3de5fd9ad4756b#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Create Standard Change from Incident | Create Standard Change from Incident | Creates a Change Request Record from the current Incident. | 93e2938fd4d656b25516ba41b986365596101e39a5 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93e2938fd4d656b25516ba41b986365596101e39a5#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Reopen Incident | Reopen Incident | Changes the Incident Status from Resolved to Reopened, and clears the resolution fields that are used with the Email Monitor. Sets the Resolved Time in minutes and the Total STC Time in minutes to restart the SLA Clock. | 93c28182ecc977b3dab73446549d977a008cd84ad2 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93c28182ecc977b3dab73446549d977a008cd84ad2#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Reset Password | Reset Password | Sets password for selected User or Customer to "ChangeMe," and sets account to active if locked out. Updates Incident Form to indicate that password was reset and changes Status to Resolved. | 935467d76aacbb0fe7317345f58cc75e38c6640e38 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:935467d76aacbb0fe7317345f58cc75e38c6640e38#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Marcar tempo da tarefa contra o incidente | Track Task Time Against Incident | Creates a Task time tracking entry and prompts the User for time spent and task completion details. Sets the Task Close Code to Completed. | 93d4ee5220e714428a9a4f4189a329409e69e48056 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93d4ee5220e714428a9a4f4189a329409e69e48056#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Set Incident Status to Resolved | Set Incident Status to Resolved | Sets the Incident Status to Resolved.  Used for Mobile Apps. | 93dcaa69fd0dee94e4f1f24cb6b86395bfb5cdbe77 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93dcaa69fd0dee94e4f1f24cb6b86395bfb5cdbe77#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Impacted CIs Button Actions | Impacted CI's Button Actions | Conditional expression One-Step that shows a Configuration Map | 93dfe7325dd236465ec873418e97ca948f738974a0 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93dfe7325dd236465ec873418e97ca948f738974a0#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Close as Duplicate | Close as Duplicate | Closes an Incident Record as a duplicate of another Incident. Prompts the User to enter the number (RecID) of the Incident that it duplicates. | 938737bddabf85fd0c881a4c26b93982d9411e91ef | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:938737bddabf85fd0c881a4c26b93982d9411e91ef#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Close Request | Close Request |  | 93c281891b5c3819fe72934f6da3ca31efa03f7023 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93c281891b5c3819fe72934f6da3ca31efa03f7023#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Set Incident to Priority One | Set Incident to Priority One | Sets the Incident Priority to 1.  Used for iCherwell and Android Mobile Apps. | 93dcaa73f25bd4c232c8b94ca1b29a0a63b5d4ee4b | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93dcaa73f25bd4c232c8b94ca1b29a0a63b5d4ee4b#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Nominate for KB | Nominate for KB | Creates a new Knowledge Article (KA) populated with the Categorization,  Description and Solution/Workaround from the Incident. | 9365abfe787a1bce3282c446a9ae9914204703a7fe | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9365abfe787a1bce3282c446a9ae9914204703a7fe#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| FollowUp EMail | Follow-up E-mail | Creates a follow-up e-mail to send the Customer regarding a question or update about the Incident. Allows the User to edit the e-mail before clicking Send. Attaches the e-mail to the Incident History Record. | 9344807867705870519cd54caf852e8600e42ed537 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9344807867705870519cd54caf852e8600e42ed537#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| SLA Escalate if not Touched in 3 Days | SLA Escalate if not Touched in 3 Days | When 3 days lapse from the last modified date time, sends a reminder e-mail to the Incident Owner to follow up with the Customer. | 93a606bfdcaf4fa68bf8284a7d8e195bae5e851992 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93a606bfdcaf4fa68bf8284a7d8e195bae5e851992#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Take Ownership | Take Ownership | Makes the current user the owner of the Incident. <br/>Changes the Incident status from new to assigned. | 93d50acaac30f5fe73aef345cf923763d34f756c0c | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93d50acaac30f5fe73aef345cf923763d34f756c0c#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Escalate to Level 3 | Escalate to Level 3 |  | 940794577aeb1e8265242c452eb83401abcefda781 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:940794577aeb1e8265242c452eb83401abcefda781#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Escalation Complete | Escalation Complete |  | 940794cdb072fb6649a9fc49b8b3ce3f77760c9964 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:940794cdb072fb6649a9fc49b8b3ce3f77760c9964#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Invite pour le détails de la transmission au troisième | Escalation to Level 2 and 3 | Creates escalation task to predefined level 2 and level 3 teams based on data in Incident Subcategory table. | 93f72f43c5c4979d75c5f547e795400ef411cb8a6b | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93f72f43c5c4979d75c5f547e795400ef411cb8a6b#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Cria um problema de um incidente | Create Problem from Incident | Creates a Problem Record from the Incident.  Adds the Problem to the Problem Management Queue. | 935ecc5e96f6f2e26994e445dd8be9fef86252399e | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:935ecc5e96f6f2e26994e445dd8be9fef86252399e#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Crear incidencia | Create Incident |  | 93dbbd9b58b12daa093a9944d8a356e57cefd7d277 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93dbbd9b58b12daa093a9944d8a356e57cefd7d277#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Filtrar SCTs | Filter SCTs |  | 9411e83cb4677257b43dd24021aae88c85a3213805 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9411e83cb4677257b43dd24021aae88c85a3213805#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Convert into Major Incident | Convert into Major Incident | Converts an Incident into a Major Incident | 94434b2049907a382f535b4004a442ebae3c1af753 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:94434b2049907a382f535b4004a442ebae3c1af753#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Cancel Incident | Cancel Incident | Abandons the incident and opens the default dashboard | 944414556cbeebd3bf521840bdad54264072e6e430 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:944414556cbeebd3bf521840bdad54264072e6e430#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Go to Record | Go to Record | Opens the current record | 9445b97b516056a1278bb1483bb5c7f93e08e4635a | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9445b97b516056a1278bb1483bb5c7f93e08e4635a#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Requester Follow Up Email | Requester Follow Up Email |  | 9450a0600c044e15f723d349958b5dec22924863e8 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9450a0600c044e15f723d349958b5dec22924863e8#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Confirmação de resolução | Resolved Confirmation | Creates an e-mail to the Customer that her Incident was resolved. Allows the User to edit the e-mail before clicking Send. Attaches the e-mail to the Incident History Record. | 9454250878f3b7ff56de064ca781b2787105c8e667 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9454250878f3b7ff56de064ca781b2787105c8e667#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Recommended Assignee | Recommended Assignee |  | 9454e641d3819fbf16c6394037af3814de18670bf8 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9454e641d3819fbf16c6394037af3814de18670bf8#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Create and Send Survey | Create and Send Survey |  | 943a2f7631f172ade8507347a5ada7b2a39daec900 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:943a2f7631f172ade8507347a5ada7b2a39daec900#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Sample Onestep Called from API | Sample Onestep Called from API |  | 947509fc528a451570e6c14223a9a8ca12b0856fc2 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:947509fc528a451570e6c14223a9a8ca12b0856fc2#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>### Buttons one-step actions:
+>|Name|Display Name|Description|Id|Association|Stand In Key|
+>|---|---|---|---|---|---|
+>| Call Contact | Call Contact | Launches Skype to contact the Customer. | 9389e70ed88b73a6b1393948a0951e25993cff6c66 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9389e70ed88b73a6b1393948a0951e25993cff6c66#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Cancel Incident | Cancel Incident | Abandons the incident and opens the default dashboard | 944414556cbeebd3bf521840bdad54264072e6e430 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:944414556cbeebd3bf521840bdad54264072e6e430#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Crear una tarea con el tiempo dedicado | Create a Task with Time Spent | Creates a Task with a Status of In-Progress and prompts the user for a Title, Description and Time Spent.  Used primarily in iCherwell | 93dfb3fc4f3339c24f199d4eed888d50a2da3e2908 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93dfb3fc4f3339c24f199d4eed888d50a2da3e2908#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Create and Send Survey | Create and Send Survey |  | 943a2f7631f172ade8507347a5ada7b2a39daec900 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:943a2f7631f172ade8507347a5ada7b2a39daec900#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Create Change from Incident | Create Change from Incident | Changes the Incident Status to Pending and creates a Change Request Record from the current Incident. Prompts User to select a reason and enter a short title for the Change, and links the Change Request to the Incident. | 9378b5149c22e1173219ac42a699f88b881885bc11 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9378b5149c22e1173219ac42a699f88b881885bc11#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Cria um problema de um incidente | Create Problem from Incident | Creates a Problem Record from the Incident.  Adds the Problem to the Problem Management Queue. | 935ecc5e96f6f2e26994e445dd8be9fef86252399e | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:935ecc5e96f6f2e26994e445dd8be9fef86252399e#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Create Standard Change from Incident | Create Standard Change from Incident | Creates a Change Request Record from the current Incident. | 93e2938fd4d656b25516ba41b986365596101e39a5 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93e2938fd4d656b25516ba41b986365596101e39a5#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Impacted CIs Button Actions | Impacted CI's Button Actions | Conditional expression One-Step that shows a Configuration Map | 93dfe7325dd236465ec873418e97ca948f738974a0 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93dfe7325dd236465ec873418e97ca948f738974a0#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Nominate for KB | Nominate for KB | Creates a new Knowledge Article (KA) populated with the Categorization,  Description and Solution/Workaround from the Incident. | 9365abfe787a1bce3282c446a9ae9914204703a7fe | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9365abfe787a1bce3282c446a9ae9914204703a7fe#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Marcar tempo da tarefa contra o incidente | Track Task Time Against Incident | Creates a Task time tracking entry and prompts the User for time spent and task completion details. Sets the Task Close Code to Completed. | 93d4ee5220e714428a9a4f4189a329409e69e48056 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93d4ee5220e714428a9a4f4189a329409e69e48056#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>### Config Item Tasks one-step actions:
+>|Name|Display Name|Description|Id|Association|Stand In Key|
+>|---|---|---|---|---|---|
+>| Ping System | Ping System | Pings the Primary CI (specified on the Incident Form) using the IP Address provided in the CI details. | 9379e37ed996514927afa143658d9d46c06b3f1558 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:9379e37ed996514927afa143658d9d46c06b3f1558#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| RDP to Primary CI | RDP to Primary CI | Launches Remote Desktop Connection (MSTSC.exe) to the selected CI.  Assumes the current User has rights to use remote desktop and remote connections are configured on the target CI. | 939850e292d4b54454e9d8471db023c97db04ec279 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:939850e292d4b54454e9d8471db023c97db04ec279#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Reboot Computer | Reboot Computer | Reboots the Primary CI (specified on the Incident Form), and then updates the Close Description field to track that the CI was rebooted. | 936592312d5676ab8accd94673a45ceaa41777e31e | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:936592312d5676ab8accd94673a45ceaa41777e31e#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Reset Password | Reset Password | Sets password for selected User or Customer to "ChangeMe," and sets account to active if locked out. Updates Incident Form to indicate that password was reset and changes Status to Resolved. | 935467d76aacbb0fe7317345f58cc75e38c6640e38 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:935467d76aacbb0fe7317345f58cc75e38c6640e38#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>### Record Templates one-step actions:
+>|Name|Display Name|Description|Id|Association|Stand In Key|
+>|---|---|---|---|---|---|
+>| Close as Duplicate | Close as Duplicate | Closes an Incident Record as a duplicate of another Incident. Prompts the User to enter the number (RecID) of the Incident that it duplicates. | 938737bddabf85fd0c881a4c26b93982d9411e91ef | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:938737bddabf85fd0c881a4c26b93982d9411e91ef#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Crear incidencia | Create Incident |  | 93dbbd9b58b12daa093a9944d8a356e57cefd7d277 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93dbbd9b58b12daa093a9944d8a356e57cefd7d277#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>### Service Request Models one-step actions:
+>|Name|Display Name|Description|Id|Association|Stand In Key|
+>|---|---|---|---|---|---|
+>| New Employee Request Denied | New Employee Request Denied | Creates and sends an e-mail to a Customer that her request for a new employee computer is denied. Attaches the e-mail to the Incident History Record. | 93d5744310efa377c99eac4cd6a029e203095cfdf6 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93d5744310efa377c99eac4cd6a029e203095cfdf6#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| New Employee Tasks | New Employee Tasks | Creates Tasks for new employee items and adds request to New Request Queue. | 93b51a73bd4eabbc7d81614d06ab3de5fd9ad4756b | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93b51a73bd4eabbc7d81614d06ab3de5fd9ad4756b#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>### Workflow Actions one-step actions:
+>|Name|Display Name|Description|Id|Association|Stand In Key|
+>|---|---|---|---|---|---|
+>| Escalate to Level 3 | Escalate to Level 3 |  | 940794577aeb1e8265242c452eb83401abcefda781 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:940794577aeb1e8265242c452eb83401abcefda781#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Escalation Complete | Escalation Complete |  | 940794cdb072fb6649a9fc49b8b3ce3f77760c9964 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:940794cdb072fb6649a9fc49b8b3ce3f77760c9964#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Invite pour le détails de la transmission au troisième | Escalation to Level 2 and 3 | Creates escalation task to predefined level 2 and level 3 teams based on data in Incident Subcategory table. | 93f72f43c5c4979d75c5f547e795400ef411cb8a6b | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93f72f43c5c4979d75c5f547e795400ef411cb8a6b#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Reopen Incident | Reopen Incident | Changes the Incident Status from Resolved to Reopened, and clears the resolution fields that are used with the Email Monitor. Sets the Resolved Time in minutes and the Total STC Time in minutes to restart the SLA Clock. | 93c28182ecc977b3dab73446549d977a008cd84ad2 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93c28182ecc977b3dab73446549d977a008cd84ad2#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| SLA Escalate if not Touched in 3 Days | SLA Escalate if not Touched in 3 Days | When 3 days lapse from the last modified date time, sends a reminder e-mail to the Incident Owner to follow up with the Customer. | 93a606bfdcaf4fa68bf8284a7d8e195bae5e851992 | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93a606bfdcaf4fa68bf8284a7d8e195bae5e851992#Owner:6dd53665c0c24cab86870a21cf6434ae |
+>| Take Ownership | Take Ownership | Makes the current user the owner of the Incident. <br/>Changes the Incident status from new to assigned. | 93d50acaac30f5fe73aef345cf923763d34f756c0c | 6dd53665c0c24cab86870a21cf6434ae | DefType:OneStepDef#Scope:Global#Id:93d50acaac30f5fe73aef345cf923763d34f756c0c#Owner:6dd53665c0c24cab86870a21cf6434ae |
+
+
+### cherwell-run-one-step-action-on-business-object
+***
+Run a One-Step Action using a OneStepActionRequest. This request is used to start a One-Step Action run with additional information, such as prompt values.
+
+
+#### Base Command
+
+`cherwell-run-one-step-action-on-business-object`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| busobjectid | The ID of the business object. | Required | 
+| busobrecid | The ID of the business object record. | Required | 
+| oneStepAction_StandInKey | The key to find the One-Step Action to run. You can get it using the command cherwell-get-one-step-actions-for-business-object. | Required | 
+| prompt_values | Additional information to run the action in JSON format. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+
+
+#### Command Example
+```!cherwell-run-one-step-action-on-business-object busobjectid=6dd53665c0c24cab86870a21cf6434ae busobrecid=94757184cce46253b3ab694ae58289b64d0cd867ce oneStepAction_StandInKey=DefType:OneStepDef#Scope:Global#Id:947509fc528a451570e6c14223a9a8ca12b0856fc2#Owner:6dd53665c0c24cab86870a21cf6434ae prompt_values=[{"promptDefId": "947509fe4c84176152bcaa472b929d556b47c5df6d","value": "This is from the REST API"}]```
+
+#### Human Readable Output
+
+>One-Step action has been executed successfully.

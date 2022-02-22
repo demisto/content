@@ -12,14 +12,16 @@ configuration:
   name: gappsID
   required: false
   type: 0
-- display: Events query (e.g., "from:example@demisto.com")
+- display: Events search query (e.g., "from:example@demisto.com")
   name: query
   required: false
   type: 0
+  additionalinfo: Used for searching emails in the inbox. The query language follows the Gmail query specification. For example - "from:example@demisto.com is:unread".
 - display: Events user key (e.g., example@demisto.com)
   name: queryUserKey
   required: false
   type: 0
+  additionalinfo: Use this to specify the email account to search for messages with the search query. By default, the integration uses the email address specified in the credentials.
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -1783,7 +1785,8 @@ script:
         'Replaces {varname} variables with values from this parameter. Expected
                values are in the form of a JSON document. For example, {"varname" :{"value" "some
                value", "key": "context key"}}. Each var name can either be provided with
-               the value or a context key to retrieve the value.'
+               the value or a context key to retrieve the value.
+               Note that only context data is accessible for this argument, while incident fields are not.'
       isArray: false
       name: templateParams
       required: false
@@ -1938,7 +1941,7 @@ script:
       secret: false
     - default: false
       description: |-
-        'Replaces {varname} variables with values from this parameter. Expected values are in the form of a JSON document. For example, {"varname" :{"value" "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value.'
+        'Replaces {varname} variables with values from this parameter. Expected values are in the form of a JSON document. For example, {"varname" :{"value" "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value. Note that only context data is accessible for this argument, while incident fields are not.'
       isArray: false
       name: templateParams
       required: false
@@ -2242,7 +2245,7 @@ script:
       description: A name that appears in the "From:" header for email sent using
         this alias.
       type: String
-  dockerimage: demisto/google-api:1.0.0.18525
+  dockerimage: demisto/google-api:1.0.0.24033
   isfetch: true
   longRunning: false
   longRunningPort: false

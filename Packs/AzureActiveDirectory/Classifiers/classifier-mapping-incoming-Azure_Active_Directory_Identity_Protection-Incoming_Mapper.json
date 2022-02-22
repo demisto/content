@@ -1,0 +1,73 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Azure Active Directory Identity and Access Incoming Mapper",
+    "mapping": {
+        "Azure Active Directory Identity and Access": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Azure Active Directory Identity and Access Alert Type": {
+                    "complex": null,
+                    "simple": "riskEventType"
+                },
+                "Azure Active Directory Identity and Access Activity": {
+                    "complex": null,
+                    "simple": "activity"
+                },
+                "Azure Active Directory Identity and Access Detected Date Time": {
+                    "complex": null,
+                    "simple": "detectedDateTime"
+                },
+                "Azure Active Directory Identity and Access Detection Timing Type": {
+                    "complex": null,
+                    "simple": "detectionTimingType"
+                },
+                "Azure Active Directory Identity and Access Token Issuer Type": {
+                    "complex": null,
+                    "simple": "tokenIssuerType"
+                },
+                "Last Update Time": {
+                    "complex": null,
+                    "simple": "lastUpdatedDateTime"
+                },
+                "Location": {
+                    "complex": {
+                        "accessor": "geoCoordinates",
+                        "filters": [],
+                        "root": "location",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Location Region": {
+                    "complex": null,
+                    "simple": "location.countryOrRegion"
+                },
+                "Risk Rating": {
+                    "complex": null,
+                    "simple": "riskLevel"
+                },
+                "Source IP": {
+                    "complex": null,
+                    "simple": "ipAddress"
+                },
+                "State": {
+                    "complex": null,
+                    "simple": "riskState"
+                },
+                "Subtype": {
+                    "complex": null,
+                    "simple": "riskDetail"
+                },
+                "Username": {
+                    "complex": null,
+                    "simple": "userPrincipalName"
+                }
+            }
+        }
+    },
+    "name": "Azure Active Directory Identity and Access Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

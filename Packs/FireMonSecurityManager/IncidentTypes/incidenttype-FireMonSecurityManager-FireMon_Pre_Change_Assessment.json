@@ -1,0 +1,30 @@
+{
+    "id": "FireMon Pre Change Assessment",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "FireMon Pre Change Assessment",
+    "prevName": "FireMon Pre Change Assessment",
+    "color": "#fea743",
+    "playbookId": "FireMon Pre Change Assessment",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "FireMon Incident Pre Change Assessment",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.0.0"
+}

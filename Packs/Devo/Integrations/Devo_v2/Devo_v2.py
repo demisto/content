@@ -13,6 +13,8 @@ import os
 from datetime import datetime
 from devo.sender import Lookup, SenderConfigSSL, Sender
 from typing import List, Dict, Set
+from devodsconnector import error_checking
+from functools import partial
 
 ''' GLOBAL VARS '''
 ALLOW_INSECURE = demisto.params().get('insecure', False)
@@ -23,6 +25,8 @@ WRITER_CREDENTIALS = demisto.params().get('writer_credentials', None)
 LINQ_LINK_BASE = demisto.params().get('linq_link_base', "https://us.devo.com/welcome")
 FETCH_INCIDENTS_FILTER = demisto.params().get('fetch_incidents_filters', None)
 FETCH_INCIDENTS_DEDUPE = demisto.params().get('fetch_incidents_deduplication', None)
+TIMEOUT = demisto.params().get('timeout', '60')
+PORT = arg_to_number(demisto.params().get('port', '443') or '443')
 HEALTHCHECK_WRITER_RECORD = [{'hello': 'world', 'from': 'demisto-integration'}]
 HEALTHCHECK_WRITER_TABLE = 'test.keep.free'
 RANGE_PATTERN = re.compile('^[0-9]+ [a-zA-Z]+')
@@ -77,7 +81,7 @@ def alert_to_incident(alert):
     alert_severity = float(1)
     alert_name = alert['context'].split('.')[-1]
     alert_description = None
-    alert_occurred = demisto_ISO(float(alert['eventdate']))
+    alert_occurred = demisto_ISO(float(alert['eventdate']) / 1000)
     alert_labels = []
 
     if demisto.get(alert['extraData'], 'alertPriority'):
@@ -114,7 +118,27 @@ def alert_to_incident(alert):
     return incident
 
 
-def build_link(query, start_ts_milli, end_ts_milli, mode='queryApp'):
+# Monkey patching for backwards compatibility
+def get_types(self, linq_query, start, ts_format):
+    type_map = self._make_type_map(ts_format)
+    stop = self._to_unix(start)
+    start = stop - 1
+
+    response = self._query(linq_query, start=start, stop=stop, mode='json/compact', limit=1)
+
+    try:
+        data = json.loads(response)
+        error_checking.check_status(data)
+    except ValueError:
+        raise Exception('API V2 response error')
+
+    col_data = data['object']['m']
+    type_dict = {c: type_map[v['type']] for c, v in col_data.items()}
+
+    return type_dict
+
+
+def build_link(query, start_ts_milli, end_ts_milli, mode='loxcope', linq_base=None):
     myb64str = base64.b64encode((json.dumps({
         'query': query,
         'mode': mode,
@@ -123,7 +147,12 @@ def build_link(query, start_ts_milli, end_ts_milli, mode='queryApp'):
             'to': end_ts_milli
         }
     }).encode('ascii'))).decode()
-    url = LINQ_LINK_BASE + f"#/verticalApp?path=apps/custom/queryApp_dev&targetQuery={myb64str}"
+
+    if linq_base:
+        url = linq_base + f"/#/vapps/app.custom.queryApp_dev?&targetQuery={myb64str}"
+    else:
+        url = LINQ_LINK_BASE + f"/#/vapps/app.custom.queryApp_dev?&targetQuery={myb64str}"
+
     return url
 
 
@@ -135,8 +164,9 @@ def check_configuration():
 
     if WRITER_RELAY and WRITER_CREDENTIALS:
         creds = get_writer_creds()
-        ds.Writer(key=creds['key'].name, crt=creds['crt'].name, chain=creds['chain'].name, relay=WRITER_RELAY)\
-            .load(HEALTHCHECK_WRITER_RECORD, HEALTHCHECK_WRITER_TABLE, historical=False)
+        Sender(SenderConfigSSL(address=(WRITER_RELAY, PORT),
+                               key=creds['key'].name, cert=creds['crt'].name, chain=creds['chain'].name))\
+            .send(tag=HEALTHCHECK_WRITER_TABLE, msg=f'{HEALTHCHECK_WRITER_RECORD}')
 
     if FETCH_INCIDENTS_FILTER:
         alert_filters = check_type(FETCH_INCIDENTS_FILTER, dict)
@@ -292,7 +322,8 @@ def fetch_incidents():
 
     # execute the query and get the events
     # reverse the list so that the most recent event timestamp event is taken when de-duping if needed.
-    events = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT, verify=not ALLOW_INSECURE)
+    events = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT,
+                            verify=not ALLOW_INSECURE, timeout=int(TIMEOUT))
                     .query(alert_query, start=float(from_time), stop=float(to_time),
                            output='dict', ts_format='timestamp'))[::-1]
 
@@ -333,14 +364,18 @@ def run_query_command():
     timestamp_from = demisto.args()['from']
     timestamp_to = demisto.args().get('to', None)
     write_context = demisto.args()['writeToContext'].lower()
+    query_timeout = int(demisto.args().get('queryTimeout', TIMEOUT))
+    linq_base = demisto.args().get('linqLinkBase', None)
 
     time_range = get_time_range(timestamp_from, timestamp_to)
 
-    results = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT, verify=not ALLOW_INSECURE)
+    results = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT, verify=not ALLOW_INSECURE,
+                   timeout=query_timeout)
                    .query(to_query, start=float(time_range[0]), stop=float(time_range[1]),
                    output='dict', ts_format='iso'))
 
-    querylink = {'DevoTableLink': build_link(to_query, int(1000 * float(time_range[0])), int(1000 * float(time_range[1])))}
+    querylink = {'DevoTableLink': build_link(to_query, int(1000 * float(time_range[0])),
+                 int(1000 * float(time_range[1])), linq_base=linq_base)}
 
     entry = {
         'Type': entryTypes['note'],
@@ -383,6 +418,8 @@ def get_alerts_command():
     timestamp_to = demisto.args().get('to', None)
     alert_filters = demisto.args().get('filters', None)
     write_context = demisto.args()['writeToContext'].lower()
+    query_timeout = int(demisto.args().get('queryTimeout', TIMEOUT))
+    linq_base = demisto.args().get('linqLinkBase', None)
     alert_query = ALERTS_QUERY
 
     time_range = get_time_range(timestamp_from, timestamp_to)
@@ -399,11 +436,13 @@ def get_alerts_command():
                       for filt in alert_filters['filters']])
         alert_query = f'{alert_query} where {filter_string}'
 
-    results = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT, verify=not ALLOW_INSECURE)
+    results = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT,
+                   verify=not ALLOW_INSECURE, timeout=query_timeout)
                    .query(alert_query, start=float(time_range[0]), stop=float(time_range[1]),
                    output='dict', ts_format='iso'))
 
-    querylink = {'DevoTableLink': build_link(alert_query, int(1000 * float(time_range[0])), int(1000 * float(time_range[1])))}
+    querylink = {'DevoTableLink': build_link(alert_query, int(1000 * float(time_range[0])),
+                 int(1000 * float(time_range[1])), linq_base=linq_base)}
 
     for res in results:
         res['extraData'] = json.loads(res['extraData'])
@@ -453,7 +492,9 @@ def multi_table_query_command():
     search_token = demisto.args()['searchToken']
     timestamp_from = demisto.args()['from']
     timestamp_to = demisto.args().get('to', None)
+    limit = int(demisto.args().get('limit', 50))
     write_context = demisto.args()['writeToContext'].lower()
+    query_timeout = int(demisto.args().get('queryTimeout', TIMEOUT))
 
     time_range = get_time_range(timestamp_from, timestamp_to)
 
@@ -461,9 +502,12 @@ def multi_table_query_command():
     all_results: List[Dict] = []
     sub_queries = []
 
+    ds_read = ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT,
+                        verify=not ALLOW_INSECURE, timeout=query_timeout)
+    ds_read.get_types = partial(get_types, ds_read)
+
     for table in tables_to_query:
-        fields = ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT, verify=not ALLOW_INSECURE)\
-            ._get_types(f'from {table} select *', 'now', 'iso').keys()
+        fields = ds_read.get_types(f'from {table} select *', 'now', 'iso').keys()
         clauses = [f"( isnotnull({field}) and str({field})->\"" + search_token + "\")" for field in fields]
         sub_queries.append("from " + table + " where" + " or ".join(clauses) + " select *")
 
@@ -484,6 +528,11 @@ def multi_table_query_command():
         entry['HumanReadable'] = 'No results found'
         return entry
 
+    if limit == 0:
+        pass
+    else:
+        all_results = all_results[:limit]
+
     headers: Set = set().union(*(r.keys() for r in all_results))
 
     md = tableToMarkdown('Devo query results', all_results, headers)
@@ -500,13 +549,22 @@ def multi_table_query_command():
 def write_to_table_command():
     table_name = demisto.args()['tableName']
     records = check_type(demisto.args()['records'], list)
+    linq_base = demisto.args().get('linqLinkBase', None)
 
     creds = get_writer_creds()
+    linq = f"from {table_name}"
 
-    linq = ds.Writer(key=creds['key'].name, crt=creds['crt'].name, chain=creds['chain'].name, relay=WRITER_RELAY)\
-        .load(records, table_name, historical=False, linq_func=(lambda x: x))
+    sender = Sender(SenderConfigSSL(address=(WRITER_RELAY, PORT),
+                    key=creds['key'].name, cert=creds['crt'].name, chain=creds['chain'].name))
 
-    querylink = {'DevoTableLink': build_link(linq, int(1000 * time.time()) - 3600000, int(1000 * time.time()))}
+    for r in records:
+        try:
+            sender.send(tag=table_name, msg=json.dumps(r))
+        except TypeError:
+            sender.send(tag=table_name, msg=f"{r}")
+
+    querylink = {'DevoTableLink': build_link(linq, int(1000 * time.time()) - 3600000,
+                 int(1000 * time.time()), linq_base=linq_base)}
 
     entry = {
         'Type': entryTypes['note'],
@@ -543,7 +601,7 @@ def write_to_lookup_table_command():
 
     creds = get_writer_creds()
 
-    engine_config = SenderConfigSSL(address=(WRITER_RELAY, 443),
+    engine_config = SenderConfigSSL(address=(WRITER_RELAY, PORT),
                                     key=creds['key'].name,
                                     cert=creds['crt'].name,
                                     chain=creds['chain'].name)

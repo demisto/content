@@ -183,11 +183,6 @@ fRciC1z2msLtmgPUH81DqLx+B+pY
 
 ------5DAD2A4AC7C108E6B3D263AADB9D2BDB--
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>2. smime-encrypt-email-body</h3>
@@ -350,16 +345,13 @@ There are no context output for this command.
 The signature verified
 b'a sign of our times'
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>4. smime-decrypt-email-body</h3>
 <hr>
-<p>Decrypts the message body.</p>
+<p>Decrypts the message body. Please note we are using chardet module to find the correct encoding for the given text. Detected types are shown <a href="https://pypi.org/project/chardet/">here</a>.
+    If you need to use different encoding to decode the message body, you can use the <code>encoding</code> argument when executing command. 
+</p>
 <h5>Base Command</h5>
 <p>
   <code>smime-decrypt-email-body</code>
@@ -391,6 +383,11 @@ b'a sign of our times'
       <td>encrypt_message</td>
       <td>The encrypted message with .p7 extension.</td>
       <td>Required</td>
+    </tr>
+    <tr>
+      <td>encoding</td>
+      <td>The encoding code to use when decode the message body, e.g 'ISO-8859-2'. You can find description of the different encoding types <a href="https://docs.python.org/3/library/codecs.html#standard-encodings">here</a>.</td>
+      <td> </td>
     </tr>
   </tbody>
 </table>
@@ -439,11 +436,6 @@ b'a sign of our times'
 The decrypted message is: 
 Hello World
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>5. smime-sign-and-encrypt</h3>

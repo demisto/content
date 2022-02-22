@@ -395,7 +395,8 @@ def ticket_to_incident(ticket):
     """
     incident = {}
     # Incident Title
-    incident['name'] = 'Freshdesk Ticket: "{}"'.format(ticket.get('subject'))
+    subject = ticket.get('subject', '').encode('ascii', 'replace')
+    incident['name'] = 'Freshdesk Ticket: "{}"'.format(subject)
     # Incident update time - the ticket's update time - The API does not support filtering tickets by creation time
     # but only by update time. The update time will be the creation time of the incidents and the incident id check will
     # prevent duplications of incidents.
@@ -1864,5 +1865,4 @@ try:
 
 # Log exceptions
 except Exception as e:
-    LOG(e)
-    return_error(e.message)
+    return_error("Failed to execute {} command. Error: {}".format(demisto.command(), str(e)), e)

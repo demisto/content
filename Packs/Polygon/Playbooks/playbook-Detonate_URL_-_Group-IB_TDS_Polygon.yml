@@ -1,7 +1,7 @@
 id: Detonate URL - Group-IB TDS Polygon
 version: -1
 name: Detonate URL - Group-IB TDS Polygon
-description: Detonate URL using Group-IB TDS Polygon integration.
+description: Detonate URL using Group-IB THF Polygon integration.
 starttaskid: "0"
 tasks:
   "0":
@@ -117,7 +117,7 @@ tasks:
       id: 6948ec34-2400-4760-8be6-a298743c12d2
       version: -1
       name: polygon-export-report
-      description: Export an archive with TDS Polygon report to War Room
+      description: Export an archive with THF Polygon report to War Room
       script: Group-IB TDS Polygon|||polygon-export-report
       type: regular
       iscommand: true
@@ -151,7 +151,7 @@ tasks:
       id: 4a79b7e8-4212-4b47-8078-bfb2dde6e1b4
       version: -1
       name: polygon-analysis-info
-      description: Get TDS Polygon analysis information
+      description: Get THF Polygon analysis information
       script: Group-IB TDS Polygon|||polygon-analysis-info
       type: regular
       iscommand: true
@@ -288,7 +288,7 @@ tasks:
     task:
       id: 466aa1ae-b36c-4232-86f0-89cf7d19a2d3
       version: -1
-      name: Is TDS Polygon integration enabled?
+      name: Is THF Polygon integration enabled?
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
@@ -468,7 +468,7 @@ outputs:
   description: Process end time
   type: date
 - contextPath: Polygon.Analysis.ID
-  description: Analysis ID in TDS
+  description: Analysis ID in THF
   type: number
 - contextPath: Polygon.Analysis.Name
   description: File Name

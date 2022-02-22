@@ -106,7 +106,6 @@ def to_demisto_indicator(value, indicators_name, stix2obj, tags: list = [], tlp_
         "type": indicators_name,
         "rawJSON": stix2obj,
         "fields": {
-            "name": stix2obj.get("sixgill_feedname"),
             "actor": stix2obj.get("sixgill_actor"),
             "tags": list((set(stix2obj.get("labels")).union(set(tags)))),
             "firstseenbysource": stix2obj.get("created"),
@@ -135,6 +134,9 @@ def to_demisto_indicator(value, indicators_name, stix2obj, tags: list = [], tlp_
         },
         "score": to_demisto_score(stix2obj.get("sixgill_feedid"), stix2obj.get("revoked", False))
     }
+
+    if stix2obj.get("sixgill_feedname"):
+        indicator['fields']['tags'].append(stix2obj.get("sixgill_feedname"))
 
     if tlp_color:
         indicator['fields']['trafficlightprotocol'] = tlp_color
@@ -218,6 +220,11 @@ demisto_mapping: Dict[str, Dict[str, Any]] = {
     'darkfeed_021': {'name': FeedIndicatorType.File, 'pipeline': []},
     'darkfeed_022': {'name': FeedIndicatorType.IP, 'pipeline': []},
     'darkfeed_023': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
+    'darkfeed_024': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_025': {'name': FeedIndicatorType.File, 'pipeline': []},
+    'darkfeed_026': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
+    'darkfeed_027': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_028': {'name': FeedIndicatorType.IP, 'pipeline': []},
 }
 
 

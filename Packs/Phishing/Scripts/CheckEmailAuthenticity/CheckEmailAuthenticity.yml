@@ -299,7 +299,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python2
-dockerimage: demisto/python:2.7.18.20958
+dockerimage: demisto/python:2.7.18.24398
 runas: DBotWeakRole
 runonce: false
 fromversion: 5.0.0

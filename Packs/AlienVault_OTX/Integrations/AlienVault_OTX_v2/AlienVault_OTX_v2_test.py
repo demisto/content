@@ -6,6 +6,7 @@ import pytest
 # Import local packages
 from AlienVault_OTX_v2 import calculate_dbot_score, Client, file_command, url_command, domain_command, ip_command
 from CommonServerPython import *
+import demistomock as demisto
 
 # DBot calculation Test
 arg_names_dbot = "pulse, score"
@@ -133,7 +134,7 @@ URL_EC = {
 
 URL_RELATIONSHIPS = [{
     'name': 'hosted-on', 'reverseName': 'hosts', 'type': 'IndicatorToIndicator',
-    'entityA': {'url': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list'},
+    'entityA': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list',
     'entityAFamily': 'Indicator', 'entityAType': 'URL', 'entityB': 'fotoidea.com', 'entityBFamily': 'Indicator',
     'entityBType': 'Domain', 'fields': {}, 'reliability': 'C - Fairly reliable', 'brand': 'AlienVault OTX v2'
 }]
@@ -197,6 +198,7 @@ DOMAIN_EC = {
         'Name': 'otx.alienvault.com', 'Alexa': 'http://www.alexa.com/siteinfo/otx.alienvault.com',
         'Whois': 'http://whois.domaintools.com/otx.alienvault.com'}
 }
+IP_404_RAW_RESPONSE = 404
 
 IP_RAW_RESPONSE = {
     "accuracy_radius": 1000,
@@ -499,6 +501,8 @@ IP_RELATIONSHIPS = [
      'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern', 'fields': {}, 'reliability': 'C - Fairly reliable',
      'brand': 'AlienVault OTX v2'}]
 
+INTEGRATION_NAME = 'AlienVault OTX v2'
+
 client = Client(
     base_url="base_url",
     headers={'X-OTX-API-KEY': "TOKEN"},
@@ -513,6 +517,11 @@ client = Client(
 @pytest.mark.parametrize(argnames=arg_names_dbot, argvalues=arg_values_dbot)
 def test_dbot_score(pulse: dict, score: int):
     assert calculate_dbot_score(client, pulse) == score, f"Error calculate DBot Score {pulse.get('count')}"
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
 
 
 @pytest.mark.parametrize('raw_response_general,raw_response_analysis,expected', [
@@ -553,8 +562,7 @@ def test_url_command(mocker, raw_response, expected_ec, expected_relationships):
     - Validate that the proper relations were created
     """
     mocker.patch.object(client, 'query', side_effect=[raw_response])
-    command_results = url_command(client, {
-        'url': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list'})
+    command_results = url_command(client, 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list')
     # results is CommandResults list
     all_context = command_results[0].to_context()
 
@@ -586,6 +594,27 @@ def test_url_command_not_found(mocker):
     command_results = url_command(client, url)
 
     assert command_results[0].to_context()['HumanReadable'] == expected_result
+
+
+def test_url_command_uppercase_protocol(requests_mock):
+    """
+    Given:
+        - URL with uppercase protocol (HTTPS)
+
+    When:
+        - Running the url command
+
+    Then:
+        - Ensure the protocol is lowercased
+    """
+    requests_mock.get(
+        'base_url/indicators/url/https://www.google.com/general',
+        json={
+            'alexa': 'http://www.alexa.com/siteinfo/google.com',
+        }
+    )
+    res = url_command(client, 'HTTPS://www.google.com')
+    assert res[0].indicator.to_context()['URL(val.Data && val.Data == obj.Data)']['Data'] == 'https://www.google.com'
 
 
 @pytest.mark.parametrize('raw_response,expected', [
@@ -635,3 +664,22 @@ def test_ip_command(mocker, ip_, raw_response, expected_ec, expected_relationshi
 
     relations = all_context['Relationships']
     assert expected_relationships == relations
+
+
+@pytest.mark.parametrize('ip_,raw_response,expected', [
+    ('8.8.88.8', IP_404_RAW_RESPONSE, 'IP 8.8.88.8 could not be found.'),
+])
+def test_ip_command_on_404(mocker, ip_, raw_response, expected):
+    """
+        Given
+        - An IPv4 address.
+
+        When
+        - Running ip_command with the IP.
+
+        Then
+        - Validate that the CommandResult created correctly when the api returns 404
+        """
+    mocker.patch.object(client, 'query', side_effect=[raw_response])
+    command_results = ip_command(client, ip_, 'IPv4')
+    assert command_results[0].readable_output == expected

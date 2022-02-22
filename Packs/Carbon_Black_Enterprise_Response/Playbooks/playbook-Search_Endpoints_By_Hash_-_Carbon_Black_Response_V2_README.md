@@ -30,6 +30,3 @@ This playbook does not use any scripts.
 | Endpoint.Hostname | The device hostname | string |
 | Endpoint | The endpoint | unknown |
 
-## Playbook Image
----
-![Search Endpoints By Hash - Carbon Black Response V2](Insert the link to your image here)

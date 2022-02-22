@@ -66,6 +66,6 @@ timeout: 3µs
 type: python
 subtype: python3
 dockerimage: demisto/faker3:1.0.0.247
-runas: DBotWeakRole
+runas: DBotRole
 runonce: false
 fromversion: 5.0.0

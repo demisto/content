@@ -9,6 +9,10 @@ To use this integration you must have a Service Account with one of the followin
 - **Pub/Sub Admin**
 - **Pub/Sub Editor**
 
+## Known Limitations
+When clicking on **Reset the "last run" timestamp**, messages that were recently pulled (including pulls via classification mapper) might take a few minutes before they can be fetched again.
+Because the fetch ignores older messages once newer ones were fetched, it's recommended to wait a few minutes following a reset before trying to fetch again, to prevent older messages from being dropped.
+
 ## Configure GooglePubSub on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -992,4 +996,3 @@ There is no context output for this command.
 |ACK ID|
 |---|
 | example_ack_id |
-

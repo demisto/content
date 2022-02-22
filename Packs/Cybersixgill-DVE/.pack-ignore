@@ -1,0 +1,5 @@
+[file:CybersixgillDVEFeed.yml]
+ignore=IN145
+
+[file:CybersixgillDVEEnrichment.yml]
+ignore=IN145

@@ -238,10 +238,6 @@ script:
         3 weeks).
       isArray: false
       name: time_range
-      predefined:
-      - minutes
-      - days
-      - weeks
       required: false
       secret: false
     - auto: PREDEFINED
@@ -433,10 +429,6 @@ script:
         3 weeks).
       isArray: false
       name: time_range
-      predefined:
-      - minutes
-      - days
-      - weeks
       required: false
       secret: false
     deprecated: false
@@ -596,10 +588,6 @@ script:
         3 weeks).
       isArray: false
       name: time_range
-      predefined:
-      - minutes
-      - days
-      - weeks
       required: false
       secret: false
     - default: false
@@ -975,10 +963,6 @@ script:
         3 weeks).
       isArray: false
       name: time_range
-      predefined:
-      - minutes
-      - days
-      - weeks
       required: false
       secret: false
     - default: false
@@ -1413,10 +1397,6 @@ script:
         3 weeks).
       isArray: false
       name: time_range
-      predefined:
-      - minutes
-      - days
-      - weeks
       required: false
       secret: false
     - default: false
@@ -1839,10 +1819,6 @@ script:
         7 days, 3 weeks).
       isArray: false
       name: time_range
-      predefined:
-      - minutes
-      - days
-      - weeks
       required: false
       secret: false
     - default: false
@@ -2324,10 +2300,6 @@ script:
         7 days, 3 weeks).
       isArray: false
       name: time_range
-      predefined:
-      - minutes
-      - days
-      - weeks
       required: false
       secret: false
     - default: false
@@ -2617,7 +2589,7 @@ script:
     description: Use this command in case your authentication calls fail due to internal
       call-limit, the command will reset the limit cache.
     execution: false
-  dockerimage: demisto/python_pancloud_v2:1.0.0.18452
+  dockerimage: demisto/python_pancloud_v2:1.0.0.23674
   feed: false
   isfetch: true
   longRunning: false

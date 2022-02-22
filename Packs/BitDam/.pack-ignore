@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM104
+
+[file:BitDam.yml]
+ignore=IN145

@@ -1,0 +1,31 @@
+{
+    "id": "incident_partofcampaign",
+    "version": -1,
+    "modified": "2021-07-20T15:37:39.246156744Z",
+    "name": "Part of Campaign",
+    "ownerOnly": false,
+    "description": "The ID of the campaign incident of which the current incident is part of.",
+    "cliName": "partofcampaign",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Phishing"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

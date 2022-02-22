@@ -1,5 +1,7 @@
 id: Calculate Severity - Generic v2
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Calculate Severity - Generic v2
 description: |-
   Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
@@ -8,6 +10,7 @@ description: |-
   - Critical assets
   - Email authenticity
   - Current incident severity
+  - Microsoft Headers
 starttaskid: "0"
 tasks:
   "0":
@@ -23,16 +26,17 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "16"
       - "19"
       - "18"
       - "24"
+      - "16"
+      - "27"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 30
+          "y": 50
         }
       }
     note: false
@@ -57,163 +61,15 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedhosts: {}
-      affectedindividualscontactinformation: {}
-      affectedips: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      arcsightcaseid: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentitem: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      backupowner: {}
-      blah: {}
-      booltest: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      daysbetweenreportcreation: {}
-      deleteEmptyField: {}
-      dest: {}
-      destinationip: {}
-      destntdomain: {}
-      details: {}
-      detectedusers: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailbodyhtmlraw: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailfromdisplayname: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderdomain: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailsubjectlanguage: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventid: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      hostid: {}
-      hostname: {}
-      htmlimage: {}
-      htmlrenderedimage: {}
-      id: {}
-      important: {}
-      importantfield: {}
-      isthedatasubjecttodpia: {}
-      killchain: {}
-      labels: {}
-      likelyimpact: {}
-      lob: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      mdtest: {}
-      measurestomitigate: {}
-      myfield: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      phishingsubtype: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      queues: {}
-      relateddomain: {}
-      replacePlaybook: {}
-      reporteduser: {}
-      reportinguser: {}
-      roles: {}
-      screenshot: {}
-      screenshot2: {}
-      sectorofaffectedparty: {}
-      selector: {}
       severity:
         simple: low
-      signature: {}
-      single: {}
-      single2: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      source: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      systems: {}
-      team: {}
-      telephoneno: {}
-      test: {}
-      test2: {}
-      testfield: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      type: {}
-      user: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdr: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 62,
-          "y": 770
+          "x": 50,
+          "y": 870
         }
       }
     note: false
@@ -238,165 +94,15 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedhosts: {}
-      affectedindividualscontactinformation: {}
-      affectedips: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      arcsightcaseid: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentitem: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      backupowner: {}
-      blah: {}
-      booltest: {}
-      bugtraq: {}
-      campaigntargetcount: {}
-      campaigntargets: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      daysbetweenreportcreation: {}
-      deleteEmptyField: {}
-      dest: {}
-      destinationip: {}
-      destntdomain: {}
-      details: {}
-      detectedusers: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailbodyhtmlraw: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailfromdisplayname: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderdomain: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailsubjectlanguage: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventid: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      hostid: {}
-      hostname: {}
-      htmlimage: {}
-      htmlrenderedimage: {}
-      id: {}
-      important: {}
-      importantfield: {}
-      isthedatasubjecttodpia: {}
-      killchain: {}
-      labels: {}
-      likelyimpact: {}
-      lob: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      mdtest: {}
-      measurestomitigate: {}
-      myfield: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      phishingsubtype: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      queues: {}
-      relateddomain: {}
-      replacePlaybook: {}
-      reporteduser: {}
-      reportinguser: {}
-      roles: {}
-      screenshot: {}
-      screenshot2: {}
-      sectorofaffectedparty: {}
-      selector: {}
       severity:
         simple: medium
-      signature: {}
-      single: {}
-      single2: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      source: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      systems: {}
-      team: {}
-      telephoneno: {}
-      test: {}
-      test2: {}
-      testfield: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      type: {}
-      user: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdr: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 483,
-          "y": 770
+          "x": 470,
+          "y": 870
         }
       }
     note: false
@@ -421,161 +127,15 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedhosts: {}
-      affectedindividualscontactinformation: {}
-      affectedips: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      arcsightcaseid: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentitem: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      backupowner: {}
-      blah: {}
-      booltest: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      daysbetweenreportcreation: {}
-      deleteEmptyField: {}
-      dest: {}
-      destinationip: {}
-      destntdomain: {}
-      details: {}
-      detectedusers: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailbodyhtmlraw: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailfromdisplayname: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderdomain: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailsubjectlanguage: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventid: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      hostid: {}
-      hostname: {}
-      htmlimage: {}
-      htmlrenderedimage: {}
-      id: {}
-      important: {}
-      importantfield: {}
-      isthedatasubjecttodpia: {}
-      killchain: {}
-      labels: {}
-      likelyimpact: {}
-      lob: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      mdtest: {}
-      measurestomitigate: {}
-      myfield: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      phishingsubtype: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      queues: {}
-      relateddomain: {}
-      replacePlaybook: {}
-      reporteduser: {}
-      reportinguser: {}
-      roles: {}
-      screenshot: {}
-      screenshot2: {}
-      sectorofaffectedparty: {}
-      selector: {}
       severity:
         simple: high
-      signature: {}
-      single: {}
-      single2: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      source: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      systems: {}
-      team: {}
-      telephoneno: {}
-      test: {}
-      test2: {}
-      testfield: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      type: {}
-      user: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdr: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1333,
-          "y": 770
+          "x": 1340,
+          "y": 870
         }
       }
     note: false
@@ -600,7 +160,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1050
+          "y": 1100
         }
       }
     note: false
@@ -625,158 +185,15 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedhosts: {}
-      affectedindividualscontactinformation: {}
-      affectedips: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      arcsightcaseid: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentitem: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      backupowner: {}
-      blah: {}
-      booltest: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      daysbetweenreportcreation: {}
-      deleteEmptyField: {}
-      dest: {}
-      destinationip: {}
-      destntdomain: {}
-      details: {}
-      detectedusers: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailbodyhtmlraw: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailfromdisplayname: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderdomain: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailsubjectlanguage: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventid: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      hostid: {}
-      hostname: {}
-      htmlimage: {}
-      htmlrenderedimage: {}
-      id: {}
-      important: {}
-      importantfield: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      likelyimpact: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      mdtest: {}
-      measurestomitigate: {}
-      myfield: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      phishingsubtype: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      relateddomain: {}
-      replacePlaybook: {}
-      reporteduser: {}
-      reportinguser: {}
-      roles: {}
-      screenshot: {}
-      screenshot2: {}
-      sectorofaffectedparty: {}
-      selector: {}
       severity:
         simple: critical
-      signature: {}
-      single: {}
-      single2: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      source: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      systems: {}
-      team: {}
-      telephoneno: {}
-      test: {}
-      test2: {}
-      testfield: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      type: {}
-      user: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdr: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1750,
-          "y": 770
+          "x": 1770,
+          "y": 870
         }
       }
     note: false
@@ -786,13 +203,14 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: bbfdfe72-13f4-48a2-8cbb-79fd7952704b
+    taskid: be9c8f44-63bb-4ba0-873b-2168cdb2ab06
     type: condition
     task:
-      id: bbfdfe72-13f4-48a2-8cbb-79fd7952704b
+      id: be9c8f44-63bb-4ba0-873b-2168cdb2ab06
       version: -1
       name: Determine incident severity
-      description: Determines the severity level based on the highest result of all severity calculations.
+      description: Determines the severity level based on the highest result of all
+        severity calculations.
       type: condition
       iscommand: false
       brand: ""
@@ -853,6 +271,14 @@ tasks:
                       value:
                         simple: "4"
                     ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.MicrosoftHeadersSeverityCheck
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "4"
             iscontext: true
     - label: High
       condition:
@@ -898,6 +324,14 @@ tasks:
                       value:
                         simple: "3"
                     ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.MicrosoftHeadersSeverityCheck
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
             iscontext: true
     - label: Medium
       condition:
@@ -942,6 +376,14 @@ tasks:
                       value:
                         simple: "2"
                     ignorecase: true
+                  - operator: containsGeneral
+                    left:
+                      value:
+                        simple: Severities.MicrosoftHeadersSeverityCheck
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
             iscontext: true
           ignorecase: true
     - label: Low
@@ -988,12 +430,20 @@ tasks:
                       value:
                         simple: "1"
                     ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.MicrosoftHeadersSeverityCheck
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "1"
             iscontext: true
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 570
+          "y": 670
         }
       }
     note: false
@@ -1031,8 +481,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1120,
-          "y": 185
+          "x": 910,
+          "y": 200
         }
       }
     note: false
@@ -1049,7 +499,7 @@ tasks:
       version: -1
       name: Calculate Severity - Critical Assets v2
       description: |-
-        Determines if a critical assest is associated with the invesigation. The playbook returns a severity level of "Critical" if at least one critical asset is associated with the investigation.
+        Determines if a critical asset is associated with the investigation. The playbook returns a severity level of "Critical" if at least one critical asset is associated with the investigation.
         Critical assets refer to: users, user groups, endpoints and endpoint groups.
       playbookName: Calculate Severity - Critical Assets v2
       type: playbook
@@ -1093,8 +543,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 700,
-          "y": 185
+          "x": 450,
+          "y": 200
         }
       }
     note: false
@@ -1110,7 +560,8 @@ tasks:
       id: b20ff842-f44e-4314-8d7a-ce51e1d69c16
       version: -1
       name: Calculate Severity By Highest DBotScore
-      description: Calculates the incident severity level according to the highest indicator DBotScore.
+      description: Calculates the incident severity level according to the highest
+        indicator DBotScore.
       playbookName: Calculate Severity By Highest DBotScore
       type: playbook
       iscommand: false
@@ -1131,8 +582,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1533,
-          "y": 185
+          "x": 1370,
+          "y": 200
         }
       }
     note: false
@@ -1148,7 +599,8 @@ tasks:
       id: 1a13e3e0-18fb-4c0f-8866-9d56b0df1017
       version: -1
       name: Calculate Severity By Email Authenticity
-      description: Calculates a severity according to the verdict coming from the CheckEmailAuthenticity script.
+      description: Calculates a severity according to the verdict coming from the
+        CheckEmailAuthenticity script.
       playbookName: Calculate Severity By Email Authenticity
       type: playbook
       iscommand: false
@@ -1169,8 +621,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 185
+          "x": -20,
+          "y": 200
         }
       }
     note: false
@@ -1195,158 +647,89 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedhosts: {}
-      affectedindividualscontactinformation: {}
-      affectedips: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentitem: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      backupowner: {}
-      bugtraq: {}
-      campaigntargetcount: {}
-      campaigntargets: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      daysbetweenreportcreation: {}
-      deleteEmptyField: {}
-      dest: {}
-      destinationip: {}
-      destntdomain: {}
-      details: {}
-      detectedusers: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailbodyhtmlraw: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailfromdisplayname: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderdomain: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailsubjectlanguage: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventid: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      hostid: {}
-      hostname: {}
-      htmlimage: {}
-      htmlrenderedimage: {}
-      id: {}
-      important: {}
-      importantfield: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      likelyimpact: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      mdtest: {}
-      measurestomitigate: {}
-      myfield: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      phishingsubtype: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      relateddomain: {}
-      replacePlaybook: {}
-      reporteduser: {}
-      reportinguser: {}
-      roles: {}
-      screenshot: {}
-      screenshot2: {}
-      sectorofaffectedparty: {}
-      selector: {}
       severity:
         simple: unknown
-      signature: {}
-      single: {}
-      single2: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      source: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      systems: {}
-      telephoneno: {}
-      test: {}
-      test2: {}
-      testfield: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      type: {}
-      user: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdr: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 865
+          "y": 905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: ec346f9c-5097-4f41-81f7-2fa0243a7a2c
+    type: regular
+    task:
+      id: ec346f9c-5097-4f41-81f7-2fa0243a7a2c
+      version: -1
+      name: Set Microsoft Headers Severity Check
+      description: Calculates the severity after processing the PCL, BCL and PCL values
+        inside Microsoft headers. If no value is entered, nothing is returned.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      key:
+        simple: Severities.MicrosoftHeadersSeverityCheck
+      value:
+        simple: ${inputs.MicrosoftHeadersSeverityCheck}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1950,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: a69eaf95-968e-4032-8bfd-206412ffc322
+    type: condition
+    task:
+      id: a69eaf95-968e-4032-8bfd-206412ffc322
+      version: -1
+      name: Check if MicrosoftHeadersSeverityCheck is not empty
+      description: This task verifies that the playbook input "MicrosoftHeadersSeverityCheck"
+        is not empty.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MicrosoftHeadersSeverityCheck
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1840,
+          "y": 200
         }
       }
     note: false
@@ -1362,14 +745,15 @@ view: |-
       "15_25_#default#": 0.59,
       "15_4_Low": 0.9,
       "15_5_Medium": 0.81,
-      "15_6_High": 0.82
+      "15_6_High": 0.82,
+      "27_26_yes": 0.62
     },
     "paper": {
       "dimensions": {
-        "height": 1085,
-        "width": 2068,
-        "x": 62,
-        "y": 30
+        "height": 1115,
+        "width": 2350,
+        "x": -20,
+        "y": 50
       }
     }
   }
@@ -1425,7 +809,16 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: 'Indicates the email authenticity resulting from the EmailAuthenticityCheck script. Possible values are: Pass, Fail, Suspicious, and Undetermined.'
+  description: 'Indicates the email authenticity resulting from the EmailAuthenticityCheck
+    script. Possible values are: Pass, Fail, Suspicious, and Undetermined.'
+  playbookInputQuery:
+- key: MicrosoftHeadersSeverityCheck
+  value:
+    simple: ${Email.MicrosoftHeadersSeverityCheck}
+  required: false
+  description: The value is set by the "Process Microsoft's Anti-Spam Headers" Playbook,
+    which calculates the severity after processing the PCL, BCL and PCL values inside
+    Microsoft's headers.
   playbookInputQuery:
 outputs:
 - contextPath: CriticalAssets
@@ -1443,6 +836,6 @@ outputs:
 - contextPath: CriticalAssets.CriticalUserGroups
   description: Critical user-groups involved in the incident.
   type: unknown
-fromversion: 5.0.0
 tests:
 - Calculate Severity - Generic v2 - Test
+fromversion: 5.0.0

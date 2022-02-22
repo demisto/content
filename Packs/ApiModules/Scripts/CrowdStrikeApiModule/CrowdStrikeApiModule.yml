@@ -14,3 +14,5 @@ dependson: {}
 timeout: 0s
 dockerimage: demisto/python3:3.8.6.12176
 fromversion: 5.0.0
+tests:
+- No tests

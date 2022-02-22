@@ -9,3 +9,6 @@ ignore=RM106
 
 [file:playbook-Detonate_URL_-_ThreatGrid_README.md]
 ignore=RM106
+
+[file:ThreatGrid.yml]
+ignore=IN145

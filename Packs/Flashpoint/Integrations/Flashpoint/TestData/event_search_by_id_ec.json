@@ -5,6 +5,7 @@
     "Tags": "tag1",
     "ObservedTime": "Jun 18, 2019  22:08",
     "EventCreatorEmail": "fake@test.com",
-    "Href": "http://123-fake-api.com/api/v4/indicators/event/test_scan_id"
+    "Href": "http://123-fake-api.com/api/v4/indicators/event/test_scan_id",
+    "MalwareDescription": "<p>\"Ave Maria\" is a remote access trojan.</p>"
   }
 }

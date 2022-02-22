@@ -142,7 +142,7 @@ def create_file_data_json(attachment):
 def get_reply_body(notes, incident_id, attachments):
     """ Get the notes and the incident id and return the reply body
     Args:
-        notes (dict): The notes of the email.
+        notes (list): The notes of the email.
         incident_id (str): The incident id.
         attachments (list): The email's attachments.
     Returns:
@@ -155,9 +155,11 @@ def get_reply_body(notes, incident_id, attachments):
             note_userdata = demisto.executeCommand("getUserByUsername", {"username": note_user})
             user_fullname = dict_safe_get(note_userdata[0], ['Contents', 'name']) or "DBot"
             reply_body += f"{user_fullname}: \n{note['Contents']}\n\n"
-            if attachments:
-                attachment_names = [attachment.get('name') for attachment in attachments]
-                reply_body += f'Attachments: {attachment_names}\n'
+
+        if attachments:
+            attachment_names = [attachment.get('name') for attachment in attachments]
+            reply_body += f'Attachments: {attachment_names}\n\n'
+
             entry_note = json.dumps(
                 [{"Type": 1, "ContentsFormat": 'html', "Contents": reply_body, "tags": ['email-thread']}])
             entry_tags_res = demisto.executeCommand("addEntries", {"entries": entry_note, 'id': incident_id})
@@ -180,24 +182,50 @@ def get_reply_body(notes, incident_id, attachments):
         return_error(get_error(res))
 
 
-def get_email_recipients(email_to, email_from, service_mail):
+def get_email_recipients(email_to, email_from, service_mail, mailbox):
     """Get the email recipient.
+        The mailbox should be removed from the recipients list, so the replied email
+        won't get to the same mailbox and causes a loop. If somehow it is None,
+        the service mail should be removed.
     Args:
         email_to (str): The email receiver.
         email_from (str): The email's sender.
         service_mail (str): The mail listener.
+        mailbox (str): The mailbox configured in the relevant integration.
     Returns:
         The email recipients.
     """
     email_to_set = {email_from}
     email_to = argToList(email_to)
     email_to_set = email_to_set.union(set(email_to))
-    service_mail_recipient = next(recipient for recipient in email_to_set if service_mail in recipient)
-    if service_mail_recipient:
-        email_to_set.remove(service_mail_recipient)
+
+    recipient_to_remove = ''
+    address_to_remove = mailbox if mailbox else service_mail
+    if address_to_remove:
+        for recipient in email_to_set:
+            if address_to_remove in recipient:
+                recipient_to_remove = recipient
+                break
+
+    if recipient_to_remove:
+        email_to_set.remove(recipient_to_remove)
 
     email_recipients = ','.join(email_to_set)
     return email_recipients
+
+
+def get_mailbox_from_incident_labels(labels):
+    """
+    Gets the mailbox from which the incident was fetched from the incident labels.
+    Args:
+        labels (list): the incident labels.
+    Returns:
+        The mailbox label.
+    """
+    for label in labels:
+        if label.get('type') == 'Mailbox':
+            return label.get('value')
+    return None
 
 
 def main():
@@ -205,6 +233,9 @@ def main():
     incident = demisto.incident()
     incident_id = incident.get('id')
     custom_fields = incident.get('CustomFields')
+    labels = incident.get('labels', [])
+    # The mailbox configured in the relevant integration
+    mailbox = custom_fields.get('emailreceived') or get_mailbox_from_incident_labels(labels)
     email_subject = custom_fields.get('emailsubject')
     email_cc = custom_fields.get('emailcc', '')
     add_cc = custom_fields.get('addcctoemail', '')
@@ -213,7 +244,7 @@ def main():
     email_to = custom_fields.get('emailto')
     email_latest_message = custom_fields.get('emaillatestmessage')
     email_code = custom_fields.get('emailgeneratedcode')
-    email_to_str = get_email_recipients(email_to, email_from, service_mail)
+    email_to_str = get_email_recipients(email_to, email_from, service_mail, mailbox)
     files = args.get('files', {})
     attachments = args.get('attachment', {})
     notes = demisto.executeCommand("getEntries", {'filter': {'categories': ['notes']}})

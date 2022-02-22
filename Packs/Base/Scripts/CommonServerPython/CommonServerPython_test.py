@@ -10,14 +10,15 @@ from pytest import raises, mark
 import pytest
 import warnings
 
-from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
+from CommonServerPython import set_to_integration_context_with_retries, xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
+    IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, return_outputs, \
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict
+    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer
+import CommonServerPython
 
 try:
     from StringIO import StringIO
@@ -49,6 +50,11 @@ def clear_version_cache():
     get_demisto_version._version = None
 
 
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(CommonServerPython, 'get_integration_name', return_value='Test')
+
+
 def test_xml():
     import json
 
@@ -76,6 +82,24 @@ def toEntry(table):
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': table
     }
+
+
+def test_is_ip_valid():
+    valid_ip_v6 = "FE80:0000:0000:0000:0202:B3FF:FE1E:8329"
+    valid_ip_v6_b = "FE80::0202:B3FF:FE1E:8329"
+    invalid_ip_v6 = "KKKK:0000:0000:0000:0202:B3FF:FE1E:8329"
+    valid_ip_v4 = "10.10.10.10"
+    invalid_ip_v4 = "10.10.10.9999"
+    invalid_not_ip_with_ip_structure = "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1"
+    not_ip = "Demisto"
+    assert not is_ip_valid(valid_ip_v6)
+    assert is_ip_valid(valid_ip_v6, True)
+    assert is_ip_valid(valid_ip_v6_b, True)
+    assert not is_ip_valid(invalid_ip_v6, True)
+    assert not is_ip_valid(not_ip, True)
+    assert is_ip_valid(valid_ip_v4)
+    assert not is_ip_valid(invalid_ip_v4)
+    assert not is_ip_valid(invalid_not_ip_with_ip_structure)
 
 
 DATA = [
@@ -157,326 +181,641 @@ DATA_WITH_URLS = [(
 COMPLEX_DATA_WITH_URLS = [(
     [
         {'data':
-         {'id': '1',
-          'result':
-          {'files':
-           [
-               {
-                          'filename': 'name',
-                          'size': 0,
-                          'url': 'url'
+             {'id': '1',
+              'result':
+                  {'files':
+                      [
+                          {
+                              'filename': 'name',
+                              'size': 0,
+                              'url': 'url'
                           }
-           ]
-           },
-          'links': ['link']
-          }
+                      ]
+                  },
+              'links': ['link']
+              }
          },
         {'data':
-         {'id': '2',
-          'result':
-          {'files':
-           [
-               {
-                   'filename': 'name',
-                   'size': 0,
-                   'url': 'url'
-               }
-           ]
-           },
-          'links': ['link']
-          }
+             {'id': '2',
+              'result':
+                  {'files':
+                      [
+                          {
+                              'filename': 'name',
+                              'size': 0,
+                              'url': 'url'
+                          }
+                      ]
+                  },
+              'links': ['link']
+              }
          }
     ],
     [
         {'data':
-         {'id': '1',
-          'result':
-          {'files':
-           [
-               {
-                   'filename': 'name',
-                   'size': 0,
-                   'url': '[url](url)'
-               }
-           ]
-           },
-          'links': ['[link](link)']
-          }
+             {'id': '1',
+              'result':
+                  {'files':
+                      [
+                          {
+                              'filename': 'name',
+                              'size': 0,
+                              'url': '[url](url)'
+                          }
+                      ]
+                  },
+              'links': ['[link](link)']
+              }
          },
         {'data':
-         {'id': '2',
-          'result':
-          {'files':
-           [
-               {
-                   'filename': 'name',
-                   'size': 0,
-                   'url': '[url](url)'
-               }
-           ]
-           },
-          'links': ['[link](link)']
-          }
+             {'id': '2',
+              'result':
+                  {'files':
+                      [
+                          {
+                              'filename': 'name',
+                              'size': 0,
+                              'url': '[url](url)'
+                          }
+                      ]
+                  },
+              'links': ['[link](link)']
+              }
          }
     ])]
 
 
-@pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
-def test_tbl_to_md_only_data(data, expected_table):
-    # sanity
-    table = tableToMarkdown('tableToMarkdown test', data)
+class TestTableToMarkdown:
+    @pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
+    def test_sanity(self, data, expected_table):
+        """
+        Given:
+          - list of objects.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table.
+        """
+        table = tableToMarkdown('tableToMarkdown test', data)
 
-    assert table == expected_table
+        assert table == expected_table
 
+    @staticmethod
+    def test_header_transform_underscoreToCamelCase():
+        """
+        Given:
+          - list of objects.
+          - an header transformer.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table with updated headers.
+        """
+        # header transform
+        table = tableToMarkdown('tableToMarkdown test with headerTransform', DATA,
+                                headerTransform=underscoreToCamelCase)
+        expected_table = (
+            '### tableToMarkdown test with headerTransform\n'
+            '|Header1|Header2|Header3|\n'
+            '|---|---|---|\n'
+            '| a1 | b1 | c1 |\n'
+            '| a2 | b2 | c2 |\n'
+            '| a3 | b3 | c3 |\n'
+        )
+        assert table == expected_table
 
-def test_tbl_to_md_header_transform_underscoreToCamelCase():
-    # header transform
-    table = tableToMarkdown('tableToMarkdown test with headerTransform', DATA,
-                            headerTransform=underscoreToCamelCase)
-    expected_table = '''### tableToMarkdown test with headerTransform
-|Header1|Header2|Header3|
-|---|---|---|
-| a1 | b1 | c1 |
-| a2 | b2 | c2 |
-| a3 | b3 | c3 |
-'''
-    assert table == expected_table
+    @staticmethod
+    def test_multiline():
+        """
+        Given:
+          - list of objects.
+          - some values contains a new line and the "|" sign.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table with "br" tags instead of new lines and escaped pipe sign.
+        """
+        data = copy.deepcopy(DATA)
+        for i, d in enumerate(data):
+            d['header_2'] = 'b%d.1\nb%d.2' % (i + 1, i + 1,)
+            d['header_3'] = 'c%d|1' % (i + 1,)
 
+        table = tableToMarkdown('tableToMarkdown test with multiline', data)
+        expected_table = (
+            '### tableToMarkdown test with multiline\n'
+            '|header_1|header_2|header_3|\n'
+            '|---|---|---|\n'
+            '| a1 | b1.1<br>b1.2 | c1\|1 |\n'
+            '| a2 | b2.1<br>b2.2 | c2\|1 |\n'
+            '| a3 | b3.1<br>b3.2 | c3\|1 |\n'
+        )
+        assert table == expected_table
 
-def test_tbl_to_md_multiline():
-    # escaping characters: multiline + md-chars
-    data = copy.deepcopy(DATA)
-    for i, d in enumerate(data):
-        d['header_2'] = 'b%d.1\nb%d.2' % (i + 1, i + 1,)
-        d['header_3'] = 'c%d|1' % (i + 1,)
+    @staticmethod
+    def test_url():
+        """
+        Given:
+          - list of objects.
+          - some values contain a URL.
+          - some values are missing.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table.
+        """
+        data = copy.deepcopy(DATA)
+        for d in data:
+            d['header_2'] = None
+            d['header_3'] = '[url](https:\\demisto.com)'
+        table_url_missing_info = tableToMarkdown('tableToMarkdown test with url and missing info', data)
+        expected_table_url_missing_info = (
+            '### tableToMarkdown test with url and missing info\n'
+            '|header_1|header_2|header_3|\n'
+            '|---|---|---|\n'
+            '| a1 |  | [url](https:\demisto.com) |\n'
+            '| a2 |  | [url](https:\demisto.com) |\n'
+            '| a3 |  | [url](https:\demisto.com) |\n'
+        )
+        assert table_url_missing_info == expected_table_url_missing_info
 
-    table = tableToMarkdown('tableToMarkdown test with multiline', data)
-    expected_table = '''### tableToMarkdown test with multiline
-|header_1|header_2|header_3|
-|---|---|---|
-| a1 | b1.1<br>b1.2 | c1\\|1 |
-| a2 | b2.1<br>b2.2 | c2\\|1 |
-| a3 | b3.1<br>b3.2 | c3\\|1 |
-'''
-    assert table == expected_table
+    @staticmethod
+    def test_single_column():
+        """
+        Given:
+          - list of objects.
+          - a single header.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid column style table.
+        """
+        # single column table
+        table_single_column = tableToMarkdown('tableToMarkdown test with single column', DATA, ['header_1'])
+        expected_table_single_column = (
+            '### tableToMarkdown test with single column\n'
+            '|header_1|\n'
+            '|---|\n'
+            '| a1 |\n'
+            '| a2 |\n'
+            '| a3 |\n'
+        )
+        assert table_single_column == expected_table_single_column
 
+    @staticmethod
+    def test_list_values():
+        """
+        Given:
+          - list of objects.
+          - some values are lists.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table where the list values are comma-separated and each item in a new line.
+        """
+        # list values
+        data = copy.deepcopy(DATA)
+        for i, d in enumerate(data):
+            d['header_3'] = [i + 1, 'second item']
+            d['header_2'] = 'hi'
 
-def test_tbl_to_md_url():
-    # url + empty data
-    data = copy.deepcopy(DATA)
-    for i, d in enumerate(data):
-        d['header_3'] = '[url](https:\\demisto.com)'
-        d['header_2'] = None
-    table_url_missing_info = tableToMarkdown('tableToMarkdown test with url and missing info', data)
-    expected_table_url_missing_info = '''### tableToMarkdown test with url and missing info
-|header_1|header_2|header_3|
-|---|---|---|
-| a1 |  | [url](https:\\demisto.com) |
-| a2 |  | [url](https:\\demisto.com) |
-| a3 |  | [url](https:\\demisto.com) |
-'''
-    assert table_url_missing_info == expected_table_url_missing_info
+        table_list_field = tableToMarkdown('tableToMarkdown test with list field', data)
+        expected_table_list_field = (
+            '### tableToMarkdown test with list field\n'
+            '|header_1|header_2|header_3|\n'
+            '|---|---|---|\n'
+            '| a1 | hi | 1,<br>second item |\n'
+            '| a2 | hi | 2,<br>second item |\n'
+            '| a3 | hi | 3,<br>second item |\n'
+        )
+        assert table_list_field == expected_table_list_field
 
+    @staticmethod
+    def test_empty_fields():
+        """
+        Given:
+          - list of objects.
+          - all values are empty.
+        When:
+          - calling tableToMarkdown with removeNull=false.
+          - calling tableToMarkdown with removeNull=true.
+        Then:
+          - return an empty table.
+          - return a "no results" message.
+        """
+        data = [
+            {
+                'a': None,
+                'b': None,
+                'c': None,
+            } for _ in range(3)
+        ]
+        table_all_none = tableToMarkdown('tableToMarkdown test with all none fields', data)
+        expected_table_all_none = (
+            '### tableToMarkdown test with all none fields\n'
+            '|a|b|c|\n'
+            '|---|---|---|\n'
+            '|  |  |  |\n'
+            '|  |  |  |\n'
+            '|  |  |  |\n'
+        )
+        assert table_all_none == expected_table_all_none
 
-def test_tbl_to_md_single_column():
-    # single column table
-    table_single_column = tableToMarkdown('tableToMarkdown test with single column', DATA, ['header_1'])
-    expected_table_single_column = '''### tableToMarkdown test with single column
-|header_1|
-|---|
-| a1 |
-| a2 |
-| a3 |
-'''
-    assert table_single_column == expected_table_single_column
-
-
-def test_is_ip_valid():
-    valid_ip_v6 = "FE80:0000:0000:0000:0202:B3FF:FE1E:8329"
-    valid_ip_v6_b = "FE80::0202:B3FF:FE1E:8329"
-    invalid_ip_v6 = "KKKK:0000:0000:0000:0202:B3FF:FE1E:8329"
-    valid_ip_v4 = "10.10.10.10"
-    invalid_ip_v4 = "10.10.10.9999"
-    invalid_not_ip_with_ip_structure = "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1"
-    not_ip = "Demisto"
-    assert not is_ip_valid(valid_ip_v6)
-    assert is_ip_valid(valid_ip_v6, True)
-    assert is_ip_valid(valid_ip_v6_b, True)
-    assert not is_ip_valid(invalid_ip_v6, True)
-    assert not is_ip_valid(not_ip, True)
-    assert is_ip_valid(valid_ip_v4)
-    assert not is_ip_valid(invalid_ip_v4)
-    assert not is_ip_valid(invalid_not_ip_with_ip_structure)
-
-
-def test_tbl_to_md_list_values():
-    # list values
-    data = copy.deepcopy(DATA)
-    for i, d in enumerate(data):
-        d['header_3'] = [i + 1, 'second item']
-        d['header_2'] = 'hi'
-
-    table_list_field = tableToMarkdown('tableToMarkdown test with list field', data)
-    expected_table_list_field = '''### tableToMarkdown test with list field
-|header_1|header_2|header_3|
-|---|---|---|
-| a1 | hi | 1,<br>second item |
-| a2 | hi | 2,<br>second item |
-| a3 | hi | 3,<br>second item |
-'''
-    assert table_list_field == expected_table_list_field
-
-
-def test_tbl_to_md_empty_fields():
-    # all fields are empty
-    data = [
-        {
-            'a': None,
-            'b': None,
-            'c': None,
-        } for _ in range(3)
-    ]
-    table_all_none = tableToMarkdown('tableToMarkdown test with all none fields', data)
-    expected_table_all_none = '''### tableToMarkdown test with all none fields
-|a|b|c|
-|---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-'''
-    assert table_all_none == expected_table_all_none
-
-    # all fields are empty - removed
-    table_all_none2 = tableToMarkdown('tableToMarkdown test with all none fields2', data, removeNull=True)
-    expected_table_all_none2 = '''### tableToMarkdown test with all none fields2
+        # all fields are empty - removed
+        table_all_none2 = tableToMarkdown('tableToMarkdown test with all none fields2', data, removeNull=True)
+        expected_table_all_none2 = '''### tableToMarkdown test with all none fields2
 **No entries.**
 '''
-    assert table_all_none2 == expected_table_all_none2
+        assert table_all_none2 == expected_table_all_none2
 
+    @staticmethod
+    def test_header_not_on_first_object():
+        """
+        Given:
+          - list of objects
+          - list of headers with header that doesn't appear in the first object.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table with the extra header.
+        """
+        # header not on first object
+        data = copy.deepcopy(DATA)
+        data[1]['extra_header'] = 'sample'
+        table_extra_header = tableToMarkdown('tableToMarkdown test with extra header', data,
+                                             headers=['header_1', 'header_2', 'extra_header'])
+        expected_table_extra_header = (
+            '### tableToMarkdown test with extra header\n'
+            '|header_1|header_2|extra_header|\n'
+            '|---|---|---|\n'
+            '| a1 | b1 |  |\n'
+            '| a2 | b2 | sample |\n'
+            '| a3 | b3 |  |\n'
+        )
+        assert table_extra_header == expected_table_extra_header
 
-def test_tbl_to_md_header_not_on_first_object():
-    # header not on first object
-    data = copy.deepcopy(DATA)
-    data[1]['extra_header'] = 'sample'
-    table_extra_header = tableToMarkdown('tableToMarkdown test with extra header', data,
-                                         headers=['header_1', 'header_2', 'extra_header'])
-    expected_table_extra_header = '''### tableToMarkdown test with extra header
-|header_1|header_2|extra_header|
-|---|---|---|
-| a1 | b1 |  |
-| a2 | b2 | sample |
-| a3 | b3 |  |
-'''
-    assert table_extra_header == expected_table_extra_header
+    @staticmethod
+    def test_no_header():
+        """
+        Given:
+          - list of objects.
+          - a list with non-existing headers.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a "no result" message.
+        """
+        # no header
+        table_no_headers = tableToMarkdown('tableToMarkdown test with no headers', DATA,
+                                           headers=['no', 'header', 'found'], removeNull=True)
+        expected_table_no_headers = (
+            '### tableToMarkdown test with no headers\n'
+            '**No entries.**\n'
+        )
+        assert table_no_headers == expected_table_no_headers
 
+    @staticmethod
+    def test_dict_value():
+        """
+        Given:
+          - list of objects.
+          - some values are lists.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table.
+        """
+        # dict value
+        data = copy.deepcopy(DATA)
+        data[1]['extra_header'] = {'sample': 'qwerty', 'sample2': '`asdf'}
+        table_dict_record = tableToMarkdown('tableToMarkdown test with dict record', data,
+                                            headers=['header_1', 'header_2', 'extra_header'])
+        expected_dict_record = (
+            '### tableToMarkdown test with dict record\n'
+            '|header_1|header_2|extra_header|\n'
+            '|---|---|---|\n'
+            '| a1 | b1 |  |\n'
+            '| a2 | b2 | sample: qwerty<br>sample2: \\`asdf |\n'
+            '| a3 | b3 |  |\n'
+        )
+        assert table_dict_record == expected_dict_record
 
-def test_tbl_to_md_no_header():
-    # no header
-    table_no_headers = tableToMarkdown('tableToMarkdown test with no headers', DATA,
-                                       headers=['no', 'header', 'found'], removeNull=True)
-    expected_table_no_headers = '''### tableToMarkdown test with no headers
-**No entries.**
-'''
-    assert table_no_headers == expected_table_no_headers
+    @staticmethod
+    def test_string_header():
+        """
+        Given:
+          - list of objects.
+          - a single header as a string.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table.
+        """
+        # string header (instead of list)
+        table_string_header = tableToMarkdown('tableToMarkdown string header', DATA, 'header_1')
+        expected_string_header_tbl = (
+            '### tableToMarkdown string header\n'
+            '|header_1|\n'
+            '|---|\n'
+            '| a1 |\n'
+            '| a2 |\n'
+            '| a3 |\n'
+        )
+        assert table_string_header == expected_string_header_tbl
 
+    @staticmethod
+    def test_list_of_strings_instead_of_dict():
+        """
+        Given:
+          - list of strings.
+          - a single header as a list.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table.
+        """
+        # list of string values instead of list of dict objects
+        table_string_array = tableToMarkdown('tableToMarkdown test with string array', ['foo', 'bar', 'katz'],
+                                             ['header_1'])
+        expected_string_array_tbl = (
+            '### tableToMarkdown test with string array\n'
+            '|header_1|\n'
+            '|---|\n'
+            '| foo |\n'
+            '| bar |\n'
+            '| katz |\n'
+        )
+        assert table_string_array == expected_string_array_tbl
 
-def test_tbl_to_md_dict_value():
-    # dict value
-    data = copy.deepcopy(DATA)
-    data[1]['extra_header'] = {'sample': 'qwerty', 'sample2': 'asdf'}
-    table_dict_record = tableToMarkdown('tableToMarkdown test with dict record', data,
-                                        headers=['header_1', 'header_2', 'extra_header'])
-    expected_dict_record = '''### tableToMarkdown test with dict record
-|header_1|header_2|extra_header|
-|---|---|---|
-| a1 | b1 |  |
-| a2 | b2 | sample: qwerty<br>sample2: asdf |
-| a3 | b3 |  |
-'''
-    assert table_dict_record == expected_dict_record
+    @staticmethod
+    def test_list_of_strings_instead_of_dict_and_string_header():
+        """
+        Given:
+          - list of strings.
+          - a single header as a string.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table.
+        """
+        # combination: string header + string values list
+        table_string_array_string_header = tableToMarkdown('tableToMarkdown test with string array and string header',
+                                                           ['foo', 'bar', 'katz'], 'header_1')
 
+        expected_string_array_string_header_tbl = (
+            '### tableToMarkdown test with string array and string header\n'
+            '|header_1|\n'
+            '|---|\n'
+            '| foo |\n'
+            '| bar |\n'
+            '| katz |\n'
+        )
 
-def test_tbl_to_md_string_header():
-    # string header (instead of list)
-    table_string_header = tableToMarkdown('tableToMarkdown string header', DATA, 'header_1')
-    expected_string_header_tbl = '''### tableToMarkdown string header
-|header_1|
-|---|
-| a1 |
-| a2 |
-| a3 |
-'''
-    assert table_string_header == expected_string_header_tbl
+        assert table_string_array_string_header == expected_string_array_string_header_tbl
 
+    @staticmethod
+    def test_single_key_dict():
+        # combination: string header + string values list
+        table_single_key_dict = tableToMarkdown('tableToMarkdown test with single key dict',
+                                                {'single': ['Arthur', 'Blob', 'Cactus']})
+        expected_single_key_dict_tbl = (
+            '### tableToMarkdown test with single key dict\n'
+            '|single|\n'
+            '|---|\n'
+            '| Arthur |\n'
+            '| Blob |\n'
+            '| Cactus |\n'
+        )
+        assert table_single_key_dict == expected_single_key_dict_tbl
 
-def test_tbl_to_md_list_of_strings_instead_of_dict():
-    # list of string values instead of list of dict objects
-    table_string_array = tableToMarkdown('tableToMarkdown test with string array', ['foo', 'bar', 'katz'], ['header_1'])
-    expected_string_array_tbl = '''### tableToMarkdown test with string array
-|header_1|
-|---|
-| foo |
-| bar |
-| katz |
-'''
-    assert table_string_array == expected_string_array_tbl
-
-
-def test_tbl_to_md_list_of_strings_instead_of_dict_and_string_header():
-    # combination: string header + string values list
-    table_string_array_string_header = tableToMarkdown('tableToMarkdown test with string array and string header',
-                                                       ['foo', 'bar', 'katz'], 'header_1')
-    expected_string_array_string_header_tbl = '''### tableToMarkdown test with string array and string header
-|header_1|
-|---|
-| foo |
-| bar |
-| katz |
-'''
-    assert table_string_array_string_header == expected_string_array_string_header_tbl
-
-
-def test_tbl_to_md_dict_with_special_character():
-    data = {
-        'header_1': u'foo',
-        'header_2': [u'\xe2.rtf']
-    }
-    table_with_character = tableToMarkdown('tableToMarkdown test with special character', data)
-    expected_string_with_special_character = '''### tableToMarkdown test with special character
+    @staticmethod
+    def test_dict_with_special_character():
+        """
+        When:
+          - calling tableToMarkdown.
+        Given:
+          - list of objects.
+          - some values contain special characters.
+        Then:
+          - return a valid table.
+        """
+        data = {
+            'header_1': u'foo',
+            'header_2': [u'\xe2.rtf']
+        }
+        table_with_character = tableToMarkdown('tableToMarkdown test with special character', data)
+        expected_string_with_special_character = '''### tableToMarkdown test with special character
 |header_1|header_2|
 |---|---|
 | foo | â.rtf |
 '''
-    assert table_with_character == expected_string_with_special_character
+        assert table_with_character == expected_string_with_special_character
 
+    @staticmethod
+    def test_title_with_special_character():
+        """
+        When:
+          - calling tableToMarkdown.
+        Given:
+          - a title with a special character.
+        Then:
+          - return a valid table.
+        """
+        data = {
+            'header_1': u'foo'
+        }
+        table_with_character = tableToMarkdown('tableToMarkdown test with special character Ù', data)
+        expected_string_with_special_character = (
+            '### tableToMarkdown test with special character Ù\n'
+            '|header_1|\n'
+            '|---|\n'
+            '| foo |\n'
+        )
+        assert table_with_character == expected_string_with_special_character
 
-def test_tbl_to_md_header_with_special_character():
-    data = {
-        'header_1': u'foo'
-    }
-    table_with_character = tableToMarkdown('tableToMarkdown test with special character Ù', data)
-    expected_string_with_special_character = '''### tableToMarkdown test with special character Ù
-|header_1|
-|---|
-| foo |
+    @pytest.mark.parametrize('data, expected_table', DATA_WITH_URLS)
+    def test_clickable_url(self, data, expected_table):
+        """
+        Given:
+          - list of objects.
+          - some values are URLs.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table with clickable URLs.
+        """
+        table = tableToMarkdown('tableToMarkdown test', data, url_keys=['url1', 'url2'])
+        assert table == expected_table
+
+    @staticmethod
+    def test_keep_headers_list():
+        """
+        Given:
+          - list of objects.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table.
+          - the given headers list is not modified.
+        """
+        headers = ['header_1', 'header_2']
+        data = {
+            'header_1': 'foo',
+        }
+        table = tableToMarkdown('tableToMarkdown test', data, removeNull=True, headers=headers)
+        assert 'header_2' not in table
+        assert headers == ['header_1', 'header_2']
+
+    @staticmethod
+    def test_date_fields_param():
+        """
+        Given:
+          - List of objects with date fields in epoch format.
+        When:
+          - Calling tableToMarkdown with the given date fields.
+        Then:
+          - Return the date data in the markdown table in human-readable format.
+        """
+        data = [
+            {
+                "docker_image": "demisto/python3",
+                "create_time": '1631521313466'
+            },
+            {
+                "docker_image": "demisto/python2",
+                "create_time": 1631521521466
+            }
+        ]
+
+        table = tableToMarkdown('tableToMarkdown test', data, headers=["docker_image", "create_time"],
+                                date_fields=['create_time'])
+
+        expected_md_table = '''### tableToMarkdown test
+|docker_image|create_time|
+|---|---|
+| demisto/python3 | 2021-09-13 08:21:53 |
+| demisto/python2 | 2021-09-13 08:25:21 |
 '''
-    assert table_with_character == expected_string_with_special_character
+        assert table == expected_md_table
 
+    @staticmethod
+    def test_with_json_transformers_default():
+        """
+        Given:
+          - Nested json table.
+        When:
+          - Calling tableToMarkdown with `is_auto_transform_json` set to True.
+        Then:
+          - Parse the json table to the default format which supports nesting.
+        """
+        with open('test_data/nested_data_example.json') as f:
+            nested_data_example = json.load(f)
+        table = tableToMarkdown("tableToMarkdown test", nested_data_example,
+                                headers=['name', 'changelog', 'nested'],
+                                is_auto_json_transform=True)
+        if IS_PY3:
+            expected_table = """### tableToMarkdown test
+|name|changelog|nested|
+|---|---|---|
+| Active Directory Query | **1.0.4**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>	***displayName***: 1.0.4 - R124496<br>	***released***: 2020-09-23T17:43:26Z<br>**1.0.5**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>	***displayName***: 1.0.5 - 132259<br>	***released***: 2020-10-01T17:48:31Z<br>**1.0.6**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br><br>	***displayName***: 1.0.6 - 151676<br>	***released***: 2020-10-19T14:35:15Z | **item1**:<br>	***a***: 1<br>	***b***: 2<br>	***c***: 3<br>	***d***: 4 |
+"""
+        else:
+            expected_table = u"""### tableToMarkdown test
+|name|changelog|nested|
+|---|---|---|
+| Active Directory Query | **1.0.4**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>	***displayName***: 1.0.4 - R124496<br>	***released***: 2020-09-23T17:43:26Z<br>**1.0.5**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>	***displayName***: 1.0.5 - 132259<br>	***released***: 2020-10-01T17:48:31Z<br>**1.0.6**:<br>	***path***: <br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br><br>	***displayName***: 1.0.6 - 151676<br>	***released***: 2020-10-19T14:35:15Z | **item1**:<br>	***a***: 1<br>	***c***: 3<br>	***b***: 2<br>	***d***: 4 |
+"""
+        assert table == expected_table
 
-@pytest.mark.parametrize('data, expected_table', DATA_WITH_URLS)
-def test_tbl_to_md_clickable_url(data, expected_table):
-    table = tableToMarkdown('tableToMarkdown test', data, url_keys=['url1', 'url2'])
-    assert table == expected_table
+    @staticmethod
+    def test_with_json_transformer_simple():
+        with open('test_data/simple_data_example.json') as f:
+            simple_data_example = json.load(f)
+        name_transformer = JsonTransformer(keys=['first', 'second'])
+        json_transformer_mapping = {'name': name_transformer}
+        table = tableToMarkdown("tableToMarkdown test", simple_data_example,
+                                json_transform_mapping=json_transformer_mapping)
+        if IS_PY3:
+            expected_table = """### tableToMarkdown test
+|name|value|
+|---|---|
+| **first**:<br>	***a***: val<br><br>***second***: b | val1 |
+| **first**:<br>	***a***: val2<br><br>***second***: d | val2 |
+"""
+        else:
+            expected_table = u"""### tableToMarkdown test
+|name|value|
+|---|---|
+| <br>***second***: b<br>**first**:<br>	***a***: val | val1 |
+| <br>***second***: d<br>**first**:<br>	***a***: val2 | val2 |
+"""
+        assert expected_table == table
 
+    @staticmethod
+    def test_with_json_transformer_nested():
+        """
+        Given:
+          - Nested json table.
+        When:
+          - Calling tableToMarkdown with JsonTransformer with only `keys` given.
+        Then:
+          - The header key which is transformed will parsed with the relevant keys.
+        """
 
-def test_tbl_keep_headers_list():
-    headers = ['header_1', 'header_2']
-    data = {
-        'header_1': 'foo'
-    }
-    table = tableToMarkdown('tableToMarkdown test', data, removeNull=True, headers=headers)
-    assert 'header_2' not in table
-    assert headers == ['header_1', 'header_2']
+        with open('test_data/nested_data_example.json') as f:
+            nested_data_example = json.load(f)
+        changelog_transformer = JsonTransformer(keys=['releaseNotes', 'released'], is_nested=True)
+        table_json_transformer = {'changelog': changelog_transformer}
+        table = tableToMarkdown("tableToMarkdown test", nested_data_example, headers=['name', 'changelog'],
+                                json_transform_mapping=table_json_transformer)
+        expected_table = """### tableToMarkdown test
+|name|changelog|
+|---|---|
+| Active Directory Query | **1.0.4**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>	***released***: 2020-09-23T17:43:26Z<br>**1.0.5**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>	***released***: 2020-10-01T17:48:31Z<br>**1.0.6**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br><br>	***released***: 2020-10-19T14:35:15Z |
+"""
+        assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transformer_nested_complex():
+        """
+        Given:
+          - Double nested json table.
+        When:
+          - Calling tableToMarkdown with JsonTransformer with only `keys_lst` given and `is_nested` set to True.
+        Then:
+          - The header key which is transformed will parsed with the relevant keys.
+        """
+        with open('test_data/complex_nested_data_example.json') as f:
+            complex_nested_data_example = json.load(f)
+        changelog_transformer = JsonTransformer(keys=['releaseNotes', 'c'], is_nested=True)
+        table_json_transformer = {'changelog': changelog_transformer}
+        table = tableToMarkdown('tableToMarkdown test', complex_nested_data_example, headers=['name', 'changelog'],
+                                json_transform_mapping=table_json_transformer)
+        expected_table = """### tableToMarkdown test
+|name|changelog|
+|---|---|
+| Active Directory Query | **1.0.4**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.4**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>**1.0.5**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.5**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>**1.0.6**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.6**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br> |
+"""
+
+        assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transformer_func():
+
+        def changelog_to_str(json_input):
+            return ', '.join(json_input.keys())
+
+        with open('test_data/nested_data_example.json') as f:
+            nested_data_example = json.load(f)
+        changelog_transformer = JsonTransformer(func=changelog_to_str)
+        table_json_transformer = {'changelog': changelog_transformer}
+        table = tableToMarkdown("tableToMarkdown test", nested_data_example, headers=['name', 'changelog'],
+                                json_transform_mapping=table_json_transformer)
+        expected_table = """### tableToMarkdown test
+|name|changelog|
+|---|---|
+| Active Directory Query | 1.0.4, 1.0.5, 1.0.6 |
+"""
+        assert expected_table == table
 
 
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
@@ -563,18 +902,22 @@ def test_date_to_timestamp():
     assert date_to_timestamp(datetime.strptime('2018-11-06T08:56:41', "%Y-%m-%dT%H:%M:%S")) == 1541494601000
 
 
-def test_pascalToSpace():
-    use_cases = [
-        ('Validate', 'Validate'),
-        ('validate', 'Validate'),
-        ('TCP', 'TCP'),
-        ('eventType', 'Event Type'),
-        ('eventID', 'Event ID'),
-        ('eventId', 'Event Id'),
-        ('IPAddress', 'IP Address'),
-    ]
-    for s, expected in use_cases:
-        assert pascalToSpace(s) == expected, 'Error on {} != {}'.format(pascalToSpace(s), expected)
+PASCAL_TO_SPACE_USE_CASES = [
+    ('Validate', 'Validate'),
+    ('validate', 'Validate'),
+    ('TCP', 'TCP'),
+    ('eventType', 'Event Type'),
+    ('eventID', 'Event ID'),
+    ('eventId', 'Event Id'),
+    ('IPAddress', 'IP Address'),
+    ('isDisabled', 'Is Disabled'),
+    ('device-group', 'Device - Group'),
+]
+
+
+@pytest.mark.parametrize('s, expected', PASCAL_TO_SPACE_USE_CASES)
+def test_pascalToSpace(s, expected):
+    assert pascalToSpace(s) == expected, 'Error on {} != {}'.format(pascalToSpace(s), expected)
 
 
 def test_safe_load_json():
@@ -817,10 +1160,13 @@ def test_logger_replace_strs(mocker):
         'apikey': 'my_apikey',
     })
     ilog = IntegrationLogger()
-    ilog.add_replace_strs('special_str', '')  # also check that empty string is not added by mistake
+    ilog.add_replace_strs('special_str', 'ZAQ!@#$%&*', '')  # also check that empty string is not added by mistake
     ilog('my_apikey is special_str and b64: ' + b64_encode('my_apikey'))
+    ilog('special chars like ZAQ!@#$%&* should be replaced even when url-encoded like ZAQ%21%40%23%24%25%26%2A')
     assert ('' not in ilog.replace_strs)
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
+    assert ilog.messages[1] == \
+           'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
 
 
 TEST_SSH_KEY_ESC = '-----BEGIN OPENSSH PRIVATE KEY-----\\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
@@ -828,6 +1174,8 @@ TEST_SSH_KEY_ESC = '-----BEGIN OPENSSH PRIVATE KEY-----\\nb3BlbnNzaC1rZXktdjEAAA
 
 TEST_SSH_KEY = '-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
                'AAAAdzc2gtcn\n-----END OPENSSH PRIVATE KEY-----'
+
+TEST_PASS_JSON_CHARS = 'json_chars'
 
 SENSITIVE_PARAM = {
     'app': None,
@@ -852,12 +1200,14 @@ SENSITIVE_PARAM = {
         'password': 'ident_pass',
         'passwordChanged': False
     },
+    'password': TEST_PASS_JSON_CHARS + '\\"',
 }
 
 
 def test_logger_replace_strs_credentials(mocker):
     mocker.patch.object(demisto, 'params', return_value=SENSITIVE_PARAM)
-    basic_auth = b64_encode('{}:{}'.format(SENSITIVE_PARAM['authentication']['identifier'], SENSITIVE_PARAM['authentication']['password']))
+    basic_auth = b64_encode(
+        '{}:{}'.format(SENSITIVE_PARAM['authentication']['identifier'], SENSITIVE_PARAM['authentication']['password']))
     ilog = IntegrationLogger()
     # log some secrets
     ilog('my cred pass: cred_pass. my ssh key: ssh_key_secret. my ssh key: {}.'
@@ -876,7 +1226,8 @@ def test_debug_logger_replace_strs(mocker):
     msg = debug_logger.int_logger.messages[0]
     assert 'debug-mode started' in msg
     assert 'Params:' in msg
-    for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass', TEST_SSH_KEY, TEST_SSH_KEY_ESC):
+    for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass', TEST_SSH_KEY,
+              TEST_SSH_KEY_ESC, TEST_PASS_JSON_CHARS):
         assert s not in msg
 
 
@@ -1476,6 +1827,34 @@ class TestCommandResults:
         assert list(results.to_context()['EntryContext'].keys())[0] == \
                'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
 
+    @pytest.mark.parametrize('score, expected_readable',
+                             [(CommonServerPython.Common.DBotScore.NONE, 'Unknown'),
+                              (CommonServerPython.Common.DBotScore.GOOD, 'Good'),
+                              (CommonServerPython.Common.DBotScore.SUSPICIOUS, 'Suspicious'),
+                              (CommonServerPython.Common.DBotScore.BAD, 'Bad')])
+    def test_dbot_readable(self, score, expected_readable):
+        from CommonServerPython import Common, DBotScoreType
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Test',
+            indicator_type=DBotScoreType.IP,
+            score=score
+        )
+        assert dbot_score.to_readable() == expected_readable
+
+    def test_dbot_readable_invalid(self):
+        from CommonServerPython import Common, DBotScoreType
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Test',
+            indicator_type=DBotScoreType.IP,
+            score=0
+        )
+        dbot_score.score = 7
+        assert dbot_score.to_readable() == 'Undefined'
+        dbot_score.score = None
+        assert dbot_score.to_readable() == 'Undefined'
+
     def test_readable_only_context(self):
         """
         Given:
@@ -1539,7 +1918,7 @@ class TestCommandResults:
 
         dbot_score = Common.DBotScore(
             indicator='8.8.8.8',
-            integration_name='Virus Total',
+            integration_name='Test',
             indicator_type=DBotScoreType.IP,
             score=Common.DBotScore.GOOD
         )
@@ -1581,7 +1960,7 @@ class TestCommandResults:
                 'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
                     {
                         'Indicator': '8.8.8.8',
-                        'Vendor': 'Virus Total',
+                        'Vendor': 'Test',
                         'Score': 1,
                         'Type': 'ip'
                     }
@@ -1597,7 +1976,7 @@ class TestCommandResults:
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
         dbot_score1 = Common.DBotScore(
             indicator='8.8.8.8',
-            integration_name='Virus Total',
+            integration_name='Test',
             indicator_type=DBotScoreType.IP,
             score=Common.DBotScore.GOOD
         )
@@ -1616,7 +1995,7 @@ class TestCommandResults:
 
         dbot_score2 = Common.DBotScore(
             indicator='5.5.5.5',
-            integration_name='Virus Total',
+            integration_name='Test',
             indicator_type=DBotScoreType.IP,
             score=Common.DBotScore.GOOD
         )
@@ -1662,13 +2041,13 @@ class TestCommandResults:
                 'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
                     {
                         'Indicator': '8.8.8.8',
-                        'Vendor': 'Virus Total',
+                        'Vendor': 'Test',
                         'Score': 1,
                         'Type': 'ip'
                     },
                     {
                         'Indicator': '5.5.5.5',
-                        'Vendor': 'Virus Total',
+                        'Vendor': 'Test',
                         'Score': 1,
                         'Type': 'ip'
                     }
@@ -1798,7 +2177,7 @@ class TestCommandResults:
 
         dbot_score = Common.DBotScore(
             indicator='8.8.8.8',
-            integration_name='Virus Total',
+            integration_name='Test',
             score=Common.DBotScore.GOOD,
             indicator_type=DBotScoreType.IP,
             reliability=DBotScoreReliability.B,
@@ -1824,7 +2203,7 @@ class TestCommandResults:
                 {
                     'Indicator': '8.8.8.8',
                     'Type': 'ip',
-                    'Vendor': 'Virus Total',
+                    'Vendor': 'Test',
                     'Score': 1,
                     'Reliability': 'B - Usually reliable'
                 }
@@ -1901,7 +2280,7 @@ class TestCommandResults:
         mocker.patch.object(demisto, 'params', return_value={'insecure': True})
         dbot_score = Common.DBotScore(
             indicator='8.8.8.8',
-            integration_name='Virus Total',
+            integration_name='Test',
             indicator_type=DBotScoreType.IP,
             score=Common.DBotScore.GOOD
         )
@@ -1926,7 +2305,7 @@ class TestCommandResults:
                 {
                     'Indicator': '8.8.8.8',
                     'Type': 'ip',
-                    'Vendor': 'Virus Total',
+                    'Vendor': 'Test',
                     'Score': 1
                 }
             ]
@@ -2014,6 +2393,20 @@ class TestCommandResults:
         assert results.to_context().get('Note') is True
 
 
+def test_http_request_ssl_ciphers_insecure():
+    if IS_PY3 and PY_VER_MINOR >= 10:
+        from CommonServerPython import BaseClient
+
+        client = BaseClient('https://www.google.com', ok_codes=(200, 201), verify=False)
+        adapter = client._session.adapters.get('https://')
+        ssl_context = adapter.poolmanager.connection_pool_kw['ssl_context']
+        ciphers_list = ssl_context.get_ciphers()
+
+        assert len(ciphers_list) == 42
+        assert next(cipher for cipher in ciphers_list if cipher['name'] == 'AES128-GCM-SHA256')
+    else:
+        assert True
+
 class TestBaseClient:
     from CommonServerPython import BaseClient
     text = {"status": "ok"}
@@ -2080,9 +2473,12 @@ class TestBaseClient:
 
     def test_http_request_json_negative(self, requests_mock):
         from CommonServerPython import DemistoException
-        requests_mock.get('http://example.com/api/v2/event', text='notjson')
-        with raises(DemistoException, match="Failed to parse json"):
+        text = 'notjson'
+        requests_mock.get('http://example.com/api/v2/event', text=text)
+        with raises(DemistoException, match="Failed to parse json") as exception:
             self.client._http_request('get', 'event')
+        assert exception.value.res
+        assert exception.value.res.text == text
 
     def test_http_request_text(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
@@ -2138,6 +2534,69 @@ class TestBaseClient:
                 'http': 'http://testproxy:8899',
                 'https': 'https://testproxy:8899'
             }
+            assert m.called is True
+
+    def test_http_request_proxy_without_http_prefix(self):
+        """
+            Given
+                - proxy param is set to true
+                - proxy configs are without http/https prefix
+
+            When
+            - run an http get request
+
+            Then
+            -  the request will run and will use proxy configs that will include http:// prefix.
+        """
+        from CommonServerPython import BaseClient
+        import requests_mock
+
+        os.environ['http_proxy'] = 'testproxy:8899'
+        os.environ['https_proxy'] = 'testproxy:8899'
+
+        os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+        client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), proxy=True, verify=True)
+
+        with requests_mock.mock() as m:
+            m.get('http://example.com/api/v2/event')
+
+            res = client._http_request('get', 'event', resp_type='response')
+
+            assert m.last_request.verify == '/test1.pem'
+            assert m.last_request.proxies == {
+                'http': 'http://testproxy:8899',
+                'https': 'http://testproxy:8899'
+            }
+            assert m.called is True
+
+    def test_http_request_proxy_empty_proxy(self):
+        """
+            Given
+                - proxy param is set to true
+                - proxy configs are empty
+
+            When
+            - run an http get request
+
+            Then
+            -  the request will run and will use empty proxy configs and will not add https prefixes
+        """
+        from CommonServerPython import BaseClient
+        import requests_mock
+
+        os.environ['http_proxy'] = ''
+        os.environ['https_proxy'] = ''
+
+        os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+        client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), proxy=True, verify=True)
+
+        with requests_mock.mock() as m:
+            m.get('http://example.com/api/v2/event')
+
+            res = client._http_request('get', 'event', resp_type='response')
+
+            assert m.last_request.verify == '/test1.pem'
+            assert m.last_request.proxies == {}
             assert m.called is True
 
     def test_http_request_verify_false(self):
@@ -2257,6 +2716,56 @@ class TestBaseClient:
             resp_json = json.loads(e.res.text)
             assert e.res.status_code == 400
             assert resp_json.get('error') == 'additional text'
+
+    def test_http_request_timeout_default(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        self.client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == self.client.REQUESTS_TIMEOUT
+
+    def test_http_request_timeout_given_func(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 120
+        self.client._http_request('get', 'event', timeout=timeout)
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_given_class(self, requests_mock):
+        from CommonServerPython import BaseClient
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 44
+        new_client = BaseClient('http://example.com/api/v2/', timeout=timeout)
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_environ_system(self, requests_mock, mocker):
+        from CommonServerPython import BaseClient
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 10
+        mocker.patch.dict(os.environ, {'REQUESTS_TIMEOUT': str(timeout)})
+        new_client = BaseClient('http://example.com/api/v2/')
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_environ_integration(self, requests_mock, mocker):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 180.1
+        # integration name is set to Test in the fixture handle_calling_context
+        mocker.patch.dict(os.environ, {'REQUESTS_TIMEOUT.Test': str(timeout)})
+        from CommonServerPython import BaseClient
+        new_client = BaseClient('http://example.com/api/v2/')
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_environ_script(self, requests_mock, mocker):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 23.4
+        script_name = 'TestScript'
+        mocker.patch.dict(os.environ, {'REQUESTS_TIMEOUT.' + script_name: str(timeout)})
+        mocker.patch.dict(demisto.callingContext, {'context': {'ScriptName': script_name}})
+        mocker.patch.object(CommonServerPython, 'get_integration_name', return_value='')
+        from CommonServerPython import BaseClient
+        new_client = BaseClient('http://example.com/api/v2/')
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
 
     def test_is_valid_ok_codes_empty(self):
         from requests import Response
@@ -2852,6 +3361,208 @@ def test_auto_detect_indicator_type_tldextract(mocker):
         assert 'cache_file' in res[1].keys()
 
 
+VALID_URL_INDICATORS = [
+    '3.21.32.65/path',
+    '19.117.63.253:28/other/path',
+    '19.117.63.253:28/path',
+    '1.1.1.1/7/server/somestring/something.php?fjjasjkfhsjasofds=sjhfhdsfhasld',
+    'flake8.pycqa.org/en/latest',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/path/path',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/32/path/path',
+    'https://google.com/sdlfdshfkle3247239elkxszmcdfdstgk4e5pt0/path/path/oatdsfk/sdfjjdf',
+    'www.123.43.6.89/path',
+    'https://15.12.76.123',
+    'www.google.com/path',
+    'wwW.GooGle.com/path',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/65/path/path',
+    '2001:db8:3333:4444:5555:6666:7777:8888/32/path/path',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/h'
+    '1.1.1.1/7/server',
+    "1.1.1.1/32/path",
+    'http://evil.tld/',
+    'https://evil.tld/evil.html',
+    'ftp://foo.bar/',
+    'www.evil.tld/evil.aspx',
+    'sftp://8.26.75.97:121',
+    'sftp://69.254.57.79:5001/path',
+    'sftp://75.26.0.1/path',
+    'https://www.evil.tld/',
+    'www.evil.tld/resource',
+    'hxxps://google[.]com',
+    'hxxps://google[.]com:443',
+    'hxxps://google[.]com:443/path'
+    'www.1.2.3.4/?user=test%Email=demisto',
+    'www.1.2.3.4:8080/user=test%Email=demisto'
+    'http://xn--e1v2i3l4.tld/evilagain.aspx',
+    'https://www.xn--e1v2i3l4.tld',
+    'https://0330.0072.0307.0116',
+    'https://0563.2437.2623.2222',  # IP as octal number
+    'https://2467.1461.3567.1434:443',
+    'https://3571.3633.2222.3576:443/path',
+    'https://4573.2436.1254.7423:443/p',
+    'https://0563.2437.2623.2222:443/path/path',
+    'hxxps://www.xn--e1v2i3l4.tld',
+    'hxxp://www.xn--e1v2i3l4.tld',
+    'www.evil.tld:443/path/to/resource.html',
+    'WWW.evil.tld:443/path/to/resource.html',
+    'wWw.Evil.tld:443/path/to/resource.html',
+    'Https://wWw.Evil.tld:443/path/to/resource.html',
+    'https://1.2.3.4/path/to/resource.html',
+    'HTTPS://1.2.3.4/path/to/resource.html',
+    '1.2.3.4/path',
+    '1.2.3.4/path/to/resource.html',
+    'http://1.2.3.4:8080/',
+    'http://1.2.3.4:8080/resource.html',
+    'HTTP://1.2.3.4',
+    'HTTP://1.2.3.4:80/path',
+    'ftp://foo.bar/resource',
+    'FTP://foo.bar/resource',
+    'http://test.evil.tld/',
+    'ftps://foo.bar/resource',
+    'ftps://foo.bar/Resource'
+    '5.6.7.8/fdsfs',
+    'https://serverName.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'http://serverName.org/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'https://1.1.1.1/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'https://google.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'www.google.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'www.63.4.6.1/integrations/test-playbooks',
+    'https://xsoar.pan.dev/docs/welcome',
+    '5.6.7.8/user/',
+    'http://www.example.com/and%26here.html',
+    'https://1234',  # IP as integer 1234 = '0.0.4.210'
+    'https://4657624',
+    'https://64123/path',
+    'https://0.0.0.1/path',
+    'https://1',  # same as 0.0.0.1
+    'hXXps://isc.sans[.]edu/',
+    'hXXps://1.1.1.1[.]edu/',
+    'hxxp://0[x]455e8c6f/0s19ef206s18s2f2s567s49a8s91f7s4s19fd61a',  # defanged hexa-decimal IP.
+    'hxxp://0x325e5c7f/34823jdsasjfd/asdsafgf/324',  # hexa-decimal IP.
+    'hxxps://0xAA268BF1:8080/',
+    'hxxps://0xAB268DC1:8080/path',
+    'hxxps://0xAB268DC1/',
+    'hxxps://0xAB268DC1/p',
+    'hxxps://0xAB268DC1/32',
+    'http://www.google.com:8080',
+    'http://www[.]google.com:8080',  # defanged Domain
+    'http://www.google[.]com:8080/path',
+    'http://www[.]google.com:8080/path',
+    'http://www.253.234.73.12:8080/secret.txt',
+    'https://www.10.15.53.95:8080',
+    'www[.]google.com:8080/path',
+    'www.google[.]com:8080/path',
+    'google[.]com/path',
+    'google[.]com:443/path',
+    'hXXps://1.1.1.1[.]edu/path',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/80',
+    '2001:0db8:0001:0000:0000:0ab9:C0A8:0102/resource.html',
+    '2251:dbc:8fa3:8d3:1f19:8a2e:370:7348/80',
+]
+
+
+@pytest.mark.parametrize('indicator_value', VALID_URL_INDICATORS)
+def test_valid_url_indicator_types(indicator_value):
+    """
+    Given
+    - Valid URL indicators.
+    When
+    - Trying to match those indicators with the URL regex.
+    Then
+    - The indicators are classified as URL indicators.
+    """
+    assert re.match(urlRegex, indicator_value)
+
+
+INVALID_URL_INDICATORS = [
+    'test',
+    'httn://bla.com/path',
+    'google.com*',
+    '1.1.1.1',
+    '1.1.1.1/',
+    '1.1.1.1/32',
+    '1.1.1.1/32/',
+    'path/path',
+    '1.1.1.1:8080',
+    '1.1.1.1:8080/',
+    '1.1.1.1:111112243245/path',
+    '3.4.6.92:8080:/test',
+    '1.1.1.1:4lll/',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/64/',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/64',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/32',
+    '2001:db8:3333:4444:5555:6666:7777:8888/',
+    'flake8.pycqa.org',
+    'google.com',
+    'HTTPS://dsdffd.c'  # not valid tld
+    'https://test',
+    'ftp://test',
+    'ftps:test',
+    'a.a.a.a',
+    'b.b.b',
+    'https:/1.1.1.1.1/path',
+    'wwww.test',
+    'help.test.com',
+    'help-test/com'
+    'wwww.path.com/path',
+    'fnvfdsbf/path',
+    '65.23.7.2',
+    'k.f.a.f',
+    'test/test/test/test',
+    'http://www.example.com/ %20here.html',
+    'http ://www.example.com/ %20here.html',
+    'http://www.example .com/%20here.html'
+    'http://wwww.example.com/%20here.html',
+    'FTP://Google.test:',
+    '',
+    'somestring',
+    'dsjfshjdfgkjldsh32423123^^&*#@$#@$@!#4',
+    'aaa/1.1.1.1/path',
+    'domain*com/1.1.1.1/path',
+    'http:1.1.1.1/path',
+    'kfer93420932/path/path',
+    '1.1.1.1.1/24',
+    '2.2.2.2.2/3sad',
+    'http://fdsfesd',
+    'http://fdsfesd:8080',  # no tld
+    'FLAKE8.dds.asdfd/',
+    'FTP://Google.',
+    'https://www.',
+    '1.1.1.1/pa klj'
+    '1.1.1.1.1/path',
+    '2.2.2.2.2/3sad',
+    'HTTPS://1.1.1.1..1.1.1.1/path',
+    'https://1.1.1.1.1.1.1.1.1.1.1/path'
+    '1.1.1.1 .1/path',
+    '123.6.2.2/ path',
+    '   test.com',
+    'test .com.domain'
+    'hxxps://0xAB26:8080/path',  # must be 8 hexa-decimal chars
+    'hxxps://34543645356432234e:8080/path',  # too large integer IP
+    'https://35.12.5677.143423:443',  # invalid IP address
+    'https://4578.2436.1254.7423',  # invalid octal address (must be numbers between 0-7)
+    'https://4578.2436.1254.7423:443/p',
+    'https://www.evil.tld/ https://4578.2436.1254.7423:443/p',
+    'FTP://foo hXXps://1.1.1.1[.]edu/path',
+    'https://216.58.199.78:12345fdsf',
+    'https://www.216.58.199.78:sfsdg'
+]
+
+
+@pytest.mark.parametrize('indicator_value', INVALID_URL_INDICATORS)
+def test_invalid_url_indicator_types(indicator_value):
+    """
+    Given
+    - invalid URL indicators.
+    When
+    - Trying to match those indicators with the URL regex.
+    Then
+    - The indicators are not classified as URL indicators.
+    """
+    assert not re.match(urlRegex, indicator_value)
+
+
+
 def test_handle_proxy(mocker):
     os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
     mocker.patch.object(demisto, 'params', return_value={'insecure': True})
@@ -2864,6 +3575,60 @@ def test_handle_proxy(mocker):
     mocker.patch.object(demisto, 'params', return_value={'unsecure': True})
     handle_proxy()
     assert os.getenv('REQUESTS_CA_BUNDLE') is None
+
+
+def test_handle_proxy_without_http_prefix():
+    """
+        Given
+            proxy is configured in environment vars without http/https prefixes
+
+        When
+            run handle_proxy()
+
+        Then
+            the function will return proxies with http:// prefix
+    """
+    os.environ['HTTP_PROXY'] = 'testproxy:8899'
+    os.environ['HTTPS_PROXY'] = 'testproxy:8899'
+    proxies = handle_proxy(checkbox_default_value=True)
+    assert proxies['http'] == 'http://testproxy:8899'
+    assert proxies['https'] == 'http://testproxy:8899'
+
+
+def test_handle_proxy_with_http_prefix():
+    """
+        Given
+            proxy is configured in environment vars with http/https prefixes
+
+        When
+            run handle_proxy()
+
+        Then
+            the function will return proxies unchanged
+    """
+    os.environ['HTTP_PROXY'] = 'http://testproxy:8899'
+    os.environ['HTTPS_PROXY'] = 'https://testproxy:8899'
+    proxies = handle_proxy(checkbox_default_value=True)
+    assert proxies['http'] == 'http://testproxy:8899'
+    assert proxies['https'] == 'https://testproxy:8899'
+
+
+def test_handle_proxy_with_socks5_prefix():
+    """
+        Given
+            proxy is configured in environment vars with socks5 (socks proxy) prefixes
+
+        When
+            run handle_proxy()
+
+        Then
+            the function will return proxies unchanged
+    """
+    os.environ['HTTP_PROXY'] = 'socks5://testproxy:8899'
+    os.environ['HTTPS_PROXY'] = 'socks5://testproxy:8899'
+    proxies = handle_proxy(checkbox_default_value=True)
+    assert proxies['http'] == 'socks5://testproxy:8899'
+    assert proxies['https'] == 'socks5://testproxy:8899'
 
 
 @pytest.mark.parametrize(argnames="dict_obj, keys, expected, default_return_value",
@@ -3323,6 +4088,216 @@ def test_return_results_mixed_results(mocker):
     assert demisto_results_mock.call_args_list[1][0][0] == mock_demisto_results_entry
 
 
+class TestExecuteCommand:
+    @staticmethod
+    def test_sanity(mocker):
+        """
+        Given:
+            - A successful command with a single entry as output.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that only the Contents value is returned.
+        """
+        from CommonServerPython import execute_command, EntryType
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=[{'Type': EntryType.NOTE,
+                                                                  'Contents': {'hello': 'world'}}])
+        res = execute_command('command', {'arg1': 'value'})
+        execute_command_args = demisto_execute_mock.call_args_list[0][0]
+        assert demisto_execute_mock.call_count == 1
+        assert execute_command_args[0] == 'command'
+        assert execute_command_args[1] == {'arg1': 'value'}
+        assert res == {'hello': 'world'}
+
+    @staticmethod
+    def test_multiple_results(mocker):
+        """
+        Given:
+            - A successful command with several entries as output.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the "Contents" values of all entries are returned.
+        """
+        from CommonServerPython import execute_command, EntryType
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            {'Type': EntryType.NOTE, 'Contents': {'entry': '2'}},
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        res = execute_command('command', {'arg1': 'value'})
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(res, list)
+        assert len(res) == 3
+        assert res[0] == {'hello': 'world'}
+        assert res[1] == {}
+        assert res[2] == {'entry': '2'}
+
+    @staticmethod
+    def test_raw_results(mocker):
+        """
+        Given:
+            - A successful command with several entries as output.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the entire entries are returned.
+        """
+        from CommonServerPython import execute_command, EntryType
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            'text',
+            1337,
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        res = execute_command('command', {'arg1': 'value'}, extract_contents=False)
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(res, list)
+        assert len(res) == 4
+        assert res[0] == {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}}
+        assert res[1] == {'Type': EntryType.NOTE, 'Context': 'no contents here'}
+        assert res[2] == 'text'
+        assert res[3] == 1337
+
+    @staticmethod
+    def test_failure(mocker):
+        """
+        Given:
+            - A command that fails.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the original error is returned to War-Room (using demisto.results).
+            - Assert an error is returned to the War-Room.
+            - Function ends the run using SystemExit.
+        """
+        from CommonServerPython import execute_command, EntryType
+        error_entries = [
+            {'Type': EntryType.ERROR, 'Contents': 'error number 1'},
+            {'Type': EntryType.NOTE, 'Contents': 'not an error'},
+            {'Type': EntryType.ERROR, 'Contents': 'error number 2'},
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=error_entries)
+        demisto_results_mock = mocker.patch.object(demisto, 'results')
+
+        with raises(SystemExit, match='0'):
+            execute_command('bad', {'arg1': 'value'})
+
+        assert demisto_execute_mock.call_count == 1
+        assert demisto_results_mock.call_count == 1
+        # first call, args (not kwargs), first argument
+        error_text = demisto_results_mock.call_args_list[0][0][0]['Contents']
+        assert 'Failed to execute bad.' in error_text
+        assert 'error number 1' in error_text
+        assert 'error number 2' in error_text
+        assert 'not an error' not in error_text
+
+    @staticmethod
+    def test_failure_integration(monkeypatch):
+        from CommonServerPython import execute_command, EntryType
+        monkeypatch.delattr(demisto, 'executeCommand')
+
+        with raises(DemistoException, match=r'Cannot run demisto.executeCommand\(\) from integrations.'):
+            execute_command('bad', {'arg1': 'value'})
+
+    @staticmethod
+    def test_multiple_results_fail_on_error_false(mocker):
+        """
+        Given:
+            - A successful command with several entries as output.
+            - fail_on_error set to False.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the status of the execution is True for successful run.
+            - Assert that the "Contents" values of all entries are returned.
+        """
+        from CommonServerPython import execute_command, EntryType
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            {'Type': EntryType.NOTE, 'Contents': {'entry': '2'}},
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        status, res = execute_command('command', {'arg1': 'value'}, fail_on_error=False)
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(res, list)
+        assert len(res) == 3
+        assert status
+        assert res[0] == {'hello': 'world'}
+        assert res[1] == {}
+        assert res[2] == {'entry': '2'}
+
+    @staticmethod
+    def test_raw_results_fail_on_error_false(mocker):
+        """
+        Given:
+            - A successful command with several entries as output.
+            - fail_on_error set to False.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the status of the execution is True for successful run.
+            - Assert that the entire entries are returned.
+        """
+        from CommonServerPython import execute_command, EntryType
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            'text',
+            1337,
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        status, res = execute_command('command', {'arg1': 'value'}, extract_contents=False, fail_on_error=False)
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(res, list)
+        assert len(res) == 4
+        assert status
+        assert res[0] == {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}}
+        assert res[1] == {'Type': EntryType.NOTE, 'Context': 'no contents here'}
+        assert res[2] == 'text'
+        assert res[3] == 1337
+
+    @staticmethod
+    def test_failure_fail_on_error_false(mocker):
+        """
+        Given:
+            - A command that fails.
+            - fail_on_error set to False.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the status of the execution is False for failed run.
+            - Assert that the original errors are returned as a value, and not to the war-room.
+        """
+        from CommonServerPython import execute_command, EntryType
+        error_entries = [
+            {'Type': EntryType.ERROR, 'Contents': 'error number 1'},
+            {'Type': EntryType.NOTE, 'Contents': 'not an error'},
+            {'Type': EntryType.ERROR, 'Contents': 'error number 2'},
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=error_entries)
+        demisto_results_mock = mocker.patch.object(demisto, 'results')
+
+        status, error_text = execute_command('bad', {'arg1': 'value'}, fail_on_error=False)
+
+        assert demisto_execute_mock.call_count == 1
+        assert demisto_results_mock.call_count == 0
+        assert not status
+        assert 'error number 1' in error_text
+        assert 'error number 2' in error_text
+        assert 'not an error' not in error_text
+
+
 def test_arg_to_int__valid_numbers():
     """
     Given
@@ -3624,7 +4599,7 @@ class TestCommonTypes:
 
         dbot_score = Common.DBotScore(
             indicator='somedomain.com',
-            integration_name='Virus Total',
+            integration_name='Test',
             indicator_type=DBotScoreType.DOMAIN,
             score=Common.DBotScore.GOOD
         )
@@ -3801,7 +4776,7 @@ class TestCommonTypes:
                     {
                         'Indicator': 'somedomain.com',
                         'Type': 'domain',
-                        'Vendor': 'Virus Total',
+                        'Vendor': 'Test',
                         'Score': 1
                     }
                 ]
@@ -3825,7 +4800,7 @@ class TestCommonTypes:
 
         dbot_score = Common.DBotScore(
             indicator='bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d',
-            integration_name='test',
+            integration_name='Test',
             indicator_type=DBotScoreType.CERTIFICATE,
             score=Common.DBotScore.NONE
         )
@@ -4206,7 +5181,7 @@ class TestCommonTypes:
                 'val.Vendor == obj.Vendor && val.Type == obj.Type)': [{
                     "Indicator": "bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d",
                     "Type": "certificate",
-                    "Vendor": "test",
+                    "Vendor": "Test",
                     "Score": 0
                 }]
             },
@@ -4234,8 +5209,8 @@ class TestCommonTypes:
             score=Common.DBotScore.GOOD
         )
         dbot_context = {'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                   'val.Vendor == obj.Vendor && val.Type == obj.Type)':
-                       {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Test', 'Score': 1}}
+                        'val.Vendor == obj.Vendor && val.Type == obj.Type)':
+                            {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Test', 'Score': 1}}
 
         assert dbot_context == dbot_score.to_context()
 
@@ -4244,7 +5219,8 @@ class TestCommonTypes:
             address='user@example.com',
             dbot_score=dbot_score
         )
-        assert email_context.to_context()[email_context.CONTEXT_PATH] == {'Address': 'user@example.com', 'Domain': 'example.com'}
+        assert email_context.to_context()[email_context.CONTEXT_PATH] == {'Address': 'user@example.com',
+                                                                          'Domain': 'example.com'}
 
 
 class TestIndicatorsSearcher:
@@ -4253,6 +5229,8 @@ class TestIndicatorsSearcher:
         if not searchAfter:
             searchAfter = 0
 
+        iocs = [{'value': 'mock{}'.format(searchAfter)}]
+
         if searchAfter < 6:
             searchAfter += 1
 
@@ -4260,11 +5238,33 @@ class TestIndicatorsSearcher:
             # mock the end of indicators
             searchAfter = None
 
-        if page == 17:
+        if page and page >= 17:
             # checking a unique case when trying to reach a certain page and not all the indicators
-            searchAfter = 200
+            iocs = []
+            searchAfter = None
 
-        return {'searchAfter': searchAfter}
+        return {'searchAfter': searchAfter, 'iocs': iocs, 'total': 7}
+
+    def mock_search_indicators_search_after(self, fromDate='', toDate='', query='', size=0, value='', page=0,
+                                            searchAfter=None, populateFields=None):
+        """
+        Mocks search indicators returning different results for searchAfter value:
+          - None: {searchAfter: 0, iocs: [...]}
+          - 0-2: {searchAfter: i+1, iocs: [...]}
+          - 3+: {searchAfter: None, iocs: []}
+
+        total of 4 iocs available
+        """
+        search_after_options = (0, 1, 2)
+        if searchAfter is None:
+            search_after_value = search_after_options[0]
+        else:
+            if searchAfter in search_after_options:
+                search_after_value = searchAfter + 1
+            else:
+                return {'searchAfter': None, 'iocs': []}
+        iocs = [{'value': 'mock{}'.format(search_after_value)}]
+        return {'searchAfter': search_after_value, 'iocs': iocs, 'total': 4}
 
     def test_search_indicators_by_page(self, mocker):
         """
@@ -4275,10 +5275,9 @@ class TestIndicatorsSearcher:
           - Mocking search indicators using paging
         Then:
           - The page number is rising
-          - The searchAfter param is null
         """
         from CommonServerPython import IndicatorsSearcher
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
 
         search_indicators_obj_paging = IndicatorsSearcher()
         search_indicators_obj_paging._can_use_search_after = False
@@ -4287,7 +5286,6 @@ class TestIndicatorsSearcher:
             search_indicators_obj_paging.search_indicators_by_version()
 
         assert search_indicators_obj_paging._page == 5
-        assert not search_indicators_obj_paging._search_after_param
 
     def test_search_indicators_by_search_after(self, mocker):
         """
@@ -4298,7 +5296,7 @@ class TestIndicatorsSearcher:
           - Mocking search indicators using the searchAfter parameter
         Then:
           - The search after param is rising
-          - The page param is 0
+          - The page param is rising
         """
         from CommonServerPython import IndicatorsSearcher
         mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
@@ -4312,7 +5310,7 @@ class TestIndicatorsSearcher:
             print(e)
 
         assert search_indicators_obj_search_after._search_after_param == 5
-        assert search_indicators_obj_search_after._page == 0
+        assert search_indicators_obj_search_after._page == 5
 
     def test_search_all_indicators_by_search_after(self, mocker):
         """
@@ -4324,7 +5322,7 @@ class TestIndicatorsSearcher:
           so search_after is None
         Then:
           - The search after param is None
-          - The page param is 0
+          - The page param is rising
         """
         from CommonServerPython import IndicatorsSearcher
         mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
@@ -4333,30 +5331,114 @@ class TestIndicatorsSearcher:
         search_indicators_obj_search_after._can_use_search_after = True
         for n in range(7):
             search_indicators_obj_search_after.search_indicators_by_version()
-        assert search_indicators_obj_search_after._search_after_param == None
-        assert search_indicators_obj_search_after._page == 0
+        assert search_indicators_obj_search_after._search_after_param is None
+        assert search_indicators_obj_search_after._page == 7
 
     def test_search_indicators_in_certain_page(self, mocker):
         """
         Given:
-          - Searching indicators in a specific page that is mot 0
-          - Server version in equal or higher than 6.1.0
+          - Searching indicators in a specific page that is not 0
+          - Server version in less than 6.1.0
         When:
           - Mocking search indicators in this specific page
           so search_after is None
         Then:
           - The search after param is not None
-          - The page param is 0
+          - The page param is 17
         """
         from CommonServerPython import IndicatorsSearcher
         mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
 
-        res = search_indicators_obj_search_after = IndicatorsSearcher(page=17)
-        search_indicators_obj_search_after._can_use_search_after = True
+        search_indicators_obj_search_after = IndicatorsSearcher(page=17)
+        search_indicators_obj_search_after._can_use_search_after = False
         search_indicators_obj_search_after.search_indicators_by_version()
 
-        assert search_indicators_obj_search_after._search_after_param == 200
-        assert search_indicators_obj_search_after._page == 17
+        assert search_indicators_obj_search_after._search_after_param is None
+        assert search_indicators_obj_search_after._page == 18
+
+    def test_iterator__pages(self, mocker):
+        """
+        Given:
+          - Searching indicators from page 1
+          - Total available indicators == 6
+        When:
+          - Searching indicators using iterator
+        Then:
+          - Get 6 indicators
+          - Advance page to 7
+          - is_search_done returns True
+        """
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
+
+        search_indicators = IndicatorsSearcher(page=1, size=1)
+        search_indicators._can_use_search_after = False
+        results = []
+        for res in search_indicators:
+            results.append(res)
+        assert len(results) == 6
+        assert search_indicators.page == 7
+        assert search_indicators.is_search_done() is True
+
+    def test_iterator__search_after(self, mocker):
+        """
+        Given:
+          - Searching indicators from first page
+          - Total available indicators == 7
+          - Limit is set to 10
+        When:
+          - Searching indicators using iterator
+          - search_after is supported
+        Then:
+          - Get 7 indicators
+        """
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_indicators_search_after)
+        search_indicators = IndicatorsSearcher(limit=10)
+        search_indicators._can_use_search_after = True
+        results = []
+        for res in search_indicators:
+            results.append(res)
+        assert len(results) == 4
+
+    def test_iterator__empty_page(self, mocker):
+        """
+        Given:
+          - Searching indicators from page 18
+          - Total available indicators from page 10-16 == 7
+          - No available indicators from page 17
+        When:
+          - Searching indicators using iterator (search_after is not supported)
+        Then:
+          - Get 0 indicators
+          - page doesn't advance (set to 18)
+        """
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
+
+        search_indicators = IndicatorsSearcher(page=18)
+        results = []
+        for res in search_indicators:
+            results.append(res)
+        assert len(results) == 0
+        assert search_indicators.page == 19
+
+    def test_iterator__research_flow(self, mocker):
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_indicators_search_after)
+        # fetch first 3
+        search_indicators = IndicatorsSearcher(limit=3)
+        search_indicators._can_use_search_after = True
+        results = []
+        for res in search_indicators:
+            results.append(res)
+        assert len(results) == 3
+        # fetch 1 more (limit set to 2, but only 1 available)
+        search_indicators.limit += 2
+        results = []
+        for res in search_indicators:
+            results.append(res)
+        assert len(results) == 1
 
 
 class TestAutoFocusKeyRetriever:
@@ -4864,3 +5946,407 @@ def test_smart_get_dict():
     assert s.get('t1', 2) == 2
     assert s.get('t2') == 1
     assert s.get('t3') is None
+
+
+class TestCustomIndicator:
+    def test_custom_indicator_init_success(self):
+        """
+        Given: Data needed for creating a custom indicator
+        When: Data is valid
+        Then: Create a valid custom indicator
+        """
+        from CommonServerPython import Common, DBotScoreType
+        dbot_score = Common.DBotScore(
+            'test',
+            DBotScoreType.CUSTOM,
+            'VirusTotal',
+            score=Common.DBotScore.BAD,
+            malicious_description='malicious!'
+        )
+        indicator = Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+        assert indicator.CONTEXT_PATH == 'prefix(val.value && val.value == obj.value)'
+        assert indicator.param == 'value'
+        assert indicator.value == 'test_value'
+
+    def test_custom_indicator_init_existing_type(self):
+        """
+        Given: Data needed for creating a custom indicator
+        When: Type already exists
+        Then: raise a Value Error
+        """
+        with pytest.raises(ValueError):
+            from CommonServerPython import Common, DBotScoreType
+            dbot_score = Common.DBotScore(
+                'test',
+                DBotScoreType.CUSTOM,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+            Common.CustomIndicator('ip', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+
+    def test_custom_indicator_init_no_prefix(self):
+        """
+        Given: Data needed for Custom indicator
+        When: Prefix provided is None
+        Then: Raise ValueError
+        """
+        with pytest.raises(ValueError):
+            from CommonServerPython import Common, DBotScoreType
+            dbot_score = Common.DBotScore(
+                'test',
+                DBotScoreType.CUSTOM,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+            Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, None)
+
+    def test_custom_indicator_init_no_dbot_score(self):
+        """
+        Given: Data needed for Custom indicator
+        When: Dbotscore is not a DBotScore object
+        Then: Raise ValueError
+        """
+        with pytest.raises(ValueError):
+            from CommonServerPython import Common
+            dbot_score = ''
+            Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+
+    def test_custom_indicator_to_context(self):
+        """
+        Given: Data needed for Custom indicator
+        When: there's a call to to_context
+        Then: create a valid context
+        """
+        from CommonServerPython import Common, DBotScoreType
+        dbot_score = Common.DBotScore(
+            'test',
+            DBotScoreType.CUSTOM,
+            'VirusTotal',
+            score=Common.DBotScore.BAD,
+            malicious_description='malicious!'
+        )
+        indicator = Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+        context = indicator.to_context()
+        assert context['DBotScore(val.Indicator &&'
+                       ' val.Indicator == obj.Indicator &&'
+                       ' val.Vendor == obj.Vendor && val.Type == obj.Type)']['Indicator'] == 'test'
+        assert context['prefix(val.value && val.value == obj.value)']['value'] == 'test_value'
+        assert context['prefix(val.value && val.value == obj.value)']['param'] == 'value'
+
+    def test_custom_indicator_no_params(self):
+        """
+        Given: Data needed for creating a custom indicator
+        When: params are None
+        Then: Raise an error
+        """
+        with pytest.raises(TypeError):
+            from CommonServerPython import Common, DBotScoreType
+            dbot_score = Common.DBotScore(
+                'test',
+                DBotScoreType.CUSTOM,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+            Common.CustomIndicator('test', 'test_value', dbot_score, None, 'prefix')
+
+    def test_custom_indicator_no_value(self):
+        """
+        Given: Data needed for creating a custom indicator
+        When: value is None
+        Then: Raise an error
+        """
+        with pytest.raises(ValueError):
+            from CommonServerPython import Common, DBotScoreType
+            dbot_score = Common.DBotScore(
+                'test',
+                DBotScoreType.CUSTOM,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+            Common.CustomIndicator('test', None, dbot_score, {'param': 'value'}, 'prefix')
+
+
+@pytest.mark.parametrize(
+    "demistoUrls,expected_result",
+    [({'server': 'https://localhost:8443:/acc_test_tenant'}, 'acc_test_tenant'),
+     ({'server': 'https://localhost:8443'}, '')])
+def test_get_tenant_name(mocker, demistoUrls, expected_result):
+    """
+        Given
+        - demistoUrls dictionary
+        When
+        - Running on multi tenant mode
+        - Running on single tenant mode
+        Then
+        - Return tenant account name if is multi tenant
+    """
+    from CommonServerPython import get_tenant_account_name
+    mocker.patch.object(demisto, 'demistoUrls', return_value=demistoUrls)
+
+    result = get_tenant_account_name()
+    assert result == expected_result
+
+
+IOCS = {'iocs': [{'id': '2323', 'value': 'google.com'},
+                 {'id': '5942', 'value': '1.1.1.1'}]}
+
+
+def test_indicators_value_to_clickable(mocker):
+    from CommonServerPython import indicators_value_to_clickable
+    from CommonServerPython import IndicatorsSearcher
+    mocker.patch.object(IndicatorsSearcher, '__next__', side_effect=[IOCS, StopIteration])
+    result = indicators_value_to_clickable(['1.1.1.1', 'google.com'])
+    assert result.get('1.1.1.1') == '[1.1.1.1](#/indicator/5942)'
+    assert result.get('google.com') == '[google.com](#/indicator/2323)'
+
+
+def test_indicators_value_to_clickable_invalid(mocker):
+    from CommonServerPython import indicators_value_to_clickable
+    from CommonServerPython import IndicatorsSearcher
+    mocker.patch.object(IndicatorsSearcher, '__next__', side_effect=[StopIteration])
+    result = indicators_value_to_clickable(['8.8.8.8', 'abc.com'])
+    assert not result
+    result = indicators_value_to_clickable(None)
+    assert not result
+
+
+def test_arg_to_number():
+    """
+    Test if arg_to_number handles unicode object without failing.
+    """
+    from CommonServerPython import arg_to_number
+    result = arg_to_number(u'1')
+    assert result == 1
+
+
+def test_get_message_threads_dump():
+    from CommonServerPython import get_message_threads_dump
+    result = str(get_message_threads_dump(None, None))
+    assert ' Start Threads Dump ' in result
+    assert ' End Threads Dump ' in result
+    assert 'CommonServerPython.py' in result
+    assert 'get_message_threads_dump' in result
+
+
+def test_get_message_memory_dump():
+    from CommonServerPython import get_message_memory_dump
+    result = str(get_message_memory_dump(None, None))
+    assert ' Start Variables Dump ' in result
+    assert ' Start Local Vars ' in result
+    assert ' End Local Vars ' in result
+    assert ' Start Top ' in result
+    assert ' Globals by Size ' in result
+    assert ' End Top ' in result
+    assert ' End Variables Dump ' in result
+
+
+def test_shorten_string_for_printing():
+    from CommonServerPython import shorten_string_for_printing
+    assert shorten_string_for_printing(None, None) is None
+    assert shorten_string_for_printing('1', 9) == '1'
+    assert shorten_string_for_printing('123456789', 9) == '123456789'
+    assert shorten_string_for_printing('1234567890', 9) == '123...890'
+    assert shorten_string_for_printing('12345678901', 9) == '123...901'
+    assert shorten_string_for_printing('123456789012', 9) == '123...012'
+
+    assert shorten_string_for_printing('1234567890', 10) == '1234567890'
+    assert shorten_string_for_printing('12345678901', 10) == '1234...901'
+    assert shorten_string_for_printing('123456789012', 10) == '1234...012'
+
+
+def test_get_size_of_object():
+    from CommonServerPython import get_size_of_object
+
+    class Object(object):
+        pass
+
+    level_3 = Object()
+    level_3.key3 = 'val3'
+
+    level_2 = Object()
+    level_2.key2 = 'val2'
+    level_2.child = level_3
+
+    level_1 = Object()
+    level_1.key1 = 'val1'
+    level_1.child = level_2
+
+    level_1_sys_size = sys.getsizeof(level_1)
+    level_1_deep_size = get_size_of_object(level_1)
+
+    # 3 levels, so shoulod be at least 3 times as large
+    assert level_1_deep_size > 3 * level_1_sys_size
+
+
+class TestSetAndGetLastMirrorRun:
+
+    def test_get_last_mirror_run_in_6_6(self, mocker):
+        """
+        Given: 6.6.0 environment and getLastMirrorRun returns results
+        When: Execute mirroring run
+        Then: Returning demisto.getLastRun object
+        """
+        import demistomock as demisto
+        from CommonServerPython import get_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.6.0"})
+        mocker.patch.object(demisto, 'getLastMirrorRun', return_value={"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
+        result = get_last_mirror_run()
+        assert result == {"lastMirrorRun": "2018-10-24T14:13:20+00:00"}
+
+    def test_get_last_mirror_run_in_6_6_when_return_empty_results(self, mocker):
+        """
+        Given: 6.6.0 environment and getLastMirrorRun returns empty results
+        When: Execute mirroring run
+        Then: Returning demisto.getLastRun empty object
+        """
+        import demistomock as demisto
+        from CommonServerPython import get_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.6.0"})
+        mocker.patch.object(demisto, 'getLastMirrorRun', return_value={})
+        result = get_last_mirror_run()
+        assert result == {}
+
+    def test_get_last_run_in_6_5(self, mocker):
+        """
+        Given: 6.5.0 environment and getLastMirrorRun returns results
+        When: Execute mirroring run
+        Then: Get a string which represent we can't use this function
+        """
+        import demistomock as demisto
+        from CommonServerPython import get_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
+        get_last_run = mocker.patch.object(demisto, 'getLastMirrorRun')
+        with raises(DemistoException, match='You cannot use getLastMirrorRun as your version is below 6.6.0'):
+            get_last_mirror_run()
+            assert get_last_run.called is False
+
+    def test_set_mirror_last_run_in_6_6(self, mocker):
+        """
+        Given: 6.6.0 environment
+        When: Execute mirroring run
+        Then: Using demisto.setLastMirrorRun to save results
+        """
+        import demistomock as demisto
+        from CommonServerPython import set_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.6.0"})
+        set_last_run = mocker.patch.object(demisto, 'setLastMirrorRun', return_value={})
+        set_last_mirror_run({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
+        set_last_run.assert_called_with({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
+
+    def test_set_mirror_last_run_in_6_5(self, mocker):
+        """
+        Given: 6.5.0 environment
+        When: Execute mirroring run
+        Then: Don't use demisto.setLastMirrorRun
+        """
+        import demistomock as demisto
+        from CommonServerPython import set_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
+        set_last_run = mocker.patch.object(demisto, 'setLastMirrorRun', return_value={})
+        with raises(DemistoException, match='You cannot use setLastMirrorRun as your version is below 6.6.0'):
+            set_last_mirror_run({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
+            assert set_last_run.called is False
+
+
+class TestTracebackLineNumberAdgustment:
+    @staticmethod
+    def test_module_line_number_mapping():
+        from CommonServerPython import _MODULES_LINE_MAPPING
+        assert _MODULES_LINE_MAPPING['CommonServerPython']['start'] == 0
+
+    @staticmethod
+    def test_register_module_line_sanity():
+        """
+        Given:
+            A module with a start and an end boundries.
+        When:
+            registering a module.
+        Then:
+            * module exists in the mapping with valid boundries.
+        """
+        import CommonServerPython
+        CommonServerPython.register_module_line('Sanity', 'start', 5)
+        CommonServerPython.register_module_line('Sanity', 'end', 50)
+        assert CommonServerPython._MODULES_LINE_MAPPING['Sanity'] == {
+            'start': 5,
+            'start_wrapper': 5,
+            'end': 50,
+            'end_wrapper': 50,
+        }
+
+    @staticmethod
+    def test_register_module_line_single_boundry():
+        """
+        Given:
+            * A module with only an end boundry.
+            * A module with only a start boundry.
+        When:
+            registering a module.
+        Then:
+            * both modules exists in the mapping.
+            * the missing boundry is 0 for start and infinity for end.
+        """
+        import CommonServerPython
+        CommonServerPython.register_module_line('NoStart', 'end', 4)
+        CommonServerPython.register_module_line('NoEnd', 'start', 100)
+
+        assert CommonServerPython._MODULES_LINE_MAPPING['NoStart'] == {
+            'start': 0,
+            'start_wrapper': 0,
+            'end': 4,
+            'end_wrapper': 4,
+        }
+        assert CommonServerPython._MODULES_LINE_MAPPING['NoEnd'] == {
+            'start': 100,
+            'start_wrapper': 100,
+            'end': float('inf'),
+            'end_wrapper': float('inf'),
+        }
+
+    @staticmethod
+    def test_register_module_line_invalid_inputs():
+        """
+        Given:
+            * invalid start_end flag.
+            * invalid line number.
+        When:
+            registering a module.
+        Then:
+            function exits quietly
+        """
+        import CommonServerPython
+        CommonServerPython.register_module_line('Cactus', 'statr', 5)
+        CommonServerPython.register_module_line('Cactus', 'start', '5')
+        CommonServerPython.register_module_line('Cactus', 'statr', -5)
+        CommonServerPython.register_module_line('Cactus', 'statr', 0, -1)
+
+
+    @staticmethod
+    def test_fix_traceback_line_numbers():
+        import CommonServerPython
+        CommonServerPython._MODULES_LINE_MAPPING = {
+            'CommonServerPython': {'start': 200, 'end': 865, 'end_wrapper': 900},
+            'TestTracebackLines': {'start': 901, 'end': float('inf'), 'start_wrapper': 901},
+            'TestingApiModule': {'start': 1004, 'end': 1032, 'start_wrapper': 1001, 'end_wrapper': 1033},
+        }
+        traceback = '''Traceback (most recent call last):
+  File "<string>", line 1043, in <module>
+  File "<string>", line 986, in main
+  File "<string>", line 600, in func_wrapper
+  File "<string>", line 1031, in api_module_call_script
+  File "<string>", line 927, in call_func
+Exception: WTF?!!!'''
+        expected_traceback = '''Traceback (most recent call last):
+  File "<TestTracebackLines>", line 110, in <module>
+  File "<TestTracebackLines>", line 85, in main
+  File "<CommonServerPython>", line 400, in func_wrapper
+  File "<TestingApiModule>", line 27, in api_module_call_script
+  File "<TestTracebackLines>", line 26, in call_func
+Exception: WTF?!!!'''
+        result = CommonServerPython.fix_traceback_line_numbers(traceback)
+        assert result == expected_traceback
+

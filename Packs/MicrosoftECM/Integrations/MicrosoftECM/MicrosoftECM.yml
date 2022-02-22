@@ -1161,6 +1161,6 @@ script:
       description: The unique identifier for this relationship.
       type: number
     description: Gets the relationships between a device and its primary users.
-  dockerimage: demisto/powershell-ubuntu:7.0.3.12001
+  dockerimage: demisto/powershell-ubuntu:7.1.3.22304
   runonce: false
 fromversion: 5.5.0

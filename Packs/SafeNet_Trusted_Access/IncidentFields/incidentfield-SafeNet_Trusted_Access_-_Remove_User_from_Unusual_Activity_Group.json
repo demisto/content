@@ -1,0 +1,35 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SafeNet Trusted Access Push Reject Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "safenettrustedaccessremoveuserfromunusualactivitygroup",
+    "closeForm": true,
+    "content": true,
+    "description": "If no option is selected, you need to remove user from the group manually.",
+    "editForm": false,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_safenettrustedaccessremoveuserfromunusualactivitygroup",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "SafeNet Trusted Access - Remove User from Unusual Activity Group",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "script": "STA-PostProcessing",
+    "selectValues": [
+        "Yes",
+        "No"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -403,7 +403,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               simple: Shodan.IP.ISP

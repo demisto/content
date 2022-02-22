@@ -10,12 +10,45 @@
     "expiration": 0,
     "file": false,
     "fileHashesPriority": null,
-    "formatScript": "",
+    "formatScript": "ExtractAttackPattern",
     "id": "Attack Pattern",
     "locked": false,
-    "manualMapping": {},
+    "manualMapping": {
+        "description": {
+            "simple": "AttackPattern.Description",
+            "complex": null
+        },
+        "firstseenbysource": {
+            "simple": "AttackPattern.FirstSeenBySource",
+            "complex": null
+        },
+        "killchainphases": {
+            "simple": "AttackPattern.KillChainPhases",
+            "complex": null
+        },
+        "mitreid": {
+            "simple": "AttackPattern.MITREID",
+            "complex": null
+        },
+        "operatingsystemrefs": {
+            "simple": "AttackPattern.OperatingSystemRefs",
+            "complex": null
+        },
+        "publications": {
+            "simple": "AttackPattern.Publications",
+            "complex": null
+        },
+        "stixid": {
+            "simple": "AttackPattern.STIXID",
+            "complex": null
+        },
+        "tags": {
+            "simple": "AttackPattern.Tags",
+            "complex": null
+        }
+    },
     "mergeContext": false,
-    "regex": "",
+    "regex": "(T\\d{3,4}\\.\\d{3}|T\\d{3,4})",
     "reputationCommand": "",
     "reputationScriptName": "",
     "sortValues": null,

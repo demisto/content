@@ -1,0 +1,24 @@
+[
+  {
+    "id": "0c7de6b902df7d6263645d0ac1b0fbe6b9bb50dd",
+    "domainName": "foo.bar",
+    "resolvedIp": "0000:0000:0000:0000:0000:0000:0000:0001",
+    "requestOriginIp": "1.1.1.1",
+    "nameserverIp": "2.2.2.2",
+    "nodeLabel": "Label",
+    "requestTime": 1622469653,
+    "byteCount": 0,
+    "pktCount": 0
+  },
+  {
+    "id": "01d670de2814e14fde852f344e5193bfc7374d17",
+    "domainName": "foo.bar",
+    "resolvedIp": "3.3.3.3",
+    "requestOriginIp": "4.4.4.4",
+    "nameserverIp": "2.2.2.2",
+    "nodeLabel": "Label",
+    "requestTime": 1622469653,
+    "byteCount": 0,
+    "pktCount": 0
+  }
+]

@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SafeNet Trusted Access Push Reject Alert",
+        "SafeNet Trusted Access Account Lockout Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "safenettrustedaccessusername",
+    "closeForm": false,
+    "content": true,
+    "description": "Username of the user.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_safenettrustedaccessusername",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "SafeNet Trusted Access - Username",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "marketplaces": [
+       "xsoar"
+    ]
+}

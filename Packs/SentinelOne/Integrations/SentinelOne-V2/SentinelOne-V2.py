@@ -111,7 +111,7 @@ class Client(BaseClient):
 
     def get_threats_request(self, content_hash=None, mitigation_status=None, created_before=None, created_after=None,
                             created_until=None, created_from=None, resolved='false', display_name=None, query=None,
-                            threat_ids=None, limit=20, classifications=None):
+                            threat_ids=None, limit=20, classifications=None, site_ids=None, rank=None):
         keys_to_ignore = ['displayName__like' if IS_VERSION_2_1 else 'displayName']
 
         params = assign_params(
@@ -128,6 +128,8 @@ class Client(BaseClient):
             ids=argToList(threat_ids),
             limit=int(limit),
             classifications=argToList(classifications),
+            siteIds=site_ids,
+            rank=int(rank) if rank else None,
             keys_to_ignore=keys_to_ignore,
         )
         response = self._http_request(method='GET', url_suffix='threats', params=params)
@@ -216,9 +218,15 @@ class Client(BaseClient):
         response = self._http_request(method='GET', url_suffix=endpoint_url)
         return response.get('data', {})
 
-    def reactivate_site_request(self, site_id):
+    def reactivate_site_request(self, site_id, expiration, unlimited):
         endpoint_url = f'sites/{site_id}/reactivate'
-        response = self._http_request(method='PUT', url_suffix=endpoint_url)
+        payload = {
+            "data": {
+                "expiration": expiration,
+                "unlimited": unlimited
+            }
+        }
+        response = self._http_request(method='PUT', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
     def get_threat_summary_request(self, site_ids=None, group_ids=None):
@@ -757,8 +765,8 @@ def create_white_item_command(client: Client, args: dict):
     exclusion_mode = args.get('exclusion_mode')
     path_exclusion_type = args.get('path_exclusion_type')
 
-    if not (group_ids or site_ids):
-        raise DemistoException("You must provide either group_ids or site_ids.")
+    if not group_ids or not site_ids:
+        raise DemistoException("You must provide group_ids and site_ids.")
 
     # Make request and get raw response
     new_item = client.create_exclusion_item_request(exclusion_type, exclusion_value, os_type, description,
@@ -889,9 +897,26 @@ def reactivate_site_command(client: Client, args: dict) -> CommandResults:
 
     # Get arguments
     site_id = args.get('site_id')
+    unlimited = args.get('unlimited')
+    expiration = args.get('expiration')
+
+    if unlimited is not None:
+        unlimited = argToBoolean(unlimited)
+
+    # if unlimited and expiration are not passed then error out
+    if unlimited is None and expiration is None:
+        raise DemistoException("You must provide unlimited argument or expiration argument as required.")
+
+    # if unlimited is not passed but expiration is then set unlimited to False
+    if unlimited is None:
+        unlimited = False
+
+    # if unlimited is False and no expiration then error out.
+    if unlimited is False and expiration is None:
+        raise DemistoException("You must provide expiration when unlimited is false")
 
     # Make request and get raw response
-    site = client.reactivate_site_request(site_id)
+    site = client.reactivate_site_request(site_id, expiration, unlimited)
 
     # Parse response into context & content entries
     if site:
@@ -956,7 +981,7 @@ def list_agents_command(client: Client, args: dict) -> CommandResults:
         active_threats=args.get('min_active_threats'),
         computer_name=args.get('computer_name'),
         scan_status=args.get('scan_status'),
-        os_type=args.get('os_type'),
+        osTypes=args.get('os_type'),
         created_at=args.get('created_at'),
         limit=int(args.get('limit', 10)),
     )
@@ -1215,7 +1240,7 @@ def get_processes(client: Client, args: dict) -> CommandResults:
         raw_response=processes)
 
 
-def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_threat_rank: int):
+def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_threat_rank: int, fetch_site_ids: str):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
 
@@ -1227,7 +1252,7 @@ def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_th
     incidents = []
     last_fetch_date_string = timestamp_to_datestring(last_fetch, '%Y-%m-%dT%H:%M:%S.%fZ')
 
-    threats = client.get_threats_request(limit=fetch_limit, created_after=last_fetch_date_string)
+    threats = client.get_threats_request(limit=fetch_limit, created_after=last_fetch_date_string, site_ids=fetch_site_ids)
     for threat in threats:
         rank = threat.get('rank')
         try:
@@ -1264,7 +1289,9 @@ def main():
     global IS_VERSION_2_1
 
     params = demisto.params()
-    token = params.get('token')
+    token = params.get('token') or params.get('credentials', {}).get('password')
+    if not token:
+        raise ValueError('The API Token parameter is required.')
     api_version = params.get('api_version', '2.1')
     server = params.get('url').rstrip('/')
     base_url = urljoin(server, f'/web/api/v{api_version}/')
@@ -1276,6 +1303,7 @@ def main():
     first_fetch_time = params.get('fetch_time', '3 days')
     fetch_threat_rank = int(params.get('fetch_threat_rank', 0))
     fetch_limit = int(params.get('fetch_limit', 10))
+    fetch_site_ids = params.get('fetch_site_ids', None)
 
     headers = {
         'Authorization': 'ApiToken ' + token if token else 'ApiToken',
@@ -1333,7 +1361,7 @@ def main():
         if command == 'test-module':
             return_results(test_module(client, params.get('isFetch'), first_fetch_time))
         if command == 'fetch-incidents':
-            fetch_incidents(client, fetch_limit, first_fetch_time, fetch_threat_rank)
+            fetch_incidents(client, fetch_limit, first_fetch_time, fetch_threat_rank, fetch_site_ids)
 
         else:
             if command in commands['common']:

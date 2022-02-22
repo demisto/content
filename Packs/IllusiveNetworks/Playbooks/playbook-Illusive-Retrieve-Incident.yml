@@ -74,11 +74,11 @@ tasks:
     nexttasks:
       '#default#':
       - '5'
-      yes:
+      'yes':
       - '3'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isEqualString
           left:

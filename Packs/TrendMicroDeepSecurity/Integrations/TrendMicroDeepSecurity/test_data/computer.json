@@ -1,0 +1,13 @@
+{
+  "hostName": "TestComputer",
+  "displayName": "Test Computer",
+  "description": "Test Computer for XSOAR",
+  "lastIPUsed": "",
+  "platform": "",
+  "groupID": 0,
+  "policyID": 1,
+  "relayListID": 0,
+  "agentVersion": "0.0.0.0",
+  "hostGUID": "52DA6A2B-A3AD-4DA7-911C-3C8915E26BA5",
+  "ID": 3
+}

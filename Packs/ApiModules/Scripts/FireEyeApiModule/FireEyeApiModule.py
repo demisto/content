@@ -5,11 +5,16 @@ requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 FE_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
+OK_CODES = (200, 206)
 
 
 class FireEyeClient(BaseClient):
-    def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
-        super().__init__(base_url=base_url, auth=(username, password), verify=verify, proxy=proxy)
+    def __init__(self, base_url: str,
+                 username: str, password: str,
+                 verify: bool, proxy: bool,
+                 ok_codes: tuple = OK_CODES):
+
+        super().__init__(base_url=base_url, auth=(username, password), verify=verify, proxy=proxy, ok_codes=ok_codes)
         self._headers = {
             'X-FeApi-Token': self._get_token(),
             'Accept': 'application/json',
@@ -30,7 +35,7 @@ class FireEyeClient(BaseClient):
                 timeout=timeout
             )
             # Handle error responses gracefully
-            if res.status_code != 200:
+            if not self._is_status_code_valid(res):
                 err_msg = f'Error in API call {res.status_code} - {res.reason}'
                 try:
                     # Try to parse json error response
@@ -109,10 +114,11 @@ class FireEyeClient(BaseClient):
 
     @logger
     def _generate_token(self) -> str:
-        resp = self._http_request(method='POST', url_suffix='auth/login', resp_type='response')
-        if resp.status_code != 200:
+        try:
+            resp = self._http_request(method='POST', url_suffix='auth/login', resp_type='response')
+        except DemistoException as er:
             raise DemistoException(
-                f'Token request failed with status code {resp.status_code}. message: {str(resp)}')
+                f'Token request failed. message: {str(er)}')
         if 'X-FeApi-Token' not in resp.headers:
             raise DemistoException(
                 f'Token request failed. API token is missing. message: {str(resp)}')
@@ -120,7 +126,7 @@ class FireEyeClient(BaseClient):
 
         integration_context = get_integration_context()
         integration_context.update({'token': token})
-        time_buffer = 10  # minutes by which to lengthen the validity period
+        time_buffer = 600  # 600 seconds (10 minutes) by which to lengthen the validity period
         integration_context.update({'valid_until': datetime.timestamp(datetime.now() + timedelta(seconds=time_buffer))})
         set_integration_context(integration_context)
 

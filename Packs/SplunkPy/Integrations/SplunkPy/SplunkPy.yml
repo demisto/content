@@ -19,14 +19,15 @@ configuration:
 - defaultvalue: search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name)
     | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency`
     | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description)
-    | eval security_domain=if(isnull(security_domain),source,security_domain)
-  display: Fetch notable events ES query
+    | eval security_domain=if(isnull(security_domain),source,security_domain) | expandtoken
+  display: Fetch events query
   name: fetchQuery
   required: false
   type: 0
-  additionalinfo: The query for the notable events enrichment (defined by default).
-    If you decide to edit this, make sure to provide a query that uses the \`notable\`
-    macro. Use the new default query as an example.
+  additionalinfo: The Splunk search query by which to fetch events. The default query
+    fetches ES notable events. You can edit this query to fetch other types of events.
+    Note, that to fetch ES noatable events, make sure to include the \`notable\` macro
+    in your query.
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
   name: fetch_limit
@@ -69,18 +70,6 @@ configuration:
     months, 1 year)
   hidden: false
   name: fetch_time
-  required: false
-  type: 0
-- defaultvalue: earliest_time
-  display: Earliest time to fetch (The name of the Splunk field whose value defines
-    the query's earliest time to fetch.)
-  name: earliest_fetch_time_fieldname
-  required: false
-  type: 0
-- defaultvalue: latest_time
-  display: Latest time to fetch (The name of the Splunk field whose value defines
-    the query's latest time to fetch.)
-  name: latest_fetch_time_fieldname
   required: false
   type: 0
 - display: Extract Fields - CSV fields that will be parsed out of _raw notable events
@@ -185,6 +174,25 @@ configuration:
   additionalinfo: The limit of how many events to retrieve per each one of the enrichment
     types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not
     recommended).
+- display: 'Advanced: Extensive logging (for debugging purposes) - Please do not use this option unless advised otherwise.'
+  name: extensive_logs
+  type: 8
+  required: false
+- display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
+  name: occurrence_look_behind
+  defaultvalue: "15"
+  type: 0
+  required: false
+  additionalinfo: The fetch time range will be at least of the size specified here.
+    This will support events that have a gap between their occurrence time and their
+    index time in Splunk. To decide how long the backwards window should be, you need to analyze what is the average
+    time between them both on your splunk envorinment.
+- display: 'Advanced: Unique ID fields'
+  name: unique_id_fields
+  type: 0
+  required: false
+  additionalinfo: Use this parameter to specify a list of comma separated fields, which
+    together are a unique identifier for the events you wish to fetch.
 description: Runs queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
@@ -275,15 +283,40 @@ script:
       name: app
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      isArray: false
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '30'
+    - default: false
+      description: The job sid.
+      isArray: false
+      name: sid
+      required: false
+      secret: false
     deprecated: false
     description: Searches Splunk for events.
     execution: false
     name: splunk-search
+    polling: true
     outputs:
     - contextPath: Splunk.Result
       description: The results of the Splunk search. The results are a JSON array,
         in which each item is a Splunk event.
       type: Unknown
+    - contextPath: Splunk.JobStatus
+      description: The search status.
+      type: String
   - arguments:
     - default: false
       description: Splunk index in which to push data. Run the splunk-get-indexes
@@ -774,7 +807,7 @@ script:
   - name: splunk-reset-enriching-fetch-mechanism
     arguments: []
     description: Resets the enrichment mechanism of fetched notables.
-  dockerimage: demisto/splunksdk:1.0.0.19034
+  dockerimage: demisto/splunksdk:1.0.0.24033
   feed: false
   isfetch: true
   longRunning: false
@@ -787,9 +820,16 @@ script:
   subtype: python2
   type: python
 tests:
-- SplunkPy-Test-V2
-- SplunkPy KV commands
+- SplunkPySearch_Test_default_handler
+- SplunkPySearch_Test_requests_handler
+- SplunkPy-Test-V2_default_handler
+- SplunkPy-Test-V2_requests_handler
+- Splunk-Test_default_handler
+- Splunk-Test_requests_handler
+- SplunkPy_KV_commands_default_handler
+- SplunkPy_KV_commands_requests_handler
 - SplunkPy parse-raw - Test
 defaultclassifier: SplunkPy
 defaultmapperin: SplunkPy-mapper
+defaultmapperout: Splunk - Notable Generic Outgoing Mapper
 fromversion: 5.0.0

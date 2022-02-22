@@ -8,6 +8,11 @@ import traceback
 ''' STANDALONE FUNCTION '''
 
 
+def remove_id_and_version_from_entry(entry):
+    entry.pop('ID', None)
+    entry.pop('Version', None)
+
+
 def copy_notes_to_target_incident(args: Dict[str, Any]) -> CommandResults:
 
     target_incident = args.get('target_incident', None)
@@ -24,6 +29,7 @@ def copy_notes_to_target_incident(args: Dict[str, Any]) -> CommandResults:
     if isinstance(entries, list) and len(entries) > 0:
         for entry in entries:
             if entry.get('Note') is True:
+                remove_id_and_version_from_entry(entry)
                 note_entries.append(entry)
 
         if len(note_entries) > 0:

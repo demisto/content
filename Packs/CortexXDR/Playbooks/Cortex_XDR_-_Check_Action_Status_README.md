@@ -32,7 +32,3 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | PaloAltoNetworksXDR.GetActionStatus.endpoint_id | Endpoint ID. | string |
 | PaloAltoNetworksXDR.GetActionStatus.status | Status of specific endpoint ID. | string |
 | PaloAltoNetworksXDR.GetActionStatus.action_id | The action ID that was the input. | number |
-
-## Playbook Image
----
-![Cortex XDR - Check Action Status](Insert the link to your image here)

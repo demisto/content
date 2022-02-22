@@ -1,0 +1,32 @@
+{
+    "name": "FlashpointFeed",
+    "description": "Ingest indicator feeds from Flashpoint.",
+    "support": "partner",
+    "currentVersion": "1.0.1",
+    "author": "Flashpoint",
+    "url": "https://www.flashpoint-intel.com/",
+    "email": "demisto_support@flashpoint-intel.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence",
+        "Relationship",
+        "TIM"
+    ],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "Flashpoint",
+        "Indicators",
+        "IoC",
+        "Feed"
+    ],
+    "githubUser": [],
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

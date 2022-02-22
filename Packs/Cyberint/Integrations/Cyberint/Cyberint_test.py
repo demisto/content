@@ -87,8 +87,8 @@ def test_fetch_incidents(requests_mock) -> None:
     requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-3/attachments/X', json=mock_response)
     requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-4/attachments/X', json=mock_response)
 
-    pdf_content_mock = open('test_data/expert_analysis_mock.pdf', 'rb')
-    requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-4/analysis_report', content=pdf_content_mock.read())
+    with open('test_data/expert_analysis_mock.pdf', 'rb') as pdf_content_mock:
+        requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-4/analysis_report', content=pdf_content_mock.read())
 
     mock_response = json.loads(load_mock_response('list_alerts.json'))
     requests_mock.post(f'{BASE_URL}/api/v1/alerts', json=mock_response)
@@ -118,8 +118,8 @@ def test_fetch_incidents_no_last_fetch(requests_mock):
     mock_response = load_mock_response('csv_example.csv')
     requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-3/attachments/X', json=mock_response)
 
-    pdf_content_mock = open('test_data/expert_analysis_mock.pdf', 'rb')
-    requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-4/analysis_report', content=pdf_content_mock.read())
+    with open('test_data/expert_analysis_mock.pdf', 'rb') as pdf_content_mock:
+        requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-4/analysis_report', content=pdf_content_mock.read())
     requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-4/attachments/X', json=mock_response)
 
     mock_response = json.loads(load_mock_response('list_alerts.json'))
@@ -222,8 +222,8 @@ def test_cyberint_alerts_analysis_report_command(requests_mock):
     """
     from Cyberint import Client, cyberint_alerts_get_analysis_report_command
 
-    pdf_content_mock = open('test_data/expert_analysis_mock.pdf', 'rb')
-    requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-4/analysis_report', content=pdf_content_mock.read())
+    with open('test_data/expert_analysis_mock.pdf', 'rb') as pdf_content_mock:
+        requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-4/analysis_report', content=pdf_content_mock.read())
 
     client = Client(base_url=BASE_URL, verify_ssl=False, access_token='xxx', proxy=False)
     result = cyberint_alerts_get_analysis_report_command(client, "ARG-4", "expert_analysis_mock.pdf")
@@ -246,8 +246,8 @@ def test_cyberint_alerts_get_attachment_command(requests_mock):
      """
     from Cyberint import Client, cyberint_alerts_get_attachment_command
 
-    png_content_mock = open('test_data/attachment_file_mock.png', 'rb')
-    requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-3/attachments/X', content=png_content_mock.read())
+    with open('test_data/attachment_file_mock.png', 'rb') as png_content_mock:
+        requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-3/attachments/X', content=png_content_mock.read())
 
     client = Client(base_url=BASE_URL, verify_ssl=False, access_token='xxx', proxy=False)
     result = cyberint_alerts_get_attachment_command(client, "ARG-3", "X", "attachment_file_mock.png")

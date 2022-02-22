@@ -1,8 +1,6 @@
-In this tutorial, learn how to integrate GRA with Cortex XSOAR. You can check the Design Document of this integration [here](https://docs.google.com/document/d/1wETtBEKg37PHNU8tYeB56M1LE314ux086z3HFeF_cX0).
+[Gurucul Risk Analytics (GRA)](https://gurucul.com/gurucul-risk-analytics-gra) is a data science backed cloud native platform that predicts, detects and prevents breaches. It ingests and analyzes massive amounts of data from the network, IT systems, cloud platforms, EDR, applications, IoT, HR and much more to give you a comprehensive contextual view of user and entity behaviors This Integration facilitates retrieval of High Risk Entities identified by GRA by creating a case for each entity within GRA. These high risk entities are fetched in Cortex XSOAR and a corresponding incident is created for each entity in Cortex XSOAR. As a part of this integration, workflows can be configured at Cortex XSOAR based on different commands provided by GRA. These will define the actions to be taken on a particular high risk entity based on the Risk Score.
 
 Please make sure you look at the integration source code and comments.
-
-This integration was built to interact with the sample SOAR Gurucul API To check the API source code go to [GitHub](https://github.com/fvigo/soarGurucul).
 
 ## Configure Gurucul on Cortex XSOAR
 
@@ -12,19 +10,16 @@ This integration was built to interact with the sample SOAR Gurucul API To check
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://soar.monstersofhack.com\) | True |
-| isFetch | Fetch incidents | False |
-| incidentType | Incident type | False |
-| max_fetch | Maximum number of incidents per fetch | False |
+| url | Server URL \(e.g. `https://soar.monstersofhack.com`\) | True |
 | apikey | API Key | True |
-| threshold_ip | Score threshold for ip reputation command \(0\-100\) | False |
-| threshold_domain | Score threshold for domain reputation command \(0\-100\) | False |
-| alert_status | Fetch alerts with status \(ACTIVE, CLOSED\) | False |
-| alert_type | Fetch alerts with type | False |
-| min_severity | Minimum severity of alerts to fetch | True |
-| first_fetch | First fetch time | False |
+| isFetch | Fetch incidents | False |
+| Classifier| Classifier for incident|False|
+| IncidentType | Incident type | False |
+| Mapper | Mapping incoming data|False|
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
+| first_fetch | First fetch time | False |
+| max_fetch | Maximum number of incidents per fetch | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -798,7 +793,7 @@ get details of the user.
 | Gra.Cases.ownerName | String | Owner Name. | 
 | Gra.Cases.riskDate | Date | Risk Risk. | 
 | Gra.Cases.status | String | Case Status . | 
-
+| Gra.Cases.anomalies | String | Anomalies . | 
 
 #### Command Example
 ```!gra-cases status="OPEN" page=1 max=25```
@@ -1022,6 +1017,62 @@ Retrieve detailed anomaly summary of specified anomaly name.
     "anomaly6": 1
   },
   "entitiesFlagged": 0
+}
+```
+
+#### Human Readable Output
+
+
+### gra-analytical-features-entity-value
+***
+Retrieve analytical features for specified entity value and model name.
+
+#### Base Command
+
+`gra-analytical-features-entity-value`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entityValue | Entity Value | Required | 
+| modelName | Model Name | Required | 
+| fromDate | From Date ( yyyy-MM-dd ) | Optional | 
+| toDate | To Date ( yyyy-MM-dd ) | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Analytical.Features.Entity.Value.analyticalFeatures | String | Analytical Features  | 
+| Gra.Analytical.Features.Entity.Value.analyticalFeatureValues | String | Analytical Feature Values | 
+
+
+#### Command Example
+```!gra-analytical-features-entity-value entityValue=EntityValue```
+
+#### Context Example
+```
+{
+    "analyticalFeatures": {
+        "analyticalFeature1": 7,
+        "analyticalFeature2": 1,
+        "analyticalFeature3": 0
+    },
+    "analyticalFeatureValues": {
+        "analyticalFeature1": {
+            "analyticalFeature1a": 2,
+            "analyticalFeature1b": 1,
+            "analyticalFeature1c": 1
+        },
+        "analyticalFeature2": {
+            "analyticalFeature2a": 6
+        },
+        "analyticalFeature3": {
+            "analyticalFeature3a": 13,
+            "analyticalFeature3b": 6
+        }
+    }
 }
 ```
 

@@ -22,6 +22,7 @@ Search entries in the war room for the pattern text, and set tags to the entries
 | filter_tags | The tags to filter entries |
 | filter_entry_types | The list of entry type of source entries |
 | filter_entry_formats | The list of entry format of source entries |
+| filter_user_type | The user type to filter entries by who created them |
 | algorithm | The pattern matching algorithm |
 | pattern | The pattern text to search |
 | exclude_pattern | The pattern text to exclude entries matched |

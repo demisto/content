@@ -1,0 +1,429 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: CensysV2
+  version: -1
+configuration:
+- display: App ID
+  displaypassword: Secret
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Censys is a search engine that allows computer scientists to ask questions
+  about the devices and networks that compose the internet. Driven by internet-wide
+  scanning, Censys lets researchers find specific hosts and create aggregate reports
+  on how devices, and certificates are configured and deployed.
+display: Censys v2
+name: CensysV2
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The IP address of the requested host.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The index from which to retrieve data.
+      isArray: false
+      name: index
+      predefined:
+      - ipv4
+      - certificates
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns detailed information for an IP address or SHA256 within the
+      specified index.
+    execution: false
+    name: cen-view
+    outputs:
+    - contextPath: Censys.View.autonomous_system.asn
+      description: The autonomous system number (ASN) that the host is in.
+      type: Number
+    - contextPath: Censys.View.autonomous_system.bgp_prefix
+      description: The autonomous system's CIDR.
+      type: String
+    - contextPath: Censys.View.autonomous_system.country_code
+      description: The autonomous system's two-letter, ISO 3166-1 alpha-2 country
+        code (e.g., US, CN, GB, RU).
+      type: String
+    - contextPath: Censys.View.autonomous_system.description
+      description: A brief description of the autonomous system.
+      type: String
+    - contextPath: Censys.View.autonomous_system.name
+      description: The friendly name of the autonomous system.
+      type: String
+    - contextPath: Censys.View.autonomous_system_updated_at
+      description: When the autonomous system was updated.
+      type: Date
+    - contextPath: Censys.View.dns.names
+      description: DNS Names.
+      type: String
+    - contextPath: Censys.View.dns.records
+      description: DNS records.
+      type: Unknown
+    - contextPath: Censys.View.dns.reverse_dns.names
+      description: Reverse DNS names.
+      type: String
+    - contextPath: Censys.View.ip
+      description: The host’s IP address.
+      type: String
+    - contextPath: Censys.View.last_updated_at
+      description: When the host was last updated.
+      type: Date
+    - contextPath: Censys.View.location.continent
+      description: The continent of the host's detected location (e.g., North America,
+        Europe, Asia, South America, Africa, Oceania).
+      type: String
+    - contextPath: Censys.View.location.coordinates
+      description: The estimated coordinates of the host's detected location.
+      type: Unknown
+    - contextPath: Censys.View.location.country
+      description: The name of the country of the host's detected location.
+      type: String
+    - contextPath: Censys.View.location.country_code
+      description: The two-letter ISO 3166-1 alpha-2 country code of the host's detected
+        location (e.g., US, CN, GB, RU).
+      type: String
+    - contextPath: Censys.View.location.postal_code
+      description: The postal code (if applicable) of the host's detected location.
+      type: String
+    - contextPath: Censys.View.location.registered_country
+      description: The English name of the host's registered country.
+      type: String
+    - contextPath: Censys.View.location.registered_country_code
+      description: The registered country's two-letter, ISO 3166-1 alpha-2 country
+        code (e.g., US, CN, GB, RU).
+      type: String
+    - contextPath: Censys.View.location.timezone
+      description: The IANA time zone database name of the host's detected location.
+      type: String
+    - contextPath: Censys.View.services.dns
+      description: DNS information.
+      type: Unknown
+    - contextPath: Censys.View.services.extended_service_name
+      description: The service name with the TLS encryption indicator if the service is using it.
+      type: String
+    - contextPath: Censys.View.services.observed_at
+      description: The UTC timestamp of when Censys scanned the service.
+      type: Date
+    - contextPath: Censys.View.services.perspective_id
+      description: The upstream internet service provider Censys peered with to scan the service -
+        NTT Communications, TATA, Telia Carrier, or Hurricane Electric.
+      type: String
+    - contextPath: Censys.View.services.port
+      description: The port the service was reached at.
+      type: Number
+    - contextPath: Censys.View.services.service_name
+      description: The name of the service on the port. This is typically the L7 protocol
+        (e.g., “HTTP”); however, in the case that a more specific HTTP-based protocol
+        is found (e.g., Kubernetes or Prometheus), the field will show that. This
+        field indicates where protocol-specific data will be located.
+      type: String
+    - contextPath: Censys.View.services.source_ip
+      description: The IP address from which Censys scanned the service.
+      type: String
+    - contextPath: Censys.View.services.transport_protocol
+      description: The transport protocol (known in OSI model as L4) used to contact
+        this service (i.e., UDP or TCP).
+      type: String
+    - contextPath: Censys.View.services.banner
+      description: The banner as a part of the protocol scan. That field will be nested
+        in the protocol-specific data under the service_name field.
+      type: String
+    - contextPath: Censys.View.services.tls.certificates
+      description: A subset of the parsed details of the certificate, including the issuer, subject, fingerprint,
+        names, public keys, and signature.
+      type: Unknown
+    - contextPath: Censys.View.services.tls.session_ticket
+      description: Details about the session ticket provided by the server at the end of the TLS handshake.
+      type: Unknown
+    - contextPath: Censys.View.ct
+      description: When a certificate was added to a CT log.
+      type: Unknown
+    - contextPath: Censys.View.fingerprint_sha256
+      description: The SHA2-256 digest over the DER encoding of the certificate.
+      type: String
+    - contextPath: Censys.View.metadata
+      description: Whether the certificate was (ever) seen during a Censys scan of
+        the internet.
+      type: Unknown
+    - contextPath: Censys.View.parent_spki_subject_fingerprint
+      description: Parent simple public key infrastructure (SPKI) subject fingerprint.
+      type: String
+    - contextPath: Censys.View.parsed.extensions
+      description: Additional fields that extend the X.509 spec.
+      type: Unknown
+    - contextPath: Censys.View.parsed.fingerprint_md5
+      description: The MD5 digest over the DER encoding of the certificate.
+      type: String
+    - contextPath: Censys.View.parsed.fingerprint_sha1
+      description: The SHA1 digest over the DER encoding of the certificate.
+      type: String
+    - contextPath: Censys.View.parsed.fingerprint_sha256
+      description: The SHA2-256 digest over the DER encoding of the certificate.
+      type: String
+    - contextPath: Censys.View.parsed.issuer.common_name
+      description: Common name.
+      type: String
+    - contextPath: Censys.View.parsed.issuer.country
+      description: Country name.
+      type: String
+    - contextPath: Censys.View.parsed.issuer.organization
+      description: Organization name.
+      type: String
+    - contextPath: Censys.View.parsed.issuer_dn
+      description: Information about the certificate authority that issued the certificate.
+      type: String
+    - contextPath: Censys.View.parsed.names
+      description: Any names for which the certificate can be used for identity verification.
+      type: String
+    - contextPath: Censys.View.parsed.redacted
+      description: Indicates whether the certificate redacted.
+      type: Boolean
+    - contextPath: Censys.View.parsed.serial_number
+      description: The issuer-specific identifier of the certificate.
+      type: String
+    - contextPath: Censys.View.parsed.signature.self_signed
+      description: Indicates whether the subject key was also used to sign the certificate.
+      type: Boolean
+    - contextPath: Censys.View.parsed.signature.signature_algorithm.name
+      description: Name of signature algorithm, e.g., SHA1-RSA or ECDSA-SHA512. Unknown algorithms get an integer ID.
+      type: String
+    - contextPath: Censys.View.parsed.signature.signature_algorithm.oid
+      description: The object identifier of the signature algorithm, in dotted-decimal notation.
+      type: String
+    - contextPath: Censys.View.parsed.signature.valid
+      description: Whether the signature is valid.
+      type: Boolean
+    - contextPath: Censys.View.parsed.signature.value
+      description: Contents of the signature as a bit string.
+      type: String
+    - contextPath: Censys.View.parsed.signature_algorithm.name
+      description: Name of the signature algorithm, e.g., SHA1-RSA or ECDSA-SHA512. Unknown algorithms get an integer ID.
+      type: String
+    - contextPath: Censys.View.parsed.signature_algorithm.oid
+      description: The object identifier of the signature algorithm, in dotted-decimal notation.
+      type: String
+    - contextPath: Censys.View.parsed.spki_subject_fingerprint
+      description: The SHA2-256 digest over the DER encoding of the certificate's SubjectPublicKeyInfo,
+        as a hexadecimal string.
+      type: String
+    - contextPath: Censys.View.parsed.subject.common_name
+      description: Common name.
+      type: String
+    - contextPath: Censys.View.parsed.subject.country
+      description: Country name.
+      type: String
+    - contextPath: Censys.View.parsed.subject.locality
+      description: Locality name.
+      type: String
+    - contextPath: Censys.View.parsed.subject.organization
+      description: The name of the organization to which the certificate was issued, if available.
+      type: String
+    - contextPath: Censys.View.parsed.subject.province
+      description: State of province name.
+      type: String
+    - contextPath: Censys.View.parsed.subject_dn
+      description: Information about the entity that was issued the certificate.
+      type: String
+    - contextPath: Censys.View.parsed.subject_key_info.ecdsa_public_key
+      description: The public portion of an ECDSA asymmetric key.
+      type: Unknown
+    - contextPath: Censys.View.parsed.subject_key_info.fingerprint_sha256
+      description: The SHA2-256 digest calculated over the certificate's DER encoding.
+      type: String
+    - contextPath: Censys.View.parsed.subject_key_info.key_algorithm.name
+      description: Name of public key type, e.g., RSA or ECDSA.
+      type: String
+    - contextPath: Censys.View.parsed.tbs_fingerprint
+      description: The SHA2-256 digest over the DER encoding of the certificate's
+        TBSCertificate.
+      type: String
+    - contextPath: Censys.View.parsed.tbs_noct_fingerprint
+      description: The SHA2-256 digest over the DER encoding of the certificate's
+        TBSCertificate with any CT extensions omitted.
+      type: String
+    - contextPath: Censys.View.parsed.validation_level
+      description: How the certificate is validated - Domain validated (DV), Organization
+        Validated (OV), Extended Validation (EV), or unknown.
+      type: String
+    - contextPath: Censys.View.parsed.validity.end
+      description: Timestamp of when the certificate expires. Timezone is UTC.
+      type: Date
+    - contextPath: Censys.View.parsed.validity.length
+      description: The length of time, in seconds, that the certificate is valid.
+      type: Number
+    - contextPath: Censys.View.parsed.validity.start
+      description: Timestamp of when certificate is first valid. Timezone is UTC.
+      type: Date
+    - contextPath: Censys.View.parsed.version
+      description: The x.509 certificate version number.
+      type: Number
+    - contextPath: Censys.View.precert
+      description: Whether the certificate is pre-cert.
+      type: Boolean
+    - contextPath: Censys.View.raw
+      description: The raw certificate.
+      type: String
+    - contextPath: Censys.View.tags
+      description: Tags applied to the certificate.
+      type: String
+    - contextPath: Censys.View.validation
+      description: Whether the certificate is trusted by modern web browsers (Mozilla NSS, Microsoft, and Apple).
+      type: Unknown
+    - contextPath: Censys.View.zlint
+      description: Whether the certificate has any zlint errors.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Query used to search for hosts with matching attributes. Uses the
+        Censys Search Language.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of hits to return in each response (minimum
+        of 0, maximum of 100). (Applies for the host search.) 
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The number of results to return. 
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The index from which to retrieve data.
+      isArray: false
+      name: index
+      predefined:
+      - ipv4
+      - certificates
+      required: true
+      secret: false
+    - default: false
+      description: The fields to return. (Applies for the certificates search.)
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page to return. (Applies for the certificates search.)
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Return previews of hosts matching a specified search query or a
+      list of certificates that match the given query.
+    execution: false
+    name: cen-search
+    outputs:
+    - contextPath: Censys.Search.autonomous_system.asn
+      description: The autonomous system number (ASN) that the host is in.
+      type: Number
+    - contextPath: Censys.Search.autonomous_system.bgp_prefix
+      description: The autonomous system's CIDR.
+      type: String
+    - contextPath: Censys.Search.autonomous_system.country_code
+      description: The autonomous system's two-letter, ISO 3166-1 alpha-2 country code
+        (e.g., US, CN, GB, RU).
+      type: String
+    - contextPath: Censys.Search.autonomous_system.description
+      description: A brief description of the autonomous system.
+      type: String
+    - contextPath: Censys.Search.autonomous_system.name
+      description: The friendly name of the autonomous system.
+      type: String
+    - contextPath: Censys.Search.ip
+      description: The host’s IP address.
+      type: String
+    - contextPath: Censys.Search.location.continent
+      description: The continent of the host's detected location (e.g., North America,
+        Europe, Asia, South America, Africa, Oceania).
+      type: String
+    - contextPath: Censys.Search.location.coordinates
+      description: The estimated coordinates of the host's detected location.
+      type: Unknown
+    - contextPath: Censys.Search.location.country
+      description: The country of the host's detected location.
+      type: String
+    - contextPath: Censys.Search.location.country_code
+      description: The two-letter ISO 3166-1 alpha-2 country code of the host's detected
+        location (e.g., US, CN, GB, RU).
+      type: String
+    - contextPath: Censys.Search.location.registered_country
+      description: The host's registered country.
+      type: String
+    - contextPath: Censys.Search.location.registered_country_code
+      description: The registered country's two-letter, ISO 3166-1 alpha-2 country
+        code (e.g., US, CN, GB, RU).
+      type: String
+    - contextPath: Censys.Search.location.timezone
+      description: The IANA time zone database name of the host's detected location.
+      type: String
+    - contextPath: Censys.Search.services.port
+      description: The port the service was reached at.
+      type: Number
+    - contextPath: Censys.Search.services.service_name
+      description: The name of the service on the port. This is typically the L7 protocol
+        (e.g., “HTTP”); however, in case a more specific HTTP-based protocol
+        is found (e.g., Kubernetes or Prometheus), the field will show that. This
+        field indicates where protocol-specific data will be located.
+      type: String
+    - contextPath: Censys.Search.services.transport_protocol
+      description: The transport protocol (known in OSI model as L4) used to contact
+        this service (i.e., UDP or TCP).
+      type: String
+    - contextPath: Censys.Search.parsed.fingerprint_sha256
+      description: SHA 256 fingerprint.
+      type: String
+    - contextPath: Censys.Search.parsed.issuer.organization
+      description: The organization name.
+      type: Unknown
+    - contextPath: Censys.Search.parsed.names
+      description: Common names for the entity.
+      type: Unknown
+    - contextPath: Censys.Search.parsed.subject_dn
+      description: Distinguished name of the entity that the certificate belongs to.
+      type: String
+    - contextPath: Censys.Search.parsed.validity.end
+      description: Timestamp of when the certificate expires. Timezone is UTC.
+      type: Date
+    - contextPath: Censys.Search.parsed.validity.start
+      description: Timestamp of when the certificate is first valid. Timezone is UTC.
+      type: Date
+    - contextPath: Censys.Search.parsed.issuer_dn
+      description: Distinguished name of the entity that has signed and issued the
+        certificate.
+      type: String
+  dockerimage: demisto/python3:3.10.1.25933
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- CensysV2-Test
+fromversion: 6.0.0

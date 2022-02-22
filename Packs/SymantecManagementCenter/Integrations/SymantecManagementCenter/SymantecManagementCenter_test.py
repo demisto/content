@@ -71,7 +71,10 @@ def test_add_policy_content_local_category_db(mocker, requests_mock):
         'params',
         return_value={
             'url': 'https://server',
-            'credentials': {}
+            'credentials': {
+                'identifier': 'user',
+                'password': 'password'
+            }
         }
     )
     mocker.patch.object(
@@ -172,7 +175,10 @@ def test_delete_policy_content_local_category_db(mocker, requests_mock):
         'params',
         return_value={
             'url': 'https://server',
-            'credentials': {}
+            'credentials': {
+                'identifier': 'user',
+                'password': 'password'
+            }
         }
     )
     mocker.patch.object(
@@ -271,7 +277,10 @@ def test_delete_policy_content_local_category_db_negative(mocker, requests_mock)
         'params',
         return_value={
             'url': 'https://server',
-            'credentials': {}
+            'credentials': {
+                'identifier': 'user',
+                'password': 'password'
+            }
         }
     )
     mocker.patch.object(
@@ -361,7 +370,10 @@ def test_update_policy_content_local_category_db(mocker, requests_mock):
         'params',
         return_value={
             'url': 'https://server',
-            'credentials': {}
+            'credentials': {
+                'identifier': 'user',
+                'password': 'password'
+            }
         }
     )
     mocker.patch.object(
@@ -462,7 +474,10 @@ def test_update_policy_content_local_category_db_negative(mocker, requests_mock)
         'params',
         return_value={
             'url': 'https://server',
-            'credentials': {}
+            'credentials': {
+                'identifier': 'user',
+                'password': 'password'
+            }
         }
     )
     mocker.patch.object(

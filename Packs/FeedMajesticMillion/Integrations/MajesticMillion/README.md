@@ -25,6 +25,7 @@ The default value is 100k. If you encounter performance issues, consider decreas
 | feedTags | Tags | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
+| use_https | Use HTTPS connection | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

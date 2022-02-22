@@ -3,3 +3,6 @@ ignore=BA101
 
 [file:classifier-mapper-incoming-Darktrace.json]
 ignore=BA101
+
+[file:Darktrace.yml]
+ignore=IN145

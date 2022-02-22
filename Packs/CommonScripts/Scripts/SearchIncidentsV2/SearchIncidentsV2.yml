@@ -106,6 +106,15 @@ args:
   required: false
   secret: false
 - default: false
+  description: |-
+    The number of events to return from the alert JSON. The default is 0, which returns all events.
+    Note that the count is from the head of the list, regardless of event time or other properties.
+  isArray: false
+  name: trimevents
+  required: false
+  secret: false
+  defaultValue: '0'
+- default: false
   description: Number of incidents per page (per fetch)
   isArray: false
   name: size
@@ -117,7 +126,12 @@ args:
   name: sort
   required: false
   secret: false
-comment: Searches Demisto incidents
+comment: |-
+  Searches Demisto incidents.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
 commonfields:
   id: SearchIncidentsV2
   version: -1
@@ -167,6 +181,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.2.17957
-runas: DBotRole
+dockerimage: demisto/python3:3.10.1.25933
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

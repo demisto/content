@@ -1,7 +1,7 @@
 args:
 - default: false
-  description: Incident ID to get the prediction of. If empty, predicts the current incident
-    ID.
+  description: Incident ID to get the prediction of. If empty, predicts the current
+    incident ID.
   isArray: false
   name: incidentId
   predefined:
@@ -70,6 +70,12 @@ args:
   name: fromDate
   required: false
   secret: false
+- default: false
+  description: Argument for the query of similar incidents.
+  isArray: false
+  name: query
+  required: false
+  secret: false
 comment: Finds similar incidents based on indicators' similarity. Indicators' contribution
   to the final score is based on their scarcity.
 commonfields:
@@ -82,7 +88,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/ml:1.0.0.18831
+dockerimage: demisto/ml:1.0.0.25666
 runas: DBotWeakRole
 runonce: false
 tests:

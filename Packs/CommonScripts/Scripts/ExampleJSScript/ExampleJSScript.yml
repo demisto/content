@@ -1,0 +1,21 @@
+commonfields:
+  id: ExampleJSScript
+  version: -1
+name: ExampleJSScript
+script: ''
+type: javascript
+tags:
+- example
+comment: This is only an example script, to showcase how to use and write JavaScript
+  scripts
+system: true
+args:
+- name: ArgumentExample
+  required: true
+  description: An example argument that will be passed into and used by the script
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0
+tests:
+- No tests

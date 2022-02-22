@@ -1,0 +1,23 @@
+commonfields:
+  id: GetLatestReleaseNotes
+  version: -1
+name: GetLatestReleaseNotes
+script: ''
+type: python
+tags: []
+enabled: true
+comment: This script retrieves the latest release notes for selected packs.
+args:
+- name: content_data
+  required: true
+  default: true
+  isArray: true
+  description: The content data path from the context, for example "${ContentData}".
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.1.25933
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

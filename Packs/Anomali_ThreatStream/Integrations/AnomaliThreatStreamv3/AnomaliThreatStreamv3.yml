@@ -1,0 +1,1641 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Anomali ThreatStream v3
+  version: -1
+configuration:
+- defaultvalue: https://api.threatstream.com
+  display: Server URL (e.g., https://www.test.com)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  displaypassword: API Key
+  name: credentials
+  required: true
+  type: 9
+- display: URL threshold
+  name: url_threshold
+  required: false
+  type: 0
+- display: IP threshold
+  name: ip_threshold
+  required: false
+  type: 0
+- display: Domain threshold
+  name: domain_threshold
+  required: false
+  type: 0
+- display: File threshold
+  name: file_threshold
+  required: false
+  type: 0
+- display: Email threshold
+  additionalinfo: Email indicators with confidence value above this threshold are
+    considered malicious.
+  name: email_threshold
+  required: false
+  type: 0
+- defaultvalue: 'false'
+  additionalinfo: Whether to include inactive indicators in reputation commands.
+  display: Include inactive results
+  name: include_inactive
+  required: false
+  type: 8
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  additionalinfo: Create relationships between indicators as part of enrichment.
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
+defaultclassifier: 'null'
+description: Use Anomali ThreatStream to query and submit threats.
+display: Anomali ThreatStream v3
+name: Anomali ThreatStream v3
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: The IP to check.
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+    - default: false
+      description: If confidence is greater than the threshold the IP address
+        is considered malicious, otherwise it is considered good. This argument
+        overrides the default IP threshold defined as a parameter.
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: Whether to include results with an inactive status.
+      isArray: false
+      name: include_inactive
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks the reputation of the given IP address.
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: IP.ASN
+      description: The Autonomous System (AS) number associated with the indicator.
+      type: String
+    - contextPath: IP.Address
+      description: The IP address of the indicator.
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country associated with the indicator.
+      type: String
+    - contextPath: IP.Geo.Location
+      description: The longitude and latitude of the IP address.
+      type: String
+    - contextPath: ThreatStream.IP.ASN
+      description: The Autonomous System (AS) number associated with the indicator.
+      type: String
+    - contextPath: ThreatStream.IP.Address
+      description: The IP address of the indicator.
+      type: String
+    - contextPath: ThreatStream.IP.Country
+      description: The country associated with the indicator.
+      type: String
+    - contextPath: ThreatStream.IP.Type
+      description: The indicator type.
+      type: String
+    - contextPath: ThreatStream.IP.Modified
+      description: 'The time the indicator was last updated. The date format
+        is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time in
+        UTC time.'
+      type: String
+    - contextPath: ThreatStream.IP.Severity
+      description: The indicator severity ("very-high", "high", "medium", or "low").
+      type: String
+    - contextPath: ThreatStream.IP.Confidence
+      description: The observable certainty level of a reported indicator type. Confidence
+        score can range from 0-100, in increasing order of confidence.
+      type: String
+    - contextPath: ThreatStream.IP.Status
+      description: The status assigned to the indicator.
+      type: String
+    - contextPath: ThreatStream.IP.Organization
+      description: The name of the business that owns the IP address associated with
+        the indicator.
+      type: String
+    - contextPath: ThreatStream.IP.Source
+      description: The indicator source.
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor that reported the indicator as malicious.
+      type: String
+    - contextPath: ThreatStream.IP.Tags
+      description: Tags assigned to the IP.
+      type: Unknown
+    - contextPath: IP.Tags
+      description: List of IP Tags.
+      type: Unknown
+    - contextPath: IP.ThreatTypes
+      description: Threat types associated with the IP.
+      type: Unknown
+  - arguments:
+    - default: true
+      description: The domain name to check.
+      isArray: true
+      name: domain
+      required: true
+      secret: false
+    - default: false
+      description: If confidence is greater than the threshold the Domain is
+        considered malicious, otherwise it is considered good. This argument 
+        overrides the default Domain threshold defined as a parameter.
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: Whether to include results with an inactive status.
+      isArray: false
+      name: include_inactive
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks the reputation of the given domain name.
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.DNS
+      description: The IP addresses resolved by DNS.
+      type: String
+    - contextPath: Domain.WHOIS.CreationDate
+      description: |-
+        The date the domain was created. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value
+        for time in UTC time.
+      type: Date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: |-
+        The date the domain was last updated. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value
+        for time in UTC time.
+      type: Date
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: The registant name.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Email
+      description: The registrant email address.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Phone
+      description: The registrant phone number.
+      type: String
+    - contextPath: ThreatStream.Domain.ASN
+      description: The Autonomous System (AS) number associated with the indicator.
+      type: String
+    - contextPath: ThreatStream.Domain.Address
+      description: The indicator domain name.
+      type: String
+    - contextPath: ThreatStream.Domain.Country
+      description: The country associated with the indicator.
+      type: String
+    - contextPath: ThreatStream.Domain.Type
+      description: The indicator type.
+      type: String
+    - contextPath: ThreatStream.Domain.Modified
+      description: |-
+        The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+        for time in UTC time.
+      type: String
+    - contextPath: ThreatStream.Domain.Severity
+      description: The indicator severity ("very-high", "high", "medium", "low").
+      type: String
+    - contextPath: ThreatStream.Domain.Confidence
+      description: The observable certainty level of a reported indicator type. Confidence
+        score ranges from 0-100, in increasing order of confidence.
+      type: String
+    - contextPath: ThreatStream.Domain.Status
+      description: The status assigned to the indicator.
+      type: String
+    - contextPath: ThreatStream.Domain.Organization
+      description: The name of the business that owns the IP address associated with
+        the indicator.
+      type: String
+    - contextPath: ThreatStream.Domain.Source
+      description: The indicator source.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor that reported the indicator as malicious.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: ThreatStream.Domain.Tags
+      description: Tags assigned to the domain.
+      type: Unknown
+    - contextPath: Domain.Tags
+      description: List of domain tags.
+      type: Unknown
+    - contextPath: Domain.ThreatTypes
+      description: Threat types associated with the domain.
+      type: Unknown
+  - arguments:
+    - default: true
+      description: The hash of file to check.
+      isArray: true
+      name: file
+      required: true
+      secret: false
+    - default: false
+      description: If the confidence is greater than the threshold the hash of the file 
+        is considered malicious, otherwise it is considered good.
+        This argument overrides the default file threshold defined as a parameter.
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: Whether to include results with an inactive status.
+      isArray: false
+      name: include_inactive
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks the reputation of the given hash of the file.
+    execution: false
+    name: file
+    outputs:
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor that reported the indicator as malicious.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: ThreatStream.File.Severity
+      description: The indicator severity ("very-high", "high", "medium", "low").
+      type: String
+    - contextPath: ThreatStream.File.Confidence
+      description: The observable certainty level of a reported indicator type. Confidence
+        score ranges from 0-100, in increasing order of confidence.
+      type: String
+    - contextPath: ThreatStream.File.Status
+      description: The status assigned to the indicator.
+      type: String
+    - contextPath: ThreatStream.File.Type
+      description: The indicator type.
+      type: String
+    - contextPath: ThreatStream.File.MD5
+      description: The MD5 hash of the indicator.
+      type: String
+    - contextPath: ThreatStream.File.SHA1
+      description: The SHA1 hash of the indicator.
+      type: String
+    - contextPath: ThreatStream.File.SHA256
+      description: The SHA256 hash of the indicator.
+      type: String
+    - contextPath: ThreatStream.File.SHA512
+      description: The SHA512 hash of the indicator.
+      type: String
+    - contextPath: ThreatStream.File.Modified
+      description: |-
+        The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+        for time in UTC time.
+      type: String
+    - contextPath: ThreatStream.File.Source
+      description: The indicator source.
+      type: String
+    - contextPath: ThreatStream.File.Tags
+      description: Tags assigned to the file.
+      type: Unknown
+    - contextPath: File.Tags
+      description: List of file tags.
+      type: Unknown
+    - contextPath: File.ThreatTypes
+      description: Threat types associated with the file.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The email address to check.
+      isArray: false
+      name: email
+      required: true
+      secret: false
+    - default: false
+      description: If the confidence is greater than the threshold the email
+        address is considered malicious, otherwise it is considered good.
+        This argument overrides the default email threshold defined as a parameter.
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: Whether to include results with an inactive status.
+      isArray: false
+      name: include_inactive
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks the reputation of the given email address.
+    execution: false
+    name: threatstream-email-reputation
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: ThreatStream.EmailReputation.Severity
+      description: The indicator severity ("very-high", "high", "medium", "low").
+      type: String
+    - contextPath: ThreatStream.EmailReputation.Confidence
+      description: The observable certainty level of a reported indicator type. Confidence
+        score ranges from 0-100, in increasing order of confidence.
+      type: String
+    - contextPath: ThreatStream.EmailReputation.Status
+      description: The status assigned to the indicator.
+      type: String
+    - contextPath: ThreatStream.EmailReputation.Type
+      description: The indicator type.
+      type: String
+    - contextPath: ThreatStream.EmailReputation.Email
+      description: The indicator email address.
+      type: String
+    - contextPath: ThreatStream.EmailReputation.Source
+      description: The indicator source.
+      type: String
+    - contextPath: ThreatStream.EmailReputation.Modified
+      description: |-
+        The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+        for time in UTC time.
+      type: String
+    - contextPath: ThreatStream.EmailReputation.Tags
+      description: Tags assigned to the email.
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: ip
+      description: The type of passive DNS search ("ip", "domain").
+      isArray: false
+      name: type
+      predefined:
+      - ip
+      - domain
+      required: true
+      secret: false
+    - default: false
+      description: Possible values are "IP" or "Domain".
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns enrichment data for Domain or IP for available observables.
+    execution: false
+    name: threatstream-get-passive-dns
+    outputs:
+    - contextPath: ThreatStream.PassiveDNS.Domain
+      description: The domain value.
+      type: String
+    - contextPath: ThreatStream.PassiveDNS.Ip
+      description: The IP value.
+      type: String
+    - contextPath: ThreatStream.PassiveDNS.Rrtype
+      description: The Rrtype value.
+      type: String
+    - contextPath: ThreatStream.PassiveDNS.Source
+      description: The source value.
+      type: String
+    - contextPath: ThreatStream.PassiveDNS.FirstSeen
+      description: |-
+        The first seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+        for time, in UTC time.
+      type: String
+    - contextPath: ThreatStream.PassiveDNS.LastSeen
+      description: |-
+        The last seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+        for time in UTC time.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The observable certainty level of a reported indicator type.
+      isArray: false
+      name: confidence
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: private
+      description: Whether the indicator data is public or private to the organization.
+      isArray: false
+      name: classification
+      predefined:
+      - private
+      - public
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: exploit
+      description: Type of threat associated with the imported observables. Can be "adware", "anomalous", "anonymization", "apt", "bot", "brute", "c2", "compromised", "crypto", "data_leakage", "ddos", "dyn_dns", "exfil", "exploit", "hack_tool", "i2p", "informational", "malware", "p2p", "parked", "phish", "scan", "sinkhole", "spam", "suppress", "suspicious", "tor", or "vps".
+      isArray: false
+      name: threat_type
+      predefined:
+      - adware
+      - anomalous
+      - anonymization
+      - apt
+      - bot
+      - brute
+      - c2
+      - compromised
+      - crypto
+      - data_leakage
+      - ddos
+      - dyn_dns
+      - exfil
+      - exploit
+      - hack_tool
+      - i2p
+      - informational
+      - malware
+      - p2p
+      - parked
+      - phish
+      - scan
+      - sinkhole
+      - spam
+      - suppress
+      - suspicious
+      - tor
+      - vps
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: low
+      description: The potential impact of the indicator type with which the observable
+        is believed to be associated. Can be "low", "medium", "high", or "very-high".
+      isArray: false
+      name: severity
+      predefined:
+      - low
+      - medium
+      - high
+      - very-high
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The import type of the indicator. Can be "datatext", "file-id",
+        or "url".
+      isArray: false
+      name: import_type
+      predefined:
+      - datatext
+      - file-id
+      - url
+      required: true
+      secret: false
+    - default: false
+      description: 'The imported data source. Can be one of the following: url or
+        file-id datatext of the file uploaded to the War Room. Supported file types
+        for file-id are: CSV, HTML, IOC, JSON, PDF, TXT.'
+      isArray: false
+      name: import_value
+      required: true
+      secret: false
+    - default: false
+      description: Indicator type to assign if a specific type is not associated with
+        an observable. This is a global setting that applies to any imported IP-type
+        observable when an explicit itype is not specified for it.
+      isArray: false
+      name: ip_mapping
+      required: false
+      secret: false
+    - default: false
+      description: Indicator type to assign if a specific type is not associated with
+        an observable. This is a global setting that applies to any imported domain-type
+        observable when an explicit itype is not specified for it.
+      isArray: false
+      name: domain_mapping
+      required: false
+      secret: false
+    - default: false
+      description: Indicator type to assign if a specific type is not associated with
+        an observable. This is a global setting that applies to any imported URL-type
+        observable when an explicit itype is not specified for it.
+      isArray: false
+      name: url_mapping
+      required: false
+      secret: false
+    - default: false
+      description: Indicator type to assign if a specific type is not associated with
+        an observable. This is a global setting that applies to any imported email-type
+        observable when an explicit itype is not specified for it.
+      isArray: false
+      name: email_mapping
+      required: false
+      secret: false
+    - default: false
+      description: Indicator type to assign if a specific type is not associated with
+        an observable. This is a global setting that applies to any imported MD5-type
+        observable when an explicit itype is not specified for it.
+      isArray: false
+      name: md5_mapping
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Imports indicators (observables) into ThreatStream. The imported data must be approved using the ThreatStream UI. The data can be imported
+      using one of three methods: plain-text, file, or URL.'
+    execution: false
+    name: threatstream-import-indicator-with-approval
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The observable certainty level of a reported indicator type.
+      isArray: false
+      name: confidence
+      required: false
+      secret: false
+    - default: false
+      description: To use your specified confidence entirely and not re-assess the
+        value using machine learning algorithms, set source_confidence_ weight to
+        100.
+      isArray: false
+      name: source_confidence_weight
+      required: false
+      secret: false
+    - default: false
+      description: The time stamp when intelligence will expire on ThreatStream,
+        in ISO format. For example, 2020-12-24T00:00:00.
+      isArray: false
+      name: expiration_ts
+      required: false
+      secret: false
+    - default: false
+      description: The severity to assign to the observable when it is imported.
+        Can be "low", "medium", "high" , or "very-high".
+      isArray: false
+      name: severity
+      predefined:
+      - low
+      - medium
+      - high
+      - very-high
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of tags. For example, tag1,tag2.
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of trusted circle IDs with which threat data should
+        be shared.
+      isArray: false
+      name: trustedcircles
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Denotes whether the indicator data is public or private to the
+        organization.
+      isArray: false
+      name: classification
+      predefined:
+      - private
+      - public
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether unresolved domain observables are included in the file will be accepted as valid in ThreatStream and imported.
+      isArray: false
+      name: allow_unresolved
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    - default: false
+      description: The entry ID of a file (containing a JSON with an "objects" array and "meta" maps) that is uploaded to the War Room.
+      isArray: false
+      name: file_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Imports indicators (observables) into ThreatStream. Approval is not
+      required for the imported data. You must have the Approve Intel user permission
+      to import without approval using the API.
+    execution: false
+    name: threatstream-import-indicator-without-approval
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The threat model of the returned list. Can be "actor", "campaign",
+        "incident", "signature", "ttp", "vulnerability", or "tipreport".
+      isArray: false
+      name: model
+      predefined:
+      - actor
+      - campaign
+      - incident
+      - signature
+      - ttp
+      - vulnerability
+      - tipreport
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Limits the model size list. Specifying limit=0 returns up to
+        a maximum of 1000 models. For limit=0, the output is not set in the
+        context.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of threat models.
+    execution: false
+    name: threatstream-get-model-list
+    outputs:
+    - contextPath: ThreatStream.List.Type
+      description: The threat model type.
+      type: String
+    - contextPath: ThreatStream.List.Name
+      description: The threat model name.
+      type: String
+    - contextPath: ThreatStream.List.ID
+      description: The threat model ID.
+      type: String
+    - contextPath: ThreatStream.List.CreatedTime
+      description: 'The date and time of threat model creation. The date format is:
+        YYYYMMDDThhmmss, where "T" denotes the start of the value for time in UTC
+        time.'
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The threat model. Can be "actor", "campaign", "incident", "signature",
+        "ttp", "vulnerability", or "tipreport".
+      isArray: false
+      name: model
+      predefined:
+      - actor
+      - campaign
+      - incident
+      - signature
+      - ttp
+      - vulnerability
+      - tipreport
+      required: true
+      secret: false
+    - default: false
+      description: The threat model ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns an HTML file with a description of the threat model.
+    execution: false
+    name: threatstream-get-model-description
+    outputs:
+    - contextPath: File.Name
+      description: The file name of the model description.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the model description.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The threat model. Can be "actor", "campaign", "incident", "signature",
+        "ttp", "vulnerability", or "tipreport".
+      isArray: false
+      name: model
+      predefined:
+      - actor
+      - campaign
+      - incident
+      - signature
+      - ttp
+      - vulnerability
+      - tipreport
+      required: true
+      secret: false
+    - default: false
+      description: The model ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of indicators associated with the specified model
+      and ID of the model.
+    execution: false
+    name: threatstream-get-indicators-by-model
+    outputs:
+    - contextPath: ThreatStream.Model.ModelType
+      description: The threat model type.
+      type: String
+    - contextPath: ThreatStream.Model.ModelID
+      description: The threat model ID.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Value
+      description: The value of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.ID
+      description: The ID of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.IType
+      description: The iType of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Severity
+      description: The indicator severity associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Confidence
+      description: The confidence of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Country
+      description: The country of the indicator associated with the specified model
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Organization
+      description: The organization of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.ASN
+      description: The ASN of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Status
+      description: The status of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Tags
+      description: The tags of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Modified
+      description: The date and time the indicator was last modified.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Source
+      description: The indicator source.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Type
+      description: The indicator type.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: private
+      description: Classification of the Sandbox submission. Can be "private" or "public".
+      isArray: false
+      name: submission_classification
+      predefined:
+      - private
+      - public
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: WINDOWS7
+      description: The platform on which the submitted URL or file is run. To
+        obtain a list supported platforms run the threatstream-supported-platforms
+        command. Can be "WINDOWS7", or "WINDOWSXP".
+      isArray: false
+      name: report_platform
+      predefined:
+      - WINDOWS7
+      - WINDOWSXP
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: file
+      description: The detonation type. Can be "file" or "url".
+      isArray: false
+      name: submission_type
+      predefined:
+      - file
+      - url
+      required: true
+      secret: false
+    - default: false
+      description: The submission value. Possible values are a valid URL or a file
+        ID that was uploaded to the War Room to detonate.
+      isArray: false
+      name: submission_value
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether the premium sandbox should be used for detonation.
+      isArray: false
+      name: premium_sandbox
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of additional details for the indicator.
+        This information is displayed in the Tag column of the ThreatStream UI.
+      isArray: false
+      name: detail
+      required: false
+      secret: false
+    deprecated: false
+    description: Submits a file or URL to the ThreatStream-hosted sandbox for detonation.
+    execution: false
+    name: threatstream-submit-to-sandbox
+    outputs:
+    - contextPath: ThreatStream.Analysis.ReportID
+      description: The report ID submitted to the sandbox.
+      type: String
+    - contextPath: ThreatStream.Analysis.Status
+      description: The analysis status.
+      type: String
+    - contextPath: ThreatStream.Analysis.Platform
+      description: The platform of the submission submitted to the sandbox.
+      type: String
+  - arguments:
+    - default: false
+      description: The report ID to check the status.
+      isArray: false
+      name: report_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the current status of the report submitted to the
+      sandbox. The report ID is returned from the threatstream-submit-to-sandbox command.
+    execution: false
+    name: threatstream-get-analysis-status
+    outputs:
+    - contextPath: ThreatStream.Analysis.ReportID
+      description: The report ID of the file or URL that was detonated in the sandbox.
+      type: String
+    - contextPath: ThreatStream.Analysis.Status
+      description: The report status of the file or URL that was detonated in the sandbox.
+      type: String
+    - contextPath: ThreatStream.Analysis.Platform
+      description: The platform used for detonation.
+      type: String
+    - contextPath: ThreatStream.Analysis.Verdict
+      description: The report verdict of the file or URL detonated in the
+        sandbox. The verdict remains "benign" until detonation is complete.
+      type: String
+  - arguments:
+    - default: false
+      description: The report ID to return.
+      isArray: false
+      name: report_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the report of a file or URL submitted to the sandbox.
+    execution: false
+    name: threatstream-analysis-report
+    outputs:
+    - contextPath: ThreatStream.Analysis.ReportID
+      description: The ID of the report submitted to the sandbox.
+      type: String
+    - contextPath: ThreatStream.Analysis.Category
+      description: The report category.
+      type: String
+    - contextPath: ThreatStream.Analysis.Started
+      description: The detonation start time.
+      type: String
+    - contextPath: ThreatStream.Analysis.Completed
+      description: The detonation completion time.
+      type: String
+    - contextPath: ThreatStream.Analysis.Duration
+      description: The duration of the detonation (in seconds).
+      type: Number
+    - contextPath: ThreatStream.Analysis.VmName
+      description: The VM name.
+      type: String
+    - contextPath: ThreatStream.Analysis.VmID
+      description: The VM ID.
+      type: String
+    - contextPath: ThreatStream.Analysis.Network.UdpSource
+      description: The UDP source.
+      type: String
+    - contextPath: ThreatStream.Analysis.Network.UdpDestination
+      description: The UDP destination.
+      type: String
+    - contextPath: ThreatStream.Analysis.Network.UdpPort
+      description: The UDP port.
+      type: String
+    - contextPath: ThreatStream.Analysis.Network.IcmpSource
+      description: The ICMP source.
+      type: String
+    - contextPath: ThreatStream.Analysis.Network.IcmpDestination
+      description: The ICMP destination.
+      type: String
+    - contextPath: ThreatStream.Analysis.Network.IcmpPort
+      description: The ICMP port.
+      type: String
+    - contextPath: ThreatStream.Analysis.Network.TcpSource
+      description: The TCP source.
+      type: String
+    - contextPath: ThreatStream.Analysis.Network.TcpDestination
+      description: The TCP destination.
+      type: String
+    - contextPath: ThreatStream.Analysis.Network.TcpPort
+      description: The TCP port.
+      type: String
+    - contextPath: ThreatStream.Analysis.Network.HttpSource
+      description: The source of the HTTP address.
+      type: String
+    - contextPath: ThreatStream.Analysis.Network.HttpDestinaton
+      description: The destination of the HTTP address.
+      type: String
+    - contextPath: ThreatStream.Analysis.Network.HttpPort
+      description: The port of the HTTP address.
+      type: String
+    - contextPath: ThreatStream.Analysis.Network.HttpsSource
+      description: The source of the HTTPS address.
+      type: String
+    - contextPath: ThreatStream.Analysis.Network.HttpsDestinaton
+      description: The destination of the HTTPS address.
+      type: String
+    - contextPath: ThreatStream.Analysis.Network.HttpsPort
+      description: The port of the HTTPS address.
+      type: String
+    - contextPath: ThreatStream.Analysis.Network.Hosts
+      description: The network analysis hosts.
+      type: String
+    - contextPath: ThreatStream.Analysis.Verdict
+      description: The verdict of the sandbox detonation.
+      type: String
+  - arguments:
+    - default: false
+      description: The Anomali Observable Search Filter Language query to filter indicator
+        results. If a query is passed as an argument, it overrides all other arguments.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The Autonomous System (AS) number associated with the indicator.
+      isArray: false
+      name: asn
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The observable certainty level
+        of a reported indicator type. Confidence scores range from 0-100 in increasing order of confidence, and are assigned by ThreatStream based on several factors.
+      isArray: false
+      name: confidence
+      required: false
+      secret: false
+    - default: false
+      description: The country associated with the indicator.
+      isArray: false
+      name: country
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        When the indicator was first seen on
+        the ThreatStream cloud platform. The date must be specified in this format:
+        YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time.
+        For example, 2014-10-02T20:44:35.
+      isArray: false
+      name: created_ts
+      required: false
+      secret: false
+    - default: false
+      description: The unique ID for the indicator.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether the classification of the indicator is public. Default
+        is "false".
+      isArray: false
+      name: is_public
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    - default: false
+      description: The severity assigned to the indicator by ThreatStream.
+      isArray: false
+      name: indicator_severity
+      required: false
+      secret: false
+    - default: false
+      description: The registered owner (organization) of the IP address associated
+        with the indicator.
+      isArray: false
+      name: org
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The status assigned to the indicator. Can be "active", "inactive",
+        or "falsepos".
+      isArray: false
+      name: status
+      predefined:
+      - active
+      - inactive
+      - falsepos
+      required: false
+      secret: false
+    - default: false
+      description: The tag assigned to the indicator.
+      isArray: false
+      name: tags_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of indicator. Can be "domain", "email", "ip", "MD5", "string",
+        or "url".
+      isArray: false
+      name: type
+      predefined:
+      - domain
+      - email
+      - ip
+      - md5
+      - string
+      - url
+      required: false
+      secret: false
+    - default: false
+      description: 'The value of the indicator. '
+      isArray: false
+      name: indicator_value
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: The maximum number of results to return from ThreatStream. Default
+        is 20.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Return filtered indicators from ThreatStream. If a query is defined,
+      it overrides all other arguments that were passed to the command.
+    execution: false
+    name: threatstream-get-indicators
+    outputs:
+    - contextPath: ThreatStream.Indicators.IType
+      description: The indicator type.
+      type: String
+    - contextPath: ThreatStream.Indicators.Modified
+      description: |-
+        The date and time the indicator was last updated in ThreatStream. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value
+        for time in UTC time.
+      type: String
+    - contextPath: ThreatStream.Indicators.Confidence
+      description: The observable certainty level of a reported indicator type.
+      type: String
+    - contextPath: ThreatStream.Indicators.Value
+      description: The indicator value.
+      type: String
+    - contextPath: ThreatStream.Indicators.Status
+      description: The indicator status.
+      type: String
+    - contextPath: ThreatStream.Indicators.Organization
+      description: The registered owner (organization) of the IP address associated
+        with the indicator.
+      type: String
+    - contextPath: ThreatStream.Indicators.Country
+      description: The country associated with the indicator.
+      type: String
+    - contextPath: ThreatStream.Indicators.Tags
+      description: The tag assigned to the indicator.
+      type: String
+    - contextPath: ThreatStream.Indicators.Source
+      description: The indicator source.
+      type: String
+    - contextPath: ThreatStream.Indicators.ID
+      description: The indicator ID.
+      type: String
+    - contextPath: ThreatStream.Indicators.ASN
+      description: The Autonomous System (AS) number associated with the indicator.
+      type: String
+    - contextPath: ThreatStream.Indicators.Severity
+      description: The severity assigned to the indicator.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: intelligence
+      description: The type of threat model entity to which to add the tag. Can be
+        "actor", "campaign", "incident", "intelligence", "signature", "tipreport",
+        "ttp", or "vulnerability".
+      isArray: false
+      name: model
+      predefined:
+      - actor
+      - campaign
+      - incident
+      - intelligence
+      - signature
+      - tipreport
+      - ttp
+      - vulnerability
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma separated list of tags applied to the specified threat
+        model entities or observable. '
+      isArray: true
+      name: tags
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the model to which to add the tag.
+      isArray: false
+      name: model_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds tags to intelligence to filter for related entities.
+    execution: false
+    name: threatstream-add-tag-to-model
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The type of threat model to create. Can be "actor", "campaign",
+        "incident", "ttp", "vulnerability", or "tipreport".
+      isArray: false
+      name: model
+      predefined:
+      - actor
+      - campaign
+      - incident
+      - ttp
+      - vulnerability
+      - tipreport
+      required: true
+      secret: false
+    - default: false
+      description: The name of the threat model to create.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether the scope of threat model is visible.
+      isArray: false
+      name: is_public
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: red
+      description: The Traffic Light Protocol designation for the threat model. Can
+        be "red", "amber", "green", or "white".
+      isArray: false
+      name: tlp
+      predefined:
+      - red
+      - amber
+      - green
+      - white
+      required: false
+      secret: false
+    - default: false
+      description: A comma separated list of tags.
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: A comma separated list of indicators IDs associated with the threat
+        model on the ThreatStream platform.
+      isArray: false
+      name: intelligence
+      required: false
+      secret: false
+    - default: false
+      description: The description of the threat model.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a threat model with the specified parameters.
+    execution: false
+    name: threatstream-create-model
+    outputs:
+    - contextPath: ThreatStream.Model.ModelType
+      description: The threat model type.
+      type: String
+    - contextPath: ThreatStream.Model.ModelID
+      description: The threat model ID.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Value
+      description: The value of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.ID
+      description: The ID of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.IType
+      description: The iType of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Severity
+      description: The severity of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Confidence
+      description: The confidence of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Country
+      description: The country of the indicator associated with the specified model
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Organization
+      description: The organization of the indicator associated with the specified
+        model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.ASN
+      description: The ASN of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Status
+      description: The status of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Tags
+      description: The tags of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Modified
+      description: The date and time the indicator was last modified.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Source
+      description: The indicator source.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Type
+      description: The indicator type.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The type of threat model to update. Can be "actor", "campaign",
+        "incident", "ttp", "vulnerability", or "tipreport".
+      isArray: false
+      name: model
+      predefined:
+      - actor
+      - campaign
+      - incident
+      - ttp
+      - vulnerability
+      - tipreport
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the threat model to update.
+      isArray: false
+      name: model_id
+      required: true
+      secret: false
+    - default: false
+      description: The name of the threat model to update.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether the scope of threat model is visible.
+      isArray: false
+      name: is_public
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: red
+      description: The Traffic Light Protocol designation for the threat model. Can
+        be "red", "amber", "green", or "white".
+      isArray: false
+      name: tlp
+      predefined:
+      - red
+      - amber
+      - green
+      - white
+      required: false
+      secret: false
+    - default: false
+      description: A comma separated list of tags.
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: A comma separated list of indicator IDs associated with the threat
+        model on the ThreatStream platform.
+      isArray: false
+      name: intelligence
+      required: false
+      secret: false
+    - default: false
+      description: The description of the threat model.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates a threat model with specific parameters. If one or more optional
+      parameters are defined, the command overrides previous data stored in ThreatStream.
+    execution: false
+    name: threatstream-update-model
+    outputs:
+    - contextPath: ThreatStream.Model.ModelType
+      description: The threat model type.
+      type: String
+    - contextPath: ThreatStream.Model.ModelID
+      description: The threat model ID.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Value
+      description: The value of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.ID
+      description: The ID of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.IType
+      description: The iType of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Severity
+      description: The severity of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Confidence
+      description: The confidence of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Country
+      description: The country of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Organization
+      description: The organization of the indicator associated with the specified
+        model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.ASN
+      description: The ASN of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Status
+      description: The status of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Tags
+      description: The tags of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Modified
+      description: The date and time the indicator was last modified.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Source
+      description: The indicator source.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Type
+      description: The indicator type.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: default
+      description: The type of sandbox ("default" or "premium").
+      isArray: false
+      name: sandbox_type
+      predefined:
+      - default
+      - premium
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of supported platforms for default or premium sandbox.
+    execution: false
+    name: threatstream-supported-platforms
+    outputs:
+    - contextPath: ThreatStream.PremiumPlatforms.Name
+      description: The name of the supported platform for premium sandbox.
+      type: String
+    - contextPath: ThreatStream.PremiumPlatforms.Types
+      description: The type of supported submissions for premium sandbox.
+      type: String
+    - contextPath: ThreatStream.PremiumPlatforms.Label
+      description: The display name of the supported platform of premium sandbox.
+      type: String
+    - contextPath: ThreatStream.DefaultPlatforms.Name
+      description: The name of the supported platform for standard sandbox.
+      type: String
+    - contextPath: ThreatStream.DefaultPlatforms.Types
+      description: The type of the supported submissions for standard sandbox.
+      type: String
+    - contextPath: ThreatStream.DefaultPlatforms.Label
+      description: The display name of the supported platform of standard sandbox.
+      type: String
+  - arguments:
+    - default: true
+      description: The URL to check.
+      isArray: true
+      name: url
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If confidence is greater than the threshold the URL is
+        considered malicious, otherwise it is considered good. This argument 
+        overrides the default URL threshold defined as a parameter.
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: Whether to include results with an inactive status.
+      isArray: false
+      name: include_inactive
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks the reputation of the given URL.
+    execution: false
+    name: url
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: URL.Data
+      description: The URL of the indicator.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor that reported the indicator as malicious.
+      type: String
+    - contextPath: ThreatStream.URL.Modified
+      description: |-
+        The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+        for time in UTC time.
+      type: String
+    - contextPath: ThreatStream.URL.Confidence
+      description: The observable certainty level of a reported indicator type. Confidence
+        score ranges from 0-100, in increasing order of confidence.
+      type: String
+    - contextPath: ThreatStream.URL.Status
+      description: The indicator status.
+      type: String
+    - contextPath: ThreatStream.URL.Organization
+      description: The name of the business that owns the IP address associated with
+        the indicator.
+      type: String
+    - contextPath: ThreatStream.URL.Address
+      description: The indicator URL.
+      type: String
+    - contextPath: ThreatStream.URL.Country
+      description: The country associated with the indicator.
+      type: String
+    - contextPath: ThreatStream.URL.Type
+      description: The indicator type.
+      type: String
+    - contextPath: ThreatStream.URL.Source
+      description: The indicator source.
+      type: String
+    - contextPath: ThreatStream.URL.Severity
+      description: The indicator severity ("very-high", "high", "medium", or "low").
+      type: String
+    - contextPath: ThreatStream.URL.Tags
+      description: Tags assigned to the URL.
+      type: Unknown
+    - contextPath: URL.Tags
+      description: List of URL tags.
+      type: Unknown
+    - contextPath: URL.ThreatTypes
+      description: Threat types associated with the url.
+      type: Unknown
+  dockerimage: demisto/py3-tools:0.0.1.26536
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- ThreatStream-Test
+fromversion: 6.0.0

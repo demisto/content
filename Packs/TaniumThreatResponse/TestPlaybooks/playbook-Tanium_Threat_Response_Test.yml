@@ -1,22 +1,19 @@
-elasticcommonfields: {}
 id: Tanium Threat Response Test
 version: -1
 name: Tanium Threat Response Test
-description: ""
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f13f7e5c-80e3-42d4-8e3e-82090b4cd9de
+    taskid: f391abcb-9a4b-455f-84c4-877071014f25
     type: start
     task:
-      description: ""
-      elasticcommonfields: {}
-      id: f13f7e5c-80e3-42d4-8e3e-82090b4cd9de
+      id: f391abcb-9a4b-455f-84c4-877071014f25
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -35,11 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: ef23e26c-ae70-424d-826b-3088caf15921
+    taskid: e086be41-07af-422d-8128-3eaf8de9d78f
     type: regular
     task:
-      elasticcommonfields: {}
-      id: ef23e26c-ae70-424d-826b-3088caf15921
+      id: e086be41-07af-422d-8128-3eaf8de9d78f
       version: -1
       name: Clear context
       description: Delete field from context
@@ -54,10 +50,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -73,11 +65,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 0ee63d3d-aaa6-4909-8875-06ac4c1b6313
+    taskid: b579fea4-09cf-451d-80ef-8d1db6ff1417
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 0ee63d3d-aaa6-4909-8875-06ac4c1b6313
+      id: b579fea4-09cf-451d-80ef-8d1db6ff1417
       version: -1
       name: Get intel doc by ID
       description: Returns a intel document object based on ID.
@@ -106,17 +97,16 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: eb741492-d7cd-4fbd-8082-8cfc2313d0a1
+    taskid: e6055d54-f04e-45f6-8a49-0e9974db56ab
     type: title
     task:
-      description: ""
-      elasticcommonfields: {}
-      id: eb741492-d7cd-4fbd-8082-8cfc2313d0a1
+      id: e6055d54-f04e-45f6-8a49-0e9974db56ab
       version: -1
       name: Query lists commands
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -135,17 +125,16 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: f8d9222f-7163-4198-83b8-c98e27498daa
+    taskid: d29ec414-ceb7-46d9-8bc6-8843fcde84df
     type: title
     task:
-      description: ""
-      elasticcommonfields: {}
-      id: f8d9222f-7163-4198-83b8-c98e27498daa
+      id: d29ec414-ceb7-46d9-8bc6-8843fcde84df
       version: -1
       name: Getters
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -164,11 +153,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 0dc01348-06b9-480a-8d78-4d5b3874937d
+    taskid: 0b1b83d7-26e2-4ac1-8282-861c924cd476
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 0dc01348-06b9-480a-8d78-4d5b3874937d
+      id: 0b1b83d7-26e2-4ac1-8282-861c924cd476
       version: -1
       name: Get intel docs list
       description: Returns a list of all intel documents.
@@ -179,8 +167,6 @@ tasks:
     nexttasks:
       '#none#':
       - "6"
-    scriptarguments:
-      limit: {}
     separatecontext: false
     view: |-
       {
@@ -196,11 +182,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 4b1bfe5e-cacb-4a65-8f99-8913ec05e4dc
+    taskid: 5b188bdc-7dd5-4d88-8320-5f347e808c5d
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 4b1bfe5e-cacb-4a65-8f99-8913ec05e4dc
+      id: 5b188bdc-7dd5-4d88-8320-5f347e808c5d
       version: -1
       name: Get alerts list
       description: Returns a list of all alerts.
@@ -210,18 +195,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
-    scriptarguments:
-      computer-ip-address: {}
-      computer-name: {}
-      intel-doc-id: {}
-      limit: {}
-      offset: {}
-      priority: {}
-      scan-config-id: {}
-      severity: {}
-      state: {}
-      type: {}
+      - "10"
     separatecontext: false
     view: |-
       {
@@ -235,27 +209,22 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "7":
-    id: "7"
-    taskid: 772d2d8e-7749-4b5c-82f6-14c10a8a12fe
+  "10":
+    id: "10"
+    taskid: 99d32f9a-940e-4d97-8d3b-826b3fb1cce8
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 772d2d8e-7749-4b5c-82f6-14c10a8a12fe
+      id: 99d32f9a-940e-4d97-8d3b-826b3fb1cce8
       version: -1
-      name: Get connections list
-      description: Returns all connections.
-      script: '|||tanium-tr-list-connections'
+      name: Get labels list
+      description: Returns all available labels in the system.
+      script: '|||tanium-tr-list-labels'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
-    scriptarguments:
-      limit:
-        simple: "1"
-      offset: {}
+      - "11"
     separatecontext: false
     view: |-
       {
@@ -269,140 +238,24 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "8":
-    id: "8"
-    taskid: 0a11a1b1-8d05-41bd-8e4b-9f64740936d2
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 0a11a1b1-8d05-41bd-8e4b-9f64740936d2
-      version: -1
-      name: Get snapshots list by connection
-      description: Returns all snapshots of a single connection.
-      script: '|||tanium-tr-list-snapshots-by-connection'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      connection-name:
-        simple: taniumlinux
-      connection_name:
-        complex:
-          root: Tanium
-          accessor: Connection.Name
-          transformers:
-          - operator: FirstArrayElement
-      limit:
-        simple: "1"
-      offset: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "9":
-    id: "9"
-    taskid: ffbfb41d-8f1f-447d-8d37-2cc2081a7c3a
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: ffbfb41d-8f1f-447d-8d37-2cc2081a7c3a
-      version: -1
-      name: Get local snapshots list by connection
-      description: Returns all local snapshots of a single connection.
-      script: '|||tanium-tr-list-local-snapshots-by-connection'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      connection-name:
-        simple: taniumlinux
-      connection_name:
-        complex:
-          root: Tanium
-          accessor: Connection.Name
-          transformers:
-          - operator: FirstArrayElement
-      limit: {}
-      offset: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1215
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "10":
-    id: "10"
-    taskid: 35bec9d6-edb7-441a-8201-d9467ae6f3d6
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 35bec9d6-edb7-441a-8201-d9467ae6f3d6
-      version: -1
-      name: Get labels list
-      description: Returns all available labels in the system.
-      script: '|||tanium-tr-list-labels'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      limit: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "11":
     id: "11"
-    taskid: 492a460d-2b05-437e-8a70-20b8a981b0a0
+    taskid: bbd6e936-ae80-4f10-83bd-42ebddc1dccc
     type: title
     task:
-      description: ""
-      elasticcommonfields: {}
-      id: 492a460d-2b05-437e-8a70-20b8a981b0a0
+      id: bbd6e936-ae80-4f10-83bd-42ebddc1dccc
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1580
+          "y": 1055
         }
       }
     note: false
@@ -412,11 +265,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 29f777ed-0bfb-4a74-884e-2ab654b2b88a
+    taskid: 91410551-e853-4df0-852d-ae7152efe7ad
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 29f777ed-0bfb-4a74-884e-2ab654b2b88a
+      id: 91410551-e853-4df0-852d-ae7152efe7ad
       version: -1
       name: Get alert by ID
       description: Returns alert object based on ID.
@@ -445,11 +297,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 0d369dbc-2e0c-4232-8b1c-c4ad0d1bf08f
+    taskid: 63dd7041-94ef-4ddb-8d2f-464eaf8c68fb
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 0d369dbc-2e0c-4232-8b1c-c4ad0d1bf08f
+      id: 63dd7041-94ef-4ddb-8d2f-464eaf8c68fb
       version: -1
       name: Update alert state
       description: Update the state of a single alert.
@@ -480,12 +331,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 44c23af0-6d88-48e4-8b20-05d5261eb89e
+    taskid: 16273ce0-685b-49eb-8626-914f134d7af0
     type: condition
     task:
-      description: ""
-      elasticcommonfields: {}
-      id: 44c23af0-6d88-48e4-8b20-05d5261eb89e
+      id: 16273ce0-685b-49eb-8626-914f134d7af0
       version: -1
       name: Validate alert state
       type: condition
@@ -520,11 +369,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: e3d49df8-cae7-45ab-8936-0d431f3fcf5d
+    taskid: d0f0d768-cfe9-4b11-8ef0-65d82e076ae6
     type: regular
     task:
-      elasticcommonfields: {}
-      id: e3d49df8-cae7-45ab-8936-0d431f3fcf5d
+      id: d0f0d768-cfe9-4b11-8ef0-65d82e076ae6
       version: -1
       name: Update alert state
       description: Update the state of a single alert.
@@ -553,46 +401,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "16":
-    id: "16"
-    taskid: b9be2b4b-09ca-4b05-8123-c2e71086399a
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: b9be2b4b-09ca-4b05-8123-c2e71086399a
-      version: -1
-      name: Get connection by name
-      description: Returns a connection object based on name.
-      script: '|||tanium-tr-get-connection-by-name'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      connection-name:
-        simple: taniumlinux
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1565
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "17":
     id: "17"
-    taskid: 5d630380-5ab2-4c79-8ec9-c784d41710b1
+    taskid: 3632f337-173c-401d-848a-75ce978364e5
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 5d630380-5ab2-4c79-8ec9-c784d41710b1
+      id: 3632f337-173c-401d-848a-75ce978364e5
       version: -1
       name: Get label by ID
       description: Returns label object based on ID.
@@ -602,7 +416,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "18"
     scriptarguments:
       label-id:
         simple: "1"
@@ -621,94 +435,22 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 5c2a510a-acc8-4a94-8b8b-88f8bea736a8
+    taskid: 43a59d4c-3bfa-4397-8f29-3974f4ac2d2a
     type: title
     task:
-      description: ""
-      elasticcommonfields: {}
-      id: 5c2a510a-acc8-4a94-8b8b-88f8bea736a8
+      id: 43a59d4c-3bfa-4397-8f29-3974f4ac2d2a
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 2090
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "23":
-    id: "23"
-    taskid: e0c29360-d495-4f23-8cee-88037433bc49
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: e0c29360-d495-4f23-8cee-88037433bc49
-      version: -1
-      name: tanium-tr-get-evidence-by-id
-      description: Gets evidence by evidence ID.
-      script: '|||tanium-tr-get-evidence-by-id'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      evidence-id:
-        simple: "29"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1915
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "24":
-    id: "24"
-    taskid: fb2a3397-283d-40f7-86f7-a169a9d486ed
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: fb2a3397-283d-40f7-86f7-a169a9d486ed
-      version: -1
-      name: Create connection
-      description: Creates a local or remote connection.
-      script: '|||tanium-tr-create-connection'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      connection-timeout: {}
-      destination:
-        simple: taniumlinux
-      destination-type:
-        simple: ip_address
-      remote:
-        simple: "False"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1740
+          "y": 1565
         }
       }
     note: false
@@ -721,7 +463,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2105,
+        "height": 1580,
         "width": 810,
         "x": 50,
         "y": 50
@@ -731,3 +473,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

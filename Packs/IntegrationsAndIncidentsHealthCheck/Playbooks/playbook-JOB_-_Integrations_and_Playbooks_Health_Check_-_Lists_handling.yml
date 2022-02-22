@@ -1,5 +1,7 @@
 id: JOB - Integrations and Playbooks Health Check - Lists handling
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: JOB - Integrations and Incidents Health Check - Lists handling
 description: This playbook is triggered by a 'JOB - Integrations and Playbooks Health'
   playbook and is responsible for creating or updating related XSOAR lists.
@@ -1384,7 +1386,6 @@ tasks:
       '#none#':
       - "52"
     scriptarguments:
-      append: {}
       key:
         simple: FailedintegrationsTable
       stringify:
@@ -1423,7 +1424,6 @@ tasks:
       '#none#':
       - "53"
     scriptarguments:
-      append: {}
       key:
         simple: FailedincidentsTable
       stringify:
@@ -1696,10 +1696,10 @@ tasks:
     quietmode: 0
   "54":
     id: "54"
-    taskid: 5c411312-cd8e-4a95-8011-39a939725477
+    taskid: 09bcd8ca-d2f0-43cd-861f-8b4367de364e
     type: regular
     task:
-      id: 5c411312-cd8e-4a95-8011-39a939725477
+      id: 09bcd8ca-d2f0-43cd-861f-8b4367de364e
       version: -1
       name: Set lists names to context
       description: Set the XSOAR lists name in context under the key XSOARlists.
@@ -1712,7 +1712,6 @@ tasks:
       - "14"
       - "13"
     scriptarguments:
-      append: {}
       key:
         simple: XSOARlists
       stringify:
@@ -1720,6 +1719,12 @@ tasks:
       value:
         complex:
           root: lists
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .=Object.keys(val)
     separatecontext: false
     view: |-
       {
@@ -1750,3 +1755,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+marketplaces:
+  - xsoar

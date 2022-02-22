@@ -2,7 +2,7 @@
     "name": "Rubrik Polaris",
     "description": "Integration for Rubrik Polaris",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.7",
     "author": "Rubrik",
     "url": "https://www.rubrik.com/support/",
     "email": "support@rubrik.com",
@@ -15,5 +15,9 @@
     "keywords": [],
     "githubUser": [
         "drew-russell"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

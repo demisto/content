@@ -1,0 +1,156 @@
+id: playbook-CustomIndicatorDemo-test
+version: -1
+name: playbook-CustomIndicatorDemo-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 21491667-52f3-4247-85bc-2c57a226abd4
+    type: start
+    task:
+      id: 21491667-52f3-4247-85bc-2c57a226abd4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 86b65937-519e-421c-8b04-50e0ad26d93d
+    type: regular
+    task:
+      id: 86b65937-519e-421c-8b04-50e0ad26d93d
+      version: -1
+      name: test-custom-indicator
+      description: 'This command demonstrates the usage of CustomIndicator.'
+      script: CustomIndicatorDemo|||test-custom-indicator
+      type: regular
+      iscommand: true
+      brand: CustomIndicatorDemo
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 8f6b2ee7-9290-405a-858b-4868ab476608
+    type: condition
+    task:
+      id: 8f6b2ee7-9290-405a-858b-4868ab476608
+      version: -1
+      name: verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: custom.param1
+            iscontext: true
+          right:
+            value:
+              simple: value1
+      - - operator: isEqualString
+          left:
+            value:
+              simple: custom.param2
+            iscontext: true
+          right:
+            value:
+              simple: value2
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Demo.Result.dummy
+            iscontext: true
+          right:
+            value:
+              simple: test
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 9e31f61b-3068-40a4-8f25-7fba0d6c1df4
+    type: title
+    task:
+      id: 9e31f61b-3068-40a4-8f25-7fba0d6c1df4
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
+description: ''

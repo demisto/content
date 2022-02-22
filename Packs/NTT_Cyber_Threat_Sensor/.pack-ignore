@@ -2,7 +2,7 @@
 ignore=PA116
 
 [file:NTT_Cyber_Threat_Sensor.yml]
-ignore=IN126,BA108,BA109
+ignore=IN126,BA108,BA109,IN145
 
 [file:classifier-mapper-incoming-NTT_Cyber_Threat_Sensor.json]
 ignore=BA101

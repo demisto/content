@@ -132,7 +132,7 @@
    }
 }
 </pre>
-<p>Each var name can either be provided with a value or a context key to retrieve the value from.</p>
+<p>Each var name can either be provided with a value or a context key to retrieve the value from. Note that only context data is accessible for this argument, while incident fields are not.</p>
 </td>
 </tr>
 <tr>
@@ -152,7 +152,7 @@
 <h5> Example:</h5>
 <pre>&lt;html&gt;
   &lt;body&gt;
-    &lt;img src="cid:radomimagecid"/&gt;
+    &lt;img src=\"cid:radomimagecid\"/&gt;
   &lt;/body&gt;
 &lt;/html&gt;</pre>
 <h3>CID Limitations</h3>

@@ -1,0 +1,687 @@
+commonfields:
+  id: VxStream
+  version: -1
+name: VxStream
+deprecated: true
+display: CrowdStrike Falcon Sandbox (Deprecated)
+category: Forensics & Malware Analysis
+description: Deprecated. Use CrowdStrike Falcon Sandbox V2 instead.
+configuration:
+- display: Server URL (e.g. https://216.3.128.82)
+  name: serverUrl
+  defaultvalue: https://www.hybrid-analysis.com
+  type: 0
+  required: true
+- display: API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Secret Key (applicable only for v1)
+  name: secretKey
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: API Version (v1,v2)
+  name: version
+  defaultvalue: v1
+  type: 0
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: vx-scan
+    deprecated: true
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: File hash (MD5, SHA1 or SHA256)
+    outputs:
+    - contextPath: File.SHA256
+      description: SHA256 of the file
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 of the file
+      type: string
+    - contextPath: File.MD5
+      description: MD5 of the file
+      type: string
+    - contextPath: File.environmentId
+      description: 'Environment id of the file '
+      type: number
+    - contextPath: File.analysis_start_time
+      description: Analysis start time of the file
+      type: string
+    - contextPath: File.submitname
+      description: Submission name of the file
+      type: string
+    - contextPath: File.classification_tags
+      description: List of classification tags of the file
+    - contextPath: File.vxfamily
+      description: Family classification of the file
+      type: string
+    - contextPath: File.total_network_connections
+      description: Total network connections of the file
+      type: number
+    - contextPath: File.total_processes
+      description: Total processes count of the file
+      type: number
+    - contextPath: File.total_signatures
+      description: Total signatures count if the file
+      type: number
+    - contextPath: File.hosts
+      description: List of file's hosts
+    - contextPath: File.isinteresting
+      description: If server found this file interesting
+      type: boolean
+    - contextPath: File.domains
+      description: List of file's related domains
+    - contextPath: File.isurlanalysis
+      description: If file analyzed by url
+      type: boolean
+    - contextPath: File.Malicious.Vendor
+      description: or malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: string
+    description: Get summary information for a given MD5, SHA1 or SHA256 and all the
+      reports generated for any environment ID
+  - name: crowdstrike-scan
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: File hash (MD5, SHA1 or SHA256)
+    outputs:
+    - contextPath: File.SHA256
+      description: SHA256 of the file
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 of the file
+      type: string
+    - contextPath: File.MD5
+      description: MD5 of the file
+      type: string
+    - contextPath: File.environmentId
+      description: Environment id of the file
+      type: string
+    - contextPath: File.analysis_start_time
+      description: Analysis start time of the file
+      type: string
+    - contextPath: File.submitname
+      description: Submission name of the file
+      type: string
+    - contextPath: File.classification_tags
+      description: List of classification tags of the file
+    - contextPath: File.vxfamily
+      description: Family classification of the file
+      type: string
+    - contextPath: File.total_network_connections
+      description: Total network connections of the file
+      type: number
+    - contextPath: File.total_processes
+      description: Total processes count of the file
+      type: number
+    - contextPath: File.total_signatures
+      description: Total signatures count if the file
+      type: number
+    - contextPath: File.hosts
+      description: List of file's hosts
+    - contextPath: File.isinteresting
+      description: If server found this file interesting
+      type: boolean
+    - contextPath: File.domains
+      description: List of file's related domains
+    - contextPath: File.isurlanalysis
+      description: If file analyzed by url
+      type: boolean
+    - contextPath: File.Malicious.Vendor
+      description: or malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.hash
+      description: The hash used to query the file
+      type: string
+    - contextPath: File.state
+      description: The state of the file test
+      type: string
+    description: Get summary information for a given MD5, SHA1 or SHA256 and all the
+      reports generated for any environment ID
+  - name: vx-get-environments
+    deprecated: true
+    arguments: []
+    outputs:
+    - contextPath: VX.Environment.ID
+      description: Environment id
+    - contextPath: VX.Environment.description
+      description: Environment description
+    - contextPath: VX.Environment.architecture
+      description: Environment architecture
+    - contextPath: VX.Environment.VMs_total
+      description: Total virtual machines in environment
+    - contextPath: VX.Environment.VMs_busy
+      description: Busy virtual machines in environment
+    - contextPath: VX.Environment.analysisMode
+      description: Analysis mode of environment
+    - contextPath: VX.Environment.groupicon
+      description: Icon of environment
+    description: Get a list of all available environments
+  - name: crowdstrike-get-environments
+    arguments: []
+    outputs:
+    - contextPath: CrowdStrike.Environment.ID
+      description: Environment ID
+      type: number
+    - contextPath: CrowdStrike.Environment.description
+      description: Environment description
+      type: string
+    - contextPath: CrowdStrike.Environment.architecture
+      description: Environment architecture
+      type: string
+    - contextPath: CrowdStrike.Environment.VMs_total
+      description: Total virtual machines in environment
+      type: number
+    - contextPath: CrowdStrike.Environment.VMs_busy
+      description: Busy virtual machines in environment
+      type: number
+    - contextPath: CrowdStrike.Environment.analysisMode
+      description: 'Analysis mode of environment '
+      type: string
+    - contextPath: CrowdStrike.Environment.groupicon
+      description: Icon of environment
+      type: string
+    description: Get a list of all available environments
+  - name: vx-submit-sample
+    deprecated: true
+    arguments:
+    - name: entryId
+      required: true
+      default: true
+      description: War-room entry ID of sample file
+    - name: environmentId
+      description: Environment ID to submit file to (get all IDs via crowdstrike-get-environments)
+      defaultValue: "100"
+    description: Submit a file from investigation to analysis server
+  - name: crowdstrike-submit-sample
+    arguments:
+    - name: entryId
+      required: true
+      default: true
+      description: War-room entry ID of sample file
+    - name: environmentID
+      required: true
+      description: Environment ID to submit file to (get all IDs via crowdstrike-get-environments)
+      defaultValue: "100"
+    outputs:
+    - contextPath: File.SHA256
+      description: File SHA256 hash
+      type: string
+    - contextPath: File.MD5
+      description: File MD5 hash
+      type: string
+    - contextPath: File.SHA1
+      description: File SHA1 hash
+      type: string
+    - contextPath: CrowdStrike.JobID
+      description: Sample job ID
+      type: string
+    - contextPath: CrowdStrike.EnvironmentID
+      description: Sample environment ID
+      type: number
+    description: Submit a file from investigation to analysis server
+  - name: vx-search
+    deprecated: true
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Falcon Sandbox query syntax (see `<server url>/faq#advanced-search-options`
+        for more details). examples -  url:google, host:95.181.53.78
+    outputs:
+    - contextPath: VX.Search.SHA256
+      description: SHA256 of search result
+    - contextPath: VX.Search.SHA1
+      description: SHA1of search result
+    - contextPath: VX.Search.MD5
+      description: MD5 of search result
+    - contextPath: VX.Search.environmentId
+      description: Environment Id of search result
+    - contextPath: VX.Search.start_time
+      description: Start time of search result
+    - contextPath: VX.Search.threatscore
+      description: Threat score of search result by server
+    - contextPath: VX.Search.verdict
+      description: Verdict of search result
+    - contextPath: VX.Search.environmentDescription
+      description: Environment description of search result
+    - contextPath: VX.Search.submitname
+      description: Submission name of search result
+    - contextPath: VX.Search.vxfamily
+      description: Family of search result
+    - contextPath: VX.Search.threatscore
+      description: Threat score of search result
+    - contextPath: VX.Search.type_short
+      description: type of search result (url, host, etc.)
+    - contextPath: VX.Search.size
+      description: Size of search result
+    - contextPath: File.Malicious.Vendor
+      description: or malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    description: Search the database using the Falcon Sandbox search syntax
+  - name: crowdstrike-search
+    arguments:
+    - name: query
+      default: true
+      description: Falcon Sandbox query syntax, e.g. url:google,host:95.181.53.78.
+        This argument integrates all other arguments to one, and cannot be given along
+        with the other arguments.
+    - name: filename
+      description: Filename e.g. invoice.exe
+    - name: filetype
+      description: Filetype e.g. docx
+    - name: filetype_desc
+      description: Filetype description e.g. PE32 executable
+    - name: env_id
+      description: Environment Id
+    - name: country
+      description: Country (3 digit ISO) e.g. swe, usa, fra
+    - name: verdict
+      auto: PREDEFINED
+      predefined:
+      - Whitelisted
+      - NoVerdict
+      - NoSpecificThreat
+      - Suspicious
+      - Malicious
+      description: 'Verdict '
+    - name: av_detect
+      description: AV Multiscan range e.g. 50-70 (min 0, max 100)
+    - name: vx_family
+      description: AV Family Substring e.g. nemucod
+    - name: tag
+      description: Hashtag e.g. ransomware
+    - name: port
+      description: Port e.g. 8080
+    - name: host
+      description: Host e.g. 192.168.0.1
+    - name: domain
+      description: Domain e.g. checkip.dyndns.org
+    - name: url
+      description: HTTP Request Substring e.g. google
+    - name: similar_to
+      description: Similar Samples e.g. <sha256>
+    - name: context
+      description: Sample Context e.g. <sha256>
+    - name: imp_hash
+      description: Import Hash
+    - name: ssdeep
+      description: SSDeep
+    - name: authentihash
+      description: Authentication Hash
+    outputs:
+    - contextPath: File.SHA256
+      description: SHA256 of search result
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1of search result
+      type: string
+    - contextPath: File.MD5
+      description: MD5 of search result
+      type: string
+    - contextPath: File.environmentId
+      description: Environment Id of search result
+      type: number
+    - contextPath: File.start_time
+      description: Start time of search result
+    - contextPath: File.threatscore
+      description: Threat score of search result by server
+      type: string
+    - contextPath: File.verdict
+      description: Verdict of search result
+      type: string
+    - contextPath: File.environmentDescription
+      description: Environment description of search result
+      type: string
+    - contextPath: File.submitname
+      description: Submission name of search result
+      type: string
+    - contextPath: File.vxfamily
+      description: Family of search result
+      type: string
+    - contextPath: File.threatscore
+      description: Threat score of search result
+      type: number
+    - contextPath: File.type_short
+      description: type of search result (url, host, etc.)
+      type: string
+    - contextPath: File.size
+      description: Size of search result
+      type: number
+    - contextPath: File.Malicious.Vendor
+      description: or malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: string
+    description: Search the database using the Falcon Sandbox search syntax
+  - name: vx-result
+    deprecated: true
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: File hash (MD5, SHA1 or SHA256)
+    - name: environmentId
+      description: environment ID to submit file to(get all via crowdstrike-get-environments)
+    description: Retrieve result data upon a file. NOTE - This command returns a file
+  - name: crowdstrike-result
+    arguments:
+    - name: file
+      default: true
+      description: File hash (MD5, SHA1 or SHA256) - Mandatory in v1
+    - name: environmentId
+      description: environment ID to submit file to (get all via crowdstrike-get-environments)  -
+        Mandatory in v1.
+      defaultValue: "100"
+    - name: file-type
+      auto: PREDEFINED
+      predefined:
+      - xml
+      - json
+      - html
+      - pdf
+      - stix
+      - misp
+      - bin
+      - pcap
+      description: File type of report to return (supported only in v2)
+      defaultValue: pdf
+    - name: JobID
+      description: Job ID of file to generate report of (supported only in v2)
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    description: Retrieve result data upon a file. NOTE - This command returns a file
+  - name: vx-detonate-file
+    deprecated: true
+    arguments:
+    - name: entryId
+      required: true
+      description: War-room entry ID of sample file
+    - name: environmentID
+      description: environment ID to submit file to(get all via crowdstrike-get-environments).
+        Default is 100, or other WINDOWS ID
+    - name: delay
+      description: Delay wait time between calls (in seconds)
+      defaultValue: "3"
+    - name: timeout
+      description: Total wait time (in seconds)
+      defaultValue: "60"
+    description: (Deprecated - Please use CrowdStrike Falcon Sandbox - Detonate file
+      playbook instead) Detonate file through Falcon Sandbox
+  - name: crowdstrike-detonate-file
+    deprecated: true
+    arguments:
+    - name: entryId
+      required: true
+      description: War-room entry ID of sample file
+    - name: environmentID
+      description: environment ID to submit file to(get all via crowdstrike-get-environments).
+        Default is 100, or other WINDOWS ID
+    - name: delay
+      description: Delay wait time between calls (in seconds)
+      defaultValue: "3"
+    - name: timeout
+      description: Total wait time (in seconds)
+      defaultValue: "60"
+    outputs:
+    - contextPath: File.SHA256
+      description: SHA256 of the file
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 of the file
+      type: string
+    - contextPath: File.MD5
+      description: MD5 of the file
+      type: string
+    - contextPath: File.environmentId
+      description: Environment id of the file
+      type: string
+    - contextPath: File.analysis_start_time
+      description: Analysis start time of the file
+      type: string
+    - contextPath: File.submitname
+      description: Submission name of the file
+      type: string
+    - contextPath: File.classification_tags
+      description: List of classification tags of the file
+    - contextPath: File.vxfamily
+      description: Family classification of the file
+      type: string
+    - contextPath: File.total_network_connections
+      description: Total network connections of the file
+      type: number
+    - contextPath: File.total_processes
+      description: Total processes count of the file
+      type: number
+    - contextPath: File.total_signatures
+      description: Total signatures count if the file
+      type: number
+    - contextPath: File.hosts
+      description: List of file's hosts
+    - contextPath: File.isinteresting
+      description: If server found this file interesting
+      type: boolean
+    - contextPath: File.domains
+      description: List of file's related domains
+    - contextPath: File.isurlanalysis
+      description: If file analyzed by url
+      type: boolean
+    - contextPath: File.Malicious.Vendor
+      description: or malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    description: (Deprecated - Please use CrowdStrike Falcon Sandbox - Detonate file
+      playbook instead) Detonate file through Falcon Sandbox
+  - name: crowdstrike-submit-url
+    arguments:
+    - name: url
+      required: true
+      description: URL to analyze
+    - name: environmentID
+      required: true
+      description: Environment ID to submit URL to
+      defaultValue: "100"
+    - name: dontThrowErrorOnFileDetonation
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Not throwing an error when sending a URL, which points to a file.
+      defaultValue: "false"
+    outputs:
+    - contextPath: File.SHA256
+      description: File SHA256
+      type: string
+    - contextPath: CrowdStrike.EnvironmentID
+      description: Environment ID in which the URL was analysed
+      type: string
+    - contextPath: CrowdStrike.JobID
+      description: Job ID of URL analysation
+      type: string
+    description: Submit a URL for analysis (Supported only in v2)
+  - name: crowdstrike-get-screenshots
+    arguments:
+    - name: file
+      description: File hash (SHA256) to retrieve screenshots of
+    - name: environmentID
+      description: environment ID to retrieve screenshots from
+      defaultValue: "100"
+    - name: JobID
+      description: Job ID to retrieve screenshots of
+    outputs:
+    - contextPath: File.SHA256
+      description: SHA256 of search result
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1of search result
+      type: string
+    - contextPath: File.MD5
+      description: MD5 of search result
+      type: string
+    - contextPath: File.environmentId
+      description: Environment Id of search result
+      type: number
+    - contextPath: File.start_time
+      description: Start time of search result
+    - contextPath: File.threatscore
+      description: Threat score of search result by server
+      type: string
+    - contextPath: File.verdict
+      description: Verdict of search result
+      type: string
+    - contextPath: File.environmentDescription
+      description: Environment description of search result
+      type: string
+    - contextPath: File.submitname
+      description: Submission name of search result
+      type: string
+    - contextPath: File.vxfamily
+      description: Family of search result
+      type: string
+    - contextPath: File.threatscore
+      description: Threat score of search result
+      type: number
+    - contextPath: File.type_short
+      description: type of search result (url, host, etc.)
+      type: string
+    - contextPath: File.size
+      description: Size of search result
+      type: number
+    - contextPath: File.Malicious.Vendor
+      description: or malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: string
+    description: ' Retrieves screenshots from a report (Supported only in v2)'
+  - name: crowdstrike-detonate-url
+    deprecated: true
+    arguments:
+    - name: url
+      required: true
+      description: 'URL address to be submitted '
+    - name: environmentID
+      description: Environment ID to submit URL to (get all via crowdstrike-get-environments).
+        Default is 100, or other WINDOWS ID
+      defaultValue: "100"
+    - name: delay
+      description: Delay wait time between calls (in seconds)
+      defaultValue: "3"
+    - name: timeout
+      description: Total wait time (in seconds)
+      defaultValue: "60"
+    - name: file-type
+      auto: PREDEFINED
+      predefined:
+      - xml
+      - json
+      - html
+      - pdf
+      - stix
+      - misp
+      - bin
+      - pcap
+      description: File type of report to return
+      defaultValue: pdf
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    description: "(Deprecated - Please use CrowdStrike Falcon Sandbox - Detonate URL\
+      \ playbook instead) Detonates URL address through Falcon Sandbox (supported\
+      \ only in v2)"
+  - name: crowdstrike-submit-file-by-url
+    arguments:
+    - name: environmentID
+      description: Environment ID to submit file to (get all IDs via crowdstrike-get-environments)
+      defaultValue: "100"
+    - name: url
+      required: true
+      description: URL of file to submit.
+    outputs:
+    - contextPath: File.SHA256
+      description: File SHA256
+      type: string
+    - contextPath: CrowdStrike.EnvironmentID
+      description: Environment ID in which the file was analysed
+      type: string
+    - contextPath: CrowdStrike.JobID
+      description: Job ID of file analysation
+      type: string
+    description: Submit a file by URL for analysis (Supported only in v2).
+  runonce: false
+tests:
+- No test - deprecated.
+fromversion: 5.0.0

@@ -1,0 +1,28 @@
+{
+  "@odata.context": "https://graph.microsoft.com/beta/$metadata#riskyUsers",
+  "@odata.nextLink": "https://graph.microsoft.com/beta/RiskyUsers?$top=2&$skiptoken=dummy_skip_token",
+  "value": [
+    {
+      "id": "dummy_id",
+      "isDeleted": "False",
+      "isProcessing": "False",
+      "riskLevel": "none",
+      "riskState": "remediated",
+      "riskDetail": "adminGeneratedTemporaryPassword",
+      "riskLastUpdatedDateTime": "2021-07-14T10:36:43.3326435Z",
+      "userDisplayName": "foo1",
+      "userPrincipalName": "foo1@demisto.com"
+    },
+    {
+      "id": "dummy_id2",
+      "isDeleted": "False",
+      "isProcessing": "False",
+      "riskLevel": "medium",
+      "riskState": "atRisk",
+      "riskDetail": "none",
+      "riskLastUpdatedDateTime": "2020-06-23T18:53:57.7795781Z",
+      "userDisplayName": "foo2",
+      "userPrincipalName": "foo2@demisto.com"
+    }
+  ]
+}

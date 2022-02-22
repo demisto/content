@@ -9,39 +9,17 @@ requests.packages.urllib3.disable_warnings()
 '''Constants'''
 CATEGORY = 'alarm'  # only focus on alarms
 
-'''Globals'''
-AUTH_SERVER: str
-AUTH_URL: str
-ARC_URL: str
-CLIENT_ID: str
-CLIENT_SECRET: str
-AUTH_HEADERS: dict
-CLIENT_HEADERS: dict
-VERIFY_CERT: bool
-PROXY: bool
+AUTH_SERVER = demisto.getParam('auth_url')
+AUTH_URL = AUTH_SERVER + '/as/token.oauth2'
+ARC_URL = demisto.getParam('arc_url')
+ARC_URL += '/rest/1.0'
 
-
-def init_globals():
-    """
-
-    :return: void
-    """
-
-    global AUTH_SERVER, AUTH_URL, ARC_URL, CLIENT_ID, CLIENT_SECRET, AUTH_HEADERS, CLIENT_HEADERS, VERIFY_CERT, PROXY
-
-    AUTH_SERVER = demisto.getParam('auth_url')
-    AUTH_URL = AUTH_SERVER + '/as/token.oauth2'
-    ARC_URL = demisto.getParam('arc_url')
-    ARC_URL += '/rest/1.0'
-
-    CLIENT_ID = demisto.getParam('client_id')
-    CLIENT_SECRET = demisto.getParam('client_secret')
-    VERIFY_CERT = not demisto.params().get('insecure', False)
-    AUTH_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
-    CLIENT_HEADERS = {'Authorization': ''}
-    PROXY = demisto.getParam('proxy')
-
-    handle_proxy()
+CLIENT_ID = demisto.getParam('client_id')
+CLIENT_SECRET = demisto.getParam('client_secret')
+VERIFY_CERT = not demisto.params().get('insecure', False)
+AUTH_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
+CLIENT_HEADERS = {'Authorization': ''}
+PROXY = demisto.getParam('proxy')
 
 
 def request_api_token():
@@ -539,7 +517,7 @@ def main():
     }
 
     try:
-        init_globals()
+        handle_proxy()
 
         command = demisto.command()
 

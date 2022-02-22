@@ -1,0 +1,99 @@
+Received: from xxx.xxx.outlook.com
+ ([fe80::b84c:5b5c:fb05:fab0]) by xxx.xxx.outlook.com
+ ([fe80::b84c:5b5c:fb05:fab0%10]) with mapi id 15.20.4308.026; Mon, 12 Jul
+ 2021 18:06:49 +0000
+From: Example P <examplep@test.com>
+Subject: This is test1
+Thread-Topic: This is test1
+Thread-Index: AQ111111111
+X-MS-Exchange-MessageSentRepresentingType: 1
+Date: Mon, 12 Jul 2021 18:06:48 +0000
+Message-ID: <1111@test.com>
+Accept-Language: en-US
+Content-Language: en-US
+Content-Language: en-US
+Content-Type: multipart/mixed;
+ boundary="_002_"
+MIME-Version: 1.0
+Received: from 127.0.0.1
+
+--_002_
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <qqqqq@test.org>
+
+
+*** This is an External Email ***
+
+--_002_
+Content-Type: message/rfc822
+Content-Disposition: attachment; creation-date="Mon, 12 Jul 2021 18:07:23 GMT";
+ modification-date="Mon, 12 Jul 2021 18:07:23 GMT"
+Content-ID: <1111@test.org>
+
+Received: from test.text.com
+From: Example R <Example R@test.com>
+Subject: This is test 2
+Thread-Topic: This is test 2
+Thread-Index: A2222==
+Date: Mon, 12 Jul 2021 18:06:48 +0000
+Message-ID: <2222@test.com>
+Accept-Language: en-US
+Content-Language: en-US
+Content-Type: multipart/signed;
+ boundary="_65_";
+ protocol="application/pkcs7-signature"; micalg=sha-256
+To:
+CC:
+MIME-Version: 1.0
+
+--_65_
+Content-Type: multipart/alternative;
+	boundary="_75_"
+
+
+--_75_
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset=us-ascii
+
+
+
+--_75_
+Content-Type: multipart/mixed;
+	boundary="_44_"
+
+
+--_44_
+Content-Transfer-Encoding: 7bit
+Content-Type: text/html;
+	charset=us-ascii
+
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=us-ascii"></head><meta http-equiv="Content-Type" content="text/html; charset=us-ascii" class=""></html>
+--_44_
+Content-Disposition: inline;
+	filename="PDF_EXM.pdf"
+Content-Type: application/pdf;
+	x-unix-mode=0644;
+	name="PDF_EXM.pdf"
+Content-Transfer-Encoding: base64
+
+
+--_44_
+Content-Transfer-Encoding: 7bit
+Content-Type: text/html;
+	charset=us-ascii
+
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=us-ascii"></head><meta http-equiv="Content-Type" content="text/html; charset=us-ascii" class=""></html>
+--_44_--
+
+--_75_
+
+--_65_
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+
+
+--_65_--
+
+--_002_--

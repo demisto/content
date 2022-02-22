@@ -1,0 +1,346 @@
+commonfields:
+  id: FalconIntel
+  version: -1
+name: FalconIntel
+display: CrowdStrike Falcon Intel (Deprecated)
+category: Data Enrichment & Threat Intelligence
+description: Deprecated. Use CrowdStrike Falcon Intel v2 integration instead.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  defaultvalue: https://intelapi.crowdstrike.com/
+  type: 0
+  required: true
+- display: API ID
+  name: id
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key
+  name: key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Indicator Threshold. Minimum malicious confidence from Falcon Intel to
+    consider the indicator malicious.(low, medium, high)
+  name: threshold
+  defaultvalue: high
+  type: 0
+  required: false
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Support indicator API V2
+  name: version
+  defaultvalue: "true"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: The file hash md5/sha1/sha256 to check
+    outputs:
+    - contextPath: File.MD5
+      description: Bad hash MD5
+    - contextPath: File.SHA1
+      description: Bad hash SHA1
+    - contextPath: File.SHA256
+      description: Bad hash SHA256
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+    description: Check file reputation
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: URL to be checked
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URL
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+    description: Check the given URL reputation
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Domain to be checked
+    outputs:
+    - contextPath: Domain.Name
+      description: Bad domain
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+    description: Check the given URL reputation
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP to check
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IP
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+    description: Check IP reputation
+  - name: cs-actors
+    arguments:
+    - name: q
+      default: true
+      description: Search all fields for the given data
+    - name: name
+      description: Search based on actor name
+    - name: desc
+      description: Search based on description
+    - name: minLastModifiedDate
+      description: Search range from modified date. Dates are formatted as YYYY-MM-DD.
+    - name: maxLastModifiedDate
+      description: Search range to modified date. Dates are formatted as YYYY-MM-DD.
+    - name: minLastActivityDate
+      description: Search range from activity date. Dates are formatted as YYYY-MM-DD.
+    - name: maxLastActivityDate
+      description: Search range to activity date. Dates are formatted as YYYY-MM-DD.
+    - name: origins
+      description: Search by origins separated by ","
+    - name: targetCountries
+      description: Search by target countries separated by ","
+    - name: targetIndustries
+      description: Search by target industries separated by ","
+    - name: motivations
+      description: Search by motivations separated by ","
+    - name: offset
+      description: Which page of the results to retrieve. It is 0 based.
+    - name: limit
+      description: Number of results for the page
+    - name: sort
+      description: Sort is field_name.order, field_name.order where order is either
+        asc or desc
+    - name: slug
+      description: 'Search by ''slug'' or short descriptive name. Ex: "anchor-panda"'
+    description: Search known actors based on the given parameters. Dates are formatted
+      as YYYY-MM-DD. Max date is taken automatically looking at end-of-day time. Origins,
+      targetCountries, targetIndustries and motivations can all receive multiple values
+      separated by ",". Offset is 0 based. Sort is field_name.order, field_name.order
+      where order is either asc or desc.
+  - name: cs-indicators
+    arguments:
+    - name: parameter
+      required: true
+      description: Based on what parameter to search. See CrowdStrike documentation
+        for details. Can be one of indicator, type, report, actor, malicious_confidence,
+        published_date, last_updated, malware_family, kill_chain, labels, DomainType,
+        EmailAddressType, IntelNews, IPAddressType, Malware, Status, Target, ThreatType,
+        Vulnerability
+    - name: filter
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - match
+      - equal
+      - gt
+      - gte
+      - lt
+      - lte
+      description: Can be either match, equal, gt(e), lt(e)
+    - name: value
+      required: true
+      description: The value for the given parameter
+    - name: sort
+      description: Sort by a field. Should be field_name.order where order is either
+        asc or desc. Fields are indicator, type, report, actor, malicious_confidence,
+        published_date, last_updated.
+    - name: page
+      description: The page to retrieve - 1 based
+    - name: pageSize
+      description: The size of the page to retrieve
+    outputs:
+    - contextPath: File.MD5
+      description: hash MD5
+    - contextPath: File.SHA1
+      description: hash SHA1
+    - contextPath: File.SHA256
+      description: hash SHA256
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: File.Reports
+      description: For malicious files, the associated reports describing the hash
+    - contextPath: File.Actors
+      description: For malicious files, the associated actors
+    - contextPath: File.MalwareFamilies
+      description: For malicious files, the associated malware family
+    - contextPath: File.KillChains
+      description: For malicious files, the associated kill chain
+    - contextPath: URL.Data
+      description: Bad URL
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: URL.Reports
+      description: For malicious URL, the associated reports describing the URL
+    - contextPath: URL.Actors
+      description: For malicious URL, the associated actors
+    - contextPath: URL.MalwareFamilies
+      description: For malicious URL, the associated malware family
+    - contextPath: URL.KillChains
+      description: For malicious URL, the associated kill chain
+    - contextPath: Domain.Name
+      description: Bad domain
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: Domain.Reports
+      description: For malicious domain, the associated reports describing the domain
+    - contextPath: Domain.Actors
+      description: For malicious domain, the associated actors
+    - contextPath: Domain.MalwareFamilies
+      description: For malicious domain, the associated malware family
+    - contextPath: Domain.KillChains
+      description: For malicious domain, the associated kill chain
+    - contextPath: IP.Address
+      description: IP Indicators
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: IP.Reports
+      description: For malicious IP, the associated reports describing the IP
+    - contextPath: IP.Actors
+      description: For malicious IP, the associated actors
+    - contextPath: IP.MalwareFamilies
+      description: For malicious IP, the associated malware family
+    - contextPath: IP.KillChains
+      description: For malicious IP, the associated kill chain
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Search known indicators based on the given parameters
+  - name: cs-reports
+    arguments:
+    - name: q
+      description: Perform a generic substring search across all fields in a report
+    - name: name
+      description: Search for keywords across report names (i.e. the report’s title)
+    - name: actor
+      description: Search for a report related to a particular actor. For a list of
+        actors, refer to the Intel Actors API
+    - name: targetCountries
+      description: Search reports by targeted country/countries
+    - name: targetIndustries
+      description: Search reports by targeted industry/industries
+    - name: motivations
+      description: Search by motivation
+    - name: slug
+      description: Search by report 'slug' or short descriptive name
+    - name: description
+      description: Search the body of the report
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - intelligence report
+      - alert
+      - periodic report
+      - tipper
+      description: The type of object to search for.
+    - name: subType
+      auto: PREDEFINED
+      predefined:
+      - weekly
+      - monthly
+      - quarterly
+      - annual
+      description: The sub-type to search for.
+    - name: tags
+      description: Tags associated with a report (managed internally by CS)
+    - name: minLastModifiedDate
+      description: Constrain results to those modified on or after a certain date
+        - format YYYY-MM-DD
+    - name: maxLastModifiedDate
+      description: Constrain results to those modified on or before a certain date
+        - format YYYY-MM-DD
+    - name: offset
+      description: Used to paginate the response. You can then use limit to set the
+        number of results for the next page.
+    - name: limit
+      description: Limits the number of results to return
+    - name: sort
+      description: 'The field and direction to sort results on in the format of: <field>.<asc>
+        or <field>.<desc>. Valid values include: name, target_countries, target_industries,
+        type, created_date, last_modified_date'
+    description: The Falcon Intel Reports API allows to query CrowdStrike intelligence
+      publications.
+  - name: cs-report-pdf
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The ID of the report to retrieve
+    description: Retrieve the Falcon Intel Report PDF
+  runonce: false
+tests:
+- No tests - deprecated
+fromversion: 5.0.0
+deprecated: true

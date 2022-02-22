@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM104
+
+[file:Carbonblackliveresponse.yml]
+ignore=IN145

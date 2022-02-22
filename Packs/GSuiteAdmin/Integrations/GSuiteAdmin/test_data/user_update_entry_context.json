@@ -3,8 +3,8 @@
   "ContentsFormat": "json",
   "Contents": {
   "kind": "admin#directory#user",
-  "id": "113493660192005193453",
-  "etag": "\"UZc68Yn_jDETK2xoIaU08U3l9kOfUJfF2U8govk4i9k/BS8MYYcgeO5xZow8j-5lVXwDCtI\"",
+  "id": "testuser",
+  "etag": "\"SomeTag\"",
   "primaryEmail": "test@domain.io",
   "name": {
     "givenName": "test",
@@ -43,15 +43,15 @@
   "recoveryPhone": "+9196648855"
 
 },
-  "HumanReadable": "### Updated User Details\n|Id|Customer Id|Primary Email|First Name|Last Name|Archived|Suspended|Org Unit Path|Is Admin|Creation Time|Secondary Email Details|Ip Whitelisted|Recovery Phone|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 113493660192005193453 | C03puekhd | test@domain.io | test | account | false | false | / | true | 2020-08-07T06:17:07.000Z | Address: test@domain.io<br>Primary: True | false | +9196648855 |\n",
+  "HumanReadable": "### Updated User Details\n|Id|Customer Id|Primary Email|First Name|Last Name|Archived|Suspended|Org Unit Path|Is Admin|Creation Time|Secondary Email Details|Ip Whitelisted|Recovery Phone|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| testuser | C03puekhd | test@domain.io | test | account | false | false | / | true | 2020-08-07T06:17:07.000Z | Address: test@domain.io<br>Primary: True | false | +9196648855 |\n",
   "EntryContext": {
     "GSuite.User(val.id == obj.id)": {
        "firstName": "test",
   "fullName": "test account",
   "lastName": "account",
   "kind": "admin#directory#user",
-  "id": "113493660192005193453",
-  "etag": "\"UZc68Yn_jDETK2xoIaU08U3l9kOfUJfF2U8govk4i9k/BS8MYYcgeO5xZow8j-5lVXwDCtI\"",
+  "id": "testuser",
+  "etag": "\"SomeTag\"",
   "primaryEmail": "test@domain.io",
   "isAdmin": true,
   "isDelegatedAdmin": false,

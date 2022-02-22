@@ -64,8 +64,9 @@ def get_pack_support_type_from_pr_metadata_file(pr_metadata_filename: str, pr: P
     print(f'Branch name is: {branch_name}')
     contributor_repo: Repository = pr.head.repo
     branch: Branch = contributor_repo.get_branch(branch=branch_name)
-    metadata_file: ContentFile = contributor_repo.get_contents(path=pr_metadata_filename, ref=branch.commit.sha)
-    metadata_file_content: dict = json.loads(base64.b64decode(metadata_file.content))
+    metadata_file: ContentFile = \
+        contributor_repo.get_contents(path=pr_metadata_filename, ref=branch.commit.sha)  # type: ignore[assignment]
+    metadata_file_content: dict = json.loads(base64.b64decode(metadata_file.content))  # type: ignore[arg-type]
     return metadata_file_content.get(SUPPORT)
 
 

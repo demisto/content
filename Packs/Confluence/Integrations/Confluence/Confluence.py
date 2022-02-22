@@ -446,7 +446,7 @@ def test():
 
     if not res:
         return_error('Test failed. \nCheck URL and Username/Password.\nURL: {}, Status Code: {}, Response: {}'.format(
-            full_url, res.status_code, res.text))
+            full_url, res.status_code, res.text.encode('utf8')))
 
     demisto.results('ok')
 

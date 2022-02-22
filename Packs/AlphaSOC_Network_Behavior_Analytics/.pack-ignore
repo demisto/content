@@ -1,4 +1,4 @@
-[file:integration-AlphaSOC_Network_Behavior_Analytics.yml]
+[file:AlphaSOCNetworkBehaviorAnalytics.yml]
 ignore=IN126
 
 [file:README.md]

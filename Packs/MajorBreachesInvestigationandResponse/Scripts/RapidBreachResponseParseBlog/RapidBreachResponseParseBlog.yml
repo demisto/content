@@ -2,19 +2,20 @@ commonfields:
   id: RapidBreachResponseParseBlog
   version: -1
 name: RapidBreachResponseParseBlog
-comment: Parse Volexity request blog
+comment: Deprecated. Use "ParseHTMLIndicators" instead. Parse Volexity request blog.
 script: ''
 type: python
 tags: []
 enabled: true
 args:
 - name: url
-  description: The requested URL
+  description: The requested URL.
 scripttarget: 0
 subtype: python3
 runonce: false
 dockerimage: demisto/btfl-soup:1.0.1.20315
 runas: DBotWeakRole
 fromversion: 5.5.0
+deprecated: true
 tests:
 - No tests (auto formatted)

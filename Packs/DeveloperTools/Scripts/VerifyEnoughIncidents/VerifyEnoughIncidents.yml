@@ -1,0 +1,34 @@
+commonfields:
+  id: VerifyEnoughIncidents
+  version: -1
+name: VerifyEnoughIncidents
+fromversion: 6.0.0
+script: ''
+type: python
+tags: []
+comment: Check whether a given query returns enough incidents.
+enabled: true
+args:
+- name: query
+  required: true
+  description: The query used to check whether there are sufficient incidents in Cortex XSOAR.
+- name: size
+  required: true
+  description: The amount of incidents in which to check.
+outputs:
+- contextPath: IncidentsCheck.Size
+  description: The number of incidents in Cortex XSOAR that is expected to match the query.
+  type: number
+- contextPath: IncidentsCheck.ConditionMet
+  description: Whether there are enough incidents in Cortex XSOAR that match the query.
+  type: boolean
+- contextPath: IncidentsCheck.Query
+  description: The incidents query used to check whether the condition was met.
+  type: boolean
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.7.24076
+runas: DBotWeakRole
+tests:
+- No test

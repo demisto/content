@@ -1,4 +1,4 @@
-This playbook will check to see if there are any content updates available for installed packs and notify users via e-mail or Slack.
+Deprecated. Use "Content Update Manager" playbook instead. This playbook will check to see if there are any content updates available for installed packs and notify users via e-mail or Slack.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -33,7 +33,3 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![Content Update Check](Insert the link to your image here)

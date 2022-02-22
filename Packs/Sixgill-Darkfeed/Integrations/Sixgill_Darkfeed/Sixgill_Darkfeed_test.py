@@ -179,8 +179,8 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                     'sixgill_posttitle': 'Credit Card Debt Help,       somewebsite.com',
                                     'sixgill_severity': 70, 'sixgill_source': 'market_magbo', 'spec_version': '2.0',
                                     'type': 'indicator', 'valid_from': '2019-12-07T00:57:04Z'},
-                        'fields': {'name': 'compromised_sites', 'actor': 'some_actor',
-                                   'tags': ['compromised'],
+                        'fields': {'actor': 'some_actor',
+                                   'tags': ['compromised', 'compromised_sites'],
                                    'firstseenbysource': '2020-01-09T07:31:16.708Z',
                                    'description': 'Description: Shell access to this domain is being sold on dark web '
                                                   'markets\nCreated On: 2020-01-09T07:31:16.708Z\nPost '
@@ -226,8 +226,8 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                                   'sixgill_posttitle': 'somewebsite.com', 'sixgill_severity': 70,
                                                   'sixgill_source': 'market_magbo', 'spec_version': '2.0',
                                                   'type': 'indicator', 'valid_from': '2019-12-06T17:10:04Z'},
-                                      'fields': {'name': 'compromised_sites', 'actor': 'some_actor',
-                                                 'tags': ['compromised'],
+                                      'fields': {'actor': 'some_actor',
+                                                 'tags': ['compromised', 'compromised_sites'],
                                                  'firstseenbysource': '2020-01-09T07:31:16.824Z',
                                                  'description': 'Description: Shell access to this domain is being '
                                                                 'sold on dark web markets\n'
@@ -282,8 +282,8 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                                                 'sixgill_source': 'market_magbo', 'spec_version': '2.0',
                                                                 'type': 'indicator',
                                                                 'valid_from': '2019-12-06T23:24:51Z'},
-                                                    'fields': {'name': 'compromised_sites', 'actor': 'some_actor',
-                                                               'tags': ['url'],
+                                                    'fields': {'actor': 'some_actor',
+                                                               'tags': ['url', 'compromised_sites'],
                                                                'firstseenbysource': '2020-01-09T07:31:16.757Z',
                                                                'description': 'Description: Shell access to this '
                                                                               'domain is being sold on dark '
@@ -349,7 +349,7 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                                                           'sixgill_source': 'market_magbo',
                                                                           'spec_version': '2.0', 'type': 'indicator',
                                                                           'valid_from': '2019-12-06T14:37:16Z'},
-                        'fields': {'name': 'compromised_sites', 'actor': 'some_actor', 'tags': ['ip'],
+                        'fields': {'actor': 'some_actor', 'tags': ['ip', 'compromised_sites'],
                                    'firstseenbysource': '2020-01-09T07:31:16.834Z',
                                    'description': 'Description: Shell access to this domain is being sold on '
                                                   'dark web markets\nCreated On: 2020-01-09T07:31:16.834Z\n'
@@ -389,8 +389,8 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                     'sixgill_posttitle': 'somewebsite.com', 'sixgill_severity': 70,
                                     'sixgill_source': 'market_magbo', 'spec_version': '2.0', 'type': 'indicator',
                                     'valid_from': '2019-12-06T14:37:16Z'},
-                        'fields': {'name': 'compromised_sites', 'actor': 'some_actor',
-                                   'tags': ['malware hash'],
+                        'fields': {'actor': 'some_actor',
+                                   'tags': ['malware hash', 'compromised_sites'],
                                    'firstseenbysource': '2020-01-09T07:31:16.834Z',
                                    'description': 'Description: Shell access to this domain is being sold on dark '
                                                   'web markets\nCreated On: 2020-01-09T07:31:16.834Z\n'
@@ -446,8 +446,8 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                     'sixgill_source': 'forum_nulled',
                                     'spec_version': '2.0', 'type': 'indicator',
                                     'valid_from': '2020-01-25T21:08:25Z'},
-                        'fields': {'name': 'proxy_ips', 'actor': 'LunarEclipsed',
-                                   'tags': ['anonymization'],
+                        'fields': {'actor': 'LunarEclipsed',
+                                   'tags': ['anonymization', 'proxy_ips'],
                                    'firstseenbysource': '2020-02-09T06:41:41.266Z',
                                    'description': "Description: IP address was listed as a proxy\n"
                                                   "Created On: 2020-02-09T06:41:41.266Z\n"

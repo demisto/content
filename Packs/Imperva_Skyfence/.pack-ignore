@@ -1,2 +1,5 @@
 [file:Imperva_Skyfence]
 ignore=PA116
+
+[file:ImpervaSkyfence.yml]
+ignore=IN145

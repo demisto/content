@@ -1,0 +1,145 @@
+{
+    "data": [
+        {
+            "id": "1297733",
+            "type": "report",
+            "attributes": {
+                "title": "Do not use depreciated function isSecure",
+                "state": "new",
+                "created_at": "2021-08-10T07:17:41.923Z",
+                "vulnerability_information": "## Summary:\nThe depreciated function isSecure is not compatible with for SSL verification.\n\n## Impact\n\nSSL verification will fail regardless of certificate authenticity.",
+                "triaged_at": null,
+                "closed_at": null,
+                "last_reporter_activity_at": "2021-08-10T07:17:42.048Z",
+                "first_program_activity_at": "2021-08-10T07:17:42.048Z",
+                "last_program_activity_at": "2021-08-10T07:17:42.048Z",
+                "bounty_awarded_at": null,
+                "swag_awarded_at": null,
+                "disclosed_at": null,
+                "reporter_agreed_on_going_public_at": null,
+                "last_public_activity_at": "2021-08-10T07:17:42.048Z",
+                "last_activity_at": "2021-08-10T07:17:42.048Z",
+                "source": null,
+                "timer_bounty_awarded_elapsed_time": null,
+                "timer_bounty_awarded_miss_at": null,
+                "timer_first_program_response_miss_at": null,
+                "timer_first_program_response_elapsed_time": null,
+                "timer_report_resolved_miss_at": null,
+                "timer_report_resolved_elapsed_time": null,
+                "timer_report_triage_miss_at": null,
+                "timer_report_triage_elapsed_time": null
+            },
+            "relationships": {
+                "reporter": {
+                    "data": {
+                        "id": "1878386",
+                        "type": "user",
+                        "attributes": {
+                            "username": "jahnvi_crest",
+                            "name": "Jahnvi",
+                            "disabled": false,
+                            "created_at": "2021-08-02T09:27:56.324Z",
+                            "profile_picture": {
+                                "62x62": "/assets/avatars/default-71a302d706457f3d3a31eb30fa3e73e6cf0b1d677b8fa218eaeaffd67ae97918.png",
+                                "82x82": "/assets/avatars/default-71a302d706457f3d3a31eb30fa3e73e6cf0b1d677b8fa218eaeaffd67ae97918.png",
+                                "110x110": "/assets/avatars/default-71a302d706457f3d3a31eb30fa3e73e6cf0b1d677b8fa218eaeaffd67ae97918.png",
+                                "260x260": "/assets/avatars/default-71a302d706457f3d3a31eb30fa3e73e6cf0b1d677b8fa218eaeaffd67ae97918.png"
+                            },
+                            "bio": null,
+                            "website": null,
+                            "location": null,
+                            "hackerone_triager": false
+                        }
+                    }
+                },
+                "program": {
+                    "data": {
+                        "id": "53994",
+                        "type": "program",
+                        "attributes": {
+                            "handle": "something_h1b",
+                            "created_at": "2021-08-09T13:39:20.342Z",
+                            "updated_at": "2021-08-10T09:29:56.853Z"
+                        }
+                    }
+                },
+                "severity": {
+                    "data": {
+                        "id": "1185951",
+                        "type": "severity",
+                        "attributes": {
+                            "rating": "medium",
+                            "author_type": "User",
+                            "user_id": 1878386,
+                            "created_at": "2021-08-10T07:17:41.970Z",
+                            "score": 6.2,
+                            "attack_complexity": "high",
+                            "attack_vector": "adjacent",
+                            "availability": "none",
+                            "confidentiality": "high",
+                            "integrity": "low",
+                            "privileges_required": "high",
+                            "user_interaction": "none",
+                            "scope": "changed"
+                        }
+                    }
+                },
+                "weakness": {
+                    "data": {
+                        "id": "20",
+                        "type": "weakness",
+                        "attributes": {
+                            "name": "Use of Inherently Dangerous Function",
+                            "description": "The program calls a function that can never be guaranteed to work safely.",
+                            "external_id": "cwe-242",
+                            "created_at": "2017-01-05T01:51:19.000Z"
+                        }
+                    }
+                },
+                "bounties": {
+                    "data": []
+                },
+                "custom_field_values": {
+                    "data": [
+                        {
+                            "id": "198319",
+                            "type": "custom-field-value",
+                            "attributes": {
+                                "value": "true",
+                                "created_at": "2021-08-10T07:17:41.929Z",
+                                "updated_at": "2021-08-10T07:17:41.929Z"
+                            },
+                            "relationships": {
+                                "custom_field_attribute": {
+                                    "data": {
+                                        "id": "1362",
+                                        "type": "custom-field-attribute",
+                                        "attributes": {
+                                            "field_type": "Checkbox",
+                                            "label": "Urgent",
+                                            "internal": false,
+                                            "required": false,
+                                            "error_message": null,
+                                            "helper_text": "Is the report urgent in need to be resolved?",
+                                            "configuration": null,
+                                            "checkbox_text": "Yes",
+                                            "regex": null,
+                                            "created_at": "2021-08-10T07:14:39.477Z",
+                                            "updated_at": "2021-08-10T07:14:39.477Z",
+                                            "archived_at": null
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "links": {
+        "self": "https://api.hackerone.com/v1/reports?filter%5Bcreated_at__gt%5D=2021-08-10T06%3A09%3A28.534Z&filter%5Bprogram%5D%5B%5D=something_h1b&page%5Bsize%5D=1",
+        "next": "https://api.hackerone.com/v1/reports?filter%5Bcreated_at__gt%5D=2021-08-10T06%3A09%3A28.534Z&filter%5Bprogram%5D%5B%5D=something_h1b&page%5Bnumber%5D=2&page%5Bsize%5D=1",
+        "last": "https://api.hackerone.com/v1/reports?filter%5Bcreated_at__gt%5D=2021-08-10T06%3A09%3A28.534Z&filter%5Bprogram%5D%5B%5D=something_h1b&page%5Bnumber%5D=4&page%5Bsize%5D=1"
+    }
+}

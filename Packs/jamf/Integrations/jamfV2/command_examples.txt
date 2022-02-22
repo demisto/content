@@ -1,0 +1,39 @@
+jamf-get-computers limit=3
+jamf-get-computers-basic-subset limit=3
+jamf-get-computer-by-id id=1
+jamf-get-computer-by-match match="Computer 9*" limit=3
+jamf-get-computer-general-subset identifier=name identifier_value="Computer 95"
+jamf-get-computer-location-subset identifier=name identifier_value="Computer 95"
+jamf-get-computer-purchasing-subset identifier=name identifier_value="Computer 95"
+jamf-get-computer-peripherals-subset identifier=name identifier_value="Computer 95"
+jamf-get-computer-hardware-subset identifier=id identifier_value="138"
+jamf-get-computer-certificates-subset identifier=id identifier_value="138"
+jamf-get-computer-security-subset identifier=name identifier_value="Computer 95"
+jamf-get-computer-software-subset identifier=name identifier_value="Computer 95"
+jamf-get-computer-extension-attributes-subset identifier=name identifier_value="Computer 95"
+jamf-get-computer-groups-accounts-subset identifier=id identifier_value="138"
+jamf-get-computer-iphones-subset identifier=id identifier_value="138"
+jamf-get-computer-configuration-profiles-subset identifier=id identifier_value="138"
+jamf-computer-lock id=138 passcode=123456
+jamf-computer-erase id=138 passcode=123456
+jamf-get-users limit=3
+jamf-get-user-by-id id=1
+jamf-get-user-by-name name=tomertest
+jamf-get-user-by-email email=user28@email.com
+jamf-get-mobile-devices limit=3
+jamf-get-mobile-device-by-id id=114
+jamf-get-mobile-device-by-match match="B0:65:BD:4E:50:5D"
+jamf-get-mobile-device-general-subset identifier=id identifier_value=1
+jamf-get-mobile-device-location-subset identifier=id identifier_value=1
+jamf-get-mobile-device-purchasing-subset identifier=id identifier_value=114
+jamf-get-mobile-device-applications-subset identifier=id identifier_value=114
+jamf-get-mobile-device-security-subset identifier=id identifier_value=114
+jamf-get-mobile-device-network-subset identifier=id identifier_value=114
+jamf-get-mobile-device-certificates-subset identifier=id identifier_value=114
+jamf-get-mobile-device-extension-attributes-subset identifier=id identifier_value=114
+jamf-get-mobile-device-provisioning-profiles-subset identifier=id identifier_value=114
+jamf-get-mobile-device-groups-subset identifier=id identifier_value=114
+jamf-get-mobile-device-configuration-profiles-subset identifier=id identifier_value=114
+jamf-get-computers-by-application application=safar* limit=3
+jamf-mobile-device-lost-mode id=114
+jamf-mobile-device-erase id=114

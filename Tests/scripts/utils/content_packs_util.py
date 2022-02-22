@@ -1,39 +1,26 @@
-import json
 import os
-from typing import Tuple
+from pathlib import PosixPath
+from typing import Tuple, Union
 
+import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import (PACK_METADATA_SUPPORT, PACKS_DIR, PACKS_PACK_META_FILE_NAME)
 
 SKIPPED_PACKS = ['DeprecatedContent', 'NonSupported']
 IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported']  # files to ignore inside Packs folder
 
 
-def get_pack_metadata(file_path: str) -> dict:
-    """
-    Args:
-        file_path: The Pack metadata file path
-
-    Returns:
-        dict: The pack metadata file content
-    """
-    with open(file_path) as pack_metadata:
-        return json.load(pack_metadata)
-
-
-def is_pack_xsoar_supported(pack_path: str) -> bool:
-    """Checks whether the pack is XSOAR supported.
+def is_pack_xsoar_supported(file_path: Union[str, PosixPath]) -> bool:
+    """Checks whether the file belongs to a pack that is XSOAR supported.
     Tests are not being collected for non XSOAR  packs.
 
     Args:
-        pack_path (str): The pack path
+        file_path (Union[str, PosixPath]): The file path.
 
     Returns:
-        True if the pack is certified, False otherwise
+        True if the pack that the file path resides in is certified, False otherwise
     """
-    pack_metadata_path = os.path.join(pack_path, PACKS_PACK_META_FILE_NAME)
-    if not os.path.isfile(pack_metadata_path):
-        return False
-    pack_metadata = get_pack_metadata(pack_metadata_path)
+    str_file_path: str = str(file_path)
+    pack_metadata = tools.get_pack_metadata(str_file_path)
     return pack_metadata.get(PACK_METADATA_SUPPORT, '').lower() == "xsoar"
 
 
@@ -50,7 +37,7 @@ def is_pack_deprecated(pack_path: str) -> bool:
     pack_metadata_path = os.path.join(pack_path, PACKS_PACK_META_FILE_NAME)
     if not os.path.isfile(pack_metadata_path):
         return True
-    pack_metadata = get_pack_metadata(pack_metadata_path)
+    pack_metadata = tools.get_pack_metadata(pack_metadata_path)
     return pack_metadata.get('hidden', False)
 
 

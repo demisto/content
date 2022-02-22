@@ -11,3 +11,6 @@ ignore=IF100
 
 [file:incidentfield-RubrikPolaris_Event_ID.json]
 ignore=IF100
+
+[file:RubrikPolaris.yml]
+ignore=IN145

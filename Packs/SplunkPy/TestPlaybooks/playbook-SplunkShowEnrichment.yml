@@ -1,0 +1,212 @@
+id: SplunkShowEnrichment
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: SplunkShowEnrichment
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c74fa9ff-2da9-4b3f-847b-729a104a0eed
+    type: start
+    task:
+      id: c74fa9ff-2da9-4b3f-847b-729a104a0eed
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 64069637-0bd8-467c-8e54-55a269c9a636
+    type: regular
+    task:
+      id: 64069637-0bd8-467c-8e54-55a269c9a636
+      version: -1
+      name: set-incident-fields
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      assettable:
+        simple: '[{"asset":["host1","host2"]}]'
+      identitytable:
+        simple: '[{"identity_tag":"identity"}]'
+      notabledrilldown:
+        simple: '[{"test":"test"}]'
+      successfulassetenrichment:
+        simple: "true"
+      successfuldrilldownenrichment:
+        simple: "true"
+      successfulidentityenrichment:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f68d9160-10e6-4bc9-87a8-eaf735e1df15
+    type: regular
+    task:
+      id: f68d9160-10e6-4bc9-87a8-eaf735e1df15
+      version: -1
+      name: SplunkShowDrilldown
+      description: Automation to display drilldown search results from Splunk.
+      scriptName: SplunkShowDrilldown
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b6aed52e-a08c-4d7c-8933-a0a2cbcc5aec
+    type: regular
+    task:
+      id: b6aed52e-a08c-4d7c-8933-a0a2cbcc5aec
+      version: -1
+      name: SplunkShowAsset
+      description: Automation to display asset objects from Splunk.
+      scriptName: SplunkShowAsset
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d63649f5-5174-4a90-8e65-3ebfb90b15cf
+    type: regular
+    task:
+      id: d63649f5-5174-4a90-8e65-3ebfb90b15cf
+      version: -1
+      name: SplunkShowIdentity
+      description: Automation to display identity objects from Splunk.
+      scriptName: SplunkShowIdentity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 97c22df0-4b2c-4208-87fa-336a639598c7
+    type: title
+    task:
+      id: 97c22df0-4b2c-4208-87fa-336a639598c7
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 985,
+        "width": 380,
+        "x": 60,
+        "y": -60
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0

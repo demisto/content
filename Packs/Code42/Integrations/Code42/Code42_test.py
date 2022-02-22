@@ -735,8 +735,8 @@ MOCK_OBSERVATION_QUERIES = [
             {
                 "filterClause": "OR",
                 "filters": [
-                    {"operator": "IS", "term": "fileCategory", "value": "PDF"},
-                    {"operator": "IS", "term": "fileCategory", "value": "SOURCE_CODE"}
+                    {"operator": "IS", "term": "fileCategory", "value": "Pdf"},
+                    {"operator": "IS", "term": "fileCategory", "value": "SourceCode"}
                 ]
             }
         ],

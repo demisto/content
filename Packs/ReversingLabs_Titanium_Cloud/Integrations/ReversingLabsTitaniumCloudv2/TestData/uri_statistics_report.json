@@ -1,0 +1,14 @@
+{
+    "rl": {
+        "uri_state": {
+            "domain": "google.com",
+            "sha1": "baea954b95731c68ae6e45bd1e252eb4560cdc45",
+            "uri_type": "domain",
+            "counters": {
+                "known": 19453370,
+                "malicious": 6409678,
+                "suspicious": 161600
+            }
+        }
+    }
+}

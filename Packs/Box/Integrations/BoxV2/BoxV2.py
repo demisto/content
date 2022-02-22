@@ -487,7 +487,7 @@ class Client(BaseClient):
         )
 
     def folder_create(self, name: str, parent_id: str, as_user: str):
-        """
+        r"""
         Creates a folder with the given name. For files residing under the root of the users
         directory, please use '0'.
 

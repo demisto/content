@@ -8,13 +8,13 @@ The unified console for managing Sophos products.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| credentials | Sophos account ID | True |
+| credentials | Sophos client ID and secret | True |
+| Tenant ID | Tenant ID on which the commands would be executed by default. Required in case of partner/organization level credentials | False |
 | isFetch | Fetch incidents | False |
 | fetch_severity | Fetch Severity | False |
 | fetch_category | Fetch Category | False |
 | max_fetch | Fetch Limit | False |
 | fetch_time | First Fetch Time | False |
-| insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -46,8 +46,10 @@ List alerts.
 | SophosCentral.Alert.groupKey | String | Alert group key. | 
 | SophosCentral.Alert.id | String | The alert ID. | 
 | SophosCentral.Alert.managedAgentId | String | The alert source ID. | 
+| SophosCentral.Alert.managedAgentName | String | The alert source name. |
 | SophosCentral.Alert.managedAgentType | String | The source that triggered the Alert. | 
 | SophosCentral.Alert.person | String | The ID of the referenced person object. | 
+| SophosCentral.Alert.personName | String | The name of the referenced person object. |
 | SophosCentral.Alert.product | String | Product type. | 
 | SophosCentral.Alert.raisedAt | Date | When the alert was triggered. | 
 | SophosCentral.Alert.severity | String | Severity level for the alert. | 
@@ -158,8 +160,10 @@ Get a single alert by ID.
 | SophosCentral.Alert.groupKey | String | Alert group key. | 
 | SophosCentral.Alert.id | String | The alert ID. | 
 | SophosCentral.Alert.managedAgentId | String | The alert source ID. | 
+| SophosCentral.Alert.managedAgentName | String | The alert source name. |
 | SophosCentral.Alert.managedAgentType | String | The source that triggered the alert. | 
 | SophosCentral.Alert.person | String | The ID of the referenced person object. | 
+| SophosCentral.Alert.personName | String | The name of the referenced person object. |
 | SophosCentral.Alert.product | String | Product type. | 
 | SophosCentral.Alert.raisedAt | Date | When the alert was triggered. | 
 | SophosCentral.Alert.severity | String | Severity level for the alert. | 
@@ -298,8 +302,10 @@ Get alerts matching request.
 | SophosCentral.Alert.groupKey | String | Alert group key. | 
 | SophosCentral.Alert.id | String | The alert ID. | 
 | SophosCentral.Alert.managedAgentId | String | The alert source ID. | 
+| SophosCentral.Alert.managedAgentName | String | The alert source name. |
 | SophosCentral.Alert.managedAgentType | String | The source that triggered the alert. | 
-| SophosCentral.Alert.person | String | The ID of the referenced person object. | 
+| SophosCentral.Alert.person | String | The ID of the referenced person object. |
+| SophosCentral.Alert.personName | String | The name of the referenced person object. |
 | SophosCentral.Alert.product | String | Product type. | 
 | SophosCentral.Alert.raisedAt | Date | When the alert was triggered. | 
 | SophosCentral.Alert.severity | String | Severity level for the alert. | 
@@ -2182,3 +2188,121 @@ Get a single detected exploit.
 #### Human Readable Output
 
 
+### sophos-central-isolate-endpoint
+***
+Isolate one or more endpoints.
+
+
+#### Base Command
+
+`sophos-central-isolate-endpoint`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_id | ID(s) of the endpoint(s) to be isolated. | Required |
+| comment | Comment indicating why the endpoint(s) should be isolated. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.EndpointIsolation.items.id | String | The unique endpoint ID. |
+| SophosCentral.EndpointIsolation.items.isolation.enabled | Boolean | Isolation status. |
+| SophosCentral.EndpointIsolation.items.isolation.lastEnabledAt | String | When isolation was last enabled for the endpoint. |
+| SophosCentral.EndpointIsolation.items.isolation.lastEnabledBy.id | String | Principal Email or clientId by whom isolation was enabled. |
+| SophosCentral.EndpointIsolation.items.isolation.lastDisabledAt | String | When isolation was last disabled for the endpoint. |
+| SophosCentral.EndpointIsolation.items.isolation.lastDisabledBy.id | String | Principal Email or clientId by whom isolation was disabled. |
+| SophosCentral.EndpointIsolation.items.isolation.comment | String | Reason endpoint should be isolated or not. |
+
+
+#### Command Example
+```!sophos-central-isolate-endpoint endpoint_id=25de27bc-b07a-4728-b7b2-a021365xxxxx```
+
+#### Context Example
+```json
+{
+    "items": [
+        {
+            "id": "25de27bc-b07a-4728-b7b2-a021365xxxxx",
+            "isolation": {
+                "enabled": true,
+                "lastEnabledAt": "2021-08-13 09.07.03 GMT",
+                "lastEnabledBy": {
+                    "id": "e71332ab-c447-45ff-b356-b8b5f39xxxxx"
+                },
+                "lastDisabledAt": "2021-08-13 09.54.02 GMT",
+                "lastDisabledBy": {
+                    "id": "e71332ab-c447-45ff-b356-b8b5f39xxxxx"
+                },
+                "comment": "testing"
+            }
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+Endpoint(s) isolated successfully.
+
+
+### sophos-central-deisolate-endpoint
+***
+De-isolate one or more endpoints.
+
+
+#### Base Command
+
+`sophos-central-deisolate-endpoint`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_id | ID(s) of the endpoint(s) to be de-isolated. | Required |
+| comment | Comment indicating why the endpoint(s) should be de-isolated. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.EndpointIsolation.items.id | String | The unique endpoint ID. |
+| SophosCentral.EndpointIsolation.items.isolation.enabled | Boolean | Isolation status. |
+| SophosCentral.EndpointIsolation.items.isolation.lastEnabledAt | String | When isolation was last enabled for the endpoint. |
+| SophosCentral.EndpointIsolation.items.isolation.lastEnabledBy.id | String | Principal Email or clientId by whom isolation was enabled. |
+| SophosCentral.EndpointIsolation.items.isolation.lastDisabledAt | String | When isolation was last disabled for the endpoint. |
+| SophosCentral.EndpointIsolation.items.isolation.lastDisabledBy.id | String | Principal Email or clientId by whom isolation was disabled. |
+| SophosCentral.EndpointIsolation.items.isolation.comment | String | Reason endpoint should be isolated or not. |
+
+
+#### Command Example
+```!sophos-central-deisolate-endpoint endpoint_id=25de27bc-b07a-4728-b7b2-a021365xxxxx```
+
+#### Context Example
+```json
+{
+    "items": [
+        {
+            "id": "25de27bc-b07a-4728-b7b2-a021365xxxxx",
+            "isolation": {
+                "enabled": false,
+                "lastEnabledAt": "2021-08-13 09.07.03 GMT",
+                "lastEnabledBy": {
+                    "id": "e71332ab-c447-45ff-b356-b8b5f39xxxxx"
+                },
+                "lastDisabledAt": "2021-08-13 09.54.02 GMT",
+                "lastDisabledBy": {
+                    "id": "e71332ab-c447-45ff-b356-b8b5f39xxxxx"
+                },
+                "comment": "testing"
+            }
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+Endpoint(s) de-isolated successfully.

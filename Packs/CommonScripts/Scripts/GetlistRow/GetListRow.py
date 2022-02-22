@@ -17,8 +17,8 @@ def validate_header_exists(headers, header):
         return_error("Error: The supplied header name was not found.")
 
 
-def list_to_headers_and_lines(list_data):
-    lines_and_headers = [line.split(',') for line in list_data.split('\n')]
+def list_to_headers_and_lines(list_data, list_separator: str):
+    lines_and_headers = [line.split(list_separator) for line in list_data.split('\n')]
     headers = lines_and_headers[0]
     return headers, lines_and_headers[1:]
 
@@ -46,7 +46,7 @@ def parse_relevant_rows(headers, lines, header, value, context, parse_all=False)
             readable_output="No results found"
         )
     context["Results"] = lines_context
-    human_readable = tableToMarkdown('List Result', lines_context, headers=headers)
+    human_readable = tableToMarkdown('List Result', lines_context, headers=headers, removeNull=True)
     return CommandResults(
         outputs_prefix=output_condition,
         outputs=context,
@@ -54,7 +54,7 @@ def parse_relevant_rows(headers, lines, header, value, context, parse_all=False)
     )
 
 
-def parse_list(parse_all, header, value, list_name):
+def parse_list(parse_all, header, value, list_name, list_separator: str):
     validate_args(parse_all, header, value)
     list_data = demisto.executeCommand("getList", {'listName': list_name})[0]['Contents']
     context = {
@@ -64,7 +64,7 @@ def parse_list(parse_all, header, value, list_name):
         "ParseAll": parse_all
     }
     validate_list_exists(list_data)
-    headers, lines = list_to_headers_and_lines(list_data)
+    headers, lines = list_to_headers_and_lines(list_data, list_separator)
     if parse_all.lower() == 'true':
         command_results = parse_relevant_rows(headers, lines, header, value, context, parse_all=True)
     else:
@@ -79,8 +79,9 @@ def main():
     parse_all = args['parse_all']
     header = args.get('header', '')
     value = args.get('value', '')
+    list_separator = args.get('list_separator', ',') or ','
 
-    return_results(parse_list(parse_all, header, value, list_name))
+    return_results(parse_list(parse_all, header, value, list_name, list_separator))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

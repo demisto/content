@@ -1,0 +1,37 @@
+[
+    {
+        "ID": "5026382f-09de-440c-b97d-784006fcbe1d",
+        "alert_key": null,
+        "analyst_notes": null,
+        "count": 1,
+        "creation_time": "2021-05-11 12:58:26",
+        "details": "On 01 April 2021 18:18:25 UTC, malware was detected on DESKTOP-FOIJEWEIR (last seen user: JohnQ): Backdoor:ASP/Chopper.F!dha Backdoor:ASP/Chopper.F!dha Threat location(s): file:C:\\Users\\JohnQ\\Downloads\\bad.exe file:C:\\Users\\JohnQ\\Downloads\\bad.exe While the above was blocked by an anti-virus, its presence could indicate further issues such as additional undetected malware or an attacker with persistent access into your network.\n\nThis system should be isolated from your network until remediation can occur. Exact remediation steps will depend on the nature of the system and its role.\n\nIf this system is not critical and does not contain sensitive information, the simplest solution may be a re-image. If the system is critical to your business operations, you may wish to engage us for further advice.",
+        "details_markdown": "On 01 April 2021 18:18:25 UTC, malware was detected on DESKTOP-FOIJEWEIR (last seen user: JohnQ): Backdoor:ASP/Chopper.F!dha Backdoor:ASP/Chopper.F!dha Threat location(s): file:_C:\\Users\\user\\Downloads\\bad.exe file:_C:\\Users\\user\\Downloads\\bad.exe While the above was blocked by an anti-virus, its presence could indicate further issues such as additional undetected malware or an attacker with persistent access into your network.\n\nThis system should be isolated from your network until remediation can occur. Exact remediation steps will depend on the nature of the system and its role.\n\nIf this system is not critical and does not contain sensitive information, the simplest solution may be a re-image. If the system is critical to your business operations, you may wish to engage us for further advice.",
+        "display_url": "https://foo.bar",
+        "external_bug_id": null,
+        "last_updated_time": "2021-05-11 12:58:26",
+        "notes": null,
+        "organization": {
+            "ID": "7d2f2003-be1e-45fe-8f9a-e6d02ab935b2",
+            "email": "john.smith@foo.bar",
+            "name": "Acme Inc."
+        },
+        "references": [],
+        "resolution": "Unresolved",
+        "serial_id": "11",
+        "severity": "Critical",
+        "status": "Open",
+        "steps": [
+            {
+                "ID": "d189bb5b-3612-4b95-9fbf-352a53cc5bfa",
+                "completed": false,
+                "label": "Isolate and ensure that no further threats exist on this system.",
+                "last_updated_time": "2021-05-11 12:58:26"
+            }
+        ],
+        "template_id": null,
+        "title": "Malware detected",
+        "triage_id": null,
+        "type": "Action"
+    }
+]

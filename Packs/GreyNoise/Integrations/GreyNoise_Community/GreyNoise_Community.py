@@ -287,6 +287,18 @@ def main() -> None:
     :rtype:
     """
 
+    # get pack version
+    if is_demisto_version_ge("6.1.0"):
+        response = demisto.internalHttpRequest("GET", "/contentpacks/metadata/installed")
+        packs = json.loads(response["body"])
+    else:
+        packs = []
+
+    pack_version = "1.1.2"
+    for pack in packs:
+        if pack["name"] == "GreyNoise":
+            pack_version = pack["currentVersion"]
+
     api_key = demisto.params().get("api_key")
     proxy = demisto.params().get("proxy", False)
 
@@ -296,7 +308,7 @@ def main() -> None:
             api_key=api_key,
             proxy=handle_proxy("proxy", proxy).get("https", ""),
             use_cache=False,
-            integration_name="xsoar-community-integration-v1.0.2",
+            integration_name=f"xsoar-community-integration-v{pack_version}",
             offering="community",
         )
 

@@ -57,9 +57,11 @@ Searches for an indicator of type IP address.
 | DBotScore.Type | string | The type assigned by DBot for the indicator. | 
 | DBotScore.Score | number | The score assigned by DBot for the indicator. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | IP.Address | string | The IP address of the indicator. | 
 | IP.Malicious.Vendor | string | For malicious IP addresses, the vendor that made the decision. | 
 | IP.Malicious.Description | string | For malicious IP addresses, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -129,9 +131,11 @@ Searches for an indicator of type URL.
 | DBotScore.Type | string | The type assigned by DBot for the indicator. | 
 | DBotScore.Score | number | The score assigned by DBot for the indicator. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | URL.Data | string | The data of the URL indicator. | 
 | URL.Malicious.Vendor | string | For malicious URLs, the vendor that made the decision. | 
 | URL.Malicious.Description | string | For malicious URLs, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -214,11 +218,13 @@ Searches for an indicator of type file.
 | DBotScore.Type | string | The type assigned by DBot for the indicator. | 
 | DBotScore.Score | number | The score assigned by DBot for the indicator. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | File.MD5 | string | The MD5 hash of the indicator. | 
 | File.SHA1 | string | The SHA1 hash of the indicator. | 
 | File.SHA256 | string | The SHA256 hash of the indicator. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | string | For malicious files, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -351,6 +357,7 @@ Retrieves a list of all indicators.
 | DBotScore.Type | string | The type assigned by DBot for the indicator. | 
 | DBotScore.Score | number | The score assigned by DBot for the indicator. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | IP.Address | string | The IP address of the indicator. | 
 | IP.Malicious.Vendor | string | For malicious IP addresses, the vendor that made the decision. | 
 | IP.Malicious.Description | string | For malicious IP addresses, the full description. | 
@@ -365,6 +372,7 @@ Retrieves a list of all indicators.
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | string | For malicious files, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -569,6 +577,7 @@ Retrieves information about an indicator.
 | DBotScore.Type | string | The type assigned by DBot for the indicator. | 
 | DBotScore.Score | number | The score assigned by DBot for the indicator. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | IP.Address | string | The IP address of the indicator. | 
 | IP.Malicious.Vendor | string | For malicious IP addresses, the vendor that made the decision. | 
 | IP.Malicious.Description | string | For malicious IP addresses, the full description. | 
@@ -583,6 +592,7 @@ Retrieves information about an indicator.
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | string | For malicious files, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -659,6 +669,7 @@ Fetches all indicators that have a tag.
 | DBotScore.Type | string | The type assigned by DBot for the tagged indicator. | 
 | DBotScore.Score | number | The score assigned by DBot for the tagged indicator. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | IP.Address | string | The IP address of the tagged indicator. | 
 | IP.Malicious.Vendor | string | For malicious IP addresses, the vendor that made the decision. | 
 | IP.Malicious.Description | string | For malicious IP addresses, the full description. | 
@@ -673,6 +684,7 @@ Fetches all indicators that have a tag.
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | string | For malicious files, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -798,6 +810,7 @@ Adds a new indicator to ThreatConnect.
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | string | For malicious files, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -997,6 +1010,7 @@ Associates an indicator with an existing incident. The indicator must exist befo
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | string | For malicious files, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -1058,9 +1072,11 @@ Searches for an indicator of type domain.
 | DBotScore.Type | string | The type assigned by DBot for the indicator. | 
 | DBotScore.Score | number | The score assigned by DBot for the indicator. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | Domain.Name | string | The name of the domain. | 
 | Domain.Malicious.Vendor | string | For malicious domains, the vendor that made the decision. | 
 | Domain.Malicious.Description | string | For malicious domains, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -1134,6 +1150,7 @@ Returns indicators that are related to a specific incident.
 | DBotScore.Type | string | The type assigned by DBot for the indicator. | 
 | DBotScore.Score | number | The score assigned by DBot for the indicator. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | IP.Address | string | The IP address of the returned indicator. | 
 | IP.Malicious.Vendor | string | For malicious IP addresses, the vendor that made the decision. | 
 | IP.Malicious.Description | string | For malicious IP addresses, the full description. | 
@@ -1237,6 +1254,7 @@ Updates the indicator in ThreatConnect.
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | string | For malicious files, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -1311,6 +1329,7 @@ Removes a tag from a specified indicator.
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | string | For malicious files, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example

@@ -1,0 +1,66 @@
+{
+    "items": [
+        {
+            "abuse_emails": [
+                ""
+            ],
+            "address": [],
+            "city": [],
+            "country": [
+                "Canada"
+            ],
+            "domain": "hyas.com",
+            "domain_2tld": "hyas.com",
+            "domain_created_datetime": "2001-05-01T23:42:14",
+            "domain_expires_datetime": "2026-05-01T23:42:14",
+            "domain_updated_datetime": "2020-06-30T15:43:39",
+            "email": [],
+            "idn_name": "",
+            "meta_data": "",
+            "name": [],
+            "nameserver": [
+                "n1.domaincontrol.com",
+                "n2.domaincontrol.com"
+            ],
+            "organization": [
+                "HYAS Infosec Inc."
+            ],
+            "phone": [],
+            "registrar": "GoDaddy.com, LLC",
+            "state": [
+                "British Columbia"
+            ],
+            "whois_hash": "",
+            "whois_id": "70195358_DOMAIN_COM-VRSN",
+            "whois_nameserver": [
+                {
+                    "domain": "n1.domaincontrol.com",
+                    "domain_2tld": "n1.domaincontrol.com",
+                    "whois_related_nameserver_id": ""
+                },
+                {
+                    "domain": "n2.domaincontrol.com",
+                    "domain_2tld": "n2.domaincontrol.com",
+                    "whois_related_nameserver_id": ""
+                }
+            ],
+            "whois_pii": [
+                {
+                    "address": "",
+                    "city": "",
+                    "data": "",
+                    "email": "",
+                    "geo_country_alpha_2": "Canada",
+                    "name": "",
+                    "organization": "HYAS Infosec Inc.",
+                    "phone_e164": "",
+                    "state": "British Columbia",
+                    "whois_related_pii_id": "",
+                    "whois_related_type": ""
+                }
+            ]
+        }
+    ],
+    "source": "whois",
+    "total_count": 1
+}

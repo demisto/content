@@ -1,0 +1,380 @@
+{
+ "get_workflows_list": {
+  "response": {
+   "next_page_token": null,
+   "items": [
+    {
+     "name": "bucket_upload",
+     "metrics": {
+      "total_runs": 181,
+      "successful_runs": 136,
+      "mttr": 93519,
+      "total_credits_used": 323000,
+      "failed_runs": 43,
+      "median_credits_used": 0,
+      "success_rate": 0.7513812154696132,
+      "duration_metrics": {
+       "min": 202,
+       "mean": 8807,
+       "median": 8606,
+       "p95": 11307,
+       "max": 16317,
+       "standard_deviation": 1707.0,
+       "total_duration": 0
+      },
+      "total_recoveries": 0,
+      "throughput": 2.033707865168539
+     },
+     "window_start": "2021-03-31T09:01:11.412Z",
+     "window_end": "2021-06-28T23:42:38.647Z",
+     "project_id": "123asx21-8c43-21ss-b469-123azxw2asd2"
+    },
+    {
+     "name": "upload_trigger",
+     "metrics": {
+      "total_runs": 2,
+      "successful_runs": 1,
+      "mttr": 0,
+      "total_credits_used": 1900,
+      "failed_runs": 1,
+      "median_credits_used": 0,
+      "success_rate": 0.5,
+      "duration_metrics": {
+       "min": 3005,
+       "mean": 4508,
+       "median": 4508,
+       "p95": 5860,
+       "max": 6011,
+       "standard_deviation": 2125.0,
+       "total_duration": 0
+      },
+      "total_recoveries": 0,
+      "throughput": 0.2
+     },
+     "window_start": "2021-04-13T12:31:14.409Z",
+     "window_end": "2021-04-22T14:28:57.252Z",
+     "project_id": "123asx21-8c43-21ss-b469-123azxw2asd2"
+    },
+    {
+     "name": "commit",
+     "metrics": {
+      "total_runs": 997,
+      "successful_runs": 890,
+      "mttr": 7277,
+      "total_credits_used": 901540,
+      "failed_runs": 104,
+      "median_credits_used": 0,
+      "success_rate": 0.892678034102307,
+      "duration_metrics": {
+       "min": 24,
+       "mean": 2489,
+       "median": 2121,
+       "p95": 5758,
+       "max": 19605,
+       "standard_deviation": 1341.0,
+       "total_duration": 0
+      },
+      "total_recoveries": 0,
+      "throughput": 11.202247191011235
+     },
+     "window_start": "2021-03-31T06:14:57.976Z",
+     "window_end": "2021-06-28T23:04:43.335Z",
+     "project_id": "123asx21-8c43-21ss-b469-123azxw2asd2"
+    }
+   ]
+  },
+  "outputs": [
+   {
+    "metrics": {
+     "duration_metrics": {
+      "max": 16317,
+      "mean": 8807,
+      "median": 8606,
+      "min": 202,
+      "p95": 11307,
+      "standard_deviation": 1707.0,
+      "total_duration": 0
+     },
+     "failed_runs": 43,
+     "median_credits_used": 0,
+     "mttr": 93519,
+     "success_rate": 0.7513812154696132,
+     "successful_runs": 136,
+     "throughput": 2.033707865168539,
+     "total_credits_used": 323000,
+     "total_recoveries": 0,
+     "total_runs": 181
+    },
+    "name": "bucket_upload",
+    "project_id": "123asx21-8c43-21ss-b469-123azxw2asd2",
+    "window_end": "2021-06-28T23:42:38.647Z",
+    "window_start": "2021-03-31T09:01:11.412Z"
+   },
+   {
+    "metrics": {
+     "duration_metrics": {
+      "max": 6011,
+      "mean": 4508,
+      "median": 4508,
+      "min": 3005,
+      "p95": 5860,
+      "standard_deviation": 2125.0,
+      "total_duration": 0
+     },
+     "failed_runs": 1,
+     "median_credits_used": 0,
+     "mttr": 0,
+     "success_rate": 0.5,
+     "successful_runs": 1,
+     "throughput": 0.2,
+     "total_credits_used": 1900,
+     "total_recoveries": 0,
+     "total_runs": 2
+    },
+    "name": "upload_trigger",
+    "project_id": "123asx21-8c43-21ss-b469-123azxw2asd2",
+    "window_end": "2021-04-22T14:28:57.252Z",
+    "window_start": "2021-04-13T12:31:14.409Z"
+   },
+   {
+    "metrics": {
+     "duration_metrics": {
+      "max": 19605,
+      "mean": 2489,
+      "median": 2121,
+      "min": 24,
+      "p95": 5758,
+      "standard_deviation": 1341.0,
+      "total_duration": 0
+     },
+     "failed_runs": 104,
+     "median_credits_used": 0,
+     "mttr": 7277,
+     "success_rate": 0.892678034102307,
+     "successful_runs": 890,
+     "throughput": 11.202247191011235,
+     "total_credits_used": 901540,
+     "total_recoveries": 0,
+     "total_runs": 997
+    },
+    "name": "commit",
+    "project_id": "123asx21-8c43-21ss-b469-123azxw2asd2",
+    "window_end": "2021-06-28T23:04:43.335Z",
+    "window_start": "2021-03-31T06:14:57.976Z"
+   }
+  ],
+  "outputs_prefix": "CircleCI.Workflow",
+  "outputs_key_field": "id"
+ },
+ "get_job_artifacts": {
+  "response": {
+   "next_page_token": null,
+   "items": [
+    {
+     "path": "artifacts/filter_env.json",
+     "node_index": 0,
+     "url": "https://123456-7654321-gh.circle-artifacts.com/0/artifacts/filter_env.json"
+    },
+    {
+     "path": "artifacts/debug_log.log",
+     "node_index": 0,
+     "url": "https://123457-97654321-gh.circle-artifacts.com/0/artifacts/debug_log.log"
+    }
+   ]
+  },
+  "outputs": [
+   {
+    "path": "artifacts/filter_env.json",
+    "node_index": 0,
+    "url": "https://123456-7654321-gh.circle-artifacts.com/0/artifacts/filter_env.json"
+   },
+   {
+    "path": "artifacts/debug_log.log",
+    "node_index": 0,
+    "url": "https://123457-97654321-gh.circle-artifacts.com/0/artifacts/debug_log.log"
+   }
+  ],
+  "outputs_prefix": "CircleCI.Artifact",
+  "outputs_key_field": "url"
+ },
+ "get_workflow_jobs": {
+  "response": {
+   "next_page_token": null,
+   "items": [
+    {
+     "dependencies": [],
+     "job_number": 123456,
+     "id": "c7425325-aa22-dx22-123a-1asf21a23dfd",
+     "started_at": "2021-06-24T00:04:57Z",
+     "name": "Setup Environment",
+     "project_slug": "gh/organization_name/repo_name",
+     "status": "success",
+     "type": "build",
+     "stopped_at": "2021-06-24T00:06:32Z"
+    },
+    {
+     "dependencies": [
+      "c7425325-aa22-dx22-123a-1asf21a23dfd"
+     ],
+     "job_number": 123457,
+     "id": "89d36e04-5481-48a3-8be4-ddcb2bdcz1q1",
+     "started_at": "2021-06-24T00:06:35Z",
+     "name": "Run Validations",
+     "project_slug": "gh/organization_name/repo_name",
+     "status": "success",
+     "type": "build",
+     "stopped_at": "2021-06-24T00:38:00Z"
+    },
+    {
+     "dependencies": [
+      "c7425325-aa22-dx22-123a-1asf21a23dfd"
+     ],
+     "job_number": 112233,
+     "id": "e5552df4-0159-4cab-8cb0-9ac9feddb12a",
+     "started_at": "2021-06-24T00:06:36Z",
+     "name": "Run Unit Testing And Lint",
+     "project_slug": "gh/organization_name/repo_name",
+     "status": "success",
+     "type": "build",
+     "stopped_at": "2021-06-24T03:37:51Z"
+    },
+    {
+     "dependencies": [],
+     "job_number": 223344,
+     "id": "7e09edc1-222f-44ac-8009-2e13d28e011a",
+     "started_at": "2021-06-24T00:04:58Z",
+     "name": "Create Instances",
+     "project_slug": "gh/organization_name/repo_name",
+     "status": "success",
+     "type": "build",
+     "stopped_at": "2021-06-24T00:25:57Z"
+    },
+    {
+     "dependencies": [
+      "7e09edc1-222f-44ac-8009-2e13d28e011a"
+     ],
+     "job_number": 2342345,
+     "id": "9bf6d9da-7954-4199-a123-20c7b457a222",
+     "started_at": "2021-06-24T00:26:00Z",
+     "name": "Server Master",
+     "project_slug": "gh/organization_name/repo_name",
+     "status": "failed",
+     "type": "build",
+     "stopped_at": "2021-06-24T02:03:27Z"
+    }
+   ]
+  },
+  "outputs": [
+   {
+    "dependencies": [],
+    "id": "c7425325-aa22-dx22-123a-1asf21a23dfd",
+    "job_number": 123456,
+    "name": "Setup Environment",
+    "project_slug": "gh/organization_name/repo_name",
+    "started_at": "2021-06-24T00:04:57Z",
+    "status": "success",
+    "stopped_at": "2021-06-24T00:06:32Z",
+    "type": "build"
+   },
+   {
+    "dependencies": [
+     "c7425325-aa22-dx22-123a-1asf21a23dfd"
+    ],
+    "id": "89d36e04-5481-48a3-8be4-ddcb2bdcz1q1",
+    "job_number": 123457,
+    "name": "Run Validations",
+    "project_slug": "gh/organization_name/repo_name",
+    "started_at": "2021-06-24T00:06:35Z",
+    "status": "success",
+    "stopped_at": "2021-06-24T00:38:00Z",
+    "type": "build"
+   },
+   {
+    "dependencies": [
+     "c7425325-aa22-dx22-123a-1asf21a23dfd"
+    ],
+    "id": "e5552df4-0159-4cab-8cb0-9ac9feddb12a",
+    "job_number": 112233,
+    "name": "Run Unit Testing And Lint",
+    "project_slug": "gh/organization_name/repo_name",
+    "started_at": "2021-06-24T00:06:36Z",
+    "status": "success",
+    "stopped_at": "2021-06-24T03:37:51Z",
+    "type": "build"
+   },
+   {
+    "dependencies": [],
+    "id": "7e09edc1-222f-44ac-8009-2e13d28e011a",
+    "job_number": 223344,
+    "name": "Create Instances",
+    "project_slug": "gh/organization_name/repo_name",
+    "started_at": "2021-06-24T00:04:58Z",
+    "status": "success",
+    "stopped_at": "2021-06-24T00:25:57Z",
+    "type": "build"
+   },
+   {
+    "dependencies": [
+     "7e09edc1-222f-44ac-8009-2e13d28e011a"
+    ],
+    "id": "9bf6d9da-7954-4199-a123-20c7b457a222",
+    "job_number": 2342345,
+    "name": "Server Master",
+    "project_slug": "gh/organization_name/repo_name",
+    "started_at": "2021-06-24T00:26:00Z",
+    "status": "failed",
+    "stopped_at": "2021-06-24T02:03:27Z",
+    "type": "build"
+   }
+  ],
+  "outputs_prefix": "CircleCI.WorkflowJob",
+  "outputs_key_field": "id"
+ },
+ "get_last_workflow_runs": {
+  "response": {
+   "next_page_token": null,
+   "items": [
+    {
+     "id": "d832d004-0069-4412-8e6d-41265143411z",
+     "duration": 7743,
+     "status": "failed",
+     "created_at": "2021-06-29T00:04:56.069Z",
+     "stopped_at": "2021-06-29T02:13:59.354Z",
+     "credits_used": 2482,
+     "branch": "master"
+    },
+    {
+     "id": "eb1f5fe4-c538-45d5-a182-c79ae0f4a1az",
+     "duration": 9778,
+     "status": "failed",
+     "created_at": "2021-06-28T00:04:55.409Z",
+     "stopped_at": "2021-06-28T02:47:52.916Z",
+     "credits_used": 3129,
+     "branch": "master"
+    }
+   ]
+  },
+  "outputs": [
+   {
+    "branch": "master",
+    "created_at": "2021-06-29T00:04:56.069Z",
+    "credits_used": 2482,
+    "duration": 7743,
+    "id": "d832d004-0069-4412-8e6d-41265143411z",
+    "status": "failed",
+    "stopped_at": "2021-06-29T02:13:59.354Z"
+   },
+   {
+    "branch": "master",
+    "created_at": "2021-06-28T00:04:55.409Z",
+    "credits_used": 3129,
+    "duration": 9778,
+    "id": "eb1f5fe4-c538-45d5-a182-c79ae0f4a1az",
+    "status": "failed",
+    "stopped_at": "2021-06-28T02:47:52.916Z"
+   }
+  ],
+  "outputs_prefix": "CircleCI.WorkflowRun",
+  "outputs_key_field": "id"
+ }
+}

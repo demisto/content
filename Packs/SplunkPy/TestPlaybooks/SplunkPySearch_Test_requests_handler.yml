@@ -1,0 +1,79 @@
+id: SplunkPySearch_Test_requests_handler
+version: -1
+name: SplunkPySearch_Test_requests_handler
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ceb5e64a-956b-4dc6-bfb4-53bf5d25d8bb
+    type: start
+    task:
+      id: ceb5e64a-956b-4dc6-bfb4-53bf5d25d8bb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "1":
+    id: "1"
+    taskid: 06d08190-d626-4473-b048-aaa451269da7
+    type: regular
+    task:
+      id: 06d08190-d626-4473-b048-aaa451269da7
+      version: -1
+      name: set playbook to SplunkPySearch_Test
+      description: set playbook for current incident to SplunkPySearch_Test
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name:
+        simple: SplunkPySearch_Test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

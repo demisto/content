@@ -1,7 +1,17 @@
 import json
 
-from Polygon import demisto, Client, ANALGIN_UPLOAD, ATTACH, FILE_TYPE, \
+from Polygon import Client, ANALGIN_UPLOAD, ATTACH, FILE_TYPE, \
     HASH_REPUTATION
+import demistomock as demisto
+import pytest
+
+INTEGRATION_NAME = "Group-IB TDS Polygon"
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
+
 
 with open("test_data/args.json", "r") as f:
     data = json.load(f)

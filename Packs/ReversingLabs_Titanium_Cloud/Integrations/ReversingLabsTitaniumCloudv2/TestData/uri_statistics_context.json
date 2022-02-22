@@ -1,0 +1,56 @@
+{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": {
+        "uri_statistics": {
+            "rl": {
+                "uri_state": {
+                    "domain": "google.com",
+                    "sha1": "baea954b95731c68ae6e45bd1e252eb4560cdc45",
+                    "uri_type": "domain",
+                    "counters": {
+                        "known": 19453370,
+                        "malicious": 6409678,
+                        "suspicious": 161600
+                    }
+                }
+            }
+        }
+    },
+    "HumanReadable": "## ReversingLabs URI Statistics results for URI google.com\n ### Sample counters\n **KNOWN**: 19453370\n    **MALICIOUS**: 6409678\n    **SUSPICIOUS**: 161600\n    **SHA-1 hash**: baea954b95731c68ae6e45bd1e252eb4560cdc45\n    **URI type**: domain\n    **Domain**: google.com",
+    "EntryContext": {
+        "Domain(val.Name && val.Name == obj.Name)": [
+            {
+                "Name": "google.com"
+            }
+        ],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+            {
+                "Indicator": "google.com",
+                "Type": "domain",
+                "Vendor": "ReversingLabs TitaniumCloud v2",
+                "Score": 0
+            }
+        ],
+        "ReversingLabs": {
+            "uri_statistics": {
+                "rl": {
+                    "uri_state": {
+                        "domain": "google.com",
+                        "sha1": "baea954b95731c68ae6e45bd1e252eb4560cdc45",
+                        "uri_type": "domain",
+                        "counters": {
+                            "known": 19453370,
+                            "malicious": 6409678,
+                            "suspicious": 161600
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": []
+}

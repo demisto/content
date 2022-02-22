@@ -6,6 +6,11 @@ import CommonServerPython
 GetIndicatorDBotScoreFunc = 'GetIndicatorDBotScore.get_dbot_score_data'
 
 
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'script': True})
+
+
 @pytest.mark.parametrize(
     "indicator, indicator_type, expected",
     [
@@ -15,9 +20,9 @@ GetIndicatorDBotScoreFunc = 'GetIndicatorDBotScore.get_dbot_score_data'
         ('test_indicator', 'CVE', 'cve'),
         ('test_indicator', 'IP', 'ip'),
         ('test_indicator', 'Email', 'email'),
-        ('test_indicator', 'Url', 'url')
+        ('test_indicator', 'Url', 'url'),
+        ('test_indicator', 'IPv6', 'ip')
     ]
-
 )
 def test_validate_indicator_type(indicator, indicator_type, expected):
     """

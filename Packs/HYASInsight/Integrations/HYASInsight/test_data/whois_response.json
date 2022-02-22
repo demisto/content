@@ -1,0 +1,32 @@
+[{
+        "address": [],
+        "city": [
+            "ha noi"
+        ],
+        "country": [],
+        "domain": "domain.net",
+        "domain_2tld": "",
+        "domain_created_datetime": "2015-05-22T00:00:00Z",
+        "domain_expires_datetime": "2016-05-22T00:00:00Z",
+        "domain_updated_datetime": "2017-06-14T19:06:36.577650Z",
+        "email": [
+            "ngoc.mycomputer@gmail.com"
+        ],
+        "idn_name": "",
+        "nameserver": [
+            "ns2.inet.vn",
+            "ns1.inet.vn"
+        ],
+        "phone": [
+            {
+                "phone": "+123456789123",
+                "phone_info": {
+                    "carrier": "Viettel",
+                    "country": "Vietnam",
+                    "geo": "Vietnam"
+                }
+            }
+        ],
+        "privacy_punch": false,
+        "registrar": "onlinenic, inc."
+}]

@@ -1,2 +1,5 @@
 [file:Incapsula]
 ignore=PA116
+
+[file:Incapsula.yml]
+ignore=IN145
