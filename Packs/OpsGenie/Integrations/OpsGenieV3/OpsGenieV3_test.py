@@ -19,6 +19,24 @@ def util_load_json(path, wrap_in_response=False):
             return jsonres
 
 
+@pytest.mark.parametrize('arg1, arg2, expected_output', [
+    ('given', 'given', False),
+    ('given', None, True),
+    (None, 'yes', True),
+    (None, None, False)
+])
+def test_is_one_argument_given(arg1, arg2, expected_output):
+    """
+    Given:
+        - Combinations of two arguments
+    When:
+        - Calling function is_one_argument_given
+    Then:
+        - Ensure the resultes are correct
+    """
+    assert OpsGenieV3.is_one_argument_given(arg1, arg2) == expected_output
+
+
 def test_create_alert_wrong_responders():
     """
     Given:
@@ -221,18 +239,18 @@ def test_add_responder_alert(mocker):
     assert (res.raw_response == util_load_json('test_data/add_responder_alert.json'))
 
 
-def test_get_escalations_without_args():
+def test_get_escalations_with_both_args():
     """
     Given:
         - An app client object
     When:
-        - Calling function escalate_alert with no arguments
+        - Calling function get_escalations with no arguments
     Then:
         - Ensure the resulted will raise an exception.
     """
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
-        OpsGenieV3.escalate_alert(mock_client, {})
+        OpsGenieV3.get_escalations(mock_client, {"escalation_id": "ID", "escalation_name": "NAME"})
 
 
 def test_get_escalations(mocker):
@@ -251,7 +269,7 @@ def test_get_escalations(mocker):
     assert len(res.outputs) == 2
 
 
-def test_get_escalation(mocker):
+def test_get_escalation(requests_mock, mocker):
     """
     Given:
         - An app client object
@@ -261,9 +279,8 @@ def test_get_escalation(mocker):
     Then:
         - Ensure the return data is correct
     """
-    mock_client = OpsGenieV3.Client(base_url="")
-    mocker.patch.object(mock_client, 'get_escalation',
-                        return_value=util_load_json('test_data/get_escalations.json'))
+    mock_client = OpsGenieV3.Client(base_url="http://example.com")
+    requests_mock.get(url='http://example.com/v2/escalations/123', json=util_load_json('test_data/get_escalations.json'))
     res = OpsGenieV3.get_escalations(mock_client, {"escalation_id": 123})
     assert len(res.outputs) == 2
 

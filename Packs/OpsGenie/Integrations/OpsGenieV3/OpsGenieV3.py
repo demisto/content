@@ -136,7 +136,7 @@ class Client(BaseClient):
                                   json_data=args)
 
     def get_escalation(self, args: dict):
-        if args.get("escalation_id") and args.get("escalation_name"):
+        if not is_one_argument_given(args.get("escalation_id"), args.get("escalation_name")):
             raise DemistoException("Either escalation_id or escalation_name should be provided.")
         identifier_type = "id" if args.get("escalation_id") else "name"
         escalation = args.get("escalation_id", None) or args.get("escalation_name", None)
@@ -178,7 +178,7 @@ class Client(BaseClient):
                                              f"{args.get('alert-id')}/attachments")
 
     def get_schedule(self, args: dict):
-        if not (args.get("schedule_id") and args.get("schedule_name")):
+        if not is_one_argument_given(args.get("schedule_id"), args.get("schedule_name")):
             raise DemistoException("Either schedule_id or schedule_name should be provided.")
         identifier_type = "id" if args.get("schedule_id") else "name"
         schedule = args.get("schedule_id", None) or args.get("schedule_name", None)
@@ -312,6 +312,20 @@ class Client(BaseClient):
         return self._http_request(method='GET',
                                   url_suffix=f"/v2/{TEAMS_SUFFIX}"
                                   )
+
+
+''' HELPER FUNCTIONS '''
+
+
+def is_one_argument_given(arg1, arg2):
+    """
+    checks that out of two arguments only one argument is set.
+    :param arg1: first argument
+    :param arg2: second argument
+    :return: True if only one argument is set else False
+    """
+
+    return bool(arg1) ^ bool(arg2)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -632,7 +646,7 @@ def get_schedules(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def get_schedule_overrides(client: Client, args: Dict[str, Any]) -> CommandResults:
-    if not args.get("schedule_id") and not args.get("schedule_name"):
+    if not is_one_argument_given(args.get("schedule_id"), args.get("schedule_name")):
         raise DemistoException("Either schedule_id or schedule_name should be provided.")
     result = client.get_schedule_override(args) if args.get("override_alias") \
         else client.list_schedule_overrides(args)
