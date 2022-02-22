@@ -180,12 +180,11 @@ def extract_attack_ids(raw_response: dict):
         raw_response: The response gotten from the server
 
     :returns:
-        the attack_ids field if exists, otherwise, an empty string.
+        the attack_ids list of all the attack_ids that exists in the response.
     """
     pulses = dict_safe_get(raw_response, ['pulse_info', 'pulses']) or [{}]
     atack_ids = [pulse.get('attack_ids') for pulse in pulses if pulse.get('attack_ids')]
     return atack_ids
-    # return pulses[0].get('attack_ids')
 
 
 def relationships_manager(client: Client, entity_a: str, entity_a_type: str, indicator_type: str,
