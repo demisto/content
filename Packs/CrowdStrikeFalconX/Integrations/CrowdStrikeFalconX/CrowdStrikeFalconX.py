@@ -1,11 +1,17 @@
-from typing import Callable
+from typing import Callable, NamedTuple
 
 import urllib3
 
 from CommonServerPython import *
 
 # Disable insecure warnings
+HR_FIELDS = ['sha256', 'environment_description', 'environment_id', 'created_timestamp', 'id', 'submission_type',
+             'threat_score', 'verdict']
 urllib3.disable_warnings()
+
+ResultTuple = NamedTuple('ResultTuple', [('response', dict),
+                                         ('output', Optional[dict]),
+                                         ('indicator', Optional[Common.Indicator])])
 
 DBOT_SCORE_DICT = {'malicious': Common.DBotScore.BAD,
                    'suspicious': Common.DBotScore.SUSPICIOUS,
@@ -434,17 +440,31 @@ class Client:
         return self._http_request("Get", url_suffix, params=params)
 
 
-def keep_dict_keys(
-        dictionary: dict,
-        fields_to_keep: Optional[list]
-) -> dict:
+def filter_dictionary(dictionary: dict, fields_to_keep: Optional[list], sort_by_field_list: bool = False) -> dict:
     """
-    Filters a dict and keeps only the keys that appears in the given list
+    Filters a dictionary and keeps only the keys that appears in the given list
     :param dictionary: the origin dict
     :param fields_to_keep: the list which contains the wanted keys
-    :return: a dict based on api_current_dict without the keys that doesn't appear in fields_to_keep
+    :param sort_by_field_list: whether to sort the dictionary keys according to the field list
+    :return: the dictionary, with only fields that appeared in fields_to_keep.
+    >>> filter_dictionary({1:2,3:4}, [3])
+    {3: 4}
+    >>> filter_dictionary({1:2,3:4}, [3,1])
+    {1: 2, 3: 4}
+    >>> filter_dictionary({1:2,3:4}, [3,1], True)
+    {3: 4, 1: 2}
+    >>> filter_dictionary({1:2,3:4}, [], True)
+    {}
+    >>> filter_dictionary({1:2,3:4}, None)
+    {}
     """
-    return {k: v for k, v in dictionary.items() if k in (fields_to_keep or [])}
+    filtered = {k: v for k, v in dictionary.items() if k in (fields_to_keep or [])}
+
+    if sort_by_field_list:
+        key_order = {v: i for i, v in enumerate(fields_to_keep or [])}
+        filtered = dict(sorted(filtered.items(), key=lambda pair: key_order[pair[0]]))
+
+    return filtered
 
 
 def parse_outputs(
@@ -455,7 +475,7 @@ def parse_outputs(
         resources_fields: Optional[list] = None,
         sandbox_fields: Optional[list] = None,
         extra_sandbox_fields: Optional[list] = None,
-) -> tuple[dict[str, dict], Optional[Common.Indicator]]:
+) -> ResultTuple:
     """Parse group data as received from CrowdStrike FalconX API matching Demisto conventions
     the output from the API is a dict that contains the keys: meta, resources and errors
     the meta contains a "quota" dict
@@ -468,24 +488,23 @@ def parse_outputs(
     :param resources_fields: the wanted params that appear in the resources section
     :param sandbox_fields: the wanted params that appear in the sandbox section
     :param extra_sandbox_fields: the wanted params that appear in the extra sandbox section
-    :return: a dict based on api_res with the wanted params only
     """
-    result, indicator = {}, None
+    output, indicator = {}, None
 
     if api_res_meta := response.get("meta", dict()):
-        result |= keep_dict_keys(api_res_meta, meta_fields)
-        result |= keep_dict_keys(api_res_meta.get("quota", {}), quota_fields)
+        output |= filter_dictionary(api_res_meta, meta_fields)
+        output |= filter_dictionary(api_res_meta.get("quota", {}), quota_fields)
 
     if resources_list := response.get("resources"):
         # depends on the command, the resources_list section can be a list[str] or list of only one dict
         if isinstance(resources_list[0], dict):
             resources = resources_list[0]
-            resources_group_outputs = keep_dict_keys(resources, resources_fields)
+            resources_group_outputs = filter_dictionary(resources, resources_fields)
 
             if sandbox := resources.get("sandbox", [{}])[0]:
-                result |= keep_dict_keys(sandbox, sandbox_fields)
+                output |= filter_dictionary(sandbox, sandbox_fields)
 
-                extra_sandbox_group_outputs = keep_dict_keys(sandbox, extra_sandbox_fields)
+                extra_sandbox_group_outputs = filter_dictionary(sandbox, extra_sandbox_fields)
                 for process in extra_sandbox_group_outputs.get('processes', []):
                     process.pop('registry', None)
                 if extra_sandbox_group_outputs:
@@ -496,9 +515,9 @@ def parse_outputs(
             # the resources section is a list of strings
             resources_group_outputs = {"resources": response.get("resources")}
 
-        result |= resources_group_outputs
+        output |= resources_group_outputs
 
-    return result, indicator  # todo populate with indicators
+    return ResultTuple(response, output, indicator)
 
 
 def parse_indicator(sandbox: dict, reliability: str) -> Optional[Common.File]:
@@ -574,18 +593,18 @@ def upload_file_command(
     response = client.upload_file(file, file_name, is_confidential, comment)
 
     resources_fields = ["file_name", "sha256"]
-    filtered_outputs, indicator = parse_outputs(response, client.reliability, resources_fields=resources_fields)
+    result = parse_outputs(response, client.reliability, resources_fields=resources_fields)
     if submit_file == 'no':
         return CommandResults(
             outputs_key_field='sha256',
             outputs_prefix=OUTPUTS_PREFIX,
-            outputs=[filtered_outputs],
-            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs),
-            raw_response=[response],
-            indicators=[indicator])
+            outputs=result.output,
+            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+            raw_response=response,
+            indicator=result.indicator)
 
     else:
-        sha256 = str(filtered_outputs.get("sha256"))  # todo isn't it dangerous? may be None
+        sha256 = str(result.output.get("sha256"))  # todo isn't it dangerous? may be None
         return send_uploaded_file_to_sandbox_analysis_command(client, sha256, "160: Windows 10")
 
 
@@ -620,18 +639,18 @@ def send_uploaded_file_to_sandbox_analysis_command(
 
     sandbox_fields = ["environment_id", "sha256"]
     resource_fields = ['id', 'state', 'created_timestamp', 'created_timestamp']
-    filtered_outputs, indicator = parse_outputs(response, reliability=client.reliability,
-                                                sandbox_fields=sandbox_fields, resources_fields=resource_fields)
+    result = parse_outputs(response, reliability=client.reliability,
+                           sandbox_fields=sandbox_fields, resources_fields=resource_fields)
     # in order identify the id source, upload or submit command, the id name changed
-    filtered_outputs["submitted_id"] = filtered_outputs.pop("id")
+    result.output["submitted_id"] = result.output.pop("id")
 
     return CommandResults(
         outputs_key_field='submitted_id',
         outputs_prefix=OUTPUTS_PREFIX,
-        outputs=filtered_outputs,
-        readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs),
-        raw_response=[response],
-        indicators=[indicator]
+        outputs=result.output,
+        readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+        raw_response=result.response,
+        indicator=result.indicator
     )
 
 
@@ -665,30 +684,18 @@ def send_url_to_sandbox_analysis_command(
 
     resources_fields = ['id', 'state', 'created_timestamp']
     sandbox_fields = ["environment_id", "sha256"]
-    filtered_outputs, indicator = parse_outputs(response, client.reliability,
-                                                resources_fields=resources_fields, sandbox_fields=sandbox_fields)
+    result = parse_outputs(response, client.reliability, resources_fields=resources_fields,
+                           sandbox_fields=sandbox_fields)
     # in order identify the id source, upload or submit command, the id name changed
-    filtered_outputs["submitted_id"] = filtered_outputs.pop("id")
+    result.output["submitted_id"] = result.output.pop("id")
 
     return CommandResults(
         outputs_key_field='submitted_id',
         outputs_prefix=OUTPUTS_PREFIX,
-        outputs=[filtered_outputs],
-        readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs),
-        raw_response=[response],
-        indicators=[indicator])
-
-
-def arrange_output_for_hr(filtered_outputs_list):
-    res_hr_list: list = []
-    hr_fields = ['sha256', 'environment_description', 'environment_id', 'created_timestamp', 'id', 'submission_type',
-                 'threat_score', 'verdict']
-    for output in filtered_outputs_list:
-        output_for_hr: dict = {}
-        for field in hr_fields:
-            output_for_hr[field] = output.get(field)
-        res_hr_list.append(output_for_hr)
-    return res_hr_list, hr_fields
+        outputs=result.output,
+        readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+        raw_response=response,
+        indicator=result.indicator)
 
 
 def get_full_report_command(client: Client, ids: list, extended_data: str):
@@ -696,146 +703,128 @@ def get_full_report_command(client: Client, ids: list, extended_data: str):
     :param client: the client object with an access token
     :param ids: ids of a submitted malware samples.
     :param extended_data: Whether to return extended data which includes mitre attacks and signature information.
-    :param polling: Whether is polling call this function.
     :return: Demisto outputs when entry_context and responses are lists
     """
-    ids_list = argToList(ids)
-    filtered_outputs_list = []
-    response_list = []
+    results: list[ResultTuple] = []
     is_command_finished: bool = False
 
-    for single_id in ids_list:
+    resources_fields = ['id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
+                        "ioc_report_broad_csv_artifact_id", "ioc_report_strict_json_artifact_id",
+                        "ioc_report_broad_json_artifact_id", "ioc_report_strict_stix_artifact_id",
+                        "ioc_report_broad_stix_artifact_id", "ioc_report_strict_maec_artifact_id",
+                        "ioc_report_broad_maec_artifact_id", 'tags', "intel"]
+
+    sandbox_fields = [
+        "environment_id", "environment_description", "threat_score", "submit_url", "submission_type", "filetype",
+        "filesize", "sha256"
+    ]
+    extra_sandbox_fields = [
+        "processes", "architecture", "classification", "classification_tags", "http_requests",
+        "extracted_files", "file_metadata", "file_size", "file_type", "file_type_short", "packer", "incidents",
+        "submit_name", "screenshots_artifact_ids", "dns_requests", "contacted_hosts", "contacted_hosts"
+    ]
+
+    for single_id in argToList(ids):
         response = client.get_full_report(single_id)
         if response.get('resources'):
             is_command_finished = True
-        response_list.append(response)
-
-        resources_fields = ['id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
-                            "ioc_report_broad_csv_artifact_id", "ioc_report_strict_json_artifact_id",
-                            "ioc_report_broad_json_artifact_id", "ioc_report_strict_stix_artifact_id",
-                            "ioc_report_broad_stix_artifact_id", "ioc_report_strict_maec_artifact_id",
-                            "ioc_report_broad_maec_artifact_id", 'tags', "intel"]
-
-        sandbox_fields = [
-            "environment_id", "environment_description", "threat_score", "submit_url", "submission_type", "filetype",
-            "filesize", "sha256"
-        ]
-        extra_sandbox_fields = [
-            "processes", "architecture", "classification", "classification_tags", "http_requests",
-            "extracted_files", "file_metadata", "file_size", "file_type", "file_type_short", "packer", "incidents",
-            "submit_name", "screenshots_artifact_ids", "dns_requests", "contacted_hosts", "contacted_hosts"
-        ]
 
         if extended_data == 'true':
             extra_sandbox_fields.extend(["mitre_attacks", "signatures"])
 
-        output, indicator = parse_outputs(response, reliability=client.reliability,
-                                          resources_fields=resources_fields, sandbox_fields=sandbox_fields,
-                                          extra_sandbox_fields=extra_sandbox_fields)
-        filtered_outputs_list.append(output)
+        result = parse_outputs(response, reliability=client.reliability,
+                               resources_fields=resources_fields, sandbox_fields=sandbox_fields,
+                               extra_sandbox_fields=extra_sandbox_fields)
+        result.output = filter_dictionary(result.output, HR_FIELDS, sort_by_field_list=True)
+        results.append(result)
 
-    filtered_outputs_list_for_hr, hr_fields = arrange_output_for_hr(filtered_outputs_list)
+    pending_result_readable_output = 'There are no results yet, the sample might still being analyzed.' \
+                                     ' Please wait to download the report.\n' \
+                                     'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.'
 
-    if filtered_outputs_list:
-        readable_output = tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs_list_for_hr, hr_fields)
-    else:
-        readable_output = 'There are no results yet, the sample might still being analyzed.' \
-                          ' Please wait to download the report.\n' \
-                          'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.'
+    command_results = [
+        CommandResults(outputs_key_field='id',
+                       outputs_prefix=OUTPUTS_PREFIX,
+                       outputs=result.output,
+                       readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output, HR_FIELDS)
+                       if result.output else pending_result_readable_output,
+                       raw_response=result.response,
+                       indicator=result.indicator
+                       )
+        for result in results
+    ]
 
-    command_result = CommandResults(
-        outputs_key_field='id',
-        outputs_prefix=OUTPUTS_PREFIX,
-        outputs=filtered_outputs_list,
-        readable_output=readable_output,
-        raw_response=[response_list]
-    )
-    return command_result, is_command_finished
+    return command_results, is_command_finished  # latter is only relevant for polling, where it's necessary single file
 
 
 def get_report_summary_command(
         client: Client,
         ids: list
-) -> CommandResults:
+) -> list[CommandResults]:
     """Get a short summary version of a sandbox report.
     :param client: the client object with an access token
     :param ids: ids of a submitted malware samples.
     :return: Demisto outputs when entry_context and responses are lists
     """
-    filtered_outputs_list = []
-    indicators = []
-    response_list = []
-    ids_list = argToList(ids)
+    results: list[ResultTuple] = []
 
-    for single_id in ids_list:
+    resources_fields = [
+        'id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
+        "ioc_report_broad_csv_artifact_id", "ioc_report_strict_json_artifact_id",
+        "ioc_report_broad_json_artifact_id", "ioc_report_strict_stix_artifact_id",
+        "ioc_report_broad_stix_artifact_id", "ioc_report_strict_maec_artifact_id",
+        "ioc_report_broad_maec_artifact_id"
+    ]
+
+    sandbox_fields = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
+                      "filetype", "filesize", "sha256"]
+
+    for single_id in argToList(ids):
         response = client.get_report_summary(single_id)
-        response_list.append(response)
-
-        resources_fields = [
-            'id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
-            "ioc_report_broad_csv_artifact_id", "ioc_report_strict_json_artifact_id",
-            "ioc_report_broad_json_artifact_id", "ioc_report_strict_stix_artifact_id",
-            "ioc_report_broad_stix_artifact_id", "ioc_report_strict_maec_artifact_id",
-            "ioc_report_broad_maec_artifact_id"
-        ]
-
-        sandbox_fields = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
-                          "filetype", "filesize", "sha256"]
-        outputs, indicator = parse_outputs(response, reliability=client.reliability,
-                                           resources_fields=resources_fields, sandbox_fields=sandbox_fields)
-        filtered_outputs_list.append(outputs)
-        indicators.append(indicator)
+        result = parse_outputs(response, reliability=client.reliability,
+                               resources_fields=resources_fields, sandbox_fields=sandbox_fields)
+        results.append(result)
 
     no_outputs_msg = 'There are no results yet, the sample might still be going through analysis.' \
                      ' Please wait to download the report.\n' \
                      'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.'
 
-    filtered_outputs_list = list(filter(None, filtered_outputs_list))
-    indicators = list(filter(None, indicators))
-
-    return CommandResults(outputs_key_field='sha256',  # todo is this still correct?
-                          outputs_prefix=OUTPUTS_PREFIX,
-                          outputs=filtered_outputs_list,
-                          readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs_list)
-                          if filtered_outputs_list else no_outputs_msg,
-                          raw_response=response_list,
-                          indicators=indicators)
+    return [CommandResults(outputs_key_field='id',  # todo is this  correct?
+                           outputs_prefix=OUTPUTS_PREFIX,
+                           outputs=result.output,
+                           readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output)
+                           if result.output else no_outputs_msg,
+                           raw_response=result.response,
+                           indicator=result.indicator)
+            for result in results]
 
 
 def get_analysis_status_command(
         client: Client,
         ids: list
-) -> CommandResults:
+) -> list[CommandResults]:
     """Check the status of a sandbox analysis.
     :param client: the client object with an access token
     :param ids: ids of a submitted malware samples.
     :return: Demisto outputs when entry_context and responses are lists
     """
-    filtered_outputs_list = []
-    response_list = []
-    indicators = []
-    ids_list = argToList(ids)
+    results: list[ResultTuple] = []
 
-    for single_id in ids_list:
+    for single_id in argToList(ids):
         response = client.get_analysis_status(single_id)
-        response_list.append(response)
-
         resources_fields = ['id', 'state', 'created_timestamp']
         sandbox_fields = ["environment_id", "sha256"]
-        outputs, indicator = parse_outputs(response, reliability=client.reliability,
-                                           resources_fields=resources_fields, sandbox_fields=sandbox_fields)
-        filtered_outputs_list.append(outputs)
-        indicators.append(indicator)
+        result = parse_outputs(response,reliability=client.reliability,
+                                          resources_fields=resources_fields,sandbox_fields=sandbox_fields)
+        results.append(result)
 
-    filtered_outputs_list = list(filter(None, filtered_outputs_list))
-    indicators = list(filter(None, indicators))
-
-    return CommandResults(outputs_key_field='sha256',  # todo is this still correct?
-                          outputs_prefix=OUTPUTS_PREFIX,
-                          outputs=filtered_outputs_list,
-                          readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs_list),
-                          raw_response=response_list,
-                          indicators=indicators)
+    return [CommandResults(outputs_key_field='id',  # todo is this  correct?
+                           outputs_prefix=OUTPUTS_PREFIX,
+                           outputs=result.output,
+                           readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+                           raw_response=result.response,
+                           indicator=result.indicator)
+            for result in results]
 
 
 def download_ioc_command(
@@ -872,14 +861,14 @@ def check_quota_status_command(
     response = client.check_quota_status()
     quota_fields = ['total', 'used', 'in_progress']
 
-    filtered_outputs, indicator = parse_outputs(response, client.reliability, quota_fields=quota_fields)
+    result = parse_outputs(response, client.reliability, quota_fields=quota_fields)
 
     return CommandResults(outputs_prefix=OUTPUTS_PREFIX,
                           # todo key field?
-                          indicators=[indicator] if indicator else [],
-                          readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs),
+                          indicator=result.indicator,
+                          readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
                           raw_response=response,
-                          outputs=[filtered_outputs] if filtered_outputs else [])
+                          outputs=result.output)
 
 
 def find_sandbox_reports_command(
@@ -900,16 +889,14 @@ def find_sandbox_reports_command(
     response = client.find_sandbox_reports(limit, filter, offset, sort)
     resources_fields = ['id']
 
-    filtered_outputs, indicator = parse_outputs(response, reliability=client.reliability,
+    result = parse_outputs(response, reliability=client.reliability,
                                                 resources_fields=resources_fields)  # todo use indicator
-    entry_context = {'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
-
-    return CommandResults(outputs_key_field='sha256',  # todo is this still correct?
+    return CommandResults(outputs_key_field='id',
                           outputs_prefix=OUTPUTS_PREFIX,
-                          outputs=[filtered_outputs],
-                          readable_output=tableToMarkdown("CrowdStrike Falcon X response:", [filtered_outputs]),
+                          outputs=result.output,
+                          readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
                           raw_response=response,
-                          indicators=[indicator])
+                          indicator=result.indicator)
 
 
 def find_submission_id_command(
@@ -930,15 +917,14 @@ def find_submission_id_command(
     response = client.find_submission_id(limit, filter, offset, sort)
 
     resources_fields = ['id']
-    filtered_outputs, indicator = parse_outputs(response, reliability=client.reliability,
-                                                resources_fields=resources_fields)
+    result = parse_outputs(response, reliability=client.reliability,resources_fields=resources_fields)
 
-    return CommandResults(outputs_key_field='sha256',  # todo is this still correct?
+    return CommandResults(outputs_key_field='id',
                           outputs_prefix=OUTPUTS_PREFIX,
-                          outputs=filtered_outputs,
-                          readable_output=tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs),
-                          raw_response=[response],
-                          indicators=[indicator] if indicator else [])
+                          outputs=result.output,
+                          readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+                          raw_response=result.response,
+                          indicator=result.indicator)
 
 
 def get_results_function_args(outputs, extended_data, item_type, interval_in_secs):
