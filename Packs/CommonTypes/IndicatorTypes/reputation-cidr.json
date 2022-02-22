@@ -21,7 +21,7 @@
     "defaultMapping": {
         "blocked": {
             "simple": "CIDR.Blocked",
-            "complex": "null"
+            "complex": null
         },
         "geocountry": {
             "simple": "CIDR.Geo.Country",
