@@ -9648,16 +9648,20 @@ def main():
             get_route_summaries(topology, **demisto.args())
         elif demisto.command() == 'pan-os-platform-get-routes':
             topology = get_topology()
-            get_routes(topology, **demisto.args())
+            result = get_routes(topology, **demisto.args())
+            dataclasses_to_command_results(result)
         elif demisto.command() == 'pan-os-platform-get-system-info':
             topology = get_topology()
-            get_system_info(topology, **demisto.args())
+            result = get_system_info(topology, **demisto.args())
+            dataclasses_to_command_results(result)
         elif demisto.command() == 'pan-os-platform-get-device-groups':
             topology = get_topology()
-            get_device_groups(topology, **demisto.args())
+            result = get_device_groups(topology, **demisto.args())
+            dataclasses_to_command_results(result)
         elif demisto.command() == 'pan-os-platform-get-template-stacks':
             topology = get_topology()
-            get_template_stacks(topology, **demisto.args())
+            result = get_template_stacks(topology, **demisto.args())
+            dataclasses_to_command_results(result)
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
     except Exception as err:
