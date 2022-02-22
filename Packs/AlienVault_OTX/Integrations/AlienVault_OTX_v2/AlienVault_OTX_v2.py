@@ -669,6 +669,7 @@ def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_t
         client: Client object with request
         indicator_type: IPv4,IPv6,domain,hostname,url
         indicator: indicator its self (google.com)
+        limit: the maximum number of indicators to fetch
 
     Returns:
         Outputs
@@ -704,6 +705,7 @@ def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator
            client: Client object with request
            indicator_type: IPv4,IPv6,domain,hostname
            indicator: indicator its self (google.com)
+           limit: the maximum number of indicators to fetch
 
        Returns:
            Outputs
@@ -741,7 +743,7 @@ def alienvault_get_passive_dns_data_by_indicator_command(client: Client, indicat
            client: Client object with request
            indicator_type: IPv4,IPv6,domain,hostname
            indicator: indicator its self (google.com)
-
+           limit: the maximum number of indicators to fetch
        Returns:
            Outputs
        """
