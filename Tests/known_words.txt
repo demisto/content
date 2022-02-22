@@ -91,3 +91,4 @@ TAXII
 Syslog
 DomainTools
 replyTo
+SentinelOne
