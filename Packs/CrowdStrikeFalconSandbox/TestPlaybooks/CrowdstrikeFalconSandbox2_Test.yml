@@ -1,0 +1,1155 @@
+id: CrowdstrikeFalconSandbox2 Test
+version: -1
+fromversion: 6.2.0
+name: CrowdstrikeFalconSandbox2 Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c5cfc114-78b8-4e6a-850c-01b6d773ec5a
+    type: start
+    task:
+      id: c5cfc114-78b8-4e6a-850c-01b6d773ec5a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: e8ad08df-1130-4680-8631-b8668042f89d
+    type: regular
+    task:
+      id: e8ad08df-1130-4680-8631-b8668042f89d
+      version: -1
+      name: Get Environments
+      description: Get a list of all available environments
+      script: '|||crowdstrike-get-environments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 6bab6761-126c-4561-8e20-261626ffbcb2
+    type: regular
+    task:
+      id: 6bab6761-126c-4561-8e20-261626ffbcb2
+      version: -1
+      name: Search
+      description: Search the database using the Falcon Sandbox search syntax
+      script: '|||crowdstrike-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+      - "14"
+    scriptarguments:
+      similar_to:
+        simple: b2ac43820cdf8634e1a437b9723ec110513d3dd7a2f8d4fa3192babe3eaa4b8e
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a48c8893-0ed9-433d-8f8b-65f881557653
+    type: regular
+    task:
+      id: a48c8893-0ed9-433d-8f8b-65f881557653
+      version: -1
+      name: Scan
+      description: Get summary information for a given MD5, SHA1 or SHA256 and all
+        the reports generated for any environment ID
+      script: '|||crowdstrike-scan'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      file:
+        simple: 30d68d5f036e3edda345a0be211a14145fa763372620648d3dc2f8f7dbdf43c4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: a4eacd3a-2b43-464d-8f2c-ebb8f423584c
+    type: condition
+    task:
+      id: a4eacd3a-2b43-464d-8f2c-ebb8f423584c
+      version: -1
+      name: Exists scan
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    scriptarguments:
+      value:
+        complex:
+          root: File
+          accessor: environmentId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 90c7221d-90ac-43a8-813e-8690c3dca12e
+    type: regular
+    task:
+      id: 90c7221d-90ac-43a8-813e-8690c3dca12e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 6ee9fc79-98e9-4ab7-8b44-0b68d7ecb890
+    type: regular
+    task:
+      id: 6ee9fc79-98e9-4ab7-8b44-0b68d7ecb890
+      version: -1
+      name: crowdstrike-submit-url
+      description: Submit a URL for analysis
+      script: '|||crowdstrike-submit-url'
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon Sandbox V2
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      environmentID:
+        simple: "100"
+      extend-context:
+        simple: URL1_HASH=sha256
+      url:
+        simple: https://onedrive.live.com/?blahkey=%21AG6pRt%5FDkLiDBm5&blegh=8c90d345gGvf8asLdkfj&whocares=0CDfasdfajiog3%21105&darPd
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: b3b55e2a-2302-448b-8c4d-8f4b20bc5549
+    type: condition
+    task:
+      id: b3b55e2a-2302-448b-8c4d-8f4b20bc5549
+      version: -1
+      name: Verify Context get-environments
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    scriptarguments:
+      value:
+        complex:
+          root: CrowdStrike
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: CrowdStrike.Environment.ID
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: CrowdStrike.Environment.description
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: CrowdStrike.Environment.architecture
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: CrowdStrike.Environment.VMs_busy
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: CrowdStrike.Environment.analysisMode
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: CrowdStrike.Environment.groupicon
+                iscontext: true
+          accessor: Environment
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 9fef0bbc-a525-4dbd-8177-6ce9e5db528b
+    type: regular
+    task:
+      id: 9fef0bbc-a525-4dbd-8177-6ce9e5db528b
+      version: -1
+      name: cs-submit-url
+      description: Submit a URL for analysis
+      script: '|||cs-falcon-sandbox-submit-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      environmentID:
+        simple: "100"
+      extend-context:
+        simple: URL2_HASH=sha256
+      url:
+        simple: https://onedrive.live.com/?blahkey=%21AG6pRt%5FDkLiDBm5&blegh=8c90d345gGvf8asLdkfj&whocares=0CDfasdfajiog3%21105&darP5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 36146043-87a2-4dae-8fbf-07c1c56eeb41
+    type: condition
+    task:
+      id: 36146043-87a2-4dae-8fbf-07c1c56eeb41
+      version: -1
+      name: Verify different hashes for different submitted URLs
+      description: Ensure that the URL is being submitted correctly to crowdstrike
+        and not only the contents up until the first ampersand are being processed
+        by crowdstrike. If the two URLs (whose contents only differ after the ampersand)
+        get the same hash returned by crowdstrike it means that we are incorrectly
+        submitting the URLs and that their contents are getting cut off at the first
+        ampersand (this is bad, the desired behavior is that the hashes should differ).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: URL1_HASH
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: URL2_HASH
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 7f5073d5-df71-4bbc-8857-a6be230b5af7
+    type: title
+    task:
+      id: 7f5073d5-df71-4bbc-8857-a6be230b5af7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 9ba673d7-8374-4960-8806-b71ce135352a
+    type: regular
+    task:
+      id: 9ba673d7-8374-4960-8806-b71ce135352a
+      version: -1
+      name: Upload file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      method:
+        simple: GET
+      saveAsFile:
+        simple: "yes"
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/pdfworking.pdf
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c333721a-684e-4e70-8b15-437d30528264
+    type: regular
+    task:
+      id: c333721a-684e-4e70-8b15-437d30528264
+      version: -1
+      name: Submit file with Polling
+      description: Submit a file from investigation to analysis server
+      script: '|||cs-falcon-sandbox-submit-sample'
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon Sandbox V2
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      Polling:
+        simple: "true"
+      entryId:
+        simple: ${File.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: aa64a932-ea2a-43a4-8df1-d95ebd6c5c3f
+    type: condition
+    task:
+      id: aa64a932-ea2a-43a4-8df1-d95ebd6c5c3f
+      version: -1
+      name: Verify there's a new job and a Report
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.JobID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.Report.job_id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 5b56b561-e817-4d3f-85be-dd33e0719a63
+    type: regular
+    task:
+      id: 5b56b561-e817-4d3f-85be-dd33e0719a63
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 48d64de2-587d-4d29-8a00-bb2f28d94152
+    type: regular
+    task:
+      id: 48d64de2-587d-4d29-8a00-bb2f28d94152
+      version: -1
+      name: Get screenshots
+      description: Retrieves screenshots from a report
+      script: '|||cs-falcon-sandbox-get-screenshots'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      JobID:
+        simple: ${CrowdStrike.Report.job_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 8a4eaabb-9e60-4fff-8bb9-0efcb03e1464
+    type: condition
+    task:
+      id: 8a4eaabb-9e60-4fff-8bb9-0efcb03e1464
+      version: -1
+      name: Verify Screenshots
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: InfoFile.Name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              simple: InfoFile.EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 11752d5d-9573-46d5-8292-f2cdc14e3b72
+    type: regular
+    task:
+      id: 11752d5d-9573-46d5-8292-f2cdc14e3b72
+      version: -1
+      name: Refresh
+      description: refresh overview and download fresh data from external services
+      script: '|||cs-falcon-sandbox-analysis-overview-refresh'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      file:
+        simple: ${CrowdStrike.Submit.sha256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 992665eb-26a5-40f8-888a-d029d3a4004b
+    type: regular
+    task:
+      id: 992665eb-26a5-40f8-888a-d029d3a4004b
+      version: -1
+      name: Analysis Overview
+      description: get overview for hash
+      script: '|||cs-falcon-sandbox-analysis-overview'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      file:
+        simple: ${CrowdStrike.Submit.sha256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 48ac3c97-25f3-446d-8585-5b41bffdc495
+    type: condition
+    task:
+      id: 48ac3c97-25f3-446d-8585-5b41bffdc495
+      version: -1
+      name: Verify Overview
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.AnalysisOverview.architecture
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.AnalysisOverview.last_file_name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.AnalysisOverview.threat_score
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.AnalysisOverview.verdict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.AnalysisOverview.sha256
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.AnalysisOverview.size
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.AnalysisOverview.type_short
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.AnalysisOverview.url_analysis
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 0fde6bd4-4e65-43aa-85c6-530b49d926fc
+    type: regular
+    task:
+      id: 0fde6bd4-4e65-43aa-85c6-530b49d926fc
+      version: -1
+      name: Analysis Overview Summary
+      description: return overview for hash
+      script: '|||cs-falcon-sandbox-analysis-overview-summary'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      file:
+        simple: ${CrowdStrike.Submit.sha256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 9375ef3b-db4a-4c1c-801a-69a3cedb1d71
+    type: condition
+    task:
+      id: 9375ef3b-db4a-4c1c-801a-69a3cedb1d71
+      version: -1
+      name: Verify Summary
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.AnalysisOverview.sha256
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.AnalysisOverview.threat_score
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.AnalysisOverview.verdict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.AnalysisOverview.analysis_start_time
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.AnalysisOverview.last_multi_scan
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.AnalysisOverview.multiscan_result
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 7776298f-04a5-4427-8dc2-20b4248df913
+    type: regular
+    task:
+      id: 7776298f-04a5-4427-8dc2-20b4248df913
+      version: -1
+      name: Get Sample
+      description: download sample file
+      script: '|||cs-falcon-sandbox-sample-download'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      file:
+        simple: ${CrowdStrike.Submit.sha256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: d02e1131-9dc6-4186-8ef6-d81b96314d3e
+    type: condition
+    task:
+      id: d02e1131-9dc6-4186-8ef6-d81b96314d3e
+      version: -1
+      name: File exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 00b4b56b-cd0e-4eeb-8b1c-d90d7be2478b
+    type: regular
+    task:
+      id: 00b4b56b-cd0e-4eeb-8b1c-d90d7be2478b
+      version: -1
+      name: Get State
+      description: Get the report state for the given ID
+      script: '|||cs-falcon-sandbox-report-state'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      JobID:
+        simple: ${CrowdStrike.Submit.job_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 4442596c-3332-4ba2-8b0a-7f6510b816ca
+    type: condition
+    task:
+      id: 4442596c-3332-4ba2-8b0a-7f6510b816ca
+      version: -1
+      name: Verify State
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CrowdStrike.State.state
+            iscontext: true
+          right:
+            value:
+              simple: SUCCESS
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 2f513970-fe96-4aec-877e-44cf6658f249
+    type: regular
+    task:
+      id: 2f513970-fe96-4aec-877e-44cf6658f249
+      version: -1
+      name: Get Results
+      description: Retrieve result data upon a file. NOTE - This command returns a
+        file
+      script: '|||cs-falcon-sandbox-result'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      JobID:
+        simple: ${CrowdStrike.Submit.job_id}
+      Polling:
+        simple: "true"
+      file-type:
+        simple: misp
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 6368aed6-0ed8-4e6d-8b79-8bb4a8dca6a1
+    type: condition
+    task:
+      id: 6368aed6-0ed8-4e6d-8b79-8bb4a8dca6a1
+      version: -1
+      name: Verify Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: InfoFile.EntryID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: InfoFile.Extension
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.Report.job_id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CrowdStrike.Report.size
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3885,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: Playbook to test CrowdstrikeFalconSandboxV2 Integration

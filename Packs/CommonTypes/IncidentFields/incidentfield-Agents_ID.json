@@ -26,15 +26,5 @@
   "useAsKpi": false,
   "version": -1,
   "fromVersion": "5.5.0",
-  "openEnded": true,
-  "Aliases": [
-    {
-      "cliName": "agentid",
-      "type": "shortText"
-    },
-    {
-      "cliName": "sensorname",
-      "type": "shortText"
-    }
-  ]
+  "openEnded": true
 }

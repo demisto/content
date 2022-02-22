@@ -1,0 +1,649 @@
+commonfields:
+  id: Symantec Advanced Threat Protection
+  version: -1
+name: Symantec Advanced Threat Protection
+display: Symantec Advanced Threat Protection
+category: Endpoint
+description: Advanced protection capabilities from Symantec
+configuration:
+- display: Server URL (i.e. https://host:port)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Client ID as generated in the ATP console
+  name: client
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident data source
+  name: fetch_incidents_type
+  defaultvalue: incidents
+  type: 15
+  required: false
+  options:
+  - incidents
+  - events
+  - incidentevents
+- display: Maximum number of events per fetch.
+  name: max_fetch
+  defaultvalue: "50"
+  type: 0
+  required: false
+- display: Fetch incidents
+  defaultvalue: ""
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  defaultvalue: ""
+  name: incidentType
+  type: 13
+  required: false
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days). Maximum
+    is 30 days.
+  name: first_fetch
+  defaultvalue: 7 days
+  type: 0
+  required: false
+- display: Query string for fetch incidents. For example - "updated>='2020-06-06T15:39:55.616Z'
+    and updated<'2020-08-07T00:00:00.000Z' "
+  defaultvalue: ""
+  name: fetch_incidents_query
+  type: 0
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: satp-appliances
+    arguments: []
+    outputs:
+    - contextPath: ATPAppliance.appliance_id
+      description: ID of the ATP appliance
+    - contextPath: ATPAppliance.appliance_name
+      description: Name of the ATP appliance
+    - contextPath: ATPAppliance.software_version
+      description: Version of the ATP appliance
+    - contextPath: ATPAppliance.appliance_time
+      description: Current time on the appliance in UTC
+    - contextPath: ATPAppliance.role
+      description: The roles of the appliance
+    description: Retrieve the appliances configured with the versions
+  - name: satp-command
+    arguments:
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - isolate_endpoint
+      - rejoin_endpoint
+      - delete_endpoint_file
+      description: The action to perform on the endpoints
+    - name: targets
+      required: true
+      description: For isolate and rejoin a list of endpoint ids (array or comma-separated).
+        For delete, array of objects, each with hash and device_uid attributes (supports
+        comma-delimited hash:uid,hash:uid as well).
+    outputs:
+    - contextPath: ATPCommand.ID
+      description: The ID of the executing command
+    - contextPath: ATPCommand.Action
+      description: The requested action for the command
+    description: Issue commands to endpoints managed by Symantec Endpoint Protection
+    execution: true
+  - name: satp-command-state
+    arguments:
+    - name: command
+      required: true
+      default: true
+      description: The command ID to retrieve state for
+    outputs:
+    - contextPath: ATPCommand.ID
+      description: The ID of the executing command
+    - contextPath: ATPCommand.Action
+      description: The requested action for the command
+    - contextPath: ATPCommand.Status.target
+      description: The target for the state
+    - contextPath: ATPCommand.Status.state
+      description: The state of the command
+    - contextPath: ATPCommand.Status.error_code
+      description: Error code for the target
+    - contextPath: ATPCommand.Status.message
+      description: Message for the target
+    description: Retrieve the command state
+  - name: satp-command-cancel
+    arguments:
+    - name: command
+      required: true
+      default: true
+      description: The command ID to cancel
+    outputs:
+    - contextPath: ATPCommand.ID
+      description: The ID of the executing command
+    - contextPath: ATPCommand.ErrorCode
+      description: Error code for cancelling - 0 if successful
+    - contextPath: ATPCommand.Message
+      description: Message for the cancellation
+    description: Cancel the given command
+    execution: true
+  - name: satp-events
+    arguments:
+    - name: query
+      description: Specifies a search condition. See full details at https://help.symantec.com/api-doc/atp_2.2/EN_US/#_eventqueryrequest
+    - name: start_time
+      description: ISO8601 date format - 2017-01-01T00:00:00.000Z. Also accepts milliseconds
+        since epoch.
+    - name: end_time
+      description: ISO8601 date format - 2017-01-01T00:00:00.000Z. Also accepts milliseconds
+        since epoch.
+    - name: limit
+      description: Maximum number of events to return. Default is 100 and max is 1000.
+      defaultValue: "100"
+    - name: next
+      description: Used for events cursoring. Retrieve the next batch of events.
+    outputs:
+    - contextPath: ATPEvents.Total
+      description: Total number of results
+    - contextPath: ATPEvents.Next
+      description: Next batch ID
+    - contextPath: ATPEvents.Result.type_id
+      description: The unique identifier for an event type.
+    - contextPath: ATPEvents.Result.uuid
+      description: The unique id for this event
+    - contextPath: ATPEvents.Result.message
+      description: Human-readable event message or description of the event
+    - contextPath: ATPEvents.Result.severity_id
+      description: Severity between 1 (info) and 6 (fatal).
+    - contextPath: ATPEvents.Result.device_time
+      description: The timestamp (in ISO 8601 format) that specifies the time at which
+        the event occurred.
+    - contextPath: ATPEvents.Result.device_uid
+      description: Unique ID of the device that originated the event.
+    - contextPath: ATPEvents.Result.device_name
+      description: The device name (i.e., the name of the endpoint or appliance associated
+        with an event).
+    - contextPath: ATPEvents.Result.device_ip
+      description: The IPv6 or IPv4 address of the device that originated the event.
+    - contextPath: ATPEvents.Result.device_type
+      description: The type of the device that originated the event.
+    - contextPath: ATPEvents.Result.device_os_name
+      description: The operating system running on the device_type that originated
+        the event.
+    - contextPath: ATPEvents.Result.device_os_ver
+      description: The version of the operating system that is running on the device_type
+        that originated the event.
+    - contextPath: ATPEvents.Result.user_uid
+      description: Unique ID of the user that originated the event or the user on
+        whose behalf the event occurred.
+    - contextPath: ATPEvents.Result.user_name
+      description: The user name or ID that originated or caused the event.
+    - contextPath: ATPEvents.Result.action_id
+      description: 'Action taken with respect to the underlying cause of the event.
+        Possible values are: 0 = BLOCK 1 = MONITOR'
+    - contextPath: ATPEvents.Result.internal_hostname
+      description: The host name of the internal device/machine for the connection
+    - contextPath: ATPEvents.Result.scanner_name
+      description: The name of the ATP scanner that generated this event
+    - contextPath: ATPEvents.Result.internal_ip
+      description: The IP address of the internal device/machine for the connection
+    - contextPath: ATPEvents.Result.internal_port
+      description: The port number identified as the source port in traffic sent to
+        the target device
+    - contextPath: ATPEvents.Result.external_ip
+      description: The IP address of the device/machine that accepted the connection
+    - contextPath: ATPEvents.Result.external_port
+      description: The port number identified as the target port in traffic sent to
+        the target device
+    - contextPath: ATPEvents.Result.data_source_url
+      description: The URL that the traffic came from
+    - contextPath: ATPEvents.Result.data_source_url_domain
+      description: The domain from which the file was downloaded. The domain is extracted
+        from the URL for the query performance.
+    - contextPath: ATPEvents.Result.data_source_url_referer
+      description: The referer URL used in the download
+    - contextPath: ATPEvents.Result.sep_installed
+      description: Indicates whether SEP was installed when the event was generated
+    - contextPath: ATPEvents.Result.data_direction
+      description: 'The direction of the data source. Possible values are: 1 = Inbound.
+        Traffic flow from WAN to LAN. 2 = Outbound. Traffic flow from LAN to WAN.'
+    - contextPath: ATPEvents.Result.network_scanner_type
+      description: 'The type of network scanner that detected the event. Possible
+        values are: 0 = ATP-N Scanner (default) 1 = WSS .cloud Scanner'
+    - contextPath: ATPEvents.Result.vlan_id
+      description: Indicates the VLAN ID (between 0 and 4095) on which the endpoint
+        is deployed. If the value is 0 or missing, the endpoint is deployed in a non-VLAN
+        setup
+    - contextPath: ATPEvents.Result.device_end_time
+      description: The end time of an event (in format yyyy-MM-dd’T’HH:mm:ss.SSSZ).
+        This is used with the aggregation count field.
+    - contextPath: ATPEvents.Result.host_name
+      description: The host name of the client computer
+    - contextPath: ATPEvents.Result.domain_name
+      description: The domain name of the client computer
+    - contextPath: ATPEvents.Result.data_source_ip
+      description: The source IP address that the file came from (either IPv4 or IPv6).
+    - contextPath: ATPEvents.Result.target_ip
+      description: The local (victim) IP address (IPv4 or IPv6)
+    - contextPath: ATPEvents.Result.target_port
+      description: The local (victim) port number
+    - contextPath: ATPEvents.Result.source_ip
+      description: The remote IP address (IPv4 or IPv6).
+    - contextPath: ATPEvents.Result.source_port
+      description: The remote port number
+    - contextPath: ATPEvents.Result.parent_file_sha2
+      description: The SHA256 of the parent file
+    - contextPath: ATPEvents.Result.reason
+      description: 'This field is overloaded and has following possible interpretations
+        (depending on the corresponding type_id).  For type_id 4118, it specifies
+        the block list hash function that was used to identify the file. This field
+        has following possible values: 0 = BY_FILE_BLACKLIST_SHA2 1 = BY_FILE_BLACKLIST_MD5  For
+        type_id 4112, it specifies the block list criteria that identify the traffic.
+        This field has following possible values: 0 = BY_SOURCE_IP 1 = BY_DEST_IP
+        2 = BY_DEST_URL'
+    - contextPath: ATPEvents.Result.manual_submit
+      description: Indicates whether the file was manually submitted for analysis
+    - contextPath: ATPEvents.Result.signature_id
+      description: The NDC signature ID.
+    - contextPath: ATPEvents.Result.signature_name
+      description: The name of the signature
+    - contextPath: ATPEvents.Result.categories
+      description: A list of categories an intrusion event may belong to
+    - contextPath: ATPEvents.Result.intrusion_url
+      description: The URL from where a malicious script was loaded
+    - contextPath: ATPEvents.Result.infected
+      description: Indicates whether the customer machine is infected
+    - contextPath: ATPEvents.Result.count
+      description: Event aggregation count
+    - contextPath: ATPEvents.Result.severity
+      description: The seriousness of the event. 0 indicates most serious.
+    - contextPath: ATPEvents.Result.local_host_mac
+      description: The MAC address of the local computer
+    - contextPath: ATPEvents.Result.remote_host_mac
+      description: The MAC address of the remote computer
+    - contextPath: ATPEvents.Result.app_name
+      description: The full path of the application involved
+    - contextPath: ATPEvents.Result.event_desc
+      description: A description of the event. Usually, the first line of the description
+        is treated as summary
+    - contextPath: ATPEvents.Result.network_protocol
+      description: 'Network protocol as reported by SEP. Possible values are: 1 =
+        Other 2 = TCP 3 = UDP 4 = ICMP'
+    - contextPath: ATPEvents.Result.source
+      description: This field is overloaded and has possible interpretations (depending
+        on the corresponding type_id).
+    - contextPath: ATPEvents.Result.no_of_viruses
+      description: The number of events for the aggregated event record. This number
+        can be due to client-side aggregation, server-side compression, or both
+    - contextPath: ATPEvents.Result.actual_action_idx
+      description: This is the ID of action taken on the risk
+    - contextPath: ATPEvents.Result.actual_action
+      description: This is the string version of the action taken on the risk (in
+        actual_action_idx).
+    - contextPath: ATPEvents.Result.virus_name
+      description: Name of the virus
+    - contextPath: ATPEvents.Result.virus_def
+      description: The virus definition version number
+    - contextPath: ATPEvents.Result.agent_version
+      description: The version of the client software
+    - contextPath: ATPEvents.Result.MessageId
+      description: The unique ID of the email message
+    - contextPath: ATPEvents.Result.OrigMessageHeaderId
+      description: The message header ID
+    - contextPath: ATPEvents.Result.EmailReceivedDate
+      description: 'The time when the mail transfer agent received the email. The
+        format is: yyyy-MM-dd’T’HH:mm:ss.SSSZ'
+    - contextPath: ATPEvents.Result.EmailSubject
+      description: Email subject
+    - contextPath: ATPEvents.Result.EmailAction
+      description: 'The action executed on the email. Possible values are: - blocked
+        - delivered - released'
+    - contextPath: ATPEvents.Result.Direction
+      description: 'Indication direction of the email. Possible values are: 0 = Outbound
+        1 = Inbound'
+    - contextPath: ATPEvents.Result.incident
+      description: The unique ID of the incident that is related to this event
+    - contextPath: ATPEvents.Result.event_id
+      description: The event ID as reported by Symantec Endpoint Protection security
+        log
+    - contextPath: ATPEvents.Result.file
+      description: The file object
+    - contextPath: ATPEvents.Result.threat
+      description: The threat object
+    - contextPath: ATPEvents.Result.av
+      description: The AV object
+    - contextPath: ATPEvents.Result.cynic
+      description: Cynic object
+    - contextPath: ATPEvents.Result.scan
+      description: Scan object
+    - contextPath: ATPEvents.Result.bash
+      description: Bash object
+    - contextPath: ATPEvents.Result.Sender
+      description: Email sender object
+    - contextPath: ATPEvents.Result.Receivers
+      description: Email receivers array of objects
+    - contextPath: ATPEvents.Result.intrusion
+      description: Intrusion object
+    description: Accepts search requests over a specified time range and returns events
+      that match the search condition. You must specify the time range using the start_time
+      parameter and the end_time parameter (the maximum time range is 7 days). The
+      time in the result schema and is typically the event creation time. This API
+      supports search conditions (such as logical operators and special characters)
+      to narrow the events to be retrieved. See examples at https://help.symantec.com/api-doc/atp_2.2/EN_US/#_events_query_api_example.
+  - name: satp-files
+    description: Retrieve details about file based on given hash
+    arguments:
+    - name: hash
+      required: true
+      description: Hash of the file. Supports either SHA256 or MD5.
+    outputs:
+    - contextPath: File.MD5
+      description: File MD5
+    - contextPath: File.SHA256
+      description: File SHA256
+    - contextPath: File.Instances.name
+      description: Name of file
+    - contextPath: File.Instances.path
+      description: Path of file
+    - contextPath: File.Type
+      description: MIME type of the file
+    - contextPath: File.Size
+      description: Size of file in bytes
+    - contextPath: File.SignatureCompany
+      description: The company that signed the file
+    - contextPath: File.SignatureIssuer
+      description: The signature issuer
+    - contextPath: File.Age
+      description: 'A code between 1 and 4 representing the file’s global age defined
+        by the time the file was first reported to Symantec. This data is collected
+        from telemetry sent to Symantec by in-field endpoint clients like Symantec
+        Endpoint Protection and Norton. Possible values are: 1 = Years ago 2 = Months
+        ago 3 = Weeks ago 4 = Days ago'
+    - contextPath: File.Threat
+      description: Name of the threat if the file is determined to be a malware
+    - contextPath: File.Cynic
+      description: 'A code between 0 and 2 representing the verdict given by Symantec’s
+        Cynic sandbox analysis. Possible values are: 0 = Malware 1 = Good 2 = Unknown'
+    - contextPath: File.TargetedAttack
+      description: A flag that indicates whether this file is a part of targeted attack
+        launched against an organization
+    - contextPath: File.ReputationBand
+      description: 'A code between 1 and 6 representing the file’s reputation. This
+        data is generated by Symantec’s analysis engines based on the telemetry sent
+        to Symantec by in-field endpoint clients like Symantec Endpoint Protection
+        and Norton. Possible values are: 1 = Symantec-trusted 2 = Good 3 = Trending
+        Good 4 = Unproven 5 = Poor 6 = Untrusted'
+    - contextPath: File.PrevalenceBand
+      description: 'A code between 1 and 8 representing the file’s prevalence. This
+        data is collected from telemetry sent to Symantec by in-field endpoint clients
+        like Symantec Endpoint Protection and Norton. Possible values are: 1 = Fewer
+        than 5 users 2 = Fewer than 50 users 3 = Fewer than 100 users 4 = Hundreds
+        of users 5 = Thousands of users 6 = Tens of thousands of users 7 = Hundreds
+        of thousands of users 8 = Millions of users'
+    - contextPath: File.Health
+      description: 'A code between 0 and 3 representing the file’s health. Possible
+        values are: 0 = Good 1 = Neutral 2 = Suspicious 3 = Bad 4 = Analyzing'
+  - name: satp-incident-events
+    arguments:
+    - name: query
+      description: Specifies a search condition.
+    - name: start_time
+      description: ISO8601 date format - 2017-01-01T00:00:00.000Z. Also accepts milliseconds
+        since epoch.
+    - name: end_time
+      description: ISO8601 date format - 2017-01-01T00:00:00.000Z. Also accepts milliseconds
+        since epoch.
+    - name: limit
+      description: Maximum number of events to return. Default is 20 and max is 1000.
+      defaultValue: "20"
+    - name: next
+      description: Used for events cursoring. Retrieve the next batch of events.
+    outputs:
+    - contextPath: ATPIncidentEvents.Total
+      description: Total number of results
+    - contextPath: ATPIncidentEvents.Next
+      description: Next batch ID
+    - contextPath: ATPIncidentEvents.Result.type_id
+      description: The unique identifier for an event type.
+    - contextPath: ATPIncidentEvents.Result.uuid
+      description: The unique id for this event
+    - contextPath: ATPIncidentEvents.Result.message
+      description: Human-readable event message or description of the event
+    - contextPath: ATPIncidentEvents.Result.severity_id
+      description: Severity between 1 (info) and 6 (fatal).
+    - contextPath: ATPIncidentEvents.Result.device_time
+      description: The timestamp (in ISO 8601 format) that specifies the time at which
+        the event occurred.
+    - contextPath: ATPIncidentEvents.Result.device_uid
+      description: Unique ID of the device that originated the event.
+    - contextPath: ATPIncidentEvents.Result.device_name
+      description: The device name (i.e., the name of the endpoint or appliance associated
+        with an event).
+    - contextPath: ATPIncidentEvents.Result.device_ip
+      description: The IPv6 or IPv4 address of the device that originated the event.
+    - contextPath: ATPIncidentEvents.Result.device_type
+      description: The type of the device that originated the event.
+    - contextPath: ATPIncidentEvents.Result.device_os_name
+      description: The operating system running on the device_type that originated
+        the event.
+    - contextPath: ATPIncidentEvents.Result.device_os_ver
+      description: The version of the operating system that is running on the device_type
+        that originated the event.
+    - contextPath: ATPIncidentEvents.Result.user_uid
+      description: Unique ID of the user that originated the event or the user on
+        whose behalf the event occurred.
+    - contextPath: ATPIncidentEvents.Result.user_name
+      description: The user name or ID that originated or caused the event.
+    - contextPath: ATPIncidentEvents.Result.action_id
+      description: 'Action taken with respect to the underlying cause of the event.
+        Possible values are: 0 = BLOCK 1 = MONITOR'
+    - contextPath: ATPIncidentEvents.Result.internal_hostname
+      description: The host name of the internal device/machine for the connection
+    - contextPath: ATPIncidentEvents.Result.scanner_name
+      description: The name of the ATP scanner that generated this event
+    - contextPath: ATPIncidentEvents.Result.internal_ip
+      description: The IP address of the internal device/machine for the connection
+    - contextPath: ATPIncidentEvents.Result.internal_port
+      description: The port number identified as the source port in traffic sent to
+        the target device
+    - contextPath: ATPIncidentEvents.Result.external_ip
+      description: The IP address of the device/machine that accepted the connection
+    - contextPath: ATPIncidentEvents.Result.external_port
+      description: The port number identified as the target port in traffic sent to
+        the target device
+    - contextPath: ATPIncidentEvents.Result.data_source_url
+      description: The URL that the traffic came from
+    - contextPath: ATPIncidentEvents.Result.data_source_url_domain
+      description: The domain from which the file was downloaded. The domain is extracted
+        from the URL for the query performance.
+    - contextPath: ATPIncidentEvents.Result.data_source_url_referer
+      description: The referer URL used in the download
+    - contextPath: ATPIncidentEvents.Result.sep_installed
+      description: Indicates whether SEP was installed when the event was generated
+    - contextPath: ATPIncidentEvents.Result.data_direction
+      description: 'The direction of the data source. Possible values are: 1 = Inbound.
+        Traffic flow from WAN to LAN. 2 = Outbound. Traffic flow from LAN to WAN.'
+    - contextPath: ATPIncidentEvents.Result.network_scanner_type
+      description: 'The type of network scanner that detected the event. Possible
+        values are: 0 = ATP-N Scanner (default) 1 = WSS .cloud Scanner'
+    - contextPath: ATPIncidentEvents.Result.vlan_id
+      description: Indicates the VLAN ID (between 0 and 4095) on which the endpoint
+        is deployed. If the value is 0 or missing, the endpoint is deployed in a non-VLAN
+        setup
+    - contextPath: ATPIncidentEvents.Result.device_end_time
+      description: The end time of an event (in format yyyy-MM-dd’T’HH:mm:ss.SSSZ).
+        This is used with the aggregation count field.
+    - contextPath: ATPIncidentEvents.Result.host_name
+      description: The host name of the client computer
+    - contextPath: ATPIncidentEvents.Result.domain_name
+      description: The domain name of the client computer
+    - contextPath: ATPIncidentEvents.Result.data_source_ip
+      description: The source IP address that the file came from (either IPv4 or IPv6).
+    - contextPath: ATPIncidentEvents.Result.target_ip
+      description: The local (victim) IP address (IPv4 or IPv6)
+    - contextPath: ATPIncidentEvents.Result.target_port
+      description: The local (victim) port number
+    - contextPath: ATPIncidentEvents.Result.source_ip
+      description: The remote IP address (IPv4 or IPv6).
+    - contextPath: ATPIncidentEvents.Result.source_port
+      description: The remote port number
+    - contextPath: ATPIncidentEvents.Result.parent_file_sha2
+      description: The SHA256 of the parent file
+    - contextPath: ATPIncidentEvents.Result.reason
+      description: 'This field is overloaded and has following possible interpretations
+        (depending on the corresponding type_id).  For type_id 4118, it specifies
+        the block list hash function that was used to identify the file. This field
+        has following possible values: 0 = BY_FILE_BLACKLIST_SHA2 1 = BY_FILE_BLACKLIST_MD5  For
+        type_id 4112, it specifies the Blacklist criteria that identify the traffic.
+        This field has following possible values: 0 = BY_SOURCE_IP 1 = BY_DEST_IP
+        2 = BY_DEST_URL'
+    - contextPath: ATPIncidentEvents.Result.manual_submit
+      description: Indicates whether the file was manually submitted for analysis
+    - contextPath: ATPIncidentEvents.Result.signature_id
+      description: The NDC signature ID.
+    - contextPath: ATPIncidentEvents.Result.signature_name
+      description: The name of the signature
+    - contextPath: ATPIncidentEvents.Result.categories
+      description: A list of categories an intrusion event may belong to
+    - contextPath: ATPIncidentEvents.Result.intrusion_url
+      description: The URL from where a malicious script was loaded
+    - contextPath: ATPIncidentEvents.Result.infected
+      description: Indicates whether the customer machine is infected
+    - contextPath: ATPIncidentEvents.Result.count
+      description: Event aggregation count
+    - contextPath: ATPIncidentEvents.Result.severity
+      description: The seriousness of the event. 0 indicates most serious.
+    - contextPath: ATPIncidentEvents.Result.local_host_mac
+      description: The MAC address of the local computer
+    - contextPath: ATPIncidentEvents.Result.remote_host_mac
+      description: The MAC address of the remote computer
+    - contextPath: ATPIncidentEvents.Result.app_name
+      description: The full path of the application involved
+    - contextPath: ATPIncidentEvents.Result.event_desc
+      description: A description of the event. Usually, the first line of the description
+        is treated as summary
+    - contextPath: ATPIncidentEvents.Result.network_protocol
+      description: 'Network protocol as reported by SEP. Possible values are: 1 =
+        Other 2 = TCP 3 = UDP 4 = ICMP'
+    - contextPath: ATPIncidentEvents.Result.source
+      description: This field is overloaded and has possible interpretations (depending
+        on the corresponding type_id).
+    - contextPath: ATPIncidentEvents.Result.no_of_viruses
+      description: The number of events for the aggregated event record. This number
+        can be due to client-side aggregation, server-side compression, or both
+    - contextPath: ATPIncidentEvents.Result.actual_action_idx
+      description: This is the ID of action taken on the risk
+    - contextPath: ATPIncidentEvents.Result.actual_action
+      description: This is the string version of the action taken on the risk (in
+        actual_action_idx).
+    - contextPath: ATPIncidentEvents.Result.virus_name
+      description: Name of the virus
+    - contextPath: ATPIncidentEvents.Result.virus_def
+      description: The virus definition version number
+    - contextPath: ATPIncidentEvents.Result.agent_version
+      description: The version of the client software
+    - contextPath: ATPIncidentEvents.Result.MessageId
+      description: The unique ID of the email message
+    - contextPath: ATPIncidentEvents.Result.OrigMessageHeaderId
+      description: The message header ID
+    - contextPath: ATPIncidentEvents.Result.EmailReceivedDate
+      description: 'The time when the mail transfer agent received the email. The
+        format is: yyyy-MM-dd’T’HH:mm:ss.SSSZ'
+    - contextPath: ATPIncidentEvents.Result.EmailSubject
+      description: Email subject
+    - contextPath: ATPIncidentEvents.Result.EmailAction
+      description: 'The action executed on the email. Possible values are: - blocked
+        - delivered - released'
+    - contextPath: ATPIncidentEvents.Result.Direction
+      description: 'Indication direction of the email. Possible values are: 0 = Outbound
+        1 = Inbound'
+    - contextPath: ATPIncidentEvents.Result.incident
+      description: The unique ID of the incident that is related to this event
+    - contextPath: ATPIncidentEvents.Result.event_id
+      description: The event ID as reported by Symantec Endpoint Protection security
+        log
+    - contextPath: ATPIncidentEvents.Result.file
+      description: The file object
+    - contextPath: ATPIncidentEvents.Result.threat
+      description: The threat object
+    - contextPath: ATPIncidentEvents.Result.av
+      description: The AV object
+    - contextPath: ATPIncidentEvents.Result.cynic
+      description: Cynic object
+    - contextPath: ATPIncidentEvents.Result.scan
+      description: Scan object
+    - contextPath: ATPIncidentEvents.Result.bash
+      description: Bash object
+    - contextPath: ATPIncidentEvents.Result.Sender
+      description: Email sender object
+    - contextPath: ATPIncidentEvents.Result.Receivers
+      description: Email receivers array of objects
+    - contextPath: ATPIncidentEvents.Result.intrusion
+      description: Intrusion object
+    description: Get events that are related to incidents
+  - name: satp-incidents
+    arguments:
+    - name: query
+      description: Specifies a search condition.
+    - name: start_time
+      description: ISO8601 date format - 2017-01-01T00:00:00.000Z. Also accepts milliseconds
+        since epoch.
+    - name: end_time
+      description: ISO8601 date format - 2017-01-01T00:00:00.000Z. Also accepts milliseconds
+        since epoch.
+    - name: limit
+      description: Maximum number of events to return. Default is 20 and max is 1000.
+      defaultValue: "20"
+    - name: next
+      description: Used for events cursoring. Retrieve the next batch of events.
+    outputs:
+    - contextPath: ATPIncidents.Result.atp_incident_id
+      description: A unique identifier for this incident
+    - contextPath: ATPIncidents.Result.priority_level
+      description: Priority level of the incident. 1 = LOW, 2 = MED, 3 = HIGH
+    - contextPath: ATPIncidents.Result.state
+      description: The state of the incident. 1 = OPEN,2 = WAITING,3 = IN_WORK,4 =
+        CLOSED
+    - contextPath: ATPIncidents.Result.recommended_action
+      description: Recommended action for this incident
+    - contextPath: ATPIncidents.Result.first_event_seen
+      description: When the first event associated with the incident was created
+    - contextPath: ATPIncidents.Result.last_event_seen
+      description: When the last event associated with the incident was created
+    - contextPath: ATPIncidents.Result.event_count
+      description: The number of events associated with the incident
+    - contextPath: ATPIncidents.Result.device_time
+      description: The timestamp that specifies the time at which the event occurred
+    - contextPath: ATPIncidents.Result.deviceUid
+      description: A list of ATP endpoint devices UID on which the events occurred
+    - contextPath: ATPIncidents.Result.scanners
+      description: A list of ATP scanners that discovered the threat
+    - contextPath: ATPIncidents.Result.filehash
+      description: A list of SHA256 hashes associated with this incident
+    - contextPath: ATPIncidents.Result.domainid
+      description: A list of domains associated with this incident
+    - contextPath: ATPIncidents.Result.summary
+      description: Summary information about the incident
+    - contextPath: ATPIncidents.Result.time
+      description: The creation time (in ISO 8601 format) of the incident
+    - contextPath: ATPIncidents.Result.updated
+      description: The time (in ISO 8601 format) of last modification
+    - contextPath: ATPIncidents.Result.log_name
+      description: The index/type of the originating event
+    - contextPath: ATPIncidents.Result.uuid
+      description: The GUID assigned for this incident
+    description: Query incidents from ATP
+  isfetch: true
+  runonce: false
+  isFetchSamples: true
+fromversion: 5.0.0

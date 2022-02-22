@@ -1,0 +1,4 @@
+!core-iocs-sync
+!core-iocs-enable indicator=11.11.11.11
+!core-iocs-disable indicator=22.22.22.22
+!core-iocs-push indicator='test.com'
