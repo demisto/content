@@ -166,7 +166,7 @@ script:
     description: Lists all incidents in the collection.
     execution: false
     name: mongodb-list-incidents
-  dockerimage: demisto/py3-tools:0.0.1.25751
+  dockerimage: demisto/py3-tools:0.0.1.26536
   isfetch: false
   longRunning: false
   longRunningPort: false
