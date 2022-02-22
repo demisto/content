@@ -1,6 +1,5 @@
 from collections import defaultdict
 from dataclasses import dataclass, fields
-from typing import Generator, Callable, Union
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -20,7 +19,7 @@ import shutil
 import json
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, Generator, Callable
 
 import requests
 from urllib.parse import urlparse
@@ -7814,12 +7813,12 @@ class Topology:
             container_name: str = None,
             top_level_devices_only: bool = False,
     ) -> \
-            list[tuple[PanDevice, Union[Panorama, Firewall, DeviceGroup, Template, Vsys]]]:
+            List[tuple[PanDevice, Union[Panorama, Firewall, DeviceGroup, Template, Vsys]]]:
         """
         Given a device, returns all the possible configuration containers that can contain objects -
         vsys, device-groups, templates and template-stacks.
         """
-        containers: list[Union[tuple[PanDevice, Callable], tuple[PanDevice, PanDevice]]] = []
+        containers: List[Union[tuple[PanDevice, Callable], tuple[PanDevice, PanDevice]]] = []
         # for device in self.all(device_filter_string):
         # Changed to only refer to active devices, no passives.
         device_retrieval_func = self.active_devices
@@ -7920,13 +7919,13 @@ class ShowArpCommandSummaryData(ResultData):
 
 @dataclass
 class ShowArpCommandResult:
-    summary_data: list[ShowArpCommandSummaryData]
-    result_data: list[ShowArpCommandResultData]
+    summary_data: List[ShowArpCommandSummaryData]
+    result_data: List[ShowArpCommandResultData]
 
     _output_prefix = OUTPUT_PREFIX + "ShowArp"
     _title = "PAN-OS ARP Table"
 
-    # The below is required for integration autogen, we can't inspect the original class from the list[]
+    # The below is required for integration autogen, we can't inspect the original class from the List[]
     _summary_cls = ShowArpCommandSummaryData
     _result_cls = ShowArpCommandResultData
 
@@ -7950,7 +7949,7 @@ class ShowRoutingCommandSummaryData(ResultData):
 
 @dataclass
 class ShowRouteSummaryCommandResult:
-    summary_data: list[ShowRoutingCommandSummaryData]
+    summary_data: List[ShowRoutingCommandSummaryData]
     result_data: list
 
     _output_prefix = OUTPUT_PREFIX + "ShowRouteSummary"
@@ -7992,8 +7991,8 @@ class ShowRoutingRouteSummaryData(ResultData):
 
 @dataclass
 class ShowRoutingRouteCommandResult:
-    summary_data: list[ShowRoutingRouteSummaryData]
-    result_data: list[ShowRoutingRouteResultData]
+    summary_data: List[ShowRoutingRouteSummaryData]
+    result_data: List[ShowRoutingRouteResultData]
 
     _output_prefix = OUTPUT_PREFIX + "ShowRoute"
     _title = "PAN-OS Routes"
@@ -8067,8 +8066,8 @@ class ShowSystemInfoSummaryData(ResultData):
 
 @dataclass
 class ShowSystemInfoCommandResult:
-    summary_data: list[ShowSystemInfoSummaryData]
-    result_data: list[ShowSystemInfoResultData]
+    summary_data: List[ShowSystemInfoSummaryData]
+    result_data: List[ShowSystemInfoResultData]
 
     _output_prefix = OUTPUT_PREFIX + "ShowSystemInfo"
     _title = "PAN-OS System Info"
@@ -8126,8 +8125,8 @@ class ShowCounterGlobalSummaryData(ResultData):
 
 @dataclass
 class ShowCounterGlobalCommmandResult:
-    summary_data: list[ShowCounterGlobalSummaryData]
-    result_data: list[ShowCounterGlobalResultData]
+    summary_data: List[ShowCounterGlobalSummaryData]
+    result_data: List[ShowCounterGlobalResultData]
 
     _output_prefix = OUTPUT_PREFIX + "ShowCounters"
     _title = "PAN-OS Global Counters"
@@ -8191,8 +8190,8 @@ class ShowRoutingProtocolBGPPeersSummaryData(ResultData):
 
 @dataclass
 class ShowRoutingProtocolBGPCommandResult:
-    summary_data: list[ShowRoutingProtocolBGPPeersSummaryData]
-    result_data: list[ShowRoutingProtocolBGPPeersResultData]
+    summary_data: List[ShowRoutingProtocolBGPPeersSummaryData]
+    result_data: List[ShowRoutingProtocolBGPPeersResultData]
 
     _output_prefix = OUTPUT_PREFIX + "ShowBGPPeers"
     _title = "PAN-OS BGP Peers"
@@ -8211,7 +8210,7 @@ class GetDeviceConnectivityResultData(ResultData):
 
 @dataclass
 class GetDeviceConnectivityCommandResult:
-    summary_data: list[GetDeviceConnectivityResultData]
+    summary_data: List[GetDeviceConnectivityResultData]
     result_data: None = None
 
     _output_prefix = OUTPUT_PREFIX + "DeviceConnectivity"
@@ -8246,7 +8245,7 @@ class SoftwareVersion(ResultData):
 
 @dataclass
 class SoftwareVersionCommandResult:
-    summary_data: list[SoftwareVersion]
+    summary_data: List[SoftwareVersion]
     result_data: None = None
 
     _output_prefix = OUTPUT_PREFIX + "SoftwareVersions"
@@ -8338,8 +8337,8 @@ class ShowJobsAllResultData(ResultData):
 
 @dataclass
 class ShowJobsAllCommandResult:
-    summary_data: list[ShowJobsAllSummaryData]
-    result_data: list[ShowJobsAllResultData]
+    summary_data: List[ShowJobsAllSummaryData]
+    result_data: List[ShowJobsAllResultData]
 
     _output_prefix = OUTPUT_PREFIX + "JobStatus"
     _title = "PAN-OS Job Status"
@@ -8409,7 +8408,7 @@ class HighAvailabilityStateStatus(ResultData):
 
 @dataclass
 class DownloadSoftwareCommandResult:
-    summary_data: list[GenericSoftwareStatus]
+    summary_data: List[GenericSoftwareStatus]
     result_data: None = None
 
     _output_prefix = OUTPUT_PREFIX + "DownloadStatus"
@@ -8420,7 +8419,7 @@ class DownloadSoftwareCommandResult:
 
 @dataclass
 class InstallSoftwareCommandResult:
-    summary_data: list[GenericSoftwareStatus]
+    summary_data: List[GenericSoftwareStatus]
     result_data: None = None
 
     _output_prefix = OUTPUT_PREFIX + "InstallStatus"
@@ -8431,7 +8430,7 @@ class InstallSoftwareCommandResult:
 
 @dataclass
 class RestartSystemCommandResult:
-    summary_data: list[GenericSoftwareStatus]
+    summary_data: List[GenericSoftwareStatus]
     result_data: None = None
 
     _output_prefix = OUTPUT_PREFIX + "RestartStatus"
@@ -8601,7 +8600,7 @@ class PanoramaCommand:
     GET_TEMPLATE_STACK_COMMAND = "show template-stack"
 
     @staticmethod
-    def get_device_groups(topology: Topology, device_filter_str: str = None) -> list[DeviceGroupInformation]:
+    def get_device_groups(topology: Topology, device_filter_str: str = None) -> List[DeviceGroupInformation]:
         """Get all the device groups from Panorama and their associated devices."""
         device: Panorama
         result = []
@@ -8619,7 +8618,7 @@ class PanoramaCommand:
         return result
 
     @staticmethod
-    def get_template_stacks(topology: Topology, device_filter_str: str = None) -> list[
+    def get_template_stacks(topology: Topology, device_filter_str: str = None) -> List[
         TemplateStackInformation]:
         """Get all the template-stacks from Panorama and their associated devices."""
 
@@ -8642,9 +8641,9 @@ class PanoramaCommand:
     def push_all(
             topology: Topology,
             device_filter_str: str = None,
-            device_group_filter: list[str] = None,
-            template_stack_filter: list[str] = None
-    ) -> list[PushStatus]:
+            device_group_filter: List[str] = None,
+            template_stack_filter: List[str] = None
+    ) -> List[PushStatus]:
         """Pushes the pending configuration from Panorama to the firewalls. This is an async function,
         and will only push if there is config pending."""
         result = []
@@ -8697,9 +8696,9 @@ class PanoramaCommand:
         return result
 
     @staticmethod
-    def get_push_status(topology: Topology, match_job_ids: list[str] = None) -> list[PushStatus]:
+    def get_push_status(topology: Topology, match_job_ids: List[str] = None) -> List[PushStatus]:
         """Retrieves the status of a Panorama Push, using the given job ids."""
-        result: list[PushStatus] = []
+        result: List[PushStatus] = []
         for device in topology.active_top_level_devices():
             response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
             for job in response.findall("./result/job"):
@@ -8744,8 +8743,8 @@ class UniversalCommand:
     @staticmethod
     def get_system_info(topology: Topology, device_filter_str: str = None) -> ShowSystemInfoCommandResult:
         """Get the running system information"""
-        result_data: list[ShowSystemInfoResultData] = []
-        summary_data: list[ShowSystemInfoSummaryData] = []
+        result_data: List[ShowSystemInfoResultData] = []
+        summary_data: List[ShowSystemInfoSummaryData] = []
         for device in topology.all(filter_string=device_filter_str):
             response = run_op_command(device, UniversalCommand.SYSTEM_INFO_COMMAND)
             result_data.append(dataclass_from_element(device, ShowSystemInfoResultData,
@@ -8821,7 +8820,7 @@ class UniversalCommand:
         )
 
     @staticmethod
-    def commit(topology: Topology, device_filter_string: str = None) -> list[CommitStatus]:
+    def commit(topology: Topology, device_filter_string: str = None) -> List[CommitStatus]:
 
         result = []
         for device in topology.active_devices(device_filter_string):
@@ -8843,8 +8842,8 @@ class UniversalCommand:
         return result
 
     @staticmethod
-    def get_commit_job_status(topology: Topology, match_job_ids: list[str] = None) -> list[CommitStatus]:
-        result: list[CommitStatus] = []
+    def get_commit_job_status(topology: Topology, match_job_ids: List[str] = None) -> List[CommitStatus]:
+        result: List[CommitStatus] = []
         for device in topology.active_devices():
             response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
             for job in response.findall("./result/job"):
@@ -8895,7 +8894,7 @@ class UniversalCommand:
 
     @staticmethod
     def show_jobs(topology: Topology, device_filter_str: str = None, job_type: str = None,
-                  status=None, id: int = None) -> list[ShowJobsAllResultData]:
+                  status=None, id: int = None) -> List[ShowJobsAllResultData]:
         result_data = []
         for device in topology.all(filter_string=device_filter_str):
             response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
@@ -8930,8 +8929,8 @@ class FirewallCommand:
 
     @staticmethod
     def get_arp_table(topology: Topology, device_filter_str: str = None) -> ShowArpCommandResult:
-        result_data: list[ShowArpCommandResultData] = []
-        summary_data: list[ShowArpCommandSummaryData] = []
+        result_data: List[ShowArpCommandResultData] = []
+        summary_data: List[ShowArpCommandSummaryData] = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
             response = run_op_command(firewall, FirewallCommand.ARP_COMMAND, cmd_xml=False)
             summary_data.append(dataclass_from_element(firewall, ShowArpCommandSummaryData,
@@ -8947,8 +8946,8 @@ class FirewallCommand:
     @staticmethod
     def get_counter_global(topology: Topology,
                            device_filter_str: str = None) -> ShowCounterGlobalCommmandResult:
-        result_data: list[ShowCounterGlobalResultData] = []
-        summary_data: list[ShowCounterGlobalSummaryData] = []
+        result_data: List[ShowCounterGlobalResultData] = []
+        summary_data: List[ShowCounterGlobalSummaryData] = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
             response = run_op_command(firewall, FirewallCommand.GLOBAL_COUNTER_COMMAND)
             for entry in response.findall("./result/global/counters/entry"):
@@ -9002,9 +9001,9 @@ class FirewallCommand:
 
     @staticmethod
     def get_ha_status(topology: Topology,
-                      device_filter_str: str = None) -> list[ShowHAState]:
+                      device_filter_str: str = None) -> List[ShowHAState]:
 
-        result: list[ShowHAState] = []
+        result: List[ShowHAState] = []
         for firewall in topology.all(filter_string=device_filter_str):
             firewall_host_id: str = resolve_host_id(firewall)
 
@@ -9141,24 +9140,24 @@ def get_system_info(topology: Topology,
     return result
 
 
-def get_device_groups(topology: Topology, device_filter_string: str = None) -> list[DeviceGroupInformation]:
+def get_device_groups(topology: Topology, device_filter_string: str = None) -> List[DeviceGroupInformation]:
     """
     Gets the operational information of the device groups in the topology.
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: list[DeviceGroupInformation] = PanoramaCommand.get_device_groups(topology, device_filter_string)
+    result: List[DeviceGroupInformation] = PanoramaCommand.get_device_groups(topology, device_filter_string)
     return result
 
 
-def get_template_stacks(topology: Topology, device_filter_string: str = None) -> list[
+def get_template_stacks(topology: Topology, device_filter_string: str = None) -> List[
     TemplateStackInformation]:
     """
     Gets the operational information of the template-stacks in the topology.
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: list[TemplateStackInformation] = PanoramaCommand.get_template_stacks(topology,
+    result: List[TemplateStackInformation] = PanoramaCommand.get_template_stacks(topology,
                                                                                  device_filter_string)
     return result
 
