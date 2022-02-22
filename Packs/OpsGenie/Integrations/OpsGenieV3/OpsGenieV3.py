@@ -136,7 +136,7 @@ class Client(BaseClient):
                                   json_data=args)
 
     def get_escalation(self, args: dict):
-        if not is_one_argument_given(args.get("escalation_id"), args.get("escalation_name")):
+        if args.get("escalation_id") and args.get("escalation_name"):
             raise DemistoException("Either escalation_id or escalation_name should be provided.")
         identifier_type = "id" if args.get("escalation_id") else "name"
         escalation = args.get("escalation_id", None) or args.get("escalation_name", None)
@@ -646,7 +646,7 @@ def get_schedules(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def get_schedule_overrides(client: Client, args: Dict[str, Any]) -> CommandResults:
-    if not is_one_argument_given(args.get("schedule_id"), args.get("schedule_name")):
+    if not args.get("schedule_id") and not args.get("schedule_name"):
         raise DemistoException("Either schedule_id or schedule_name should be provided.")
     result = client.get_schedule_override(args) if args.get("override_alias") \
         else client.list_schedule_overrides(args)
