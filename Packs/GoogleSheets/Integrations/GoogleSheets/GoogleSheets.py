@@ -804,7 +804,7 @@ def get_http_client_with_proxy(proxy: bool, insecure: bool):  # pragma: no cover
     return httplib2.Http(disable_ssl_certificate_validation=insecure)
 
 
-def build_and_authenticate(params: dict):
+def build_and_authenticate(params: dict):  # pragma: no cover
     """
         Args:
             params (dict):
