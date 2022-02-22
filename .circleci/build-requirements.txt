@@ -10,7 +10,7 @@ google-cloud-storage==1.29.0
 google-cloud-bigquery==1.26.1
 prettytable==0.7.2
 circleci==1.2.2
-boto3==1.16.39
+boto3==1.21.4
 mock-open==1.4.0
 PyGithub==1.54.1
 python-gitlab==2.6.0
