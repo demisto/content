@@ -19,7 +19,7 @@ import shutil
 import json
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple, Union, Generator, Callable, ValuesView
+from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView, Iterator
 
 import requests
 from urllib.parse import urlparse
@@ -7647,7 +7647,7 @@ class Topology:
         """
         return self.firewall_objects.values()
 
-    def top_level_devices(self) -> Generator[Union[Firewall, Panorama], None, None]:
+    def top_level_devices(self) -> Iterator[Union[Firewall, Panorama]]:
         """
         Returns a list of the highest level devices. This is normally Panorama, or in a pure NGFW deployment,
         this would be a list of all the `Firewall` instances.
@@ -7663,7 +7663,7 @@ class Topology:
             for value in self.firewall_devices():
                 yield value
 
-    def active_devices(self, filter_str: str = None) -> Generator[Union[Firewall, Panorama], None, None]:
+    def active_devices(self, filter_str: str = None) -> Iterator[Union[Firewall, Panorama]]:
         """
         Yields active devices in the topology - Active refers to the HA state of the device. If the device
         is not in a HA pair, it is active by default.
@@ -7708,7 +7708,7 @@ class Topology:
                     serial: device
                 }
 
-    def firewalls(self, filter_string: str = None) -> Generator[Firewall, None, None]:
+    def firewalls(self, filter_string: str = None) -> Iterator[Firewall]:
         """Returns an iterable of firewalls in the topology"""
         firewall_objects = Topology.filter_devices(self.firewall_objects, filter_string)
         if not firewall_objects:
@@ -7717,7 +7717,7 @@ class Topology:
         for firewall in firewall_objects.values():
             yield firewall
 
-    def all(self, filter_string: str = None) -> Generator[Union[Firewall, Panorama], None, None]:
+    def all(self, filter_string: str = None) -> Iterator[Union[Firewall, Panorama]]:
         """Returns an iterable for all devices in the topology"""
         all_devices = {**self.firewall_objects, **self.panorama_objects}
         all_devices = Topology.filter_devices(all_devices, filter_string)
