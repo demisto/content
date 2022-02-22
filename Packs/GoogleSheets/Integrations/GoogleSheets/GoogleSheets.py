@@ -847,14 +847,14 @@ def build_and_authenticate(params: dict):
         return build('sheets', 'v4', credentials=credentials)
 
 
-def test_module() -> str:
+def test_module() -> str:  # pragma: no cover
     return "ok"
 
 
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
     """
