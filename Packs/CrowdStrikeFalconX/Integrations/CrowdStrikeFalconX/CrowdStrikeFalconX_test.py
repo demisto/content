@@ -1,18 +1,19 @@
-from CrowdStrikeFalconX import Client,\
-    send_uploaded_file_to_sandbox_analysis_command, send_url_to_sandbox_analysis_command,\
-    get_full_report_command, get_report_summary_command, get_analysis_status_command,\
+import pytest
+
+from CrowdStrikeFalconX import Client, \
+    send_uploaded_file_to_sandbox_analysis_command, send_url_to_sandbox_analysis_command, \
+    get_full_report_command, get_report_summary_command, get_analysis_status_command, \
     check_quota_status_command, find_sandbox_reports_command, find_submission_id_command, run_polling_command, \
-    pop_polling_related_args, is_new_polling_search, arrange_args_for_upload_func, remove_polling_related_args,\
+    pop_polling_related_args, is_new_polling_search, arrange_args_for_upload_func, remove_polling_related_args, \
     DBotScoreReliability
-from TestsInput.context import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT,\
-    GET_FULL_REPORT_CONTEXT, GET_REPORT_SUMMARY_CONTEXT, GET_ANALYSIS_STATUS_CONTEXT, CHECK_QUOTA_STATUS_CONTEXT,\
+from TestsInput.context import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT, \
+    GET_FULL_REPORT_CONTEXT, GET_REPORT_SUMMARY_CONTEXT, GET_ANALYSIS_STATUS_CONTEXT, CHECK_QUOTA_STATUS_CONTEXT, \
     FIND_SANDBOX_REPORTS_CONTEXT, FIND_SUBMISSION_ID_CONTEXT, MULTIPLE_ERRORS_RESULT, GET_FULL_REPORT_CONTEXT_EXTENDED
-from TestsInput.http_responses import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE,\
-    SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, GET_FULL_REPORT_HTTP_RESPONSE, GET_REPORT_SUMMARY_HTTP_RESPONSE,\
-    CHECK_QUOTA_STATUS_HTTP_RESPONSE, FIND_SANDBOX_REPORTS_HTTP_RESPONSE, FIND_SUBMISSION_ID_HTTP_RESPONSE,\
+from TestsInput.http_responses import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE, \
+    SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, GET_FULL_REPORT_HTTP_RESPONSE, GET_REPORT_SUMMARY_HTTP_RESPONSE, \
+    CHECK_QUOTA_STATUS_HTTP_RESPONSE, FIND_SANDBOX_REPORTS_HTTP_RESPONSE, FIND_SUBMISSION_ID_HTTP_RESPONSE, \
     GET_ANALYSIS_STATUS_HTTP_RESPONSE, MULTI_ERRORS_HTTP_RESPONSE, NO_ERRORS_HTTP_RESPONSE, \
     GET_FULL_REPORT_HTTP_RESPONSE_EMPTY
-import pytest
 
 
 class ResMocker:
@@ -36,7 +37,6 @@ SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS = {
     "system_time": ""
 }
 
-
 SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS_POLLING = {
     "sha256": "sha256",
     "environment_id": "160: Windows 10",
@@ -51,7 +51,6 @@ SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS_POLLING = {
     "interval_in_seconds": "60",
     "extended_data": "true"
 }
-
 
 SEND_URL_TO_SANDBOX_ANALYSIS_ARGS = {
     "url": "https://www.google.com",
@@ -139,7 +138,14 @@ def test_cs_falconx_commands(command, args, http_response, context, mocker):
 
     mocker.patch.object(Client, '_http_request', return_value=http_response)
 
-    _, outputs, _ = command(client, **args)
+    command_results = command(client, **args)
+    if not isinstance(command_results, list):  # some command only return a single CommandResults objects
+        command_results = [command_results]
+
+    outputs = [cr.to_context()['EntryContext'] for cr in command_results]
+    if isinstance(context, dict) and len(outputs) == 1:
+        outputs = outputs[0]
+
     assert outputs == context
 
 
@@ -166,7 +172,7 @@ def test_cs_falcon_x_polling_related_commands(command, args, http_response, cont
     """
     mocker.patch.object(Client, '_generate_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
-                    proxy=False)
+                    proxy=False, reliability=DBotScoreReliability.B)
 
     mocker.patch.object(Client, '_http_request', return_value=http_response)
 
@@ -193,7 +199,7 @@ def test_handle_errors(http_response, output, mocker):
     """
     mocker.patch.object(Client, '_generate_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
-                    proxy=False)
+                    proxy=False, reliability=DBotScoreReliability.B)
     try:
         mocker.patch.object(client._session, 'request', return_value=ResMocker(http_response))
         _, output, _ = check_quota_status_command(client)
@@ -216,7 +222,7 @@ def test_running_polling_command_success_for_url(mocker):
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
     mocker.patch.object(Client, '_generate_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
-                    proxy=False)
+                    proxy=False, reliability=DBotScoreReliability.B)
 
     mocker.patch.object(Client, 'send_url_to_sandbox_analysis', return_value=SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE)
     mocker.patch.object(Client, 'get_full_report', return_value=GET_FULL_REPORT_HTTP_RESPONSE)
@@ -243,7 +249,7 @@ def test_running_polling_command_success_for_file(mocker):
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
     mocker.patch.object(Client, '_generate_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
-                    proxy=False)
+                    proxy=False, reliability=DBotScoreReliability.B)
 
     mocker.patch.object(Client, 'send_url_to_sandbox_analysis', return_value=SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE)
     mocker.patch.object(Client, 'get_full_report', return_value=GET_FULL_REPORT_HTTP_RESPONSE)
@@ -271,7 +277,7 @@ def test_running_polling_command_pending_for_url(mocker):
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
     mocker.patch.object(Client, '_generate_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
-                    proxy=False)
+                    proxy=False, reliability=DBotScoreReliability.B)
 
     mocker.patch.object(Client, 'send_url_to_sandbox_analysis', return_value=SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE)
     mocker.patch.object(Client, 'get_full_report', return_value=GET_FULL_REPORT_HTTP_RESPONSE_EMPTY)
@@ -296,7 +302,7 @@ def test_running_polling_command_pending_for_file(mocker):
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
     mocker.patch.object(Client, '_generate_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
-                    proxy=False)
+                    proxy=False, reliability=DBotScoreReliability.B)
 
     mocker.patch.object(Client, 'send_url_to_sandbox_analysis', return_value=SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE)
     mocker.patch.object(Client, 'get_full_report', return_value=GET_FULL_REPORT_HTTP_RESPONSE_EMPTY)
@@ -322,7 +328,7 @@ def test_running_polling_command_new_search_for_url(mocker):
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
     mocker.patch.object(Client, '_generate_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
-                    proxy=False)
+                    proxy=False, reliability=DBotScoreReliability.B)
 
     mocker.patch.object(Client, 'send_url_to_sandbox_analysis',
                         return_value=SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE)
@@ -351,7 +357,7 @@ def test_running_polling_command_new_search_for_file(mocker):
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
     mocker.patch.object(Client, '_generate_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
-                    proxy=False)
+                    proxy=False, reliability=DBotScoreReliability.B)
 
     mocker.patch.object(Client, 'send_uploaded_file_to_sandbox_analysis',
                         return_value=SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE)

@@ -518,33 +518,62 @@ def parse_outputs(
     return ResultTuple(response, output, indicator)
 
 
-def parse_indicator(sandbox: dict, reliability: str) -> Optional[Common.File]:
+def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File]:
     if sha256 := sandbox.get('sha256'):  # todo does the `if` make sense here?
         score_field = DBOT_SCORE_DICT.get(sandbox.get('verdict'), Common.DBotScore.NONE)
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability_str)
         dbot = Common.DBotScore(indicator=sha256,  # todo sha256 or name?
                                 indicator_type=DBotScoreType.FILE,
                                 score=score_field,
-                                reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(reliability))
+                                reliability=reliability)
 
         info = {item['id']: item['value'] for item in sandbox.get('version_info', [])}
+        name = sandbox.get('submit_name')
 
-        return Common.File(dbot_score=dbot,
-                           name=sandbox.get('submit_name'),
-                           size=sandbox.get('file_size'),
-                           file_type=sandbox.get('file_type'),
-                           company=info.get('CompanyName'),
-                           product_name=info.get('ProductName'),
-                           signature=Common.FileSignature(authentihash='',  # todo
-                                                          copyright='',  # todo
-                                                          description=info.get('FileDescription', ''),
-                                                          file_version=info.get('FileVersion', ''),
-                                                          internal_name=info.get('InternalName', ''),
-                                                          original_name=info.get('OriginalFilename', '')))
+        if sandbox.get('submission_type') in ('file_url', 'file'):
+            return Common.File(dbot_score=dbot,
+                               name=name,
+                               size=sandbox.get('file_size'),
+                               file_type=sandbox.get('file_type'),
+                               company=info.get('CompanyName'),
+                               product_name=info.get('ProductName'),
+                               signature=Common.FileSignature(authentihash='',  # todo
+                                                              copyright='',  # todo
+                                                              description=info.get('FileDescription', ''),
+                                                              file_version=info.get('FileVersion', ''),
+                                                              internal_name=info.get('InternalName', ''),
+                                                              original_name=info.get('OriginalFilename', '')),
+                               relationships=parse_indicator_relationships(sandbox, name, reliability) or None)
 
 
-def test_module(
-        client: Client,
-) -> tuple[str, dict, list]:
+def parse_indicator_relationships(sandbox: dict, indicator_name: str, reliability: str) -> list[EntityRelationship]:
+    def create_relationship(relationship_name: str, entity_b: str, entity_b_type: str) -> EntityRelationship:
+        return EntityRelationship(name=relationship_name,
+                                  entity_a=indicator_name,  # todo ?
+                                  entity_a_type=FeedIndicatorType.File,  # todo feed? need str
+                                  entity_b=entity_b,
+                                  entity_b_type=entity_b_type,
+                                  source_reliability=reliability)
+    relationships = []
+
+    if request_address := demisto.get(sandbox, 'dns_requests.address'):
+        relationships.append(create_relationship(EntityRelationship.Relationships.COMMUNICATES_WITH,
+                                                 request_address,
+                                                 FeedIndicatorType.IP))
+
+    if request_domain := demisto.get(sandbox, 'dns_requests.domain'):
+        relationships.append(create_relationship(EntityRelationship.Relationships.COMMUNICATES_WITH,
+                                                 entity_b=request_domain,
+                                                 entity_b_type=FeedIndicatorType.Domain))
+
+    if host_address := demisto.get(sandbox, 'contacted_hosts.address'):
+        relationships.append(create_relationship(EntityRelationship.Relationships.COMMUNICATES_WITH,
+                                                 host_address,
+                                                 FeedIndicatorType.IP))
+    return relationships
+
+
+def test_module(client: Client) -> tuple[str, dict, list]:
     """
     If a client was made then an accesses token was successfully reached,
     therefore the username and password are valid and a connection was made
@@ -1021,7 +1050,8 @@ def run_polling_command(client, args: dict, cmd: str, upload_function: Callable,
 
 
 def upload_file_with_polling_command(client, args):
-    return run_polling_command(client, args, 'cs-fx-upload-file', upload_file_command, get_full_report_command, 'FILE')
+    return run_polling_command(client, args, 'cs-fx-upload-file', upload_file_command, get_full_report_command,
+                               'FILE')
 
 
 def submit_uploaded_file_polling_command(client, args):
