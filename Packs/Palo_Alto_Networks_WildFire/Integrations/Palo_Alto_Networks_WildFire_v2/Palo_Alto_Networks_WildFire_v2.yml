@@ -1,6 +1,6 @@
 category: Forensics & Malware Analysis
 commonfields:
-  id: WildFire-v2
+  id: WildFire-v2-Copy
   version: -1
 configuration:
 - defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
@@ -45,8 +45,8 @@ configuration:
   type: 4
   hidden: true
 description: Perform malware dynamic analysis
-display: Palo Alto Networks WildFire v2
-name: WildFire-v2
+display: Palo Alto Networks WildFire v2 Copy
+name: WildFire-v2-Copy
 script:
   commands:
   - arguments:
@@ -200,6 +200,16 @@ script:
       - 'false'
       required: false
       secret: false
+    - auto: PREDEFINED
+      defaultValue: false
+      description: ''
+      isArray: false
+      name: extended_data
+      predefined:
+      - true
+      - false
+      required: false
+      secret: false
     deprecated: false
     description: Uploads a file to WildFire for analysis.
     execution: false
@@ -240,6 +250,9 @@ script:
       type: string
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.DigitalSignature.Publisher
+      description: ' '
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -372,6 +385,16 @@ script:
       - 'false'
       required: false
       secret: false
+    - auto: PREDEFINED
+      defaultValue: false
+      description: ''
+      isArray: false
+      name: extended_data
+      predefined:
+      - true
+      - false
+      required: false
+      secret: false
     deprecated: false
     description: Uploads the URL of a remote file to WildFire for analysis.
     execution: false
@@ -409,6 +432,9 @@ script:
       type: string
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.DigitalSignature.Publisher
+      description: ' '
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -534,6 +560,16 @@ script:
       name: url
       required: false
       secret: false
+    - auto: PREDEFINED
+      defaultValue: false
+      description: ''
+      isArray: false
+      name: extended_data
+      predefined:
+      - true
+      - false
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves results for a file hash using WildFire.
     execution: false
@@ -559,6 +595,9 @@ script:
       type: string
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.DigitalSignature.Publisher
+      description: ' '
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -791,6 +830,16 @@ script:
       - 'false'
       required: false
       secret: false
+    - auto: PREDEFINED
+      defaultValue: false
+      description: ''
+      isArray: false
+      name: extended_data
+      predefined:
+      - true
+      - false
+      required: false
+      secret: false
     deprecated: false
     description: Uploads a URL of a webpage to WildFire for analysis.
     execution: false
@@ -828,6 +877,9 @@ script:
       type: string
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.DigitalSignature.Publisher
+      description: ' '
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -964,6 +1016,32 @@ script:
     - contextPath: InfoFile.Type
       description: The web artifacts file type.
       type: string
+  - arguments:
+    - description: hash values of the samples, supports only sha256.
+      name: hash
+      required: true
+      isArray: true
+    - description: A description of the change request in quotes, 
+        If you send multiple hashes, this comment will apply to each hash. (Maximum length 2,048 characters)
+      name: comment
+      required: true
+      isArray: false
+    - description: The new verdict to be applied to the sample, 
+        If you send multiple hashes, this verdict will apply to each hash.
+      auto: PREDEFINED
+      name: verdict
+      required: true
+      isArray: false
+      predefined:
+      - benign
+      - malware
+      - grayware
+      - phishing
+    name: wildfire-update-verdict
+    description: Changes the WildFire verdict applied to a sample. 
+      Verdict changes apply only to those samples submitted to the WildFire appliance,
+      and the verdict for the same sample remains unchanged in the WildFire global cloud. 
+      If a user inserts multiple hashes, the same comment and verdict will apply to all - mention in the command description!
   dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
