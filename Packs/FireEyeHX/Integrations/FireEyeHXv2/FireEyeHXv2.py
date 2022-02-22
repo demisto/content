@@ -2660,6 +2660,7 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> List:
 
         # Design the filterQuery argument with last reported_at, and convert it to urlEncoding
         query = query_fetch(reported_at=organize_reported_at(last_run.get('reported_at')))
+        demisto.debug(f'fetch-incident query -> {query}')
         args["filterQuery"] = urllib.parse.quote_plus(query)
 
         # Get all alerts with reported_at greater than last reported_at
@@ -2669,6 +2670,7 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> List:
         # Design the filterQuery argument, and convert it to urlEncoding
         first_fetch = args.get("first_fetch") if args.get("first_fetch") else "3 days"
         query = query_fetch(first_fetch=first_fetch)
+        demisto.debug(f'fetch-incident query -> {query}')
         args["filterQuery"] = urllib.parse.quote_plus(query)
 
         # Receive alerts from last 3 days - if they are more than 50 return the 50 older alerts
