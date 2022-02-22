@@ -2015,9 +2015,6 @@ class JsonTransformer:
                     for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
                         yield res
 
-                else:
-                    # if not in keys and no need to search in nested keys - don't recurse
-                    pass
         if isinstance(json_input, list):
             if not json_input or (not isinstance(json_input[0], list) and not isinstance(json_input[0], dict)):
                 # if the items of the lists are primitive, put the values in one line
