@@ -1,2 +1,5 @@
 [file:Gophish.yml]
 ignore=IN145
+
+[file:Gophish_image.png]
+ignore=IM111

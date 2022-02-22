@@ -31,24 +31,29 @@
     "x2_fields": "action_file_name",
     "Aliases": [
         {
-        "cliName": "gibleakedfilename",
-        "type": "shortText"
+            "cliName": "gibleakedfilename",
+            "type": "shortText",
+            "name": "GIB Leaked File Name"
         },
         {
-        "cliName": "pcapfilename",
-        "type": "shortText"
+            "cliName": "pcapfilename",
+            "type": "shortText",
+            "name": "PCAP File Name"
         },
         {
-        "cliName": "digitalguardianattachmentfilename",
-        "type": "shortText"
+            "cliName": "digitalguardianattachmentfilename",
+            "type": "shortText",
+            "name": "Digital Guardian Attachment Filename"
         },
         {
-        "cliName": "digitalguardianfilename",
-        "type": "shortText"
+            "cliName": "digitalguardianfilename",
+            "type": "shortText",
+            "name": "Digital Guardian Filename"
         },
         {
-        "cliName": "filenames",
-        "type": "shortText"
+            "cliName": "filenames",
+            "type": "shortText",
+            "name": "File Names"
         }
     ]
 }
