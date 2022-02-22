@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 def main():
     incident_id = demisto.args()['id'] if 'id' in demisto.args() else demisto.incidents()[0]['id']
     key = demisto.args()['key']
+
     value = demisto.args()['value']
     append = demisto.args()['append']
     error_unfinished = argToBoolean(demisto.args().get('errorUnfinished', "false"))
