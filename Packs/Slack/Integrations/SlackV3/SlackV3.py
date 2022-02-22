@@ -1714,9 +1714,6 @@ def slack_send():
     Sends a message to slack
     """
 
-    demisto.info("This is the params: ", demisto.params())
-    demisto.info("This is the args: ", demisto.args())
-
     args = demisto.args()
     message = args.get('message', '')
     to = args.get('to')
