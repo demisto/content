@@ -406,7 +406,7 @@ def test_get_schedules_with_no_args():
     Given:
         - An app client object
     When:
-        - Calling function get_schedules with both arguments
+        - Calling function get_schedules with no arguments
     Then:
         - Ensure the resulted will raise an exception.
     """
@@ -420,7 +420,7 @@ def test_get_schedules_with_both_args():
     Given:
         - An app client object
     When:
-        - Calling function get_schedules with no arguments
+        - Calling function get_schedules with both arguments
     Then:
         - Ensure the resulted will raise an exception.
     """
