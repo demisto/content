@@ -1,6 +1,6 @@
 id: 2b659e9c-bf01-4280-8e8f-29e58a9f3175
 version: -1
-name: Cortex ASM - ServiceNow CMDB Enrichment
+name: Cortex ASM - CMDB Enrichment
 description: This playbook will look up a CI in ServiceNow CMDB by IP.
 starttaskid: "0"
 tasks:
@@ -14,7 +14,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -44,7 +43,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "2"
@@ -104,7 +102,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
     separatecontext: false
     view: |-
       {
@@ -159,10 +156,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 8d028d31-f3a0-43d0-8b41-2cf1c81202f0
+    taskid: 13344812-1376-446e-8623-49d72aa0e06a
     type: regular
     task:
-      id: 8d028d31-f3a0-43d0-8b41-2cf1c81202f0
+      id: 13344812-1376-446e-8623-49d72aa0e06a
       version: -1
       name: ServiceNow Search by IP
       description: Query records for a CMDB class.
@@ -175,7 +172,8 @@ tasks:
       - "5"
     scriptarguments:
       class:
-        simple: cmdb_ci_ip_address
+        complex:
+          root: inputs.ServiceNowCMDBClass
       query:
         complex:
           root: inputs.IP
@@ -204,10 +202,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: e8cf71d2-26e2-40da-88a0-c88aaa2320c6
+    taskid: 4f858b34-ab27-4f9d-8068-49e4c48fc899
     type: condition
     task:
-      id: e8cf71d2-26e2-40da-88a0-c88aaa2320c6
+      id: 4f858b34-ab27-4f9d-8068-49e4c48fc899
       version: -1
       name: Were search results found?
       description: Check if a given value exists in the context. Will return 'no'
@@ -223,7 +221,9 @@ tasks:
       - "8"
     scriptarguments:
       value:
-        simple: ${ServiceNowCMDB.Records}
+        complex:
+          root: ServiceNowCMDB
+          accessor: Records
     separatecontext: false
     view: |-
       {
@@ -241,10 +241,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: c5a3a636-4c26-4533-8cb0-ebe468ad1b83
+    taskid: 831c909e-4141-4d05-8ef9-f00278bd704f
     type: regular
     task:
-      id: c5a3a636-4c26-4533-8cb0-ebe468ad1b83
+      id: 831c909e-4141-4d05-8ef9-f00278bd704f
       version: -1
       name: ServiceNow Get IP address CI by ID
       description: Query attributes and relationship information for a specific record.
@@ -257,9 +257,12 @@ tasks:
       - "13"
     scriptarguments:
       class:
-        simple: cmdb_ci_ip_address
+        complex:
+          root: inputs.ServiceNowCMDBClass
       sys_id:
-        simple: ${ServiceNowCMDB.Records.sys_id}
+        complex:
+          root: ServiceNowCMDB.Records
+          accessor: sys_id
     separatecontext: false
     view: |-
       {
@@ -286,7 +289,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "15"
@@ -316,7 +318,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "6"
@@ -494,7 +495,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "2"

@@ -7,15 +7,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6a0198d3-c158-47f4-8377-1f8eddd76ada
+    taskid: f942d7ac-a9f3-420b-8a36-b1c9ed41e2ae
     type: start
     task:
-      id: 6a0198d3-c158-47f4-8377-1f8eddd76ada
+      id: f942d7ac-a9f3-420b-8a36-b1c9ed41e2ae
       version: -1
       name: ""
       iscommand: false
-      description: ""
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 3ceaba2d-c24f-4fa8-8558-1e992a3ed86b
+    taskid: 5c1b53ca-c8c5-450f-851d-dcf830525368
     type: playbook
     task:
-      id: 3ceaba2d-c24f-4fa8-8558-1e992a3ed86b
+      id: 5c1b53ca-c8c5-450f-851d-dcf830525368
       version: -1
       name: Cortex ASM - Extract IP Indicator
       playbookName: Cortex ASM - Extract IP Indicator
@@ -75,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 8687767a-dd8c-4a2c-814d-2c4ff6bfa1f5
+    taskid: f7dc382a-bfec-41cd-88ca-43e2225af417
     type: condition
     task:
-      id: 8687767a-dd8c-4a2c-814d-2c4ff6bfa1f5
+      id: f7dc382a-bfec-41cd-88ca-43e2225af417
       version: -1
       name: IP exists for Alert?
       description: Check if a given value exists in the context. Will return 'no'
@@ -113,10 +113,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 79a1f65f-7744-43df-8b6a-01b236ae5e5a
+    taskid: 2ffbc7d8-8489-4d45-8ad8-e509bd58b42e
     type: playbook
     task:
-      id: 79a1f65f-7744-43df-8b6a-01b236ae5e5a
+      id: 2ffbc7d8-8489-4d45-8ad8-e509bd58b42e
       version: -1
       name: Cortex ASM - ServiceNow CMDB Enrichment
       playbookName: Cortex ASM - ServiceNow CMDB Enrichment
@@ -154,10 +154,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 7cd0c434-7c4d-4ca6-8e67-865bd8e46d83
+    taskid: 201bf808-1747-44ab-8e0d-5beec961e6c2
     type: title
     task:
-      id: 7cd0c434-7c4d-4ca6-8e67-865bd8e46d83
+      id: 201bf808-1747-44ab-8e0d-5beec961e6c2
       version: -1
       name: Complete
       type: title
@@ -181,10 +181,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 8a88cb41-e41b-46cd-81fb-1b5bf22aa9fe
+    taskid: ed1dc95b-deac-4a25-83ad-ce7c78c86bcb
     type: playbook
     task:
-      id: 8a88cb41-e41b-46cd-81fb-1b5bf22aa9fe
+      id: ed1dc95b-deac-4a25-83ad-ce7c78c86bcb
       version: -1
       name: Cortex ASM - Vulnerability Management Enrichment
       playbookName: Cortex ASM - Vulnerability Management Enrichment

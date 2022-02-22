@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8297590d-ca7b-4a19-8265-612ad432343b
+    taskid: 76b4301c-0852-4b72-8f49-9375f3c544a9
     type: start
     task:
-      id: 8297590d-ca7b-4a19-8265-612ad432343b
+      id: 76b4301c-0852-4b72-8f49-9375f3c544a9
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 177a6eff-19ca-47b3-87e6-2962876fb8d7
+    taskid: 492d881f-b7eb-4409-85d7-1abbbff20501
     type: regular
     task:
-      id: 177a6eff-19ca-47b3-87e6-2962876fb8d7
+      id: 492d881f-b7eb-4409-85d7-1abbbff20501
       version: -1
       name: Extract Indicators From Alert
       description: Extract all indicators according to server indicators configuration
@@ -53,7 +53,8 @@ tasks:
       - "4"
     scriptarguments:
       text:
-        simple: ${inputs.AlertName}
+        complex:
+          root: inputs.AlertName
     separatecontext: false
     view: |-
       {
@@ -71,10 +72,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7deeb316-2e78-475f-8e86-95eb25925c7e
+    taskid: d4c03595-5978-4ecc-8986-2a6a06cd0723
     type: regular
     task:
-      id: 7deeb316-2e78-475f-8e86-95eb25925c7e
+      id: d4c03595-5978-4ecc-8986-2a6a06cd0723
       version: -1
       name: Create New Indicator
       description: Change the properties of an indicator
@@ -92,12 +93,12 @@ tasks:
         simple: IP
       value:
         complex:
-          root: ${ExtractedIndicators.IP}
+          root: ExtractedIndicators.IP
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: ${ExtractedIndicators.IP}
+                  simple: ExtractedIndicators.IP
                 iscontext: true
     separatecontext: false
     view: |-
@@ -116,10 +117,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: ca985cec-83d9-4a95-8f7d-f51e5a0aafc8
+    taskid: 1b8d038f-9ccf-4557-8b0c-422addc34435
     type: condition
     task:
-      id: ca985cec-83d9-4a95-8f7d-f51e5a0aafc8
+      id: 1b8d038f-9ccf-4557-8b0c-422addc34435
       version: -1
       name: IP Indicator Found
       description: Check if a given value exists in the context. Will return 'no'
@@ -136,8 +137,8 @@ tasks:
     scriptarguments:
       value:
         complex:
-          root: ${ExtractedIndicators
-          accessor: IP}
+          root: ExtractedIndicators
+          accessor: IP
     separatecontext: false
     view: |-
       {
@@ -155,10 +156,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: e7c4ae9f-5b10-4620-8b1d-43d15e2adc6f
+    taskid: 05f468be-6651-4acb-84cf-91663bab2440
     type: regular
     task:
-      id: e7c4ae9f-5b10-4620-8b1d-43d15e2adc6f
+      id: 05f468be-6651-4acb-84cf-91663bab2440
       version: -1
       name: Associate IP Indicator To Alert
       description: Associate an indicator to a given alert, you can find the indicator
@@ -172,15 +173,17 @@ tasks:
       - "6"
     scriptarguments:
       alertId:
-        simple: ${alert.id}
+        complex:
+          root: alert
+          accessor: id
       id:
         complex:
-          root: ${CreatedIndicator
-          accessor: ID}
+          root: CreatedIndicator
+          accessor: ID
       value:
         complex:
-          root: ${CreatedIndicator
-          accessor: Value}
+          root: CreatedIndicator
+          accessor: Value
     separatecontext: false
     view: |-
       {
@@ -198,10 +201,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: b1ebedc2-2060-490f-8809-638d1e1245aa
+    taskid: 64754ddc-ed83-47c6-8646-a6402cf9ac98
     type: title
     task:
-      id: b1ebedc2-2060-490f-8809-638d1e1245aa
+      id: 64754ddc-ed83-47c6-8646-a6402cf9ac98
       version: -1
       name: Complete
       type: title
