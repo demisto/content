@@ -13,6 +13,7 @@ For more information, please refer to the [Identity Lifecycle Management article
     | Password |  | False |
     | Workday Report URL |  | True |
     | Fetch Limit (Recommended less than 200) |  | False |
+    | Percentage of entries to process per fetch | Advanced input - a number between 1 and 100 representing the percentage of the report that will be checked for changes each time a fetch is executed. For every fetch, that part of the report will be checked until 100% of the report was checked for changes. If you are experiencing performance issues with the integration, you can try a lower value. | False |
     | Fetch incidents | Whether or not to fetch events from Workday report. Enable only when all required configurations are set properly. | False |
     | Incident type |  | False |
     | Trust any certificate (not secure) |  | False |
