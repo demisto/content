@@ -10,10 +10,10 @@ urllib3.disable_warnings()
 
 
 @dataclass
-class ResultTuple:
+class CommandResultArguments:
     response: dict
     output: Optional[dict]
-    indicator: Optional[Common.Indicator]
+    indicator: Optional[Common.File]
 
 
 DBOT_SCORE_DICT = {'malicious': Common.DBotScore.BAD,
@@ -478,7 +478,7 @@ def parse_outputs(
         resources_fields: Optional[list] = None,
         sandbox_fields: Optional[list] = None,
         extra_sandbox_fields: Optional[list] = None,
-) -> ResultTuple:
+) -> CommandResultArguments:
     """Parse group data as received from CrowdStrike FalconX API matching Demisto conventions
     the output from the API is a dict that contains the keys: meta, resources and errors
     the meta contains a "quota" dict
@@ -499,60 +499,65 @@ def parse_outputs(
         output |= filter_dictionary(api_res_meta.get("quota", {}), quota_fields)
 
     if resources_list := response.get("resources"):
-        # depends on the command, the resources_list section can be a list[str] or list of only one dict
+        # depends on the command, the resources_list section can be a list[str] or list with a single dictionary
         if isinstance(resources_list[0], dict):
             resources = resources_list[0]
             resources_group_outputs = filter_dictionary(resources, resources_fields)
 
-            if sandbox := resources.get("sandbox", [{}])[0]:
+            if sandbox := resources.get("sandbox", [{}])[0]:  # list of single dict
                 output |= filter_dictionary(sandbox, sandbox_fields)
+                indicator = parse_indicator(sandbox, reliability)
 
-                extra_sandbox_group_outputs = filter_dictionary(sandbox, extra_sandbox_fields)
-                for process in extra_sandbox_group_outputs.get('processes', []):
-                    process.pop('registry', None)
-                if extra_sandbox_group_outputs:
+                if extra_sandbox_group_outputs := filter_dictionary(sandbox, extra_sandbox_fields):
+                    for process in extra_sandbox_group_outputs.get('processes', []):
+                        process.pop('registry', None)
+
                     resources_group_outputs['sandbox'] = extra_sandbox_group_outputs
-                indicator = parse_indicator(resources, reliability)
-
-        else:
-            # the resources section is a list of strings
+                    output |= extra_sandbox_group_outputs
+        else:  # the resources section is a list of strings
             resources_group_outputs = {"resources": response.get("resources")}
-
         output |= resources_group_outputs
-
-    return ResultTuple(response, output, indicator)
+    return CommandResultArguments(response, output, indicator)
 
 
 def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File]:
     if sha256 := sandbox.get('sha256'):  # todo does the `if` make sense here?
         score_field = DBOT_SCORE_DICT.get(sandbox.get('verdict'), Common.DBotScore.NONE)
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability_str)
-        dbot = Common.DBotScore(indicator=sha256,  # todo sha256 or name?
+        submit_name = sandbox.get('submit_name')
+
+        dbot = Common.DBotScore(indicator=submit_name,
                                 indicator_type=DBotScoreType.FILE,
                                 score=score_field,
                                 reliability=reliability)
 
         info = {item['id']: item['value'] for item in sandbox.get('version_info', [])}
-        name = sandbox.get('submit_name')
 
         if sandbox.get('submission_type') in ('file_url', 'file'):
-            return Common.File(dbot_score=dbot,
-                               name=name,
-                               size=sandbox.get('file_size'),
-                               file_type=sandbox.get('file_type'),
-                               company=info.get('CompanyName'),
-                               product_name=info.get('ProductName'),
-                               signature=Common.FileSignature(authentihash='',  # todo
-                                                              copyright='',  # todo
-                                                              description=info.get('FileDescription', ''),
-                                                              file_version=info.get('FileVersion', ''),
-                                                              internal_name=info.get('InternalName', ''),
-                                                              original_name=info.get('OriginalFilename', '')),
-                               relationships=parse_indicator_relationships(sandbox, name, reliability) or None)
+            relationships = parse_indicator_relationships(sandbox, indicator_name=submit_name, reliability=reliability)
+        else:
+            relationships = None
+
+        return Common.File(dbot_score=dbot,
+                           name=submit_name,
+                           sha256=sha256,
+                           size=sandbox.get('file_size'),
+                           file_type=sandbox.get('file_type'),
+                           company=info.get('CompanyName'),
+                           product_name=info.get('ProductName'),
+                           signature=Common.FileSignature(authentihash='',  # todo
+                                                          copyright='',  # todo
+                                                          description=info.get('FileDescription', ''),
+                                                          file_version=info.get('FileVersion', ''),
+                                                          internal_name=info.get('InternalName', ''),
+                                                          original_name=info.get('OriginalFilename', '')),
+                           relationships=relationships or None)
 
 
 def parse_indicator_relationships(sandbox: dict, indicator_name: str, reliability: str) -> list[EntityRelationship]:
-    def create_relationship(relationship_name: str, entity_b: str, entity_b_type: str) -> EntityRelationship:
+    relationships = []
+
+    def _create_relationship(relationship_name: str, entity_b: str, entity_b_type: str) -> EntityRelationship:
         return EntityRelationship(name=relationship_name,
                                   entity_a=indicator_name,  # todo ?
                                   entity_a_type=FeedIndicatorType.File,  # todo feed? need str
@@ -560,22 +565,26 @@ def parse_indicator_relationships(sandbox: dict, indicator_name: str, reliabilit
                                   entity_b_type=entity_b_type,
                                   source_reliability=reliability)
 
-    relationships = []
-
     if request_address := demisto.get(sandbox, 'dns_requests.address'):
-        relationships.append(create_relationship(EntityRelationship.Relationships.COMMUNICATES_WITH,
-                                                 request_address,
-                                                 FeedIndicatorType.IP))
+        relationships.append(_create_relationship(
+            relationship_name=EntityRelationship.Relationships.COMMUNICATES_WITH,
+            entity_b=request_address,
+            entity_b_type=FeedIndicatorType.IP)
+        )
 
     if request_domain := demisto.get(sandbox, 'dns_requests.domain'):
-        relationships.append(create_relationship(EntityRelationship.Relationships.COMMUNICATES_WITH,
-                                                 entity_b=request_domain,
-                                                 entity_b_type=FeedIndicatorType.Domain))
+        relationships.append(_create_relationship(
+            relationship_name=EntityRelationship.Relationships.COMMUNICATES_WITH,
+            entity_b=request_domain,
+            entity_b_type=FeedIndicatorType.Domain)
+        )
 
     if host_address := demisto.get(sandbox, 'contacted_hosts.address'):
-        relationships.append(create_relationship(EntityRelationship.Relationships.COMMUNICATES_WITH,
-                                                 host_address,
-                                                 FeedIndicatorType.IP))
+        relationships.append(_create_relationship(
+            relationship_name=EntityRelationship.Relationships.COMMUNICATES_WITH,
+            entity_b=host_address,
+            entity_b_type=FeedIndicatorType.IP)
+        )
     return relationships
 
 
@@ -738,7 +747,7 @@ def get_full_report_command(client: Client, ids: list, extended_data: str):
     :param extended_data: Whether to return extended data which includes mitre attacks and signature information.
     :return: Demisto outputs when entry_context and responses are lists
     """
-    results: list[ResultTuple] = []
+    results: list[CommandResultArguments] = []
     is_command_finished: bool = False
 
     resources_fields = ['id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
@@ -802,7 +811,7 @@ def get_report_summary_command(
     :param ids: ids of a submitted malware samples.
     :return: Demisto outputs when entry_context and responses are lists
     """
-    results: list[ResultTuple] = []
+    results: list[CommandResultArguments] = []
 
     resources_fields = [
         'id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
@@ -844,7 +853,7 @@ def get_analysis_status_command(
     :param ids: ids of a submitted malware samples.
     :return: Demisto outputs when entry_context and responses are lists
     """
-    results: list[ResultTuple] = []
+    results: list[CommandResultArguments] = []
 
     for single_id in argToList(ids):
         response = client.get_analysis_status(single_id)

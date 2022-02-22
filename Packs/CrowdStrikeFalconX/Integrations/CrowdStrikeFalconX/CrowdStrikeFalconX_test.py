@@ -178,10 +178,10 @@ def test_cs_falcon_x_polling_related_commands(command, args, http_response, cont
 
     if command == get_full_report_command:
         command_res, status = command(client, **args)
-        assert command_res.outputs == context
+        assert command_res[0].outputs == context
     else:
         command_res = command(client, **args)
-        assert command_res.outputs == context
+        assert command_res[0].outputs == context
 
 
 @pytest.mark.parametrize('http_response, output', [
@@ -230,8 +230,8 @@ def test_running_polling_command_success_for_url(mocker):
     expected_outputs = GET_FULL_REPORT_CONTEXT_EXTENDED
     command_results = run_polling_command(client, args, 'cs-fx-submit-url', send_url_to_sandbox_analysis_command,
                                           get_full_report_command, 'URL')
-    assert command_results.outputs == expected_outputs
-    assert command_results.scheduled_command is None
+    assert command_results[0].outputs == expected_outputs
+    assert command_results[0].scheduled_command is None
 
 
 def test_running_polling_command_success_for_file(mocker):
