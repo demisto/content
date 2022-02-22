@@ -3462,7 +3462,6 @@ script:
       type: string
   - arguments:
     - default: false
-      defaultValue: null
       description: String to filter to only show specific hostnames or serial numbers.
       isArray: false
       name: device_filter_string
@@ -3510,7 +3509,6 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: null
       description: String to filter to only show specific hostnames or serial numbers.
       isArray: false
       name: device_filter_string
@@ -3534,7 +3532,6 @@ script:
       type: Number
   - arguments:
     - default: false
-      defaultValue: null
       description: String to filter to only show specific hostnames or serial numbers.
       isArray: false
       name: device_filter_string
@@ -3582,7 +3579,6 @@ script:
       description: Which route table this route belongs to
   - arguments:
     - default: false
-      defaultValue: null
       description: String to filter to only show specific hostnames or serial numbers.
       isArray: false
       name: device_filter_string
@@ -3681,7 +3677,6 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: null
       description: String to filter to only show specific hostnames or serial numbers.
       isArray: false
       name: device_filter_string
@@ -3711,7 +3706,6 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: null
       description: String to filter to only show specific hostnames or serial numbers.
       isArray: false
       name: device_filter_string
