@@ -182,8 +182,10 @@ def extract_attack_ids(raw_response: dict):
     :returns:
         the attack_ids field if exists, otherwise, an empty string.
     """
-    attack_id_field = dict_safe_get(raw_response, ['pulse_info', 'pulses']) or [{}]
-    return attack_id_field[0].get('attack_ids', [])
+    pulses = dict_safe_get(raw_response, ['pulse_info', 'pulses']) or [{}]
+    atack_ids = [pulse.get('attack_ids') for pulse in pulses if pulse.get('attack_ids')]
+    return atack_ids
+    # return pulses[0].get('attack_ids')
 
 
 def relationships_manager(client: Client, entity_a: str, entity_a_type: str, indicator_type: str,
@@ -336,6 +338,7 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
     for ip_ in ips_list:
         raw_response = client.query(section=ip_version,
                                     argument=ip_)
+        print(raw_response)
         if raw_response and raw_response != 404:
             ip_version = FeedIndicatorType.IP if ip_version == 'IPv4' else FeedIndicatorType.IPv6
             relationships = create_relationships(client, extract_attack_ids(raw_response), ip_, ip_version, 'display_name',
