@@ -28,7 +28,9 @@ DBOT_SCORE_TO_CS_FALCON_SEVERITY = {
 
 
 def convert_unique_fields(ioc: dict, action: str, host_groups: list, platforms: list, applied_globally: bool):
-    ioc['severity'] = DBOT_SCORE_TO_CS_FALCON_SEVERITY[ioc.get('severity')]  # XSOAR indicators always have score
+    # XSOAR indicators always have score
+    ioc['severity'] = DBOT_SCORE_TO_CS_FALCON_SEVERITY[
+        ioc.get('severity')]    # type: ignore
 
     if ioc.get('type'):
         indicator_type = ioc.get('type')
