@@ -308,6 +308,7 @@ def test_unseccsseful_create_user_iam_missing_ou(mocker):
     class ConnectionMocker:
         entries = []
         result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
+        last_error = ''
 
         def search(self, *args, **kwargs):
             return
@@ -351,6 +352,7 @@ def test_unseccsseful_create_user_iam_missing_samaccountname(mocker):
     class ConnectionMocker:
         entries = []
         result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
+        last_error = ''
 
         def search(self, *args, **kwargs):
             return
