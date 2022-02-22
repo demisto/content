@@ -222,7 +222,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
         converted_table = [dict(row) for row in result]
         # converting b'' and datetime objects to readable ones
         table = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
-        table = table[skip : skip + limit]
+        table = table[skip: skip + limit]
         human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers, removeNull=True)
         context = {
             "Result": table,
