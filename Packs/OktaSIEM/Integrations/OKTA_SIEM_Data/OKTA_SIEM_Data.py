@@ -175,7 +175,7 @@ class Client(BaseClient):
 
         return sorted_events_to_save, new_last_run
 
-def test_module(client, args):
+def test_module(client):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
@@ -185,9 +185,7 @@ def test_module(client, args):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    args
-    uri = 'users/me'
-    client._http_request(method='GET', url_suffix=uri)
+    client.fetch_logs()
     return CommandResults('ok')
 
 
@@ -252,13 +250,13 @@ def main():
             proxy=proxy)
         args = demisto.args()
 
-        if command is 'test_module':
+        if command == 'test_module':
             return_results(test_module(client))
 
-        elif command is 'fetch-incidents':
+        elif command == 'fetch-incidents':
             return_results(fetch_logs_command(client))
 
-        elif command is 'okta-get-logs':
+        elif command == 'okta-get-logs':
             return_results(get_logs_command(client, args))
 
     # Log exceptions
