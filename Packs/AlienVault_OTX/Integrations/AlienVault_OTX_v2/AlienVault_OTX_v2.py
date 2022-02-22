@@ -187,7 +187,7 @@ def extract_attack_ids(raw_response: dict):
     return atack_ids
 
 
-def relationships_manager(client: Client, entity_a: str, entity_a_type: str, indicator_type: str,
+def relationships_manager(client: Client, entity_a: str, entity_a_type: str, indicator_type: str, attack_ids: list,
                           indicator: str, field_for_passive_dns_rs: str, feed_indicator_type_for_passive_dns_rs: str):
     """
     manage the relationships creation
@@ -202,7 +202,8 @@ def relationships_manager(client: Client, entity_a: str, entity_a_type: str, ind
     :returns:
         a list of the relationships that were created
     """
-    relationships: list = []
+    relationships = create_relationships(client, attack_ids, entity_a, entity_a_type, 'display_name',
+                                         FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"))
 
     if client.max_indicator_relationships > 0:
         limit = str(client.max_indicator_relationships)
@@ -340,9 +341,7 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
         print(raw_response)
         if raw_response and raw_response != 404:
             ip_version = FeedIndicatorType.IP if ip_version == 'IPv4' else FeedIndicatorType.IPv6
-            relationships = create_relationships(client, extract_attack_ids(raw_response), ip_, ip_version, 'display_name',
-                                                 FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"))
-            relationships += relationships_manager(client, entity_a=ip_, entity_a_type=ip_version,
+            relationships = relationships_manager(client, entity_a=ip_, entity_a_type=ip_version,
                                                    indicator_type=ip_version, indicator=ip_, field_for_passive_dns_rs="hostname",
                                                    feed_indicator_type_for_passive_dns_rs=FeedIndicatorType.Domain)
 
@@ -402,10 +401,7 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
     for domain in domains_list:
         raw_response = client.query(section='domain', argument=domain)
         if raw_response and raw_response != 404:
-            relationships = create_relationships(client, extract_attack_ids(raw_response), domain,
-                                                 FeedIndicatorType.Domain, 'display_name',
-                                                 FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"))
-            relationships += relationships_manager(client, entity_a=domain, indicator_type='domain',
+            relationships = relationships_manager(client, entity_a=domain, indicator_type='domain',
                                                    entity_a_type=FeedIndicatorType.Domain, indicator=domain,
                                                    field_for_passive_dns_rs='address',
                                                    feed_indicator_type_for_passive_dns_rs=FeedIndicatorType.IP)
