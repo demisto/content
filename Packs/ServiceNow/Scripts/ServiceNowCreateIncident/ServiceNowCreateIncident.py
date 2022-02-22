@@ -29,7 +29,7 @@ def get_user(query):
     user_args = {
         'table_name': 'sys_user',
         'query': query,
-        'using': demisto.args().get('using')
+        'using': using,
     }
 
     user_result = demisto.executeCommand('servicenow-query-table', user_args)[0]
@@ -67,7 +67,7 @@ def get_group(query):
     group_args = {
         'table_name': 'sys_user_group',
         'query': query,
-        'using': demisto.args().get('using')
+        'using': using,
     }
 
     group_result = demisto.executeCommand('servicenow-query-table', group_args)[0]
