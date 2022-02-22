@@ -27,9 +27,13 @@ from distutils.version import LooseVersion
 from threading import Lock
 from inspect import currentframe
 
+import yaml
+
 import demistomock as demisto
 import warnings
+from ruamel.yaml import YAML
 
+ryaml = YAML()
 
 def __line__():
     cf = currentframe()
@@ -1978,6 +1982,7 @@ class JsonTransformer:
                 str_path = ''.join(str_path_lst)
                 prev_path = path
                 if path and isinstance(path[-1], int):
+                    # if it is a beginning of a list, there is only one tab left
                     full_tabs = '\t'
 
             str_lst.append(
