@@ -1,6 +1,6 @@
 import demistomock as demisto
 from IAMInitADUser import main
-from typing import Optional, Dict, Tuple, Union
+from typing import Optional, Dict, Tuple, Union, Any
 
 PWD_GENERATION_SCRIPT = 'GeneratePassword'
 UNKNOWN_USER = 'Unknown User'
@@ -26,13 +26,13 @@ MOCK_ARGS = {
 }
 
 
-def execute_command(cmd: str, args: Optional[Dict] = None,
-                    fail_on_error: bool = False) -> Union[Tuple[bool, Optional[str]], Optional[str]]:
+def execute_command(cmd: str, args: Dict[str, Any],
+                    fail_on_error: bool = True) -> Union[Tuple[bool, Optional[str]], Optional[str]]:
     if cmd == 'getList':
         return None  # will use the default email template
 
     elif cmd == 'GeneratePassword':
-        return 'mock_password'
+        return True, 'mock_password'
 
     elif cmd in ['ad-enable-account', 'ad-update-user']:
         return args.get('username') in VALID_SAMACCOUNTNAMES, UNKNOWN_USER
@@ -52,40 +52,48 @@ def execute_command(cmd: str, args: Optional[Dict] = None,
 
 def test_good(mocker):
     mocker.patch.object(demisto, 'args', return_value=MOCK_ARGS)
+    mocker.patch.object(demisto, 'results')
     mocker.patch('IAMInitADUser.execute_command', side_effect=execute_command)
 
     main()
     results = demisto.results.call_args[0][0]['Contents']
-    assert 
-
-
-def test_bad_samaccountname(mocker):
-    args = MOCK_ARGS.copy()
-    args['sAMAccountName'] = 'bad_samaccountname'
-    mocker.patch.object(demisto, 'args', return_value=args)
-
-    mocker.patch('IAMInitADUser.execute_command', side_effect=execute_command)
+    assert results['success']
 
 
 def test_bad_pwd_generation_script(mocker):
     args = MOCK_ARGS.copy()
     args['pwdGenerationScript'] = 'bad_pwdGenerationScript'
     mocker.patch.object(demisto, 'args', return_value=args)
-
+    mocker.patch.object(demisto, 'results')
     mocker.patch('IAMInitADUser.execute_command', side_effect=execute_command)
+
+    main()
+    results = demisto.results.call_args[0][0]['Contents']
+    assert not results['success']
+    assert ERROR_UNKNOWN_CMD in results['errorMessage']
 
 
 def test_bad_password(mocker):
     args = MOCK_ARGS.copy()
     args['sAMAccountName'] = MOCK_SAMACCOUNTNAME_BAD_PWD
     mocker.patch.object(demisto, 'args', return_value=args)
-
+    mocker.patch.object(demisto, 'results')
     mocker.patch('IAMInitADUser.execute_command', side_effect=execute_command)
+
+    main()
+    results = demisto.results.call_args[0][0]['Contents']
+    assert not results['success']
+    assert 'Please make sure that "GeneratePassword" script' in results['errorMessage']
 
 
 def test_no_notification_email_addresses(mocker):
     args = MOCK_ARGS.copy()
     del args['notification_email_addresses']
     mocker.patch.object(demisto, 'args', return_value=args)
-
+    mocker.patch.object(demisto, 'results')
     mocker.patch('IAMInitADUser.execute_command', side_effect=execute_command)
+
+    main()
+    results = demisto.results.call_args[0][0]['Contents']
+    assert not results['success']
+    assert 'An error occurred while trying to send email' in results['errorMessage']

@@ -16,6 +16,60 @@ IAM Team
 """
 
 
+def get_list(list_name: str) -> Optional[str]:
+    if not list_name:
+        demisto.debug('IAMInitADUser: No list name input was provided, will use default template for email')
+        return None
+    return execute_command('getList', args={'listName': list_name})
+
+
+def generate_password(pwd_generation_script: str) -> Optional[str]:
+    success, res = execute_command(pwd_generation_script, args={}, fail_on_error=False)
+    if not success:
+        raise Exception(f'An error occurred while trying to generate a new password for the user. '
+                        f'Error is:\n{res}')
+
+    if isinstance(res, dict):
+        return res.get('NEW_PASSWORD')
+    elif isinstance(res, str):
+        return res
+    else:
+        raise Exception(f'Could not parse the generated password from {pwd_generation_script} outputs. '
+                        f'Please make sure the output of the script is a string.')
+
+
+def enable_user(args: dict) -> None:
+    success, res = execute_command('ad-enable-account', args, fail_on_error=False)
+    if not success:
+        raise Exception(f'An error occurred while trying to enable the user account. '
+                        f'Error is:\n{res}')
+
+    success, res = execute_command('ad-update-user', args, fail_on_error=False)
+    if not success:
+        raise Exception(f'An error occurred while trying to update the user account. '
+                        f'Error is:\n{res}')
+
+
+def set_new_password(args: dict, pwd_generation_script: str) -> None:
+    success, res = execute_command('ad-set-new-password', args, fail_on_error=False)
+    if not success:
+        if '5003' in res:
+            raise Exception(f"An error occurred while trying to set a new password for the user. "
+                            f"Please make sure that \"{pwd_generation_script}\" script "
+                            f"complies with your domain's password complexity policy.")
+        else:
+            raise Exception(f"An error occurred while trying to set a new password for the user. "
+                            f"Error is:\n{res}")
+
+
+def send_email(to_email, email_subject, email_body):
+    send_email_args = {"to": to_email, "subject": email_subject, "htmlBody": email_body}
+    success, res = execute_command('send-mail', send_email_args, fail_on_error=False)
+    if not success:
+        raise Exception(f'An error occurred while trying to send email to {to_email}. Error is:\n{res}')
+    return res
+
+
 def main():
     outputs: Dict[str, Union[str, bool]] = {
         'action': 'IAMInitADUser',
@@ -93,60 +147,6 @@ def main():
         readable_output=readable_output
     )
     return_results(result)
-
-
-def get_list(list_name: str) -> Optional[str]:
-    if not list_name:
-        demisto.debug('IAMInitADUser: No list name input was provided, will use default template for email')
-        return None
-    return execute_command('getList', args={'listName': list_name})
-
-
-def generate_password(pwd_generation_script: str) -> Optional[str]:
-    success, res = execute_command(pwd_generation_script, args={}, fail_on_error=False)
-    if not success:
-        raise Exception(f'An error occurred while trying to generate a new password for the user. '
-                        f'Error is:\n{res}')
-
-    if isinstance(res, dict):
-        return res.get('NEW_PASSWORD')
-    elif isinstance(res, str):
-        return res
-    else:
-        raise Exception(f'Could not parse the generated password from {pwd_generation_script} outputs. '
-                        f'Please make sure the output of the script is a string.')
-
-
-def enable_user(args: dict) -> None:
-    success, res = execute_command('ad-enable-account', args, fail_on_error=False)
-    if not success:
-        raise Exception(f'An error occurred while trying to enable the user account. '
-                        f'Error is:\n{res}')
-
-    success, res = execute_command('ad-update-user', args, fail_on_error=False)
-    if not success:
-        raise Exception(f'An error occurred while trying to update the user account. '
-                        f'Error is:\n{res}')
-
-
-def set_new_password(args: dict, pwd_generation_script: str) -> None:
-    success, res = execute_command('ad-set-new-password', args, fail_on_error=False)
-    if not success:
-        if '5003' in res:
-            raise Exception(f"An error occurred while trying to set a new password for the user. "
-                            f"Please make sure that \"{pwd_generation_script}\" script "
-                            f"complies with your domain's password complexity policy.")
-        else:
-            raise Exception(f"An error occurred while trying to set a new password for the user. "
-                            f"Error is:\n{res}")
-
-
-def send_email(to_email, email_subject, email_body):
-    send_email_args = {"to": to_email, "subject": email_subject, "htmlBody": email_body}
-    success, res = execute_command('send-mail', send_email_args, fail_on_error=False)
-    if not success:
-        raise Exception(f'An error occurred while trying to send email to {to_email}. Error is:\n{res}')
-    return res
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
