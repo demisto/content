@@ -853,7 +853,7 @@ class Client(BaseClient):
         return self._http_request(
             method='GET',
             url_suffix=f'acqs/live/{acquisition_id}'
-        )["data"]
+        ).get('data')
 
     def delete_data_acquisition_request(self, acquisition_id):
 
@@ -942,7 +942,7 @@ class Client(BaseClient):
 
         if filter_query:
 
-            response = self._http_request(
+            return self._http_request(
                 'GET',
                 url_suffix=f"alerts?filterQuery={filter_query}",
                 params=params,
@@ -950,17 +950,13 @@ class Client(BaseClient):
             )
 
         else:
-            response = self._http_request(
+            return self._http_request(
                 'GET',
                 url_suffix="alerts",
                 params=params,
                 headers=self._headers
             )
-        try:
-            return response
-        except Exception as e:
-            demisto.debug(str(e))
-            raise ValueError('Failed to parse response body')
+        
 
     def get_alert_request(self, alert_id: int):
 
@@ -1247,7 +1243,7 @@ def organize_search_body_host(client: Client, arg: Tuple, body: Dict):
     return body
 
 
-def organize_search_body_query(argForQuery: Tuple, args):
+def organize_search_body_query(argForQuery: Tuple, args: Dict):
 
     query = []
     if argForQuery[0] == "fieldSearchName":
@@ -1297,12 +1293,12 @@ def get_data_acquisition(client: Client, args: Dict[str, Any]) -> Dict:
     agent_id = args.get("agentId")
     script = args.get("script", "")
     script_name = args.get("scriptName")
-    defaultSystemScript = args.get("defaultSystemScript")
+    default_system_script = args.get("defaultSystemScript")
 
     if not host_name and not agent_id:
         raise ValueError('Please provide either agentId or hostName')
 
-    if not defaultSystemScript and not script:
+    if not default_system_script and not script:
         raise ValueError('If the script is not provided, defaultSystemScript must be specified')
 
     if script and not script_name:
@@ -1312,7 +1308,7 @@ def get_data_acquisition(client: Client, args: Dict[str, Any]) -> Dict:
         agent_id = get_agent_id_by_host_name(client, host_name)
 
     # determine whether to use the default script
-    sys = defaultSystemScript
+    sys = default_system_script
     if sys:
         script = json.dumps(SYS_SCRIPT_MAP[sys])
         script_name = f'{sys}DefaultScript'
@@ -2192,10 +2188,7 @@ def get_all_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResul
     if args.get('hostName'):
         args['agentId'] = get_agent_id_by_host_name(client, args.get('hostName', ''))
 
-    if args.get('limit'):
-        args['limit'] = int(args['limit'])
-    else:
-        args['limit'] = 50
+    args['limit'] = int(args.get('limit', '50'))
 
     alerts = get_alerts(client, args)
 
@@ -2650,7 +2643,7 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> List:
 
     last_run = demisto.getLastRun()
     alerts = []  # type: List[Dict[str, str]]
-    fetch_limit = int(args.get('max_fetch') or '50')
+    fetch_limit = min([int(args.get('max_fetch') or '50'),50])
 
     args["sort"] = "reported_at+ascending"
     args["limit"] = fetch_limit

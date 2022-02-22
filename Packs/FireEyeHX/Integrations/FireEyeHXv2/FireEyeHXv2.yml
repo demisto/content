@@ -48,10 +48,10 @@ configuration:
   required: false
   type: 19
 description: "FireEye Endpoint Security is an integrated solution that detects what\
-  \ others miss and protects endpoint against known and unknown threats. This \
-  \ integration provides access to information about endpoints, acquisitions, alerts,\
-  \ indicators, and containment. Customers can extract critical data and effectively\
-  \ operate security operations automated playbook"
+  \ others miss and protects endpoint against known and unknown threats. This  integration\
+  \ provides access to information about endpoints, acquisitions, alerts, indicators,\
+  \ and containment. Customers can extract critical data and effectively operate security\
+  \ operations automated playbook"
 display: FireEye Endpoint Security (HX) v2
 name: FireEyeHX v2
 script:
@@ -136,7 +136,8 @@ script:
       description: The host MAC address.
       type: Unknown
   - arguments:
-    - description: Specifies which record to start with in the response, The default is 0.
+    - description: Specifies which record to start with in the response, The default
+        is 0.
       name: offset
       required: false
     - description: Limit the number of results
@@ -388,7 +389,8 @@ script:
       description: Host set FireEye url
       type: string
   - arguments:
-    - description: Specifies which record to start with in the response, The default is 0.
+    - description: Specifies which record to start with in the response, The default
+        is 0.
       name: offset
       required: false
     - description: Limit the number of results
@@ -456,7 +458,8 @@ script:
       description: ""
       type: Unknown
   - arguments:
-    - description: Specifies which record to start with in the response, The default is 0.
+    - description: Specifies which record to start with in the response, The default
+        is 0.
       name: offset
       required: false
     - description: Limit the number of results
@@ -478,7 +481,8 @@ script:
       description: ""
       type: Unknown
   - arguments:
-    - description: Specifies which record to start with in the response, The default is 0.
+    - description: Specifies which record to start with in the response, The default
+        is 0.
       name: offset
       required: false
     - description: Limit the number of results
@@ -784,7 +788,8 @@ script:
       - not equals
     - auto: PREDEFINED
       default: false
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the
+        result when it's ready.
       isArray: false
       name: polling
       predefined:
@@ -1274,7 +1279,8 @@ script:
       deprecated: true
     - auto: PREDEFINED
       default: false
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the
+        result when it's ready.
       isArray: false
       name: polling
       predefined:
@@ -1445,7 +1451,8 @@ script:
       name: hostName
     - auto: PREDEFINED
       default: false
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the
+        result when it's ready.
       isArray: false
       name: polling
       predefined:
@@ -1581,7 +1588,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.1.26972
 fromversion: 6.0.0
 tests:
 - FireEyeHX_v2
