@@ -1,4 +1,5 @@
-from typing import Callable, NamedTuple
+from dataclasses import dataclass
+from typing import Callable
 
 import urllib3
 
@@ -7,9 +8,13 @@ from CommonServerPython import *
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-ResultTuple = NamedTuple('ResultTuple', [('response', dict),
-                                         ('output', Optional[dict]),
-                                         ('indicator', Optional[Common.Indicator])])
+
+@dataclass
+class ResultTuple:
+    response: dict
+    output: Optional[dict]
+    indicator: Optional[Common.Indicator]
+
 
 DBOT_SCORE_DICT = {'malicious': Common.DBotScore.BAD,
                    'suspicious': Common.DBotScore.SUSPICIOUS,
@@ -554,6 +559,7 @@ def parse_indicator_relationships(sandbox: dict, indicator_name: str, reliabilit
                                   entity_b=entity_b,
                                   entity_b_type=entity_b_type,
                                   source_reliability=reliability)
+
     relationships = []
 
     if request_address := demisto.get(sandbox, 'dns_requests.address'):
@@ -819,7 +825,7 @@ def get_report_summary_command(
                      ' Please wait to download the report.\n' \
                      'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.'
 
-    return [CommandResults(outputs_key_field='id',  # todo is this  correct?
+    return [CommandResults(outputs_key_field='id',
                            outputs_prefix=OUTPUTS_PREFIX,
                            outputs=result.output,
                            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output)
@@ -848,7 +854,7 @@ def get_analysis_status_command(
                                resources_fields=resources_fields, sandbox_fields=sandbox_fields)
         results.append(result)
 
-    return [CommandResults(outputs_key_field='id',  # todo is this  correct?
+    return [CommandResults(outputs_key_field='id',
                            outputs_prefix=OUTPUTS_PREFIX,
                            outputs=result.output,
                            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
@@ -894,7 +900,7 @@ def check_quota_status_command(
     result = parse_outputs(response, client.reliability, quota_fields=quota_fields)
 
     return CommandResults(outputs_prefix=OUTPUTS_PREFIX,
-                          # todo key field?
+                          outputs_key_field='id',
                           indicator=result.indicator,
                           readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
                           raw_response=response,
