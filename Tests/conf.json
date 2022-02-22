@@ -4565,7 +4565,7 @@
         },
         {
             "integrations": "CrowdStrike Falcon Sandbox V2",
-            "playbookID": "CrowdstrikeFalconSandboxV2 Test",
+            "playbookID": "CrowdstrikeFalconSandbox2 Test",
             "timeout": 500,
             "nightly": true
         },
@@ -5088,7 +5088,6 @@
         "AutoFocusTagsFeed-test": "shares API quota with the other test",
         "Carbon Black Edr - Test": "Jira ticket XDR-43185",
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
-        "Kaspersky Security Center - Test": "Issue 36487",
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
         "RemoteAccessTest": "Issue 44245",
         "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",

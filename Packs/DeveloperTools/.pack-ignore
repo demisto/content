@@ -12,3 +12,6 @@ ignore=IN126
 
 [file:WaitAndCompleteTask.py]
 ignore=E9003
+
+[file:CreateMockFeed_image.png]
+ignore=IM111
