@@ -3,7 +3,8 @@ from CommonServerPython import *
 # IMPORTS
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
+XSIAM_API_KEY = 'MjpIT0FjUWlKTE1Od2w2djIzWFJmTUlZV1JPVmJjTFdNMUNXeHp0N1pwNHdJZHJyS3BKbVIyY1ltS1pQQzZIR0tKQUNKVndVbzJjRGZCdHAyR1lSUXl4dkIxMW02QkJQSVhCcU9SOW5BWllJZXhxZTY5Mmp3M3dHQzFqdVJRMFJzag=='
+XSIAM_SERVER_URL = 'https://api-xdm-content-poc.xdr-qa2-uat.us.paloaltonetworks.com/logs/v1/event'
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 SEARCH_LIMIT = 200
@@ -62,11 +63,10 @@ class Client(BaseClient):
                          ok_codes=ok_codes)
 
     @staticmethod
-    def should_reset_list(previous_fetch_time: str, new_fetch_time:str):
+    def should_reset_list(previous_fetch_time: str, new_fetch_time: str):
         # if the newest event in our last fetch is grater by at least a second we are guaranteed that the previous
         # events that were saved will no longer be needed to be saved to check for duplicates
         return arg_to_datetime(new_fetch_time.split('.')[0]) > arg_to_datetime(previous_fetch_time.split('.')[0])
-
 
     @staticmethod
     def get_readable_logs(raw_logs):
@@ -175,6 +175,35 @@ class Client(BaseClient):
 
         return sorted_events_to_save, new_last_run
 
+
+def test_http_collector():
+    headers = {
+        'Authorization': 'MTM6WExKaFFQVmlsWWN1bktWekNsajAzcFU3ZERWN0N4TjVtNGtIMzFsTmxwOXZiMkRrWkVKRVRBSkppdFR4VkpMT1dFRFRkSFVORVRVV3RMQmF0bW42T2oySGh0NVl0bG5jQWhPTFdROENJdUVsQ1V2TlFLVzdjZTFLSlVzUzBlcVg=',
+        "Content-Type": "application/json"
+    }
+
+    data = [{"example1": "test", "timestamp": 1609100113039}, {"example2": [12321, 546456, 45687, 1]}]
+
+    res = requests.post('https://api-uyetter.xdr-qa2-uat.us.paloaltonetworks.com/logs/v1/event', headers=headers,
+                        data=json.dumpps(data))
+    demisto.info(f'\n\n{res.reason}\n\n\n')
+    demisto.info(f'\n\n{res.status_code}\n\n\n')
+    return res
+
+
+def send_logs_to_xsiam():
+    headers = {
+        "Authorization": XSIAM_API_KEY,
+        "Content-Type": "application/json "
+    }
+    # Note: the logs must be separated by a new line
+    body = "{'example1': 'test', 'timestamp': 1609100113039}\n{'example2': [12321,546456,45687,1]}"
+    res = requests.post(url=XSIAM_SERVER_URL,
+                        headers=headers,
+                        data=body)
+    return res
+
+
 def test_module(client):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
@@ -185,25 +214,16 @@ def test_module(client):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    client.fetch_logs()
+    test_http_collector()
+
+    # client.fetch_logs()
     return CommandResults('ok')
 
 
 def fetch_logs_command(client):
-    logs = raw_response = client.fetch_logs()
-
-    if not raw_response:
-        return 'No logs found', {}, raw_response
-
-    readable_output = tableToMarkdown('Okta Events', logs)
-    outputs = {
-        'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
-    }
-    return (
-        readable_output,
-        outputs,
-        raw_response
-    )
+    # logs = raw_response = client.fetch_logs()
+    # send_logs_to_xsiam()
+    test_http_collector()
 
 
 def get_logs_command(client, args):
@@ -232,7 +252,7 @@ def main():
 
         params = demisto.params()
         base_url = urljoin(params.get('url'), '/api/v1/')
-        api_token = params.get('apitoken')
+        api_token = params.get('credentials', {}).get('password')
         first_fetch = params.get('first_fetch', '3 days')
         fetch_limit = params.get('limit', 500)
         verify_certificate = not params.get('insecure', False)
@@ -250,11 +270,11 @@ def main():
             proxy=proxy)
         args = demisto.args()
 
-        if command == 'test_module':
+        if command == 'test-module':
             return_results(test_module(client))
 
         elif command == 'fetch-incidents':
-            return_results(fetch_logs_command(client))
+            fetch_logs_command(client)
 
         elif command == 'okta-get-logs':
             return_results(get_logs_command(client, args))
