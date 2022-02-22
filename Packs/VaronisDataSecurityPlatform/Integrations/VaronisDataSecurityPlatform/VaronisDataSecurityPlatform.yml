@@ -1,0 +1,227 @@
+category: Analytics & SIEM
+commonfields:
+  id: VaronisDataSecurityPlatform
+  version: -1
+configuration:
+- display: Instance name
+  hidden: false
+  name: name
+  required: false
+  type: 0
+- display: The FQDN/IP the integration should connect to.
+  hidden: false
+  name: url
+  required: true
+  type: 0
+- display: Name of Varonis user
+  hidden: false
+  name: credentials
+  required: true
+  type: 9
+- display: Use system proxy settings
+  hidden: false
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  hidden: false
+  name: insecure
+  required: false
+  type: 8
+description: Streamline alerts and related forensic information from Varonis DSP
+display: Varonis Data Security Platform
+name: VaronisDataSecurityPlatform
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: List of requested threat models to retrieve
+      isArray: true
+      name: threat_model_name
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The max number of alerts to retrieve (up to 50)
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    - default: false
+      description: Start time of the range of alerts
+      isArray: false
+      name: Start_time
+      required: false
+      secret: false
+    - default: false
+      description: End time of the range of alerts
+      isArray: false
+      name: End_time
+      required: false
+      secret: false
+    - default: false
+      description: List of required alerts status
+      isArray: true
+      name: Alert_Status
+      required: false
+      secret: false
+    deprecated: false
+    description: Get alerts from Varonis DA
+    execution: false
+    name: varonis-get-alerts
+    outputs:
+    - contextPath: Varonis.Alert.ID
+      description: Varonis ID for alert
+      type: Number
+    - contextPath: Varonis.Alert.Name
+      description: Name of the retrieved alert
+      type: String
+    - contextPath: Varonis.Alert.Time
+      description: When the alert was triggered
+      type: Date
+    - contextPath: Varonis.Alert.Severity
+      description: The alert's severity
+      type: String
+    - contextPath: Varonis.Alert.Category
+      description: "The category of the alert.\nCan be:\n- Reconnaissance \n- Intrusion\
+        \ \n- Exploitation \n- Privilege Escalation \n- Lateral Movement "
+      type: String
+    - contextPath: Varonis.Alert.Country
+      description: The name of the country from which the event occurred
+      type: String
+    - contextPath: Varonis.Alert.State
+      description: The name of the state or regional subdivision from which the event
+        occurred
+      type: String
+    - contextPath: Varonis.Alert.Status
+      description: |-
+        State of the alert. Can be:
+        - Open
+        - Under investigation
+        - Closed
+      type: String
+    - contextPath: Varonis.Alert.CloseReason
+      description: |-
+        The reason the alert was closed. Default options are:
+        - Resolved
+        - Misconfiguration
+        - Threat model disabled or deleted
+        - Account misclassification
+        - Legitimate activity
+        - Other
+      type: String
+    - contextPath: Varonis.Alert.BlacklistLocation
+      description: Indicates whether any of the geographical locations from which
+        an alerted activity originated was on the blacklist at the time the activity
+        occurred.
+      type: Boolean
+    - contextPath: Varonis.Alert.AbnormalLocation
+      description: Indicates whether any of the geographical locations from which
+        an alerted activity originated is new or abnormal to the organization, the
+        user and peers, or only the user.
+      type: Boolean
+    - contextPath: Varonis.Alert.NumOfAlertedEvents
+      description: The number of events having alerts.
+      type: Number
+    - contextPath: Varonis.Alert.UserName
+      description: Name of the user(s) triggered the alerts
+      type: String
+    - contextPath: Varonis.Alert.By.SamAccountName
+      description: |-
+        The logon name used to support clients and servers running earlier versions of the Windows operating system, such as Windows NT 4.0.
+        In the dashboards (other than the Alert dashboard), this is the SAM account name of the user or group.
+      type: String
+    - contextPath: Varonis.Alert.By.PreivilegedAccountType
+      description: |-
+        The type of privileged account. Options are:
+        - Service accounts
+        - Admin accounts
+        - Executive accounts
+      type: String
+    - contextPath: Varonis.Alert.By.HasFollowUpIndicators
+      description: Indicates whether global flags, tags or notes are associated with
+        the user
+      type: Boolean
+    - contextPath: Varonis.Alert.On.ContainsFlaggedData
+      description: Indicates whether the data affected by the alerted events has global
+        flags
+      type: Boolean
+    - contextPath: Varonis.Alert.On.ContainsSensitiveData
+      description: Filters according to whether the resource on which the event was
+        performed is sensitive (incl. subfolders)
+      type: Boolean
+    - contextPath: Varonis.Alert.On.Platform
+      description: The type of platform on which the server resides. For example,
+        Windows, Exchange, and SharePoint.
+      type: String
+    - contextPath: Varonis.Alert.On.Asset
+      description: The path of the alerted asset
+      type: String
+    - contextPath: Varonis.Alert.On.FileServerOrDomain
+      description: Associated file server/domain
+      type: String
+    - contextPath: Varonis.Alert.Device.Name
+      description: The name of the device from which the user generated the event.
+      type: String
+    - contextPath: Varonis.Alert.Device.ContainMaliciousExternalIP
+      description: Indicates whether the alert contains IPs known to be malicious.
+      type: Boolean
+    - contextPath: Varonis.Alert.Device.IPThreatTypes
+      description: Indicates whether the alert contains IPs known to be malicious.
+      type: String
+  - arguments:
+    - default: false
+      description: Requested alerts
+      isArray: true
+      name: Alert_id
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        Alert new status:
+        - Open
+        - Under Investigation
+      isArray: false
+      name: Status
+      required: true
+      secret: false
+    deprecated: false
+    description: Updating an alert status
+    execution: false
+    name: varonis-update-alert-status
+  - arguments:
+    - default: false
+      description: Requested alerts
+      isArray: true
+      name: Alert_id
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        The reason the alert was closed. Default options are:
+        - Resolved
+        - Misconfiguration
+        - Threat model disabled or deleted
+        - Account misclassification
+        - Legitimate activity
+        - Other
+      isArray: false
+      name: Close_Reason
+      required: true
+      secret: false
+    deprecated: false
+    description: Closing alert
+    execution: false
+    name: varonis-close-alert
+  dockerimage: demisto/ntlm:1.0.0.24037
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
