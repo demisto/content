@@ -774,7 +774,7 @@ def value_append_sheets(service: Resource, args: dict) -> CommandResults:
     return CommandResults(readable_output=markdown)
 
 
-def get_http_client_with_proxy(proxy: bool, insecure: bool):
+def get_http_client_with_proxy(proxy: bool, insecure: bool):  # pragma: no cover
     """
         Args:
             proxy (bool): Whether to use a proxy.
