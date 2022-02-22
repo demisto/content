@@ -840,13 +840,13 @@ class TestTableToMarkdown:
             expected_table = """### tableToMarkdown test
 |Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
 |---|---|---|---|---|---|
-| **-**	***index***: 0<br>	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**	***key***: Path<br>				***value***: test.txt<br>**-**	***index***: 1<br>	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**	***key***: Path<br>				***value***: test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+| **-**	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**errors**:<br>		***values***: error1, error2, error3<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**	***key***: Path<br>				***value***: test.txt<br>**-**	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**errors**:<br>		***values***: <br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**	***key***: Path<br>				***value***: test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
 """
         else:
             expected_table = u"""### tableToMarkdown test
 |Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
 |---|---|---|---|---|---|
-| **-**	***index***: 0<br>	***commandStatus***: Completed<br>	***startTime***: null<br>	**command**:<br>		**params**:<br>			**-**	***value***: test.txt<br>				***key***: Path<br>		***type***: GetFile<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>**-**	***index***: 1<br>	***commandStatus***: Completed<br>	***startTime***: null<br>	**command**:<br>		**params**:<br>			**-**	***value***: test222.txt<br>				***key***: Path<br>		***type***: GetFile<br>	***endTime***: 2022-02-17T08:22:33.823Z | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+| **-**	**command**:<br>		**params**:<br>			**-**	***value***: test.txt<br>				***key***: Path<br>		***type***: GetFile<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**errors**:<br>		***values***: error1, error2, error3<br>	***startTime***: null<br>**-**	**command**:<br>		**params**:<br>			**-**	***value***: test222.txt<br>				***key***: Path<br>		***type***: GetFile<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**errors**:<br>		***values***: <br>	***startTime***: null | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
 """
         assert expected_table == table
 

@@ -6,11 +6,10 @@
   "Creation time": "2022-02-17T08:20:02.6180466Z",
   "Commands": [
     {
-      "index": 0,
       "startTime": null,
       "endTime": "2022-02-17T08:22:33.823Z",
       "commandStatus": "Completed",
-      "errors": [],
+      "errors": ["error1", "error2", "error3"],
       "command": {
         "type": "GetFile",
         "params": [
@@ -22,7 +21,6 @@
       }
     },
     {
-      "index": 1,
       "startTime": null,
       "endTime": "2022-02-17T08:22:33.823Z",
       "commandStatus": "Completed",

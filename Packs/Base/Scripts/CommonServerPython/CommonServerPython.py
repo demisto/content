@@ -27,13 +27,10 @@ from distutils.version import LooseVersion
 from threading import Lock
 from inspect import currentframe
 
-import yaml
 
 import demistomock as demisto
 import warnings
-from ruamel.yaml import YAML
 
-ryaml = YAML()
 
 def __line__():
     cf = currentframe()
@@ -2022,9 +2019,13 @@ class JsonTransformer:
                     # if not in keys and no need to search in nested keys - don't recurse
                     pass
         if isinstance(json_input, list):
-            for i, item in enumerate(json_input):
-                for res in self.json_to_path_generator(item, path + [i]):  # this is yield from for python2 BC
-                    yield res
+            if not json_input or (not isinstance(json_input[0], list) and not isinstance(json_input[0], dict)):
+                # if the items of the lists are primitive, put the values in one line
+                yield path, 'values', ', '.join(json_input)
+            else:
+                for i, item in enumerate(json_input):
+                    for res in self.json_to_path_generator(item, path + [i]):  # this is yield from for python2 BC
+                        yield res
 
 
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
