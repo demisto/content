@@ -7181,6 +7181,8 @@ if 'requests' in sys.modules:
             """
                 A wrapper used for https communication to enable ciphers that are commonly used
                 and are not enabled by default
+                :return: No data returned
+                :rtype: ``None``
             """
 
             def init_poolmanager(self, *args, **kwargs):
