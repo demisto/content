@@ -412,7 +412,7 @@ def test_get_schedules_with_no_args():
     """
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
-        OpsGenieV3.get_schedules(mock_client, {})
+        OpsGenieV3.Client.get_schedule(mock_client, {})
 
 
 def test_get_schedules_with_both_args():
@@ -426,7 +426,7 @@ def test_get_schedules_with_both_args():
     """
     mock_client = OpsGenieV3.Client(base_url="")
     with pytest.raises(DemistoException):
-        OpsGenieV3.Client.get_schedule(mock_client, {"schedule_id": "ID", "schedule_name": "NAME"})
+        OpsGenieV3.get_schedules(mock_client, {"schedule_id": "ID", "schedule_name": "NAME"})
 
 
 def test_get_schedule_overrides_without_args():
