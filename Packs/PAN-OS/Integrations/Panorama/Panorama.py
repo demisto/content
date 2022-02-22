@@ -9642,13 +9642,16 @@ def main():
 
         elif demisto.command() == 'pan-os-platform-get-arp-tables':
             topology = get_topology()
-            get_arp_tables(topology, **demisto.args())
+            result = get_arp_tables(topology, **demisto.args())
+            dataclasses_to_command_results(result)
         elif demisto.command() == 'pan-os-platform-get-route-summary':
             topology = get_topology()
-            get_route_summaries(topology, **demisto.args())
+            result = get_route_summaries(topology, **demisto.args())
+            dataclasses_to_command_results(result)
         elif demisto.command() == 'pan-os-platform-get-routes':
             topology = get_topology()
             result = get_routes(topology, **demisto.args())
+            dataclasses_to_command_results(result)
             dataclasses_to_command_results(result)
         elif demisto.command() == 'pan-os-platform-get-system-info':
             topology = get_topology()
