@@ -32,15 +32,18 @@
     "Aliases": [
         {
             "cliName": "destinationnetwork",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Destination Network"
         },
         {
             "cliName": "destinationnetworkoffense",
-            "type": "multiSelect"
+            "type": "multiSelect",
+            "name": "Destination Network - Offense"
         },
         {
             "cliName": "irondefensedstnetworkid",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "IronDefense Dst Network ID"
         }
     ]
 }
