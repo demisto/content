@@ -4594,10 +4594,9 @@ script:
       isArray: false
       defaultValue: "50"
     - name: time_range
-      description: description
       required: false
       isArray: false
-      defaultValue: Time range to look back. Expected syntax is a human readable time
+      description: Time range to look back. Expected syntax is a human readable time
         range, e.g. 60 minutes, 6 hours, 1 day etc.
     - default: false
       defaultValue: "10"
@@ -4691,10 +4690,9 @@ script:
       isArray: false
       defaultValue: "50"
     - name: time_range
-      description: description
       required: false
       isArray: false
-      defaultValue: Time range to look back. Expected syntax is a human readable time
+      description: Time range to look back. Expected syntax is a human readable time
         range, e.g. 60 minutes, 6 hours, 1 day etc.
     - default: false
       defaultValue: "10"
@@ -4781,10 +4779,9 @@ script:
       isArray: false
       defaultValue: "50"
     - name: time_range
-      description: description
       required: false
       isArray: false
-      defaultValue: Time range to look back. Expected syntax is a human readable time
+      description: Time range to look back. Expected syntax is a human readable time
         range, e.g. 60 minutes, 6 hours, 1 day etc.
     - default: false
       defaultValue: "10"
@@ -4864,10 +4861,9 @@ script:
       isArray: false
       defaultValue: "50"
     - name: time_range
-      description: description
       required: false
       isArray: false
-      defaultValue: Time range to look back. Expected syntax is a human readable time
+      description: Time range to look back. Expected syntax is a human readable time
         range, e.g. 60 minutes, 6 hours, 1 day etc.
     - default: false
       defaultValue: "10"
@@ -4953,10 +4949,9 @@ script:
       isArray: false
       defaultValue: "50"
     - name: time_range
-      description: description
       required: false
       isArray: false
-      defaultValue: Time range to look back. Expected syntax is a human readable time
+      description: Time range to look back. Expected syntax is a human readable time
         range, e.g. 60 minutes, 6 hours, 1 day etc.
     - default: false
       defaultValue: "10"
@@ -4967,9 +4962,195 @@ script:
       required: false
       secret: false
     outputs:
-    - contextPath: MicrosoftATP.HuntProcessDetails.Result
+    - contextPath: MicrosoftATP.HuntNetworkConnections.Result
       description: The query results.
       type: String
+  - name: microsoft-atp-advanced-hunting-privilege-escalation
+    description: Is there evidence for privilege escalation.
+    deprecated: false
+    arguments:
+    - name: device_name
+      description: Device name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: device_id
+      description: Device ID to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: query_operation
+      auto: PREDEFINED
+      description: Query operator to use with provided arguments.
+      required: false
+      isArray: false
+      defaultValue: or
+      predefined:
+      - or
+      - and
+    - name: limit
+      description: Max number of results to retrieve.
+      required: false
+      isArray: false
+      defaultValue: "50"
+    - name: time_range
+      required: false
+      isArray: false
+      description: Time range to look back. Expected syntax is a human readable time
+        range, e.g. 60 minutes, 6 hours, 1 day etc.
+    - default: false
+      defaultValue: "10"
+      description: The amount of time (in seconds) that a request waits for the query
+        response before a timeout occurs.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MicrosoftATP.HuntPrivilegeEscalation.Result
+      description: The query results.
+      type: String
+  - name: microsoft-atp-advanced-hunting-tampering
+    description: Network connections investigation.
+    deprecated: false
+    arguments:
+    - name: device_name
+      description: Device name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: device_id
+      description: Device ID to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: query_operation
+      auto: PREDEFINED
+      description: Query operator to use with provided arguments.
+      required: false
+      isArray: false
+      defaultValue: or
+      predefined:
+      - or
+      - and
+    - name: limit
+      description: Max number of results to retrieve.
+      required: false
+      isArray: false
+      defaultValue: "50"
+    - name: time_range
+      required: false
+      isArray: false
+      description: Time range to look back. Expected syntax is a human readable time
+        range, e.g. 60 minutes, 6 hours, 1 day etc.
+    - default: false
+      defaultValue: "10"
+      description: The amount of time (in seconds) that a request waits for the query
+        response before a timeout occurs.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MicrosoftATP.HuntTampering.Result
+      description: The query results.
+      type: String
+  - name: microsoft-atp-advanced-hunting-cover-up
+    description: Cover up investigation. By selecting a “query_purpose”
+      argument, a designated query template will be used.
+    deprecated: false
+    arguments:
+      - name: query_purpose
+        auto: PREDEFINED
+        description: By selecting a “query_purpose” argument, a designated query template
+          will be used.
+          "file_deleted" - Did the file delete itself?
+          "event_log_cleared" - Was the event log cleared? Requires at least one of device
+          arguments (device_name/device_id).
+          "compromised_information" - Information on a compromised user and Its activities
+          Requires only username argument.
+          "connected_devices" - All connected devices by compromised user
+          Requires only username argument.
+          "action_types" - All action types created by a user on each machine
+          Requires only username argument.
+          "common_files" - Most common files associated with a user
+          Requires only username argument
+        required: true
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - file_deleted
+          - event_log_cleared
+          - compromised_information
+          - connected_devices
+          - action_types
+          - common_files
+      - name: device_name
+        description: Device name to look for.
+        required: false
+        isArray: false
+        defaultValue: ""
+      - name: file_name
+        description: File name to look for.
+        required: false
+        isArray: false
+        defaultValue: ""
+      - name: sha1
+        description: SHA1 hash to look for.
+        required: false
+        isArray: false
+        defaultValue: ""
+      - name: sha256
+        description: SHA256 hash to look for.
+        required: false
+        isArray: false
+        defaultValue: ""
+      - name: md5
+        description: MD5 hash to look for.
+        required: false
+        isArray: false
+        defaultValue: ""
+      - name: device_id
+        description: Device ID to look for.
+        required: false
+        isArray: false
+        defaultValue: ""
+      - name: username
+        description: Username to look for in relevant query types.
+        required: false
+        isArray: false
+        defaultValue: ""
+      - name: query_operation
+        auto: PREDEFINED
+        description: Query operator to use with provided arguments.
+        required: false
+        isArray: false
+        defaultValue: or
+        predefined:
+          - or
+          - and
+      - name: limit
+        description: Max number of results to retrieve.
+        required: false
+        isArray: false
+        defaultValue: "50"
+      - name: time_range
+        required: false
+        isArray: false
+        description: Time range to look back. Expected syntax is a human readable time
+          range, e.g. 60 minutes, 6 hours, 1 day etc.
+      - default: false
+        defaultValue: "10"
+        description: The amount of time (in seconds) that a request waits for the query
+          response before a timeout occurs.
+        isArray: false
+        name: timeout
+        required: false
+        secret: false
+    outputs:
+      - contextPath: MicrosoftATP.HuntCoverUp.Result
+        description: The query results.
+        type: String
   dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true

@@ -5,6 +5,8 @@ from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time,
     print_ip_addresses, get_machine_details_command, HuntingQueryBuilder, assign_params, DemistoException
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
+with open('test_data/expected_hunting_queries.json') as expected_json:
+    EXPECTED_HUNTING_QUERIES = json.load(expected_json)
 
 
 def mock_demisto(mocker):
@@ -932,8 +934,8 @@ class TestHuntingQueryBuilder:
             :return:
             """
             query_params = assign_params(
-                a='"1"',
-                b='"1","2"',
+                a='("1")',
+                b='("1","2")',
                 c='',
                 d=None,
                 e=('test_op', '"1","2"')
@@ -958,7 +960,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a network_connections query
             """
-            expected = 'DeviceNetworkEvents\n| where (RemoteIP startswith "172.16" or RemoteIP startswith "192.168" or RemoteIP startswith "10.") and ( (InitiatingProcessSHA1 has_any (("1","2"))) )\n| summarize TotalConnections = count() by DeviceName, RemoteIP, RemotePort, InitiatingProcessFileName\n| order by TotalConnections\n| limit 1'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['network_connections']
             lme = HuntingQueryBuilder.LateralMovementEvidence(
                 limit='1',
                 query_operation='and',
@@ -976,15 +978,16 @@ class TestHuntingQueryBuilder:
             When:
                 - calling build_smb_connections_query
             Then:
-                - return a network_connections query
+                - return a smb_connections query
             """
-            expected = 'DeviceNetworkEvents\n| where RemotePort == 445 and InitiatingProcessId !in (0, 4) and ( (InitiatingProcessMD5 has_any (("1","2"))) )\n| summarize RemoteIPCount=dcount(RemoteIP) by DeviceName, InitiatingProcessFileName, InitiatingProcessId, InitiatingProcessCreationTime\n| limit 1'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['smb_connections']
             lme = HuntingQueryBuilder.LateralMovementEvidence(
                 limit='1',
                 query_operation='and',
                 md5='1,2'
             )
             actual = lme.build_smb_connections_query()
+            EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['smb_connections'] = actual
             assert actual == expected
 
         def test_build_credential_dumping_query(self):
@@ -998,7 +1001,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a valid credential dumping query
             """
-            expected = 'DeviceProcessEvents\n| where ((FileName has_any ("procdump.exe", "procdump64.exe") and ProcessCommandLine has "lsass") or (ProcessCommandLine has "lsass.exe" and (ProcessCommandLine has "-accepteula"or ProcessCommandLine contains "-ma")) ) and ( (DeviceName has_any (("1"))) )\n| project Timestamp, DeviceName, ActionType, FileName, ProcessCommandLine, AccountName, InitiatingProcessIntegrityLevel, InitiatingProcessTokenElevation\n| limit 10'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['credential_dumping']
             lme = HuntingQueryBuilder.LateralMovementEvidence(
                 limit=10,
                 query_operation='or',
@@ -1018,7 +1021,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a valid credential network enumeration query
             """
-            expected = 'DeviceNetworkEvents\n| where RemotePort == 445 and InitiatingProcessId !in (0, 4) and ( (DeviceName has_any (("1"))) )\n| summarize RemoteIPCount=dcount(RemoteIP) by DeviceName, InitiatingProcessFileName, InitiatingProcessId, InitiatingProcessCreationTime\n| where RemoteIPCount > 1\n| limit 10'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['network_enumeration']
             lme = HuntingQueryBuilder.LateralMovementEvidence(
                 limit=10,
                 query_operation='or',
@@ -1038,7 +1041,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a valid rdp attempts query
             """
-            expected = 'DeviceNetworkEvents\n| where RemotePort in (22,3389,139,135,23,1433) and ( (DeviceName has_any (("1"))) )\n| summarize TotalCount=count() by DeviceName,LocalIP,RemoteIP,RemotePort\n| order by TotalCount\n| limit 10'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['rdp_attempts']
             lme = HuntingQueryBuilder.LateralMovementEvidence(
                 limit=10,
                 query_operation='or',
@@ -1059,7 +1062,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a scheduled_job query
             """
-            expected = 'DeviceEvents | where ActionType == "ScheduledTaskCreated" and InitiatingProcessAccountSid != "S-1-5-18" and ( (SHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceName, InitiatingProcessAccountDomain, InitiatingProcessAccountName, AdditionalFields\n| limit 1'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['scheduled_job']
             pe = HuntingQueryBuilder.PersistenceEvidence(
                 limit='1',
                 query_operation='and',
@@ -1103,7 +1106,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a registry_entry query
             """
-            expected = 'DeviceRegistryEvents | where ActionType == "RegistryValueSet" and ( (InitiatingProcessSHA1 has_any (("1","2"))) and InitiatingProcessCommandLine contains "something" )\n| project Timestamp, DeviceName, RegistryKey, RegistryValueType, PreviousRegistryValueData, RegistryValueName, PreviousRegistryValueData, PreviousRegistryValueName, PreviousRegistryKey, InitiatingProcessFileName\n| limit 1'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['registry_entry']
             pe = HuntingQueryBuilder.PersistenceEvidence(
                 limit='1',
                 query_operation='and',
@@ -1121,11 +1124,11 @@ class TestHuntingQueryBuilder:
             Given:
                 - PersistenceEvidence inited with sha1
             When:
-                - calling build_registry_entry_query
+                - calling build_startup_folder_changes_query
             Then:
-                - return a registry_entry query
+                - return a startup_folder_changes query
             """
-            expected = 'DeviceFileEvents | where FolderPath contains @"\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup" and ActionType == "FileCreated" and ( (SHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceName, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine InitiatingProcessFileName\n| limit 1'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['startup_folder_changes']
             pe = HuntingQueryBuilder.PersistenceEvidence(
                 limit='1',
                 query_operation='and',
@@ -1146,7 +1149,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a new_service_created query
             """
-            expected = 'DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Services" and ActionType == "RegistryKeyCreated" and ( (InitiatingProcessSHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceName, ActionType, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit 1'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['new_service_created']
             pe = HuntingQueryBuilder.PersistenceEvidence(
                 limit='1',
                 query_operation='and',
@@ -1167,7 +1170,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a service_updated query
             """
-            expected = 'DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Services" and ActionType has_any ("RegistryValueSet","RegistryKeyCreated") and ( (InitiatingProcessSHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceName, ActionType, RegistryKey, PreviousRegistryKey, RegistryValueName, PreviousRegistryValueName, RegistryValueType, RegistryValueData, PreviousRegistryValueData, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit 1'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['service_updated']
             pe = HuntingQueryBuilder.PersistenceEvidence(
                 limit='1',
                 query_operation='and',
@@ -1188,7 +1191,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a file_replaced query
             """
-            expected = 'DeviceFileEvents | where FolderPath contains @"C:\\Program Files" and ActionType == "FileModified" and ( (SHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceName, ActionType, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit 1'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['file_replaced']
             pe = HuntingQueryBuilder.PersistenceEvidence(
                 limit='1',
                 query_operation='and',
@@ -1209,7 +1212,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a new_user query
             """
-            expected = 'DeviceEvents | where ActionType == "UserAccountCreated" and ( (SHA1 has_any (("1","2"))) )\n| project AccountName,DeviceName,Timestamp,AccountSid,AccountDomain,InitiatingProcessAccountName,InitiatingProcessLogonId\n| limit 1'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['new_user']
             pe = HuntingQueryBuilder.PersistenceEvidence(
                 limit='1',
                 query_operation='and',
@@ -1230,7 +1233,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a new_group query
             """
-            expected = 'DeviceEvents | where ActionType == "SecurityGroupCreated" and ( (SHA1 has_any (("1","2"))) )\n| project AccountName,DeviceName,Timestamp,AccountSid,AccountDomain,InitiatingProcessAccountName,InitiatingProcessLogonId\n| limit 1'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['new_group']
             pe = HuntingQueryBuilder.PersistenceEvidence(
                 limit='1',
                 query_operation='and',
@@ -1251,7 +1254,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a group_user_change query
             """
-            expected = 'DeviceEvents | where ActionType == "UserAccountAddedToLocalGroup" and ( (SHA1 has_any (("1","2"))) )\n| summarize by AccountSid\n| limit 1'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['group_user_change']
             pe = HuntingQueryBuilder.PersistenceEvidence(
                 limit='1',
                 query_operation='and',
@@ -1272,7 +1275,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a local_firewall_change query
             """
-            expected = 'DeviceRegistryEvents | where RegistryKey contains @"HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\SharedAccess\\Parameters\\FirewallPolicy" and ( (InitiatingProcessSHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceName, ActionType, RegistryKey, PreviousRegistryKey, RegistryValueName, PreviousRegistryValueName, RegistryValueType, RegistryValueData, PreviousRegistryValueData, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit 1'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['local_firewall_change']
             pe = HuntingQueryBuilder.PersistenceEvidence(
                 limit='1',
                 query_operation='and',
@@ -1293,7 +1296,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a host_file_change query
             """
-            expected = 'DeviceFileEvents | where FolderPath contains @"C:\\Windows\\System32\\drivers\\etc\\hosts" and ActionType == "FileModified" and ( (InitiatingProcessSHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceName, ActionType, FileName, FolderPath, SHA1, SHA256, MD5, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit 1'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['PersistenceEvidence']['host_file_change']
             pe = HuntingQueryBuilder.PersistenceEvidence(
                 limit='1',
                 query_operation='and',
@@ -1315,7 +1318,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a file origin query
             """
-            expected = 'DeviceFileEvents | where ( (SHA1 has_any (("1","2"))) )\n| project Timestamp,FileName,FolderPath, ActionType,DeviceName,MD5,SHA1,SHA256,FileSize,FileOriginUrl,FileOriginIP,InitiatingProcessCommandLine,InitiatingProcessFileName,InitiatingProcessParentFileName\n| limit 1'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['FileOrigin']
             fo = HuntingQueryBuilder.FileOrigin(
                 limit='1',
                 query_operation='and',
@@ -1336,7 +1339,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a parent process query
             """
-            expected = 'DeviceProcessEvents | where ( (SHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceId, DeviceName, ActionType, ProcessId, ProcessCommandLine, ProcessCreationTime, AccountSid, AccountName, AccountDomain,InitiatingProcessAccountDomain, InitiatingProcessAccountDomain, InitiatingProcessAccountName, InitiatingProcessAccountSid, InitiatingProcessAccountSid, InitiatingProcessAccountUpn, InitiatingProcessAccountObjectId, InitiatingProcessLogonId, InitiatingProcessIntegrityLevel, InitiatingProcessTokenElevation, InitiatingProcessSHA1, InitiatingProcessSHA256, InitiatingProcessMD5, InitiatingProcessFileName, InitiatingProcessFileSize, InitiatingProcessVersionInfoCompanyName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoProductVersion, InitiatingProcessVersionInfoInternalFileName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessVersionInfoFileDescription, InitiatingProcessId, InitiatingProcessCommandLine, InitiatingProcessCreationTime, InitiatingProcessFolderPath, InitiatingProcessAccountDomain, InitiatingProcessAccountName, InitiatingProcessAccountSid\n| limit 1'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['parent_process']
             pd = HuntingQueryBuilder.ProcessDetails(
                 limit='1',
                 query_operation='and',
@@ -1356,7 +1359,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a grandparent process query
             """
-            expected = 'DeviceProcessEvents | where ( (SHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceId, DeviceName, ActionType, ProcessId, ProcessCommandLine, ProcessIntegrityLevel, ProcessCreationTime, AccountSid, AccountName, AccountDomain, AccountObjectId, AccountUpn, InitiatingProcessSHA1, InitiatingProcessSHA256, InitiatingProcessMD5, InitiatingProcessFileName, InitiatingProcessId, InitiatingProcessCreationTime, InitiatingProcessFolderPath, InitiatingProcessParentFileName, InitiatingProcessParentId, InitiatingProcessParentCreationTime\n| limit 1'  # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['grandparent_process']
             pd = HuntingQueryBuilder.ProcessDetails(
                 limit='1',
                 query_operation='and',
@@ -1376,7 +1379,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a process query
             """
-            expected = 'DeviceProcessEvents | where ( (SHA1 has_any (("1","2"))) )\n| summarize by SHA1,FileName,SHA256,MD5 | join DeviceFileCertificateInfo on SHA1 | summarize by FileName,SHA1,SHA256,IsSigned,Signer,SignatureType,Issuer,CertificateExpirationTime,IsTrusted,IsRootSignerMicrosoft\n| limit 1'   # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['process']
             pd = HuntingQueryBuilder.ProcessDetails(
                 limit='1',
                 query_operation='and',
@@ -1396,7 +1399,7 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a beaconing evidence query
             """
-            expected = 'DeviceProcessEvents | where ( (InitiatingProcessSHA1 has_any (("1","2"))) )\n| project Timestamp, DeviceId, DeviceName, ActionType, RemoteIP, RemotePort, RemoteUrl, LocalIP, LocalPort, Protocol, LocalIPType, RemoteIPType, InitiatingProcessSHA1, InitiatingProcessSHA256, InitiatingProcessMD5, InitiatingProcessFileName\n| limit 1'   # noqa: E501
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['beaconing_evidence']
             pd = HuntingQueryBuilder.ProcessDetails(
                 limit='1',
                 query_operation='and',
