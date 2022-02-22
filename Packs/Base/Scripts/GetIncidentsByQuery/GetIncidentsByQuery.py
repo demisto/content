@@ -171,6 +171,7 @@ def get_incidents(query, time_field, size, from_date, to_date, fields_to_populat
 
 
 def get_comma_sep_list(value):
+    value = value.replace('|', ',')
     return map(lambda x: x.strip(), value.split(","))
 
 

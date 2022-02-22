@@ -28,15 +28,17 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "actor_process_image_path",
+    "x2_fields": "actor_process_image_path",
     "Aliases": [
         {
-          "cliName": "processpath",
-          "type": "shortText"
+            "cliName": "processpath",
+            "type": "shortText",
+            "name": "Process Path"
         },
         {
             "cliName": "cmdline",
-            "type": "multiSelect"
-          }
+            "type": "multiSelect",
+            "name": "CMD line"
+        }
     ]
 }

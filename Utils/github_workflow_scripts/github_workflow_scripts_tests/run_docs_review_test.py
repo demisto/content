@@ -1,10 +1,10 @@
 from argparse import Namespace
-
+import pytest
 from Utils.github_workflow_scripts.run_docs_review import run_docs_review
 
 
 class TestsRunDocsReview:
-
+    @pytest.mark.skip(reason='Waiting for SDK release, will unskip it after SDK is released and #17097 is merged.')
     def test_file_name_includes_apostrophe(self, mocker, capsys):
         """
             Given:
