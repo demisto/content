@@ -10,7 +10,7 @@ pipenv==2020.11.15
 autopep8==1.5.4
 mypy==0.782
 networkx==2.5
-gitpython==3.1.11
+gitpython==3.1.27
 beautifulsoup4==4.9.3
 pypdf2==1.26.0
 freezegun==0.3.12
