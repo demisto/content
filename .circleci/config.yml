@@ -147,6 +147,8 @@ references:
 
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/Marketplace/*
+        rm -rf venv
+
         if [ ! -e "venv" ]; then
           echo "installing venv"
           NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
