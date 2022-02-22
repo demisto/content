@@ -6,6 +6,10 @@
         "IAM - AD User Activation": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
+				"Acquisition Hire": {
+					"complex": null,
+					"simple": "Acquisition_Hire"
+				},
 				"City": {
 					"complex": null,
 					"simple": "City"
@@ -167,6 +171,10 @@
         "IAM - AD User Deactivation": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
+				"Acquisition Hire": {
+					"complex": null,
+					"simple": "Acquisition_Hire"
+				},
 				"City": {
 					"complex": null,
 					"simple": "City"

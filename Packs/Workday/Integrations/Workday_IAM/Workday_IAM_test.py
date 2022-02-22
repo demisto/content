@@ -16,6 +16,23 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+def get_fetch_incidents_args():
+    client = Client(base_url="", verify="verify", headers={}, proxy=False, ok_codes=(200, 204), auth=None)
+    return {
+        'client': client,
+        'mapper_in': '',
+        'report_url': 'https://test.com',
+        'workday_date_format': '%m/%d/%Y',
+        'deactivation_date_field': LAST_DAY_OF_WORK_FIELD,
+        'days_before_hire_to_sync': None,
+        'days_before_hire_to_enable_ad': None,
+        'source_priority': 1,
+        'last_run': {},
+        'fetch_limit': 10,
+        'processed_entries_percentage_per_fetch': 1
+    }
+
+
 def test_fetch_incidents(mocker):
     """Unit test
     Given
@@ -32,9 +49,8 @@ def test_fetch_incidents(mocker):
     mocker.patch.object(Client, 'get_full_report', return_value=client_response.get('Report_Entry'))
     mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, {}, {}))
     mocker.patch.object(demisto, 'mapObject', return_value=mapped_user)
-    client = Client(base_url="", verify="verify", headers={}, proxy=False, ok_codes=(200, 204), auth=None)
-
-    fetch_events = fetch_incidents(client, {}, "", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None, 1)
+    fetch_args = get_fetch_incidents_args()
+    fetch_events, _ = fetch_incidents(**fetch_args)
     assert fetch_events == EVENT_RESULTS
 
 
@@ -54,9 +70,8 @@ def test_fetch_incidents_email_change(requests_mock, mocker):
     mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, employee_id_to_user_profile,
                                                                     email_to_user_profile))
     mocker.patch.object(demisto, 'mapObject', return_value=mapped_workday_user)
-    client = Client(base_url="", verify="verify", headers={}, proxy=False, ok_codes=(200, 204), auth=None)
-
-    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None, 1)
+    fetch_args = get_fetch_incidents_args()
+    fetch_events, _ = fetch_incidents(**fetch_args)
     assert fetch_events == event_data
 
 
@@ -76,10 +91,8 @@ def test_fetch_incidents_employee_id_change(requests_mock, mocker):
     mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, employee_id_to_user_profile,
                                                                     email_to_user_profile))
     mocker.patch.object(demisto, 'mapObject', return_value=mapped_workday_user)
-    client = Client(base_url="", verify="verify", headers={}, proxy=False,
-                    ok_codes=(200, 204), auth=None)
-
-    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None, 1)
+    fetch_args = get_fetch_incidents_args()
+    fetch_events, _ = fetch_incidents(**fetch_args)
     assert fetch_events == event_data
 
 
@@ -92,14 +105,15 @@ def test_fetch_incidents_orphan_user(requests_mock, mocker):
     Then
     - Ensure an IAM - Terminate User event is returned for this user.
     """
-    from test_data.fetch_incidents_orphan_user_mock_data import full_report, email_to_user_profile, event_data
+    from test_data.fetch_incidents_orphan_user_mock_data import (
+        full_report, email_to_user_profile, event_data, user_emails
+    )
 
     requests_mock.get('https://test.com', json=full_report)
     mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, {}, email_to_user_profile))
-    client = Client(base_url="", verify="verify", headers={}, proxy=False,
-                    ok_codes=(200, 204), auth=None)
-
-    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None, 1)
+    fetch_args = get_fetch_incidents_args()
+    fetch_args['last_run'] = {'user_emails': user_emails}
+    fetch_events, _ = fetch_incidents(**fetch_args)
     assert fetch_events == event_data
 
 
@@ -120,11 +134,9 @@ def test_fetch_incidents_source_priority(requests_mock, mocker):
     mocker.patch.object(demisto, 'mapObject', return_value=mapped_workday_user)
     mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, employee_id_to_user_profile,
                                                                     email_to_user_profile))
-    client = Client(base_url="", verify="verify", headers={}, proxy=False,
-                    ok_codes=(200, 204), auth=None)
-
-    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None,
-                                   source_priority=2)
+    fetch_args = get_fetch_incidents_args()
+    fetch_args['source_priority'] = 2
+    fetch_events, _ = fetch_incidents(**fetch_args)
     assert fetch_events == event_data
 
 
@@ -145,11 +157,8 @@ def test_fetch_incidents_partial_name_match(requests_mock, mocker):
     mocker.patch('Workday_IAM.get_all_user_profiles', return_value=(display_name_to_user_profile,
                                                                     employee_id_to_user_profile,
                                                                     email_to_user_profile))
-    mocker.patch('Workday_IAM.get_orphan_users', return_value=[])  # skip the orphan user detection
-    client = Client(base_url="", verify="verify", headers={}, proxy=False,
-                    ok_codes=(200, 204), auth=None)
-
-    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None, 1)
+    fetch_args = get_fetch_incidents_args()
+    fetch_events, _ = fetch_incidents(**fetch_args)
     assert fetch_events == event_data
 
 
@@ -218,13 +227,13 @@ def test_is_termination_event(demisto_user, workday_user, expected_result):
 
         # a pre-hired + rehired employee, no changed_fields (already synced into XSOAR) - should return False
         ({'adaccountstatus': 'Disabled'}, {PREHIRE_FLAG_FIELD: "True",
-                                           EMPLOYMENT_STATUS_FIELD: ""}, None, False),
+                                           EMPLOYMENT_STATUS_FIELD: ""}, {}, False),
 
         # no demisto_user - should return False
-        (None, 'mocked_workday_user', None, False),
+        (None, 'mocked_workday_user', {}, False),
 
         # demisto_user AD status is not disabled - should return False
-        ({'adaccountstatus': 'Pending'}, 'mocked_workday_user', None, False),
+        ({'adaccountstatus': 'Pending'}, 'mocked_workday_user', {}, False),
 
         # non pre-hired / non rehired employee, non empty changed_fields - should return False
         ({'adaccountstatus': 'Disabled'}, {PREHIRE_FLAG_FIELD: "False",
@@ -233,7 +242,7 @@ def test_is_termination_event(demisto_user, workday_user, expected_result):
 )
 def test_is_rehire_event(demisto_user, workday_user, changed_fields, expected_result):
     from Workday_IAM import is_rehire_event
-    assert is_rehire_event(demisto_user, workday_user, LAST_DAY_OF_WORK_FIELD) == expected_result
+    assert is_rehire_event(demisto_user, workday_user, changed_fields, LAST_DAY_OF_WORK_FIELD) == expected_result
 
 
 @pytest.mark.parametrize(
@@ -246,18 +255,23 @@ def test_is_rehire_event(demisto_user, workday_user, changed_fields, expected_re
         ({AD_ACCOUNT_STATUS_FIELD: 'Pending'}, {}, None, True),
 
         # no demisto_user - should return False
-        (None, 'mocked_workday_user', None, False),
+        (None, {'mocked_workday_user': ''}, None, False),
 
         # did not exceed threshold date - should return False
         ({AD_ACCOUNT_STATUS_FIELD: 'Pending'}, {HIRE_DATE_FIELD: "12/12/2200"}, 2, False),
 
         # demisto_user AD status is not pending - should return False
-        ({AD_ACCOUNT_STATUS_FIELD: 'Disabled'}, 'mocked_workday_user', None, False)
+        ({AD_ACCOUNT_STATUS_FIELD: 'Disabled'}, {'mocked_workday_user': ''}, None, False)
     ]
 )
 def test_is_ad_activation_event(demisto_user, workday_user, days_before_hire_to_enable_ad, expected_result):
     from Workday_IAM import is_ad_activation_event
-    assert is_ad_activation_event(demisto_user, workday_user, days_before_hire_to_enable_ad) == expected_result
+    assert is_ad_activation_event(
+        demisto_user,
+        workday_user,
+        days_before_hire_to_enable_ad,
+        LAST_DAY_OF_WORK_FIELD
+    ) == expected_result
 
 
 @pytest.mark.parametrize(
@@ -286,21 +300,24 @@ def test_is_ad_deactivation_event(demisto_user, workday_user, days_before_hire_t
 
 
 @pytest.mark.parametrize(
-    'workday_user, changed_fields, expected_result',
+    'workday_user, demisto_user, changed_fields, expected_result',
     [
         # a non terminated workday_user with changed fields (hasn't been synced to XSOAR yet) - should return True
-        ({EMPLOYMENT_STATUS_FIELD: 'Leave of Absence'}, 'mock_changed_fields', True),
+        ({EMPLOYMENT_STATUS_FIELD: 'Leave of Absence'}, {'mock_demisto_user': ''}, 'mock_changed_fields', True),
 
         # a terminated workday_user with changed fields (hasn't been synced to XSOAR yet) - should return False
-        ({EMPLOYMENT_STATUS_FIELD: 'Terminated'}, 'mock_changed_fields', False),
+        ({EMPLOYMENT_STATUS_FIELD: 'Terminated'}, {'mock_demisto_user': ''}, 'mock_changed_fields', False),
 
         # a non terminated workday_user with no changed fields (already synced to XSOAR) - should return False
-        ({EMPLOYMENT_STATUS_FIELD: 'Leave of Absence'}, None, False)
+        ({EMPLOYMENT_STATUS_FIELD: 'Leave of Absence'}, {'mock_demisto_user': ''}, None, False),
+
+        # a terminated demisto_user - should return False
+        ({EMPLOYMENT_STATUS_FIELD: 'Leave of Absence'}, {AD_ACCOUNT_STATUS_FIELD: 'Disabled'}, None, False)
     ]
 )
-def test_is_update_event(workday_user, changed_fields, expected_result):
+def test_is_update_event(workday_user, demisto_user, changed_fields, expected_result):
     from Workday_IAM import is_update_event
-    assert is_update_event(workday_user, changed_fields) == expected_result
+    assert is_update_event(workday_user, demisto_user, changed_fields) == expected_result
 
 
 @pytest.mark.parametrize(
@@ -374,7 +391,6 @@ def test_get_event_details__tufe_user(workday_user, demisto_user, expected_event
         deactivation_date_field=LAST_DAY_OF_WORK_FIELD,
         display_name_to_user_profile={},
         email_to_user_profile={},
-        employee_id_to_user_profile={},
         source_priority=1
     )
     event_type = event.get('type') if isinstance(event, dict) else None

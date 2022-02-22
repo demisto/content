@@ -16,6 +16,16 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+- display: Percentage of entries to process per fetch
+  name: processed_entries_percentage
+  required: false
+  type: 0
+  additionalinfo: Advanced input - a number between 1 and 100 representing the percentage
+    of the report that will be checked for changes each time a fetch is executed.
+    For every fetch, that part of the report will be checked until 100% of the report
+    was checked for changes. If you are experiencing performance issues with the integration,
+    you can try a lower value.
+  defaultvalue: '50'
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -32,7 +42,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: IAM Sync User - Workday
+- defaultvalue: 'IAM Sync User - Workday'
   display: Mapper (incoming)
   name: mapper_in
   required: false
@@ -42,13 +52,13 @@ configuration:
   name: first_run
   required: false
   type: 8
-- additionalinfo: If checked, the fetch incidents command will sample (at most) five
-    incidents. Use only to sample incidents for classification & mapping.
-  defaultvalue: 'false'
+- defaultvalue: 'false'
   display: Fetch Samples
   name: fetch_samples
   required: false
   type: 8
+  additionalinfo: If checked, the fetch incidents command will sample (at most) five
+    incidents. Use only to sample incidents for classification & mapping.
 - defaultvalue: '%m/%d/%Y'
   display: Date Format in Workday Report
   hidden: false
@@ -57,15 +67,15 @@ configuration:
   type: 0
 - additionalinfo: Select the field that determines when to trigger a termination incident
     for deactivated employees.
-  defaultvalue: Termination_Date
   display: Deactivation date field
   hidden: false
   name: deactivation_date_field
+  required: false
+  type: 15
+  defaultvalue: Termination_Date
   options:
   - Termination_Date
   - Last_Day_of_Work
-  required: false
-  type: 15
 - additionalinfo: Determines when employees are synced from Workday, i.e., when are
     the User Profile in XSOAR, and the users in the applications, created. Set to
     0 to sync hires on their hire date. Leave empty to sync the hires immediately.
@@ -117,7 +127,7 @@ script:
     - contextPath: WorkdayIAM.ReportEntry.locationregion
       description: Location of the employee in Workday.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.26972
   feed: false
   isfetch: true
   longRunning: false

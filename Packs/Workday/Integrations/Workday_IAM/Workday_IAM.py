@@ -6,10 +6,13 @@ import traceback
 import requests
 import re
 import dateparser
+import pytz
 
+USERNAME_FIELD = 'username'
 EMAIL_ADDRESS_FIELD = 'email'
 EMPLOYEE_ID_FIELD = 'employeeid'
 IS_PROCESSED_FIELD = 'isprocessed'
+FORCE_SYNC_FIELD = 'forcesync'
 DISPLAY_NAME_FIELD = 'displayname'
 LAST_DAY_OF_WORK_FIELD = 'lastdayofwork'
 TERMINATION_DATE_FIELD = 'terminationdate'
@@ -20,6 +23,8 @@ REHIRED_EMPLOYEE_FIELD = 'rehiredemployee'
 HIRE_DATE_FIELD = 'hiredate'
 AD_ACCOUNT_STATUS_FIELD = 'adaccountstatus'
 OLD_USER_DATA_FIELD = 'olduserdata'
+MERGED_USER_PROFILE_FIELD = 'mergeduserprofile'
+TEMP_USER_PROFILE_FIELD = 'temporaryuserprofile'
 SOURCE_PRIORITY_FIELD = 'sourcepriority'
 SOURCE_OF_TRUTH_FIELD = 'sourceoftruth'
 CONVERSION_HIRE_FIELD = 'conversionhire'
@@ -27,6 +32,7 @@ USER_PROFILE_INC_FIELD = 'UserProfile'
 USER_PROFILE_INDICATOR = 'User Profile'
 
 DATE_FORMAT = "%m/%d/%Y"
+DEFAULT_TIMEZONE = 'America/Los_Angeles'
 READ_TIME_OUT_IN_SECONDS = 300
 DEFAULT_MAPPER_IN = 'IAM Sync User - Workday'
 BATCH_SIZE = 2000
@@ -59,6 +65,16 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def parse_date(date_str, tz=DEFAULT_TIMEZONE):
+    date_str += ' 11:59 PM'
+    settings = {'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': tz}
+    return dateparser.parse(date_str, settings=settings)
+
+
+def current_time(tz=DEFAULT_TIMEZONE):
+    return datetime.now(tz=pytz.timezone(tz))
+
+
 def report_to_indicators(report_entries, mapper_in, workday_date_format, deactivation_date_field,
                          days_before_hire_to_sync, days_before_hire_to_enable_ad, source_priority):
     indicators = []
@@ -66,10 +82,10 @@ def report_to_indicators(report_entries, mapper_in, workday_date_format, deactiv
 
     for entry in report_entries:
         workday_user = get_workday_user_from_entry(entry, mapper_in, workday_date_format, source_priority)
-        if not has_reached_threshold_date(days_before_hire_to_sync, workday_user) \
+        if is_report_missing_required_user_data(workday_user) \
+                or not has_reached_threshold_date(days_before_hire_to_sync, workday_user) \
                 or new_hire_email_already_taken(workday_user, None, email_to_user_profile) \
-                or is_report_missing_required_user_data(workday_user) \
-                or is_termination_event(workday_user, None, deactivation_date_field, first_run=True):
+                or is_termination_event(workday_user, None, deactivation_date_field, check_demisto_user=False):
             continue
 
         indicator = workday_user_to_indicator(workday_user, days_before_hire_to_enable_ad)
@@ -108,6 +124,8 @@ def reformat_date_fields(user_profile, workday_date_format):
         if user_profile.get(date_field):
             datetime_obj = datetime.strptime(user_profile[date_field], workday_date_format)
             user_profile[date_field] = datetime_obj.strftime(DATE_FORMAT)
+        else:
+            user_profile[date_field] = ''  # support syncing removal of those fields from the report
 
 
 def get_workday_user_from_entry(entry, mapper_in, workday_date_format, source_priority):
@@ -116,7 +134,7 @@ def get_workday_user_from_entry(entry, mapper_in, workday_date_format, source_pr
     reformat_date_fields(workday_user, workday_date_format)
 
     workday_user[SOURCE_PRIORITY_FIELD] = source_priority
-    workday_user[SOURCE_OF_TRUTH_FIELD] = 'Workday IAM'
+    workday_user[SOURCE_OF_TRUTH_FIELD] = 'Workday'
 
     return workday_user
 
@@ -125,10 +143,14 @@ def has_reached_threshold_date(num_of_days_before_hire, workday_user):
     if not num_of_days_before_hire and num_of_days_before_hire != 0:
         return True
 
-    hire_date = dateparser.parse(workday_user.get(HIRE_DATE_FIELD)).date()
-    today = datetime.today().date()
+    hire_date = parse_date(workday_user.get(HIRE_DATE_FIELD)).date()
+    today = current_time().date()
     delta = (hire_date - today).days
-    if delta > num_of_days_before_hire:
+    return delta <= num_of_days_before_hire
+
+
+def is_user_ready_for_first_sync(num_of_days_before_hire, workday_user, demisto_user):
+    if not demisto_user and not has_reached_threshold_date(num_of_days_before_hire, workday_user):
         demisto.debug(f'Skipped creating an incident for user '
                       f'with email address {workday_user.get(EMAIL_ADDRESS_FIELD)} - '
                       f'the hire date of the employee is in more than {num_of_days_before_hire} days.')
@@ -162,28 +184,26 @@ def is_tufe_user(demisto_user):
     return False
 
 
-def is_event_processed(demisto_user):
-    if demisto_user is not None and demisto_user.get(IS_PROCESSED_FIELD) is True:
+def is_event_processed(demisto_user, changed_fields):
+    if not changed_fields and demisto_user is not None and demisto_user.get(IS_PROCESSED_FIELD) is True:
         demisto.debug(f'Dropping event for user with email {demisto_user.get(EMAIL_ADDRESS_FIELD)} '
                       f'as it is currently being processed.')
         return True
     return False
 
 
-def is_termination_event(workday_user, demisto_user, deactivation_date_field, first_run=False):
-    if not first_run and (demisto_user is None or demisto_user.get(AD_ACCOUNT_STATUS_FIELD) == 'Disabled'):
+def is_termination_event(workday_user, demisto_user, deactivation_date_field, check_demisto_user=True):
+    if check_demisto_user and (demisto_user is None or demisto_user.get(AD_ACCOUNT_STATUS_FIELD, '') == 'Disabled'):
         # skipping termination check - user does not exist or already terminated
         return False
 
     prehire_flag = workday_user.get(PREHIRE_FLAG_FIELD, '').lower() == 'true'
     employment_status = workday_user.get(EMPLOYMENT_STATUS_FIELD, '').lower()
 
-    if (deactivation_date := workday_user.get(deactivation_date_field)):
-        deactivation_date = dateparser.parse(workday_user.get(deactivation_date_field))
-    today = datetime.today()
+    deactivation_date = workday_user.get(deactivation_date_field)
 
     if (employment_status == 'terminated' and prehire_flag is False) \
-            or (deactivation_date and deactivation_date <= today):
+            or (deactivation_date and parse_date(deactivation_date) < current_time()):
         demisto.debug(f'A termination event was detected for user '
                       f'with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}.')
         return True
@@ -191,37 +211,27 @@ def is_termination_event(workday_user, demisto_user, deactivation_date_field, fi
     return False
 
 
-def is_display_name_already_taken(demisto_user, workday_user, display_name_to_user_profile):
+def is_temporary_demisto_user(demisto_user):
+    return demisto_user and demisto_user.get(TEMP_USER_PROFILE_FIELD) is True
+
+
+def is_display_name_already_taken(workday_user, display_name_to_user_profile):
     user_display_name = workday_user.get(DISPLAY_NAME_FIELD)
-    demisto_users_by_display_name = display_name_to_user_profile.get(user_display_name)
-
-    if demisto_users_by_display_name is None:
-        return False
-
-    if demisto_user is None:
-        demisto.debug(f'Detected a potential new hire for user with email address '
-                      f'{workday_user.get(EMAIL_ADDRESS_FIELD)}, but display name is already taken. '
-                      f'Please review the incident.')
-        return True
-
-    display_name_is_taken_by_another_user = False
-    is_display_name_change = True
-
+    demisto_users_by_display_name = display_name_to_user_profile.get(user_display_name, [])
     for user in demisto_users_by_display_name:
-        if user.get(EMPLOYEE_ID_FIELD) == demisto_user.get(EMPLOYEE_ID_FIELD):
-            # user already exists with this display name in XSOAR
-            is_display_name_change = False
+        if user.get(EMPLOYEE_ID_FIELD) != workday_user.get(EMPLOYEE_ID_FIELD):
+            demisto.debug(f'Detected an IAM - New Hire event for user with email address '
+                          f'{workday_user.get(EMAIL_ADDRESS_FIELD)}, but its display name is already taken. '
+                          f'Please review the incident.')
 
-        if user.get(EMPLOYEE_ID_FIELD) != demisto_user.get(EMPLOYEE_ID_FIELD) \
-                and user.get(AD_ACCOUNT_STATUS_FIELD).lower() != 'terminated':
-            display_name_is_taken_by_another_user = True
+            merged_user_profile = workday_user.copy()
+            merged_user_profile.update({
+                EMAIL_ADDRESS_FIELD: user.get(EMAIL_ADDRESS_FIELD),
+                USERNAME_FIELD: user.get(USERNAME_FIELD)
+            })
+            return merged_user_profile
 
-    if display_name_is_taken_by_another_user and is_display_name_change:
-        demisto.debug(f'Detected an event for user with email address '
-                      f'{workday_user.get(EMAIL_ADDRESS_FIELD)}, but its display name is already taken. '
-                      f'Please review the incident.')
-        return True
-    return False
+    return None
 
 
 def is_new_hire_event(demisto_user, workday_user, deactivation_date_field):
@@ -236,11 +246,10 @@ def is_new_hire_event(demisto_user, workday_user, deactivation_date_field):
                       f'with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}.')
         return True
 
-    if (deactivation_date := workday_user.get(deactivation_date_field)):
-        deactivation_date = dateparser.parse(workday_user.get(deactivation_date_field))
-    today = datetime.today()
+    deactivation_date = workday_user.get(deactivation_date_field)
 
-    if employment_status.lower() != 'terminated' and (not deactivation_date or today <= deactivation_date):
+    if employment_status.lower() != 'terminated' \
+            and (not deactivation_date or current_time() < parse_date(deactivation_date)):
         demisto.debug(f'A non-terminated user with an email address {workday_user.get(EMAIL_ADDRESS_FIELD)} '
                       f'was not found in XSOAR, even though a pre-hire was not detected. Syncing anyway.')
         return True
@@ -248,21 +257,30 @@ def is_new_hire_event(demisto_user, workday_user, deactivation_date_field):
     return False
 
 
-def is_rehire_event(demisto_user, workday_user, changed_fields):
-    if demisto_user is None or demisto_user.get(AD_ACCOUNT_STATUS_FIELD) != 'Disabled':
+def is_rehire_event(demisto_user, workday_user, changed_fields, deactivation_date_field):
+    if demisto_user is None or demisto_user.get(AD_ACCOUNT_STATUS_FIELD, '') != 'Disabled':
         # skipping rehire check - user does not exist or already active/pending
         return False
     prehire_flag = workday_user.get(PREHIRE_FLAG_FIELD, '').lower() == 'true'
     is_rehired_employee = workday_user.get(REHIRED_EMPLOYEE_FIELD, '').lower() == 'yes'
 
-    if prehire_flag is True and is_rehired_employee and changed_fields is not None:
+    deactivation_date = workday_user.get(deactivation_date_field)
+
+    if prehire_flag is True and is_rehired_employee and changed_fields \
+            or (deactivation_date_field in changed_fields
+                and (not deactivation_date or current_time() < parse_date(deactivation_date))):
         demisto.debug(f'A rehire event was detected for user '
                       f'with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}.')
         return True
     return False
 
 
-def is_ad_activation_event(demisto_user, workday_user, days_before_hire_to_enable_ad):
+def is_ad_activation_event(demisto_user, workday_user, days_before_hire_to_enable_ad, deactivation_date_field):
+    deactivation_date = workday_user.get(deactivation_date_field)
+    if deactivation_date and current_time() >= parse_date(deactivation_date):
+        # user is already terminated according to Workday - don't activate AD account
+        return False
+
     if demisto_user and demisto_user.get(AD_ACCOUNT_STATUS_FIELD, '') == 'Pending':
         if has_reached_threshold_date(days_before_hire_to_enable_ad, workday_user):
             demisto.debug(f'An Active Directory activation event was detected for user '
@@ -302,10 +320,38 @@ def is_ad_deactivation_event(demisto_user, workday_user, days_before_hire_to_ena
     return False
 
 
-def is_update_event(workday_user, changed_fields):
+def is_update_event(workday_user, demisto_user, changed_fields):
+    if demisto_user and demisto_user.get(AD_ACCOUNT_STATUS_FIELD, '') == 'Disabled':
+        # we don't process terminated records unless it's a rehire.
+        return False
+
     if changed_fields and workday_user.get(EMPLOYMENT_STATUS_FIELD, '').lower() != 'terminated':
         demisto.debug(f'An update event was detected for user '
                       f'with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}.')
+        return True
+    return False
+
+
+def generate_changed_field_str(changed_fields):
+    if not changed_fields:
+        return None
+
+    changed_fields_str = ''
+    for field, change in changed_fields.items():
+        if change["to"]:
+            changed_fields_str += f'{field} field was updated '
+            if change.get('from'):
+                changed_fields_str += f'from "{change["from"]}" '
+            changed_fields_str += f'to "{change["to"]}".\n'
+        else:
+            changed_fields_str += f'Removed {field} field (previous value "{change.get("from")}").\n'
+    return changed_fields_str
+
+
+def should_force_sync(demisto_user):
+    if demisto_user and demisto_user.get(FORCE_SYNC_FIELD) is True:
+        demisto.debug(f'Forcing user sync for user '
+                      f'with email address {demisto_user.get(EMAIL_ADDRESS_FIELD)}.')
         return True
     return False
 
@@ -336,21 +382,21 @@ def get_all_user_profiles():
 
 def get_demisto_user(email_to_user_profile, employee_id_to_user_profile, workday_user):
     demisto_user = None
-    if (employee_id := workday_user.get(EMPLOYEE_ID_FIELD)):
-        demisto_user = employee_id_to_user_profile.get(employee_id)
+    if (email := workday_user.get(EMAIL_ADDRESS_FIELD)):
+        demisto_user = email_to_user_profile.get(email)
     if not demisto_user:
-        if (email := workday_user.get(EMAIL_ADDRESS_FIELD)):
-            demisto_user = email_to_user_profile.get(email)
+        if (employee_id := workday_user.get(EMPLOYEE_ID_FIELD)):
+            demisto_user = employee_id_to_user_profile.get(employee_id)
 
     return demisto_user
 
 
-def get_orphan_users(email_to_user_profile, user_emails, source_priority):
+def get_orphan_users_events(user_emails, source_priority):
     """ Gets all users that don't exist in the Workday report anymore and terminate them in XSOAR. """
-
+    _, _, email_to_user_profile = get_all_user_profiles()
     events = []
     orphan_users = [email for email, user in email_to_user_profile.items()
-                    if email not in user_emails and user.get(EMPLOYMENT_STATUS_FIELD) != 'Terminated'
+                    if email not in user_emails and user.get(AD_ACCOUNT_STATUS_FIELD, '') != 'Disabled'
                     and user.get(SOURCE_PRIORITY_FIELD) == source_priority
                     and user.get(IS_PROCESSED_FIELD) is False]
 
@@ -360,13 +406,14 @@ def get_orphan_users(email_to_user_profile, user_emails, source_priority):
             email_to_user_profile[email][EMPLOYMENT_STATUS_FIELD] = 'Terminated'
             entry = {
                 'Email_Address': email,
-                'UserProfile': email_to_user_profile[email],
-                'Emp_ID': email_to_user_profile[email].get(EMPLOYEE_ID_FIELD)
+                USER_PROFILE_INC_FIELD: json.dumps(email_to_user_profile[email]),
+                'Emp_ID': email_to_user_profile[email].get(EMPLOYEE_ID_FIELD),
+                TERMINATION_TRIGGER_FIELD: 'Orphan'
             }
             event = {
                 'name': email,
                 'rawJSON': json.dumps(entry),
-                'type': DEFAULT_INCIDENT_TYPE,
+                'type': TERMINATE_USER_EVENT_TYPE,
                 'details': 'An orphan user was detected (could not find the user in Workday report). '
                            'Please review and terminate if necessary.'
             }
@@ -376,21 +423,33 @@ def get_orphan_users(email_to_user_profile, user_emails, source_priority):
     return events
 
 
-def get_profile_changed_fields_str(demisto_user, workday_user):
+def get_profile_changed_fields(demisto_user, workday_user):
     if not demisto_user:
         return None
-    profile_changed_fields = []
+    changed_fields = {}
 
     for field, workday_value in workday_user.items():
+        if not workday_value and not demisto_user.get(field):
+            continue
+
         if (workday_value and not demisto_user.get(field)) or workday_value != demisto_user.get(field):
-            profile_changed_fields.append([field, workday_value])
+            changed_fields[field] = {'from': demisto_user.get(field), 'to': workday_value}
 
-    return '\n'.join([f'{field[0]} field was updated to "{field[1]}".' for field in profile_changed_fields])
+    return changed_fields
 
 
-def is_valid_source_of_truth(demisto_user, source_priority):
-    if demisto_user is not None \
-            and demisto_user.get(SOURCE_PRIORITY_FIELD, 1) < source_priority:
+def is_valid_source_of_truth(demisto_user, workday_user, source_priority, deactivation_date_field):
+    if demisto_user is None:
+        return True
+
+    if is_termination_event(workday_user, None, deactivation_date_field, check_demisto_user=False) \
+            and demisto_user.get(SOURCE_PRIORITY_FIELD, 1) > source_priority \
+            and demisto_user.get(AD_ACCOUNT_STATUS_FIELD) != 'Disabled':
+        demisto.debug(f'Skipped creating a termination event for user {demisto_user.get(EMAIL_ADDRESS_FIELD)}: '
+                      f'An active state of the user in XSOAR is mastered by a different source of truth.')
+        return False
+
+    if demisto_user.get(SOURCE_PRIORITY_FIELD, 1) < source_priority:
         demisto.debug(f'Skipped creating an incident for user profile {demisto_user.get(EMAIL_ADDRESS_FIELD)}: '
                       f'The user profile in XSOAR has a higher source priority level.')
         return False
@@ -398,8 +457,7 @@ def is_valid_source_of_truth(demisto_user, source_priority):
 
 
 def get_event_details(entry, workday_user, demisto_user, days_before_hire_to_sync, days_before_hire_to_enable_ad,
-                      deactivation_date_field, display_name_to_user_profile, email_to_user_profile,
-                      employee_id_to_user_profile, source_priority):
+                      deactivation_date_field, display_name_to_user_profile, email_to_user_profile, source_priority):
     """
     This function detects the event type and creates a dictionary which holds the event details.
     If the event should not be created, None is returned.
@@ -414,28 +472,54 @@ def get_event_details(entry, workday_user, demisto_user, days_before_hire_to_syn
                                         -1 if should sync instantly.
         display_name_to_user_profile: A dictionary that maps display names to user profile indicators in XSOAR.
         email_to_user_profile: A dictionary that maps email addresses to user profile indicators in XSOAR.
-        employee_id_to_user_profile: A dictionary that maps employee ids to user profile indicators in XSOAR.
         source_priority: The source priority number.
 
     Returns:
         event: The event details.
     """
     user_email = workday_user.get(EMAIL_ADDRESS_FIELD)
-    changed_fields = get_profile_changed_fields_str(demisto_user, workday_user)
+    changed_fields = get_profile_changed_fields(demisto_user, workday_user)
+    changed_fields_str = generate_changed_field_str(changed_fields)
     demisto.debug(f'{changed_fields=}')
 
-    if not has_reached_threshold_date(days_before_hire_to_sync, workday_user) \
+    if is_report_missing_required_user_data(workday_user) \
+            or not is_user_ready_for_first_sync(days_before_hire_to_sync, workday_user, demisto_user) \
             or new_hire_email_already_taken(workday_user, demisto_user, email_to_user_profile) \
-            or is_report_missing_required_user_data(workday_user) \
-            or not is_valid_source_of_truth(demisto_user, source_priority) \
-            or is_event_processed(demisto_user):
+            or not is_valid_source_of_truth(demisto_user, workday_user, source_priority, deactivation_date_field) \
+            or is_event_processed(demisto_user, changed_fields):
         return None
 
-    if is_new_hire_event(demisto_user, workday_user, deactivation_date_field):
+    if is_temporary_demisto_user(demisto_user):
+        # We update temporary users only if there was an update in the report entry.
+        # Otherwise, we drop the event as there is an active incident waiting for a manual action.
+
+        if not changed_fields:
+            return None
+
+        if merged_user_profile := is_display_name_already_taken(workday_user, display_name_to_user_profile):
+            event_type = NEW_HIRE_EVENT_TYPE
+            workday_user[MERGED_USER_PROFILE_FIELD] = merged_user_profile
+            event_details = 'Detected an IAM - New Hire event, but display name already exists. Please review.'
+            event_details += f'\n{changed_fields_str}'
+
+        else:
+            event_type = UPDATE_USER_EVENT_TYPE
+            event_details = f'The user has been updated:\n{changed_fields_str}'
+            workday_user[OLD_USER_DATA_FIELD] = demisto_user
+
+            if demisto_user.get(SOURCE_PRIORITY_FIELD) != source_priority:
+                workday_user[CONVERSION_HIRE_FIELD] = True
+                event_details += '\n\nNote: a conversion hire was detected.'
+
+    elif is_new_hire_event(demisto_user, workday_user, deactivation_date_field):
         event_type = NEW_HIRE_EVENT_TYPE
         event_details = 'The user has been hired.'
 
-    elif is_ad_activation_event(demisto_user, workday_user, days_before_hire_to_enable_ad):
+        if merged_user_profile := is_display_name_already_taken(workday_user, display_name_to_user_profile):
+            workday_user[MERGED_USER_PROFILE_FIELD] = merged_user_profile
+            event_details = 'Detected an IAM - New Hire event, but display name already exists. Please review.'
+
+    elif is_ad_activation_event(demisto_user, workday_user, days_before_hire_to_enable_ad, deactivation_date_field):
         event_type = ACTIVATE_AD_EVENT_TYPE
         event_details = 'Active Directory user account was enabled.'
 
@@ -443,7 +527,7 @@ def get_event_details(entry, workday_user, demisto_user, days_before_hire_to_syn
         event_type = DEACTIVATE_AD_EVENT_TYPE
         event_details = 'Active Directory user account was disabled due to hire date postponement.'
 
-    elif is_rehire_event(demisto_user, workday_user, changed_fields):
+    elif is_rehire_event(demisto_user, workday_user, changed_fields, deactivation_date_field):
         event_type = REHIRE_USER_EVENT_TYPE
         event_details = 'The user has been rehired.'
 
@@ -451,14 +535,20 @@ def get_event_details(entry, workday_user, demisto_user, days_before_hire_to_syn
         event_type = TERMINATE_USER_EVENT_TYPE
         event_details = 'The user has been terminated.'
 
-    elif is_update_event(workday_user, changed_fields):
+    elif is_update_event(workday_user, demisto_user, changed_fields):
         event_type = UPDATE_USER_EVENT_TYPE
-        event_details = f'The user has been updated:\n{changed_fields}'
+        event_details = f'The user has been updated:\n{changed_fields_str}'
         workday_user[OLD_USER_DATA_FIELD] = demisto_user
 
         if demisto_user.get(SOURCE_PRIORITY_FIELD) != source_priority:
             workday_user[CONVERSION_HIRE_FIELD] = True
-            event_details = f'A conversion hire was detected:\n{changed_fields}'
+            event_details += '\n\nNote: a conversion hire was detected.'
+
+    elif should_force_sync(demisto_user):
+        event_type = UPDATE_USER_EVENT_TYPE
+        event_details = 'Forced User Sync'
+        workday_user[OLD_USER_DATA_FIELD] = demisto_user
+        demisto_user[FORCE_SYNC_FIELD] = False
 
     else:
         demisto.debug(f'Could not detect changes in report for user with email address {user_email} - skipping.')
@@ -467,20 +557,79 @@ def get_event_details(entry, workday_user, demisto_user, days_before_hire_to_syn
     if is_tufe_user(demisto_user) and event_type != REHIRE_USER_EVENT_TYPE:
         return None
 
-    if is_display_name_already_taken(demisto_user, workday_user, display_name_to_user_profile) \
-            and event_type in [NEW_HIRE_EVENT_TYPE, REHIRE_USER_EVENT_TYPE, UPDATE_USER_EVENT_TYPE]:
-        event_details = f'Detected an "{event_type}" event, but display name already exists. Please review.'
-        if changed_fields:
-            event_details += f'\n{changed_fields}'
-        event_type = DEFAULT_INCIDENT_TYPE
+    entry[USER_PROFILE_INC_FIELD] = json.dumps({**(demisto_user or {}), **workday_user})
 
-    entry[USER_PROFILE_INC_FIELD] = workday_user
     return {
         'name': user_email,
         'rawJSON': json.dumps(entry),
         'type': event_type,
         'details': event_details
     }
+
+
+def process_report_entries(mapper_in, workday_date_format, deactivation_date_field,
+                           days_before_hire_to_sync, days_before_hire_to_enable_ad,
+                           source_priority, report_entries, fetch_limit,
+                           number_of_entries_to_process, user_emails):
+    """
+    Iterates over the given report entries and processes them into XSOAR IAM events.
+
+    Args:
+        mapper_in: Incoming mapper's name
+        workday_date_format: Date format in Workday report.
+        deactivation_date_field: Deactivation date field - "lastdayofwork" or "terminationdate".
+        days_before_hire_to_sync: Number of days before hire date to sync hires, `None` if should sync instantly.
+        days_before_hire_to_enable_ad: Number of days before hire date to enable Active Directory account,
+                                        `None` if should sync instantly.
+        source_priority: Source priority level.
+        report_entries: Unproccessed report entries.
+        fetch_limit: Maximal number of events to retrieve.
+        user_emails: An aggregated list of the user emails in the Workday report. Used to detect orphan users.
+
+    Returns:
+        events: Incidents/Events that will be created in Cortex XSOAR
+    """
+    events = []
+    number_of_processed_entries = 0
+    demisto.debug('WORKDAY: entered process_report_entries function')
+    try:
+        demisto.debug('WORKDAY: before getting all user profiles')
+        display_name_to_user_profile, employee_id_to_user_profile, email_to_user_profile = get_all_user_profiles()
+        demisto.debug('WORKDAY: after getting all user profiles')
+
+        demisto.debug('Starting to process Workday report entries')
+        for entry in report_entries:
+            number_of_processed_entries += 1
+            # get the user event (if exists) according to workday report
+            workday_user = get_workday_user_from_entry(entry, mapper_in, workday_date_format, source_priority)
+            demisto_user = get_demisto_user(email_to_user_profile, employee_id_to_user_profile, workday_user)
+
+            user_email = workday_user.get(EMAIL_ADDRESS_FIELD)
+            demisto.debug(f'Getting event details for user with email address {user_email}.\n'
+                          f'Current user data in XSOAR: {demisto_user=}\nData in Workday: {workday_user=}')
+            user_emails.append(user_email)
+
+            event = get_event_details(entry, workday_user, demisto_user, days_before_hire_to_sync,
+                                      days_before_hire_to_enable_ad, deactivation_date_field,
+                                      display_name_to_user_profile, email_to_user_profile,
+                                      source_priority)
+            if event is not None:
+                events.append(event)
+
+            if len(events) == fetch_limit or number_of_processed_entries == number_of_entries_to_process - 1:
+                break
+
+        demisto.debug(f'Processed {number_of_processed_entries} Workday entries.')
+
+        if not events:
+            demisto.info('Did not detect any changes in the current Workday report entries batch.')
+
+    except Exception as e:
+        demisto.error('Failed to fetch events. Reason: ' + str(e))
+        raise e
+    unprocessed_report_entries = report_entries[number_of_processed_entries:]
+
+    return events, unprocessed_report_entries
 
 
 ''' INTEGRATION COMMANDS '''
@@ -511,7 +660,7 @@ def fetch_samples(client, mapper_in, report_url, workday_date_format):
             workday_user = convert_incident_fields_to_cli_names(workday_user)
             reformat_date_fields(workday_user, workday_date_format)
 
-            entry['UserProfile'] = workday_user
+            entry[USER_PROFILE_INC_FIELD] = json.dumps(workday_user)
             event = {
                 "name": workday_user.get(EMAIL_ADDRESS_FIELD),
                 "rawJSON": json.dumps(entry),
@@ -538,7 +687,8 @@ def get_full_report_command(client, mapper_in, report_url, workday_date_format, 
 
 
 def fetch_incidents(client, mapper_in, report_url, workday_date_format, deactivation_date_field,
-                    days_before_hire_to_sync, days_before_hire_to_enable_ad, source_priority):
+                    days_before_hire_to_sync, days_before_hire_to_enable_ad, source_priority,
+                    last_run, fetch_limit, processed_entries_percentage_per_fetch):
     """
     This function will execute each interval (default is 1 minute).
 
@@ -550,49 +700,53 @@ def fetch_incidents(client, mapper_in, report_url, workday_date_format, deactiva
         deactivation_date_field: Deactivation date field - "lastdayofwork" or "terminationdate".
         days_before_hire_to_sync: Number of days before hire date to sync hires, `None` if should sync instantly.
         days_before_hire_to_enable_ad: Number of days before hire date to enable Active Directory account,
-                                        `None` if should sync instantly.
+                                       `None` if should sync instantly.
         source_priority: Source priority level.
+        last_run: A Dictionary containing information from the previous fetch run.
+        fetch_limit: Maximal number of events to retrieve.
+        processed_entries_percentage_per_fetch: Percentage of entries to process per fetch.
 
     Returns:
         events: Incidents/Events that will be created in Cortex XSOAR
+        last_run: A Dictionary containing information from the current fetch run.
     """
-    events = []
-    user_emails = []
-    try:
-        display_name_to_user_profile, employee_id_to_user_profile, email_to_user_profile = get_all_user_profiles()
+    if not last_run.get('report_entries', []):
+        if user_emails := last_run.get('user_emails', []):
+            last_run['orphan_users_events'] = get_orphan_users_events(user_emails, source_priority)
+            last_run['user_emails'] = []
+
+        if orphan_user_events := last_run.get('orphan_users_events'):
+            last_run['orphan_users_events'] = orphan_user_events[fetch_limit:]
+            return orphan_user_events[:fetch_limit], last_run
+
+        demisto.debug('WORKDAY: before getting full workday report')
         report_entries = client.get_full_report(report_url)
+        demisto.debug('WORKDAY: after getting full workday report')
 
-        for entry in report_entries:
-            # get the user event (if exists) according to workday report
-            workday_user = get_workday_user_from_entry(entry, mapper_in, workday_date_format, source_priority)
-            demisto_user = get_demisto_user(email_to_user_profile, employee_id_to_user_profile, workday_user)
+        last_run.update({
+            'report_entries': report_entries,
+            'number_of_entries_to_process': len(report_entries) * processed_entries_percentage_per_fetch
+        })
 
-            demisto.debug(f'Getting event details for user with email address {workday_user.get("email")}.\n'
-                          f'Current user data in XSOAR: {demisto_user=}\nData in Workday: {workday_user=}')
+    events, unprocessed_report_entries = process_report_entries(
+        mapper_in,
+        workday_date_format,
+        deactivation_date_field,
+        days_before_hire_to_sync,
+        days_before_hire_to_enable_ad,
+        source_priority,
+        report_entries=last_run.get('report_entries', []),
+        fetch_limit=fetch_limit,
+        number_of_entries_to_process=last_run.get('number_of_entries_to_process', BATCH_SIZE),
+        user_emails=last_run.get('user_emails', [])
+    )
 
-            event = get_event_details(entry, workday_user, demisto_user, days_before_hire_to_sync,
-                                      days_before_hire_to_enable_ad, deactivation_date_field,
-                                      display_name_to_user_profile, email_to_user_profile,
-                                      employee_id_to_user_profile, source_priority)
-            if event is not None:
-                events.append(event)
+    last_run.update({
+        'synced_users': True,
+        'report_entries': unprocessed_report_entries
+    })
 
-            # we store all emails of user profiles for later use
-            if demisto_user is not None:
-                user_emails.append(demisto_user.get(EMAIL_ADDRESS_FIELD))
-
-        # terminate users in XSOAR which are not on workday report
-        orphan_users_events = get_orphan_users(email_to_user_profile, user_emails, source_priority)
-        events.extend(orphan_users_events)
-
-        if not events:
-            demisto.info('Did not detect any changes in Workday report.')
-
-    except Exception as e:
-        demisto.error('Failed to fetch events. Reason: ' + str(e))
-        raise e
-
-    return events
+    return events, last_run
 
 
 def workday_first_run_command(client, mapper_in, report_url, workday_date_format, deactivation_date_field,
@@ -603,6 +757,8 @@ def workday_first_run_command(client, mapper_in, report_url, workday_date_format
     for b in batch(indicators, batch_size=BATCH_SIZE):
         demisto.createIndicators(b)
 
+    return [], {'synced_users': True}
+
 
 def test_module(client, is_fetch, report_url, mapper_in, workday_date_format,
                 days_before_hire_to_sync, days_before_hire_to_enable_ad, source_priority):
@@ -610,9 +766,6 @@ def test_module(client, is_fetch, report_url, mapper_in, workday_date_format,
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
     Anything else will fail the test.
     """
-
-    # test API connectivity
-    client.get_full_report(report_url)
 
     if is_fetch:
         fetch_incidents(
@@ -623,8 +776,14 @@ def test_module(client, is_fetch, report_url, mapper_in, workday_date_format,
             days_before_hire_to_sync=days_before_hire_to_sync,
             days_before_hire_to_enable_ad=days_before_hire_to_enable_ad,
             deactivation_date_field=TERMINATION_DATE_FIELD,
-            source_priority=source_priority
+            source_priority=source_priority,
+            last_run={},
+            fetch_limit=1,
+            processed_entries_percentage_per_fetch=50
         )
+    else:
+        # test API connectivity
+        client.get_full_report(report_url)
 
     return 'ok'
 
@@ -643,6 +802,8 @@ def main():
     workday_date_format = params.get('workday_date_format', DATE_FORMAT)
     deactivation_date_field = params.get('deactivation_date_field').lower().replace('_', '')
     source_priority = int(params.get('source_priority', '1'))
+    fetch_limit = int(params.get('max_fetch', '50'))
+    processed_entries_percentage_per_fetch = float(params.get('processed_entries_percentage', '50')) / 100
 
     days_before_hire_to_sync = params.get('days_before_hire_to_sync')
     if days_before_hire_to_sync:
@@ -681,7 +842,6 @@ def main():
                 Returns the first x events (x being the fetch limit) and stores the remaining in integration context
             '''
             last_run = demisto.getLastRun()
-            events = last_run.get('events', [])
             report_url = params.get('report_url')
 
             if params.get('fetch_samples') and not last_run.get('fetched_samples'):
@@ -696,7 +856,7 @@ def main():
 
             else:
                 if not last_run.get('synced_users') and params.get('first_run'):
-                    workday_first_run_command(
+                    events, last_run = workday_first_run_command(
                         client=client,
                         mapper_in=mapper_in,
                         report_url=report_url,
@@ -706,9 +866,9 @@ def main():
                         days_before_hire_to_enable_ad=days_before_hire_to_enable_ad,
                         source_priority=source_priority
                     )
-                elif not events:
+                else:
                     # Get the events from Workday by making an API call. Last run is updated only when API call is made
-                    events = fetch_incidents(
+                    events, last_run = fetch_incidents(
                         client=client,
                         mapper_in=mapper_in,
                         report_url=report_url,
@@ -716,13 +876,14 @@ def main():
                         deactivation_date_field=deactivation_date_field,
                         days_before_hire_to_sync=days_before_hire_to_sync,
                         days_before_hire_to_enable_ad=days_before_hire_to_enable_ad,
-                        source_priority=source_priority
+                        source_priority=source_priority,
+                        last_run=last_run,
+                        fetch_limit=fetch_limit,
+                        processed_entries_percentage_per_fetch=processed_entries_percentage_per_fetch,
                     )
 
-                fetch_limit = int(params.get('max_fetch'))
-
-                demisto.incidents(events[:fetch_limit])
-                demisto.setLastRun({'synced_users': True, 'events': events[fetch_limit:]})
+                demisto.incidents(events)
+                demisto.setLastRun(last_run)
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command, Error: {e}. Traceback: {traceback.format_exc()}')
