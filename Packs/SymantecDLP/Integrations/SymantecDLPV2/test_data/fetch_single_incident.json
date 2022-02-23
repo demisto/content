@@ -1,0 +1,18 @@
+{
+  "incidents": [
+    {
+      "policyVersion": 4,
+      "messageType": "HTTP",
+      "policyId": 2,
+      "detectionDate": "2022-03-06T15:23:39.197",
+      "messageTypeId": 3,
+      "messageSource": "NETWORK",
+      "detectionServerId": 1,
+      "matchCount": 3,
+      "severityId": 1,
+      "creationDate": "2022-03-06T15:23:53.245",
+      "incidentId": 3620,
+      "incidentStatusId": 1
+    }
+  ]
+}

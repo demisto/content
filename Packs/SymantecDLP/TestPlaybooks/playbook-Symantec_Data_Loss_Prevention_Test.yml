@@ -3,7 +3,7 @@ version: -1
 name: Symantec Data Loss Prevention - Test
 starttaskid: "0"
 description: ""
-fromversion: 5.0.0
+fromversion: 6.0.0
 tasks:
   "0":
     id: "0"

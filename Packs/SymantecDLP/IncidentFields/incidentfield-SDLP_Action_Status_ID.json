@@ -1,9 +1,10 @@
 {
-    "id": "incident_itemowneremail",
+    "id": "incident_sdlpactionstatusid",
     "version": -1,
-    "name": "Item Owner Email",
+    "modified": "2022-03-06T11:49:45.946573649Z",
+    "name": "SDLP Action Status ID",
     "ownerOnly": false,
-    "cliName": "itemowneremail",
+    "cliName": "sdlpactionstatusid",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -17,22 +18,16 @@
     "group": 0,
     "hidden": false,
     "openEnded": false,
-    "associatedToAll": false,
     "associatedTypes": [
-        "Saas Security Incident",
         "Symantec DLP Discover Incident",
         "Symantec DLP Endpoint Incident",
         "Symantec DLP Network Incident"
     ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.0.0",
-    "systemAssociatedTypes": [
-        "Symantec DLP Discover Incident",
-        "Symantec DLP Endpoint Incident",
-        "Symantec DLP Network Incident"
-    ]
+    "fromVersion": "6.0.0"
 }

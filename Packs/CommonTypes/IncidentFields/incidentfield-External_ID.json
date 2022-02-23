@@ -1,9 +1,10 @@
 {
-    "id": "incident_itemowneremail",
+    "id": "incident_externalid",
     "version": -1,
-    "name": "Item Owner Email",
+    "modified": "2022-03-06T11:16:04.085866811Z",
+    "name": "External ID",
     "ownerOnly": false,
-    "cliName": "itemowneremail",
+    "cliName": "externalid",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -19,7 +20,6 @@
     "openEnded": false,
     "associatedToAll": false,
     "associatedTypes": [
-        "Saas Security Incident",
         "Symantec DLP Discover Incident",
         "Symantec DLP Endpoint Incident",
         "Symantec DLP Network Incident"
@@ -29,10 +29,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.0.0",
-    "systemAssociatedTypes": [
-        "Symantec DLP Discover Incident",
-        "Symantec DLP Endpoint Incident",
-        "Symantec DLP Network Incident"
-    ]
+    "fromVersion": "6.0.0"
 }
