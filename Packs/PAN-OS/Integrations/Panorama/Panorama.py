@@ -8500,17 +8500,21 @@ class PanosObjectReference(ResultData):
     _title = "PAN-OS Objects"
 
 
-def dataclass_from_dict(device: Union[Panorama, Firewall], d: dict, class_type: Callable):
+def dataclass_from_dict(device: Union[Panorama, Firewall], object_dict: dict, class_type: Callable):
     """
     Given a dictionary and a datacalass, converts the dictionary into the dataclass type.
+
+    :param device: The PAnDevice instance that this result data belongs to
+    :param object_dict: the dictionary of the object data
+    :param class_type the dataclass to convert the dict into
     """
     if device.hostname:
-        d["hostid"] = device.hostname
+        object_dict["hostid"] = device.hostname
     if device.serial:
-        d["hostid"] = device.serial
+        object_dict["hostid"] = device.serial
 
     r = {}
-    for k, v in d.items():
+    for k, v in object_dict.items():
         d_key = k.replace("-", "_")
         dataclass_field = next((x for x in fields(class_type) if x.name == d_key), None)
         if dataclass_field:
@@ -8519,20 +8523,22 @@ def dataclass_from_dict(device: Union[Panorama, Firewall], d: dict, class_type: 
     return class_type(**r)
 
 
-def flatten_xml_to_dict(element: Element, d: dict, class_type: Callable):
-    """Given an XML element, a dictionary, and a class, flattens the XML into the class."""
+def flatten_xml_to_dict(element: Element, object_dict: dict, class_type: Callable):
+    """Given an XML element, a dictionary, and a class, flattens the XML into the class.
+    This is a recursive function that will resolve child elements.
+    """
     for child_element in element:
         tag = child_element.tag
         # Replace hyphens in tags with underscores to match python attributes
         tag = tag.replace("-", "_")
         dataclass_field = next((x for x in fields(class_type) if x.name == tag), None)
         if dataclass_field:
-            d[tag] = child_element.text
+            object_dict[tag] = child_element.text
 
         if len(child_element) > 0:
-            d = {**d, **flatten_xml_to_dict(child_element, d, class_type)}
+            object_dict = {**object_dict, **flatten_xml_to_dict(child_element, object_dict, class_type)}
 
-    return d
+    return object_dict
 
 
 def dataclass_from_element(
@@ -8544,23 +8550,23 @@ def dataclass_from_element(
     Turns an XML `Element` Object into an instance of the provided dataclass. Dataclass paramaters must match
     child XML tags exactly.
     """
-    d = {}
+    object_dict = {}
     if element is None:
         return
 
     if device.hostname:
-        d["hostid"] = device.hostname
+        object_dict["hostid"] = device.hostname
     if device.serial:
-        d["hostid"] = device.serial
+        object_dict["hostid"] = device.serial
 
     child_element: Element
     # Handle the XML attributes, if any and if they match dataclass field
     for attr_name, attr_value in element.attrib.items():
         dataclass_field = next((x for x in fields(class_type) if x.name == attr_name), None)
         if dataclass_field:
-            d[attr_name] = attr_value
+            object_dict[attr_name] = attr_value
 
-    d = flatten_xml_to_dict(element, d, class_type)
+    d = flatten_xml_to_dict(element, object_dict, class_type)
 
     return class_type(**d)
 
