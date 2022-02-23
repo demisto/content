@@ -7509,7 +7509,7 @@ class URLFilteringProfile(VersionedPanObject):
 
 
 def run_op_command(device: Union[Panorama, Firewall], cmd: str, **kwargs) -> Element:
-    result: Element = device.op(cmd, **kwargs)
+    result = device.op(cmd, **kwargs)
     if "status" in result and result.attrib.get("status") != "success":
         raise OpCommandError(f"Operational command {cmd} failed!")
 
@@ -7518,16 +7518,13 @@ def run_op_command(device: Union[Panorama, Firewall], cmd: str, **kwargs) -> Ele
 
 def find_text_in_element(element: Element, tag: str) -> str:
     result = element.find(tag)
-    if result is None:
+    if not result:
         raise LookupError(f"Tag {tag} not found in element.")
 
     if not hasattr(result, "text"):
         raise LookupError(f"Tag {tag} has no text.")
 
-    if result.text:
-        return result.text
-    else:
-        return ""
+    return result.text if result.text else ""
 
 
 def get_element_attribute(element: Element, attribute: str) -> str:
@@ -7573,7 +7570,7 @@ class Topology:
         Devices are stored by their serial number.
         """
         ha_pair_dict = {}
-        device_op_command_result: Element = run_op_command(device, "show devices all")
+        device_op_command_result = run_op_command(device, "show devices all")
         for device_entry in device_op_command_result.findall("./result/devices/entry"):
             serial_number: str = find_text_in_element(device_entry, "./serial")
             connected: str = find_text_in_element(device_entry, "./connected")
@@ -7608,7 +7605,7 @@ class Topology:
                 """
         if isinstance(device, Panorama):
             # Check if HA is active and if so, what the system state is.
-            panorama_ha_state_result: Element = run_op_command(device, "show high-availability state")
+            panorama_ha_state_result = run_op_command(device, "show high-availability state")
             enabled = panorama_ha_state_result.find("./result/enabled")
 
             if enabled == "yes":
