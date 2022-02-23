@@ -413,7 +413,7 @@ class Client:
         :return: http response
         """
 
-        # url_suffix = f"/falconx/queries/reports/v1?filter={filter}&offset={offset}&limit{limit}=&sort={sort}" # todo del
+        # url_suffix = f"/falconx/queries/reports/v1?filter={filter}&offset={offset}&limit{limit}=&sort={sort}" # todo
         url_suffix = f"/falconx/queries/reports/v1"  # todo test
         params = {
             "filter": filter,
