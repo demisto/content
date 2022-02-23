@@ -2028,7 +2028,7 @@ def get_endpoint_command():
     # handles the search by id or by hostname
     raw_res = search_device()
 
-    if ip := args.get('ip'):
+    if ip := args.get('ip') and raw_res:
         # there is no option to filter by ip in an api call, therefore we would filter the devices in the code
         raw_res = search_device_by_ip(raw_res, ip)
 

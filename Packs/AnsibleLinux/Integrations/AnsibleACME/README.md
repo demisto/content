@@ -269,11 +269,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | ACME.AcmeCertificate.cert_days | number | The number of days the certificate remains valid. | 
 | ACME.AcmeCertificate.challenge_data | unknown | Per identifier / challenge type challenge data. Since Ansible 2.8.5, only challenges which are not yet valid are returned. | 
 | ACME.AcmeCertificate.challenge_data_dns | unknown | List of TXT values per DNS record, in case challenge is \`dns-01\`. Since Ansible 2.8.5, only challenges which are not yet valid are returned. | 
-| ACME.AcmeCertificate.authorizations | unknown | ACME authorization data. Maps an identifier to ACME authorization objects. See \`https://tools.ietf.org/html/rfc8555\#section-7.1.4\`. | 
+| ACME.AcmeCertificate.authorizations | unknown | ACME authorization data. Maps an identifier to ACME authorization objects. See \`https://tools.ietf.org/html/rfc8555#section-7.1.4\`. | 
 | ACME.AcmeCertificate.order_uri | string | ACME order URI. | 
 | ACME.AcmeCertificate.finalization_uri | string | ACME finalization URI. | 
 | ACME.AcmeCertificate.account_uri | string | ACME account URI. | 
-| ACME.AcmeCertificate.all_chains | unknown | When \`retrieve_all_alternates\` is set to \`yes\`, the module will query the ACME server for alternate chains. This return value will contain a list of all chains returned, the first entry being the main chain returned by the server. See \`Section 7.4.2 of RFC8555,https://tools.ietf.org/html/rfc8555\#section-7.4.2\` for details. | 
+| ACME.AcmeCertificate.all_chains | unknown | When \`retrieve_all_alternates\` is set to \`yes\`, the module will query the ACME server for alternate chains. This return value will contain a list of all chains returned, the first entry being the main chain returned by the server. See \`Section 7.4.2 of RFC8555,https://tools.ietf.org/html/rfc8555#section-7.4.2\` for details. | 
 
 
 #### Command Example

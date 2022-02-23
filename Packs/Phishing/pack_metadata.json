@@ -64,6 +64,10 @@
         "EWSMailSender": {
             "mandatory": false,
             "display_name": "EWS Mail Sender"
+        },
+        "CoreAlertFields": {
+            "mandatory": false,
+            "display_name": "Core Alert Fields"
         }
     },
     "marketplaces": [

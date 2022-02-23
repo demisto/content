@@ -3,7 +3,7 @@
     "caseInsensitive": true,
     "cliName": "localport",
     "closeForm": false,
-	"description": "If the alert triggered on network activity (the Event Type is Network Connection) this is the port on the endpoint that triggered the alert. If not, then N/A.",
+    "description": "If the alert triggered on network activity (the Event Type is Network Connection) this is the port on the endpoint that triggered the alert. If not, then N/A.",
     "content": true,
     "editForm": true,
     "group": 0,
@@ -28,23 +28,47 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "action_local_port",
+    "x2_fields": "action_local_port",
     "Aliases": [
         {
-          "cliName": "fireeyenxalertvictimport",
-          "type": "shortText"
+            "cliName": "fireeyenxalertvictimport",
+            "type": "shortText",
+            "name": "FireEye NX Alert Victim Port"
         },
         {
-          "cliName": "fireeyenxeventvictimport",
-          "type": "shortText"
+            "cliName": "fireeyenxeventvictimport",
+            "type": "shortText",
+            "name": "FireEye NX Event Victim Port"
         },
         {
-          "cliName": "sourceport",
-          "type": "shortText"
+            "cliName": "sourceport",
+            "type": "shortText",
+            "name": "Source Port"
         },
         {
-        "cliName": "srcports",
-        "type": "shortText" 
-        }      
+            "cliName": "srcports",
+            "type": "shortText",
+            "name": "Src Ports"
+        },
+        {
+            "cliName": "f5silverlineclientport",
+            "type": "shortText",
+            "name": "F5 Silverline Client Port"
+        },
+        {
+            "cliName": "f5silverlinetranslatedsourceport",
+            "type": "shortText",
+            "name": "F5 Silverline Translated Source Port"
+        },
+        {
+            "cliName": "shadowitport",
+            "type": "number",
+            "name": "Shadow IT Port"
+        },
+        {
+            "cliName": "expanseport",
+            "type": "number",
+            "name": "Expanse Port"
+        }
     ]
 }
