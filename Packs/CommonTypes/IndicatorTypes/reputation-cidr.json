@@ -18,6 +18,7 @@
     "contextPath": "CIDR(val.Address \u0026\u0026 val.Range === obj.Address)",
     "contextValue": "Address",
     "expiration": 10080,
+    "layout": "ipRep",
     "defaultMapping": {
         "blocked": {
             "simple": "CIDR.Blocked",

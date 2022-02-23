@@ -19,9 +19,7 @@
     "group": 2,
     "hidden": false,
     "openEnded": false,
-    "associatedTypes": [
-        "CVE"
-    ],
+    "associatedTypes": [],
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,

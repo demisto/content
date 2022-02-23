@@ -19,6 +19,7 @@
     "contextPath": "IPv6(val.Address \u0026\u0026 val.Address === obj.Address)",
     "contextValue": "Address",
     "expiration": 10080,
+    "layout": "ipRep",
     "defaultMapping": {
         "blocked": {
             "simple": "IPv6.Blocked",

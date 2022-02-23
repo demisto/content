@@ -149,7 +149,7 @@
                 ]
             }
         },
-        "trafficlightprotocoltlp": {
+        "trafficlightprotocol": {
             "simple": "",
             "complex": {
                 "root": "Domain",

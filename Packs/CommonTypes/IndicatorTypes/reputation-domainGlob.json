@@ -14,5 +14,6 @@
     "file": false,
     "updateAfter": 0,
     "mergeContext": false,
-    "expiration": 20160
+    "expiration": 20160,
+    "layout": "domainRepUnified"
 }

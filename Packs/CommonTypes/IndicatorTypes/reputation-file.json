@@ -297,6 +297,12 @@
                 ]
             }
         },
+
+        "imphash": {
+            "simple": "File.ImpHash",
+            "complex": null
+        },
+
         "modifieddate": {
             "simple": "",
             "complex": {
