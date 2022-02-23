@@ -33,8 +33,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
-description: Use the CrowdStrike Falcon X integration to submit files, file hashes,
-  URLs, and FTPs for sandbox analysis, and to retrieve reports.
+description: Use the CrowdStrike Falcon X integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
 display: CrowdStrike Falcon X
 name: CrowdStrike Falcon X
 script:
@@ -47,8 +46,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: This ia an internal argument used for the polling process, not
-        to be used by the user.
+      description: This ia an internal argument used for the polling process, not to be used by the user.
       isArray: true
       name: ids
       required: false
@@ -61,8 +59,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Determines the visibility of this file in Falcon MalQuery. Can
-        be "true" or "false". If "true", the file is confidential.
+      description: Determines the visibility of this file in Falcon MalQuery. Can be "true" or "false". If "true", the file is confidential.
       isArray: false
       name: is_confidential
       predefined:
@@ -71,16 +68,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Content of the uploaded sample in binary format, This arg can also
-        receive entry ID from war room.
+      description: Content of the uploaded sample in binary format, This arg can also receive entry ID from war room.
       isArray: false
       name: file
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the
-        result when it's ready.
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
       isArray: false
       name: polling
       predefined:
@@ -90,8 +85,7 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: If set to true, the report will return extended data which includes
-        mitre attacks and signature information.
+      description: If set to true, the report will return extended data which includes mitre attacks and signature information.
       isArray: false
       name: extended_data
       predefined:
@@ -109,8 +103,7 @@ script:
     - auto: PREDEFINED
       default:
       defaultValue: "no"
-      description: Whether to submit the given file to the sandbox. Can be "yes" or
-        "no". Default is "no".
+      description: Whether to submit the given file to the sandbox. Can be "yes" or "no". Default is "no".
       isArray: false
       name: submit_file
       predefined:
@@ -327,9 +320,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: SHA256 ID of the sample, which is a SHA256 hash value. Find the
-        sample ID from the response when uploading a malware sample or search with
-        the cs-fx-upload-file command.
+      description: SHA256 ID of the sample, which is a SHA256 hash value. Find the sample ID from the response when uploading a malware sample or search with the cs-fx-upload-file command.
       isArray: false
       name: sha256
       required: false
@@ -365,24 +356,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Command line script passed to the submitted file at runtime. Max
-        length: 2048 characters.'
+      description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters.'
       isArray: false
       name: command_line
       required: false
       secret: false
     - default: false
-      description: 'Auto-filled for Adobe or Office files that prompt for a password.
-        Max length: 32 characters.'
+      description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters.'
       isArray: false
       name: document_password
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the sandbox analysis routes network traffic via TOR. Can
-        be "true" or "false". If true, sandbox analysis routes network traffic via
-        TOR.
+      description: Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR.
       isArray: false
       name: enable_tor
       predefined:
@@ -391,8 +378,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Name of the malware sample that’s used for file type detection.
-        and analysis.
+      description: Name of the malware sample that’s used for file type detection. and analysis.
       isArray: false
       name: submit_name
       required: false
@@ -405,9 +391,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the
-        result when it's ready, Note - This command counts against the submission
-        quota.
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota.
       isArray: false
       name: polling
       predefined:
@@ -417,8 +401,7 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: If set to true, the report will return extended data which includes
-        mitre attacks and signature information.
+      description: If set to true, the report will return extended data which includes mitre attacks and signature information.
       isArray: false
       name: extended_data
       predefined:
@@ -427,8 +410,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: This ia an internal argument used for the polling process, not
-        to be used by the user.
+      description: This ia an internal argument used for the polling process, not to be used by the user.
       isArray: true
       name: ids
       required: false
@@ -667,17 +649,14 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: ID of a submitted malware sample. Find a submission ID from the
-        response when submitting a malware sample or search with the cs-fx-submit-uploaded-file
-        command.
+      description: ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command.
       isArray: true
       name: ids
       required: true
       secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: If set to true, the report will return extended data which includes
-        mitre attacks and signature information.
+      description: If set to true, the report will return extended data which includes mitre attacks and signature information.
       isArray: false
       name: extended_data
       predefined:
@@ -947,9 +926,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of a submitted malware sample. Find a submission ID from the
-        response when submitting a malware sample or search with the cs-fx-submit-uploaded-file
-        command.
+      description: ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command.
       isArray: true
       name: ids
       required: true
@@ -1024,9 +1001,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of a submitted malware sample. Find a submission ID from the
-        response when submitting a malware sample or search with the cs-fx-submit-uploaded-file/url
-        command.
+      description: ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file/url command.
       isArray: true
       name: ids
       required: true
@@ -1121,7 +1096,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: SHA256 hash to search for. Overridden by the *filter* argument (if provided)
+      description: 'SHA256 hash to search for. Overridden by the *filter* argument (if provided)'
       isArray: false
       name: hash
       required: false
@@ -1180,8 +1155,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Finds submission IDs for uploaded files by providing an FQL filter
-      and paging details. Returns a set of submission IDs that match the search criteria.
+    description: Finds submission IDs for uploaded files by providing an FQL filter and paging details. Returns a set of submission IDs that match the search criteria.
     execution: false
     name: cs-fx-find-submission-id
     outputs:
@@ -1227,15 +1201,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Command line script passed to the submitted file at runtime. Max
-        length: 2048 characters'
+      description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters'
       isArray: false
       name: command_line
       required: false
       secret: false
     - default: false
-      description: 'Auto-filled for Adobe or Office files that prompt for a password.
-        Max length: 32 characters.'
+      description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters.'
       isArray: false
       name: document_password
       required: false
@@ -1243,9 +1215,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether the sandbox analysis routes network traffic via TOR. Can
-        be "true" or "false". If true, sandbox analysis routes network traffic via
-        TOR. Default is false.'
+      description: 'Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Default is false.'
       isArray: false
       name: enable_tor
       predefined:
@@ -1254,8 +1224,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Name of the malware sample that’s used for file type detection
-        and analysis.
+      description: Name of the malware sample that’s used for file type detection and analysis.
       isArray: false
       name: submit_name
       required: false
@@ -1268,9 +1237,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the
-        result when it's ready, Note - This command counts against the submission
-        quota.
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota.
       isArray: false
       name: polling
       predefined:
@@ -1287,8 +1254,7 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: If set to true, the report will return extended data which includes
-        mitre attacks and signature information.
+      description: If set to true, the report will return extended data which includes mitre attacks and signature information.
       isArray: false
       name: extended_data
       predefined:
@@ -1297,8 +1263,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: This ia an internal argument used for the polling process, not
-        to be used by the user.
+      description: This ia an internal argument used for the polling process, not to be used by the user.
       isArray: true
       name: ids
       required: false
@@ -1530,8 +1495,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: ID of an artifact, such as an IOC pack, PCAP file, or actor image.
-        Find an artifact ID in a report or summary.
+      description: ID of an artifact, such as an IOC pack, PCAP file, or actor image. Find an artifact ID in a report or summary.
       isArray: false
       name: id
       required: true
@@ -1544,8 +1508,7 @@ script:
       secret: false
     - default: false
       defaultValue: gzip
-      description: Format used to compress the downloaded file. Currently, you must
-        provide the value of the GZIP file.
+      description: Format used to compress the downloaded file. Currently, you must provide the value of the GZIP file.
       isArray: false
       name: accept_encoding
       required: false
@@ -1554,7 +1517,7 @@ script:
     description: Downloads IOC packs, PCAP files, and other analysis artifacts.
     execution: false
     name: cs-fx-download-ioc
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.1.26972
   feed: false
   isfetch: false
   longRunning: false
