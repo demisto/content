@@ -42,10 +42,11 @@ RELATIONSHIP_TYPE = {
 
 
 class Client:
-    def __init__(self, api_key='', threshold=None, use_ssl=False, reliability=DBotScoreReliability.C):
+    def __init__(self, api_key='', scan_visibility='public', threshold=None, use_ssl=False, reliability=DBotScoreReliability.C):
         self.base_url = 'https://urlscan.io/api/v1/'
         self.api_key = api_key
         self.threshold = threshold
+        self.scan_visibility = scan_visibility
         self.use_ssl = use_ssl
         self.reliability = reliability
 
@@ -185,12 +186,15 @@ def poll(target, step, args=(), kwargs=None, timeout=60,
 
 def urlscan_submit_url(client):
     submission_dict = {}
-    if demisto.args().get('public'):
+    if demisto.args().get('scan_visibility'):
+        submission_dict['visibility'] = demisto.args().get('scan_visibility')
+    elif client.scan_visibility:
+        submission_dict['visibility'] = client.scan_visibility
+    elif demisto.args().get('public'):
         if demisto.args().get('public') == 'public':
             submission_dict['visibility'] = 'public'
-    else:
-        if demisto.params().get('is_public') is True:
-            submission_dict['visibility'] = 'public'
+    elif demisto.params().get('is_public') is True:
+        submission_dict['visibility'] = 'public'
 
     submission_dict['url'] = demisto.args().get('url')
 
@@ -686,6 +690,7 @@ def main():
     params = demisto.params()
 
     api_key = params.get('apikey') or (params.get('creds_apikey') or {}).get('password', '')
+    scan_visibility = params.get('scan_visibility')
     threshold = int(params.get('url_threshold', '1'))
     use_ssl = not params.get('insecure', False)
     reliability = params.get('integrationReliability')
@@ -698,6 +703,7 @@ def main():
 
     client = Client(
         api_key=api_key,
+        scan_visibility=scan_visibility,
         threshold=threshold,
         use_ssl=use_ssl,
         reliability=reliability
@@ -726,7 +732,7 @@ def main():
     except Exception as e:
         LOG(e)
         LOG.print_log(False)
-        return_error(e.message)
+        return_error(e)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
