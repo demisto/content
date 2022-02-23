@@ -956,7 +956,6 @@ class Client(BaseClient):
                 params=params,
                 headers=self._headers
             )
-        
 
     def get_alert_request(self, alert_id: int):
 
@@ -2643,7 +2642,7 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> List:
 
     last_run = demisto.getLastRun()
     alerts = []  # type: List[Dict[str, str]]
-    fetch_limit = min([int(args.get('max_fetch') or '50'),50])
+    fetch_limit = min([int(args.get('max_fetch') or '50'), 50])
 
     args["sort"] = "reported_at+ascending"
     args["limit"] = fetch_limit
