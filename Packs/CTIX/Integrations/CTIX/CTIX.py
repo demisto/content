@@ -535,7 +535,7 @@ def create_intel_command(client: Client, args: Dict[str, Any]) -> Dict:
         "threat_actors": args.get("threat_actors", []),
         "attack_patterns": args.get("attack_patterns", []),
         "title": args.get("title", None),
-        "description": args.get("description", None),
+        "description": args.get("description"),
         "confidence": args.get("confidence", None),
         "tlp": args.get("tlp", None),
     }
