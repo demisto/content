@@ -360,8 +360,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Resolves and updates a detection using the provided arguments. At
-      least one optional argument must be passed, otherwise no change will take place.
+    description: Resolves and updates a detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place.
     execution: false
     name: cs-falcon-resolve-detection
   - arguments:
@@ -415,8 +414,7 @@ script:
       default: false
       defaultValue: read
       description: 'The scope for which to run the command. Possible values are: "read",
-        "write", and "admin". (NOTE: In order to run the CrowdStrike RTR `put` command,
-        it is necessary to pass `scope=admin`.)'
+        "write", and "admin". (NOTE: In order to run the CrowdStrike RTR `put` command, it is necessary to pass `scope=admin`.)'
       isArray: false
       name: scope
       predefined:
@@ -1495,8 +1493,8 @@ script:
     execution: false
     name: cs-falcon-delete-ioc
   - arguments:
-    - auto: PREDEFINED
-      default: false
+    - default: false
+      auto: PREDEFINED
       description: 'A comma-separated list of indicator types. Valid types are: "sha256",
         "sha1", "md5", "domain", "ipv4", "ipv6".'
       isArray: true
@@ -1523,20 +1521,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: The date on which the indicator will become inactive (ISO 8601
-        format, i.e. YYYY-MM-DDThh:mm:ssZ).
+      description: The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ssZ).
       isArray: false
       name: expiration
       required: false
       secret: false
     - default: false
-      defaultValue: '50'
       description: The maximum number of records to return. The minimum is 1 and the
         maximum is 500.
       isArray: false
       name: limit
       required: false
       secret: false
+      defaultValue: 50
     - auto: PREDEFINED
       default: false
       description: 'The order in which the results are returned. Possible values are:
@@ -1609,8 +1606,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'The IOC type to retrieve. Possible values are: "sha256", "sha1",
-        "md5", "domain", "ipv4", and "ipv6". Either ioc_id or ioc_type and value must
-        be provided.'
+        "md5", "domain", "ipv4", and "ipv6". Either ioc_id or ioc_type and value must be provided.'
       isArray: false
       name: type
       predefined:
@@ -1623,15 +1619,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The string representation of the indicator. Either ioc_id or ioc_type
-        and value must be provided.
+      description: 'The string representation of the indicator.
+      Either ioc_id or ioc_type and value must be provided.'
       isArray: false
       name: value
       required: false
       secret: false
     - default: false
-      description: The ID of the IOC to get. Can be retrieved by running the cs-falcon-search-custom-iocs
-        command. Either ioc_id or ioc_type and value must be provided.
+      description: 'The ID of the IOC to get. 
+      Can be retrieved by running the cs-falcon-search-custom-iocs command.
+      Either ioc_id or ioc_type and value must be provided.'
       isArray: false
       name: ioc_id
       required: false
@@ -1693,23 +1690,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: |-
-        The string representation of the indicator.
-        Can also get comma separated values in order to upload multiple IOCs of the same type but with different values (all other args will be the same for all the newly created IOCs)
-      isArray: true
+      description: The string representation of the indicator.
+      isArray: false
       name: value
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Action to take when a host observes the custom IOC. Possible values
-        are: no_action - Save the indicator for future use, but take no action. No
-        severity required. allow - Applies to hashes only. Allow the indicator and
-        do not detect it. Severity does not apply and should not be provided. prevent_no_ui
-        - Applies to hashes only. Block and detect the indicator, but hide it from
-        Activity > Detections. Has a default severity value. prevent - Applies to
-        hashes only. Block the indicator and show it as a detection at the selected
-        severity. detect - Enable detections for the indicator at the selected severity.'
+      description: 'Action to take when a host observes the custom IOC. Possible
+        values are: no_action - Save the indicator for future use, but take no action. No severity required.
+        allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided.
+        prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value.
+        prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity.
+        detect - Enable detections for the indicator at the selected severity.'
       isArray: false
       name: action
       predefined:
@@ -1722,10 +1715,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The platforms that the indicator applies to. You can enter multiple
-        platform names, separated by commas. Possible values are: mac, windows and
-        linux.'
-      isArray: true
+      description: 'The platforms that the indicator applies to. You can enter multiple platform names, separated by commas.
+      Possible values are: mac, windows and linux.' 
+      isArray: false
       name: platforms
       predefined:
       - mac
@@ -1735,9 +1727,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The severity level to apply to this indicator. Required for the
-        prevent and detect actions. Optional for no_action. Possible values are: informational,
-        low, medium, high, and critical.'
+      description: 'The severity level to apply to this indicator. 
+      Required for the prevent and detect actions. Optional for no_action.
+      Possible values are: informational, low, medium, high, and critical.' 
       isArray: false
       name: severity
       predefined:
@@ -1749,8 +1741,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The date on which the indicator will become inactive (ISO 8601
-        format, i.e. YYYY-MM-DDThh:mm:ssZ).
+      description: The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ssZ).
       isArray: false
       name: expiration
       required: false
@@ -1770,8 +1761,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the indicator is applied globally. Either applied_globally
-        or host_groups must be provided.
+      description: 'Whether the indicator is applied globally. 
+      Either applied_globally or host_groups must be provided.'
       isArray: false
       name: applied_globally
       predefined:
@@ -1780,17 +1771,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of host group IDs that the indicator applies to. Can be retrieved
-        by running the cs-falcon-list-host-groups command. Either applied_globally
-        or host_groups must be provided.
+      description: 'List of host group IDs that the indicator applies to. 
+      Can be retrieved by running the cs-falcon-list-host-groups command.
+      Either applied_globally or host_groups must be provided.'
       isArray: true
       name: host_groups
-      required: false
-      secret: false
-    - default: false
-      description: List of tags to apply to the indicator.
-      isArray: true
-      name: tags
       required: false
       secret: false
     deprecated: false
@@ -1834,30 +1819,21 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
-    - contextPath: CrowdStrike.IOC.Tags
-      description: The tags of the IOC.
-      type: Unknown
-    - contextPath: CrowdStrike.IOC.Platforms
-      description: The platforms of the IOC.
-      type: Unknown
   - arguments:
     - default: false
-      description: The ID of the IOC to update. Can be retrieved by running the cs-falcon-search-custom-iocs
-        command.
+      description: The ID of the IOC to update. Can be retrieved by running the cs-falcon-search-custom-iocs command.
       isArray: false
       name: ioc_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Action to take when a host observes the custom IOC. Possible values
-        are: no_action - Save the indicator for future use, but take no action. No
-        severity required. allow - Applies to hashes only. Allow the indicator and
-        do not detect it. Severity does not apply and should not be provided. prevent_no_ui
-        - Applies to hashes only. Block and detect the indicator, but hide it from
-        Activity > Detections. Has a default severity value. prevent - Applies to
-        hashes only. Block the indicator and show it as a detection at the selected
-        severity. detect - Enable detections for the indicator at the selected severity.'
+      description: 'Action to take when a host observes the custom IOC. Possible
+        values are: no_action - Save the indicator for future use, but take no action. No severity required.
+        allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided.
+        prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value.
+        prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity.
+        detect - Enable detections for the indicator at the selected severity.'
       isArray: false
       name: action
       predefined:
@@ -1870,9 +1846,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The platforms that the indicator applies to. You can enter multiple
-        platform names, separated by commas. Possible values are: mac, windows and
-        linux.'
+      description: 'The platforms that the indicator applies to. You can enter multiple platform names, separated by commas.
+      Possible values are: mac, windows and linux.' 
       isArray: false
       name: platforms
       predefined:
@@ -1883,9 +1858,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The severity level to apply to this indicator. Required for the
-        prevent and detect actions. Optional for no_action. Possible values are: informational,
-        low, medium, high and critical.'
+      description: 'The severity level to apply to this indicator. 
+      Required for the prevent and detect actions. Optional for no_action.
+      Possible values are: informational, low, medium, high and critical.' 
       isArray: false
       name: severity
       predefined:
@@ -1897,8 +1872,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The date on which the indicator will become inactive (ISO 8601
-        format, i.e. YYYY-MM-DDThh:mm:ssZ).
+      description: The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ssZ).
       isArray: false
       name: expiration
       required: false
@@ -1959,8 +1933,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The ID of the IOC to delete. Can be retrieved by running the cs-falcon-search-custom-iocs
-        command.
+      description: The ID of the IOC to delete. Can be retrieved by running the cs-falcon-search-custom-iocs command.
       isArray: false
       name: ioc_id
       required: true
@@ -2168,8 +2141,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma separated detections ids for example - ldt:1234:1234,ldt:5678:5678,
-        In case you use this IDs argument fetch_query argument will be ignored.
+      description: A comma separated detections ids for example - ldt:1234:1234,ldt:5678:5678, In case you use this IDs argument fetch_query argument will be ignored.
       isArray: true
       name: ids
       required: false
@@ -2452,8 +2424,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma separated incident ids for example - inc:1234:1234,inc:5678:5678,
-        In case you use this IDs argument fetch_query argument will be ignored.
+      description: A comma separated incident ids for example - inc:1234:1234,inc:5678:5678, In case you use this IDs argument fetch_query argument will be ignored.
       isArray: true
       name: ids
       required: false
@@ -2646,8 +2617,8 @@ script:
       isArray: false
       name: group_type
       predefined:
-      - static
-      - dynamic
+        - static
+        - dynamic
       required: true
       secret: false
     - default: false
@@ -2662,41 +2633,40 @@ script:
       name: assignment_rule
       required: false
       secret: false
-    deprecated: false
+      deprecated: false
     description: Create a host group.
     execution: false
     name: cs-falcon-create-host-group
     outputs:
-    - contextPath: CrowdStrike.HostGroup.id
-      description: The ID of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.group_type
-      description: The group type of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.name
-      description: The name of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.description
-      description: The description of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.created_by
-      description: The client that created the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.created_timestamp
-      description: 'The datetime when the host group was created in ISO time format.
+      - contextPath: CrowdStrike.HostGroup.id
+        description: The ID of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.group_type
+        description: The group type of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.name
+        description: The name of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.description
+        description: The description of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_by
+        description: The client that created the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_timestamp
+        description: 'The datetime when the host group was created in ISO time format. For
+        example: 2019-10-17T13:41:48.487520845Z.'
+        type: Date
+      - contextPath: CrowdStrike.HostGroup.modified_by
+        description: The client that modified the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.modified_timestamp
+        description: 'The datetime when the host group was last modified in ISO time format.
         For example: 2019-10-17T13:41:48.487520845Z.'
-      type: Date
-    - contextPath: CrowdStrike.HostGroup.modified_by
-      description: The client that modified the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.modified_timestamp
-      description: 'The datetime when the host group was last modified in ISO time
-        format. For example: 2019-10-17T13:41:48.487520845Z.'
-      type: Date
+        type: Date
   - arguments:
     - default: false
-      description: The query by which to filter the devices that belong to the host
-        group.
+      description: The query by which to filter the devices that belong to the host group.
       isArray: false
       name: filter
       required: false
@@ -2708,43 +2678,42 @@ script:
       required: false
       secret: false
     - default: true
-      defaultValue: '50'
+      defaultValue: 50
       description: Maximum number of results on a page.
       isArray: false
       name: limit
       required: false
       secret: false
-    deprecated: false
     description: List the available host groups.
     execution: false
     name: cs-falcon-list-host-groups
     outputs:
-    - contextPath: CrowdStrike.HostGroup.id
-      description: The ID of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.group_type
-      description: The group type of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.name
-      description: The name of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.description
-      description: The description of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.created_by
-      description: The client that created the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.created_timestamp
-      description: 'The datetime when the host group was created in ISO time format.
+      - contextPath: CrowdStrike.HostGroup.id
+        description: The ID of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.group_type
+        description: The group type of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.name
+        description: The name of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.description
+        description: The description of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_by
+        description: The client that created the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_timestamp
+        description: 'The datetime when the host group was created in ISO time format. For
+        example: 2019-10-17T13:41:48.487520845Z.'
+        type: Date
+      - contextPath: CrowdStrike.HostGroup.modified_by
+        description: The client that modified the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.modified_timestamp
+        description: 'The datetime when the host group was last modified in ISO time format.
         For example: 2019-10-17T13:41:48.487520845Z.'
-      type: Date
-    - contextPath: CrowdStrike.HostGroup.modified_by
-      description: The client that modified the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.modified_timestamp
-      description: 'The datetime when the host group was last modified in ISO time
-        format. For example: 2019-10-17T13:41:48.487520845Z.'
-      type: Date
+        type: Date
   - arguments:
     - default: false
       description: A comma-separated list of the IDs of the host groups to be deleted.
@@ -2752,93 +2721,91 @@ script:
       name: host_group_id
       required: true
       secret: false
-    deprecated: false
     description: Delete the requested host groups.
     execution: false
     name: cs-falcon-delete-host-groups
   - arguments:
-    - default: false
-      description: The ID of the host group.
-      isArray: false
-      name: host_group_id
-      required: true
-      secret: false
-    - default: false
-      description: The name of the host group.
-      isArray: false
-      name: name
-      required: false
-      secret: false
-    - default: false
-      description: The description of the host group.
-      isArray: false
-      name: description
-      required: false
-      secret: false
-    - default: false
-      description: The assignment rule.
-      isArray: false
-      name: assignment_rule
-      required: false
-      secret: false
+      - default: false
+        description: The ID of the host group.
+        isArray: false
+        name: host_group_id
+        required: true
+        secret: false
+      - default: false
+        description: The name of the host group.
+        isArray: false
+        name: name
+        required: false
+        secret: false
+      - default: false
+        description: The description of the host group.
+        isArray: false
+        name: description
+        required: false
+        secret: false
+      - default: false
+        description: The assignment rule.
+        isArray: false
+        name: assignment_rule
+        required: false
+        secret: false
     deprecated: false
     description: Update a host group.
     execution: false
     name: cs-falcon-update-host-group
     outputs:
-    - contextPath: CrowdStrike.HostGroup.id
-      description: The ID of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.group_type
-      description: The group type of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.name
-      description: The name of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.description
-      description: The description of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.created_by
-      description: The client that created the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.created_timestamp
-      description: 'The datetime when the host group was created in ISO time format.
+      - contextPath: CrowdStrike.HostGroup.id
+        description: The ID of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.group_type
+        description: The group type of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.name
+        description: The name of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.description
+        description: The description of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_by
+        description: The client that created the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_timestamp
+        description: 'The datetime when the host group was created in ISO time format. For
+        example: 2019-10-17T13:41:48.487520845Z.'
+        type: Date
+      - contextPath: CrowdStrike.HostGroup.modified_by
+        description: The client that modified the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.modified_timestamp
+        description: 'The datetime when the host group was last modified in ISO time format.
         For example: 2019-10-17T13:41:48.487520845Z.'
-      type: Date
-    - contextPath: CrowdStrike.HostGroup.modified_by
-      description: The client that modified the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.modified_timestamp
-      description: 'The datetime when the host group was last modified in ISO time
-        format. For example: 2019-10-17T13:41:48.487520845Z.'
-      type: Date
+        type: Date
   - arguments:
-    - default: false
-      description: The ID of the host group.
-      isArray: false
-      name: host_group_id
-      required: false
-      secret: false
-    - default: false
-      description: The query by which to filter the devices that belong to the host
-        group.
-      isArray: false
-      name: filter
-      required: false
-      secret: false
-    - default: false
-      description: Page offset.
-      isArray: false
-      name: offset
-      required: false
-      secret: false
-    - default: true
-      defaultValue: '50'
-      description: Maximum number of results on a page.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
+      - default: false
+        description: The ID of the host group.
+        isArray: false
+        name: host_group_id
+        required: false
+        secret: false
+      - default: false
+        description: The query by which to filter the devices that belong to the host group.
+        isArray: false
+        name: filter
+        required: false
+        secret: false
+      - default: false
+        description: Page offset.
+        isArray: false
+        name: offset
+        required: false
+        secret: false
+      - default: true
+        defaultValue: 50
+        description: Maximum number of results on a page.
+        isArray: false
+        name: limit
+        required: false
+        secret: false
     deprecated: false
     description: Get the list of host group members.
     execution: false
@@ -2872,176 +2839,119 @@ script:
       description: The device status.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the host group.
-      isArray: false
-      name: host_group_id
-      required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of host agent IDs to run commands. (The
-        list of host agent IDs can be retrieved by running the 'cs-falcon-search-device'
-        command.)
-      isArray: true
-      name: host_ids
-      required: true
-      secret: false
+      - default: false
+        description: The ID of the host group.
+        isArray: false
+        name: host_group_id
+        required: true
+        secret: false
+      - default: false
+        description: A comma-separated list of host agent IDs to run commands. (The
+                  list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.)
+        isArray: true
+        name: host_ids
+        required: true
+        secret: false
     deprecated: false
     description: Add host group members.
     execution: false
     name: cs-falcon-add-host-group-members
     outputs:
-    - contextPath: CrowdStrike.HostGroup.id
-      description: The ID of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.group_type
-      description: The group type of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.name
-      description: The name of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.description
-      description: The description of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.created_by
-      description: The client that created the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.created_timestamp
-      description: 'The datetime when the host group was created in ISO time format.
+      - contextPath: CrowdStrike.HostGroup.id
+        description: The ID of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.group_type
+        description: The group type of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.name
+        description: The name of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.description
+        description: The description of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_by
+        description: The client that created the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_timestamp
+        description: 'The datetime when the host group was created in ISO time format. For
+        example: 2019-10-17T13:41:48.487520845Z.'
+        type: Date
+      - contextPath: CrowdStrike.HostGroup.modified_by
+        description: The client that modified the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.modified_timestamp
+        description: 'The datetime when the host group was last modified in ISO time format.
         For example: 2019-10-17T13:41:48.487520845Z.'
-      type: Date
-    - contextPath: CrowdStrike.HostGroup.modified_by
-      description: The client that modified the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.modified_timestamp
-      description: 'The datetime when the host group was last modified in ISO time
-        format. For example: 2019-10-17T13:41:48.487520845Z.'
-      type: Date
+        type: Date
   - arguments:
-    - default: false
-      description: The ID of the host group.
-      isArray: false
-      name: host_group_id
-      required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of host agent IDs to run commands. (The
-        list of host agent IDs can be retrieved by running the 'cs-falcon-search-device'
-        command.)
-      isArray: true
-      name: host_ids
-      required: true
-      secret: false
+      - default: false
+        description: The ID of the host group.
+        isArray: false
+        name: host_group_id
+        required: true
+        secret: false
+      - default: false
+        description: A comma-separated list of host agent IDs to run commands. (The
+                      list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.)
+        isArray: true
+        name: host_ids
+        required: true
+        secret: false
     deprecated: false
     description: Remove host group members.
     execution: false
     name: cs-falcon-remove-host-group-members
     outputs:
-    - contextPath: CrowdStrike.HostGroup.id
-      description: The ID of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.group_type
-      description: The group type of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.name
-      description: The name of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.description
-      description: The description of the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.created_by
-      description: The client that created the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.created_timestamp
-      description: 'The datetime when the host group was created in ISO time format.
+      - contextPath: CrowdStrike.HostGroup.id
+        description: The ID of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.group_type
+        description: The group type of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.name
+        description: The name of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.description
+        description: The description of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_by
+        description: The client that created the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_timestamp
+        description: 'The datetime when the host group was created in ISO time format. For
+        example: 2019-10-17T13:41:48.487520845Z.'
+        type: Date
+      - contextPath: CrowdStrike.HostGroup.modified_by
+        description: The client that modified the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.modified_timestamp
+        description: 'The datetime when the host group was last modified in ISO time format.
         For example: 2019-10-17T13:41:48.487520845Z.'
-      type: Date
-    - contextPath: CrowdStrike.HostGroup.modified_by
-      description: The client that modified the host group.
-      type: String
-    - contextPath: CrowdStrike.HostGroup.modified_timestamp
-      description: 'The datetime when the host group was last modified in ISO time
-        format. For example: 2019-10-17T13:41:48.487520845Z.'
-      type: Date
+        type: Date
   - arguments:
-    - default: false
-      description: A comma-separated list of incident IDs.
-      isArray: true
-      name: ids
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The new status of the incident. Can be "New", "In Progress", "Reopened",
-        "Closed".
-      isArray: false
-      name: status
-      predefined:
-      - New
-      - In Progress
-      - Reopened
-      - Closed
-      required: true
-      secret: false
+      - default: false
+        description: A comma-separated list of incident IDs.
+        isArray: true
+        name: ids
+        required: true
+        secret: false
+      - auto: PREDEFINED
+        default: false
+        description: The new status of the incident. Can be "New", "In Progress", "Reopened", "Closed".
+        isArray: false
+        name: status
+        predefined:
+          - New
+          - In Progress
+          - Reopened
+          - Closed
+        required: true
+        secret: false
     deprecated: false
     description: Resolve incidents.
     execution: false
     name: cs-falcon-resolve-incident
-  - arguments:
-    - default: false
-      description: A JSON object with list of CS Falcon indicators to upload.
-      isArray: true
-      name: multiple_indicators_json
-      required: true
-      secret: false
-    deprecated: false
-    description: Uploads a batch of indicators.
-    execution: false
-    name: cs-falcon-batch-upload-custom-ioc
-    outputs:
-    - contextPath: CrowdStrike.IOC.Type
-      description: The type of the IOC.
-      type: string
-    - contextPath: CrowdStrike.IOC.Value
-      description: The string representation of the indicator.
-      type: string
-    - contextPath: CrowdStrike.IOC.ID
-      description: The full ID of the indicator.
-      type: string
-    - contextPath: CrowdStrike.IOC.Severity
-      description: The severity level to apply to this indicator.
-      type: string
-    - contextPath: CrowdStrike.IOC.Source
-      description: The source of the IOC.
-      type: string
-    - contextPath: CrowdStrike.IOC.Action
-      description: Action to take when a host observes the custom IOC.
-      type: string
-    - contextPath: CrowdStrike.IOC.Expiration
-      description: The datetime when the indicator will expire.
-      type: string
-    - contextPath: CrowdStrike.IOC.Description
-      description: The description of the IOC.
-      type: string
-    - contextPath: CrowdStrike.IOC.CreatedTime
-      description: The datetime the IOC was created.
-      type: date
-    - contextPath: CrowdStrike.IOC.CreatedBy
-      description: The identity of the user/process who created the IOC.
-      type: string
-    - contextPath: CrowdStrike.IOC.ModifiedTime
-      description: The datetime the indicator was last modified.
-      type: date
-    - contextPath: CrowdStrike.IOC.ModifiedBy
-      description: The identity of the user/process who last updated the IOC.
-      type: string
-    - contextPath: CrowdStrike.IOC.Tags
-      description: The tags of the IOC.
-      type: Unknown
-    - contextPath: CrowdStrike.IOC.Platforms
-      description: The platforms of the IOC.
-      type: Unknown
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.1.26972
   feed: false
   isfetch: true
   longRunning: false
