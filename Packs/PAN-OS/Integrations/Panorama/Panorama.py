@@ -7786,20 +7786,6 @@ class Topology:
 
         return topology
 
-    def freeze(self) -> dict:
-        """
-        Serializes the topology information for storage (for example, in the incident context)
-        """
-        frozen_topology = FrozenTopology
-        panorama_object: Panorama
-        for panorama_object in self.panorama_objects:
-            frozen_topology.panorama_objects.append(panorama_object.hostname)
-        firewall_object: Firewall
-        for firewall_object in self.panorama_objects:
-            frozen_topology.firewall_objects.append(firewall_object.hostname)
-
-        return vars(frozen_topology)
-
     def get_direct_device(self, firewall: Firewall) -> PanDevice:
         """
         Given a firewall object that's proxied via Panorama, create a device that uses a direct API connection
