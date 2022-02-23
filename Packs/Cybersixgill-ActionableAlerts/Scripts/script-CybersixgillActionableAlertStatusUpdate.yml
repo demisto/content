@@ -1,6 +1,6 @@
 commonfields:
   id: c918decb-1358-4774-8090-fe9540ea63ae
-  version: 73
+  version: 84
 vcShouldKeepItemLegacyProdMachine: false
 name: CybersixgillActionableAlertStatusUpdate
 script: |-
@@ -18,7 +18,12 @@ script: |-
 
   command_args['alert_id'] = parse_qs(urlparse(incident_link).fragment)["/?actionable_alert"][0]
 
-  demisto.executeCommand("cybersixgill-update-alert-status", command_args)
+  res = demisto.executeCommand("cybersixgill-update-alert-status", command_args)
+
+  if isError(res[0]):
+      return_error('Failed to update Actionable alert status - {}'.format(res[0]['Contents']))
+  else:
+      demisto.results("Actionable Alert Status Updated successfully.")
 type: python
 tags:
 - field-change-triggered
@@ -35,6 +40,6 @@ dependson:
 timeout: 180ns
 pswd: ""
 runonce: false
-dockerimage: devdemisto/sixgill:1.0.0.26750
+dockerimage: demisto/sixgill:1.0.0.24417
 runas: DBotWeakRole
 engineinfo: {}
