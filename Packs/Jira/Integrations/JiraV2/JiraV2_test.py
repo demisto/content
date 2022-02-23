@@ -1282,3 +1282,46 @@ def test_get_custom_field_names(mocker, requests_mock):
     requests_mock.get('https://localhost/rest/api/latest/field', json=FIELDS_RESPONSE)
     res = get_custom_field_names()
     assert res == EXPECTED_RESP
+
+
+def test_get_attachment_data_request(mocker, requests_mock):
+    """
+    Given:
+        - An attachment data.
+    When
+        - Running the get_attachment_data command.
+    Then
+        - Ensure the command does not fail due to a wrong url.
+    """
+    from JiraV2 import get_attachment_data
+    from test_data.raw_response import ATTACHMENT
+
+    mocker.patch.object(demisto, "params", return_value=integration_params)
+    requests_mock.get('https://localhost/rest/api/2/attachment/content/16188', json={})
+
+    assert get_attachment_data(ATTACHMENT), 'There was a request to the wrong url'
+
+
+def test_get_attachment_data_url_processing(mocker, requests_mock):
+    """
+    Given:
+        - An attachment data.
+    When
+        - Running the get_attachment_data command.
+    Then
+        - Ensure the filename output is correct, and the req_path is correct.
+    """
+    from JiraV2 import get_attachment_data
+    from test_data.raw_response import ATTACHMENT
+
+    class file:
+        def __init__(self):
+            self.content = b"content"
+
+    file_content = file()
+    request = mocker.patch("JiraV2.jira_req", return_value=file_content)
+    mocker.patch.object(demisto, "params", return_value=integration_params)
+    filename, _ = get_attachment_data(ATTACHMENT)
+
+    assert filename == '16188'
+    assert request.call_args[1].get("resource_url") == 'rest/api/2/attachment/content/16188'

@@ -4,7 +4,7 @@
     "cliName": "hostos",
     "closeForm": false,
     "content": true,
-    "description": "Operating system of the endpoint or server on which this alert triggered.",
+    "description": "Action taken by the alert sensor, either Detected or Prevented with action status displayed in parenthesis.",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -22,17 +22,11 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "multiSelect",
-    "unmapped": false,
+    "type": "shortText",
+    "unmapped": true,
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "agent_os_type",
-    "Aliases": [
-        {
-          "cliName": "srcos",
-          "type": "shortText"
-        }
-    ]
+	"x2_fields": "agent_os_type"
 }

@@ -95,7 +95,7 @@ For more details about the authentication used in this integration, see <a href=
 <td style="width: 136px;">filter</td>
 <td style="width: 549px;">
 <p>Use this field to filter on any of the alert properties in the format "{property} eq '{property-value}'", e.g. "category eq 'ransomware'".</p>
-<p>For Microsoft filter syntax, see the <a href="https://developer.microsoft.com/en-us/graph/docs/concepts/query_parameters#filter-parameter" target="_blank" rel="noopener">Microsoft Graph Documentation</a>.</p>
+<p>For Microsoft filter syntax, see the <a href="https://docs.microsoft.com/en-us/graph/query-parameters#filter-parameter" target="_blank" rel="noopener">Microsoft Graph Documentation</a>.</p>
 </td>
 <td style="width: 55px;">Optional</td>
 </tr>
