@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -43,6 +44,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "2"
@@ -102,6 +104,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -119,10 +122,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b9e7869f-8cee-43f4-86d3-fd8cbad86ffd
+    taskid: 5387384c-7fc2-48c9-8c22-7db769716a16
     type: condition
     task:
-      id: b9e7869f-8cee-43f4-86d3-fd8cbad86ffd
+      id: 5387384c-7fc2-48c9-8c22-7db769716a16
       version: -1
       name: IP address Exists?
       description: Check if a given value exists in the context. Will return 'no'
@@ -138,7 +141,8 @@ tasks:
       - "4"
     scriptarguments:
       value:
-        simple: ${inputs.IP}
+        complex:
+          root: inputs.IP
     separatecontext: false
     view: |-
       {
@@ -289,6 +293,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "15"
@@ -318,6 +323,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "6"
@@ -338,10 +344,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 49d88a89-9b8a-4c2f-8768-08d6b584d039
+    taskid: b815edc2-f6e3-4db8-8f03-f0dbb2690ae8
     type: regular
     task:
-      id: 49d88a89-9b8a-4c2f-8768-08d6b584d039
+      id: b815edc2-f6e3-4db8-8f03-f0dbb2690ae8
       version: -1
       name: Fetch Related CMDB CI by ID
       description: Query attributes and relationship information for a specific record.
@@ -356,7 +362,9 @@ tasks:
       class:
         simple: cmdb_ci
       sys_id:
-        simple: ${ServiceNowCMDB.Record.Attributes.cmdb_ci.value}
+        complex:
+          root: ServiceNowCMDB.Record.Attributes.cmdb_ci
+          accessor: value
     separatecontext: false
     view: |-
       {
@@ -374,10 +382,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: fb51a5ef-1c13-43eb-83dd-5b9b32e32067
+    taskid: f2e66266-397a-4f4d-8660-7bd996d02766
     type: regular
     task:
-      id: fb51a5ef-1c13-43eb-83dd-5b9b32e32067
+      id: f2e66266-397a-4f4d-8660-7bd996d02766
       version: -1
       name: Save ServiceNow CMDB CI to Notes
       description: Convert an array to a nice table display. Usually, from the context.
@@ -392,9 +400,9 @@ tasks:
       columns:
         simple: name,sys_class_name,sys_id,asset.display_value,asset.link,asset.value
       data:
-        simple: |2-
-
-          ${ServiceNowCMDB.Record.Attributes}
+        complex:
+          root: ServiceNowCMDB.Record
+          accessor: Attributes
       title:
         simple: Fetched ServiceNow CMDB Record
     separatecontext: false
@@ -414,10 +422,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 18a57423-b04b-478f-8a39-6871b60d977d
+    taskid: 6e455b28-e3e0-4051-8390-0515d6ba66c2
     type: condition
     task:
-      id: 18a57423-b04b-478f-8a39-6871b60d977d
+      id: 6e455b28-e3e0-4051-8390-0515d6ba66c2
       version: -1
       name: Related SysID Exists?
       description: Check if a given value exists in the context. Will return 'no'
@@ -433,7 +441,9 @@ tasks:
       - "9"
     scriptarguments:
       value:
-        simple: ${ServiceNowCMDB.Record.Attributes.cmdb_ci.value}
+        complex:
+          root: '{ServiceNowCMDB.Record.Attributes.cmdb_ci'
+          accessor: value
     separatecontext: false
     view: |-
       {
@@ -451,10 +461,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 3a00bc4d-d500-4f84-869a-f9cda6e8afcc
+    taskid: f81e0175-c22b-4c83-8aab-128ab2f73b84
     type: regular
     task:
-      id: 3a00bc4d-d500-4f84-869a-f9cda6e8afcc
+      id: f81e0175-c22b-4c83-8aab-128ab2f73b84
       version: -1
       name: Print Notification of missing Sys_id
       description: Prints text to war room (Markdown supported)
@@ -467,8 +477,17 @@ tasks:
       - "2"
     scriptarguments:
       value:
-        simple: cmdb_ci_network_adapter record for ${inputs.IP} found without associated
-          CI attributes
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'cmdb_ci_ip_address record for '
+              suffix:
+                value:
+                  simple: ' found without associated CI attributes'
     separatecontext: false
     view: |-
       {
@@ -495,6 +514,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "2"

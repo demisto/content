@@ -36,23 +36,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 5c1b53ca-c8c5-450f-851d-dcf830525368
+    taskid: c38b00d2-bdfd-4dff-8e97-e4a6ac36fec2
     type: playbook
     task:
-      id: 5c1b53ca-c8c5-450f-851d-dcf830525368
+      id: c38b00d2-bdfd-4dff-8e97-e4a6ac36fec2
       version: -1
       name: Cortex ASM - Extract IP Indicator
+      description: Identifies IPv4 Address associated with Alert and creates a new
+        Indicator.
       playbookName: Cortex ASM - Extract IP Indicator
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
       AlertName:
-        simple: ${alert.name}
+        complex:
+          root: alert
+          accessor: alertname
     separatecontext: true
     loop:
       iscommand: false
@@ -75,10 +78,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f7dc382a-bfec-41cd-88ca-43e2225af417
+    taskid: d29c2fe9-103e-4e00-88b4-46ae3f516cd6
     type: condition
     task:
-      id: f7dc382a-bfec-41cd-88ca-43e2225af417
+      id: d29c2fe9-103e-4e00-88b4-46ae3f516cd6
       version: -1
       name: IP exists for Alert?
       description: Check if a given value exists in the context. Will return 'no'
@@ -95,7 +98,9 @@ tasks:
       - "5"
     scriptarguments:
       value:
-        simple: ${ExtractedIndicators.IP}
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
     separatecontext: false
     view: |-
       {
@@ -113,25 +118,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 2ffbc7d8-8489-4d45-8ad8-e509bd58b42e
+    taskid: 95d6a918-58aa-4d2d-8ddb-34accccbbf81
     type: playbook
     task:
-      id: 2ffbc7d8-8489-4d45-8ad8-e509bd58b42e
+      id: 95d6a918-58aa-4d2d-8ddb-34accccbbf81
       version: -1
       name: Cortex ASM - ServiceNow CMDB Enrichment
+      description: This playbook will look up a CI in ServiceNow CMDB by IP.
       playbookName: Cortex ASM - ServiceNow CMDB Enrichment
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "4"
     scriptarguments:
       IP:
-        simple: ${ExtractedIndicators.IP}
-      modules:
-        simple: ${ConfiguredModules}
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+      ServiceNowCMDBClass:
+        simple: cmdb_ci_ip_address
     separatecontext: true
     loop:
       iscommand: false
@@ -181,23 +188,28 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: ed1dc95b-deac-4a25-83ad-ce7c78c86bcb
+    taskid: e6142186-b7d5-4dcf-8b84-3cbaff6e0a7c
     type: playbook
     task:
-      id: ed1dc95b-deac-4a25-83ad-ce7c78c86bcb
+      id: e6142186-b7d5-4dcf-8b84-3cbaff6e0a7c
       version: -1
       name: Cortex ASM - Vulnerability Management Enrichment
+      description: This playbook will look up an IP address in Tenable.io or Rapid7
+        InsightVM.
       playbookName: Cortex ASM - Vulnerability Management Enrichment
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "4"
     scriptarguments:
+      DaysPast:
+        simple: "30"
       IP:
-        simple: ${ExtractedIndicators.IP}
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
     separatecontext: true
     loop:
       iscommand: false
