@@ -178,7 +178,7 @@ try:
     from urllib3.util import Retry
     from typing import Optional, Dict, List, Any, Union, Set
 
-    import dateparser
+    import dateparser  # type: ignore
     from datetime import timezone  # type: ignore
 except Exception:
     if sys.version_info[0] < 3:

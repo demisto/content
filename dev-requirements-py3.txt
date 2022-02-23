@@ -1,7 +1,7 @@
 flake8==4.0.1
 bandit==1.7.2
 demisto-py>=3.0.2
-git+https://github.com/demisto/demisto-sdk.git@af456a8d763a62a2d1b14de16c5b80afbd3f8873#egg=demisto-sdk
+git+https://github.com/demisto/demisto-sdk.git@75b209427c1a0f7604244ca4df452b4faca7448a#egg=demisto-sdk
 pytest==7.0.1
 pytest-mock==3.7.0
 requests-mock==1.9.3
@@ -23,4 +23,3 @@ timeout-decorator==0.5.0
 sendgrid==6.6.0
 blessings==1.7
 slack_sdk==3.11.2
-typed-ast==1.5.2

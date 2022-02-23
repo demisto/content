@@ -26,8 +26,8 @@ class DetectionRatio:
 
 class Client(BaseClient):
     def get_api_indicators(self,
-                           query_filter: Optional[str] = None,
-                           limit: Optional[int] = 10):
+                           query_filter: str = None,
+                           limit: int = 10):
         return self._http_request(
             'GET',
             'intelligence/hunting_notification_files',
