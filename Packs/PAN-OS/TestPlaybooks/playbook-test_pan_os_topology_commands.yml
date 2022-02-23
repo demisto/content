@@ -1,0 +1,622 @@
+id: test_pan_os_topology_commands
+name: test_pan_os_topology_commands
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: pan-os-platform-get-arp-tables
+      description: ''
+      script: Panorama_DEV|||pan-os-platform-get-arp-tables
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowArp.Summary.hostid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowArp.Summary.max
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowArp.Summary.total
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowArp.Summary.timeout
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowArp.Summary.dp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowArp.Result.hostid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowArp.Result.interface
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowArp.Result.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowArp.Result.mac
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowArp.Result.port
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowArp.Result.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowArp.Result.ttl
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: pan-os-platform-get-route-summary
+      description: ''
+      script: Panorama_DEV|||pan-os-platform-get-route-summary
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '5'
+    type: condition
+    task:
+      id: '5'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowRouteSummary.Summary.hostid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowRouteSummary.Summary.total
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowRouteSummary.Summary.limit
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowRouteSummary.Summary.active
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: pan-os-platform-get-routes
+      description: ''
+      script: Panorama_DEV|||pan-os-platform-get-routes
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '7'
+    type: condition
+    task:
+      id: '7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowRoute.Summary.hostid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowRoute.Summary.interface
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowRoute.Summary.route_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowRoute.Result.hostid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowRoute.Result.virtual_router
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowRoute.Result.destination
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowRoute.Result.nexthop
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowRoute.Result.metric
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowRoute.Result.flags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowRoute.Result.age
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowRoute.Result.interface
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowRoute.Result.route_table
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '8'
+    type: regular
+    task:
+      id: '8'
+      version: -1
+      name: pan-os-platform-get-system-info
+      description: ''
+      script: Panorama_DEV|||pan-os-platform-get-system-info
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '9'
+    type: condition
+    task:
+      id: '9'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Summary.hostid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Summary.ip_address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Summary.sw_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Summary.family
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Summary.model
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Summary.uptime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Summary.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.hostid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.ip_address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.netmask
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.mac_address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.uptime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.family
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.model
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.sw_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.operational_mode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.ipv6_address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.default_gateway
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.public_ip_address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.av_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.av_release_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.app_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.app_release_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.threat_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.threat_release_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.wildfire_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.wildfire_release_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.ShowSystemInfo.Result.url_filtering_version
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '10'
+    type: regular
+    task:
+      id: '10'
+      version: -1
+      name: pan-os-platform-get-template-stacks
+      description: ''
+      script: Panorama_DEV|||pan-os-platform-get-template-stacks
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: '11'
+    type: condition
+    task:
+      id: '11'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.TemplateStackOp.hostid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.TemplateStackOp.serial
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.TemplateStackOp.connected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.TemplateStackOp.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.TemplateStackOp.last_commit_all_state_tpl
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANOS.TemplateStackOp.name
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: '12'
+    taskid: '12'
+    type: title
+    task:
+      id: '12'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
