@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: GitLab test2
+  id: GitLab
   version: -1
 configuration:
 - defaultvalue: https://gitlab.com/api/v4
@@ -25,8 +25,8 @@ configuration:
   required: false
   type: 8
 description: An integration with GitLab.
-display: GitLab test2
-name: GitLab test2
+display: GitLab
+name: GitLab
 script:
   commands:
   - arguments:
