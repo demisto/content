@@ -387,7 +387,7 @@ class TestChangedIntegration:
     GIT_DIFF_RET = "M Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
-        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET, marketplace_version='marketplacev2')
 
         assert filterd_tests == {self.TEST_ID}
         assert content_packs == {"Base", "DeveloperTools", "PagerDuty"}
@@ -411,6 +411,32 @@ class TestChangedIntegrationAndPlaybook:
     GIT_DIFF_RET = "M Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.py\n" \
                    "M Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
+    def test_changed_runnable_test__unmocked_get_modified_files_on_marketplacev2(self):
+        """
+        Given:
+            - 2 Modified in packs and only PagerDuty is marketplacev2 supported.
+        When:
+            - Calling get_test_list_and_content_packs_to_install
+        Then:
+            - Test filter should not return the CommonPlaybooks pack
+        """
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET, marketplace_version='marketplacev2')
+        assert filterd_tests == {'PagerDuty Test'}
+        assert content_packs == {"Base", "DeveloperTools", 'PagerDuty'}
+
+    def test_changed_runnable_test__unmocked_get_modified_files_on_xsoar(self):
+        """
+        Given:
+            - 2 Modified in packs and only CommonPlaybooks is xsoar supported.
+        When:
+            - Calling get_test_list_and_content_packs_to_install
+        Then:
+            - Test filter should not return the PagerDuty pack
+        """
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET, marketplace_version='xsoar')
+        assert filterd_tests == {'Calculate Severity - Standard - Test'}
+        assert content_packs == {"Base", "DeveloperTools", 'CommonPlaybooks'}
+
     def test_changed_runnable_test__unmocked_get_modified_files_with_deprecated_pack(self, mocker):
         mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
                             return_value=(True, ''))
@@ -418,7 +444,7 @@ class TestChangedIntegrationAndPlaybook:
 
         assert filterd_tests == set(self.TEST_ID.split('\n'))
         assert "FakePack" not in content_packs
-        assert content_packs == {"Base", "DeveloperTools", 'CommonPlaybooks', 'PagerDuty'}
+        assert content_packs == {"Base", "DeveloperTools", 'CommonPlaybooks'}
 
     def test_changed_runnable_test__unmocked_get_modified_files_with_not_deprecated_pack(self, mocker):
         mocker.patch.object(content_packs_util, 'is_pack_deprecated', return_value=False)
@@ -427,7 +453,7 @@ class TestChangedIntegrationAndPlaybook:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == set(self.TEST_ID.split('\n'))
-        assert content_packs == {"Base", "DeveloperTools", 'CommonPlaybooks', 'PagerDuty'}
+        assert content_packs == {"Base", "DeveloperTools", 'CommonPlaybooks'}
 
 
 class TestChangedScript:
@@ -607,7 +633,7 @@ def create_get_modified_files_ret(modified_files_list=None, modified_tests_list=
 
 
 def get_mock_test_list(get_modified_files_ret=None, mocker=None,
-                       git_diff_ret=''):
+                       git_diff_ret='', marketplace_version='xsoar'):
     branch_name = 'BranchA'
     if get_modified_files_ret is not None:
         mocker.patch(
@@ -615,7 +641,7 @@ def get_mock_test_list(get_modified_files_ret=None, mocker=None,
             return_value=get_modified_files_ret
         )
     tests, content_packs = get_test_list_and_content_packs_to_install(
-        git_diff_ret, branch_name, 'xsoar', id_set=MOCK_ID_SET, conf=TestConf(MOCK_CONF)
+        git_diff_ret, branch_name, marketplace_version, id_set=MOCK_ID_SET, conf=TestConf(MOCK_CONF)
     )
     return tests, content_packs
 

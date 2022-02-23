@@ -1056,11 +1056,12 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: dict, marketplace_v
         - Non XSOAR supported packs
         - DeprecatedContent, NonSupported packs
         - Deprecated packs
+        - Not compatible with the marketplace version were the tests will run
 
         Args:
             tests (set): Tests set to remove the tests to ignore from
             id_set (dict): The id set object
-            marketplace_version (str)
+            marketplace_version (str): The marketplace version were the tests will run
         Return:
              set: The filtered tests set
         """
@@ -1103,11 +1104,13 @@ def filter_tests(tests: set, id_set: dict, modified_packs: set, marketplace_vers
     b. Non-XSOAR or non-supported packs
     c. tests of deprecated packs.
     d. tests of private packs (optional)
+    e. Not compatible with the marketplace version were the tests will run
+
     Args:
         tests (set): Set of tests collected so far.
         id_set (dict): The ID set.
         modified_packs: The modified packs.
-        marketplace_version:(str)
+        marketplace_version (str): The marketplace version were the tests will run.
     Returns:
         (set): Set of tests without ignored, non supported and deprecated-packs tests.
     """
@@ -1131,8 +1134,8 @@ def filter_installed_packs(packs_to_install: set, marketplace_version: str, id_s
         - Content pack is not deprecated
     Args:
         packs_to_install (set): Set of installed packs collected so far.
-        marketplace_version (str):
-        id_set (dict):
+        marketplace_version (str): The marketplace version were the tests will run
+        id_set (dict): Structure which holds all content entities to extract pack names from.
     Returns:
         (set): Set of packs without ignored, skipped and deprecated-packs.
     """
@@ -1197,7 +1200,7 @@ def get_test_list_and_content_packs_to_install(files_string,
 
     # Check if only README file in file string, if so, no need to create the servers.
     documentation_changes_only = is_documentation_changes_only(files_string)
-    create_filter_envs_file(from_version, to_version, documentation_changes_only=documentation_changes_only)
+    # create_filter_envs_file(from_version, to_version, documentation_changes_only=documentation_changes_only)
 
     tests = set([])
     packs_to_install = set([])

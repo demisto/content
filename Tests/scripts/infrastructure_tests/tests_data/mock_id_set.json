@@ -396,7 +396,8 @@
           "PagerDuty-incidents": "",
           "PagerDuty-get-all-schedules": "",
           "PagerDuty-get-users-on-call-now": ""
-        }
+        },
+        "pack": "PagerDuty"
       }
     },
     {
@@ -441,7 +442,7 @@
       },
       "PagerDuty": {
         "marketplaces": [
-          "xsoar"
+          "marketplacev2"
         ]
       },
       "EWS": {
