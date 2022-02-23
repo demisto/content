@@ -94,6 +94,9 @@ script:
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
       type: string
+    - contextPath: File.DigitalSignature.Publisher
+      description: ' '
+      type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: string

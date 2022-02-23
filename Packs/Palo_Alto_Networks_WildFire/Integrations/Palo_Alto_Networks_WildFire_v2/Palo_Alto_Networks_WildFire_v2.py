@@ -917,63 +917,63 @@ def parse_file_report(reports, file_info, extended_data: bool):
                         entry = [entry]
                     for url in entry:
                         feed_related_indicators.append({'value': url, 'type': 'URL'})
-        
-        if 'process_list' in report and 'process' in report['process_list'] and report['process_list']['process']:
-            process_list = report['process_list']['process']
-            if not isinstance(process_list, list):
-                process_list = [process_list]
-            for process in process_list:
-                if '@command' in process:
-                    process_list_command.append(process['@command'])
-                if '@name' in process:
-                    process_list_name.append(process['@name'])
-                if '@pid' in process:
-                    process_list_pid.append(process['@pid'])
-                if 'file' in process:
-                    process_list_file.append(process['file'])
-        
-        if 'process_tree' in report and 'process' in report['process_tree'] and report['process_tree']['process']:
-            process_tree = report['process_list']['process']
-            if not isinstance(process_tree, list):
-                process_list = [process_tree]
-            for process in process_tree:
-                if '@text' in process:
-                    process_tree_text.append(process['@text'])
-                if '@name' in process:
-                    process_tree_name.append(process['@name'])
-                if '@pid' in process:
-                    process_tree_pid.append(process['@pid'])
-                if 'child' in process and 'process' in process['child'] and process['child']['process']:
-                    child_process = process['child']['process']
-                    if not isinstance(child_process, list):
-                        child_process = [child_process]
-                    for child in child_process:
-                        if '' in child:
-                            child_name.append(child['@name'])
-                        if '' in child:
-                            child_pid.append(child['@pid'])
-                        if '@text' in child:
-                            child_text.append(child['@text'])
-        
-        if 'summary' in report and 'entry' in report['summary'] and report['summary']['entry']:
-            entries = report['summary']['entry']
-            if not isinstance(entries, list):
-                entries = [entries]
-            for entry in entries:
-                if '#text' in entry:
-                    entry_text.append(entry['#text'])
-                if '@details' in entry:
-                    entry_details.append(entry['@details'])
-                if '@behavior' in entry:
-                    entry_behavior.append(entry['@behavior'])
+        if extended_data:
+            if 'process_list' in report and 'process' in report['process_list'] and report['process_list']['process']:
+                process_list = report['process_list']['process']
+                if not isinstance(process_list, list):
+                    process_list = [process_list]
+                for process in process_list:
+                    if '@command' in process:
+                        process_list_command.append(process['@command'])
+                    if '@name' in process:
+                        process_list_name.append(process['@name'])
+                    if '@pid' in process:
+                        process_list_pid.append(process['@pid'])
+                    if 'file' in process:
+                        process_list_file.append(process['file'])
+            
+            if 'process_tree' in report and 'process' in report['process_tree'] and report['process_tree']['process']:
+                process_tree = report['process_list']['process']
+                if not isinstance(process_tree, list):
+                    process_list = [process_tree]
+                for process in process_tree:
+                    if '@text' in process:
+                        process_tree_text.append(process['@text'])
+                    if '@name' in process:
+                        process_tree_name.append(process['@name'])
+                    if '@pid' in process:
+                        process_tree_pid.append(process['@pid'])
+                    if 'child' in process and 'process' in process['child'] and process['child']['process']:
+                        child_process = process['child']['process']
+                        if not isinstance(child_process, list):
+                            child_process = [child_process]
+                        for child in child_process:
+                            if '' in child:
+                                child_name.append(child['@name'])
+                            if '' in child:
+                                child_pid.append(child['@pid'])
+                            if '@text' in child:
+                                child_text.append(child['@text'])
+            
+            if 'summary' in report and 'entry' in report['summary'] and report['summary']['entry']:
+                entries = report['summary']['entry']
+                if not isinstance(entries, list):
+                    entries = [entries]
+                for entry in entries:
+                    if '#text' in entry:
+                        entry_text.append(entry['#text'])
+                    if '@details' in entry:
+                        entry_details.append(entry['@details'])
+                    if '@behavior' in entry:
+                        entry_behavior.append(entry['@behavior'])
 
-        if 'elf_info' in report and 'Shell_Commands' in report['elf_info'] and 'entry' in report['elf_info']['Shell_Commands'] and report['elf_info']['Shell_Commands']['entry']:
-            elf_shell_commands.append(report['elf_info']['Shell_Commands']['entry'])
+            if 'elf_info' in report and 'Shell_Commands' in report['elf_info'] and 'entry' in report['elf_info']['Shell_Commands'] and report['elf_info']['Shell_Commands']['entry']:
+                elf_shell_commands.append(report['elf_info']['Shell_Commands']['entry'])
 
-        if 'platform' in report:
-            platform_report.append(report['platform'])
-        if 'software' in report:
-            software_report.append(report['software'])
+            if 'platform' in report:
+                platform_report.append(report['platform'])
+            if 'software' in report:
+                software_report.append(report['software'])
 
     outputs = {
         'Status': 'Success',
