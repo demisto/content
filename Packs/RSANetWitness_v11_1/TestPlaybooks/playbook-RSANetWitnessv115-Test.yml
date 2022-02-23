@@ -1,5 +1,5 @@
 id: RSANetWitnessv115-Test
-version: 3
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: RSANetWitnessv115-Test
 starttaskid: "0"
