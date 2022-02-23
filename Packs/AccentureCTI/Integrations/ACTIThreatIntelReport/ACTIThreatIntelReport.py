@@ -83,8 +83,8 @@ def getThreatReport_command(client: Client, args: dict , reliability: DBotScoreR
         if 'uuid' in args:
             ia_ir_uuid: str = str(args.get('uuid'))
             result = client.document_download(url_suffix=f'/v0/{ia_ir_uuid}')
-            context = _ia_ir_extract(result, reliability)
-            return CommandResults(raw_response=result, outputs=context, readable_output=f"Report with UUID: {result['uuid']} has been fetched")
+            context, custom_indicator = _ia_ir_extract(result, reliability)
+            return CommandResults(indicator=custom_indicator, raw_response=result, readable_output=f"Report with UUID: {result['uuid']} has been fetched")
         
     except Exception as e:
         if 'Failed to parse json object from response' in e.args[0]:
@@ -98,13 +98,13 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
     """
     """
     threat_types = Res.get('threat_types','')
-    threattypes=''; uuid=''
+    threattypes=''; uuid=''; indicatortype=''
     uuid = Res.get('uuid','')
     if threat_types:
             for threat_type in threat_types:
                 threattypes= threattypes+'\n- '+threat_type
     context = {
-        "Report": {
+        "IAIR": {
                 'created_on' : Res.get('created_on','NA'),
                 'display_text' : Res.get('display_text','NA'),
                 'dynamic_properties' : Res.get('dynamic_properties','NA'),
@@ -119,27 +119,28 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
                 'uuid' : uuid,
                 'analysis' : Res.get('analysis','NA'),
                 'sources_external' : Res.get('sources_external','NA')
-            },
-            "DBotScore": {
-                "Indicator": Res.get('display_text','NA'),
-                "Reliability": reliability,
-                "Type": "Report",
-                "Vendor": "ACTI Threat Intelligence Report"
             }
+            # "DBotScore": {
+            #     "Indicator": Res.get('display_text','NA'),
+            #     "Reliability": reliability,
+            #     "Type": "Report",
+            #     "Vendor": "ACTI Threat Intelligence Report"
+            # }
         }
     
     type_of_report = Res.get('type','NA')
     if 'intelligence_report' in type_of_report:
-        context['Report']['conclusion'] = Res.get('conclusion','NA')
-        context['Report']['summary'] = Res.get('summary','NA')
-        context['DBotScore']['Score'] = Res.get('NA')  # Intelligence alerts shouldn't contain severity
+        context['IAIR']['conclusion'] = Res.get('conclusion','NA')
+        context['IAIR']['summary'] = Res.get('summary','NA')
+        severity_dbot_score = Common.DBotScore.NONE
+        indicatortype = 'ACTI Intelligence Report'
     else:
         severity_dbot_score = Res.get('severity','NA')
         if severity_dbot_score != 'NA':
             severity_dbot_score = _calculate_dbot_score(severity_dbot_score)
-        context['Report']['mitigation'] = Res.get('mitigation','NA')
-        context['Report']['severity'] = Res.get('severity','NA')
-        context['Report']['abstract'] = Res.get('abstract','NA')
+        context['IAIR']['mitigation'] = Res.get('mitigation','NA')
+        context['IAIR']['severity'] = Res.get('severity','NA')
+        context['IAIR']['abstract'] = Res.get('abstract','NA')
         attachment_links = Res.get('attachment_links','')
         fqlink: str = ''
         if attachment_links:
@@ -147,10 +148,11 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
                 fqlink= fqlink+'\n- '+(ATTACHMENT_LINK+link)
         else:
             fqlink = 'NA'
-        context['Report']['attachment_links'] = fqlink
-        context['DBotScore']['Score'] = severity_dbot_score
-        
-    return context
+        context['IAIR']['attachment_links'] = fqlink
+        indicatortype = 'ACTI Intelligence Alert'
+    dbot_score = Common.DBotScore(indicator=uuid, indicator_type=DBotScoreType.CUSTOM, integration_name='ACTI Threat Intelligence Report', score=severity_dbot_score)
+    custom_indicator = Common.CustomIndicator(indicator_type=indicatortype, dbot_score=dbot_score, value=uuid, data=context, context_prefix='ACTI')
+    return context, custom_indicator
 
 def main():
     params = demisto.params()
