@@ -25,6 +25,7 @@ CMD
 CVSS
 DNS
 Hostnames
+LTM
 Src
 Srcs
 Subdomains
