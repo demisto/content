@@ -1,9 +1,9 @@
 {
-  "id": "incident_parentprocessid",
+  "id": "incident_parentprocessids",
   "version": -1,
   "name": "Parent Process ID",
   "ownerOnly": false,
-  "cliName": "parentprocessid",
+  "cliName": "parentprocessids",
   "type": "multiSelect",
   "closeForm": false,
   "editForm": true,

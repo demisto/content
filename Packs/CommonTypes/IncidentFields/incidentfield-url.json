@@ -1,9 +1,9 @@
 {
-  "id": "incident_url",
+  "id": "incident_urls",
   "version": -1,
   "name": "URL",
   "ownerOnly": false,
-  "cliName": "url",
+  "cliName": "urls",
   "type": "multiSelect",
   "closeForm": false,
   "editForm": true,
