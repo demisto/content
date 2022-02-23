@@ -125,7 +125,7 @@
                 "Parent Process File Path": {
                     "simple": "evidence.parentProcessFilePath"
                 },
-                "Parent Process ID": {
+                "Parent Process IDs": {
                     "simple": "evidence.parentProcessId"
                 },
                 "Process Creation Time": {
