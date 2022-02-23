@@ -8609,10 +8609,10 @@ class PanoramaCommand:
                 for device_group_xml in response.findall("./result/devicegroups/entry"):
                     dg_name = get_element_attribute(device_group_xml, "name")
                     for device_xml in device_group_xml.findall("./devices/entry"):
-                        r: DeviceGroupInformation = dataclass_from_element(device, DeviceGroupInformation,
+                        device_group_information: DeviceGroupInformation = dataclass_from_element(device, DeviceGroupInformation,
                                                                            device_xml)
-                        r.name = dg_name
-                        result.append(r)
+                        device_group_information.name = dg_name
+                        result.append(device_group_information)
 
         return result
 
@@ -8629,10 +8629,11 @@ class PanoramaCommand:
                 for template_stack_xml in response.findall("./result/template-stack/entry"):
                     template_name = get_element_attribute(template_stack_xml, "name")
                     for device_xml in template_stack_xml.findall("./devices/entry"):
-                        r: TemplateStackInformation = dataclass_from_element(device, TemplateStackInformation,
-                                                                             device_xml)
-                        r.name = template_name
-                        result.append(r)
+                        result_template_stack_information: TemplateStackInformation = dataclass_from_element(device,
+                                                                                                             TemplateStackInformation,
+                                                                                                             device_xml)
+                        result_template_stack_information.name = template_name
+                        result.append(result_template_stack_information)
 
         return result
 
@@ -8943,8 +8944,7 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_counter_global(topology: Topology,
-                           device_filter_str: str = None) -> ShowCounterGlobalCommmandResult:
+    def get_counter_global(topology: Topology, device_filter_str: str = None) -> ShowCounterGlobalCommmandResult:
         result_data: List[ShowCounterGlobalResultData] = []
         summary_data: List[ShowCounterGlobalSummaryData] = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
@@ -8959,8 +8959,7 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_routing_summary(topology: Topology,
-                            device_filter_str: str = None) -> ShowRouteSummaryCommandResult:
+    def get_routing_summary(topology: Topology, device_filter_str: str = None) -> ShowRouteSummaryCommandResult:
         summary_data = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
             response = run_op_command(firewall, FirewallCommand.ROUTING_SUMMARY_COMMAND)
@@ -8973,8 +8972,7 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_bgp_peers(topology: Topology,
-                      device_filter_str: str = None) -> ShowRoutingProtocolBGPCommandResult:
+    def get_bgp_peers(topology: Topology, device_filter_str: str = None) -> ShowRoutingProtocolBGPCommandResult:
         summary_data = []
         result_data = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
@@ -8990,8 +8988,7 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_device_state(topology: Topology,
-                         device_filter_str: str):
+    def get_device_state(topology: Topology, device_filter_str: str):
         for firewall in topology.firewalls(filter_string=device_filter_str):
             # Connect directly to the firewall
             direct_firewall_connection: Firewall = topology.get_direct_device(firewall)
@@ -8999,8 +8996,7 @@ class FirewallCommand:
             return direct_firewall_connection.xapi.export_result.get("content")
 
     @staticmethod
-    def get_ha_status(topology: Topology,
-                      device_filter_str: str = None) -> List[ShowHAState]:
+    def get_ha_status(topology: Topology, device_filter_str: str = None) -> List[ShowHAState]:
 
         result: List[ShowHAState] = []
         for firewall in topology.all(filter_string=device_filter_str):
@@ -9047,8 +9043,7 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_routes(topology: Topology,
-                   device_filter_str: str = None) -> ShowRoutingRouteCommandResult:
+    def get_routes(topology: Topology, device_filter_str: str = None) -> ShowRoutingRouteCommandResult:
         summary_data = []
         result_data = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
