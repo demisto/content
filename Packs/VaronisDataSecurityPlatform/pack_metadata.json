@@ -7,14 +7,23 @@
     "url": "",
     "email": "vdobrotskyi@varonis.com",
     "categories": [
-        "Analytics & SIEM"
+        "Analytics & SIEM",
+        "Forensics & Malware Analysis"
     ],
     "tags": [
         "Alerts",
         "Forensics",
         "Malware"
     ],
-    "useCases": [],
+    "useCases": [
+        "Breach Notification",
+        "Compliance",
+        "Hunting",
+        "Impossible Traveler",
+        "Malware",
+        "Phishing",
+        "Ransomware"
+    ],
     "keywords": [
         "Data governance",
         "Classification",
