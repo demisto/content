@@ -1916,9 +1916,7 @@ def build_search_human_readable(args, parsed_search_results):
             headers = "results"
         else:
             chosen_fields = []
-            matches = re.finditer(r' table (?P<table>[^|]*)', args.get('query', ''))
-            for match in matches:
-                table_args = match.group('table')
+            for table_args in re.findall(r' table (?P<table>[^|]*)', args.get('query', '')):
                 chosen_fields.extend([field.strip('"')
                                       for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', table_args) if field])
 
