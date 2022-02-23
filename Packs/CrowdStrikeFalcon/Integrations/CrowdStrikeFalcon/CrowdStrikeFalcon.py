@@ -420,7 +420,7 @@ def create_json_iocs_list(
         ioc_type: str,
         iocs_value: List[str],
         action: str,
-        platforms: str,
+        platforms: List[str],
         severity: Optional[str] = None,
         source: Optional[str] = None,
         description: Optional[str] = None,
@@ -429,7 +429,8 @@ def create_json_iocs_list(
         host_groups: Optional[List[str]] = None,
         tags: Optional[List[str]] = None) -> List[dict]:
     """
-    Get a list of iocs values and create a list of Json objects with the iocs data
+    Get a list of iocs values and create a list of Json objects with the iocs data.
+    This function is used for uploading multiple indicator with same arguments with different values.
     :param ioc_type: The type of the indicator.
     :param iocs_value: List of the indicator.
     :param action: Action to take when a host observes the custom IOC.
@@ -3006,11 +3007,7 @@ def upload_batch_custom_ioc_command(
     :param multiple_indicators_json: A JSON object with list of CS Falcon indicators to upload.
 
     """
-    try:
-        batch_json = json.loads(multiple_indicators_json)   # type: ignore
-    except json.JSONDecodeError as e:
-        raise DemistoException(f'{INTEGRATION_NAME}: The `multiple_indicators_json` argument is not a valid json, {e}.')
-
+    batch_json = safe_load_json(multiple_indicators_json)
     raw_res = upload_batch_custom_ioc(batch_json)
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])
