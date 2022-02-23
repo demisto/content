@@ -416,7 +416,7 @@ try:
     elif demisto.command() == 'test-module':
         test_module()
 except Exception as e:
-    if isinstance(e, WindowsError):  # pylint: disable=undefined-variable
+    if isinstance(e, OSError):  # pylint: disable=undefined-variable
         return_error("Could not open powershell on the target engine.")
     else:
         return_error(e)
