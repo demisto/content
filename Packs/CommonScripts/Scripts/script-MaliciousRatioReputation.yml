@@ -55,6 +55,6 @@ args:
   defaultValue: "0.3"
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python:2.7.18.24398
 tests:
 - No tests (auto formatted)
