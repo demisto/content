@@ -69,7 +69,7 @@ INTEGRATION_NAME = 'Microsoft Defender ATP'
 class HuntingQueryBuilder:
     """ERROR MESSAGES"""
     FILE_ARGS_ERR = 'Please provide at least one file arguments: "file_name", "sha1", "sha256" or "md5".'
-    DEVICES_ARGS_ERR = 'Please provide at least one devices arguments: "file_id" or "file_name".'
+    DEVICES_ARGS_ERR = 'Please provide at least one devices arguments: "device_id" or "device_name".'
     ANY_ARGS_ERR = 'Please provide at least one of the query args: "device_name", "file_name", "sha1, "sha256", "md5"' \
                    ' or "device_id".'
 
@@ -655,7 +655,7 @@ class HuntingQueryBuilder:
         DNS_QUERY_PREFIX = 'DeviceNetworkEvents | where RemotePort == 53 and'
         POWERSHELL_EXECUTION_PROCESS_KNOWN_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in~ ("powershell.exe", "powershell_ise.exe",".ps") and'  # noqa: E501
         POWERSHELL_EXECUTION_PROCESS_UNKNOWN_QUERY = 'DeviceProcessEvents | where FileName in~ ("powershell.exe", "powershell_ise.exe",".ps") and ( InitiatingProcessFileName != "SenerIR.exe" and InitiatingProcessParentFileName != "MsSense.exe" and InitiatingProcessSignatureStatus == "Valid" ) and (InitiatingProcessFileName != "CompatTelRunner.exe" and InitiatingProcessParentFileName != "CompatTelRunner.exe" and InitiatingProcessSignatureStatus == "Valid") | summarize by InitiatingProcessFolderPath,InitiatingProcessFileName,InitiatingProcessParentFileName,InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessVersionInfoProductName,InitiatingProcessCommandLine,InitiatingProcessSignerType,InitiatingProcessSignatureStatus'  # noqa: E501
-        ENCODED_COMMANDS_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in("powershell.exe","powershell_ise.exe") and ProcessCommandLine contains "-e" and'  # noqa: E501
+        ENCODED_COMMANDS_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in ("powershell.exe","powershell_ise.exe") and ProcessCommandLine contains "-e" and'  # noqa: E501
 
         """QUERY SUFFIX"""
         EXTERNAL_ADDRESSES_QUERY_SUFFIX = '\n| summarize TotalConnections = count() by DeviceName, RemoteIP, RemotePort, InitiatingProcessFileName,InitiatingProcessFolderPath | order by TotalConnections\n| limit {}'  # noqa: E501
@@ -933,7 +933,7 @@ class HuntingQueryBuilder:
 
             return query
 
-        def build_common_filess_query(self):
+        def build_common_files_query(self):
             query_dict = assign_params(
                 AccountName=self._username
             )
@@ -3896,7 +3896,7 @@ def cover_up_command(client, args):
         'compromised_information': query_builder.build_compromised_information_query,
         'connected_devices': query_builder.build_connected_devices_query,
         'action_types': query_builder.build_action_types_query,
-        'common_files': query_builder.build_common_filess_query
+        'common_files': query_builder.build_common_files_query
     }
     if query_purpose not in query_options:
         raise DemistoException(f'Unsupported query_purpose: {query_purpose}.')

@@ -7,7 +7,7 @@ import pytest
 from CommonServerPython import DemistoException
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
     print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
-    get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, assign_params, DemistoException
+    get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, assign_params
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 with open('test_data/expected_hunting_queries.json') as expected_json:
@@ -1649,4 +1649,281 @@ class TestHuntingQueryBuilder:
                 sha1='1,2',
             )
             actual = pd.build_beaconing_evidence_query()
+            assert actual == expected
+
+    class TestNetworkConnections:
+        def test_build_external_addresses_query(self):
+            """
+            Tests external_addresses query
+
+            Given:
+                - NetworkConnections inited with sha1
+            When:
+                - calling build_external_addresses_query
+            Then:
+                - return a external_addresses query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['NetworkConnections']['external_addresses']
+            nc = HuntingQueryBuilder.NetworkConnections(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='external_addresses'
+            )
+            actual = nc.build_external_addresses_query()
+            assert actual == expected
+
+        def test_build_dns_query(self):
+            """
+            Tests dns_query query
+
+            Given:
+                - NetworkConnections inited with sha1
+            When:
+                - calling build_dns_query
+            Then:
+                - return a dns_query query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['NetworkConnections']['dns_query']
+            nc = HuntingQueryBuilder.NetworkConnections(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='dns_query'
+            )
+            actual = nc.build_dns_query()
+            assert actual == expected
+
+        def test_build_powershell_execution_process_known_query(self):
+            """
+            Tests powershell_execution_process_known query
+
+            Given:
+                - NetworkConnections inited with sha1 and device_id
+            When:
+                - calling build_powershell_execution_process_known_query
+            Then:
+                - return a powershell_execution_process_known query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['NetworkConnections']['powershell_execution_process_known']
+            nc = HuntingQueryBuilder.NetworkConnections(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                device_id='1',
+                query_purpose='powershell_execution_process_known'
+            )
+            actual = nc.build_powershell_execution_process_known_query()
+            assert actual == expected
+
+        def test_build_powershell_execution_process_unknown_query(self):
+            """
+            Tests powershell_execution_process_unknown query
+
+            Given:
+                - NetworkConnections inited with no query arg
+            When:
+                - calling build_powershell_execution_process_unknown_query
+            Then:
+                - return a powershell_execution_process_unknown query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['NetworkConnections']['powershell_execution_process_unknown']
+            nc = HuntingQueryBuilder.NetworkConnections(
+                limit='1',
+                query_operation='and',
+                query_purpose='powershell_execution_process_unknown'
+            )
+            actual = nc.build_powershell_execution_process_unknown_query()
+            assert actual == expected
+
+        def test_build_encoded_commands_query(self):
+            """
+            Tests encoded_commands query
+
+            Given:
+                - NetworkConnections inited with md5 and device_id
+            When:
+                - calling build_encoded_commands_query
+            Then:
+                - return a encoded_commands query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['NetworkConnections']['encoded_commands']
+            nc = HuntingQueryBuilder.NetworkConnections(
+                limit='1',
+                query_operation='and',
+                md5='1',
+                device_id='1',
+                query_purpose='encoded_commands'
+            )
+            actual = nc.build_encoded_commands_query()
+            assert actual == expected
+
+    class TestPrivilegeEscalation:
+        def test_build_query(self):
+            """
+            Tests query
+
+            Given:
+                - PrivilegeEscalation inited with device_id
+            When:
+                - calling build_query
+            Then:
+                - return a PrivilegeEscalation query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['PrivilegeEscalation']
+            pe = HuntingQueryBuilder.PrivilegeEscalation(
+                limit='1',
+                query_operation='and',
+                device_id='1'
+            )
+            actual = pe.build_query()
+            assert actual == expected
+
+    class TestTampering:
+        def test_build_external_addresses_query(self):
+            """
+            Tests external_addresses query
+
+            Given:
+                - Tampering inited with device_id
+            When:
+                - calling build_query
+            Then:
+                - return a Tampering query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['Tampering']
+            t = HuntingQueryBuilder.Tampering(
+                limit='1',
+                query_operation='and',
+                device_id='1'
+            )
+            actual = t.build_query()
+            EXPECTED_HUNTING_QUERIES['Tampering'] = actual
+            assert actual == expected
+
+    class TestCoverUp:
+        def test_build_file_deleted_query(self):
+            """
+            Tests file_deleted query
+
+            Given:
+                - CoverUp inited with sha1
+            When:
+                - calling build_file_deleted_query
+            Then:
+                - return a file_deleted query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['CoverUp']['file_deleted']
+            cu = HuntingQueryBuilder.CoverUp(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='file_deleted'
+            )
+            actual = cu.build_file_deleted_query()
+            assert actual == expected
+
+        def test_build_event_log_cleared_query(self):
+            """
+            Tests event_log query
+
+            Given:
+                - CoverUp inited with sha1
+            When:
+                - calling build_event_log_cleared_query
+            Then:
+                - return a event_log query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['CoverUp']['event_log']
+            cu = HuntingQueryBuilder.CoverUp(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                query_purpose='event_log'
+            )
+            actual = cu.build_event_log_cleared_query()
+            assert actual == expected
+
+        def test_build_compromised_information_query(self):
+            """
+            Tests compromised_information query
+
+            Given:
+                - CoverUp inited with username
+            When:
+                - calling build_compromised_information_query
+            Then:
+                - return a compromised_information query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['CoverUp']['compromised_information']
+            cu = HuntingQueryBuilder.CoverUp(
+                limit='1',
+                query_operation='and',
+                username='dbot',
+                query_purpose='compromised_information'
+            )
+            actual = cu.build_compromised_information_query()
+            assert actual == expected
+
+        def test_build_connected_devices_query(self):
+            """
+            Tests connected_devices query
+
+            Given:
+                - CoverUp inited with username
+            When:
+                - calling build_connected_devices_query
+            Then:
+                - return a connected_devices query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['CoverUp']['connected_devices']
+            cu = HuntingQueryBuilder.CoverUp(
+                limit='1',
+                query_operation='and',
+                username='dbot',
+                query_purpose='connected_devices'
+            )
+            actual = cu.build_connected_devices_query()
+            assert actual == expected
+
+        def test_build_action_types_query(self):
+            """
+            Tests action_types query
+
+            Given:
+                - CoverUp inited with username
+            When:
+                - calling build_action_types_query
+            Then:
+                - return a action_types query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['CoverUp']['action_types']
+            cu = HuntingQueryBuilder.CoverUp(
+                limit='1',
+                query_operation='and',
+                username='dbot',
+                query_purpose='action_types'
+            )
+            actual = cu.build_action_types_query()
+            assert actual == expected
+
+        def test_build_common_files_query(self):
+            """
+            Tests common_files query
+
+            Given:
+                - CoverUp inited with username
+            When:
+                - calling build_common_files_query
+            Then:
+                - return a common_files query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['CoverUp']['common_files']
+            cu = HuntingQueryBuilder.CoverUp(
+                limit='1',
+                query_operation='and',
+                username='dbot',
+                query_purpose='common_files'
+            )
+            actual = cu.build_common_files_query()
             assert actual == expected
