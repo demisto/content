@@ -97,7 +97,6 @@ def test_params(mocker, params, expected_result):
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
-    assert len(err_msg) < 100
     assert expected_result in err_msg
 
 
