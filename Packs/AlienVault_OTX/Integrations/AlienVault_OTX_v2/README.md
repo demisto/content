@@ -236,27 +236,6 @@ Queries a domain in AlienVault OTX.
             {
                 "EntityA": "ahnlab.myfw.us",
                 "EntityAType": "Domain",
-                "EntityB": "98.136.104.23",
-                "EntityBType": "IP",
-                "Relationship": "indicator-of"
-            },
-            {
-                "ntityA": "ahnlab.myfw.us",
-                "EntityAType": "Domain",
-                "EntityB": "98.136.111.23",
-                "EntityBType": "IP",
-                "Relationship": "indicator-of"
-            },
-            {
-                "EntityA": "ahnlab.myfw.us",
-                "EntityAType": "Domain",
-                "EntityB": "98.136.108.23",
-                "EntityBType": "IP",
-                "Relationship": "indicator-of"
-            },
-            {
-                "EntityA": "ahnlab.myfw.us",
-                "EntityAType": "Domain",
                 "EntityB": "ahnlab.myfw.us",
                 "EntityBType": "IP",
                 "Relationship": "indicator-of"
