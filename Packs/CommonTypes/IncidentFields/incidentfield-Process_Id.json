@@ -1,10 +1,9 @@
 {
-  "id": "incident_microsoftdefenderforendpointprocessid",
+  "id": "incident_processid",
   "version": -1,
-  "modified": "2022-02-20T21:25:27.796213+02:00",
-  "name": "Microsoft Defender for Endpoint Process ID",
+  "name": "Process ID",
   "ownerOnly": false,
-  "cliName": "microsoftdefenderforendpointprocessid",
+  "cliName": "processid",
   "type": "multiSelect",
   "closeForm": false,
   "editForm": true,
@@ -18,10 +17,9 @@
   "group": 0,
   "hidden": false,
   "openEnded": true,
-  "associatedTypes": [
-    "Microsoft Defender For Endpoint"
-  ],
-  "associatedToAll": false,
+  "associatedTypes": null,
+  "systemAssociatedTypes": null,
+  "associatedToAll": true,
   "unmapped": false,
   "unsearchable": true,
   "caseInsensitive": true,

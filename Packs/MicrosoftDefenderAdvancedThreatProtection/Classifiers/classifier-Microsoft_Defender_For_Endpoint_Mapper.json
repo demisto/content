@@ -92,7 +92,7 @@
                 "Device Id": {
                     "simple": "machineId"
                 },
-                "Microsoft Defender for Endpoint Domain Name": {
+                "Domain Name": {
                     "simple": "evidence.domainName"
                 },
                 "Microsoft Defender for Endpoint Evidence Type": {
@@ -122,28 +122,25 @@
                 "Parent Process": {
                     "simple": "evidence.parentProcessFileName"
                 },
-                "Microsoft Defender for Endpoint Parent Process File Name": {
-                    "simple": "evidence.parentProcessFileName"
-                },
-                "Microsoft Defender for Endpoint Parent Process File Path": {
+                "Parent Process File Path": {
                     "simple": "evidence.parentProcessFilePath"
                 },
-                "Microsoft Defender for Endpoint Parent Process IDs": {
+                "Parent Process ID": {
                     "simple": "evidence.parentProcessId"
                 },
-                "Microsoft Defender for Endpoint Process Creation Time": {
+                "Process Creation Time": {
                     "simple": "evidence.processCreationTime"
                 },
-                "Microsoft Defender for Endpoint Process ID": {
+                "Process ID": {
                     "simple": "evidence.processId"
                 },
-                "Microsoft Defender for Endpoint Registry Value": {
+                "Registry Value": {
                     "simple": "evidence.registryValue"
                 },
-                "Microsoft Defender for Endpoint Registry Key": {
+                "Registry Key": {
                     "simple": "evidence.registryKey"
                 },
-                "Microsoft Defender for Endpoint Registry Value Type": {
+                "Registry Value Type": {
                     "simple": "evidence.registryValueType"
                 },
                 "Source IPs": {
@@ -170,10 +167,10 @@
                 "Ticket Number": {
                     "simple": "incidentId"
                 },
-                "Microsoft Defender for Endpoint URL": {
+                "URL": {
                     "simple": "evidence.url"
                 },
-                "Microsoft Defender for Endpoint User SID": {
+                "User SID": {
                     "simple": "evidence.userSid"
                 },
                 "Users": {

@@ -1,10 +1,9 @@
 {
-  "id": "incident_microsoftdefenderforendpointurl",
+  "id": "incident_parentprocessid",
   "version": -1,
-  "modified": "2022-02-21T16:01:33.702394+02:00",
-  "name": "Microsoft Defender for Endpoint URL",
+  "name": "Parent Process ID",
   "ownerOnly": false,
-  "cliName": "microsoftdefenderforendpointurl",
+  "cliName": "parentprocessid",
   "type": "multiSelect",
   "closeForm": false,
   "editForm": true,
@@ -18,10 +17,9 @@
   "group": 0,
   "hidden": false,
   "openEnded": true,
-  "associatedTypes": [
-    "Microsoft Defender For Endpoint"
-  ],
-  "associatedToAll": false,
+  "associatedTypes": null,
+  "systemAssociatedTypes": null,
+  "associatedToAll": true,
   "unmapped": false,
   "unsearchable": true,
   "caseInsensitive": true,

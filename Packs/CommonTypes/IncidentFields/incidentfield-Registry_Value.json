@@ -1,10 +1,9 @@
 {
-  "id": "incident_microsoftdefenderforendpointparentprocessids",
+  "id": "incident_registryvalue",
   "version": -1,
-  "modified": "2022-02-21T15:59:02.42744+02:00",
-  "name": "Microsoft Defender for Endpoint Parent Process IDs",
+  "name": "Registry Value",
   "ownerOnly": false,
-  "cliName": "microsoftdefenderforendpointparentprocessids",
+  "cliName": "registryvalue",
   "type": "multiSelect",
   "closeForm": false,
   "editForm": true,
@@ -18,10 +17,9 @@
   "group": 0,
   "hidden": false,
   "openEnded": true,
-  "associatedTypes": [
-    "Microsoft Defender For Endpoint"
-  ],
-  "associatedToAll": false,
+  "associatedTypes": null,
+  "systemAssociatedTypes": null,
+  "associatedToAll": true,
   "unmapped": false,
   "unsearchable": true,
   "caseInsensitive": true,

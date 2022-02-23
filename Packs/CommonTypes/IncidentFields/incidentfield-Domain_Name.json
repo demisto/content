@@ -1,10 +1,9 @@
 {
-  "id": "incident_microsoftdefenderforendpointdomainname",
+  "id": "incident_domainname",
   "version": -1,
-  "modified": "2022-02-20T21:27:52.300838+02:00",
-  "name": "Microsoft Defender for Endpoint Domain Name",
+  "name": "Domain Name",
   "ownerOnly": false,
-  "cliName": "microsoftdefenderforendpointdomainname",
+  "cliName": "domainname",
   "type": "multiSelect",
   "closeForm": false,
   "editForm": true,
@@ -18,10 +17,9 @@
   "group": 0,
   "hidden": false,
   "openEnded": true,
-  "associatedTypes": [
-    "Microsoft Defender For Endpoint"
-  ],
-  "associatedToAll": false,
+  "associatedTypes": null,
+  "systemAssociatedTypes": null,
+  "associatedToAll": true,
   "unmapped": false,
   "unsearchable": true,
   "caseInsensitive": true,
