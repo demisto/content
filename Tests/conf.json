@@ -4990,6 +4990,12 @@
             "scripts": [
                 "HttpV2"
             ]
+        },
+        {
+            "integrations": ["GoogleSheets",
+                            "GoogleDrive"],
+            "playbookID": "GoogleSheets-Test",
+            "fromversion": "6.1.0"
         }
     ],
     "skipped_tests": {
@@ -5455,6 +5461,9 @@
             },
             "demisto/py3-tools": {
                 "memory_threshold": 105
+            },
+            "demisto/googleapi-python3": {
+                "memory_threshold": 200
             }
         }
     }
