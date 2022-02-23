@@ -7725,9 +7725,7 @@ class Topology:
 
     def get_by_filter_str(self, filter_string: str = None) -> dict:
         """Filters all devices and returns a dictionary of matching."""
-        all_devices = {**self.firewall_objects, **self.panorama_objects}
-        all_devices = Topology.filter_devices(all_devices, filter_string)
-        return all_devices
+        return Topology.filter_devices({**self.firewall_objects, **self.panorama_objects}, filter_string)
 
     @classmethod
     def build_from_string(cls, hostnames: str, username: str, password: str, api_key: str = None):
@@ -7793,7 +7791,7 @@ class Topology:
             # If it's already a direct connection
             return firewall
 
-        ip_address = firewall.show_system_info().get("system").get("ip-address")
+        ip_address = (firewall.show_system_info().get("system") or {}).get("ip-address")
 
         return PanDevice.create_from_device(
             hostname=ip_address,
@@ -7812,7 +7810,7 @@ class Topology:
         Given a device, returns all the possible configuration containers that can contain objects -
         vsys, device-groups, templates and template-stacks.
         """
-        containers: List[Union[tuple[PanDevice, Callable], tuple[PanDevice, PanDevice]]] = []
+        containers = []
         # for device in self.all(device_filter_string):
         # Changed to only refer to active devices, no passives.
         device_retrieval_func = self.active_devices
@@ -8551,7 +8549,7 @@ def dataclass_from_element(
     child XML tags exactly.
     """
     object_dict = {}
-    if element is None:
+    if not element:
         return
 
     if device.hostname:
@@ -8587,7 +8585,7 @@ def resolve_container_name(container: Union[Panorama, Firewall, DeviceGroup, Tem
     """
     Gets the name of a given PanDevice container or if it's not a container, returns shared.
     """
-    if type(container) in [Panorama, Firewall]:
+    if isinstance(container, (Panorama, Firewall)):
         return "shared"
 
     return container.name
@@ -8604,7 +8602,7 @@ class PanoramaCommand:
         device: Panorama
         result = []
         for device in topology.active_top_level_devices(device_filter_str):
-            if type(device) is Panorama:
+            if isinstance(device, Panorama):
                 response = run_op_command(device, PanoramaCommand.GET_DEVICEGROUPS_COMMAND)
                 for device_group_xml in response.findall("./result/devicegroups/entry"):
                     dg_name = get_element_attribute(device_group_xml, "name")
@@ -8641,8 +8639,8 @@ class PanoramaCommand:
     def push_all(
             topology: Topology,
             device_filter_str: str = None,
-            device_group_filter: List[str] = None,
-            template_stack_filter: List[str] = None
+            device_group_filter: Optional[List[str]] = None,
+            template_stack_filter:  Optional[List[str]] = None
     ) -> List[PushStatus]:
         """Pushes the pending configuration from Panorama to the firewalls. This is an async function,
         and will only push if there is config pending."""
@@ -8759,7 +8757,7 @@ class UniversalCommand:
 
     @staticmethod
     def get_available_software(topology: Topology,
-                               device_filter_str: str = None) -> SoftwareVersionCommandResult:
+                               device_filter_str: Optional[str] = None) -> SoftwareVersionCommandResult:
         """Get all available software updates"""
         summary_data = []
         for device in topology.all(filter_string=device_filter_str):
@@ -8852,7 +8850,7 @@ class UniversalCommand:
                     status = find_text_in_element(job, "./status")
                     job_id = find_text_in_element(job, "./id")
                     commit_type = find_text_in_element(job, "./type")
-                    if type(device) is Panorama:
+                    if isinstance(device, Panorama):
                         device_type = "Panorama"
                     else:
                         device_type = "Firewall"
@@ -8928,7 +8926,7 @@ class FirewallCommand:
     REQUEST_STATE_PREFIX = "request high-availability state"
 
     @staticmethod
-    def get_arp_table(topology: Topology, device_filter_str: str = None) -> ShowArpCommandResult:
+    def get_arp_table(topology: Topology, device_filter_str: Optional[str] = None) -> ShowArpCommandResult:
         result_data: List[ShowArpCommandResultData] = []
         summary_data: List[ShowArpCommandSummaryData] = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
@@ -9190,7 +9188,7 @@ def dataclasses_to_command_results(result: Any, empty_result_message: str = "No 
     if not hasattr(result, "summary_data"):
         # If this isn't a regular summary/result return, but instead, is just one object or a list of flat
         # objects
-        if type(result) is list:
+        if isinstance(result, list):
             outputs = [vars(x) for x in result]
             summary_list = [vars(x) for x in result]
             # This is a bit controversial
