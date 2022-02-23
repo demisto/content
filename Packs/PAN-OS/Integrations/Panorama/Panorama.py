@@ -8559,7 +8559,6 @@ def dataclass_from_element(
     if device.serial:
         object_dict["hostid"] = device.serial
 
-    child_element: Element
     # Handle the XML attributes, if any and if they match dataclass field
     for attr_name, attr_value in element.attrib.items():
         dataclass_field = next((x for x in fields(class_type) if x.name == attr_name), None)
@@ -9111,8 +9110,7 @@ def get_route_summaries(topology: Topology,
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: ShowRouteSummaryCommandResult = FirewallCommand.get_routing_summary(topology,
-                                                                                device_filter_string)
+    result: ShowRouteSummaryCommandResult = FirewallCommand.get_routing_summary(topology, device_filter_string)
     return result
 
 
@@ -9123,8 +9121,7 @@ def get_routes(topology: Topology,
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: ShowRoutingRouteCommandResult = FirewallCommand.get_routes(topology,
-                                                                       device_filter_string)
+    result: ShowRoutingRouteCommandResult = FirewallCommand.get_routes(topology, device_filter_string)
     return result
 
 
@@ -9135,8 +9132,7 @@ def get_system_info(topology: Topology,
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: ShowSystemInfoCommandResult = UniversalCommand.get_system_info(topology,
-                                                                           device_filter_string)
+    result: ShowSystemInfoCommandResult = UniversalCommand.get_system_info(topology, device_filter_string)
     return result
 
 
@@ -9157,8 +9153,7 @@ def get_template_stacks(topology: Topology, device_filter_string: str = None) ->
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: List[TemplateStackInformation] = PanoramaCommand.get_template_stacks(topology,
-                                                                                 device_filter_string)
+    result: List[TemplateStackInformation] = PanoramaCommand.get_template_stacks(topology, device_filter_string)
     return result
 
 
