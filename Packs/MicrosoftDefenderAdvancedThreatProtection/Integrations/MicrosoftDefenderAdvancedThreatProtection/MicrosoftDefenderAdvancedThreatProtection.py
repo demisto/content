@@ -1,4 +1,5 @@
 import copy
+from itertools import product
 from json import JSONDecodeError
 from typing import Tuple, List, Dict, Callable
 from CommonServerPython import *
@@ -1853,17 +1854,20 @@ def stop_and_quarantine_file_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
-    machine_id = args.get('machine_id')
-    file_sha1 = args.get('file_hash')
+    machine_ids = argToList(args.get('machine_id'))
+    file_sha1s = argToList(args.get('file_hash'))
     comment = args.get('comment')
-    machine_action_response = client.stop_and_quarantine_file(machine_id, file_sha1, comment)
-    action_data = get_machine_action_data(machine_action_response)
-    human_readable = tableToMarkdown(f'Stopping the execution of a file on {machine_id} machine and deleting it:',
-                                     action_data, headers=headers, removeNull=True)
-    entry_context = {
-        'MicrosoftATP.MachineAction(val.ID === obj.ID)': action_data
-    }
-    return human_readable, entry_context, machine_action_response
+    command_results = []
+    for machine_id, file_sha1 in product(machine_ids, file_sha1s):
+        machine_action_response = client.stop_and_quarantine_file(machine_id, file_sha1, comment)
+        action_data = get_machine_action_data(machine_action_response)
+        human_readable = tableToMarkdown(f'Stopping the execution of a file on {machine_id} machine and deleting it:',
+                                         action_data, headers=headers, removeNull=True)
+
+        command_results.append(CommandResults(outputs_prefix='MicrosoftATP.MachineAction', outputs_key_field='id',
+                                              readable_output=human_readable, outputs=action_data,
+                                              raw_response=machine_action_response))
+    return command_results
 
 
 def get_investigations_by_id_command(client: MsClient, args: dict):
