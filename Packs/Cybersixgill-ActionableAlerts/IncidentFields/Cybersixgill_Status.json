@@ -10,6 +10,9 @@
     "closeForm": false,
     "editForm": true,
     "required": false,
+    "script": "c918decb-1358-4774-8090-fe9540ea63ae",
+    "runScriptAfterUpdate": false,
+    "fieldCalcScript": "",
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "selectValues": [
