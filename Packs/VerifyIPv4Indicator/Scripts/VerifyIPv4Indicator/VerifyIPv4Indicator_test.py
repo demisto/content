@@ -1,5 +1,5 @@
 import demistomock as demisto
-from VerifyIPv4Indicator import is_valid_ipv4_address, main
+from VerifyIPv4Indicator import main
 
 
 def test_main(mocker):
@@ -15,3 +15,4 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'results')
     main()
     demisto.results.assert_called_with('')
+    
