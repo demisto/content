@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:Druva.yml]
 ignore=IN145
+
+[file:Druva_image.png]
+ignore=IM111
