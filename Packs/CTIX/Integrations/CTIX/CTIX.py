@@ -84,7 +84,7 @@ class Client(BaseClient):
         try:
             resp.raise_for_status()  # Raising an exception for non-200 status code
         except requests.exceptions.HTTPError as e:
-            err_msg = "Error in API call [{}]".format(resp.status_code)
+            err_msg = f"Error in API call [resp.status_code]"
             raise DemistoException(err_msg, e)
         json_data = resp.json()
         response = {"data": json_data, "status": status_code}
