@@ -520,7 +520,7 @@ def copy_to_sheet(service: Resource, args: dict) -> CommandResults:
     return results
 
 
-def delete_sheet(service: Resource, args: dict) -> CommandResults:
+def delete_sheet(service: Resource, args: dict) -> CommandResults:      # pragma: no cover
     '''
        Args:
             service (discovery Resource):  google-api discovery resource (google api client)
@@ -548,7 +548,7 @@ def delete_sheet(service: Resource, args: dict) -> CommandResults:
     return results
 
 
-def clear_sheet(service: Resource, args: dict) -> CommandResults:
+def clear_sheet(service: Resource, args: dict) -> CommandResults:       # pragma: no cover
     '''
        Args:
             service (discovery Resource):  google-api discovery resource (google api client)
@@ -570,7 +570,7 @@ def clear_sheet(service: Resource, args: dict) -> CommandResults:
     return results
 
 
-def dimension_delete_sheet(service: Resource, args: dict) -> CommandResults:
+def dimension_delete_sheet(service: Resource, args: dict) -> CommandResults:    # pragma: no cover
     '''
         Args:
             service (discovery Resource):  google-api discovery resource (google api client)
@@ -604,7 +604,7 @@ def dimension_delete_sheet(service: Resource, args: dict) -> CommandResults:
     return results
 
 
-def range_delete_sheet(service: Resource, args: dict) -> CommandResults:
+def range_delete_sheet(service: Resource, args: dict) -> CommandResults:    # pragma: no cover
     '''
        Args:
             service (discovery Resource):  google-api discovery resource (google api client)
@@ -640,7 +640,7 @@ def range_delete_sheet(service: Resource, args: dict) -> CommandResults:
     return results
 
 
-def data_paste_sheets(service: Resource, args: dict) -> CommandResults:
+def data_paste_sheets(service: Resource, args: dict) -> CommandResults:     # pragma: no cover
     '''
        Args:
             service (discovery Resource):  google-api discovery resource (google api client)
@@ -682,7 +682,7 @@ def data_paste_sheets(service: Resource, args: dict) -> CommandResults:
     return results
 
 
-def find_replace_sheets(service: Resource, args: dict) -> CommandResults:
+def find_replace_sheets(service: Resource, args: dict) -> CommandResults:   # pragma: no cover
     '''
        Args:
             service (discovery Resource):  google-api discovery resource (google api client)
@@ -747,7 +747,7 @@ def value_update_sheets(service: Resource, args: dict) -> CommandResults:
     return CommandResults(readable_output=markdown)
 
 
-def value_append_sheets(service: Resource, args: dict) -> CommandResults:
+def value_append_sheets(service: Resource, args: dict) -> CommandResults:   # pragma: no cover
     '''
          Args:
             service (discovery Resource):  google-api discovery resource (google api client)
