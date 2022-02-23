@@ -321,7 +321,7 @@ def domain_details_command(client: Client, args: Dict[str, Any]) -> List[Command
     enhanced = argToBoolean(args.get('enhanced', False))
     response = client.get_domain_details(domain_array, enhanced)
     domain_list = response.get("data", {}).get("results", {})
-    domain_map = {domain["name2"]: domain for domain in domain_list}
+    domain_map = {domain.get("name2"): domain for domain in domain_list}
 
     for domain_obj in domain_array:
         if domain_obj not in domain_map:
