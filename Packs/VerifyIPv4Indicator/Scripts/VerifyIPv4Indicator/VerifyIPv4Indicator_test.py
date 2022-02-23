@@ -15,4 +15,3 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'results')
     main()
     demisto.results.assert_called_with('')
-    
