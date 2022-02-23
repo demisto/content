@@ -7286,16 +7286,18 @@ class BestPractices:
 
 # pan-os-python new classes
 class CustomVersionedPanObject(VersionedPanObject):
+    """This is a patch for functionality in pan-os-python that doesn't easily enable us to retrieve these specific types of
+    objects. This allows us to still use VersionedPanObjects to keep the code consistent."""
     def __init__(self):
         super(CustomVersionedPanObject, self).__init__()
 
     def _refresh_children(self, running_config=False, xml=None):
         """Override normal refresh method"""
         # Retrieve the xml if we weren't given it
-        if xml is None:
+        if not xml:
             xml = self._refresh_xml(running_config, True)
 
-        if xml is None:
+        if not xml:
             return
 
         # Remove all the current child instances first
@@ -7304,7 +7306,7 @@ class CustomVersionedPanObject(VersionedPanObject):
         child = self.CHILDTYPES[0]()
         child.parent = self
         childroot = xml.find(child.XPATH[1:])
-        if childroot is not None:
+        if not childroot:
             l = child.refreshall_from_xml(childroot)
             self.extend(l)
 
