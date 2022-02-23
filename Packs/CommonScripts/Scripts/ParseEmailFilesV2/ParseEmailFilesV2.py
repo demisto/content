@@ -136,7 +136,7 @@ def main():
         if isinstance(output, dict):
             output = [output]
 
-        elif nesting_level_to_return != 'All files':
+        elif output and nesting_level_to_return != 'All files':
             output = parse_nesting_level(nesting_level_to_return, output)
 
         for email in output:

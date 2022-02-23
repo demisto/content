@@ -421,7 +421,8 @@ def test_md_output_with_body_text():
     assert expected == md
 
 
-@pytest.mark.parametrize('nesting_level_to_return, output, res', [('All files', ['output1'], ['output1']),
+@pytest.mark.parametrize('nesting_level_to_return, output, res', [('All files', ['output1', 'output2', 'output3'],
+                                                                   ['output1', 'output2', 'output3']),
                                                                   ('Outer file', ['output1', 'output2', 'output3'],
                                                                    ['output1']),
                                                                   ('Inner file', ['output1', 'output2', 'output3'],
@@ -432,11 +433,14 @@ def test_parse_nesting_level(nesting_level_to_return, output, res):
     - parsed email output, nesting_level_to_return param - All files.
     - parsed email output, nesting_level_to_return param - Outer file.
     - parsed email output, nesting_level_to_return param - Inner file.
+
     When:
-    - Getting all nested emails.
-    - Getting only outer email file.
-    - Getting only inner email file.
-    Then: Validate that returned result as expected.
+    calling the parse_nesting_level function.
+
+    Then:
+    - Validating the that all outputs are returned.
+    - Validating the that only output1 is returned.
+    - Validating the that only output3 is returned.
     """
     assert parse_nesting_level(nesting_level_to_return, output) == res
 
@@ -445,27 +449,21 @@ def test_parse_nesting_level(nesting_level_to_return, output, res):
                                                                                         ('Outer file', 3, 0, 2),
                                                                                         ('Inner file', 1, 1, 0)])
 def test_eml_contains_eml_nesting_level(mocker, nesting_level_to_return, results_len, depth, results_index):
+
     """
     Given:
     - A eml file contains eml, nesting_level_to_return param - All files.
     - A eml file contains eml, nesting_level_to_return param - Outer file.
     - A eml file contains eml, nesting_level_to_return param - Inner file.
-    When:
-    - Getting all nested emails.
-    - Getting only outer email file.
-    - Getting only inner email file.
-    Then: Validate that returned result as expected.
-    """
-    """
-    Given:
-        - A eml file contains eml
-        - depth = 1
-    When:
-        - run the ParseEmailFilesV2 script
+
+    When: parsing the eml file.
+
     Then:
-        - Ensure only the first mail is parsed
-        - Ensure the attachments of the first mail was returned
+    - Validating the that call_args_list length is 4 (2 parsed eml files and 2 attachments).
+    - Validating the that call_args_list length is 3 (the outer parsed eml file and is 2 attachments).
+    - Validating the that call_args_list length is 1 ( the Inner parsed eml file).
     """
+
     def executeCommand(name, args=None):
         if name == 'getFilePath':
             return [
