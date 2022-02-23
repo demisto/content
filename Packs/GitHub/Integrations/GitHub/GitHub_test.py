@@ -78,17 +78,17 @@ RETURN_ERROR_TARGET = 'GitHub.return_error'
 
 
 @pytest.mark.parametrize('params, expected_result', [
-    ({'credentials': {'password': '1234'}}, "Insert api token or private key"),
-    ({'sshkey': 'sshkey'}, "Insert api token or private key")
+    ({'credentials': {'password': '1234'}}, "Insert api token or private key")
 ])
 def test_params(mocker, params, expected_result):
     """
     Given:
-      - Configuration parameters
+      - Case 1: credentials with no sshkey.
     When:
-      - One of the required parameters are missed.
+      - all the required parameters are missing.
     Then:
       - Ensure the exception message as expected.
+      - Case 1: Should return "Insert api token or private key" error message.
     """
 
     mocker.patch.object(demisto, 'params', return_value=params)
