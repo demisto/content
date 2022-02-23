@@ -7294,10 +7294,10 @@ class CustomVersionedPanObject(VersionedPanObject):
     def _refresh_children(self, running_config=False, xml=None):
         """Override normal refresh method"""
         # Retrieve the xml if we weren't given it
-        if not xml:
+        if xml is None:
             xml = self._refresh_xml(running_config, True)
 
-        if not xml:
+        if xml is None:
             return
 
         # Remove all the current child instances first
@@ -7306,7 +7306,7 @@ class CustomVersionedPanObject(VersionedPanObject):
         child = self.CHILDTYPES[0]()
         child.parent = self
         childroot = xml.find(child.XPATH[1:])
-        if not childroot:
+        if childroot is not None:
             l = child.refreshall_from_xml(childroot)
             self.extend(l)
 
@@ -7518,7 +7518,8 @@ def run_op_command(device: Union[Panorama, Firewall], cmd: str, **kwargs) -> Ele
 
 def find_text_in_element(element: Element, tag: str) -> str:
     result = element.find(tag)
-    if not result:
+    # This has to be an exact check, as an element that has no text will evaluate to none.
+    if result is None:
         raise LookupError(f"Tag {tag} not found in element.")
 
     if not hasattr(result, "text"):
