@@ -7971,6 +7971,12 @@ class ShowRoutingRouteResultData(ResultData):
     interface: str
     route_table: str
 
+    def __post_init__(self):
+        # Self.age can be null if the route is static, so set it to 0 in this case so it's still a valid int.
+        if self.age:
+            self.age = int(self.age)
+        else:
+            self.age = 0
 
 @dataclass
 class ShowRoutingRouteSummaryData(ResultData):
@@ -8028,15 +8034,15 @@ class ShowSystemInfoResultData(ResultData):
     default_gateway: str = ""
     public_ip_address: str = ""
     hostname: str = ""
-    av_version: str = ""
-    av_release_date: str = ""
-    app_version: str = ""
-    app_release_date: str = ""
-    threat_version: str = ""
-    threat_release_date: str = ""
-    wildfire_version: str = ""
-    wildfire_release_date: str = ""
-    url_filtering_version: str = ""
+    av_version: str = "not_installed"
+    av_release_date: str = "not_installed"
+    app_version: str = "not_installed"
+    app_release_date: str = "not_installed"
+    threat_version: str = "not_installed"
+    threat_release_date: str = "not_installed"
+    wildfire_version: str = "not_installed"
+    wildfire_release_date: str = "not_installed"
+    url_filtering_version: str = "not_installed"
 
 
 @dataclass
