@@ -32,8 +32,9 @@ Get a list of all pools
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| expand | Expand pools in the response. Possible values are: True, False. Default is False. | Optional | 
+|-------------------| --- | --- |
+| expand            | Expand pools in the response. Possible values are: True, False. Default is False. | Optional | 
+| partition         | The administrative partition. | Optional | 
 
 
 #### Context Output
@@ -102,6 +103,7 @@ Get pool details
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | pool_name | Pool Name. | Required | 
+| partition | The administrative partition. | Optional | 
 
 
 #### Context Output
@@ -202,6 +204,7 @@ Get Pool Members
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | pool_name | Pool Name. | Required | 
+| partition | The administrative partition. | Optional |
 
 
 #### Context Output
@@ -304,6 +307,11 @@ Get Pool Members
 ### f5-ltm-get-nodes
 ***
 Get a list of all nodes
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| partition | The administrative partition. | Optional |
 
 
 #### Base Command
@@ -383,7 +391,7 @@ Get node details
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | node_name | Node Name. | Required | 
-
+| partition | The administrative partition. | Optional |
 
 #### Context Output
 
@@ -469,7 +477,7 @@ Disable a node
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | node_name | Node to disable. | Required | 
-
+| partition | The administrative partition. | Optional |
 
 #### Context Output
 
@@ -555,7 +563,7 @@ Enable a node
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | node_name | Node to enable. | Required | 
-
+| partition | The administrative partition. | Optional |
 
 #### Context Output
 
@@ -642,7 +650,7 @@ Get Pool Member Stats
 | --- | --- | --- |
 | pool_name | Pool to get its stats. | Required | 
 | member_name | Member to get its stats. | Required | 
-
+| partition | The administrative partition. | Optional |
 
 #### Context Output
 
@@ -855,7 +863,7 @@ Get Node Stats
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | node_name | Node To Query. | Required | 
-
+| partition | The administrative partition. | Optional |
 
 #### Context Output
 
@@ -956,7 +964,7 @@ Get node information by address
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip_address | IP address of the node. | Required | 
-
+| partition | The administrative partition. | Optional |
 
 #### Context Output
 
@@ -1007,7 +1015,7 @@ Get pool information by node
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | node_name | Node name. | Required | 
-
+| partition | The administrative partition. | Optional |
 
 #### Context Output
 
