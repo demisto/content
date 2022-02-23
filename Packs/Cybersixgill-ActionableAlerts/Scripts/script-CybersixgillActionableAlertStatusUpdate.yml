@@ -34,9 +34,9 @@ scripttarget: 0
 subtype: python3
 dependson:
   must:
-  - Cybersixgill_Actionable_Alerts_dev|||cybersixgill-update-alert-status
+  - Cybersixgill_Actionable_Alerts|||cybersixgill-update-alert-status
   should:
-  - Cybersixgill_Actionable_Alerts_dev|||cybersixgill-update-alert-status
+  - Cybersixgill_Actionable_Alerts|||cybersixgill-update-alert-status
 timeout: 180ns
 pswd: ""
 runonce: false
