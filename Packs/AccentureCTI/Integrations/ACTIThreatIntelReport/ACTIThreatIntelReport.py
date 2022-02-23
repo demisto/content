@@ -20,7 +20,7 @@ class Client(BaseClient):
             "Content-Type": "application/json",
             'auth-token': api_key
         }
-        super(Client, self).__init__(base_url=base_url, headers=headers)
+        super(Client, self).__init__(base_url=base_url, headers=headers, verify=verify_certificate, proxy=proxy)
 
     def document_download(self, url_suffix: str, data: dict = {}) -> dict:
         return self._http_request(method="GET", url_suffix=url_suffix, params=data)
@@ -79,21 +79,12 @@ def _calculate_dbot_score(severity: int) -> int:
 
 def getThreatReport_command(client: Client, args: dict , reliability: DBotScoreReliability):
     try:
-        result={}; integration_context={}; context={}
-        if 'setLastId' in args:
-            last_id: int = int(args.get('setLastId'))
-            integration_context={
-                    'uuid_id_map':{},
-                    'tracker_id':last_id
-                }
-            set_integration_context(integration_context)
-            return CommandResults(raw_response=result, outputs=context, readable_output=f"uuid and id mapping cache has been cleared\nLast ID has been set, new Report ID's will start from {last_id+1}")
-        if 'url' in args:
-            ia_ir_url: str = str(args.get('url'))
-            ia_ir_uuid = ia_ir_url.split('/')[-1]
+        result={}; context={}
+        if 'uuid' in args:
+            ia_ir_uuid: str = str(args.get('uuid'))
             result = client.document_download(url_suffix=f'/v0/{ia_ir_uuid}')
             context = _ia_ir_extract(result, reliability)
-            return CommandResults(raw_response=result, outputs=context, readable_output=f"Report with UUID: {ia_ir_uuid} has been fetched")
+            return CommandResults(raw_response=result, outputs=context, readable_output=f"Report with UUID: {result['uuid']} has been fetched")
         
     except Exception as e:
         if 'Failed to parse json object from response' in e.args[0]:
@@ -107,7 +98,7 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
     """
     """
     threat_types = Res.get('threat_types','')
-    threattypes=''; uuid=''; id=0; tracker_id=0; uuid_id_map={}
+    threattypes=''; uuid=''
     uuid = Res.get('uuid','')
     if threat_types:
             for threat_type in threat_types:
@@ -136,20 +127,6 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
                 "Vendor": "ACTI Threat Intelligence Report"
             }
         }
-    integration_context = get_integration_context()
-    uuid_id_map: dict = integration_context.get('uuid_id_map')
-    id = uuid_id_map.get(f'{uuid}',-1)
-    tracker_id = integration_context.get('tracker_id',-1)
-
-    if id != -1:
-        context['Report']['duplicate_flag'] = 1
-        context['Report']['id'] = id
-    else:
-        integration_context['uuid_id_map'][f'{uuid}'] = tracker_id + 1
-        integration_context['tracker_id'] = tracker_id + 1
-        context['Report']['id'] = tracker_id + 1
-        context['Report']['duplicate_flag'] = 0
-    set_integration_context(integration_context)
     
     type_of_report = Res.get('type','NA')
     if 'intelligence_report' in type_of_report:
