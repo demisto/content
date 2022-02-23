@@ -259,7 +259,7 @@
                 "Technique ID": {
                     "simple": "behaviors.technique_id"
                 },
-                "Users ID": {
+                "User SID": {
                     "simple": "behaviors.user_id"
                 },
                 "severity": {
