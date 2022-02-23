@@ -774,7 +774,7 @@ def value_append_sheets(service: Resource, args: dict) -> CommandResults:
     return CommandResults(readable_output=markdown)
 
 
-def get_http_client_with_proxy(proxy: bool, insecure: bool):
+def get_http_client_with_proxy(proxy: bool, insecure: bool):  # pragma: no cover
     """
         Args:
             proxy (bool): Whether to use a proxy.
@@ -804,7 +804,7 @@ def get_http_client_with_proxy(proxy: bool, insecure: bool):
     return httplib2.Http(disable_ssl_certificate_validation=insecure)
 
 
-def build_and_authenticate(params: dict):
+def build_and_authenticate(params: dict):  # pragma: no cover
     """
         Args:
             params (dict):
@@ -847,14 +847,14 @@ def build_and_authenticate(params: dict):
         return build('sheets', 'v4', credentials=credentials)
 
 
-def test_module() -> str:
+def test_module() -> str:  # pragma: no cover
     return "ok"
 
 
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
     """
