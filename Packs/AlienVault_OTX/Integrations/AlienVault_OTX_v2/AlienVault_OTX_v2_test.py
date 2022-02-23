@@ -15,7 +15,7 @@ arg_names_dbot = "pulse, score"
 
 arg_values_dbot = [
     ({'false_positive': [{"assessment": "accepted", "assessment_date": "2021-04-01"}]}, 1),
-    ({}, 0),
+    ({}, 1),
     ({"validation": [1]}, 2),
     ({'pulse_info': {'count': 5}, 'false_positive': [{"assessment": "pending", "assessment_date": "2021-04-01"}]}, 3),
     ({'pulse_info': {'count': 1}}, 2),

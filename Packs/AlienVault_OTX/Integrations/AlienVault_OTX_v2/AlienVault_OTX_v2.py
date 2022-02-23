@@ -111,20 +111,18 @@ def calculate_dbot_score(client: Client, raw_response: Union[dict, None]) -> flo
     if false_Positive and false_Positive[0].get("assessment") == "accepted":
         return Common.DBotScore.GOOD
     else:
-        if not validation:
-            if pulase_info_dict:
-                count = int(pulase_info_dict.get('count', '0'))
-                if count >= default_threshold:
-                    return Common.DBotScore.BAD
-                elif 0 < count < default_threshold:
-                    return Common.DBotScore.SUSPICIOUS
-                else:
-                    return Common.DBotScore.NONE
+        if not validation and pulase_info_dict:
+            count = int(pulase_info_dict.get('count', '0'))
+            if count >= default_threshold:
+                return Common.DBotScore.BAD
+            elif 0 < count < default_threshold:
+                return Common.DBotScore.SUSPICIOUS
+            else:
+                return Common.DBotScore.NONE
         elif len(validation) == 1:
             return Common.DBotScore.SUSPICIOUS
         else:
             return Common.DBotScore.GOOD
-    return 0
 
 
 def create_list_by_ec(list_entries: list, list_type: str) -> list:
