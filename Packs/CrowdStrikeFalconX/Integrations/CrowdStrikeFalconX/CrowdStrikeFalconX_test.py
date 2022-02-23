@@ -146,7 +146,7 @@ def test_cs_falconx_commands(command, args, http_response, context, mocker):
     if isinstance(context, dict) and len(outputs) == 1:
         outputs = outputs[0]
 
-    assert outputs == context
+    assert outputs == context, ddiff(outputs, context) # todo remove ddiff
 
 
 @pytest.mark.parametrize('command, args, http_response, context', [
@@ -178,10 +178,14 @@ def test_cs_falcon_x_polling_related_commands(command, args, http_response, cont
 
     if command == get_full_report_command:
         command_res, status = command(client, **args)
-        assert command_res[0].outputs == context
     else:
         command_res = command(client, **args)
-        assert command_res[0].outputs == context
+    if not isinstance(command_res, list):
+        command_res = [command_res]
+    else:
+        assert len(command_res) == 1
+
+    assert command_res[0].outputs == context, ddiff(command_res[0].outputs, context)# todo remove ddiff
 
 
 @pytest.mark.parametrize('http_response, output', [
@@ -207,6 +211,19 @@ def test_handle_errors(http_response, output, mocker):
         assert (str(e) == str(output))
 
 
+def ddiff(dict1: dict, dict2: dict):  # todo remove
+    for k in set(dict1.keys()).intersection(dict2.keys()):
+        if dict1[k] != dict2[k]:
+            print('dict1:')
+            print(dict1[k])
+            print('dict2')
+            print(dict2[k])
+    for k in set(dict1.keys()).difference(dict2.keys()):
+        print(f'key {k} missing from dict2')
+    for k in set(dict2.keys()).difference(dict1.keys()):
+        print(f'key {k} missing from dict1')
+
+
 def test_running_polling_command_success_for_url(mocker):
     """
     Given:
@@ -230,6 +247,9 @@ def test_running_polling_command_success_for_url(mocker):
     expected_outputs = GET_FULL_REPORT_CONTEXT_EXTENDED
     command_results = run_polling_command(client, args, 'cs-fx-submit-url', send_url_to_sandbox_analysis_command,
                                           get_full_report_command, 'URL')
+    assert isinstance(command_results, list) and len(command_results) == 1
+
+    print(ddiff(command_results[0].outputs, expected_outputs)) # todo remove
     assert command_results[0].outputs == expected_outputs
     assert command_results[0].scheduled_command is None
 
@@ -258,8 +278,10 @@ def test_running_polling_command_success_for_file(mocker):
     command_results = run_polling_command(client, args, 'cs-fx-submit-uploaded-file',
                                           send_uploaded_file_to_sandbox_analysis_command,
                                           get_full_report_command, 'FILE')
-    assert command_results.outputs == expected_outputs
-    assert command_results.scheduled_command is None
+    assert isinstance(command_results, list) and len(command_results) == 1
+    print(ddiff(command_results[0].outputs, expected_outputs)) # todo remove
+    assert command_results[0].outputs == expected_outputs
+    assert command_results[0].scheduled_command is None
 
 
 def test_running_polling_command_pending_for_url(mocker):
@@ -338,7 +360,7 @@ def test_running_polling_command_new_search_for_url(mocker):
     command_results = run_polling_command(client, args, 'cs-fx-submit-url', send_url_to_sandbox_analysis_command,
                                           get_full_report_command, 'URL')
 
-    assert command_results.outputs == [expected_outputs]
+    assert command_results.outputs == expected_outputs
     assert command_results.scheduled_command is not None
 
 

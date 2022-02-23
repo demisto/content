@@ -14,6 +14,8 @@ class CommandResultArguments:
     response: dict
     output: Optional[dict]
     indicator: Optional[Common.File]
+    human_readable_headers: Optional[list[str]] = None
+    human_readable_values: Optional[dict] = None
 
 
 DBOT_SCORE_DICT = {'malicious': Common.DBotScore.BAD,
@@ -401,6 +403,7 @@ class Client:
             filter: str,
             offset: str,
             sort: str,
+            hash: str,
     ) -> dict:
         """Creating the needed arguments for the http request
         :param limit: maximum number of report IDs to return
@@ -409,14 +412,20 @@ class Client:
         :param sort: sort order: asc or desc
         :return: http response
         """
-        url_suffix = f"/falconx/queries/reports/v1?filter={filter}&offset={offset}&limit{limit}=&sort={sort}"
+
+        # url_suffix = f"/falconx/queries/reports/v1?filter={filter}&offset={offset}&limit{limit}=&sort={sort}" # todo del
+        url_suffix = f"/falconx/queries/reports/v1"  # todo test
         params = {
             "filter": filter,
             "offset": offset,
             "limit": limit,
             "sort": sort,
+            "hash": hash
         }
-        return self._http_request("Get", url_suffix, params=params)
+        if limit:
+            params.pop('hash')
+
+        return self._http_request("Get", url_suffix, params=assign_params(**params))
 
     def find_submission_id(
             self,
@@ -780,25 +789,29 @@ def get_full_report_command(client: Client, ids: list, extended_data: str):
         result = parse_outputs(response, reliability=client.reliability,
                                resources_fields=resources_fields, sandbox_fields=sandbox_fields,
                                extra_sandbox_fields=extra_sandbox_fields)
-        result.output = filter_dictionary(result.output, hr_fields, sort_by_field_list=True)
+        result.human_readable_values = filter_dictionary(result.output, hr_fields, sort_by_field_list=True)
+        result.human_readable_headers = hr_fields
         results.append(result)
 
     pending_result_readable_output = 'There are no results yet, the sample might still being analyzed.' \
                                      ' Please wait to download the report.\n' \
                                      'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.'
-
-    command_results = [
-        CommandResults(outputs_key_field='id',
-                       outputs_prefix=OUTPUTS_PREFIX,
-                       outputs=result.output,
-                       readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output, hr_fields)
-                       if result.output else pending_result_readable_output,
-                       raw_response=result.response,
-                       indicator=result.indicator
-                       )
-        for result in results
-    ]
-
+    command_results = []
+    for result in results:
+        if result.output:
+            if result.human_readable_headers and result.human_readable_values:
+                readable_output = tableToMarkdown("CrowdStrike Falcon X response:",
+                                                  result.human_readable_values, result.human_readable_headers)
+            else:
+                readable_output = tableToMarkdown("CrowdStrike Falcon X response:", result.output)
+        else:
+            readable_output = pending_result_readable_output
+        command_results.append(CommandResults(outputs_key_field='id',
+                                              outputs_prefix=OUTPUTS_PREFIX,
+                                              outputs=result.output,
+                                              readable_output=readable_output,
+                                              raw_response=result.response,
+                                              indicator=result.indicator))
     return command_results, is_command_finished  # latter is only relevant for polling, where it's necessary single file
 
 
@@ -922,6 +935,7 @@ def find_sandbox_reports_command(
         filter: str = "",
         offset: str = "",
         sort: str = "",
+        hash: str = ""
 ) -> CommandResults:
     """Find sandbox reports by providing an FQL filter and paging details.
     :param client: the client object with an access token
@@ -931,7 +945,7 @@ def find_sandbox_reports_command(
     :param sort: sort order: asc or desc
     :return: Demisto outputs when entry_context and responses are lists
     """
-    response = client.find_sandbox_reports(limit, filter, offset, sort)
+    response = client.find_sandbox_reports(limit, filter, offset, sort, hash)
     resources_fields = ['id']
 
     result = parse_outputs(response, reliability=client.reliability,

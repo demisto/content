@@ -1109,7 +1109,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Optional filter and sort criteria in the form of an FQL query.
+      description: Optional filter and sort criteria in the form of an FQL query. Takes precedence over the *hash* argument (if provided)
       isArray: false
       name: filter
       required: false
@@ -1118,6 +1118,12 @@ script:
       description: The offset from which to start retrieving reports.
       isArray: false
       name: offset
+      required: false
+      secret: false
+    - default: false
+      description: SHA256 hash to search for. Overridden by the *filter* argument (if provided)
+      isArray: false
+      name: hash
       required: false
       secret: false
     - default: false
