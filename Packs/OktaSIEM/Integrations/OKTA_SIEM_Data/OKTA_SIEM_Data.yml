@@ -18,6 +18,21 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- additionalinfo: First fetch query (<number> <time unit>, e.g., 12 hours, 7 days
+    or ISO format 2020-01-01T10:00:00). Maximal number of past events to fetch is
+    10,000.
+  defaultvalue: 3 days
+  display: First fetch time
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: Maximum number of alerts per fetch. Default is 500.
+  defaultvalue: '500'
+  display: Fetch Limit
+  name: max_fetch
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

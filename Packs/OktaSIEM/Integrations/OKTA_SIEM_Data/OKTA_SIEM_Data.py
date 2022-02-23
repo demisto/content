@@ -3,8 +3,13 @@ from CommonServerPython import *
 # IMPORTS
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
+# UDI
+# XSIAM_API_KEY = 'MTM6WExKaFFQVmlsWWN1bktWekNsajAzcFU3ZERWN0N4TjVtNGtIMzFsTmxwOXZiMkRrWkVKRVRBSkppdFR4VkpMT1dFRFRkSFVORVRVV3RMQmF0bW42T2oySGh0NVl0bG5jQWhPTFdROENJdUVsQ1V2TlFLVzdjZTFLSlVzUzBlcVg='
+# XSIAM_SERVER_URL = 'https://api-uyetter.xdr-qa2-uat.us.paloaltonetworks.com/logs/v1/event'
+
 XSIAM_API_KEY = 'MjpIT0FjUWlKTE1Od2w2djIzWFJmTUlZV1JPVmJjTFdNMUNXeHp0N1pwNHdJZHJyS3BKbVIyY1ltS1pQQzZIR0tKQUNKVndVbzJjRGZCdHAyR1lSUXl4dkIxMW02QkJQSVhCcU9SOW5BWllJZXhxZTY5Mmp3M3dHQzFqdVJRMFJzag=='
 XSIAM_SERVER_URL = 'https://api-xdm-content-poc.xdr-qa2-uat.us.paloaltonetworks.com/logs/v1/event'
+
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 SEARCH_LIMIT = 200
@@ -143,6 +148,7 @@ class Client(BaseClient):
 
     def fetch_logs(self):
         new_last_run = last_run = demisto.getLastRun()
+        demisto.info(json.dumps(last_run))
         fetch_start_time = last_run.get('last_event_created_time') or self.first_fetch
         previous_fetched_uuids = last_run.get('previous_fetched_uuids') or []
 
@@ -157,21 +163,23 @@ class Client(BaseClient):
             new_events = []
             new_events_uuids = []
             for item in res:
-                if item_uuid := item.get('uuid') not in previous_fetched_uuids:
+                if (item_uuid := item.get('uuid')) not in previous_fetched_uuids:
                     new_events.append(item)
                     new_events_uuids.append(item_uuid)
 
-            # OKTA doesn't sort events by milliseconds so we sort the list before returning.
-            sorted_events_to_save = sorted(new_events, key=lambda obj: arg_to_datetime(obj.get('published')))
-            last_event_created_time = sorted_events_to_save[-1].get('published')
+            if new_events:
+                # OKTA doesn't sort events by milliseconds so we sort the list before returning.
+                sorted_events_to_save = sorted(new_events, key=lambda obj: arg_to_datetime(obj.get('published')))
+                last_event_created_time = sorted_events_to_save[-1].get('published')
 
-            if not self.should_reset_list(fetch_start_time, last_event_created_time):
-                new_events_uuids = previous_fetched_uuids + new_events_uuids
+                if not self.should_reset_list(fetch_start_time, last_event_created_time):
+                    new_events_uuids = previous_fetched_uuids + new_events_uuids
 
-            new_last_run = {
-                'last_event_created_time': last_event_created_time,
-                'previous_fetched_uuids': new_events_uuids
-            }
+                new_last_run = {
+                    'last_event_created_time': last_event_created_time,
+                    'previous_fetched_uuids': new_events_uuids
+                }
+
 
         return sorted_events_to_save, new_last_run
 
@@ -191,17 +199,21 @@ def test_http_collector():
     return res
 
 
-def send_logs_to_xsiam():
+def send_logs_to_xsiam(client, logs):
     headers = {
         "Authorization": XSIAM_API_KEY,
-        "Content-Type": "application/json "
+        "Content-Type": "text/plain "
     }
+    res = client._http_request(method='POST', full_url=XSIAM_SERVER_URL, headers=headers, data=logs)
     # Note: the logs must be separated by a new line
-    body = "{'example1': 'test', 'timestamp': 1609100113039}\n{'example2': [12321,546456,45687,1]}"
-    res = requests.post(url=XSIAM_SERVER_URL,
-                        headers=headers,
-                        data=body)
+    # res = requests.post(url=XSIAM_SERVER_URL, headers=headers, data=logs)
+
     return res
+
+
+def save_logs(client, logs):
+    formatted_logs = '\n'.join([json.dumps(log) for log in logs])
+    res = send_logs_to_xsiam(client, formatted_logs)
 
 
 def test_module(client):
@@ -214,16 +226,22 @@ def test_module(client):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    test_http_collector()
 
-    # client.fetch_logs()
-    return CommandResults('ok')
+    client.fetch_logs()
+    return 'ok'
 
 
 def fetch_logs_command(client):
-    # logs = raw_response = client.fetch_logs()
-    # send_logs_to_xsiam()
-    test_http_collector()
+    logs, last_run = client.fetch_logs()
+    demisto.setLastRun(last_run)
+    xsoar_incidents = []
+    if logs:
+        save_logs(client, logs)
+        xsoar_incidents.append({
+            "name": f'XSIAM Logs fetch - {len(logs)} events',
+            "occured": datetime.now().isoformat(),
+            "rawJSON": '{}'})
+    demisto.incidents(xsoar_incidents)
 
 
 def get_logs_command(client, args):
@@ -254,7 +272,7 @@ def main():
         base_url = urljoin(params.get('url'), '/api/v1/')
         api_token = params.get('credentials', {}).get('password')
         first_fetch = params.get('first_fetch', '3 days')
-        fetch_limit = params.get('limit', 500)
+        fetch_limit = params.get('max_fetch', 500)
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
 
