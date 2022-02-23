@@ -9158,52 +9158,18 @@ def get_template_stacks(topology: Topology, device_filter_string: str = None) ->
     return result
 
 
-@dataclass
-class DemistoParameters:
-    """
-    Demisto Parameters
-    :param str hostnames: PAN-OS Hostnames (csv)
-    """
-    hostnames: str
-    credentials: dict
-    api_key: str = ""
-
-
-def convert_params_to_object(params: dict) -> DemistoParameters:
-    """Converts demisto params to the class used by NetOps code."""
-    server_url = params.get('server')
-    parsed_url = urlparse(server_url)
-    hostname = parsed_url.hostname
-    api_key = params.get('key', '')
-
-    return DemistoParameters(
-        hostnames=hostname,  # type: ignore
-        api_key=api_key,
-        credentials={}
-    )
-
-
-def run_test_command(func: Callable):
-    demisto_params = convert_params_to_object(demisto.params())
-    topology = Topology.build_from_string(
-        demisto_params.hostnames,
-        demisto_params.credentials.get("identifier"),
-        demisto_params.credentials.get("password"),
-        api_key=demisto_params.api_key
-    )
-    return_results(func(topology))
-
-
 def get_topology() -> Topology:
     """
     Builds and returns the Topology instance
     """
-    demisto_params = convert_params_to_object(demisto.params())
+    server_url = demisto.params().get('server')
+    parsed_url = urlparse(server_url)
+    hostname = parsed_url.hostname
     topology = Topology.build_from_string(
-        demisto_params.hostnames,
-        demisto_params.credentials.get("identifier"),
-        demisto_params.credentials.get("password"),
-        api_key=demisto_params.api_key
+        hostname,
+        username="",
+        password="",
+        api_key=demisto.params().get('key')
     )
     return topology
 
@@ -9212,7 +9178,7 @@ def dataclasses_to_command_results(result: Any, empty_result_message: str = "No 
     """
     Given a dataclass or list of dataclasses, convert it into a tabular format and finally return CommandResults to demisto.
 
-    :param empty_result_message: If the result data is none, this text will be returned to demisto instead.
+    :param empty_result_message: If the result data is non
     """
     if not result:
         command_result = CommandResults(
