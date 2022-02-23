@@ -252,7 +252,7 @@ def ip_details_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     enhanced = argToBoolean(args.get('enhanced', False))
     response = client.get_ip_details(ip_addresses_array, enhanced)
     ip_list = response.get("data", {}).get("results", {})
-    ip_map = {ip["name2"]: ip for ip in ip_list}
+    ip_map = {ip.get("name2"): ip for ip in ip_list}
 
     for ip_obj in ip_addresses_array:
         if ip_obj not in ip_map:
