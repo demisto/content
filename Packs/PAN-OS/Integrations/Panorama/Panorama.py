@@ -7574,7 +7574,6 @@ class Topology:
         """
         ha_pair_dict = {}
         device_op_command_result: Element = run_op_command(device, "show devices all")
-        device_entry: Element
         for device_entry in device_op_command_result.findall("./result/devices/entry"):
             serial_number: str = find_text_in_element(device_entry, "./serial")
             connected: str = find_text_in_element(device_entry, "./connected")
@@ -7686,7 +7685,7 @@ class Topology:
         return [x for x in self.top_level_devices() if x in self.active_devices(device_filter_string)]
 
     @staticmethod
-    def filter_devices(devices: dict, filter_str: Optional[str] = None):
+    def filter_devices(devices: Dict[str, PanDevice], filter_str: Optional[str] = None):
         """
         Filters a list of devices to find matching entries based on the string.
         If the filter string matches a device serial or IP exactly, then returns just that one device.
@@ -7701,7 +7700,6 @@ class Topology:
                 filter_str: devices.get(filter_str)
             }
 
-        device: PanDevice
         for serial, device in devices.items():
             if device.hostname == filter_str:
                 return {
