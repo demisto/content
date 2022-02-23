@@ -4,8 +4,8 @@ import pytest
 
 
 @pytest.mark.parametrize('values,keys,expected', [
-    ([1, 2, 3, 4], ["A", "B", "C", "D"], {"A": 1, "B": 2, "C": 3, "D": 4}),
-    ("1,2,3,4", "A,B,C,D"], {"A": 1, "B": 2, "C": 3, "D": 4})
+    ([1, 2, 3, 4], ["A", "B", "C", "D"], [{"A": 1}, {"B": 2}, {"C": 3}, {"D": 4}]),
+    ([(1,2), (3,4)], ["A", "B"], [{"A": 1}, {"A": 2}, {"B": 3}, {"B": 4}])
 ])
 def test_key_to_json(values, keys, expected):
     """
