@@ -454,7 +454,7 @@ def create_output(columns: List[str], rows: List[List[Any]]) -> List[str]:
     outputs: List[Any] = []
     for row in rows:
         output = dict()
-        for i in range(0, 24):
+        for i in range(0, len(columns)):
             output[columns[i]] = row[i]
         outputs.append(output)
     return outputs

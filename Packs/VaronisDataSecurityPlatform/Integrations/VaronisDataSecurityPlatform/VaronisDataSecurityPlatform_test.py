@@ -14,8 +14,8 @@ import json
 import io
 from pytest_mock import MockerFixture
 
-from VaronisDataSecurityPlatform import Client, varonis_get_alerts_command, varonis_update_alert_status_command, \
-    varonis_close_alert_command
+from VaronisDataSecurityPlatform import Client, varonis_get_alerted_events_command, varonis_get_alerts_command, \
+    varonis_update_alert_status_command, varonis_close_alert_command
 
 
 def util_load_json(path):
@@ -100,3 +100,36 @@ def test_varonis_close_alert_command(requests_mock: MockerFixture):
     resp = varonis_close_alert_command(client, args)
 
     assert resp is True
+
+
+def test_varonis_get_alerted_events_command(mocker: MockerFixture):
+    """
+        When:
+            - Get alerted events from Varonis api
+        Then
+            - Assert output prefix data is as expected
+            - Assert mapping works as expected
+    """
+    client = Client(
+        base_url='https://test.com',
+        verify=False,
+        proxy=False
+    )
+    mocker.patch.object(
+        client,
+        'varonis_execute_search',
+        return_value=util_load_json('test_data/search_alerted_events_response.json')
+    )
+    mocker.patch.object(
+        client,
+        'varonis_get_search_result',
+        return_value=util_load_json('test_data/varonis_get_alerted_events_response.json')
+    )
+
+    args = util_load_json("test_data/demisto_alerted_events_args.json")
+    expected_outputs = util_load_json('test_data/varonis_get_alerted_events_command_output.json')
+
+    result = varonis_get_alerted_events_command(client, args)
+
+    assert result.outputs_prefix == 'Varonis.Event'
+    assert result.outputs == expected_outputs
