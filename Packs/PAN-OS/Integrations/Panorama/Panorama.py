@@ -7735,7 +7735,8 @@ class Topology:
     @classmethod
     def build_from_string(cls, hostnames: str, username: str, password: str, api_key: str = None):
         """
-        Splits a csv list of hostnames and builds the topology based on it.
+        Splits a csv list of hostnames and builds the topology based on it. This allows you to pass a series of PanOS hostnames
+        into the topology instead of building it from each device.
         This function will convert each hostname/username/password/api_key combination into a PanDevice
         object type, add them into a new instance of `Topology`, then return it.
         """
