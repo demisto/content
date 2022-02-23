@@ -451,6 +451,12 @@ class Client:
         }
         return self._http_request("Get", url_suffix, params=params)
 
+    def file(self, file_hashes: list[str]) -> list[CommandResults]:
+        params = {'filter': ",".join(f'sandbox.sha256:"{sha256}"' for sha256 in file_hashes)}
+        report_ids = self._http_request('get', '/queries/reports/v1', params=params).get('resources', [])
+        command_results, _ = get_full_report_command(self, ids=report_ids, extended_data='FILE')
+        return command_results
+
 
 def filter_dictionary(dictionary: dict, fields_to_keep: Optional[list], sort_by_field_list: bool = False) -> dict:
     """
@@ -477,6 +483,11 @@ def filter_dictionary(dictionary: dict, fields_to_keep: Optional[list], sort_by_
         filtered = dict(sorted(filtered.items(), key=lambda pair: key_order[pair[0]]))
 
     return filtered
+
+
+def file_command(client: Client, args: dict):
+    file_hashes: list[str] = argToList(args.get('file', ''))
+    return client.file(file_hashes)
 
 
 def parse_outputs(
@@ -749,7 +760,7 @@ def send_url_to_sandbox_analysis_command(
         indicator=result.indicator)
 
 
-def get_full_report_command(client: Client, ids: list, extended_data: str):
+def get_full_report_command(client: Client, ids: list[str], extended_data: str) -> tuple[list[CommandResults], bool]:
     """Get a full version of a sandbox report.
     :param client: the client object with an access token
     :param ids: ids of a submitted malware samples.
@@ -778,8 +789,8 @@ def get_full_report_command(client: Client, ids: list, extended_data: str):
     hr_fields = ['sha256', 'environment_description', 'environment_id', 'created_timestamp', 'id', 'submission_type',
                  'threat_score', 'verdict']
 
-    for single_id in argToList(ids):
-        response = client.get_full_report(single_id)
+    for id_ in argToList(ids):
+        response = client.get_full_report(id_)
         if response.get('resources'):
             is_command_finished = True
 

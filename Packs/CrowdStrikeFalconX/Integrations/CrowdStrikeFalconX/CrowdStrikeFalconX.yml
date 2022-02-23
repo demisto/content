@@ -1163,6 +1163,21 @@ script:
       description: 'Set of report IDs that match the search criteria. '
       type: Number
   - arguments:
+    - default: true
+      description: The file hash(es) to search for
+      isArray: true
+      name: file
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the full report for one or more files, by their sha256 hash.
+    execution: false
+    name: file
+    outputs:
+    - contextPath: csfalconx.resource.id # todo
+      description: 'Set of report IDs that match the search criteria. '
+      type: Number
+  - arguments:
     - default: false
       description: |-
         A web page or file URL. It can be HTTP(S) or FTP.
