@@ -1626,7 +1626,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The ID of the IOC to get. 
+      description: 'The ID of the IOC to get.
       Can be retrieved by running the cs-falcon-search-custom-iocs command.
       Either ioc_id or ioc_type and value must be provided.'
       isArray: false
@@ -1690,8 +1690,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: The string representation of the indicator.
-      isArray: false
+      description: |-
+        The string representation of the indicator.
+        Can also get comma separated values in order to upload multiple IOCs of the same type but with different values (all other args will be the same for all the newly created IOCs)
+      isArray: true
       name: value
       required: true
       secret: false
@@ -1715,9 +1717,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The platforms that the indicator applies to. You can enter multiple platform names, separated by commas.
-      Possible values are: mac, windows and linux.' 
-      isArray: false
+      description: 'The platforms that the indicator applies to. You can enter multiple
+        platform names, separated by commas. Possible values are: mac, windows and
+        linux.'
+      isArray: true
       name: platforms
       predefined:
       - mac
@@ -1727,9 +1730,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The severity level to apply to this indicator. 
+      description: 'The severity level to apply to this indicator.
       Required for the prevent and detect actions. Optional for no_action.
-      Possible values are: informational, low, medium, high, and critical.' 
+      Possible values are: informational, low, medium, high, and critical.'
       isArray: false
       name: severity
       predefined:
@@ -1761,7 +1764,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the indicator is applied globally. 
+      description: 'Whether the indicator is applied globally.
       Either applied_globally or host_groups must be provided.'
       isArray: false
       name: applied_globally
@@ -1771,7 +1774,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'List of host group IDs that the indicator applies to. 
+      description: 'List of host group IDs that the indicator applies to.
       Can be retrieved by running the cs-falcon-list-host-groups command.
       Either applied_globally or host_groups must be provided.'
       isArray: true
@@ -1819,6 +1822,12 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
+    - contextPath: CrowdStrike.IOC.Tags
+      description: The tags of the IOC.
+      type: Unknown
+    - contextPath: CrowdStrike.IOC.Platforms
+      description: The platforms of the IOC.
+      type: Unknown
   - arguments:
     - default: false
       description: The ID of the IOC to update. Can be retrieved by running the cs-falcon-search-custom-iocs command.
@@ -1847,7 +1856,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'The platforms that the indicator applies to. You can enter multiple platform names, separated by commas.
-      Possible values are: mac, windows and linux.' 
+      Possible values are: mac, windows and linux.'
       isArray: false
       name: platforms
       predefined:
@@ -1858,9 +1867,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The severity level to apply to this indicator. 
+      description: 'The severity level to apply to this indicator.
       Required for the prevent and detect actions. Optional for no_action.
-      Possible values are: informational, low, medium, high and critical.' 
+      Possible values are: informational, low, medium, high and critical.'
       isArray: false
       name: severity
       predefined:
@@ -2951,6 +2960,60 @@ script:
     description: Resolve incidents.
     execution: false
     name: cs-falcon-resolve-incident
+  - arguments:
+    - default: false
+      description: A JSON object with list of CS Falcon indicators to upload.
+      isArray: true
+      name: multiple_indicators_json
+      required: true
+      secret: false
+    deprecated: false
+    description: Uploads a batch of indicators.
+    execution: false
+    name: cs-falcon-batch-upload-custom-ioc
+    outputs:
+    - contextPath: CrowdStrike.IOC.Type
+      description: The type of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.Value
+      description: The string representation of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.ID
+      description: The full ID of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.Severity
+      description: The severity level to apply to this indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.Source
+      description: The source of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.Action
+      description: Action to take when a host observes the custom IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.Expiration
+      description: The datetime when the indicator will expire.
+      type: string
+    - contextPath: CrowdStrike.IOC.Description
+      description: The description of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.CreatedTime
+      description: The datetime the IOC was created.
+      type: date
+    - contextPath: CrowdStrike.IOC.CreatedBy
+      description: The identity of the user/process who created the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.ModifiedTime
+      description: The datetime the indicator was last modified.
+      type: date
+    - contextPath: CrowdStrike.IOC.ModifiedBy
+      description: The identity of the user/process who last updated the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.Tags
+      description: The tags of the IOC.
+      type: Unknown
+    - contextPath: CrowdStrike.IOC.Platforms
+      description: The platforms of the IOC.
+      type: Unknown
   dockerimage: demisto/python3:3.10.1.26972
   feed: false
   isfetch: true
