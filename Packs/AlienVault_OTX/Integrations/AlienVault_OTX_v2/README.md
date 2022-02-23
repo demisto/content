@@ -122,21 +122,21 @@ Queries an IP address in AlienVault OTX.
                 "Relationship": "indicator-of"
             },
             {
-                "EntitiyA": "98.136.102.23",
+                "EntityA": "98.136.103.23",
                 "EntityAType": "IP",
                 "entityB": "mojorojorestaurante.com",
                 "entityBType": "URL",
                 "Relationship": "indicator-of"
             },
             {
-                "EntitiyA": "98.136.102.23",
+                "EntityA": "98.136.103.23",
                 "EntityAType": "IP",
                 "entityB": "nguyenhoangai-4g.xyz",
                 "entityBType": "Domain",
                 "Relationship": "indicator-of"
             },
             {
-                "EntitiyA": "98.136.102.23",
+                "EntityA": "98.136.103.23",
                 "EntityAType": "IP",
                 "entityB": "0b4d4a7c35a185680bc5102bdd98218297e2cdf0a552bde10e377345f3622c1c",
                 "entityBType": "File",
@@ -229,28 +229,28 @@ Queries a domain in AlienVault OTX.
             {
                 "EntityA": "ahnlab.myfw.us",
                 "EntityAType": "Domain",
-                "EntityB": "119.194.217.123",
+                "EntityB": "98.136.103.23",
                 "EntityBType": "IP",
                 "Relationship": "indicator-of"
             },
             {
                 "EntityA": "ahnlab.myfw.us",
                 "EntityAType": "Domain",
-                "EntityB": "108.61.203.22",
+                "EntityB": "98.136.104.23",
                 "EntityBType": "IP",
                 "Relationship": "indicator-of"
             },
             {
                 "ntityA": "ahnlab.myfw.us",
                 "EntityAType": "Domain",
-                "EntityB": "67.208.74.71",
+                "EntityB": "98.136.111.23",
                 "EntityBType": "IP",
                 "Relationship": "indicator-of"
             },
             {
                 "EntityA": "ahnlab.myfw.us",
                 "EntityAType": "Domain",
-                "EntityB": "67.208.74.71",
+                "EntityB": "98.136.108.23",
                 "EntityBType": "IP",
                 "Relationship": "indicator-of"
             },
