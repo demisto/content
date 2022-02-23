@@ -120,6 +120,27 @@ Queries an IP address in AlienVault OTX.
                 "EntityB": "T1071 - Application Layer Protocol",
                 "EntityBType": "Attack Pattern",
                 "Relationship": "indicator-of"
+            },
+            {
+                "EntitiyA": "98.136.102.23",
+                "EntityAType": "IP",
+                "entityB": "mojorojorestaurante.com",
+                "entityBType": "URL",
+                "Relationship": "indicator-of"
+            },
+            {
+                "EntitiyA": "98.136.102.23",
+                "EntityAType": "IP",
+                "entityB": "nguyenhoangai-4g.xyz",
+                "entityBType": "Domain",
+                "Relationship": "indicator-of"
+            },
+            {
+                "EntitiyA": "98.136.102.23",
+                "EntityAType": "IP",
+                "entityB": "0b4d4a7c35a185680bc5102bdd98218297e2cdf0a552bde10e377345f3622c1c",
+                "entityBType": "File",
+                "Relationship": "indicator-of"
             }
         ]
     }
@@ -189,7 +210,58 @@ Queries a domain in AlienVault OTX.
         "Vendor": "AlienVault OTX v2"
     },
     "Domain": {
-        "Name": "ahnlab.myfw.us"
+        "Name": "ahnlab.myfw.us",
+        "Relationships":[
+            {
+                "EntityA": "ahnlab.myfw.us",
+                "EntityAType": "Domain",
+                "EntityB": "b3558ad9f46b72a0319f11889870457dfd611cc4020dbc63945a92869581f774",
+                "EntityBType": "File",
+                "Relationship": "indicator-of"
+            },
+            {
+                "EntityA": "ahnlab.myfw.us",
+                "EntityAType": "Domain",
+                "EntityB": "219c6da3c6555bba5a3c1138180351dd6d39bc14d3cb491e93a46bff6c5ca271",
+                "EntityBType": "File",
+                "Relationship": "indicator-of",
+            },
+            {
+                "EntityA": "ahnlab.myfw.us",
+                "EntityAType": "Domain",
+                "EntityB": "119.194.217.123",
+                "EntityBType": "IP",
+                "Relationship": "indicator-of"
+            },
+            {
+                "EntityA": "ahnlab.myfw.us",
+                "EntityAType": "Domain",
+                "EntityB": "108.61.203.22",
+                "EntityBType": "IP",
+                "Relationship": "indicator-of"
+            },
+            {
+                "ntityA": "ahnlab.myfw.us",
+                "EntityAType": "Domain",
+                "EntityB": "67.208.74.71",
+                "EntityBType": "IP",
+                "Relationship": "indicator-of"
+            },
+            {
+                "EntityA": "ahnlab.myfw.us",
+                "EntityAType": "Domain",
+                "EntityB": "67.208.74.71",
+                "EntityBType": "IP",
+                "Relationship": "indicator-of"
+            },
+            {
+                "EntityA": "ahnlab.myfw.us",
+                "EntityAType": "Domain",
+                "EntityB": "ahnlab.myfw.us",
+                "EntityBType": "IP",
+                "Relationship": "indicator-of"
+            }
+        ]
     }
 }
 ```
