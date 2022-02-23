@@ -63,7 +63,7 @@ class Client(BaseClient):
         """
         expires = int(time.time() + 30)
         request_type = kwargs.pop("request_type", "get")
-        data = kwargs.get("data", None)
+        data = kwargs.get("data")
         kwargs["AccessID"] = self.access_id
         kwargs["Expires"] = expires
         kwargs["Signature"] = self.signature(expires)
