@@ -416,46 +416,46 @@ script:
     name: fireeye-hx-list-policy
     outputs:
     - contextPath: FireEyeHX.Policy._id
-      description: ""
+      description: Unique policy ID
       type: Unknown
     - contextPath: FireEyeHX.Policy.name
-      description: ""
+      description: The name of the policy
       type: Unknown
     - contextPath: FireEyeHX.Policy.description
-      description: ""
+      description: Description of the policy
       type: Unknown
     - contextPath: FireEyeHX.Policy.policy_type_id
-      description: ""
+      description: Unique policy type ID.
       type: Unknown
     - contextPath: FireEyeHX.Policy.priority
-      description: ""
+      description: The priority order of the policy
       type: Unknown
     - contextPath: FireEyeHX.Policy.enabled
-      description: ""
+      description: The policy is enabled ("true") or disabled ("false")
       type: Unknown
     - contextPath: FireEyeHX.Policy.default
-      description: ""
+      description: True if it is the default policy. There can only be one policy marked as default
       type: Unknown
     - contextPath: FireEyeHX.Policy.migrated
-      description: ""
+      description: True if it is a migrated policy
       type: Unknown
     - contextPath: FireEyeHX.Policy.created_by
-      description: ""
+      description: The user who created the policy
       type: Unknown
     - contextPath: FireEyeHX.Policy.created_at
-      description: ""
+      description: Time the policy was first created
       type: Unknown
     - contextPath: FireEyeHX.Policy.updated_at
-      description: ""
+      description: Time the policy was last updated
       type: Unknown
     - contextPath: FireEyeHX.Policy.categories
-      description: ""
+      description: Collection of categories the policy is associated with
       type: Unknown
     - contextPath: FireEyeHX.Policy.display_created_at
-      description: ""
+      description: Time since the display was first created
       type: Unknown
     - contextPath: FireEyeHX.Policy.display_updated_at
-      description: ""
+      description: Time since the display was last updated
       type: Unknown
   - arguments:
     - description: Specifies which record to start with in the response, The default
@@ -465,20 +465,20 @@ script:
     - description: Limit the number of results
       name: limit
       required: false
-    - description: ""
+    - description: The host set ID
       name: hostSetId
       required: false
-    - description: ""
+    - description: Unique policy ID
       name: policyId
       required: false
     description: Get a list of all policies for all host sets.
     name: fireeye-hx-list-host-set-policy
     outputs:
     - contextPath: FireEyeHX.HostSets.Policy.policy_id
-      description: ""
+      description: Unique policy ID
       type: Unknown
-    - contextPath: FireEyeHX.HostSets.Policy.persit_id
-      description: ""
+    - contextPath: FireEyeHX.HostSets.Policy.persist_id
+      description: The host set ID
       type: Unknown
   - arguments:
     - description: Specifies which record to start with in the response, The default
@@ -614,7 +614,7 @@ script:
       description: URI to retrieve data for this record
       type: Unknown
     - contextPath: FireEyeHX.Search.host_set
-      description: ""
+      description: Host Set infomaition
       type: Unknown
     - contextPath: FireEyeHX.Search.stats
       description: ""
@@ -730,7 +730,7 @@ script:
       description: Name of the search
       type: Unknown
   - arguments:
-    - description: ""
+    - description: Unique search ID
       name: searchId
       required: true
     description: Fetches the result for a specific enterprise search.
@@ -1583,6 +1583,12 @@ script:
       isArray: false
     description: Delete a Host Set Policy.
     name: fireeye-hx-delete-host-set-policy
+  - arguments:
+    - description: The acquisition ID.
+      name: acquisitionId
+      required: true
+    description: Delete data acquisition.
+    name: fireeye-hx-delete-data-acquisition
   isfetch: true
   runonce: false
   script: "-"
