@@ -35,8 +35,5 @@
     "useAsKpi": true,
     "validationRegex": "",
     "version": -1,
-    "fromVersion": "5.5.0",
-    "marketplaces": [
-        "xsoar"
-    ]
+    "fromVersion": "5.5.0"
 }

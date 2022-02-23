@@ -31,16 +31,19 @@
     "x2_fields": "fw_serial_number",
     "Aliases": [
         {
-          "cliName": "applianceid",
-          "type": "shortText"
+            "cliName": "applianceid",
+            "type": "shortText",
+            "name": "Appliance ID"
         },
         {
-          "cliName": "extrahopapplianceid",
-          "type": "shortText"
+            "cliName": "extrahopapplianceid",
+            "type": "shortText",
+            "name": "ExtraHop Appliance ID"
         },
         {
-          "cliName": "fwserials",
-          "type": "shortText"
+            "cliName": "fwserials",
+            "type": "shortText",
+            "name": "fwserials"
         }
     ]
 }

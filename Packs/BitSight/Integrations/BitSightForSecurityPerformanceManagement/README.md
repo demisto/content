@@ -22,6 +22,7 @@ This integration was integrated and tested with version 01 of BitSight for Secur
     | Use system proxy settings |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
+    | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

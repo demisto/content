@@ -36,3 +36,7 @@ ignore=IF100
 
 [file:incidentfield-Argus_Event_Type.json]
 ignore=IF100
+
+
+[file:ArgusManagedDefence_image.png]
+ignore=IM111
