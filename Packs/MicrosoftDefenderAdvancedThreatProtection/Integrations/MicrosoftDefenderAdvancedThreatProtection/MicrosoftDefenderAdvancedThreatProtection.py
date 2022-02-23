@@ -2336,24 +2336,6 @@ def add_remove_machine_tag_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
-# def fetch_incidents(client: MsClient, last_run, fetch_evidence):
-# last_alert_fetched_time = get_last_alert_fetched_time(last_run, client.alert_time_to_fetch)
-# existing_ids = last_run.get('existing_ids', [])
-# latest_creation_time = last_alert_fetched_time
-# filter_alerts_creation_time = create_filter_alerts_creation_time(last_alert_fetched_time)
-# alerts = client.list_alerts(filter_alerts_creation_time)['value']
-#
-# incidents, new_ids, latest_creation_time = all_alerts_to_incidents(alerts, latest_creation_time, existing_ids,
-#                                                                    client.alert_status_to_fetch,
-#                                                                    client.alert_severities_to_fetch)
-#
-# demisto.setLastRun({
-#     'last_alert_fetched_time': datetime.strftime(latest_creation_time, '%Y-%m-%dT%H:%M:%S'),
-#     'existing_ids': new_ids
-# })
-# demisto.incidents(incidents)
-
-
 def fetch_incidents(client: MsClient, last_run, fetch_evidence):
     first_fetch_time = dateparser.parse(client.alert_time_to_fetch,
                                         settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
@@ -2371,7 +2353,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
                                            settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
 
     params = _get_incidents_query_params(client, fetch_evidence, last_fetch_time)
-    demisto.info(f'########### {params=}')
+    demisto.debug(f'getting alerts using {params=}')
     incidents = []
     # get_alerts:
     try:
