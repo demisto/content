@@ -80,7 +80,7 @@ RETURN_ERROR_TARGET = 'GitHub.return_error'
 @pytest.mark.parametrize('params, expected_result', [
     ({'credentials': {'password': '1234'}}, "Insert api token or private key")
 ])
-def test_params(mocker, params, expected_result):
+def test_missing_params(mocker, params, expected_result):
     """
     Given:
       - Case 1: credentials with no sshkey.
