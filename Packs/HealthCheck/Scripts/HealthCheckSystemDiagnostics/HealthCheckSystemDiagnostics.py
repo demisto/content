@@ -5,6 +5,19 @@ from CommonServerPython import *  # noqa: F401
 from operator import itemgetter
 import re
 
+DESCRIPTION = [
+    "Large incidents were found",
+    "Large Workplans were found",
+    "Large investigation context data larger than 1 MB was found, that ,ay slow down playbook execution",
+    "Large playbook tasks are used, storing a large amount of data to task inputs and outputs"
+]
+
+RESOLUTION = [
+    'consider to use quite mode in task settings and Playbook Settings: https://xsoar.pan.dev/docs/playbooks/playbook-settings',
+    "Avoid storing unnecessary data to context",
+
+]
+
 
 def LargeIncidents(account_name):
     largeIncidents = demisto.executeCommand("demisto-api-get", {"uri": f"{account_name}diagnostics/incidentsSize"})[0]['Contents']
@@ -13,7 +26,6 @@ def LargeIncidents(account_name):
 
 def BigWorkplans(account_name):
     bigWorkplans = demisto.executeCommand("demisto-api-get", {"uri": f"{account_name}diagnostics/bigworkplans"})[0]['Contents']
-    # print(bigWorkplans['response'])
     return bigWorkplans['response']
 
 
@@ -28,8 +40,6 @@ def BigTasks(account_name):
 
 
 def FormatSize(size):
-    # 2**10 = 1024
-    #power = 2**10
     power = 1000
     n = 0
     power_labels = {0: '', 1: 'KB', 2: 'MB', 3: 'GB'}
@@ -45,10 +55,7 @@ def format_time(time):
     return newTimeFormat
 
 
-def FormatTableAndSet(data, dataSource, incident):
-    # print(dataSource)
-    # print(data)
-
+def FormatTableAndSet(data, dataSource):
     newFormat = []
     for entry in data:
         newEntry = {}
@@ -70,11 +77,12 @@ def FormatTableAndSet(data, dataSource, incident):
             newFormat.append(newEntry)
         elif dataSource == "bigTasks":
             taskId = re.match(r"(?P<incidentid>\d+)##(?P<taskid>[\d+])##(?P<pbiteration>-\d+|\d+)", entry['taskId'])
-            # print(taskId)
-            newEntry['details'] = f"Playbook:{entry['playbookName']},\nTaskName:{entry['taskName']},\n TaskID:{taskId['taskid']}"
-            newEntry['size'] = FormatSize(entry['taskSize'])
-            newEntry['incidentid'] = entry['investigationId']
-            newFormat.append(newEntry)
+            if taskId is not None:
+                newEntry['details'] = \
+                    f"Playbook:{entry['playbookName']},\n TaskName:{entry['taskName']},\n TaskID:{taskId['taskid']}"
+                newEntry['size'] = FormatSize(entry['taskSize'])
+                newEntry['incidentid'] = entry['investigationId']
+                newFormat.append(newEntry)
         else:
             continue
     return newFormat
@@ -85,25 +93,56 @@ account_name = incident.get('account')
 account_name = f"acc_{account_name}/" if account_name != "" else ""
 
 
-SystemDiagnosticsResults = []
-
-
 SystemDiagnosticsResults = {
     "largeIncidents": LargeIncidents(account_name),
     "bigWorkplans": BigWorkplans(account_name),
     "bigContext": BigContext(account_name),
     "bigTasks": BigTasks(account_name)
 }
-#print(json.dumps(SystemDiagnosticsResults, indent = 4))
+
 out = []
 for key in SystemDiagnosticsResults.keys():
     if key != "bigTasks":
-        res = FormatTableAndSet(SystemDiagnosticsResults[key], key, incident)
+        res = FormatTableAndSet(SystemDiagnosticsResults[key], key)
         SystemDiagnosticsResults[key] = res
         out.extend(res)
     else:
-        bigTasksNewFormat = FormatTableAndSet(SystemDiagnosticsResults[key], key, incident)
-print(out)
+        bigTasksNewFormat = FormatTableAndSet(SystemDiagnosticsResults[key], key)
+
+actionableItems = []
+if SystemDiagnosticsResults['largeIncidents']:
+    actionableItems.append({"category": "DB Analysis", "severity": "High",
+                            "description": f"{DESCRIPTION[0]}",
+                            "resolution": f"{RESOLUTION[0]}"
+                            })
+
+if SystemDiagnosticsResults['bigWorkplans']:
+    actionableItems.append({"category": "DB Analysis", "severity": "High",
+                            "description": f"{DESCRIPTION[1]}",
+                            "resolution": f"{RESOLUTION[0]}"
+                            })
+
+if SystemDiagnosticsResults['bigContext']:
+    actionableItems.append({"category": "DB Analysis", "severity": "High",
+                            "description": f"{DESCRIPTION[2]}",
+                            "resolution": f"{RESOLUTION[1]}"
+                            })
+
+if SystemDiagnosticsResults['bigTasks']:
+    actionableItems.append({"category": "DB Analysis", "severity": "High",
+                            "description": f"{DESCRIPTION[3]}",
+                            "resolution": f"{RESOLUTION[0]}"
+                            })
+
 sorted_out = sorted(out, key=itemgetter('incidentid'))
 demisto.executeCommand("setIncident", {"healthchecklargeinvestigations": sorted_out})
 demisto.executeCommand("setIncident", {"healthcheckinvestigationswithlargeinputoutput": bigTasksNewFormat})
+
+
+results = CommandResults(
+    readable_output="HealthCheck System Diagnostics Done",
+    outputs_prefix="HealthCheck.ActionableItems",
+    outputs=actionableItems
+)
+
+return_results(results)

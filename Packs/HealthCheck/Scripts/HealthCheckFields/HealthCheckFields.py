@@ -21,7 +21,7 @@ def find_indexed_longText_fields(fields):
 #     return found
 
 
-DESCRIPTION = ['Custom with LongText fields were configured to be indexed consider not to index it']
+DESCRIPTION = ['Custom fields which useually contains big data are being indexed, consider not to index it']
 
 RESOLUTION = ['Navigate to incident field page (Settings > Advanced > Fields), select Field > Edit, '
               'and turn off Make data available for search under the Attributes tab its determines if '
@@ -53,5 +53,3 @@ results = CommandResults(
 
 return_results(results)
 
-# for recomendations:
-# if fields exist with data in incidents make it higher severity with explanations

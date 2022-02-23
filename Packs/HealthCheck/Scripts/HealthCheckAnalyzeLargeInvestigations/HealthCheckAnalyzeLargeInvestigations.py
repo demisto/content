@@ -11,7 +11,7 @@ THRESHOLDS = {
 }
 DESCRIPTION = [
     'Too many incidents with high number of war room entries were found, consider to use quite mode in task settings',
-    'Large incidents were found, consider to use quite mode in task settings and delete context unneeded Context'
+    'Large incidents were found, consider to use quite mode in task settings and delete unneeded Context'
 ]
 RESOLUTION = [
     'Playbook Settings: https://xsoar.pan.dev/docs/playbooks/playbook-settings',
@@ -30,6 +30,11 @@ def format_dict_keys(entry: Dict[str, Any]) -> Dict:
             new_entry[key.lower()] = value
 
     return new_entry
+
+
+def formatToEntriesGrid(table):
+    for entry in table:
+        entry['amountofentries'] = entry['info']
 
 
 def main(args):
@@ -56,7 +61,9 @@ def main(args):
 
     numberofincidentsbiggerthan1mb = len(incidentsbiggerthan1mb)
     numberofincidentswithmorethan500entries = len(incidentswithmorethan500entries)
-
+    if incidentswithmorethan500entries:
+        formatToEntriesGrid(incidentswithmorethan500entries)
+        
     analyzeFields = {
         'healthchecklargeinvestigations': incidentsbiggerthan1mb,
         'healthchecknumberofinvestigationsbiggerthan1mb': numberofincidentsbiggerthan1mb,
