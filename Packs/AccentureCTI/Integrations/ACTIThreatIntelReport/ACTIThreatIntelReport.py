@@ -120,12 +120,6 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
                 'analysis' : Res.get('analysis','NA'),
                 'sources_external' : Res.get('sources_external','NA')
             }
-            # "DBotScore": {
-            #     "Indicator": Res.get('display_text','NA'),
-            #     "Reliability": reliability,
-            #     "Type": "Report",
-            #     "Vendor": "ACTI Threat Intelligence Report"
-            # }
         }
     
     type_of_report = Res.get('type','NA')
