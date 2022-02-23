@@ -54,17 +54,17 @@ create-instances-upload-flow:
     - if: '$BUCKET_UPLOAD == "true"'
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
-#create-instances-mpv2-upload-flow:
-#  extends:
-#    - create-instances-mpv2
-#  variables:
-#    IFRA_ENV_TYPE: "Bucket-Upload"
-#    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
-#  rules:
-#    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
-#      when: never
-#    - if: '$BUCKET_UPLOAD == "true"'
-#    - if: '$FORCE_BUCKET_UPLOAD == "true"'
+prepare-testing-bucket-mpv2-upload-flow:
+ extends:
+   - prepare-testing-bucket-mpv2
+ variables:
+   IFRA_ENV_TYPE: "Bucket-Upload"
+   ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+ rules:
+   - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+     when: never
+   - if: '$BUCKET_UPLOAD == "true"'
+   - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 
 .install_packs_in_server:
@@ -126,6 +126,10 @@ install-packs-in-server-master:
     INSTANCE_ROLE: "Server Master"
 
 
+# TO-DO: Job to test installation of mpv2 packs - issue https://github.com/demisto/etc/issues/44769
+# install-mpv2-pack-on-mpv2-instances
+
+
 upload-packs-to-marketplace:
   tags:
     - gke
@@ -168,6 +172,7 @@ upload-packs-to-marketplace:
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar
       fi
     - section_end "Upload Packs To Marketplace Storage"
+
     - section_start "Download packs from GCP"
     - |
       if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
@@ -185,10 +190,11 @@ upload-packs-to-marketplace:
       echo "successfully downloaded index.zip"
       gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
     - section_end "Download packs from GCP"
+
     - section_start "Zip Content Packs From GCS"
-    - |
-      python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
+    - python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
     - section_end "Zip Content Packs From GCS"
+
     - section_start "Validate Premium Packs"
     - |
       if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]; then
@@ -197,6 +203,64 @@ upload-packs-to-marketplace:
         echo "Skipping Premium Packs Validation"
       fi
     - section_end "Validate Premium Packs"
+
+
+upload-packs-to-marketplace-v2:
+  tags:
+    - gke
+  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "prepare-testing-bucket-mpv2-upload-flow"]
+  stage: upload-to-marketplace
+  artifacts:
+    expire_in: 48 hrs
+    paths:
+      - /builds/xsoar/content/artifacts/*
+    when: always
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    INSTANCE_ROLE: "Server Master"
+    INSTANCE_CREATED: "true"
+    SSH_TUNNEL_TIMEOUT: 10
+    TIME_TO_LIVE: ""
+  extends:
+    - .bucket-upload-rule
+    - .default-job-settings
+  script:
+    - *check_user_permissions_to_upload_packs
+    - section_start "Upload Packs To Marketplace Storage"
+    - |
+      if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_V2_BUCKET" != "$GCS_PRODUCTION_V2_BUCKET" ]]; then
+        EXTRACT_FOLDER=$(mktemp -d)
+        PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
+        PACKS_DEPENDENCIES=$ARTIFACTS_FOLDER/packs_dependencies.json
+        CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
+        GCS_BUILD_BUCKET="marketplace-ci-build"
+        if [[ -z $STORAGE_BASE_PATH ]]; then
+          if [[ $GCS_MARKET_V2_BUCKET == $GCS_PRODUCTION_V2_BUCKET ]]; then
+            STORAGE_BASE_PATH="content"
+          else
+            STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
+          fi
+          echo "Set storage base path to $STORAGE_BASE_PATH"
+        fi
+        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_V2_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH/packs" --marketplace marketplacev2
+      fi
+    - section_end "Upload Packs To Marketplace Storage"
+
+    - section_start "Download packs from GCP"
+    - |
+      PACKS_SRC="gs://$GCS_MARKET_V2_BUCKET/$STORAGE_BASE_PATH/packs"
+      ZIP_FOLDER=$(mktemp -d)
+      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
+      echo "successfully activated google cloud service account"
+      gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
+      echo "successfully downloaded index.zip"
+      gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
+    - section_end "Download packs from GCP"
+
+    - section_start "Zip Content Packs From GCS"
+    - python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
+    - section_end "Zip Content Packs From GCS"
+
 
 
 force-pack-upload:

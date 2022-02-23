@@ -208,7 +208,8 @@ def test_parse_indicators():
     - we extract this IOCs list to Demisto format
     Then
     - run the parse_indicators
-    Validate The IOCs list extracted successfully.
+    - Validate The IOCs list extracted successfully.
+
     """
     assert parse_indicators(INDICATORS_DATA, [], '')[0] == INDICATORS_RESULT
 

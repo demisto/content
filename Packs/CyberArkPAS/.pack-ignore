@@ -1,2 +1,6 @@
 [file:CyberArkPAS.yml]
 ignore=IN126
+
+
+[file:CyberArkPAS_image.png]
+ignore=IM111

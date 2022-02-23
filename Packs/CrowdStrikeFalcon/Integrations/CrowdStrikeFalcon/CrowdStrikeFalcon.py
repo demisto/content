@@ -2028,7 +2028,7 @@ def get_endpoint_command():
     # handles the search by id or by hostname
     raw_res = search_device()
 
-    if ip := args.get('ip'):
+    if ip := args.get('ip') and raw_res:
         # there is no option to filter by ip in an api call, therefore we would filter the devices in the code
         raw_res = search_device_by_ip(raw_res, ip)
 
@@ -2842,14 +2842,15 @@ def list_incident_summaries_command():
 
     args_ids = args.get('ids')
     if args_ids:
-        incidents_ids = argToList(args_ids)
-    elif fetch_query:
-        fetch_query = "{query}".format(query=fetch_query)
-        incidents_ids = get_incidents_ids(filter_arg=fetch_query)
+        ids = argToList(args_ids)
     else:
-        incidents_ids = get_incidents_ids()
-    handle_response_errors(incidents_ids)
-    ids = incidents_ids.get('resources')
+        if fetch_query:
+            fetch_query = "{query}".format(query=fetch_query)
+            incidents_ids = get_incidents_ids(filter_arg=fetch_query)
+        else:
+            incidents_ids = get_incidents_ids()
+        handle_response_errors(incidents_ids)
+        ids = incidents_ids.get('resources')
     if not ids:
         return CommandResults(readable_output='No incidents were found.')
     incidents_response_data = get_incidents_entities(ids)

@@ -368,13 +368,9 @@ jobs:
           name: Check if CircleCI's config file and requirements.txt files are up to date
           when: always
           command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping, Should not run on contributor's branch."
-              exit 0
-            fi
-            ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml
-            ./Tests/scripts/is_file_up_to_date.sh .dev-requirements-py2.txt
-            ./Tests/scripts/is_file_up_to_date.sh .dev-requirements-py3.txt
+            ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
+            ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py2.txt $CIRCLE_BRANCH
+            ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py3.txt $CIRCLE_BRANCH
       - run:
           name: Verify Base Branch for Contribution
           when: always

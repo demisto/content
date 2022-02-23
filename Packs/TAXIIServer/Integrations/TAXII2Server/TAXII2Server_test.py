@@ -357,6 +357,35 @@ def test_taxii20_objects(mocker, taxii2_server_v20):
         assert response.headers.get('Content-Range') == 'items 0-2/5'
 
 
+def test_taxii20_indicators_objects(mocker, taxii2_server_v20):
+    """
+        Given
+            TAXII Server v2.0, collection_id, content-range, types_for_indicator_sdo
+        When
+            Calling get objects api request for given collection
+        Then
+            Validate that right objects are returned.
+    """
+    iocs = util_load_json('test_files/ip_iocs.json')
+    objects = util_load_json('test_files/objects20-indicators.json')
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v20)
+    mocker.patch('TAXII2Server.SERVER.types_for_indicator_sdo', [
+                 'ipv4-addr', 'domain-name', 'ipv6-addr', 'user-account',
+                 'email-addr', 'windows-registry-key', 'file', 'url'])
+    mocker.patch.object(uuid, 'uuid4', return_value='1ffe4bee-95e7-4e36-9a17-f56dbab3c777')
+    headers = copy.deepcopy(HEADERS)
+    headers['Content-Range'] = 'items 0-2/5'
+    mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
+    mocker.patch.object(demisto, 'params', return_value={'res_size': '100'})
+    with APP.test_client() as test_client:
+        response = test_client.get('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/objects/',
+                                   headers=headers)
+        assert response.status_code == 200
+        assert response.content_type == 'application/vnd.oasis.stix+json; version=2.0'
+        assert response.json == objects
+        assert response.headers.get('Content-Range') == 'items 0-2/5'
+
+
 @pytest.mark.parametrize('demisto_iocs_file,res_file,query_type', [
     ('malware_iocs', 'objects21_malware', 'malware'),
     ('file_iocs', 'objects21_file', 'file'),

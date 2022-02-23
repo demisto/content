@@ -20,9 +20,9 @@ else
   MARKETPLACE_TYPE=$3
   if [[ "$MARKETPLACE_TYPE" == "marketplacev2" ]]; then
     GCS_PRODUCTION_BUCKET=$GCS_PRODUCTION_V2_BUCKET
-    ID_SET=$ARTIFACTS_FOLDER/id_set_mp_v2.json
   fi
 fi
+
 
 echo "Preparing content packs for testing ..."
 gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1

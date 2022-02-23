@@ -41,46 +41,7 @@
   "unmapped": false,
   "unsearchable": false,
   "fromVersion": "5.0.0",
-  "Aliases": [
-    {
-      "cliName": "ironscalessenderemail",
-      "type": "shortText"
-    },
-    {
-      "cliName": "proofpointtapsenderaddress",
-      "type": "shortText"
-    },
-    {
-      "cliName": "apdmessagemailfrom",
-      "type": "shortText"
-    },
-    {
-      "cliName": "cofensetriagereportfromaddress",
-      "type": "shortText"
-    },
-    {
-      "cliName": "cymulatesourceemailaddress",
-      "type": "shortText"
-    },
-    {
-      "cliName": "cyrenexternalfrom",
-      "type": "shortText"
-    },
-    {
-      "cliName": "cyrenexternalsender",
-      "type": "shortText"
-    },
-    {
-      "cliName": "cyrenfromaddress",
-      "type": "shortText"
-    },
-    {
-      "cliName": "cyrensenderaddress",
-      "type": "shortText"
-    },
-    {
-      "cliName": "digitalguardianemailsender",
-      "type": "shortText"
-    }
+  "marketplaces": [
+    "xsoar"
   ]
 }
