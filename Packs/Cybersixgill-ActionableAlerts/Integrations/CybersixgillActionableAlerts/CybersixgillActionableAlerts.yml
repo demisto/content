@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Cybersixgill_Actionable_Alerts_dev
+  id: Cybersixgill_Actionable_Alerts
   version: -1
 configuration:
 - display: Cybersixgill API client ID
@@ -74,7 +74,7 @@ description: Cybersixgill automatically collects intelligence in real-time on al
   items with pre defined organization assets, and automatically alerts users in real
   time of any relevant intelligence items.
 display: Cybersixgill Actionable Alerts
-name: Cybersixgill_Actionable_Alerts_dev
+name: Cybersixgill_Actionable_Alerts
 script:
   commands:
   - deprecated: false
