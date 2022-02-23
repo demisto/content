@@ -2321,7 +2321,7 @@ script:
       can be viewed by navigating to `Administration -> Computer Groups` in the Threat-Response
       product console. Computer group names and IDs can also be retrieved by using
       the `tn-list-groups` command in the `Tanium` integration.
-  dockerimage: demisto/lxml:1.0.0.25271
+  dockerimage: demisto/lxml:1.0.0.26912
   feed: false
   isfetch: true
   longRunning: false
