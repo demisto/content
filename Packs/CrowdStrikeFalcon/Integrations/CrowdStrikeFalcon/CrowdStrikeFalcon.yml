@@ -1691,8 +1691,8 @@ script:
       secret: false
     - default: false
       description: |-
-        The string representation of the indicator.
-        Can also get comma separated values in order to upload multiple IOCs of the same type but with different values (all other args will be the same for all the newly created IOCs)
+        A comma separated list of indicators.
+        More than one value can be supplied in order to upload multiple IOCs of the same type but with different values. Note that the uploaded IOCs will have the same properties (as supplied in other arguments).
       isArray: true
       name: value
       required: true
