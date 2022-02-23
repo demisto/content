@@ -95,9 +95,6 @@
                 "Microsoft Defender for Endpoint Domain Name": {
                     "simple": "evidence.domainName"
                 },
-                "Event Types": {
-                    "simple": "evidence.entityType"
-                },
                 "Microsoft Defender for Endpoint Evidence Type": {
                     "simple": "evidence.entityType"
                 },
@@ -139,9 +136,6 @@
                 },
                 "Microsoft Defender for Endpoint Process ID": {
                     "simple": "evidence.processId"
-                },
-                "Process SHA256": {
-                    "simple": "evidence.sha256"
                 },
                 "Microsoft Defender for Endpoint Registry Value": {
                     "simple": "evidence.registryValue"
