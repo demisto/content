@@ -410,9 +410,9 @@ def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
         intelligence_reports = {title: IDEFENSE_URL_TEMPLATE.format(
             'intelligence_report', uuid) for title, uuid in reports.items()}
 
-        for ia in intelligence_alerts.values():
+        for ia in alerts.values():
             iair.append(ia)
-        for ir in intelligence_reports.values():
+        for ir in reports.values():
             iair.append(ir)
         
     except Exception as e:
