@@ -1915,14 +1915,12 @@ def build_search_human_readable(args, parsed_search_results):
         if not isinstance(parsed_search_results[0], dict):
             headers = "results"
         else:
-            search_for_table_args = re.search(r' table (?P<table>.*)(\|)?', args.get('query', ''))
-            if search_for_table_args:
-                table_args = search_for_table_args.group('table')
-                table_args = table_args if '|' not in table_args else table_args.split(' |')[0]
-                chosen_fields = [field.strip('"')
-                                 for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', table_args) if field]
+            chosen_fields = []
+            for table_args in re.findall(r' table (?P<table>[^|]*)', args.get('query', '')):
+                chosen_fields.extend([field.strip('"')
+                                      for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', table_args) if field])
 
-                headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
+            headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
     query = args['query'].replace('`', r'\`')
     human_readable = tableToMarkdown("Splunk Search results for query: {}".format(query),
@@ -1942,7 +1940,7 @@ def update_headers_from_field_names(search_result, chosen_fields):
                 if re.search(temp_field, key):
                     headers.append(key)
 
-        elif field in result_keys:
+        elif field in result_keys and field not in headers:
             headers.append(field)
 
     return headers
