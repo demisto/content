@@ -1076,6 +1076,8 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: dict, marketplace_v
             should_test, reason = should_test_content_pack(id_set_test_playbook_pack_name, marketplace_version, id_set)
             if not should_test:
                 tests_that_should_not_be_tested.add(f'{test}: {reason}')
+        else:
+            tests_that_should_not_be_tested.add(f'{test}: the pack of the test was not find in the id set')
 
     if tests_that_should_not_be_tested:
         logging.debug('The following test playbooks are not supported and will not be tested: \n{} '.format(
