@@ -69,18 +69,14 @@ configuration:
   name: isFetch
   required: false
   type: 8
-description: Use FortiSIEM v2 to fetch and update incidents, search events and manage
-  watchlists of FortiSIEM.
+description: Use FortiSIEM v2 to fetch and update incidents, search events and manage watchlists of FortiSIEM.
 display: FortiSIEM v2
 name: FortiSIEMV2
 script:
   commands:
   - arguments:
     - default: false
-      description: 'The query for filtering the relevant events. For example: ''eventId=9071234812319593968
-        AND eventType=type''. You can retrieve the attributes names  by the naming
-        of the filtering arguments of the command, or by naming the attributes of
-        the event that returned in the context output.'
+      description: 'The query for filtering the relevant events. For example: ''eventId=9071234812319593968 AND eventType=type''. You can retrieve the attributes names  by the naming of the filtering arguments of the command, or by naming the attributes of the event that returned in the context output.'
       isArray: false
       name: query
       required: false
@@ -99,8 +95,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Use Cortex XSOAR built-in polling to retrieve the result when it's
-        ready.
+      description: Use Cortex XSOAR built-in polling to retrieve the result when it's ready.
       isArray: false
       name: polling
       predefined:
@@ -109,8 +104,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The ID of the search query to retrieve it's results. Intended for
-        use by the Polling process and does not need to be provided by the user.
+      description: The ID of the search query to retrieve it's results. Intended for use by the Polling process and does not need to be provided by the user.
       isArray: false
       name: search_id
       required: false
@@ -130,29 +124,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: Indicates how long to wait between command executions (in seconds)
-        when 'polling' argument is true. Minimum value is 10 seconds. Default is 10.
+      description: Indicates how long to wait between command executions (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 10.
       isArray: false
       name: interval_in_seconds
       required: false
       secret: false
     - default: false
-      description: Indicates the time in seconds until the polling sequence timeouts.
-        Default is 60.
+      description: Indicates the time in seconds until the polling sequence timeouts. Default is 60.
       isArray: false
       name: timeout_in_seconds
       required: false
       secret: false
     - default: false
-      description: From which event receive time filter the events. For example, "3
-        days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".
+      description: From which event receive time filter the events. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".
       isArray: false
       name: from_time
       required: true
       secret: false
     - default: false
-      description: Until which event receive time  filter the events. For example,
-        "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".
+      description: Until which event receive time  filter the events. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".
       isArray: false
       name: to_time
       required: true
@@ -236,11 +226,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Initiate search process on events. The events will be retrieve according
-      to a constraint which will be determined either by the query argument or by
-      the filtering arguments. When using filtering arguments, an 'AND' operator will
-      be used between them. If the query argument is filled, it will override the
-      values in the filtering arguments.
+    description: Initiate search process on events. The events will be retrieve according to a constraint which will be determined either by the query argument or by the filtering arguments. When using filtering arguments, an 'AND' operator will be used between them. If the query argument is filled, it will override the values in the filtering arguments.
     execution: false
     polling: true
     name: fortisiem-event-search
@@ -261,8 +247,7 @@ script:
     name: fortisiem-event-search-status
     outputs:
     - contextPath: FortiSIEM.EventsSearchStatus.percentage_status
-      description: ' A number between 0 to 100 which represents the percentage status
-        of the search query. '
+      description: ' A number between 0 to 100 which represents the percentage status of the search query. '
       type: Number
     - contextPath: FortiSIEM.EventsSearchStatus.search_id
       description: 'The search ID which the percentage status refers to. '
@@ -341,8 +326,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type assigned to the incident ticket in an external ticket-handling
-        system.
+      description: The type assigned to the incident ticket in an external ticket-handling system.
       isArray: false
       name: external_ticket_type
       predefined:
@@ -359,8 +343,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The state of the incident ticket in an external ticket-handling
-        system.
+      description: The state of the incident ticket in an external ticket-handling system.
       isArray: false
       name: external_ticket_state
       predefined:
@@ -377,21 +360,18 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update attributes of the specified incident. Only the provided attributes
-      will be overriden.
+    description: Update attributes of the specified incident. Only the provided attributes will be overriden.
     execution: false
     name: fortisiem-incident-update
   - arguments:
     - default: false
-      description: 'Comma-separated list of IP addresses to include. For example:
-        1.1.1.1,2.2.2.2.'
+      description: 'Comma-separated list of IP addresses to include. For example: 1.1.1.1,2.2.2.2.'
       isArray: true
       name: include_ip
       required: false
       secret: false
     - default: false
-      description: 'Comma-separated list of IP addresses to exclude. For example:
-        1.1.1.1,2.2.2.2. '
+      description: 'Comma-separated list of IP addresses to exclude. For example: 1.1.1.1,2.2.2.2. '
       isArray: true
       name: exclude_ip
       required: false
@@ -423,13 +403,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List CMDB (Centralized Management Database) devices with short information
-      for each device.If you provide one of the exclude arguments, their values will
-      be excluded from the provided include arguments. For example, if you want to
-      list all devices in the range 192.168.20.1-192.168.20.100, but want to exclude
-      192.168.20.20, 192.168.20.25, then use include_ip_range='192.168.20.1-192.168.20.100'
-      and exclude_ip='192.168.20.20, 192.168.20.25'. If not any argument is provided,
-      the command will retrieve all devices.
+    description: List CMDB (Centralized Management Database) devices with short information for each device.If you provide one of the exclude arguments, their values will be excluded from the provided include arguments. For example, if you want to list all devices in the range 192.168.20.1-192.168.20.100, but want to exclude 192.168.20.20, 192.168.20.25, then use include_ip_range='192.168.20.1-192.168.20.100' and exclude_ip='192.168.20.20, 192.168.20.25'. If not any argument is provided, the command will retrieve all devices.
     execution: false
     name: fortisiem-cmdb-devices-list
     outputs:
@@ -740,9 +714,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time period in which the items will expire from the Watchlist
-        group if there is no activity for that time. For example, "3 days ago","in
-        2 weeks", "1 month". By default, the item will never expire from Watchlist.
+      description: The time period in which the items will expire from the Watchlist group if there is no activity for that time. For example, "3 days ago","in 2 weeks", "1 month". By default, the item will never expire from Watchlist.
       isArray: false
       name: age_out
       required: false
@@ -765,9 +737,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time period in which the entry will expire from the Watchlist
-        group if there is no activity for that time. For example, "3 days ago","in
-        2 weeks", "1 month". By default, the item will never expire from Watchlist.
+      description: The time period in which the entry will expire from the Watchlist group if there is no activity for that time. For example, "3 days ago","in 2 weeks", "1 month". By default, the item will never expire from Watchlist.
       isArray: false
       name: entry_age_out
       required: false
@@ -779,22 +749,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: The first time the entry was seen (<number> <time unit>, e.g.,
-        12 hours, 7 days).
+      description: The first time the entry was seen (<number> <time unit>, e.g., 12 hours, 7 days).
       isArray: false
       name: entry_first_seen
       required: false
       secret: false
     - default: false
-      description: The last time the entry was seen. For example, "3 days ago", "1
-        month", "2019-10-10T12:22:00", "2019-10-10".
+      description: The last time the entry was seen. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".
       isArray: false
       name: entry_last_seen
       required: false
       secret: false
     - default: false
-      description: The triggering rules that associate with the entry. Should be a
-        comma separate of rule names.
+      description: The triggering rules that associate with the entry. Should be a comma separate of rule names.
       isArray: false
       name: entry_trigger_rules
       required: false
@@ -865,8 +832,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The triggering rules that associate with the entry. Should be a
-        comma separate of rules names.
+      description: The triggering rules that associate with the entry. Should be a comma separate of rules names.
       isArray: true
       name: triggering_rules
       required: false
@@ -878,23 +844,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: The time period in which the entry will expire from the Watchlist
-        group if there is no activity for that time. For example, "3 days ago","in
-        2 weeks", "1 month". By default, the item will never expire from Watchlist.
+      description: The time period in which the entry will expire from the Watchlist group if there is no activity for that time. For example, "3 days ago","in 2 weeks", "1 month". By default, the item will never expire from Watchlist.
       isArray: false
       name: age_out
       required: false
       secret: false
     - default: false
-      description: The last time the entry was seen. For example, "3 days ago", "1
-        month", "2019-10-10T12:22:00", "2019-10-10".
+      description: The last time the entry was seen. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".
       isArray: false
       name: last_seen
       required: false
       secret: false
     - default: false
-      description: The first time the entry was seen. For example, "3 days ago", "1
-        month", "2019-10-10T12:22:00", "2019-10-10".
+      description: The first time the entry was seen. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".
       isArray: false
       name: first_seen
       required: false
@@ -933,8 +895,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The first time the entry was seen. For example, "3 days ago", "1
-        month", "2019-10-10T12:22:00", "2019-10-10".
+      description: The first time the entry was seen. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".
       isArray: false
       name: first_seen
       required: false
@@ -946,8 +907,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The triggering rules that associate with the entry. Should be a
-        comma separate of rules names.
+      description: The triggering rules that associate with the entry. Should be a comma separate of rules names.
       isArray: false
       name: triggering_rules
       required: false
@@ -982,31 +942,25 @@ script:
       required: true
       secret: false
     - default: false
-      description: When the entry was expired (<number> <time unit>, e.g., 12 hours,
-        7 days).
+      description: When the entry was expired (<number> <time unit>, e.g., 12 hours, 7 days).
       isArray: false
       name: expired_time
       required: false
       secret: false
     - default: false
-      description: The time period in which the entry will expire from the Watchlist
-        group if there is no activity for that time. For example, "3 days ago","in
-        2 weeks", "1 month". By default, the item will never expire from Watchlist.
+      description: The time period in which the entry will expire from the Watchlist group if there is no activity for that time. For example, "3 days ago","in 2 weeks", "1 month". By default, the item will never expire from Watchlist.
       isArray: false
       name: age_out
       required: false
       secret: false
     - default: false
-      description: The first time the entry was seen. For example, "3 days ago", "1
-        month", "2019-10-10T12:22:00", "2019-10-10".
+      description: The first time the entry was seen. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".
       isArray: false
       name: last_seen
       required: false
       secret: false
     deprecated: false
-    description: Update watchlist entry. This command overrides all existing values
-      in the entry?s attribute. Please fill all relevant arguments to avoid deletion
-      of data.
+    description: Update watchlist entry. This command overrides all existing values in the entry?s attribute. Please fill all relevant arguments to avoid deletion of data.
     execution: false
     name: fortisiem-watchlist-entry-update
     outputs:
@@ -1116,7 +1070,7 @@ script:
     - contextPath: FortiSIEM.WatchlistEntry.ageOut
       description: Expiration date of the Entry.
       type: String
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.1.26972
   feed: false
   isfetch: true
   longRunning: false
