@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "osparentusername",
+    "closeForm": false,
+    "content": true,
+    "description": "Name of the user associated with the parent operating system",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_osparentusername",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "OS Parent User Name",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+	"x2_fields": "os_actor_effective_username"
+}

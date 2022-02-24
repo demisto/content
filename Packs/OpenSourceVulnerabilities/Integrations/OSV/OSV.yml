@@ -1,0 +1,176 @@
+category: Vulnerability Management
+commonfields:
+  id: OSV
+  version: -1
+configuration:
+- defaultvalue: https://api.osv.dev
+  display: Server URL (e.g. https://api.osv.dev)
+  name: url
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: 'OSV (Open Source Vulnerability) is a vulnerability database for open
+  source projects. For each vulnerability, it perform bisects to figure out the exact
+  commit that introduces the bug, as well the exact commit that fixes it. This is
+  cross referenced against upstream repositories to figure out the affected tags and
+  commit ranges '
+display: OSV
+name: OSV
+script:
+  commands:
+  - arguments:
+    - description: 'The `id` field is a unique identifier for the vulnerability entry.
+        For example: OSV-2020-111'
+      name: id_
+      required: true
+    description: Return a `Vulnerability` object for a given OSV ID. All list of vulnerabilities
+      can be found at https://osv.dev/list
+    name: osv-get-vuln-by-id
+    outputs:
+    - contextPath: OSV.Vulnerability.id
+      description: The `id` field is a unique identifier for the vulnerability entry
+      type: String
+    - contextPath: OSV.Vulnerability.published
+      description: The RFC3339 timestamp indicating when this entry was published.
+      type: String
+    - contextPath: OSV.Vulnerability.modified
+      description: The RFC3339 timestamp indicating when this entry was last modified.
+      type: String
+    - contextPath: OSV.Vulnerability.withdrawn
+      description: The RFC3339 timestamp indicating when this entry is considered
+        to be withdrawn.
+      type: String
+    - contextPath: OSV.Vulnerability.summary
+      description: One line human readable summary for the vulnerability. It is recommended
+        to keep this under 120 characters.
+      type: String
+    - contextPath: OSV.Vulnerability.details
+      description: Any additional human readable details for the vulnerability.
+      type: String
+    - contextPath: OSV.Vulnerability.affected.ranges.repo
+      description: Applicable if type is GIT. The publicly accessible URL of the repo
+        that can be directly passed to clone commands.
+      type: String
+    - contextPath: OSV.Vulnerability.affected.ranges.events.introduced
+      description: The earliest version/commit where this vulnerability was introduced
+        in.
+      type: String
+    - contextPath: OSV.Vulnerability.affected.ranges.events.fixed
+      description: The version/commit that this vulnerability was fixed in.
+      type: String
+    - contextPath: OSV.Vulnerability.affected.ranges.events.limit
+      description: The limit to apply to the range.
+      type: String
+    - contextPath: OSV.Vulnerability.references.url
+      description: Reference URL for more details.
+      type: String
+  - arguments:
+    - description: The commit hash to query for. E.g 6879efc2c1596d11a6a6ad296f80063b558d5e0f
+      name: commit
+      required: true
+    description: Query vulnerabilities for a particular project at a given commit
+    name: osv-query-affected-by-commit
+    outputs:
+    - contextPath: OSV.VulnerabilityList.vulns.id
+      description: The `id` field is a unique identifier for the vulnerability entry.
+      type: String
+    - contextPath: OSV.VulnerabilityList.vulns.published
+      description: The RFC3339 timestamp indicating when this entry was published.
+      type: String
+    - contextPath: OSV.VulnerabilityList.vulns.modified
+      description: The RFC3339 timestamp indicating when this entry was last modified.
+      type: String
+    - contextPath: OSV.VulnerabilityList.vulns.withdrawn
+      description: The RFC3339 timestamp indicating when this entry is considered
+        to be withdrawn.
+      type: String
+    - contextPath: OSV.VulnerabilityList.vulns.summary
+      description: One line human readable summary for the vulnerability. It is recommended
+        to keep this under 120 characters.
+      type: String
+    - contextPath: OSV.VulnerabilityList.vulns.details
+      description: Any additional human readable details for the vulnerability.
+      type: String
+    - contextPath: OSV.VulnerabilityList.vulns.affected.ranges.repo
+      description: Applicable if type is GIT. The publicly accessible URL of the repo
+        that can be directly passed to clone commands.
+      type: String
+    - contextPath: OSV.VulnerabilityList.vulns.affected.ranges.events.introduced
+      description: The earliest version/commit where this vulnerability was introduced
+        in.
+      type: String
+    - contextPath: OSV.VulnerabilityList.vulns.affected.ranges.events.fixed
+      description: The version/commit that this vulnerability was fixed in.
+      type: String
+    - contextPath: OSV.VulnerabilityList.vulns.affected.ranges.events.limit
+      description: The limit to apply to the range.
+      type: String
+    - contextPath: OSV.VulnerabilityList.vulns.references.url
+      description: Reference URL for more details.
+      type: String
+  - arguments:
+    - description: ' The version string to query for. A fuzzy match is done against
+        upstream versions. Eg. 3.3.0'
+      name: version
+      required: true
+    - description: The name of the package/project to query for. Eg. django-tinymce
+      name: packageName
+      required: true
+    - description: The ecosystem of the package. Eg. PyPI
+      name: ecosystem
+    description: Query vulnerabilities for a particular project based on package name
+      and verion
+    name: osv-query-affected-by-package
+    outputs:
+    - contextPath: OSV.VulnerabilityList.vulns.id
+      description: The `id` field is a unique identifier for the vulnerability entry.
+      type: string
+    - contextPath: OSV.VulnerabilityList.vulns.published
+      description: The RFC3339 timestamp indicating when this entry was published.
+      type: string
+    - contextPath: OSV.VulnerabilityList.vulns.modified
+      description: The RFC3339 timestamp indicating when this entry was last modified.
+      type: string
+    - contextPath: OSV.VulnerabilityList.vulns.withdrawn
+      description: The RFC3339 timestamp indicating when this entry is considered
+        to be withdrawn.
+      type: string
+    - contextPath: OSV.VulnerabilityList.vulns.summary
+      description: One line human readable summary for the vulnerability. It is recommended
+        to keep this under 120 characters.
+      type: string
+    - contextPath: OSV.VulnerabilityList.vulns.details
+      description: Any additional human readable details for the vulnerability.
+      type: string
+    - contextPath: OSV.VulnerabilityList.vulns.affected.ranges.repo
+      description: Applicable if type is GIT. The publicly accessible URL of the repo
+        that can be directly passed to clone commands.
+      type: string
+    - contextPath: OSV.VulnerabilityList.vulns.affected.ranges.events.introduced
+      description: The earliest version/commit where this vulnerability was introduced
+        in.
+      type: string
+    - contextPath: OSV.VulnerabilityList.vulns.affected.ranges.events.fixed
+      description: The version/commit that this vulnerability was fixed in.
+      type: string
+    - contextPath: OSV.VulnerabilityList.vulns.affected.ranges.events.limit
+      description: The limit to apply to the range.
+      type: string
+    - contextPath: OSV.VulnerabilityList.vulns.references.url
+      description: Reference URL for more details.
+      type: string
+  dockerimage: demisto/python3:3.10.1.25933
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

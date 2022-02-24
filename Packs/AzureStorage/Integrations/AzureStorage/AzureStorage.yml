@@ -28,7 +28,7 @@ configuration:
   required: false
   type: 8
 description: Deploy and manage storage accounts and blob services.
-display: Azure Storage
+display: Azure Storage Management
 name: Azure Storage
 script:
   commands:

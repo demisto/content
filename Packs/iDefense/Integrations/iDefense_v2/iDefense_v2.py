@@ -100,13 +100,16 @@ def _extract_analysis_info(res: dict, dbot_score_type: str, reliability: DBotSco
                 dbot = Common.DBotScore(indicator_value, dbot_score_type, 'iDefense', dbot_score, desc, reliability)
                 last_published = result_content.get('last_published', '')
                 last_published_format = parse_date_string(last_published, DATE_FORMAT)
+                last_seen = result_content.get('last_seen', '')
+                last_seen_format = parse_date_string(last_seen, DATE_FORMAT)
                 analysis_info = {
                     'Name': result_content.get('display_text', ''),
                     'DbotReputation': dbot_score,
                     'Confidence': result_content.get('confidence', 0),
                     'ThreatTypes': result_content.get('threat_types', ''),
                     'TypeOfUse': result_content.get('last_seen_as', ''),
-                    'LastPublished': str(last_published_format)
+                    'LastPublished': str(last_published_format),
+                    'LastSeen': str(last_seen_format)
                 }
                 analysis_results.append({'analysis_info': analysis_info, 'dbot': dbot})
 
@@ -313,13 +316,16 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, 
             indicator = Common.URL(indicator_value, dbot)
         last_published = res.get('last_published', '')
         last_published_format = parse_date_string(last_published, DATE_FORMAT)
+        last_seen = res.get('last_seen', '')
+        last_seen_format = parse_date_string(last_seen, DATE_FORMAT)
         analysis_info = {
             'Name': res.get('display_text', ''),
             'DbotReputation': dbot_score,
             'Confidence': res.get('confidence', 0),
             'ThreatTypes': res.get('threat_types', ''),
             'TypeOfUse': res.get('last_seen_as', ''),
-            'LastPublished': str(last_published_format)
+            'LastPublished': str(last_published_format),
+            'LastSeen': str(last_seen_format)
         }
         analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
 

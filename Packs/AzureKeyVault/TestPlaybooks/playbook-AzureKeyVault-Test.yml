@@ -1,0 +1,1615 @@
+id: playbook-AzureKeyVault-Test
+version: -1
+name: playbook-AzureKeyVault-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6b6024d7-aeeb-41d5-8879-142ca8c60c78
+    type: start
+    task:
+      id: 6b6024d7-aeeb-41d5-8879-142ca8c60c78
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ca036032-21de-4601-8fc9-992a9219fb9b
+    type: regular
+    task:
+      id: ca036032-21de-4601-8fc9-992a9219fb9b
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1a4f0a9e-4279-45f3-820a-069a21722ca5
+    type: regular
+    task:
+      id: 1a4f0a9e-4279-45f3-820a-069a21722ca5
+      version: -1
+      name: azure-key-vault-create-update
+      script: AzureKeyVault|||azure-key-vault-create-update
+      type: regular
+      iscommand: true
+      brand: AzureKeyVault
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      bypass: {}
+      certificates: {}
+      default_action: {}
+      enabled_for_deployment: {}
+      enabled_for_disk_encryption: {}
+      enabled_for_template_deployment: {}
+      ignore_missing_vnet_service_endpoint: {}
+      ip_rules: {}
+      keys: {}
+      location: {}
+      object_id:
+        simple: d2e31ea2-4d20-4288-9964-6be71766fba5
+      secrets: {}
+      sku_name: {}
+      storage: {}
+      vault_name:
+        simple: xsoar-test-25
+      vnet_subnet_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 43552542-cbea-403e-8190-ec79e701ed66
+    type: condition
+    task:
+      id: 43552542-cbea-403e-8190-ec79e701ed66
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.location
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.sku.family
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.sku.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.tenantId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.accessPolicies.tenantId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.accessPolicies.objectId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.accessPolicies.permissions.keys
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.accessPolicies.permissions.secrets
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.accessPolicies.permissions.certificates
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.enabledForDeployment
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.enabledForDiskEncryption
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.enabledForTemplateDeployment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.vaultUri
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.provisioningState
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 65515f97-5ec3-42b5-8ef5-5ed54efaaab2
+    type: regular
+    task:
+      id: 65515f97-5ec3-42b5-8ef5-5ed54efaaab2
+      version: -1
+      name: azure-key-vault-delete
+      script: AzureKeyVault|||azure-key-vault-delete
+      type: regular
+      iscommand: true
+      brand: AzureKeyVault
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      vault_name:
+        simple: aa
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: f13b0ab6-83cb-4fd9-882e-ed31dd5e4055
+    type: regular
+    task:
+      id: f13b0ab6-83cb-4fd9-882e-ed31dd5e4055
+      version: -1
+      name: azure-key-vault-get
+      script: AzureKeyVault|||azure-key-vault-get
+      type: regular
+      iscommand: true
+      brand: AzureKeyVault
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      vault_name:
+        simple: xsoar-test-vault
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 976aef61-5d64-40c6-8439-c819da98b2eb
+    type: condition
+    task:
+      id: 976aef61-5d64-40c6-8439-c819da98b2eb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.location
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.sku.family
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.sku.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.tenantId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.accessPolicies.tenantId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.accessPolicies.objectId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.accessPolicies.permissions.keys
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.accessPolicies.permissions.secrets
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.accessPolicies.permissions.certificates
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.enabledForDeployment
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.enabledForDiskEncryption
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.enabledForTemplateDeployment
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.enableSoftDelete
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.vaultUri
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 14714509-f3a2-4589-881d-05bfc3d95b6b
+    type: regular
+    task:
+      id: 14714509-f3a2-4589-881d-05bfc3d95b6b
+      version: -1
+      name: azure-key-vault-list
+      script: AzureKeyVault|||azure-key-vault-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 1680fd94-9c60-48af-831a-59305368eb15
+    type: condition
+    task:
+      id: 1680fd94-9c60-48af-831a-59305368eb15
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.location
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.sku.family
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.sku.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.tenantId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.accessPolicies.tenantId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.accessPolicies.objectId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.accessPolicies.permissions.keys
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.accessPolicies.permissions.secrets
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.accessPolicies.permissions.certificates
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.enabledForDeployment
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.enabledForDiskEncryption
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.enabledForTemplateDeployment
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.enableSoftDelete
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.KeyVault.properties.vaultUri
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: d78bfa14-feae-4799-8b97-d519397cf65c
+    type: regular
+    task:
+      id: d78bfa14-feae-4799-8b97-d519397cf65c
+      version: -1
+      name: azure-key-vault-access-policy-update
+      script: AzureKeyVault|||azure-key-vault-access-policy-update
+      type: regular
+      iscommand: true
+      brand: AzureKeyVault
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      certificates: {}
+      keys:
+        simple: decrypt
+      object_id:
+        simple: d2e31ea2-4d20-4288-9964-6be71766fba5
+      operation_kind:
+        simple: add
+      secrets: {}
+      storage: {}
+      vault_name:
+        simple: xsoar-test-25
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: e13b9cfb-8582-424a-8f89-105bfb4a7856
+    type: condition
+    task:
+      id: e13b9cfb-8582-424a-8f89-105bfb4a7856
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.VaultAccessPolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.VaultAccessPolicy.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.tenantId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.objectId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.permissions.keys
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.permissions.secrets
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.permissions.certificates
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: ba778177-2303-42d2-8700-0b72a2b6e14e
+    type: regular
+    task:
+      id: ba778177-2303-42d2-8700-0b72a2b6e14e
+      version: -1
+      name: azure-key-vault-key-get
+      script: AzureKeyVault|||azure-key-vault-key-get
+      type: regular
+      iscommand: true
+      brand: AzureKeyVault
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      key_name:
+        simple: test-key-2
+      key_version: {}
+      vault_name:
+        simple: xsoar-test-vault
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: c1d7af70-ff62-4b9b-8cc8-93a57615512a
+    type: condition
+    task:
+      id: c1d7af70-ff62-4b9b-8cc8-93a57615512a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.key.kid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.key.kty
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.key.key_ops
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.key.n
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.key.e
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureKeyVault.Key.attributes.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.attributes.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.attributes.updated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.attributes.recoveryLevel
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: e43d044d-8646-4da3-8762-38e9bc6cc543
+    type: regular
+    task:
+      id: e43d044d-8646-4da3-8762-38e9bc6cc543
+      version: -1
+      name: azure-key-vault-key-list
+      script: AzureKeyVault|||azure-key-vault-key-list
+      type: regular
+      iscommand: true
+      brand: AzureKeyVault
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      limit: {}
+      offset: {}
+      vault_name:
+        simple: xsoar-test-vault
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 25e04954-6347-47b3-8cc8-05f87c1fe66f
+    type: condition
+    task:
+      id: 25e04954-6347-47b3-8cc8-05f87c1fe66f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.kid
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureKeyVault.Key.attributes.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.attributes.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.attributes.updated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.attributes.recoveryLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.attributes.recoverableDays
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 9432aef2-251d-4e93-834e-4b3381899eb8
+    type: regular
+    task:
+      id: 9432aef2-251d-4e93-834e-4b3381899eb8
+      version: -1
+      name: azure-key-vault-key-delete
+      script: AzureKeyVault|||azure-key-vault-key-delete
+      type: regular
+      iscommand: true
+      brand: AzureKeyVault
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      key_name:
+        simple: test-key-3
+      vault_name:
+        simple: xsoar-test-vault
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 2960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 15bedae3-fd64-4201-899f-00b299b8e486
+    type: condition
+    task:
+      id: 15bedae3-fd64-4201-899f-00b299b8e486
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.recoveryId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.deletedDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.key.kid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.key.kty
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.key.key_ops
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.key.n
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.key.e
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureKeyVault.Key.attributes.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.attributes.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.attributes.updated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Key.attributes.recoveryLevel
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 3130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 000ac858-913e-439a-820b-76ffe2ddc579
+    type: regular
+    task:
+      id: 000ac858-913e-439a-820b-76ffe2ddc579
+      version: -1
+      name: azure-key-vault-secret-get
+      script: AzureKeyVault|||azure-key-vault-secret-get
+      type: regular
+      iscommand: true
+      brand: AzureKeyVault
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      secret_name:
+        simple: test-sec-1
+      secret_version: {}
+      vault_name:
+        simple: xsoar-test-vault
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 59f512a9-ee69-4b86-854e-5f5b8c5ac4c4
+    type: condition
+    task:
+      id: 59f512a9-ee69-4b86-854e-5f5b8c5ac4c4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.attributes.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.attributes.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.attributes.updated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.attributes.recoveryLevel
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: e6732720-d491-4a00-8cec-d67833bf450b
+    type: regular
+    task:
+      id: e6732720-d491-4a00-8cec-d67833bf450b
+      version: -1
+      name: azure-key-vault-secret-list
+      script: AzureKeyVault|||azure-key-vault-secret-list
+      type: regular
+      iscommand: true
+      brand: AzureKeyVault
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      limit: {}
+      offset: {}
+      vault_name:
+        simple: xsoar-test-vault
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: a7e43bd0-4f5a-459e-89d6-635243674502
+    type: condition
+    task:
+      id: a7e43bd0-4f5a-459e-89d6-635243674502
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.attributes.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.attributes.nbf
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.attributes.exp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.attributes.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.attributes.updated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.attributes.recoveryLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.attributes.recoverableDays
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: fbc9fe15-0341-4f34-8c5e-797431660db0
+    type: regular
+    task:
+      id: fbc9fe15-0341-4f34-8c5e-797431660db0
+      version: -1
+      name: azure-key-vault-secret-delete
+      script: AzureKeyVault|||azure-key-vault-secret-delete
+      type: regular
+      iscommand: true
+      brand: AzureKeyVault
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      secret_name:
+        simple: test-sec-3
+      vault_name:
+        simple: xsoar-test-vault
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 4190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 64455d86-7313-4c13-888e-5ff8ab800e5a
+    type: condition
+    task:
+      id: 64455d86-7313-4c13-888e-5ff8ab800e5a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.recoveryId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.deletedDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.scheduledPurgeDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureKeyVault.Secret.attributes.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.attributes.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.attributes.updated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Secret.attributes.recoveryLevel
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 4380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 11bd6559-d6fa-4297-8df8-20621fa94a48
+    type: regular
+    task:
+      id: 11bd6559-d6fa-4297-8df8-20621fa94a48
+      version: -1
+      name: azure-key-vault-certificate-get
+      script: AzureKeyVault|||azure-key-vault-certificate-get
+      type: regular
+      iscommand: true
+      brand: AzureKeyVault
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      certificate_name:
+        simple: test-cer-1
+      certificate_version: {}
+      vault_name:
+        simple: xsoar-test-vault
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 9f9841d2-4f3e-4f9d-8679-2bb1b36a26fb
+    type: condition
+    task:
+      id: 9f9841d2-4f3e-4f9d-8679-2bb1b36a26fb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Certificate.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Certificate.kid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Certificate.sid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Certificate.x5t
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Certificate.cer
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureKeyVault.Certificate.attributes.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Certificate.attributes.exp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Certificate.attributes.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Certificate.attributes.updated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Certificate.attributes.recoveryLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Certificate.policy
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: d68f202c-844d-4bb3-8b9a-c06d4e4baf1e
+    type: regular
+    task:
+      id: d68f202c-844d-4bb3-8b9a-c06d4e4baf1e
+      version: -1
+      name: azure-key-vault-certificate-list
+      script: AzureKeyVault|||azure-key-vault-certificate-list
+      type: regular
+      iscommand: true
+      brand: AzureKeyVault
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      limit: {}
+      offset: {}
+      vault_name:
+        simple: xsoar-test-vault
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: c0014a2b-95e3-406f-85fe-8a58062c73ff
+    type: condition
+    task:
+      id: c0014a2b-95e3-406f-85fe-8a58062c73ff
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Certificate.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Certificate.x5t
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureKeyVault.Certificate.attributes.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Certificate.attributes.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.Certificate.attributes.updated
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: bd072078-6eed-4004-86cf-3651566a39e8
+    type: regular
+    task:
+      id: bd072078-6eed-4004-86cf-3651566a39e8
+      version: -1
+      name: azure-key-vault-certificate-policy-get
+      script: AzureKeyVault|||azure-key-vault-certificate-policy-get
+      type: regular
+      iscommand: true
+      brand: AzureKeyVault
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      certificate_name:
+        simple: test-cer-1
+      vault_name:
+        simple: xsoar-test-vault
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 23c9e15f-e789-46b4-8a08-4c28ade1da30
+    type: condition
+    task:
+      id: 23c9e15f-e789-46b4-8a08-4c28ade1da30
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.CertificatePolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.CertificatePolicy.key_props
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.CertificatePolicy.x509_props
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.CertificatePolicy.lifetime_actions
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.CertificatePolicy.issuer
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureKeyVault.CertificatePolicy.attributes.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.CertificatePolicy.attributes.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKeyVault.CertificatePolicy.attributes.updated
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 87e0c202-319a-4ff0-8549-e392a20d35c8
+    type: title
+    task:
+      id: 87e0c202-319a-4ff0-8549-e392a20d35c8
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5815,
+        "width": 890,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.1
+description: ''

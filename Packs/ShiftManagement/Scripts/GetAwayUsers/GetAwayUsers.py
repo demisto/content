@@ -11,14 +11,16 @@ def main():
         outputs = [
             {k: v for k, v in away_user.items() if k in ['id', 'username', 'email', 'name', 'phone', 'roles']}
             for away_user in away_users]
-        result = CommandResults(
-            outputs_key_field='id',
-            outputs_prefix='CortexXSOAR.AwayUsers',
-            readable_output=tableToMarkdown('Away Users', outputs, headerTransform=string_to_table_header,
-                                            removeNull=True),
-            outputs=outputs
-        )
-        return_results(result)
+        if outputs:
+            hr = tableToMarkdown('Away Users', outputs, headerTransform=string_to_table_header, removeNull=True)
+        else:
+            hr = '###Away Users\nNo team members were found away.'
+        return_results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': hr,
+            'EntryContext': {'AwayUsers': outputs} if outputs else {}
+        })
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute GetAwayUsers. Error: {str(e)}')

@@ -2,7 +2,7 @@
     "name": "TIM - Indicator Auto-Processing",
     "description": "Too many threat feeds? This Content Pack automates the processing of indicators at scale, significantly reducing busywork for your analysts.",
     "support": "xsoar",
-    "currentVersion": "1.1.11",
+    "currentVersion": "1.1.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -240,7 +240,6 @@
         }
     },
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "xsoar"
     ]
 }

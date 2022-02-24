@@ -5,6 +5,28 @@ from ReadPDFFileV2 import ShellException
 CWD = os.getcwd() if os.getcwd().endswith('test_data') else f'{os.getcwd()}/test_data'
 
 
+def open_html_file(file):
+    with open(file, "r", encoding='utf-8') as f:
+        return f.read()
+
+
+def test_urls_are_found_correctly(mocker):
+    """
+    Given
+        - a pdf html content.
+
+    When
+        - trying extract the urls from that html.
+
+    Then
+        - the correct url is extracted from the html content.
+    """
+    from ReadPDFFileV2 import get_urls_and_emails_from_pdf_html_content
+    mocker.patch('ReadPDFFileV2.get_pdf_htmls_content', return_value=open_html_file(f'{CWD}/pdf-html-content.html'))
+    urls, _ = get_urls_and_emails_from_pdf_html_content('', '')
+    assert urls == {'http://www.w3.org/1999/xhtml'}
+
+
 def test_get_files_names_in_path():
     from ReadPDFFileV2 import get_files_names_in_path
     pdf_file_names = get_files_names_in_path('test_data', '*.pdf')

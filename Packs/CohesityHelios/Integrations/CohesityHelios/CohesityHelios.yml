@@ -141,7 +141,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Anomalous object name to be ignored. Can be retrieved by running the command cohesity-helios-get-ransomware-alerts.
+      description: Anomalous object name to be ignored. Can be retrieved by running
+        the command cohesity-helios-get-ransomware-alerts.
       isArray: false
       name: object_name
       required: true
@@ -151,7 +152,8 @@ script:
     name: cohesity-helios-ignore-anomalous-object
   - arguments:
     - default: false
-      description: Anomalous object name to be restored. Can be retrieved by running the command cohesity-helios-get-ransomware-alerts.
+      description: Anomalous object name to be restored. Can be retrieved by running
+        the command cohesity-helios-get-ransomware-alerts.
       isArray: false
       name: object_name
       required: true
@@ -164,7 +166,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.9.9.25564
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

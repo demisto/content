@@ -3,6 +3,7 @@ import json
 from copy import deepcopy
 
 import GetAwayUsers
+import pytest
 
 import demistomock as demisto
 
@@ -13,9 +14,17 @@ def util_load_json(path):
 
 
 away_user_data = util_load_json('test_data/away_user.json')
+AWAY_USER = away_user_data
+NOT_AWAY_USER = deepcopy(away_user_data)
+NOT_AWAY_USER['isAway'] = False
 
 
-def test_script_valid(mocker):
+@pytest.mark.parametrize('mock_resp, expected',
+                         [([{'Type': '1', 'Contents': [AWAY_USER, NOT_AWAY_USER]}], [
+                             {'email': '', 'id': 'admin', 'name': 'Admin', 'phone': '+650-123456',
+                              'roles': {'demisto': ['Administrator']}, 'username': 'admin'}]),
+                          ([{'Type': '1', 'Contents': []}], None)])
+def test_script_valid(mocker, mock_resp, expected):
     """
     Given:
 
@@ -28,18 +37,10 @@ def test_script_valid(mocker):
     """
     from GetAwayUsers import main
     return_results_mock = mocker.patch.object(GetAwayUsers, 'return_results')
-    away_user = away_user_data
-    not_away_user = deepcopy(away_user_data)
-    not_away_user['isAway'] = False
-    mocker.patch.object(demisto, 'executeCommand', return_value=[{'Type': '1', 'Contents': [away_user, not_away_user]}])
+    mocker.patch.object(demisto, 'executeCommand', return_value=mock_resp)
     main()
-    command_results = return_results_mock.call_args[0][0]
-    assert command_results.outputs == [{'email': '',
-                                        'id': 'admin',
-                                        'name': 'Admin',
-                                        'phone': '+650-123456',
-                                        'roles': {'demisto': ['Administrator']},
-                                        'username': 'admin'}]
+    results = return_results_mock.call_args[0][0]
+    assert results['EntryContext'].get('AwayUsers') == expected
 
 
 def test_script_invalid(mocker):

@@ -1,0 +1,240 @@
+category: Vulnerability Management
+commonfields:
+  id: Hackuity
+  version: -1
+configuration:
+- defaultvalue: https://xxx.api.hackuity.io
+  display: Corporate server URL
+  name: url
+  required: true
+  type: 0
+- defaultvalue: N012345654321
+  display: Namespace
+  name: namespace
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Login
+  name: login
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: From a war-room, query your Hackuity cockpit in order to seamlessly retrieve
+  information related to your vulnerability stock.
+display: Hackuity
+name: Hackuity
+script:
+  commands:
+  - arguments:
+    - &argument_asset_name
+      default: false
+      description: The name of the asset
+      isArray: false
+      name: asset_name
+      required: false
+      secret: false
+    - &argument_asset_type
+      default: false
+      description: The type of the asset if the asset name is specified (by default,
+        restricts to IPs & domains)
+      isArray: false
+      name: asset_type
+      required: false
+      secret: false
+    - &argument_attribute
+      default: false
+      description: An attribute value
+      isArray: false
+      name: attribute
+      required: false
+      secret: false
+    - &argument_cvss_min
+      default: false
+      description: The minimum CVSS (included)
+      isArray: false
+      name: cvss_min
+      required: false
+      secret: false
+    - &argument_cvss_max
+      default: false
+      description: The maximum CVSS (excluded)
+      isArray: false
+      name: cvss_max
+      required: false
+      secret: false
+    - &argument_limit
+      default: false
+      defaultValue: '20'
+      description: The maximum number of items to return
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - &argument_trs_min
+      default: false
+      description: The minimum TRS (included)
+      isArray: false
+      name: trs_min
+      required: false
+      secret: false
+    - &argument_trs_max
+      default: false
+      description: The maximum TRS (excluded)
+      isArray: false
+      name: trs_max
+      required: false
+      secret: false
+    - &argument_vuln_type
+      default: false
+      description: The vulnerability type (ID)
+      isArray: false
+      name: vuln_type
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for findings in Hackuity.
+    name: hackuity-search-findings
+    outputs:
+    - contextPath: Hackuity.Findings.Asset.ID
+      description: The ID of the asset
+      type: String
+    - contextPath: Hackuity.Findings.Asset.Name
+      description: The name of the asset
+      type: String
+    - contextPath: Hackuity.Findings.Asset.Type
+      description: The type of the asset
+      type: String
+    - contextPath: Hackuity.Findings.Attributes
+      description: The attributes of the finding
+      type: Unknown
+    - contextPath: Hackuity.Findings.Score.CVSS
+      description: The CVSS of the finding
+      type: Number
+    - contextPath: Hackuity.Findings.Score.TRS
+      description: The TRS of the finding
+      type: Number
+    - contextPath: Hackuity.Findings.ID
+      description: The ID of the finding
+      type: String
+    - contextPath: Hackuity.Findings.Status.Ignored
+      description: Whether the finding is ignored
+      type: Boolean
+    - contextPath: Hackuity.Findings.Status.State
+      description: The state of the finding
+      type: String
+    - contextPath: Hackuity.Findings.Status.SubState
+      description: The sub-state of the finding
+      type: String
+    - contextPath: Hackuity.Findings.VulnType.ID
+      description: The ID of the vulnerability type
+      type: String
+    - contextPath: Hackuity.Findings.VulnType.Name
+      description: The name of the vulnerability type
+      type: String
+  - arguments:
+    - *argument_asset_name
+    - *argument_asset_type
+    - *argument_attribute
+    - *argument_cvss_min
+    - *argument_cvss_max
+    - *argument_limit
+    - *argument_trs_min
+    - *argument_trs_max
+    - *argument_vuln_type
+    deprecated: false
+    description: Search for vulndb vulnerabilities in Hackuity.
+    name: hackuity-search-vulndb-vulnerabilities
+    outputs: &outputs_vulnerabilities
+    - contextPath: Hackuity.Vulnerabilities.Attributes
+      description: The attributes of the vulnerability
+      type: String
+    - contextPath: Hackuity.Vulnerabilities.Score.CVSS
+      description: The CVSS of the vulnerability
+      type: String
+    - contextPath: Hackuity.Vulnerabilities.Score.TRS
+      description: The TRS of the vulnerability
+      type: String
+    - contextPath: Hackuity.Vulnerabilities.Description
+      description: The description of the vulnerability
+      type: String
+    - contextPath: Hackuity.Vulnerabilities.ID
+      description: The ID of the vulnerability
+      type: String
+    - contextPath: Hackuity.Vulnerabilities.Seen.First
+      description: The date of the first time the vulnerability has been seen
+      type: Date
+    - contextPath: Hackuity.Vulnerabilities.Findings.Total
+      description: The total number of findings on this vulnerability
+      type: String
+    - contextPath: Hackuity.Vulnerabilities.Findings.Open
+      description: The number of open findings on this vulnerability
+      type: String
+    - contextPath: Hackuity.Vulnerabilities.Findings.Closed
+      description: The number of closed findings on this vulnerability
+      type: String
+    - contextPath: Hackuity.Vulnerabilities.Findings.Ignored
+      description: The number of ignored findings on this vulnerability
+      type: String
+    - contextPath: Hackuity.Vulnerabilities.VulnType.ID
+      description: The ID of the vulnerability type
+      type: String
+    - contextPath: Hackuity.Vulnerabilities.VulnType.Name
+      description: The name of the vulnerability type
+      type: String
+  - arguments:
+    - *argument_asset_name
+    - *argument_asset_type
+    - *argument_attribute
+    - *argument_cvss_min
+    - *argument_cvss_max
+    - *argument_limit
+    - *argument_trs_min
+    - *argument_trs_max
+    - *argument_vuln_type
+    deprecated: false
+    description: Search for provider vulnerabilities in Hackuity.
+    name: hackuity-search-provider-vulnerabilities
+    outputs: *outputs_vulnerabilities
+  - deprecated: false
+    description: List the widgets in the default dashboard of the user.
+    name: hackuity-dashboard-widgets
+    outputs:
+    - contextPath: Hackuity.Dashboard.Widgets.ID
+      description: The ID of the widget
+      type: String
+    - contextPath: Hackuity.Dashboard.Widgets.Params
+      description: The configuration of the widget
+      type: Unknown
+    - contextPath: Hackuity.Dashboard.Widgets.Type
+      description: The type of the widget
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the widget
+      isArray: false
+      name: widget_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the data of a dashboard widget
+    name: hackuity-dashboard-data
+    outputs:
+    - contextPath: Hackuity.Dashboard.Data
+      description: The data of the widget
+      type: Unknown
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.1.25933
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

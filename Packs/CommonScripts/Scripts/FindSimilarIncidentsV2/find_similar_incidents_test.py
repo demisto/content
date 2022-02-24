@@ -193,10 +193,19 @@ def test_build_similar_keys_list():
     from FindSimilarIncidentsV2 import build_incident_fields_query
 
     int_res = build_incident_fields_query({u'sla': 0})
-    assert int_res == ['sla:="0"']
+    assert int_res == ['sla:=0']
 
     str_res = build_incident_fields_query({u'employeeid': u'1111'})
     assert str_res == [u'employeeid="1111"']
+
+    list_res = build_incident_fields_query({u'test': [u'name1', 0]})
+    assert list_res == [u'test="name1"', 'test:=0']
+
+    list_res = build_incident_fields_query({u'test': []})
+    assert list_res == ['test=[]']
+
+    escape_res = build_incident_fields_query({u'test': u'"C:\\test\\escape\\sequence" test'})
+    assert escape_res == [u'test="\\"C:\\test\\escape\\sequence\\" test"']
 
 
 def test_similar_incidents_fields(mocker):

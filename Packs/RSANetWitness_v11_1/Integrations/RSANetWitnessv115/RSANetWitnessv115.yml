@@ -1,0 +1,2460 @@
+category: Analytics & SIEM
+commonfields:
+  id: RSANetWitnessv115
+  version: -1
+configuration:
+- display: Server URL (e.g https://192.168.0.1)
+  name: url
+  required: true
+  type: 0
+- display: User name
+  name: credentials
+  required: true
+  type: 9
+- additionalinfo: The service ID that is automatically used in every command where
+    service ID is required. Retrieve all service IDs with the rsa-nw-services-list
+    command. To overwrite with another service ID, use the command argument 'service_id'.
+  display: Service Id
+  hidden: false
+  name: service_id
+  required: false
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- additionalinfo: The maximum number of incidents to fetch
+  defaultvalue: '50'
+  display: Fetch Limit
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: First fetch timestamp (<number> <time unit>, for example, 12 hours,
+    7 days)
+  defaultvalue: 1 days
+  display: Fetch Time
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: NetWitness Incident
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+description: The RSA NetWitness integration provides system log, network, and endpoint
+  visibility for real-time collection, detection, and automated response with the
+  Cortex XSOAR Enterprise platform. Using full session analysis, customers can extract
+  critical data and effectively run security operations automated playbooks.
+display: RSANetWitnessv115 (Beta)
+name: RSANetWitnessv115
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: A timestamp in the format 2020-01-18T14:00:00.000Z. Retrieve incidents
+        created on and before this timestamp.
+      isArray: false
+      name: until
+      required: false
+      secret: false
+    - default: false
+      description: A timestamp in the format 2020-01-18T14:00:00.000Z. Retrieve incidents
+        created on and after this timestamp.
+      isArray: false
+      name: since
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of items to return in a single page. Cannot
+        be supplied with the limit argument.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: The requested page number, first page is 0. Cannot be supplied
+        with the limit argument.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of results to be returned. If not set, the first
+        50 results are returned. Cannot be supplied with page_size/page_number arguments.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Enter an incident ID to receive its full details. For example,
+        'INC-40'
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a single incident by ID or multiple incidents by the date
+      and time they were created using the start time ('since') or end time ('until').
+      You can limit the results using the limit argument or the page size argument.
+      If no arguments are entered the last 50 results are returned.
+    execution: false
+    name: rsa-nw-list-incidents
+    outputs:
+    - contextPath: RSANetWitness115.Incidents.id
+      description: The unique incident identifier.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.title
+      description: The incident title.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.summary
+      description: The incident summary.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.priority
+      description: The incident priority. Can be Low, Medium, High, or Critical.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.riskScore
+      description: The incident risk score is calculated based on the associated alert’s
+        risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
+      type: Number
+    - contextPath: RSANetWitness115.Incidents.status
+      description: The current incident status.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.alertCount
+      description: The number of alerts associated with an incident.
+      type: Number
+    - contextPath: RSANetWitness115.Incidents.averageAlertRiskScore
+      description: The average risk score of the alerts associated with the incident.
+        Risk score ranges from 0 (no risk) to 100 (highest risk).
+      type: Number
+    - contextPath: RSANetWitness115.Incidents.sealed
+      description: Indicates if additional alerts can be associated with an incident.
+        A sealed incident cannot be associated with additional alerts.
+      type: Boolean
+    - contextPath: RSANetWitness115.Incidents.totalRemediationTaskCount
+      description: The number of total remediation tasks for an incident.
+      type: Number
+    - contextPath: RSANetWitness115.Incidents.openRemediationTaskCount
+      description: The number of open remediation tasks for an incident.
+      type: Number
+    - contextPath: RSANetWitness115.Incidents.created
+      description: The timestamp when the incident was created.
+      type: Date
+    - contextPath: RSANetWitness115.Incidents.lastUpdated
+      description: The timestamp when the incident was last updated.
+      type: Date
+    - contextPath: RSANetWitness115.Incidents.lastUpdatedBy
+      description: The NetWitness user identifier of the user who last updated the
+        incident.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.assignee
+      description: The NetWitness user identifier of the user currently working on
+        the incident.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.sources
+      description: Unique set of sources for all the alerts in an incident.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.ruleId
+      description: The unique identifier of the rule that created the incident.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.firstAlertTime
+      description: The timestamp of the earliest occurring Alert in this incident.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.categories.id
+      description: The unique category identifier.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.categories.parent
+      description: The parent name of the category.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.categories.name
+      description: The friendly name of the category.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.journalEntries.id
+      description: The unique journal entry identifier.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.journalEntries.author
+      description: The author of this entry.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.journalEntries.notes
+      description: Notes and observations about the incident.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.journalEntries.created
+      description: The timestamp of the journal entry created date.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.journalEntries.lastUpdated
+      description: The timestamp of the journal entry last updated date.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.journalEntries.milestone
+      description: Incident milestone classifier.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.createdBy
+      description: The NetWitness user ID or name of the rule that created the incident.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.deletedAlertCount
+      description: The number of alerts that are deleted from the incident.
+      type: Number
+    - contextPath: RSANetWitness115.Incidents.eventCount
+      description: The number of events associated with incident.
+      type: Number
+    - contextPath: RSANetWitness115.Incidents.alertMeta.SourceIp
+      description: The unique source IP addresses.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.alertMeta.DestinationIp
+      description: The unique destination IP addresses.
+      type: String
+    - contextPath: RSANetWitness115.paging.Incidents.hasNext
+      description: Indicates if there is a page containing results after this page.
+      type: Boolean
+    - contextPath: RSANetWitness115.paging.Incidents.hasPrevious
+      description: Indicates if there is a page containing results before this page.
+      type: Boolean
+    - contextPath: RSANetWitness115.paging.Incidents.pageNumber
+      description: The requested page number.
+      type: Number
+    - contextPath: RSANetWitness115.paging.Incidents.pageSize
+      description: The requested number of items to return in a single page.
+      type: Number
+    - contextPath: RSANetWitness115.paging.Incidents.totalPages
+      description: The total number of pages available.
+      type: Number
+    - contextPath: RSANetWitness115.paging.Incidents.totalItems
+      description: The total number of items available.
+      type: Number
+  - arguments:
+    - default: false
+      description: The incident ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The new incident status. Can be New, Assigned, InProgress, RemediationRequested,
+        RemediationComplete, Closed, ClosedFalsePositive.
+      isArray: false
+      name: status
+      predefined:
+      - New
+      - Assigned
+      - InProgress
+      - RemediationRequested
+      - RemediationComplete
+      - Closed
+      - ClosedFalsePositive
+      required: false
+      secret: false
+    - default: false
+      description: The NetWitness user identifier of the user currently working on
+        the incident. You can find the list of assignees in the RSA Net Witness interface.
+      isArray: false
+      name: assignee
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates incident status and assignee.
+    execution: false
+    name: rsa-nw-update-incident
+    outputs:
+      - contextPath: RSANetWitness115.Incidents.id
+        description: The unique incident identifier.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.title
+        description: The incident title.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.summary
+        description: The incident summary.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.priority
+        description: The incident priority. Can be Low, Medium, High, or Critical.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.riskScore
+        description: The incident risk score is calculated based on the associated alert’s
+          risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
+        type: Number
+      - contextPath: RSANetWitness115.Incidents.status
+        description: The current incident status.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.alertCount
+        description: The number of alerts associated with an incident.
+        type: Number
+      - contextPath: RSANetWitness115.Incidents.averageAlertRiskScore
+        description: The average risk score of the alerts associated with the incident.
+          Risk score ranges from 0 (no risk) to 100 (highest risk).
+        type: Number
+      - contextPath: RSANetWitness115.Incidents.sealed
+        description: Indicates if additional alerts can be associated with an incident.
+          A sealed incident cannot be associated with additional alerts.
+        type: Boolean
+      - contextPath: RSANetWitness115.Incidents.totalRemediationTaskCount
+        description: The number of total remediation tasks for an incident.
+        type: Number
+      - contextPath: RSANetWitness115.Incidents.openRemediationTaskCount
+        description: The number of open remediation tasks for an incident.
+        type: Number
+      - contextPath: RSANetWitness115.Incidents.created
+        description: The timestamp when the incident was created.
+        type: Date
+      - contextPath: RSANetWitness115.Incidents.lastUpdated
+        description: The timestamp when the incident was last updated.
+        type: Date
+      - contextPath: RSANetWitness115.Incidents.lastUpdatedBy
+        description: The NetWitness user identifier of the user who last updated the
+          incident.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.assignee
+        description: The NetWitness user identifier of the user currently working on
+          the incident.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.sources
+        description: Unique set of sources for all the alerts in an incident.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.ruleId
+        description: The unique identifier of the rule that created the incident.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.firstAlertTime
+        description: The timestamp of the earliest occurring Alert in this incident.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.categories.id
+        description: The unique category identifier.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.categories.parent
+        description: The parent name of the category.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.categories.name
+        description: The friendly name of the category.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.journalEntries.id
+        description: The unique journal entry identifier.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.journalEntries.author
+        description: The author of this entry.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.journalEntries.notes
+        description: Notes and observations about the incident.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.journalEntries.created
+        description: The timestamp of the journal entry created date.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.journalEntries.lastUpdated
+        description: The timestamp of the journal entry last updated date.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.journalEntries.milestone
+        description: Incident milestone classifier.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.createdBy
+        description: The NetWitness user ID or name of the rule that created the incident.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.deletedAlertCount
+        description: The number of alerts that are deleted from the incident.
+        type: Number
+      - contextPath: RSANetWitness115.Incidents.eventCount
+        description: The number of events associated with incident.
+        type: Number
+      - contextPath: RSANetWitness115.Incidents.alertMeta.SourceIp
+        description: The unique source IP addresses.
+        type: String
+      - contextPath: RSANetWitness115.Incidents.alertMeta.DestinationIp
+        description: The unique destination IP addresses.
+        type: String
+  - arguments:
+    - default: false
+      description: The unique incident identifier.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove a single incident using the incident’s unique identifier.
+    execution: false
+    name: rsa-nw-remove-incident
+  - arguments:
+    - default: false
+      description: The unique incident identifier.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: The NetWitness user ID of the user creating the journal entry.
+        Can be found in the RSA platform. If no author is provided the command lists
+        the user from the integration configuration as the author.
+      isArray: false
+      name: author
+      required: false
+      secret: false
+    - default: false
+      description: Notes and observations about the incident.
+      isArray: false
+      name: notes
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The incident milestone classifier. Can be Reconnaissance, Delivery,
+        Exploitation, Installation, CommandAndControl, ActionOnObjective, Containment,
+        Eradication, Closure
+      isArray: false
+      name: milestone
+      predefined:
+      - Reconnaissance
+      - Delivery
+      - Exploitation
+      - Installation
+      - CommandAndControl
+      - ActionOnObjective
+      - Containment
+      - Eradication
+      - Closure
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a journal entry to an existing incident.
+    execution: false
+    name: rsa-nw-incident-add-journal-entry
+  - arguments:
+    - default: false
+      description: The unique incident identifier.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: The requested page number, first page is 0. Cannot be supplied
+        with the limit argument.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of items to return in a single page. Cannot
+        be supplied with the limit argument.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of results to be returned. If not set, the first
+        50 results are returned. cannot be supplied with page_size/page_number arguments.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves all the alerts that are associated with an incident based
+      on the incident ID. you can limit the results using the limit argument or the
+      page size argument.
+    execution: false
+    name: rsa-nw-incident-list-alerts
+    outputs:
+    - contextPath: RSANetWitness115.IncidentAlerts.id
+      description: The unique alert identifier.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.title
+      description: The title or name of the rule that created the alert.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.detail
+      description: The details of the alert. This can be the module name or meta that
+        the module included.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.created
+      description: The timestamp of the alert created date.
+      type: Date
+    - contextPath: RSANetWitness115.IncidentAlerts.source
+      description: The source of this alert. For example, Event Stream Analysis or
+        Malware Analysis.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.riskScore
+      description: The risk score of this alert, usually in the range 0 - 100.
+      type: Number
+    - contextPath: RSANetWitness115.IncidentAlerts.type
+      description: The type alert type. For example, Network or Log.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.source.device.ipAddress
+      description: The source IP address.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.source.device.port
+      description: The source port.
+      type: Number
+    - contextPath: RSANetWitness115.IncidentAlerts.events.source.device.macAddress
+      description: The source ethernet MAC address.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.source.device.dnsHostname
+      description: The source DNS resolved hostname.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.source.device.dnsDomain
+      description: The source top-level domain from the DNS resolved hostname.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.source.user.username
+      description: The source unique username.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.source.user.emailAddress
+      description: The source email address.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.source.user.adUsername
+      description: The source Active Directory (AD) username.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.source.user.adDomain
+      description: The source Active Directory (AD) domain.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.destination.device.ipAddress
+      description: The destination IP address.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.destination.device.port
+      description: The destination port.
+      type: Number
+    - contextPath: RSANetWitness115.IncidentAlerts.events.destination.device.macAddress
+      description: The destination ethernet MAC address.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.destination.device.dnsHostname
+      description: The destination DNS resolved hostname.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.destination.device.dnsDomain
+      description: The destination top-level domain from the DNS resolved hostname.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.destination.user.username
+      description: The destination unique username.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.destination.user.emailAddress
+      description: The destination email address.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.destination.user.adUsername
+      description: The destination Active Directory (AD) username.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.destination.user.adDomain
+      description: An destination Active Directory (AD) domain.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.domain
+      description: The destination top-level domain or Windows domain.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.eventSource
+      description: The source of the event. This may be a fully-qualified hostname
+        with a port, or simple name.
+      type: String
+    - contextPath: RSANetWitness115.IncidentAlerts.events.eventSourceId
+      description: The unique identifier of the event on the source. For Network and
+        Log events, this is the Nextgen Session ID.
+      type: String
+    - contextPath: RSANetWitness115.paging.IncidentAlerts.pageNumber
+      description: The requested page number.
+      type: Number
+    - contextPath: RSANetWitness115.paging.IncidentAlerts.pageSize
+      description: The requested number of items to return in a single page.
+      type: Number
+    - contextPath: RSANetWitness115.paging.IncidentAlerts.totalPages
+      description: The total number of pages available.
+      type: Number
+    - contextPath: RSANetWitness115.paging.IncidentAlerts.totalItems
+      description: The total number of items available.
+      type: Number
+    - contextPath: RSANetWitness115.paging.IncidentAlerts.hasNext
+      description: Indicates if there is a page containing results after this page.
+      type: Boolean
+    - contextPath: RSANetWitness115.paging.IncidentAlerts.hasPrevious
+      description: Indicates if there is a page containing results before this page.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The name of the service. For example, endpoint-server.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of all services, or filter by name.
+    execution: false
+    name: rsa-nw-services-list
+    outputs:
+    - contextPath: RSANetWitness115.ServicesList.id
+      description: The unique identifier of each service installed in the RSA NetWitness
+        suite.
+      type: String
+    - contextPath: RSANetWitness115.ServicesList.name
+      description: The name of the service. For example, endpoint- server.
+      type: String
+    - contextPath: RSANetWitness115.ServicesList.displayName
+      description: The display name of the service.
+      type: String
+    - contextPath: RSANetWitness115.ServicesList.host
+      description: The host details of the service.
+      type: String
+    - contextPath: RSANetWitness115.ServicesList.version
+      description: The version of the service.
+      type: String
+  - arguments:
+    - default: false
+      description: The service ID of the specific endpoint server. View all service
+        IDs using the 'rsa-nw-services-list' command. If none is given, the service
+        ID configured in the integration configuration is used.
+      isArray: false
+      name: service_id
+      required: false
+      secret: false
+    - default: false
+      description: The requested page number, first page is 0. Cannot be supplied
+        with the limit argument.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of items to return in a single page. Cannot
+        be supplied with the limit argument.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of results to be returned. If not set, the first
+        50 results are returned. Cannot be supplied with page_size/page_number arguments.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of host agent IDs.
+      isArray: true
+      name: agent_id
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of host names.
+      isArray: true
+      name: host_name
+      required: false
+      secret: false
+    - default: false
+      description: The host risk score. Returns all results with risk score greater
+        than or equal to.
+      isArray: false
+      name: risk_score
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IPV4 in the network interface.
+      isArray: true
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: Custom filter in JSON format.
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    deprecated: false
+    description: Lists all host information from a specific endpoint server. Filter
+      the results using the supplied arguments (can be a list) or use the 'filter'
+      argument. You can limit the results using the limit argument or the page size
+      argument.
+    execution: false
+    name: rsa-nw-hosts-list
+    outputs:
+    - contextPath: RSANetWitness115.HostsList.agentId
+      description: The host agent ID.
+      type: String
+    - contextPath: RSANetWitness115.HostsList.hostName
+      description: The host name.
+      type: String
+    - contextPath: RSANetWitness115.HostsList.riskScore
+      description: The host risk score.
+      type: Number
+    - contextPath: RSANetWitness115.HostsList.networkInterfaces.name
+      description: The name of the network interface.
+      type: String
+    - contextPath: RSANetWitness115.HostsList.networkInterfaces.macAddress
+      description: The MAC Address of the network interface.
+      type: String
+    - contextPath: RSANetWitness115.HostsList.networkInterfaces.ipv4
+      description: The list of IPV4 in the network interface.
+      type: String
+    - contextPath: RSANetWitness115.HostsList.networkInterfaces.ipv6
+      description: The list of IPV6 in the network interface.
+      type: String
+    - contextPath: RSANetWitness115.HostsList.networkInterfaces.networkIdv6
+      description: The list of network IDV6 in the network interface.
+      type: String
+    - contextPath: RSANetWitness115.HostsList.networkInterfaces.gateway
+      description: The list of gateways in the network interface.
+      type: String
+    - contextPath: RSANetWitness115.HostsList.networkInterfaces.dns
+      description: The list of DNS in the network interface.
+      type: String
+    - contextPath: RSANetWitness115.HostsList.networkInterfaces.promiscuous
+      description: Specifies if the network interface is in promiscuous mode.
+      type: Boolean
+    - contextPath: RSANetWitness115.HostsList.lastSeenTime
+      description: The agent last seen time.
+      type: Date
+    - contextPath: RSANetWitness115.paging.HostsList.pageNumber
+      description: The requested page number.
+      type: Number
+    - contextPath: RSANetWitness115.paging.HostsList.pageSize
+      description: The requested number of items to return in a single page.
+      type: Number
+    - contextPath: RSANetWitness115.paging.HostsList.totalPages
+      description: The total number of pages available.
+      type: Number
+    - contextPath: RSANetWitness115.paging.HostsList.totalItems
+      description: The total number of items available.
+      type: Number
+    - contextPath: RSANetWitness115.paging.HostsList.hasNext
+      description: Indicates if there is a page containing results after this page.
+      type: Boolean
+    - contextPath: RSANetWitness115.paging.HostsList.hasPrevious
+      description: Indicates if there is a page containing results before this page.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The endpoint ID.
+      isArray: true
+      name: id
+      required: false
+      secret: false
+    - default: true
+      description: The endpoint IP.
+      isArray: true
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: The endpoint hostname.
+      isArray: true
+      name: hostname
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves host information for a specific endpoint. To use this command,
+      service ID must be set in the integration configuration.
+    execution: false
+    name: endpoint
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: The endpoint hostname.
+      type: String
+    - contextPath: Endpoint.Relationships.EntityA
+      description: The relationship source.
+      type: string
+    - contextPath: Endpoint.Relationships.EntityB
+      description: The relationship destination.
+      type: string
+    - contextPath: Endpoint.Relationships.Relationship
+      description: The relationship name.
+      type: string
+    - contextPath: Endpoint.Relationships.EntityAType
+      description: The relationship source type.
+      type: string
+    - contextPath: Endpoint.Relationships.EntityBType
+      description: The relationship destination type.
+      type: string
+    - contextPath: Endpoint.OS
+      description: The endpoint operation system.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The endpoint IP address.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The endpoint ID.
+      type: String
+    - contextPath: Endpoint.Status
+      description: The endpoint status.
+      type: String
+    - contextPath: Endpoint.IsIsolated
+      description: The endpoint isolation status.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: The endpoint MAC address.
+      type: String
+    - contextPath: Endpoint.Vendor
+      description: The integration name of the endpoint vendor.
+      type: String
+    - contextPath: Endpoint.Domain
+      description: The endpoint domain.
+      type: String
+    - contextPath: Endpoint.DHCPServer
+      description: The endpoint DHCP server.
+      type: String
+    - contextPath: Endpoint.OSVersion
+      description: The endpoint operation system version.
+      type: String
+    - contextPath: Endpoint.BIOSVersion
+      description: The endpoint BIOS version.
+      type: String
+    - contextPath: Endpoint.Model
+      description: The model of the machine or device.
+      type: String
+    - contextPath: Endpoint.Memory
+      description: The memory on this endpoint.
+      type: Int
+    - contextPath: Endpoint.Processors
+      description: The number of processors.
+      type: Int
+    - contextPath: Endpoint.Processor
+      description: The processor model.
+      type: String
+  - arguments:
+    - default: false
+      description: The host agent ID.
+      isArray: false
+      name: agent_id
+      required: true
+      secret: false
+    - default: false
+      description: The service ID of the specific endpoint server. View all service
+        IDs using the 'rsa-nw-services-list' command. If none is given, the service
+        ID configured in the integration configuration is used.
+      isArray: false
+      name: service_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve a list os snapshot IDs for a given host.
+    execution: false
+    name: rsa-nw-snapshots-list-for-host
+    outputs:
+    - contextPath: RSANetWitness115.SnapshotsListForHost
+      description: The list of snapshot timestamps.
+      type: Date
+  - arguments:
+    - default: false
+      description: The host agent ID.
+      isArray: false
+      name: agent_id
+      required: true
+      secret: false
+    - default: false
+      description: The start time of the scan snapshot. Can be retrieved using the
+        'rsa-nw-snapshots-list-for-host' command.
+      isArray: false
+      name: snapshot_timestamp
+      required: true
+      secret: false
+    - default: false
+      description: The service ID of the specific endpoint server. View all service
+        IDs using the 'rsa-nw-services-list' command. If none is given, the service
+        ID configured in the integration configuration is used.
+      isArray: false
+      name: service_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: A comma-separated list of categories to filter the results. For
+        example, PROCESSES,SERVICES.
+      isArray: true
+      name: categories
+      predefined:
+      - PROCESSES
+      - LOADED_LIBRARIES
+      - SERVICES
+      - AUTORUNS
+      - TASKS
+      - DRIVERS
+      - THREADS
+      - IMAGE_HOOKS
+      - KERNEL_HOOKS.
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of results returned by the command.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The offset to receive results from. For example, offset=3 returns
+        results from the 3rd result onward.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Provides snapshot details of the given host for the specified snapshot
+      time. It is recommended to use categories to filter the results since this command
+      returns a large amount of data.
+    execution: false
+    name: rsa-nw-snapshot-details-get
+    outputs:
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.machineOsType
+      description: The operating system type (Windows, Mac, Linux).
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.hostName
+      description: The host name.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.agentId
+      description: The host agent ID.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.agentVersion
+      description: The agent version.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.scanStartTime
+      description: The start time of the scan snapshot.
+      type: Date
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.directory
+      description: The file directory.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileName
+      description: The file name.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.owner.username
+      description: The user name of the file owner.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.owner.groupname
+      description: The group name of the file owner.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.owner.uid
+      description: The UID of the user name.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.owner.gid
+      description: The GID of the user name.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.timeCreated
+      description: The timestamp when the file was created.
+      type: Date
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.timeModified
+      description: The timestamp when the file was modified.
+      type: Date
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.timeAccessed
+      description: The timestamp when the file was last accessed.
+      type: Date
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.attributes
+      description: The list of file attributes.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.accessMode
+      description: The file access mode.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.nonExe
+      description: The number of non-exe files in the same directory as the file.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.exe
+      description: The number of exe files in the same directory as the file.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.subFolder
+      description: The number of sub-folders in the same directory as the file.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.exeSameCompany
+      description: The number of executables with the same company name in the same
+        directory as the file.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.hiddenFiles
+      description: The count of hidden files in the same directory as the file.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileContext
+      description: The list of file context.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.directoryContext
+      description: The list of directory context.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.autorunContext
+      description: The list of autorun context.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.networkContext
+      description: The list of network context.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.kernelModeContext
+      description: The list of kernel mode context.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.userModeContext
+      description: The list of user mode context.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.processContext
+      description: The list of process context.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.rpm.packageName
+      description: The RPM package name to which the file belongs.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.rpm.category
+      description: The category to which the RPM package belongs.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.processes.pid
+      description: The process ID.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.processes.parentPid
+      description: The parent process ID.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.processes.imageBase
+      description: The process image base address.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.processes.createUtcTime
+      description: The process creation time.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.processes.owner
+      description: The user name.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.processes.launchArguments
+      description: The process launch arguments.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.processes.threadCount
+      description: The number of threads running in the process.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.processes.eprocess
+      description: The process identifier.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.processes.sessionId
+      description: The process session ID.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.processes.parentPath
+      description: The parent process directory.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.processes.imageSize
+      description: The process image size.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.processes.integrityLevel
+      description: The process integrity level.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.processes.context
+      description: The list of process context.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.dlls.createTime
+      description: The process creation timestamp.
+      type: Date
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.dlls.eprocess
+      description: The process identity.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.dlls.imageSize
+      description: The size of the DLL image in memory.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.threads.processName
+      description: The process name.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.threads.processTime
+      description: The process creation timestamp.
+      type: Date
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.threads.eprocess
+      description: The process identifier.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.threads.pid
+      description: The process ID.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.threads.ethread
+      description: The thread identifier.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.threads.tid
+      description: The thread ID.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.threads.teb
+      description: The address of the thread environment block.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.threads.startAddress
+      description: The start address of the thread in memory.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.threads.state
+      description: The thread state.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.threads.behaviorKey
+      description: The floating behavior resolution of the thread.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.drivers.imageBase
+      description: The driver image base address.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.drivers.imageSize
+      description: The driver image size.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.services.serviceName
+      description: The service name as identified by the system.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.services.displayName
+      description: The service display name.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.services.description
+      description: The service description.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.services.account
+      description: The name of the user the service executes as.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.services.launchArguments
+      description: The launch arguments of the service.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.services.serviceMain
+      description: The service main.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.services.hostingPid
+      description: The service hosting process ID.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.services.state
+      description: The service current state.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.services.win32ErrorCode
+      description: The last Windows 32 error code from registry.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.services.context
+      description: The list of service context.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.tasks.name
+      description: The task name.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.tasks.executeUser
+      description: The name of the user the task executes as.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.tasks.creatorUser
+      description: The name of the user who created the task.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.tasks.launchArguments
+      description: The launch arguments of the task.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.tasks.status
+      description: The task status.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.tasks.lastRunTime
+      description: The time the task was last run.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.tasks.nextRunTime
+      description: The next scheduled time of the task.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.tasks.triggerString
+      description: The textual trigger string of the task.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.autoruns.type
+      description: The autorun type.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.autoruns.registryPath
+      description: The registry path where the autorun is located.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.autoruns.launchArguments
+      description: the autorun launch argument.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.process.pid
+      description: The PID of the process in which the hook was detected.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.process.fileName
+      description: The filename of the process in which the hook was detected.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.process.createUtcTime
+      description: The creation time of the process in which the hook was detected.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.hookLocation.section
+      description: The name of the image section that was modified by the hook.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.hookLocation.sectionBase
+      description: The base of the image section that was modified by the hook.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.hookLocation.symbol
+      description: The closest symbol name to the memory location that was modified.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.hookLocation.symbolOffset
+      description: The closest symbol +/- offset to the hook location when relevant.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.inlinePatch.originalBytes
+      description: The hexadecimal bytes which were replaced.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.inlinePatch.originalAsm
+      description: The array of decoded ASM instructions that were replaced.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.inlinePatch.currentBytes
+      description: The hexadecimal bytes that overwrote the original code.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.inlinePatch.currentAsm
+      description: The array of decoded ASM instructions that overwrote the original
+        code.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.kernelHooks.hookLocation.objectName
+      description: Name of the object that was hooked in kernel.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.kernelHooks.hookLocation.objectFunction
+      description: The name of the object function that was hooked in the kernel.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.processes.priority
+      description: The process priority.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.processes.flags
+      description: The process flags.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.processes.nice
+      description: The nice value of the process.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.processes.openFilesCount
+      description: The number of open files by process at scan time.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.processes.context
+      description: The process context.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.processes.pid
+      description: The process ID.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.processes.parentPid
+      description: The parent process ID.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.processes.imageBase
+      description: The process image base address.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.processes.createUtcTime
+      description: The process UTC creation time.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.processes.owner
+      description: The user name.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.processes.launchArguments
+      description: The process launch arguments.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.processes.threadCount
+      description: The number of threads running in the process.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.dylibs.pid
+      description: The process ID in dylibs which is loaded.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.dylibs.processName
+      description: The process name in dylibs.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.dylibs.imageBase
+      description: The process image base address in dylibs.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.drivers.preLinked
+      description: True if the kext bundle is prelinked.
+      type: Boolean
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.drivers.numberOfReferences
+      description: The number of references.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.drivers.dependencies
+      description: The list of kexts (name) the driver is linked against.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.drivers.imageBase
+      description: The driver image base address.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.drivers.imageSize
+      description: The driver image size.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.daemons.name
+      description: The daemon label.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.daemons.sessionName
+      description: The name of the session in which the daemon runs.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.daemons.user
+      description: The name of the user under which the daemon runs.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.daemons.pid
+      description: The daemon PID.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.daemons.onDemand
+      description: True if the daemon is configured to run on demand.
+      type: Boolean
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.daemons.lastExitCode
+      description: The daemon last exit code.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.daemons.timeout
+      description: The daemon timeout value.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.daemons.daemons.launchArguments
+      description: The daemon launch argument.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.daemons.daemons.config
+      description: The full path of the configuration file used to configure the daemon.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.tasks.name
+      description: The task name.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.tasks.cronJob
+      description: True if the task is a cron job, else launchd.
+      type: Boolean
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.tasks.launchArguments
+      description: The task launch argument.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.tasks.user
+      description: The name of the user under which the task runs.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.tasks.triggerString
+      description: The task trigger string.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.tasks.configFile
+      description: The full path of the configuration file used to configure the task.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.autoruns.type
+      description: The autorun type.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.autoruns.user
+      description: The name of the user under which the autorun is run.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.autoruns.name
+      description: The autorun label.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.mac.autoruns.detail
+      description: The autorun details.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.processes.priority
+      description: The process priority.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.processes.uid
+      description: The user UID.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.processes.environment
+      description: The process environment variables.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.processes.nice
+      description: The process nice value.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.processes.securityContext
+      description: The process security context.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.processes.pid
+      description: The process ID.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.processes.parentPid
+      description: The parent process ID.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.processes.imageBase
+      description: The process base address.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.processes.createUtcTime
+      description: The process UTC creation time.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.processes.owner
+      description: The user name.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.processes.launchArguments
+      description: The process launch arguments.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.processes.threadCount
+      description: The number of threads running in the process.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.loadedLibraries.pid
+      description: The process ID in the loaded library.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.loadedLibraries.processName
+      description: The process name in the loaded library.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.loadedLibraries.imageBase
+      description: The process image base address in the loaded library.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.drivers.numberOfInstances
+      description: The number of instances loaded in memory.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.drivers.loadState
+      description: The driver load state.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.drivers.dependencies
+      description: The dependent driver names.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.drivers.author
+      description: The driver author name.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.drivers.description
+      description: The driver description.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.drivers.sourceVersion
+      description: The driver source version.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.drivers.versionMagic
+      description: The driver version magic.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.initds.initdHashSha256
+      description: The hash of the init-d script file.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.initds.initdPaths
+      description: The path of the init-d script file.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.initds.pid
+      description: The process ID of the init-d script file.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.initds.description
+      description: The init-d script file description.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.initds.status
+      description: The init-d script file status.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.initds.runLevels
+      description: The list of run levels in which the init-d script file is enabled.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.systemds.systemdHashSha256
+      description: The systemd script file hash value.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.systemds.systemdPaths
+      description: The systemd script file path value.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.systemds.name
+      description: The systemd script file name.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.systemds.description
+      description: The systemd script file description.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.systemds.state
+      description: The systemd script file state.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.systemds.launchArguments
+      description: The systemd script file launch argument.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.systemds.pid
+      description: The process ID.
+      type: Number
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.systemds.triggeredBy
+      description: The systemd script file triggered by list.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.systemds.triggerStrings
+      description: The systemd script file trigger strings.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.autoruns.type
+      description: The autorun type.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.autoruns.label
+      description: The autorun label.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.autoruns.comments
+      description: The autorun comments.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.crons.user
+      description: The user account under which cron job was created.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.crons.triggerString
+      description: The trigger string that launches the cron job.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.linux.crons.launchArguments
+      description: The cron job launch arguments.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.firstFileName
+      description: The first name of the file sent by the agent.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.reputationStatus
+      description: The reputation status of the file.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.globalRiskScore
+      description: The global risk score.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.firstSeenTime
+      description: The time the file was first seen by the endpoint server.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.machineOsType
+      description: The operating system type (Windows, Mac, Linux).
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.signature
+      description: The file signatory information.
+      type: Object
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.signature.timeStamp
+      description: The signature timestamp.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.signature.thumbprint
+      description: The certificate thumbprint.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.signature.context
+      description: The certificate context information.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.signature.signer
+      description: The certificate signer information.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.size
+      description: The file size.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.checksumMd5
+      description: The file MD5.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.checksumSha1
+      description: The file SHA1.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.checksumSha256
+      description: The file SHA256.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.pe
+      description: The file PE information. This is applicable for Windows files.
+      type: Object
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.timeStamp
+      description: The PE file timestamp.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.imageSize
+      description: The PE file image size.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.numberOfExportedFunctions
+      description: The number of exported functions in the PE file.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.numberOfNamesExported
+      description: The number of names exported in the PE file.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.numberOfExecuteWriteSections
+      description: The number of execute write sections in the PE file.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.context
+      description: The PE file context information.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.resources
+      description: The PE file resources.
+      type: Object
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.resources.originalFileName
+      description: The original filename as per PE information.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.resources.company
+      description: The company name as per PE information.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.resources.description
+      description: The description of the file as per PE information.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.resources.version
+      description: The version of the file as per PE information.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.sectionNames
+      description: The list of section names in the PE file.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.importedLibraries
+      description: The list of imported libraries in the PE file.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.elf
+      description: The ELF information of the file. This is applicable for Linux files.
+      type: Object
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.elf.classType
+      description: The ELF file class type.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.elf.data
+      description: The ELF file data.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.elf.entryPoint
+      description: The ELF file entry point.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.elf.context
+      description: The ELF file context information.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.elf.type
+      description: The ELF file type.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.elf.sectionNames
+      description: The list of section names in the ELF file.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.elf.importedLibraries
+      description: The list of imported libraries in the ELF file.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.macho
+      description: The Macho file information. This is applicable for Mac files.
+      type: Object
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.macho.uuid
+      description: The Macho file UUID.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.macho.identifier
+      description: The Macho file identifier.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.macho.minOsxVersion
+      description: The minimum OSx version for the Macho file.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.macho.context
+      description: The Macho file context information.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.macho.flags
+      description: The Macho file flags.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.macho.numberOfLoadCommands
+      description: The number of Macho file load commands.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.macho.version
+      description: The Macho file version.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.macho.sectionNames
+      description: The Macho file section names.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.macho.importedLibraries
+      description: The Macho file imported libraries list.
+      type: Unknown
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.entropy
+      description: The file entropy.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.format
+      description: The file format.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.fileStatus
+      description: The file status as assigned by the analyst. Can be Whitelist, Blacklist,
+        Neutral, or Graylist.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.remediationAction
+      description: The remediation action as assigned by the analyst. For example,
+        Blocked.
+      type: String
+    - contextPath: RSANetWitness115.SnapshotDetailsGet.localRiskScore
+      description: The file score based on alerts triggered in the given agent.
+      type: Number
+  - arguments:
+    - default: false
+      description: The service ID of the specific endpoint Server. View all service
+        IDs using the 'rsa-nw-services-list' command. If none is given, the service
+        ID configured in the integration configuration is used.
+      isArray: false
+      name: service_id
+      required: false
+      secret: false
+    - default: false
+      description: The requested page number, first page is number 0. Cannot be supplied
+        with the limit argument.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of items to return in a single page. Cannot
+        be supplied with the limit argument.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of results to be returned. If not set, the first
+        10 results are returned.  Cannot be supplied with page_size/page_number arguments.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Lists all related file information from a specific endpoint server.
+      You can limit the results using the limit argument or the page size argument.
+    execution: false
+    name: rsa-nw-files-list
+    outputs:
+    - contextPath: RSANetWitness115.FilesList.windows.autoruns.type
+      description: The autorun type.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.windows.autoruns.registryPath
+      description: The registry path where autorun is located.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.windows.autoruns.launchArguments
+      description: The autorun launch argument.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.windows.imageHooks.process.pid
+      description: The PID of the process the hook was detected in.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.windows.imageHooks.process.fileName
+      description: The file name of the process the hook was detected in.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.windows.imageHooks.process.createUtcTime
+      description: The creation time of the process the hook was detected in.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.windows.imageHooks.hookLocation.section
+      description: The name of the image section modified by the hook.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.windows.imageHooks.hookLocation.sectionBase
+      description: The image section base modified by the hook.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.windows.imageHooks.hookLocation.symbol
+      description: The closest symbol name to the memory location that was modified.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.windows.imageHooks.hookLocation.symbolOffset
+      description: The closest symbol +/- offset to the hook location when relevant.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.windows.imageHooks.inlinePatch.originalBytes
+      description: The hexadecimal bytes that were replaced.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.windows.imageHooks.inlinePatch.originalAsm
+      description: The array of decoded ASM instructions that were replaced.
+      type: Unknown
+    - contextPath: RSANetWitness115.FilesList.windows.imageHooks.inlinePatch.currentBytes
+      description: The hexadecimal bytes that overwrote the original code.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.windows.imageHooks.inlinePatch.currentAsm
+      description: The array of decoded ASM instructions that overwrote the original
+        code.
+      type: Unknown
+    - contextPath: RSANetWitness115.FilesList.windows.kernelHooks.hookLocation.objectName
+      description: The name of the object that was hooked in the kernel.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.windows.kernelHooks.hookLocation.objectFunction
+      description: The name of the object function that was hooked in the kernel.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.processes.priority
+      description: The process priority.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.mac.processes.flags
+      description: The process flags.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.mac.processes.nice
+      description: The process nice value.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.mac.processes.openFilesCount
+      description: The number of open files by the process at scan time.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.mac.processes.context
+      description: The process context.
+      type: Unknown
+    - contextPath: RSANetWitness115.FilesList.mac.processes.pid
+      description: The process ID.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.mac.processes.parentPid
+      description: The parent process ID.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.mac.processes.imageBase
+      description: The process image base address.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.mac.processes.createUtcTime
+      description: The process UTC creation time.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.processes.owner
+      description: The user name.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.processes.launchArguments
+      description: The process launch arguments.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.processes.threadCount
+      description: The number of threads running in the process.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.mac.dylibs.pid
+      description: The process ID in dylibs which is loaded.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.mac.dylibs.processName
+      description: The process name in dylibs.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.dylibs.imageBase
+      description: The process image base address in dylibs.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.drivers.preLinked
+      description: True if the kext bundle is prelinked.
+      type: Boolean
+    - contextPath: RSANetWitness115.FilesList.mac.drivers.numberOfReferences
+      description: The number of references.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.mac.drivers.dependencies
+      description: The list of kexts(name) the driver is linked against.
+      type: Unknown
+    - contextPath: RSANetWitness115.FilesList.mac.drivers.imageBase
+      description: The driver image base address.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.drivers.imageSize
+      description: The driver image size.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.daemons.name
+      description: The daemon label.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.daemons.sessionName
+      description: The name of the session in which daemon runs.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.daemons.user
+      description: The name of the user under which the daemon runs.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.daemons.pid
+      description: The daemon ID.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.mac.daemons.onDemand
+      description: True if the daemon is configured to run on demand.
+      type: Boolean
+    - contextPath: RSANetWitness115.FilesList.mac.daemons.lastExitCode
+      description: The daemon last exit code.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.mac.daemons.timeout
+      description: The daemon timeout value.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.mac.daemons.daemons.launchArguments
+      description: The daemon launch argument.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.daemons.daemons.config
+      description: The full path of the configuration file used to configure the daemon.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.tasks.name
+      description: The task name.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.tasks.cronJob
+      description: True if the task is a cron job, else launchd.
+      type: Boolean
+    - contextPath: RSANetWitness115.FilesList.mac.tasks.launchArguments
+      description: The task launch argument.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.tasks.user
+      description: The name of the user under which this task will run.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.tasks.triggerString
+      description: The task trigger string.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.tasks.configFile
+      description: The full path of the configuration file used to configure the task.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.autoruns.type
+      description: The autorun type.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.autoruns.user
+      description: The name of the user under which the autorun is run.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.autoruns.name
+      description: The autorun label.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.mac.autoruns.detail
+      description: The autorun details.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.processes.priority
+      description: The process priority.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.linux.processes.uid
+      description: The user UID.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.linux.processes.environment
+      description: The environment variables.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.processes.nice
+      description: The process nice value.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.linux.processes.securityContext
+      description: The process security context.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.processes.pid
+      description: The process ID.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.linux.processes.parentPid
+      description: The parent process ID.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.linux.processes.imageBase
+      description: The process base address.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.linux.processes.createUtcTime
+      description: The process UTC creation time.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.processes.owner
+      description: The user name.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.processes.launchArguments
+      description: The process launch arguments.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.processes.threadCount
+      description: The number of threads running in the process.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.linux.loadedLibraries.pid
+      description: The process ID in the loaded library.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.loadedLibraries.processName
+      description: The process name in the loaded library.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.loadedLibraries.imageBase
+      description: The process image base address in the loaded library.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.drivers.numberOfInstances
+      description: The number of instances loaded in memory.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.linux.drivers.loadState
+      description: The driver load state.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.drivers.dependencies
+      description: The dependent driver names.
+      type: Unknown
+    - contextPath: RSANetWitness115.FilesList.linux.drivers.author
+      description: The driver author name.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.drivers.description
+      description: The driver description.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.drivers.sourceVersion
+      description: The driver source version.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.drivers.versionMagic
+      description: The driver version magic.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.initds.initdHashSha256
+      description: The init-d script file hash.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.initds.initdPaths
+      description: The init-d script file path.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.initds.pid
+      description: The init-d script file process ID.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.linux.initds.description
+      description: The init-d script file description.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.initds.status
+      description: The init-d script file status.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.initds.runLevels
+      description: The ist of run levels in which the init-d script file is enabled.
+      type: Unknown
+    - contextPath: RSANetWitness115.FilesList.linux.systemds.systemdHashSha256
+      description: The systemd script file hash value.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.systemds.systemdPaths
+      description: The systemd script file path value.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.systemds.name
+      description: The systemd script file name.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.systemds.description
+      description: The systemd script file description.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.systemds.state
+      description: The systemd script file state.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.systemds.launchArguments
+      description: The systemd script file launch argument.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.systemds.pid
+      description: The systemd script file process ID.
+      type: Number
+    - contextPath: RSANetWitness115.FilesList.linux.systemds.triggeredBy
+      description: The systemd script file triggered by list.
+      type: Unknown
+    - contextPath: RSANetWitness115.FilesList.linux.systemds.triggerStrings
+      description: The systemd script file trigger strings.
+      type: Unknown
+    - contextPath: RSANetWitness115.FilesList.linux.autoruns.type
+      description: The autorun type.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.autoruns.label
+      description: The autorun label.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.autoruns.comments
+      description: The autorun comments.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.crons.user
+      description: The user account under which cron job was created.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.crons.triggerString
+      description: The trigger string that launches the cron job.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.linux.crons.launchArguments
+      description: The cron job launch arguments.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.firstFileName
+      description: The first name of the file sent by the agent.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.reputationStatus
+      description: The file reputation status.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.globalRiskScore
+      description: The global risk score.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.firstSeenTime
+      description: The time the file was first seen by the endpoint server.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.fileProperties.machineOsType
+      description: The operating system type (Windows, Mac, Linux).
+      type: String
+    - contextPath: RSANetWitness115.FilesList.signature
+      description: The file signatory information.
+      type: Object
+    - contextPath: RSANetWitness115.FilesList.signature.timeStamp
+      description: The signature timestamp.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.signature.thumbprint
+      description: The certificate thumbprint.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.signature.context
+      description: The certificate context information.
+      type: Unknown
+    - contextPath: RSANetWitness115.FilesList.signature.signer
+      description: The certificate signer information.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.size
+      description: The file size.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.checksumMd5
+      description: The file MD5.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.checksumSha1
+      description: The file SHA1.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.checksumSha256
+      description: The file SHA256.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.pe
+      description: The file PE information. This is applicable for Windows files.
+      type: Object
+    - contextPath: RSANetWitness115.FilesList.pe.timeStamp
+      description: The PE file timestamp.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.pe.imageSize
+      description: The PE file image size.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.pe.numberOfExportedFunctions
+      description: The number of exported functions in the PE file.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.pe.numberOfNamesExported
+      description: The number of names exported in the PE file.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.pe.numberOfExecuteWriteSections
+      description: The number of execute write sections in the PE file.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.pe.context
+      description: The PE file context information.
+      type: Unknown
+    - contextPath: RSANetWitness115.FilesList.pe.resources
+      description: The PE file resources.
+      type: Object
+    - contextPath: RSANetWitness115.FilesList.pe.resources.originalFileName
+      description: The original filename as per PE information.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.pe.resources.company
+      description: The company name as per PE information.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.pe.resources.description
+      description: The file description as per PE information.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.pe.resources.version
+      description: The file version as per PE information.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.pe.sectionNames
+      description: The list of section names in the PE file.
+      type: Unknown
+    - contextPath: RSANetWitness115.FilesList.pe.importedLibraries
+      description: The list of imported libraries in the PE file.
+      type: Unknown
+    - contextPath: RSANetWitness115.FilesList.elf
+      description: The file ELF information. This is applicable for Linux files.
+      type: Object
+    - contextPath: RSANetWitness115.FilesList.elf.classType
+      description: The ELF file Class type.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.elf.data
+      description: The ELF file data.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.elf.entryPoint
+      description: The ELF file entry point.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.elf.context
+      description: The ELF file context information.
+      type: Unknown
+    - contextPath: RSANetWitness115.FilesList.elf.type
+      description: The ELF file type.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.elf.sectionNames
+      description: The list of section names in the ELF file.
+      type: Unknown
+    - contextPath: RSANetWitness115.FilesList.elf.importedLibraries
+      description: The list of imported libraries in the ELF file.
+      type: Unknown
+    - contextPath: RSANetWitness115.FilesList.macho
+      description: The file Macho information. This is applicable for Mac files.
+      type: Object
+    - contextPath: RSANetWitness115.FilesList.macho.uuid
+      description: The Macho file UUID.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.macho.identifier
+      description: The Macho file identifier.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.macho.minOsxVersion
+      description: The minimum OSx version for the Macho file.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.macho.context
+      description: The Macho file context information.
+      type: Unknown
+    - contextPath: RSANetWitness115.FilesList.macho.flags
+      description: The Macho file flags.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.macho.numberOfLoadCommands
+      description: The number of load commands for the Macho file.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.macho.version
+      description: The Macho file version.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.macho.sectionNames
+      description: The Macho file section names.
+      type: Unknown
+    - contextPath: RSANetWitness115.FilesList.macho.importedLibraries
+      description: The Macho file imported libraries list.
+      type: Unknown
+    - contextPath: RSANetWitness115.FilesList.entropy
+      description: The file entropy.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.format
+      description: The file format.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.fileStatus
+      description: The file status as assigned by the analyst. Can be Whitelist, Blacklist,
+        Neutral, or Graylist.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.remediationAction
+      description: The remediation action as assigned by the analyst. For example,
+        Blocked.
+      type: String
+    - contextPath: RSANetWitness115.FilesList.localRiskScore
+      description: The file score based on alerts triggered in the given agent.
+      type: Number
+  - arguments:
+    - default: false
+      description: The host agent ID.
+      isArray: false
+      name: agent_id
+      required: true
+      secret: false
+    - default: false
+      description: The service ID of the specific endpoint server. View all service
+        IDs using the 'rsa-nw-services-list' command. If none is given, the service
+        ID configured in the integration configuration is used.
+      isArray: false
+      name: service_id
+      required: false
+      secret: false
+    - default: false
+      description: You can use cpuMax to specify the amount of CPU the agent can use
+        to run the scan. You can choose a value from 5 to 100. If you do not specify
+        a value, the agent uses the default 25% CPU for the scan.
+      isArray: false
+      name: cpu_max
+      required: false
+      secret: false
+    deprecated: false
+    description: Starts a scan for the host with the specified agent ID. Each scan
+      produces a snapshot, the full details can be seen using the 'rsa-nw-snapshot-details-get'
+      command.
+    execution: false
+    name: rsa-nw-scan-request
+  - arguments:
+    - default: false
+      description: Unique identifier of the host.
+      isArray: false
+      name: agent_id
+      required: true
+      secret: false
+    - default: false
+      description: The service ID of the specific endpoint server. View all service
+        IDs using the 'rsa-nw-services-list' command. If none is given, the service
+        ID configured in the integration configuration is used.
+      isArray: false
+      name: service_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Stop a scan for the host with the specified agent ID.
+    execution: false
+    name: rsa-nw-scan-stop-request
+  - arguments:
+    - default: false
+      description: Unique host identifier.
+      isArray: false
+      name: agent_id
+      required: true
+      secret: false
+    - default: false
+      description: The service ID of the specific endpoint server. View all service
+        IDs using the 'rsa-nw-services-list' command. If none is given, the service
+        ID configured in the integration configuration is used.
+      isArray: false
+      name: service_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter alerts based on the category. Can be Critical, High, Medium,
+        or Low.
+      isArray: false
+      name: alert_category
+      predefined:
+      - Critical
+      - High
+      - Medium
+      - Low
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets all alerts triggered for a given host.
+    execution: false
+    name: rsa-nw-host-alerts-list
+    outputs:
+    - contextPath: RSANetWitness115.HostAlerts.id
+      description: The entity ID for which the score needs to be queried. Use agent
+        ID for hosts and checksum for files.
+      type: String
+    - contextPath: RSANetWitness115.HostAlerts.distinctAlertCount.critical
+      description: The number of critical alerts.
+      type: Number
+    - contextPath: RSANetWitness115.HostAlerts.distinctAlertCount.high
+      description: The number of high alerts.
+      type: Number
+    - contextPath: RSANetWitness115.HostAlerts.distinctAlertCount.medium
+      description: The number of medium alerts.
+      type: Number
+    - contextPath: RSANetWitness115.HostAlerts.distinctAlertCount.low
+      description: The number of low alerts.
+      type: Number
+    - contextPath: RSANetWitness115.HostAlerts.categorizedAlerts
+      description: The alert and event count for a file/host, categorized by severity.
+      type: String
+  - arguments:
+    - default: false
+      description: The file hash, either md5 or sha256.
+      isArray: false
+      name: check_sum
+      predefined:
+      - ''
+      required: true
+      secret: false
+    - default: false
+      description: The service ID of the specific endpoint server. View all service
+        IDs using the 'rsa-nw-services-list' command. If none is given, the service
+        ID configured in the integration configuration is used.
+      isArray: false
+      name: service_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter alerts based on the category.  Can be Critical, High, Medium,
+        or Low.
+      isArray: false
+      name: alert_category
+      predefined:
+      - Critical
+      - High
+      - Medium
+      - Low
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets all alerts triggered for a given file.
+    execution: false
+    name: rsa-nw-file-alerts-list
+    outputs:
+    - contextPath: RSANetWitness115.FileAlerts.id
+      description: The entity ID for which score needs to be queried. Use agent ID
+        for hosts and checksum for files.
+      type: String
+    - contextPath: RSANetWitness115.FileAlerts.distinctAlertCount.critical
+      description: The number of critical alerts.
+      type: Number
+    - contextPath: RSANetWitness115.FileAlerts.distinctAlertCount.high
+      description: The number of high alerts.
+      type: Number
+    - contextPath: RSANetWitness115.FileAlerts.distinctAlertCount.medium
+      description: The number of medium alerts.
+      type: Number
+    - contextPath: RSANetWitness115.FileAlerts.distinctAlertCount.low
+      description: The number of low alerts.
+      type: Number
+    - contextPath: RSANetWitness115.FileAlerts.categorizedAlerts
+      description: The alert and event count for a file/host, categorized by severity.
+      type: String
+  - arguments:
+    - default: false
+      description: The host agent ID.
+      isArray: false
+      name: agent_id
+      required: true
+      secret: false
+    - default: false
+      description: The service ID of the specific endpoint server. View all service
+        IDs using the 'rsa-nw-services-list' command. If none is given, the service
+        ID configured in the integration configuration is used.
+      isArray: false
+      name: service_id
+      required: false
+      secret: false
+    - default: false
+      description: The path where the files may be present, either specify a single
+        file path or use a wild card. for example - "C:\Users\sample\*" . To see scanned
+        files paths use the command 'rsa-nw-snapshot-details-get'
+      isArray: false
+      name: path
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: The maximum number of files returned by the host matching the wild
+        card path.
+      isArray: false
+      name: count_files
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The maximum size of each file (in MB) when using a wild card path.
+      isArray: false
+      name: max_file_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiate file download for a single file or multiple files to the
+      endpoint server.
+    execution: false
+    name: rsa-nw-file-download
+  - arguments:
+    - default: false
+      description: The host agent ID.
+      isArray: false
+      name: agent_id
+      required: true
+      secret: false
+    - default: false
+      description: The service ID of the endpoint server to be connected.
+      isArray: false
+      name: service_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiates the MFT download to the endpoint server.
+    execution: false
+    name: rsa-nw-mft-download-request
+  - arguments:
+    - default: false
+      description: The host agent ID.
+      isArray: false
+      name: agent_id
+      required: true
+      secret: false
+    - default: false
+      description: The service ID of the endpoint server to be connected.
+      isArray: false
+      name: service_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiates the download of the system dump to the endpoint server.
+    execution: false
+    name: rsa-nw-system-dump-download-request
+  - arguments:
+    - default: false
+      description: The host agent ID.
+      isArray: false
+      name: agent_id
+      required: true
+      secret: false
+    - default: false
+      description: The service ID of the endpoint server to be connected.
+      isArray: false
+      name: service_id
+      required: false
+      secret: false
+    - default: false
+      description: The process ID.
+      isArray: false
+      name: process_id
+      required: true
+      secret: false
+    - default: false
+      description: The process identifier in Windows.
+      isArray: false
+      name: eprocess
+      required: true
+      secret: false
+    - default: false
+      description: the file name.
+      isArray: false
+      name: file_name
+      required: true
+      secret: false
+    - default: false
+      description: The file path.
+      isArray: false
+      name: path
+      required: false
+      secret: false
+    - default: false
+      description: The hash (sha256 or md5) of the file. Can be found in the 'rsa-nw-snapshot-details-get'
+        command response under field fileProperties.checksumSha256 or fileProperties.checksumMd5.
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    - default: false
+      description: The process UTC created time. Can be found in the 'rsa-nw-snapshot-details-get'
+        response under field windows.processes.createUtcTime.
+      isArray: false
+      name: process_create_utctime
+      required: true
+      secret: false
+    deprecated: false
+    description: Initiates the download of the process dump to the endpoint server.
+      You can find the process details by using the 'rsa-nw-snapshot-details-get'
+      and filter by category=PROCESSES, or use the RSA NW UI.
+    execution: false
+    name: rsa-nw-process-dump-download-request
+  - arguments:
+    - default: false
+      description: The unique host identifier.
+      isArray: false
+      name: agent_id
+      required: true
+      secret: false
+    - default: false
+      description: The service ID of the endpoint server to be connected.
+      isArray: false
+      name: service_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Allow DNS communication.
+      isArray: false
+      name: allow_dns_only_by_system
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IPv4 or IPv6 addresses to excluded from
+        isolation. For example, 1.2.3.4,11:22:33:44
+      isArray: false
+      name: exclusion_list
+      required: false
+      secret: false
+    - default: false
+      description: Additional information.
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    deprecated: false
+    description: Isolates the host with the specified agent ID from the network.
+    execution: false
+    name: rsa-nw-endpoint-isolate-from-network
+  - arguments:
+    - default: false
+      description: The unique host identifier.
+      isArray: false
+      name: agent_id
+      required: true
+      secret: false
+    - default: false
+      description: The service ID of the endpoint server to be connected.
+      isArray: false
+      name: service_id
+      required: false
+      secret: false
+    - default: false
+      description: Allows DNS communication.
+      isArray: false
+      name: allow_dns_only_by_system
+      required: false
+      secret: false
+    - default: false
+      description: ' A comma-separated list of IPv4 or IPv6 addresses to excluded
+        from isolation. For example, 1.2.3.4,11:22:33:44'
+      isArray: false
+      name: exclusion_list
+      required: true
+      secret: false
+    - default: false
+      description: Additional information.
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates the network isolation exclusion list for the host with the
+      specified agent ID.
+    execution: false
+    name: rsa-nw-endpoint-update-exclusions
+  - arguments:
+    - default: false
+      description: The unique host identifier.
+      isArray: false
+      name: agent_id
+      required: true
+      secret: false
+    - default: false
+      description: The service ID of the endpoint server to be connected.
+      isArray: false
+      name: service_id
+      required: false
+      secret: false
+    - default: false
+      description: Allows DNS communication.
+      isArray: false
+      name: allow_dns_only_by_system
+      required: false
+      secret: false
+    - default: false
+      description: Additional information.
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    deprecated: false
+    description: Restores the network connection and removes IP addresses added to
+      the exclusion list for the host with the specified agent ID.
+    execution: false
+    name: rsa-nw-endpoint-isolation-remove
+  dockerimage: demisto/python3:3.10.1.25933
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- RSANetWitnessv115-Test
+defaultmapperin: RSA NetWitness v11.5 - incoming mapper
+fromversion: 5.5.0
+beta: true
