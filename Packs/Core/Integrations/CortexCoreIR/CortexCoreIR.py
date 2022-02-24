@@ -2995,7 +2995,7 @@ def get_original_alerts_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def get_dynamic_analysis(client: Client, args: Dict) -> CommandResults:
+def get_dynamic_analysis_command(client: Client, args: Dict) -> CommandResults:
     alert_id_list = argToList(args.get('alert_ids', []))
     raw_response = client.get_original_alerts(alert_id_list)
     reply = copy.deepcopy(raw_response)
@@ -3400,7 +3400,7 @@ def main():
             return_results(get_original_alerts_command(client, args))
 
         elif command == 'core-get-dynamic-analysis':
-            return_results(get_dynamic_analysis(client, args))
+            return_results(get_dynamic_analysis_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

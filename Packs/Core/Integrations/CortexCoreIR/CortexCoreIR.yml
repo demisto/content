@@ -2808,7 +2808,7 @@ script:
         required: true
         secret: false
     deprecated: false
-    description: Returns information about each alert ID.
+    description: Returns dynamic analysis of each alert ID.
     execution: false
     name: core-get-dynamic-analysis
     outputs:
