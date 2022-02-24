@@ -1427,7 +1427,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             f'Slack API has thrown an error. Code: {error_code}, Message: {error_msg}.')
         return
     try:
-        data: dict = req.get('payload')
+        data: dict = req.payload
         event: dict = data.get('event', {})
         text = event.get('text', '')
         user_id = data.get('user', {}).get('id', '')
