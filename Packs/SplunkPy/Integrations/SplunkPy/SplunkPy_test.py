@@ -1155,7 +1155,7 @@ def test_build_search_human_readable(mocker):
             * support commas and spaces inside header values (if surrounded with parenthesis)
             * rename headers
     """
-    func_patch = mocker.patch('SplunkPyPreRelease.update_headers_from_field_names')
+    func_patch = mocker.patch('SplunkPy.update_headers_from_field_names')
     results = [
         {'ID': 1, 'Header with space': 'h1', 'header3': 1, 'header_without_space': '1234',
          'old_header_1': '1', 'old_header_2': '2'},
