@@ -506,7 +506,7 @@ def urlscan_submit_command(client):
 
 def urlscan_search(client, search_type, query):
 
-    if search_type == 'generic':
+    if search_type == 'advanced':
         r = http_request(client, 'GET', 'search/?q=' + query)
     else:
         r = http_request(client, 'GET', 'search/?q=' + search_type + ':"' + query + '"')
@@ -535,7 +535,7 @@ def urlscan_search_command(client):
     LIMIT = int(demisto.args().get('limit'))
     HUMAN_READBALE_HEADERS = ['URL', 'Domain', 'IP', 'ASN', 'Scan ID', 'Scan Date']
     raw_query = demisto.args().get('searchParameter', '')
-    search_type = demisto.args().get('searchType')
+    search_type = demisto.args().get('searchType', '')
     if not search_type:
         if is_ip_valid(raw_query, accept_v6_ips=True):
             search_type = 'ip'
