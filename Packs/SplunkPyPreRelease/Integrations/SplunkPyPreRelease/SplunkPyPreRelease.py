@@ -1918,10 +1918,10 @@ def build_search_human_readable(args, parsed_search_results):
             table_args = re.findall(r' {} (?P<{}>[^|]*)'.format('table', 'table'), query)
             rename_args = re.findall(r' {} (?P<{}>[^|]*)'.format('rename', 'rename'), query)
 
-            chosen_fields = [field.strip('"')
-                             for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', table_args) if field]
-            rename_dict = {field[0]: field[-1].strip('"') for field in
-                           re.findall(r'((?:".*?")|(?:[^\s,]+))( AS )((?:".*?")|(?:[^\s,]+))', rename_args) if field}
+            chosen_fields = [field.strip('"') for arg_string in table_args
+                             for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', arg_string) if field]
+            rename_dict = {field[0]: field[-1].strip('"') for arg_string in rename_args for field in
+                           re.findall(r'((?:".*?")|(?:[^\s,]+))( AS )((?:".*?")|(?:[^\s,]+))', arg_string) if field}
 
             # replace renamed fields
             chosen_fields = [rename_dict.get(field, field) for field in chosen_fields]
