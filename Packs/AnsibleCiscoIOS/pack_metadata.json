@@ -9,7 +9,17 @@
     "categories": [
         "IT Services"
     ],
-    "tags": ["IT", "Network"],
+    "tags": [
+        "IT",
+        "Network"
+    ],
     "useCases": [],
-    "keywords": ["Asset Management", "Network Security"]
+    "keywords": [
+        "Asset Management",
+        "Network Security"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

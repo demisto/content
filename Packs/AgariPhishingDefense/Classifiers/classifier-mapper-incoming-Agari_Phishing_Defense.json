@@ -1,424 +1,360 @@
 {
- "description": "Maps incoming Agari Phishing Defense incident fields.",
- "feed": false,
- "id": "Agari Phishing Defense - Mapper",
- "mapping": {
-  "Agari Phishing Defense Policy Event": {
-   "dontMapEventToLabels": true,
-   "internalMapping": {
-    "APD Admin Recipients": {
-     "complex": {
-      "accessor": "admin_recipients",
-      "filters": [
-
-      ],
-      "root": "policy",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Alert Definition Name": {
-     "complex": {
-      "accessor": "alert_definition_name",
-      "filters": [
-
-      ],
-      "root": "policy",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Attack Types": {
-     "complex": {
-      "accessor": "",
-      "filters": [
-       [
-        {
-         "ignoreCase": false,
-         "left": {
-          "isContext": true,
-          "value": {
-           "complex": null,
-           "simple": "message.attack_class_types"
-          }
-         },
-         "operator": "isNotEmpty",
-         "right": null
-        }
-       ]
-      ],
-      "root": "message.attack_class_types",
-      "transformers": [
-       {
-        "args": {
-
+    "description": "Maps incoming Agari Phishing Defense incident fields.",
+    "feed": false,
+    "id": "Agari Phishing Defense - Mapper",
+    "mapping": {
+        "Agari Phishing Defense Policy Event": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "APD Admin Recipients": {
+                    "complex": {
+                        "accessor": "admin_recipients",
+                        "filters": [],
+                        "root": "policy",
+                        "transformers": []
+                    }
+                },
+                "APD Alert Definition Name": {
+                    "complex": {
+                        "accessor": "alert_definition_name",
+                        "filters": [],
+                        "root": "policy",
+                        "transformers": []
+                    }
+                },
+                "APD Attack Types": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "message.attack_class_types"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "message.attack_class_types",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "APD Created At": {
+                    "complex": {
+                        "accessor": "created_at",
+                        "filters": [],
+                        "root": "policy",
+                        "transformers": []
+                    }
+                },
+                "APD Enforcement Action": {
+                    "complex": {
+                        "accessor": "enforcement_action",
+                        "filters": [],
+                        "root": "message",
+                        "transformers": []
+                    }
+                },
+                "APD Global Message ID": {
+                    "complex": {
+                        "accessor": "message_id",
+                        "filters": [],
+                        "root": "message",
+                        "transformers": []
+                    }
+                },
+                "APD Internal Message ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "message",
+                        "transformers": []
+                    }
+                },
+                "APD Message Authentication Results": {
+                    "complex": {
+                        "accessor": "authentication_results",
+                        "filters": [],
+                        "root": "message",
+                        "transformers": []
+                    }
+                },
+                "APD Message Authenticity Score": {
+                    "complex": {
+                        "accessor": "authenticity_score",
+                        "filters": [],
+                        "root": "message",
+                        "transformers": []
+                    }
+                },
+                "APD Message DKIM D Tag": {
+                    "complex": {
+                        "accessor": "dkim_d_tag",
+                        "filters": [],
+                        "root": "message",
+                        "transformers": []
+                    }
+                },
+                "APD Message Date": {
+                    "complex": {
+                        "accessor": "date",
+                        "filters": [],
+                        "root": "message",
+                        "transformers": []
+                    }
+                },
+                "APD Message Domain Reputation": {
+                    "complex": {
+                        "accessor": "domain_reputation",
+                        "filters": [],
+                        "root": "message",
+                        "transformers": []
+                    }
+                },
+                "APD Message From": {
+                    "complex": {
+                        "accessor": "from",
+                        "filters": [],
+                        "root": "message",
+                        "transformers": []
+                    }
+                },
+                "APD Message From Domain": {
+                    "complex": {
+                        "accessor": "from_domain",
+                        "filters": [],
+                        "root": "message",
+                        "transformers": []
+                    }
+                },
+                "APD Message Mail From": {
+                    "complex": {
+                        "accessor": "mail_from",
+                        "filters": [],
+                        "root": "message",
+                        "transformers": []
+                    }
+                },
+                "APD Message PTR Name": {
+                    "complex": {
+                        "accessor": "ptr_name",
+                        "filters": [],
+                        "root": "message.sending_ip_address",
+                        "transformers": []
+                    }
+                },
+                "APD Message Reply To": {
+                    "complex": {
+                        "accessor": "reply_to",
+                        "filters": [],
+                        "root": "message",
+                        "transformers": []
+                    }
+                },
+                "APD Message Reputation": {
+                    "complex": {
+                        "accessor": "sbrs",
+                        "filters": [],
+                        "root": "message",
+                        "transformers": []
+                    }
+                },
+                "APD Message Risk Reason": {
+                    "complex": {
+                        "accessor": "risk_reason",
+                        "filters": [],
+                        "root": "message",
+                        "transformers": []
+                    }
+                },
+                "APD Message Sender IP Address": {
+                    "complex": {
+                        "accessor": "ip",
+                        "filters": [],
+                        "root": "message.sending_ip_address",
+                        "transformers": []
+                    }
+                },
+                "APD Message Subject": {
+                    "complex": {
+                        "accessor": "subject",
+                        "filters": [],
+                        "root": "message",
+                        "transformers": []
+                    }
+                },
+                "APD Message To": {
+                    "complex": {
+                        "accessor": "to",
+                        "filters": [],
+                        "root": "message",
+                        "transformers": []
+                    }
+                },
+                "APD Message Trust Score": {
+                    "complex": {
+                        "accessor": "message_trust_score",
+                        "filters": [],
+                        "root": "message",
+                        "transformers": []
+                    }
+                },
+                "APD Notified Original Recipients": {
+                    "complex": {
+                        "accessor": "notified_original_recipients",
+                        "filters": [],
+                        "root": "policy",
+                        "transformers": []
+                    }
+                },
+                "APD Policy Action": {
+                    "complex": {
+                        "accessor": "policy_action",
+                        "filters": [],
+                        "root": "policy",
+                        "transformers": []
+                    }
+                },
+                "APD Policy Enabled": {
+                    "complex": {
+                        "accessor": "policy_enabled",
+                        "filters": [],
+                        "root": "policy",
+                        "transformers": []
+                    }
+                },
+                "APD Policy Event ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "policy",
+                        "transformers": []
+                    }
+                },
+                "APD Summary": {
+                    "complex": {
+                        "accessor": "summary",
+                        "filters": [],
+                        "root": "policy",
+                        "transformers": []
+                    }
+                },
+                "APD Updated At": {
+                    "complex": {
+                        "accessor": "updated_at",
+                        "filters": [],
+                        "root": "policy",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "created_at",
+                        "filters": [],
+                        "root": "policy",
+                        "transformers": []
+                    }
+                }
+            }
         },
-        "operator": "ConvertKeysToTableFieldFormat"
-       }
-      ]
-     },
-     "simple": ""
+        "Phishing Alerts": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Email Internal Message ID": {
+                    "simple": "message.id"
+                },
+                "Alert Action": {
+                    "simple": "message.enforcement_action"
+                },
+                "Email From": {
+                    "simple": "message.from"
+                },
+                "Email In Reply To": {
+                    "simple": "message.reply_to"
+                },
+                "Email Message ID": {
+                    "simple": "message.message_id"
+                },
+                "Email Sender IP": {
+                    "simple": "message.sending_ip_address.ip"
+                },
+                "Email Source Domain": {
+                    "simple": "message.from_domain"
+                },
+                "Email Subject": {
+                    "simple": "message.subject"
+                },
+                "Email To": {
+                    "simple": "message.to"
+                },
+                "occurred": {
+                    "simple": "message.date"
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "message_trust_score",
+                        "filters": [],
+                        "root": "message",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "regex": {
+                                        "value": {
+                                            "simple": "^[0]\\d*(\\.\\d+)?|1$"
+                                        }
+                                    },
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Untrusted"
+                                        }
+                                    }
+                                },
+                                "operator": "replaceMatch"
+                            },
+                            {
+                                "args": {
+                                    "regex": {
+                                        "value": {
+                                            "simple": "^[1-4]\\d*(\\.\\d+)?|5$"
+                                        }
+                                    },
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Suspicious"
+                                        }
+                                    }
+                                },
+                                "operator": "replaceMatch"
+                            },
+                            {
+                                "args": {
+                                    "regex": {
+                                        "value": {
+                                            "simple": "^[5]\\d*(\\.\\d+)?|10$"
+                                        }
+                                    },
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Trusted"
+                                        }
+                                    }
+                                },
+                                "operator": "replaceMatch"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
     },
-    "APD Created At": {
-     "complex": {
-      "accessor": "created_at",
-      "filters": [
-
-      ],
-      "root": "policy",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Enforcement Action": {
-     "complex": {
-      "accessor": "enforcement_action",
-      "filters": [
-
-      ],
-      "root": "message",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Global Message ID": {
-     "complex": {
-      "accessor": "message_id",
-      "filters": [
-
-      ],
-      "root": "message",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Internal Message ID": {
-     "complex": {
-      "accessor": "id",
-      "filters": [
-
-      ],
-      "root": "message",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Message Authentication Results": {
-     "complex": {
-      "accessor": "authentication_results",
-      "filters": [
-
-      ],
-      "root": "message",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Message Authenticity Score": {
-     "complex": {
-      "accessor": "authenticity_score",
-      "filters": [
-
-      ],
-      "root": "message",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Message DKIM D Tag": {
-     "complex": {
-      "accessor": "dkim_d_tag",
-      "filters": [
-
-      ],
-      "root": "message",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Message Date": {
-     "complex": {
-      "accessor": "date",
-      "filters": [
-
-      ],
-      "root": "message",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Message Domain Reputation": {
-     "complex": {
-      "accessor": "domain_reputation",
-      "filters": [
-
-      ],
-      "root": "message",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Message From": {
-     "complex": {
-      "accessor": "from",
-      "filters": [
-
-      ],
-      "root": "message",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Message From Domain": {
-     "complex": {
-      "accessor": "from_domain",
-      "filters": [
-
-      ],
-      "root": "message",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Message Mail From": {
-     "complex": {
-      "accessor": "mail_from",
-      "filters": [
-
-      ],
-      "root": "message",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Message PTR Name": {
-     "complex": {
-      "accessor": "ptr_name",
-      "filters": [
-
-      ],
-      "root": "message.sending_ip_address",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Message Reply To": {
-     "complex": {
-      "accessor": "reply_to",
-      "filters": [
-
-      ],
-      "root": "message",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Message Reputation": {
-     "complex": {
-      "accessor": "sbrs",
-      "filters": [
-
-      ],
-      "root": "message",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Message Risk Reason": {
-     "complex": {
-      "accessor": "risk_reason",
-      "filters": [
-
-      ],
-      "root": "message",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Message Sender IP Address": {
-     "complex": {
-      "accessor": "ip",
-      "filters": [
-
-      ],
-      "root": "message.sending_ip_address",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Message Subject": {
-     "complex": {
-      "accessor": "subject",
-      "filters": [
-
-      ],
-      "root": "message",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Message To": {
-     "complex": {
-      "accessor": "to",
-      "filters": [
-
-      ],
-      "root": "message",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Message Trust Score": {
-     "complex": {
-      "accessor": "message_trust_score",
-      "filters": [
-
-      ],
-      "root": "message",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Notified Original Recipients": {
-     "complex": {
-      "accessor": "notified_original_recipients",
-      "filters": [
-
-      ],
-      "root": "policy",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Policy Action": {
-     "complex": {
-      "accessor": "policy_action",
-      "filters": [
-
-      ],
-      "root": "policy",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Policy Enabled": {
-     "complex": {
-      "accessor": "policy_enabled",
-      "filters": [
-
-      ],
-      "root": "policy",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Policy Event ID": {
-     "complex": {
-      "accessor": "id",
-      "filters": [
-
-      ],
-      "root": "policy",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Summary": {
-     "complex": {
-      "accessor": "summary",
-      "filters": [
-
-      ],
-      "root": "policy",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "APD Updated At": {
-     "complex": {
-      "accessor": "updated_at",
-      "filters": [
-
-      ],
-      "root": "policy",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
-    "occurred": {
-     "complex": {
-      "accessor": "created_at",
-      "filters": [
-
-      ],
-      "root": "policy",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    }
-   }
-  }
- },
- "name": "Agari Phishing Defense - Mapper",
- "type": "mapping-incoming",
- "version": -1,
- "fromVersion": "6.0.0"
+    "name": "Agari Phishing Defense - Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

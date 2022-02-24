@@ -9,7 +9,7 @@ comment: Copy all entries marked as notes from current incident to another incid
 commonfields:
   id: CopyNotesToIncident
   version: -1
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
 name: CopyNotesToIncident
 runas: DBotWeakRole

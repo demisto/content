@@ -112,7 +112,7 @@ script:
     - contextPath: SecBI.Incident.LastAppearance
       description: The last appearance of data of the SecBI incident.
       type: Date
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: false
   longRunning: false
   longRunningPort: false

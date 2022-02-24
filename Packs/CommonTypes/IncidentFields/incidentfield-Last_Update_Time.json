@@ -10,7 +10,9 @@
         "Logrhythm Case",
         "CrowdStrike Falcon Detection",
         "CrowdStrike Falcon Incident",
-        "Microsoft Defender For Endpoint"
+        "Microsoft Defender For Endpoint",
+        "OpsGenie Incident",
+        "OpsGenie Alert"
     ],
     "breachScript": "",
     "caseInsensitive": true,

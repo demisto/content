@@ -2,7 +2,7 @@
     "name": "FortiAuthenticator",
     "description": "Manage user configuration on FortiAuthenticator.",
     "support": "community",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Jason Lo",
     "url": "",
     "email": "",
@@ -15,5 +15,9 @@
     "keywords": [],
     "githubUser": [
         "jasonlo82"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

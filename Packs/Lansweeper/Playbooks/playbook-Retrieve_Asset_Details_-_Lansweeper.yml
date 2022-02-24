@@ -1,0 +1,301 @@
+id: Retrieve Asset Details - Lansweeper
+version: -1
+name: Retrieve Asset Details - Lansweeper
+description: Get contextual information of asset based on IP/MAC from Lansweeper.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ee2d4a99-e8f2-4e19-82f4-83d80c9aca57
+    type: start
+    task:
+      id: ee2d4a99-e8f2-4e19-82f4-83d80c9aca57
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 87bca11c-a689-4b79-846a-2c7db1ed705c
+    type: title
+    task:
+      id: 87bca11c-a689-4b79-846a-2c7db1ed705c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 3a3e545f-3fd3-43fc-89e4-9830c0d52dad
+    type: regular
+    task:
+      id: 3a3e545f-3fd3-43fc-89e4-9830c0d52dad
+      version: -1
+      name: Get IP Address from Context
+      description: Gets all IP addresses in context, excluding ones given.
+      scriptName: ContextGetIps
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      extend-context:
+        simple: IPAddress=.
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 42e795af-5dd7-4091-8616-05945521abf4
+    type: regular
+    task:
+      id: 42e795af-5dd7-4091-8616-05945521abf4
+      version: -1
+      name: Retrieve Assets
+      description: Return a list of all assets associated with a given site and IP
+        address.
+      script: '|||ls-ip-hunt'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip:
+        complex:
+          root: IPAddress
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 6023994c-f4a1-4a91-82e8-dc4b1b31b88d
+    type: regular
+    task:
+      id: 6023994c-f4a1-4a91-82e8-dc4b1b31b88d
+      version: -1
+      name: Get MAC Address from Context
+      description: Gets all MAC addresses in context, excluding ones given.
+      scriptName: ContextGetMACAddresses
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      extend-context:
+        simple: MacAddress=.
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: f128502b-1d5b-435a-81df-ea76d57343e6
+    type: regular
+    task:
+      id: f128502b-1d5b-435a-81df-ea76d57343e6
+      version: -1
+      name: Retrieve Assets
+      description: Return a list of all assets associated with a given site and MAC
+        address.
+      script: '|||ls-mac-hunt'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      mac_address:
+        complex:
+          root: MacAddress
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: ee6a6d43-7e79-4309-8158-88c85609079d
+    type: condition
+    task:
+      id: ee6a6d43-7e79-4309-8158-88c85609079d
+      version: -1
+      name: If IP Address exists?
+      description: Check whether IP Address exist in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IPAddress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 6fc3b12a-c00f-4a8f-80b8-21cc9fd665f4
+    type: condition
+    task:
+      id: 6fc3b12a-c00f-4a8f-80b8-21cc9fd665f4
+      version: -1
+      name: If Mac Address exists?
+      description: Check whether MAC Address exist in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MacAddress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- Lansweeper-Test
+fromversion: 6.0.0

@@ -66,7 +66,7 @@ script:
       description: The username that is defined in the User Information on FortiAuthenticator.
     name: fortiauthenticator-update-user
     description: Update the active status for specific user by email
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   script: ''
   subtype: python3

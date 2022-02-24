@@ -1,26 +1,35 @@
-args:
-- description: The value to be filtered
-  isArray: true
-  name: value
-  required: true
-comment: Remove empty items from the array.
 commonfields:
   id: RemoveEmpty
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-enabled: true
 name: RemoveEmpty
-runas: DBotWeakRole
-runonce: false
 script: ''
-scripttarget: 0
+type: javascript
 tags:
 - transformer
 - entirelist
 - general
-type: javascript
+comment: Remove empty items, entries or nodes from the array.
+enabled: true
+args:
+- name: value
+  required: true
+  description: The value to be filtered
+  isArray: true
+- name: remove_keys
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Set to true to remove keys with empty values from objects, false otherwise.
+  defaultValue: "false"
+- name: empty_values
+  description: The list of particular tokens to be considerd as empty
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

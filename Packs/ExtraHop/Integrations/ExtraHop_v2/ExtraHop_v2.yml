@@ -2152,7 +2152,7 @@ script:
       description: The display name of device.
       type: String
     - contextPath: ExtraHop.Device.OnWatchlist
-      description: Whether the device is on the advanced analysis whitelist.
+      description: Whether the device is on the advanced analysis allow list.
       type: Boolean
     - contextPath: ExtraHop.Device.ModTime
       description: The time of the most recent update, expressed in milliseconds since the epoch.
@@ -2243,7 +2243,7 @@ script:
       description: The display name of device.
       type: String
     - contextPath: Extrahop.Device.OnWatchlist
-      description: Whether the device is on the advanced analysis whitelist.
+      description: Whether the device is on the advanced analysis allow list.
       type: Boolean
     - contextPath: Extrahop.Device.ModTime
       description: The time of the most recent update, expressed in milliseconds since the epoch.
@@ -2871,7 +2871,7 @@ script:
       description: The display name of device.
       type: string
     - contextPath: ExtraHop.Device.OnWatchlist
-      description: Whether the device is on the advanced analysis whitelist.
+      description: Whether the device is on the advanced analysis allow list.
       type: boolean
     - contextPath: ExtraHop.Device.ModTime
       description: The time of the most recent update, expressed in milliseconds since the epoch.
@@ -2967,7 +2967,7 @@ script:
       description: The display name of device.
       type: string
     - contextPath: ExtraHop.Device.OnWatchlist
-      description: Whether the device is on the advanced analysis whitelist.
+      description: Whether the device is on the advanced analysis allow list.
       type: boolean
     - contextPath: ExtraHop.Device.ModTime
       description: The time of the most recent update, expressed in milliseconds since the epoch.
@@ -3157,7 +3157,7 @@ script:
     - name: port2
       description: Returns packets sent from or received on the specified port.
     description: Search for specific packets in Reveal(x).
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
 tests:
 - ExtraHop_v2-Test

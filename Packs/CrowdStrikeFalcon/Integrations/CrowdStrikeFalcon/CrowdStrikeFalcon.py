@@ -84,6 +84,9 @@ IOC_KEY_MAP = {
     'tags': 'Tags',
 }
 
+IOC_HEADERS = ['ID', 'Action', 'Severity', 'Type', 'Value', 'Expiration', 'CreatedBy', 'CreatedTime', 'Description',
+               'ModifiedBy', 'ModifiedTime', 'Platforms', 'Policy', 'ShareLevel', 'Source', 'Tags']
+
 IOC_DEVICE_COUNT_MAP = {
     'id': 'ID',
     'type': 'Type',
@@ -411,6 +414,53 @@ def handle_response_errors(raw_res: dict, err_msg: str = None):
     if raw_res.get('errors'):
         raise DemistoException(raw_res.get('errors'))
     return
+
+
+def create_json_iocs_list(
+        ioc_type: str,
+        iocs_value: List[str],
+        action: str,
+        platforms: List[str],
+        severity: Optional[str] = None,
+        source: Optional[str] = None,
+        description: Optional[str] = None,
+        expiration: Optional[str] = None,
+        applied_globally: Optional[bool] = None,
+        host_groups: Optional[List[str]] = None,
+        tags: Optional[List[str]] = None) -> List[dict]:
+    """
+    Get a list of iocs values and create a list of Json objects with the iocs data.
+    This function is used for uploading multiple indicator with same arguments with different values.
+    :param ioc_type: The type of the indicator.
+    :param iocs_value: List of the indicator.
+    :param action: Action to take when a host observes the custom IOC.
+    :param platforms: The platforms that the indicator applies to.
+    :param severity: The severity level to apply to this indicator.
+    :param source: The source where this indicator originated.
+    :param description: A meaningful description of the indicator.
+    :param expiration: The date on which the indicator will become inactive.
+    :param applied_globally: Whether the indicator is applied globally.
+    :param host_groups: List of host group IDs that the indicator applies to.
+    :param tags: List of tags to apply to the indicator.
+
+    """
+    iocs_list = []
+    for ioc_value in iocs_value:
+        iocs_list.append(assign_params(
+            type=ioc_type,
+            value=ioc_value,
+            action=action,
+            platforms=platforms,
+            severity=severity,
+            source=source,
+            description=description,
+            expiration=expiration,
+            applied_globally=applied_globally,
+            host_groups=host_groups,
+            tags=tags,
+        ))
+
+    return iocs_list
 
 
 ''' COMMAND SPECIFIC FUNCTIONS '''
@@ -1164,39 +1214,6 @@ def get_custom_ioc(ioc_id: str) -> dict:
     return http_request('GET', '/iocs/entities/indicators/v1', params=params)
 
 
-def upload_custom_ioc(
-    ioc_type: str,
-    value: str,
-    action: str,
-    platforms: str,
-    severity: Optional[str] = None,
-    source: Optional[str] = None,
-    description: Optional[str] = None,
-    expiration: Optional[str] = None,
-    applied_globally: Optional[bool] = None,
-    host_groups: Optional[List[str]] = None,
-) -> dict:
-    """
-    Create a new IOC (or replace an existing one)
-    """
-    payload = {
-        'indicators': [assign_params(
-            type=ioc_type,
-            value=value,
-            action=action,
-            platforms=platforms,
-            severity=severity,
-            source=source,
-            description=description,
-            expiration=expiration,
-            applied_globally=applied_globally,
-            host_groups=host_groups,
-        )]
-    }
-
-    return http_request('POST', '/iocs/entities/indicators/v1', json=payload)
-
-
 def update_custom_ioc(
     ioc_id: str,
     action: Optional[str] = None,
@@ -1502,6 +1519,17 @@ def delete_host_groups(host_group_ids: List[str]) -> Dict:
     return response
 
 
+def upload_batch_custom_ioc(ioc_batch: List[dict]) -> dict:
+    """
+    Upload a list of IOC
+    """
+    payload = {
+        'indicators': ioc_batch
+    }
+
+    return http_request('POST', '/iocs/entities/indicators/v1', json=payload)
+
+
 ''' COMMANDS FUNCTIONS '''
 
 
@@ -1747,7 +1775,7 @@ def search_custom_iocs_command(
     return create_entry_object(
         contents=raw_res,
         ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
-        hr=tableToMarkdown('Indicators of Compromise', ec),
+        hr=tableToMarkdown('Indicators of Compromise', ec, headers=IOC_HEADERS),
     )
 
 
@@ -1781,22 +1809,23 @@ def get_custom_ioc_command(
     return create_entry_object(
         contents=raw_res,
         ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
-        hr=tableToMarkdown('Indicator of Compromise', ec),
+        hr=tableToMarkdown('Indicator of Compromise', ec, headers=IOC_HEADERS),
     )
 
 
 def upload_custom_ioc_command(
-    ioc_type: str,
-    value: str,
-    action: str,
-    platforms: str,
-    severity: Optional[str] = None,
-    source: Optional[str] = None,
-    description: Optional[str] = None,
-    expiration: Optional[str] = None,
-    applied_globally: Optional[bool] = None,
-    host_groups: Optional[List[str]] = None,
-) -> dict:
+        ioc_type: str,
+        value: str,
+        action: str,
+        platforms: str,
+        severity: Optional[str] = None,
+        source: Optional[str] = None,
+        description: Optional[str] = None,
+        expiration: Optional[str] = None,
+        applied_globally: Optional[bool] = None,
+        host_groups: Optional[List[str]] = None,
+        tags: Optional[List[str]] = None,
+) -> List[dict]:
     """
     :param ioc_type: The type of the indicator.
     :param value: The string representation of the indicator.
@@ -1808,29 +1837,32 @@ def upload_custom_ioc_command(
     :param expiration: The date on which the indicator will become inactive.
     :param applied_globally: Whether the indicator is applied globally.
     :param host_groups: List of host group IDs that the indicator applies to.
+    :param tags: List of tags to apply to the indicator.
+
     """
     if action in {'prevent', 'detect'} and not severity:
         raise ValueError(f'Severity is required for action {action}.')
-    raw_res = upload_custom_ioc(
-        ioc_type,
-        value,
-        action,
-        argToList(platforms),
-        severity,
-        source,
-        description,
-        expiration,
-        argToBoolean(applied_globally) if applied_globally else None,
-        argToList(host_groups),
-    )
+    value = argToList(value)
+    applied_globally = argToBoolean(applied_globally) if applied_globally else None
+    host_groups = argToList(host_groups)
+    tags = argToList(tags)
+    platforms = argToList(platforms)
+
+    iocs_json_batch = create_json_iocs_list(ioc_type, value, action, platforms, severity, source, description,
+                                            expiration, applied_globally, host_groups, tags)
+    raw_res = upload_batch_custom_ioc(ioc_batch=iocs_json_batch)
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])
-    ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
-    return create_entry_object(
-        contents=raw_res,
-        ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
-        hr=tableToMarkdown('Custom IOC was created successfully', ec),
-    )
+
+    entry_objects_list = []
+    for ioc in iocs:
+        ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP)]
+        entry_objects_list.append(create_entry_object(
+            contents=raw_res,
+            ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+            hr=tableToMarkdown(f"Custom IOC {ioc['value']} was created successfully", ec),
+        ))
+    return entry_objects_list
 
 
 def update_custom_ioc_command(
@@ -2028,7 +2060,7 @@ def get_endpoint_command():
     # handles the search by id or by hostname
     raw_res = search_device()
 
-    if ip := args.get('ip'):
+    if ip := args.get('ip') and raw_res:
         # there is no option to filter by ip in an api call, therefore we would filter the devices in the code
         raw_res = search_device_by_ip(raw_res, ip)
 
@@ -2800,9 +2832,13 @@ def detections_to_human_readable(detections):
 
 
 def list_detection_summaries_command():
-    fetch_query = demisto.args().get('fetch_query')
+    args = demisto.args()
+    fetch_query = args.get('fetch_query')
 
-    if fetch_query:
+    args_ids = args.get('ids')
+    if args_ids:
+        detections_ids = argToList(args_ids)
+    elif fetch_query:
         fetch_query = "{query}".format(query=fetch_query)
         detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query), 'resources')
     else:
@@ -2833,15 +2869,20 @@ def incidents_to_human_readable(incidents):
 
 
 def list_incident_summaries_command():
-    fetch_query = demisto.args().get('fetch_query')
+    args = demisto.args()
+    fetch_query = args.get('fetch_query')
 
-    if fetch_query:
-        fetch_query = "{query}".format(query=fetch_query)
-        incidents_ids = get_incidents_ids(filter_arg=fetch_query)
+    args_ids = args.get('ids')
+    if args_ids:
+        ids = argToList(args_ids)
     else:
-        incidents_ids = get_incidents_ids()
-    handle_response_errors(incidents_ids)
-    ids = incidents_ids.get('resources')
+        if fetch_query:
+            fetch_query = "{query}".format(query=fetch_query)
+            incidents_ids = get_incidents_ids(filter_arg=fetch_query)
+        else:
+            incidents_ids = get_incidents_ids()
+        handle_response_errors(incidents_ids)
+        ids = incidents_ids.get('resources')
     if not ids:
         return CommandResults(readable_output='No incidents were found.')
     incidents_response_data = get_incidents_entities(ids)
@@ -2957,6 +2998,28 @@ def delete_host_groups_command(host_group_ids: List[str]) -> CommandResults:
         if deleted_ids else f'Host groups {host_group_ids} are not deleted'
     return CommandResults(readable_output=readable,
                           raw_response=response)
+
+
+def upload_batch_custom_ioc_command(
+        multiple_indicators_json: str = None,
+) -> List[dict]:
+    """
+    :param multiple_indicators_json: A JSON object with list of CS Falcon indicators to upload.
+
+    """
+    batch_json = safe_load_json(multiple_indicators_json)
+    raw_res = upload_batch_custom_ioc(batch_json)
+    handle_response_errors(raw_res)
+    iocs = raw_res.get('resources', [])
+    entry_objects_list = []
+    for ioc in iocs:
+        ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP)]
+        entry_objects_list.append(create_entry_object(
+            contents=raw_res,
+            ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+            hr=tableToMarkdown(f"Custom IOC {ioc['value']} was created successfully", ec),
+        ))
+    return entry_objects_list
 
 
 def test_module():
@@ -3091,6 +3154,8 @@ def main():
         elif command == 'cs-falcon-resolve-incident':
             return_results(resolve_incident_command(status=args.get('status'),
                                                     ids=argToList(args.get('ids'))))
+        elif command == 'cs-falcon-batch-upload-custom-ioc':
+            return_results(upload_batch_custom_ioc_command(**args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')

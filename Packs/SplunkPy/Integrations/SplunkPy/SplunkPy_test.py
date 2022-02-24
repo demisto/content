@@ -7,6 +7,7 @@ import splunklib.client as client
 import demistomock as demisto
 from CommonServerPython import *
 from datetime import timedelta, datetime
+from collections import namedtuple
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
@@ -167,6 +168,28 @@ RAW_STANDARD = '"Test="success"'
 RAW_JSON_AND_STANDARD_OUTPUT = {"Test": "success"}
 
 
+class Jobs:
+    def __init__(self, status):
+        self.oneshot = None
+        state = namedtuple('state', 'content')
+        self.state = state(content={'dispatchState': str(status)})
+
+    def __getitem__(self, arg):
+        return 0
+
+    def create(self, query, latest_time, app, earliest_time, exec_mode):
+        return {'sid': '123456', 'resultCount': 0}
+
+
+class Service:
+    def __init__(self, status):
+        self.jobs = Jobs(status)
+        self.status = status
+
+    def job(self, sid):
+        return Jobs(self.status)
+
+
 def test_raw_to_dict():
     actual_raw = DICT_RAW_RESPONSE
     response = splunk.rawToDict(actual_raw)
@@ -284,6 +307,12 @@ def test_parse_time_to_minutes_invalid_time_unit(mocker):
 
 SEARCH_RESULT = [
     {
+        "But": {
+            "This": "is"
+        },
+        "Very": "Unique"
+    },
+    {
         "Something": "regular",
         "But": {
             "This": "is"
@@ -311,6 +340,7 @@ REGEX_CHOSEN_FIELDS_SUBSET = [
     "Some*",
     "Very"
 ]
+
 NON_EXISTING_FIELDS = [
     "SDFAFSD",
     "ASBLFKDJK"
@@ -1122,6 +1152,84 @@ def test_build_search_human_readable(mocker):
     assert headers == expected_headers
 
 
+def test_build_search_human_readable_multi_table_in_query(mocker):
+    """
+    Given:
+        multiple table headers in query
+
+    When:
+        building a human readable table as part of splunk-search
+
+    Then:
+        Test headers are calculated correctly:
+            * all expected header exist without duplications
+    """
+    args = {"query": " table header_1, header_2 | stats state_1, state_2 | table header_1, header_2, header_3, header_4"}
+    results = [
+        {'header_1': 'val_1', 'header_2': 'val_2', 'header_3': 'val_3', 'header_4': 'val_4'},
+    ]
+    expected_headers_hr = "|header_1|header_2|header_3|header_4|\n|---|---|---|---|"
+    hr = splunk.build_search_human_readable(args, results)
+    assert expected_headers_hr in hr
+
+
+@pytest.mark.parametrize('polling', [False, True])
+def test_build_search_kwargs(polling):
+    """
+    Given:
+        The splunk-search command args.
+
+    When:
+        Running the build_search_kwargs to build the search query kwargs.
+
+    Then:
+        Ensure the query kwargs as expected.
+
+    """
+    args = {'earliest_time': '2021-11-23T10:10:10', 'latest_time': '2021-11-23T10:10:20', 'app': 'test_app', 'polling': polling}
+    kwargs_normalsearch = splunk.build_search_kwargs(args, polling)
+    for field in args:
+        if field == 'polling':
+            assert 'exec_mode' in kwargs_normalsearch
+            if polling:
+                assert kwargs_normalsearch['exec_mode'] == 'normal'
+            else:
+                assert kwargs_normalsearch['exec_mode'] == 'blocking'
+        else:
+            assert field in kwargs_normalsearch
+
+
+@pytest.mark.parametrize('polling,status', [
+    (False, 'DONE'), (True, 'DONE'), (True, 'RUNNING')
+])
+def test_splunk_search_command(mocker, polling, status):
+    """
+    Given:
+        A search query with args.
+
+    When:
+        Running the splunk_search_command with and without polling.
+
+    Then:
+        Ensure the result as expected in polling and in regular search.
+
+    """
+
+    mocker.patch.object(demisto, 'args', return_value={'query': 'query', 'earliest_time': '2021-11-23T10:10:10',
+                                                       'latest_time': '2020-10-20T10:10:20', 'app': 'test_app',
+                                                       'polling': polling})
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
+
+    search_result = splunk.splunk_search_command(Service(status))
+
+    if search_result.scheduled_command:
+        assert search_result.outputs['Status'] == status
+        assert search_result.scheduled_command._args['sid'] == '123456'
+    else:
+        assert search_result.outputs['Splunk.Result'] == []
+        assert search_result.readable_output == '### Splunk Search results for query: query\n**No entries.**\n'
+
+
 @pytest.mark.parametrize(
     argnames='credentials',
     argvalues=[{'username': 'test', 'password': 'test'}, {'splunkToken': 'token', 'password': 'test'}]
@@ -1265,3 +1373,26 @@ def test_labels_with_non_str_values(mocker):
     labels = incidents[0]["labels"]
     assert len(labels) >= 7
     assert all(isinstance(label['value'], str) for label in labels)
+
+
+def test_empty_string_as_app_param_value(mocker):
+    """
+    Given:
+        - A mock to demisto.params that contains an 'app' key with an empty string as its value
+
+    When:
+        - Run splunk.get_connection_args() function
+
+    Then:
+        - Validate that the value of the 'app' key in connection_args is '-'
+    """
+
+    # prepare
+    mock_params = {'app': '', 'host': '111', 'port': '111'}
+    mocker.patch('demistomock.params', return_value=mock_params)
+
+    # run
+    connection_args = splunk.get_connection_args()
+
+    # validate
+    assert connection_args.get('app') == '-'

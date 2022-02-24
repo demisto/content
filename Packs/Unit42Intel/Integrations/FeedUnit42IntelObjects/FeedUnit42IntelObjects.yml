@@ -55,7 +55,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-  defaultvalue: 'A - Completely reliable'
+  defaultvalue: A - Completely reliable
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
     fetched from the feed.
   display: Traffic Light Protocol Color
@@ -111,8 +111,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Unit 42 Intel Objects Feed integration to fetch indicators from Unit 42 
-  Intel Objects.
+description: Use the Unit 42 Intel Objects Feed integration to fetch indicators from
+  Unit 42 Intel Objects.
 display: Unit 42 Intel Objects Feed
 name: Unit42IntelObjectsFeed
 script:
@@ -129,7 +129,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: unit42intel-objects-feed-get-indicators
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.9.9.25564
   feed: true
   isfetch: false
   longRunning: false

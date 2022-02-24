@@ -18,5 +18,5 @@ ignore=BA101
 [file:incidentfield-Prisma_Cloud_Compute_Raw_Alert_JSON.json]
 ignore=IF100
 
-[file:PrismaCloudCompute]
+[file:pack_metadata.json]
 ignore=PA129

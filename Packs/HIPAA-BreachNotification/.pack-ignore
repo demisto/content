@@ -1,4 +1,4 @@
 [file:layoutscontainer-HIPAA_Breach_Notification.json]
 ignore=BA101
-[file:HIPAA-BreachNotification]
+[file:pack_metadata.json]
 ignore=PA129

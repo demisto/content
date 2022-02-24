@@ -1,0 +1,169 @@
+{
+ "rfc-3164": {
+  "case_one_valid": {
+   "log_message": "<116>Nov  9 17:07:20 HostName softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)",
+   "expected_vars": {
+    "app_name": null,
+    "facility": "log_alert",
+    "host_name": "HostName",
+    "msg": "softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)",
+    "msg_id": null,
+    "process_id": null,
+    "sd": {},
+    "severity": "warning",
+    "timestamp": "REPLACE_WITH_CURRENT_YEAR-11-09T17:07:20",
+    "version": null,
+    "occurred": null
+   }
+  },
+  "case_two_valid": {
+   "log_message": "<34>Oct 11 22:14:15 mymachine su: 'su root' failed for lonvick on /dev/pts/8",
+   "expected_vars": {
+    "app_name": null,
+    "facility": "security4",
+    "host_name": "mymachine",
+    "msg": "su: 'su root' failed for lonvick on /dev/pts/8",
+    "msg_id": null,
+    "process_id": null,
+    "sd": {},
+    "severity": "critical",
+    "timestamp": "REPLACE_WITH_CURRENT_YEAR-10-11T22:14:15",
+    "version": null,
+    "occurred": null
+   }
+  },
+  "case_weird_message": {
+   "log_message": "Some message not in rfc 3164 format"
+  },
+  "case_rfc-5424_format": {
+   "log_message": "<165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut=\"3\" eventSource=\"Application\" eventID=\"1011\"] BOMAn application event log entry"
+  },
+  "case_garbage_timestamp": {
+   "log_message": "<116>Nov  9 17:07:20zxc "
+  }
+ },
+ "rfc-5424": {
+  "case_one_valid": {
+   "log_message": "<165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut=\"3\" eventSource=\"Application\" eventID=\"1011\"] BOMAn application event log entry",
+   "expected_vars": {
+    "app_name": "evntslog",
+    "facility": "local4",
+    "host_name": "mymachine.example.com",
+    "msg": "BOMAn application event log entry",
+    "msg_id": "ID47",
+    "process_id": null,
+    "sd": {
+     "exampleSDID@32473": {
+      "eventID": "1011",
+      "eventSource": "Application",
+      "iut": "3"
+     }
+    },
+    "severity": "notice",
+    "timestamp": "2003-10-11T22:14:15.003Z",
+    "version": 1,
+    "occurred": "2003-10-11T22:14:15.003Z"
+   }
+  },
+  "case_two_valid": {
+   "log_message": "<165>1 2003-08-24T05:14:15.000003-07:00 192.0.2.1 myproc 8710 - - %% It's time to make the do-nuts.",
+   "expected_vars": {
+    "app_name": "myproc",
+    "facility": "local4",
+    "host_name": "192.0.2.1",
+    "msg": "%% It's time to make the do-nuts.",
+    "msg_id": null,
+    "process_id": 8710,
+    "sd": {},
+    "severity": "notice",
+    "timestamp": "2003-08-24T05:14:15.000003-07:00",
+    "version": 1,
+    "occurred": "2003-08-24T05:14:15.000003-07:00"
+   }
+  },
+  "case_weird_message": {
+   "log_message": "Some message not in rfc 5424 format"
+  },
+  "case_rfc-3164_format": {
+   "log_message": "<116>Nov  9 17:07:20 HostName softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)"
+  }
+ },
+ "rfc-6587": {
+  "case_one_valid": {
+   "log_message": "172 <165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut=\"3\" eventSource=\"Application\" eventID=\"1011\"] BOMAn application event log entry",
+   "expected_vars": {
+    "app_name": "evntslog",
+    "facility": "local4",
+    "host_name": "mymachine.example.com",
+    "msg": "BOMAn application event log entry",
+    "msg_id": "ID47",
+    "process_id": null,
+    "sd": {
+     "exampleSDID@32473": {
+      "eventID": "1011",
+      "eventSource": "Application",
+      "iut": "3"
+     }
+    },
+    "severity": "notice",
+    "timestamp": "2003-10-11T22:14:15.003Z",
+    "version": 1,
+    "occurred": "2003-10-11T22:14:15.003Z"
+   }
+  },
+  "case_two_valid": {
+   "log_message": "99 <165>1 2003-08-24T05:14:15.000003-07:00 192.0.2.1 myproc 8710 - - %% It's time to make the do-nuts.",
+   "expected_vars": {
+    "app_name": "myproc",
+    "facility": "local4",
+    "host_name": "192.0.2.1",
+    "msg": "%% It's time to make the do-nuts.",
+    "msg_id": null,
+    "process_id": 8710,
+    "sd": {},
+    "severity": "notice",
+    "timestamp": "2003-08-24T05:14:15.000003-07:00",
+    "version": 1,
+    "occurred": "2003-08-24T05:14:15.000003-07:00"
+   }
+  },
+  "case_three_valid": {
+   "log_message": "356 <116>Nov  9 17:07:20 HostName softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)",
+   "expected_vars": {
+    "app_name": null,
+    "facility": "log_alert",
+    "host_name": "HostName",
+    "msg": "softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)",
+    "msg_id": null,
+    "process_id": null,
+    "sd": {},
+    "severity": "warning",
+    "timestamp": "REPLACE_WITH_CURRENT_YEAR-11-09T17:07:20",
+    "version": null,
+    "occurred": null
+   }
+  },
+  "case_four_valid": {
+   "log_message": "76 <34>Oct 11 22:14:15 mymachine su: 'su root' failed for lonvick on /dev/pts/8",
+   "expected_vars": {
+    "app_name": null,
+    "facility": "security4",
+    "host_name": "mymachine",
+    "msg": "su: 'su root' failed for lonvick on /dev/pts/8",
+    "msg_id": null,
+    "process_id": null,
+    "sd": {},
+    "severity": "critical",
+    "timestamp": "REPLACE_WITH_CURRENT_YEAR-10-11T22:14:15",
+    "version": null,
+    "occurred": null
+   }
+  },
+  "case_weird_message": {
+   "log_message": "Some message not in rfc 6587 format"
+  },
+  "case_rfc-3164_format": {
+   "log_message": "<116>Nov  9 17:07:20 HostName softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)"
+  }
+ }
+}

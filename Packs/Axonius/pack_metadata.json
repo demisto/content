@@ -16,5 +16,9 @@
     "githubUser": [
         "Phillips-Chris"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

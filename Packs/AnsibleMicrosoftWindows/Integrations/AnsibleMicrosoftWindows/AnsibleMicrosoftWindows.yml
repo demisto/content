@@ -3299,7 +3299,7 @@ script:
         `creates_path` MUST be set and is a file. You can use this in conjunction
         with `product_id` and other `creates_*`.'
       name: creates_version
-    - defaultValue: '[0, 3010]'
+    - defaultValue: '0'
       description: 'One or more return codes from the package installation that indicates
         success. Before Ansible 2.4 this was just 0 but since Ansible 2.4 this is
         both `0` and `3010`. A return code of `3010` usually means that a reboot is
@@ -5323,7 +5323,7 @@ script:
         which updates are to be searched or installed. If an available update does
         not match one of the entries, then it is skipped and not installed. Each entry
         can either be the KB article or Update title as a regex according to the PowerShell
-        regex rules. The whitelist is only validated on updates that were found based
+        regex rules. The allow list is only validated on updates that were found based
         on `category_names`. It will not force the module to install an update if
         it was not in the category specified.'
       isArray: true

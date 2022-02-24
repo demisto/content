@@ -15,10 +15,9 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: The API token was created in the Tanium platform and should
-    be used for OAuth 2 authentication. See Help (?) for more information.
+- additionalinfo: The API token was created in the Tanium platform and should be used
+    for OAuth 2 authentication. See Help (?) for more information.
   display: API Token
-  hidden: false
   name: api_token
   required: false
   type: 4
@@ -30,28 +29,19 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Tanium endpoint security and systems management
+description: Tanium endpoint security and systems management, filters out [current
+  results unavailable] when returning question results
 display: Tanium v2
 name: Tanium v2
 script:
   commands:
   - arguments:
-    - default: false
-      description: The name of the package.
-      isArray: false
+    - description: The name of the package.
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: The package ID. Either Package ID or Package name is required.
+    - description: The package ID. Either Package ID or Package name is required.
         When both exist, Packate ID is used.
-      isArray: false
       name: id
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a package object based on name or ID.
-    execution: false
     name: tn-get-package
     outputs:
     - contextPath: TaniumPackage.Command
@@ -129,45 +119,27 @@ script:
         status is reported as failed.
       type: Number
   - arguments:
-    - default: false
-      description: The question text.
-      isArray: false
+    - description: The question text.
       name: question-text
       required: true
-      secret: false
-    - default: false
-      description: The question parameters. For example, sensor1{key1=val1,key2=val2},sensor2{key1=val1}.
-      isArray: false
+    - description: The question parameters. For example, sensor1{key1=val1,key2=val2},sensor2{key1=val1}.
       name: parameters
-      required: false
-      secret: false
-    deprecated: false
     description: Asks the server to parse the question text and choose the first parsed
       result as the question to run.
-    execution: false
     name: tn-ask-question
     outputs:
     - contextPath: Tanium.Question.ID
       description: The unique ID of the question object.
       type: Number
   - arguments:
-    - default: false
-      description: The question ID.
-      isArray: false
+    - description: The question ID.
       name: question-id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '95'
+    - defaultValue: '95'
       description: Indicates the threshold at which to return the question results.
         Default is 95. The threshold is the percentage of mr_tested against the estimated_total.
-      isArray: false
       name: completion-percentage
-      required: false
-      secret: false
-    deprecated: false
     description: Returns the question result based on question ID.
-    execution: false
     name: tn-get-question-result
     outputs:
     - contextPath: Tanium.QuestionResult.QuestionID
@@ -180,16 +152,10 @@ script:
       description: 'The status of the question request. Can be: "Completed" or "Pending".'
       type: String
   - arguments:
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: The maximum number of sensors to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of all sensors.
-    execution: false
     name: tn-list-sensors
     outputs:
     - contextPath: TaniumSensor.Category
@@ -248,22 +214,12 @@ script:
         If specified, source_hash may be omitted.
       type: Number
   - arguments:
-    - default: false
-      description: The sensor ID.
-      isArray: false
+    - description: The sensor ID.
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: The name of the sensor.
-      isArray: false
+    - description: The name of the sensor.
       name: name
-      required: false
-      secret: false
-    deprecated: false
     description: Returns detailed information about a sensor object based on name
       or ID.
-    execution: false
     name: tn-get-sensor
     outputs:
     - contextPath: TaniumSensor.Category
@@ -335,21 +291,13 @@ script:
         If specified, source_hash may be omitted.
       type: Number
   - arguments:
-    - default: false
-      description: The question ID.
-      isArray: false
+    - description: The question ID.
       name: question-id
       required: true
-      secret: false
-    - default: false
-      description: Name of the saved question to create.
-      isArray: false
+    - description: Name of the saved question to create.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Creates a saved question object.
-    execution: false
     name: tn-create-saved-question
     outputs:
     - contextPath: Tanium.SavedQuestion.ID
@@ -359,16 +307,10 @@ script:
       description: The name of the saved question.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: The maximum number of saved questions to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns all saved questions.
-    execution: false
     name: tn-list-saved-questions
     outputs:
     - contextPath: Tanium.SavedQuestion.ArchiveEnabledFlag
@@ -435,22 +377,13 @@ script:
       description: The name of the user who owns this object.
       type: String
   - arguments:
-    - default: false
-      description: The saved question ID.
-      isArray: false
+    - description: The saved question ID.
       name: question-id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '95'
+    - defaultValue: '95'
       description: Indicates the threashold to returns the question results.
-      isArray: false
       name: completion-percentage
-      required: false
-      secret: false
-    deprecated: false
     description: Returns the saved question result based on the saved question ID.
-    execution: false
     name: tn-get-saved-question-result
     outputs:
     - contextPath: Tanium.SavedQuestionResult.SavedQuestionID
@@ -462,9 +395,7 @@ script:
     - contextPath: Tanium.SavedQuestionResult.Status
       description: 'Status of the question request. Can be: "Completed" or "Pending".'
       type: String
-  - deprecated: false
-    description: Returns all client details.
-    execution: false
+  - description: Returns all client details.
     name: tn-get-system-status
     outputs:
     - contextPath: Tanium.Client.ComputerId
@@ -490,22 +421,15 @@ script:
       description: 'The status of the client. Can be: "Blocked", "Leader" "Normal",
         "Slow link".'
       type: String
+    arguments: []
   - arguments:
-    - default: false
-      description: The command to execute.
-      isArray: false
+    - description: The command to execute.
       name: command
       required: true
-      secret: false
-    - default: false
-      description: The name of the package to create.
-      isArray: false
+    - description: The name of the package to create.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Creates a package object.
-    execution: false
     name: tn-create-package
     outputs:
     - contextPath: TaniumPackage.Command
@@ -562,16 +486,10 @@ script:
         status is reported as failed.
       type: Number
   - arguments:
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: The maximum number of packages to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns all package information.
-    execution: false
     name: tn-list-packages
     outputs:
     - contextPath: TaniumPackage.Command
@@ -628,15 +546,10 @@ script:
         status is reported as failed.
       type: Number
   - arguments:
-    - default: false
-      description: The question ID.
-      isArray: false
+    - description: The question ID.
       name: question-id
       required: true
-      secret: false
-    deprecated: false
     description: Returns a question object based on question ID.
-    execution: false
     name: tn-get-question-metadata
     outputs:
     - contextPath: Tanium.Question.ID
@@ -669,16 +582,10 @@ script:
       description: The name of the user who created / issued this question.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: The maximin number of saved actions to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns all saved actions.
-    execution: false
     name: tn-list-saved-actions
     outputs:
     - contextPath: Tanium.SavedAction.ActionGroupId
@@ -750,21 +657,11 @@ script:
       description: The ID of the user who created the saved action.
       type: String
   - arguments:
-    - default: false
-      description: The saved action ID.
-      isArray: false
+    - description: The saved action ID.
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: The saved action name.
-      isArray: false
+    - description: The saved action name.
       name: name
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a saved action object based on name or ID.
-    execution: false
     name: tn-get-saved-action
     outputs:
     - contextPath: Tanium.SavedAction.ActionGroupId
@@ -836,21 +733,11 @@ script:
       description: The ID of the user who created the saved action.
       type: String
   - arguments:
-    - default: false
-      description: The saved question ID.
-      isArray: false
+    - description: The saved question ID.
       name: question-id
-      required: false
-      secret: false
-    - default: false
-      description: The saved question name.
-      isArray: false
+    - description: The saved question name.
       name: question-name
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a saved question object based on name or ID.
-    execution: false
     name: tn-get-saved-question-metadata
     outputs:
     - contextPath: Tanium.SavedQuestion.ArchiveEnabledFlag
@@ -917,27 +804,15 @@ script:
       description: The name of the user who owns this object.
       type: String
   - arguments:
-    - default: false
-      description: The action group ID.
-      isArray: false
+    - description: The action group ID.
       name: action-group-id
       required: true
-      secret: false
-    - default: false
-      description: The package ID.
-      isArray: false
+    - description: The package ID.
       name: package-id
       required: true
-      secret: false
-    - default: false
-      description: The name of the action.
-      isArray: false
+    - description: The name of the action.
       name: name
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a saved action object.
-    execution: false
     name: tn-create-saved-action
     outputs:
     - contextPath: Tanium.SavedAction.ActionGroupId
@@ -1009,55 +884,26 @@ script:
       description: The ID of the user who created the saved action.
       type: String
   - arguments:
-    - default: false
-      description: The package ID.
-      isArray: false
+    - description: The package ID.
       name: package-id
-      required: false
-      secret: false
-    - default: false
-      description: The package name.
-      isArray: false
+    - description: The package name.
       name: package-name
-      required: false
-      secret: false
-    - default: false
-      description: The package parameters. For example, $1=Value1;$2=Value2;$3=Value3.
-      isArray: false
+    - description: The package parameters. For example, $1=Value1;$2=Value2;$3=Value3.
       name: parameters
-      required: false
-      secret: false
-    - default: false
-      description: The target group ID to deploy the package.
-      isArray: false
+    - description: The target group ID to deploy the package.
       name: target-group-id
-      required: false
-      secret: false
-    - default: false
-      description: The target group name to deploy the package. Target group and action
+    - description: The target group name to deploy the package. Target group and action
         group ID are required. Target group can passed by name or ID. Note - the target
         group should be different than "All Computers" or "Default".
-      isArray: false
       name: target-group-name
-      required: false
-      secret: false
-    - default: false
-      description: The action group ID to deploy the package.
-      isArray: false
+    - description: The action group ID to deploy the package.
       name: action-group-id
       required: true
-      secret: false
-    - default: false
-      defaultValue: via Demisto API
+    - defaultValue: via Demisto API
       description: The action name.
-      isArray: false
       name: action-name
-      required: false
-      secret: false
-    deprecated: false
     description: Creates an action object based on the package name or the package
       ID.
-    execution: false
     name: tn-create-action
     outputs:
     - contextPath: Tanium.Action.ActionGroupId
@@ -1127,16 +973,10 @@ script:
       description: The name of the user who issued this action.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: The maximum number of actions to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns all actions.
-    execution: false
     name: tn-list-actions
     outputs:
     - contextPath: Tanium.Action.ActionGroupId
@@ -1206,15 +1046,10 @@ script:
       description: The name of the user who issued this action.
       type: String
   - arguments:
-    - default: false
-      description: The action ID.
-      isArray: false
+    - description: The action ID.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Returns an action object based on ID.
-    execution: false
     name: tn-get-action
     outputs:
     - contextPath: Tanium.Action.ActionGroupId
@@ -1284,16 +1119,10 @@ script:
       description: The name of the user who issued this action.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: The maximum number of saved actions to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves all saved action approval definitions on the server.
-    execution: false
     name: tn-list-saved-actions-pending-approval
     outputs:
     - contextPath: Tanium.PendingSavedAction.ApprovedFlag
@@ -1309,21 +1138,11 @@ script:
       description: The ID of the user who owns this object.
       type: Number
   - arguments:
-    - default: false
-      description: The group ID.
-      isArray: false
+    - description: The group ID.
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: Name of group.
-      isArray: false
+    - description: Name of group.
       name: name
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a group object based on ID or name.
-    execution: false
     name: tn-get-group
     outputs:
     - contextPath: Tanium.Group.ID
@@ -1342,65 +1161,38 @@ script:
       description: Whether the group is deleted. True if deleted.
       type: Boolean
   - arguments:
-    - default: false
-      description: The name of the group to create.
-      isArray: false
+    - description: The name of the group to create.
       name: group-name
       required: true
-      secret: false
-    - default: false
-      description: Comma separated list of hosts. For example, Host1,Host2.
-      isArray: false
+    - description: Comma separated list of hosts. For example, Host1,Host2.
       name: computer-names
-      required: false
-      secret: false
-    - default: false
-      description: Comma separated list of IP addresses. For example, 12.12.12.12,10.1.1.1.
-      isArray: false
+    - description: Comma separated list of IP addresses. For example, 12.12.12.12,10.1.1.1.
       name: ip-addresses
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a group object based on computers or IP addresses list.
-    execution: false
     name: tn-create-manual-group
     outputs:
     - contextPath: Tanium.Group.ID
       description: The unique ID of the group object.
       type: Number
   - arguments:
-    - default: false
-      description: The text filter-based computer group. For example, operating system
+    - description: The text filter-based computer group. For example, operating system
         contains windows.
-      isArray: false
       name: text-filter
       required: true
-      secret: false
-    - default: false
-      description: Name of the group to create.
-      isArray: false
+    - description: Name of the group to create.
       name: group-name
       required: true
-      secret: false
-    deprecated: false
     description: Creates a group object based on text filter.
-    execution: false
     name: tn-create-filter-based-group
     outputs:
     - contextPath: Tanium.Group.ID
       description: The unique ID of the group object.
       type: Number
   - arguments:
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: The maximum number of groups to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns all groups.
-    execution: false
     name: tn-list-groups
     outputs:
     - contextPath: Tanium.Group.ID
@@ -1419,65 +1211,31 @@ script:
       description: whether the group is deleted. True if deleted.
       type: Boolean
   - arguments:
-    - default: false
-      description: The group ID.
-      isArray: false
+    - description: The group ID.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Deletes a group object.
-    execution: false
     name: tn-delete-group
   - arguments:
-    - default: false
-      description: The package ID.
-      isArray: false
+    - description: The package ID.
       name: package-id
-      required: false
-      secret: false
-    - default: false
-      description: The package name. Target group is required and can passed by name
+    - description: The package name. Target group is required and can passed by name
         or ID. When both exist, the ID is used. Note the target group should be different
         than "All Computers" or "Default".
-      isArray: false
       name: package-name
-      required: false
-      secret: false
-    - default: false
-      description: Package parameters. For example, $1=Value1;$2=Value2;$3=Value3.
-      isArray: false
+    - description: Package parameters. For example, $1=Value1;$2=Value2;$3=Value3.
       name: parameters
-      required: false
-      secret: false
-    - default: false
-      description: The action group ID to deploy the package.
-      isArray: false
+    - description: The action group ID to deploy the package.
       name: action-group-id
       required: true
-      secret: false
-    - default: false
-      description: The hostname to deploy the package. Hostname or IP address is required.
-      isArray: false
+    - description: The hostname to deploy the package. Hostname or IP address is required.
       name: hostname
-      required: false
-      secret: false
-    - default: false
-      description: The IP address of the host to deploy the package.
-      isArray: false
+    - description: The IP address of the host to deploy the package.
       name: ip-address
-      required: false
-      secret: false
-    - default: false
-      defaultValue: via Demisto API
+    - defaultValue: via Demisto API
       description: The action name.
-      isArray: false
       name: action-name
-      required: false
-      secret: false
-    deprecated: false
     description: Creates an action object, based on a package name or package ID.
-    execution: false
     name: tn-create-action-by-host
     outputs:
     - contextPath: Tanium.Action.ActionGroupId
@@ -1546,13 +1304,110 @@ script:
     - contextPath: Tanium.Action.UserName
       description: The name of the user who issued this action.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  - arguments:
+    - description: The device ID.
+      isArray: true
+      name: id
+      required: true
+    description: Get device actions result
+    name: tn-get-action-result
+    outputs:
+    - contextPath: Tanium.ActionResult.now
+      description: The action result time.
+      type: Date
+    - contextPath: Tanium.ActionResult.max_available_age
+      description: The maximum action result age.
+      type: String
+    - contextPath: Tanium.ActionResult.result_sets.age
+      description: The age of the action result.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.id
+      description: The result sets ID.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.report_count
+      description: The result sets report count.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.saved_question_id
+      description: The result sets saved question ID.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.question_id
+      description: The result sets question ID.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.archived_question_id
+      description: The result sets archived question ID.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.seconds_since_issued
+      description: The result sets seconds since issued.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.issue_seconds
+      description: The result sets issued seconds.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.expire_seconds
+      description: The result sets expire seconds.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.tested
+      description: The result sets tested.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.passed
+      description: The result sets passed.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.mr_tested
+      description: The result sets mr tested.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.mr_passed
+      description: The result sets mr passed.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.estimated_total
+      description: The result sets estimated total.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.select_count
+      description: The result sets select count.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.error_count
+      description: The result sets error count.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.no_results_count
+      description: The result sets no results count.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.columns.hash
+      description: The result sets columns hash.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.columns.name
+      description: The result sets columns name.
+      type: String
+    - contextPath: Tanium.ActionResult.result_sets.columns.type
+      description: The result sets columns type.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.filtered_row_count
+      description: The result sets filtered row count.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.filtered_row_count_machines
+      description: The result sets filtered row count machines.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.row_count
+      description: The result sets row count.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.row_count_machines
+      description: The result sets row count machines.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.item_count
+      description: The result sets item count.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.rows.id
+      description: The action results row ID.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.rows.cid
+      description: The action results computer ID.
+      type: Number
+    - contextPath: Tanium.ActionResult.result_sets.rows.data.text
+      description: The action results status.
+      type: String
+    - contextPath: Tanium.ActionResult.ID
+      description: The action results ID.
+      type: String
+  dockerimage: demisto/python3:3.10.1.25933
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:

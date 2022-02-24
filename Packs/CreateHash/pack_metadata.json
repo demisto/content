@@ -1,0 +1,23 @@
+{
+    "name": "CreateHash",
+    "description": "Simple wrapper of the https://docs.python.org/3/library/hashlib.html to produce sha256, sha1, md5 and Blake (simple hash) of a given text input",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Joerg Stephan",
+    "url": "",
+    "email": "",
+    "created": "2021-12-06T11:19:01Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "johestephan"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

@@ -1,0 +1,55 @@
+commonfields:
+  id: RegexExpand
+  version: -1
+name: RegexExpand
+script: ''
+type: python
+tags:
+- transformer
+- string
+- entirelist
+comment: |-
+  Extract the strings matched to the patterns by doing backslash substitution on the template string.
+  This transformer allow to input multiple regex patterns and multiple match targets, and those can be given in the input value and the argument parameters.
+enabled: true
+args:
+- name: value
+  description: List of regex or text for the pattern match.
+  isArray: true
+- name: regex
+  description: A regex pattern to search (in Python).
+- name: text
+  description: A match target text.
+- name: template
+  description: The template text that will be returned for the output by doing backslash
+    substitution to the patterns matched.
+- name: template_type
+  auto: PREDEFINED
+  predefined:
+  - text
+  - json
+  - list
+  description: The data type of the template.
+  defaultValue: text
+- name: value_takes
+  auto: PREDEFINED
+  predefined:
+  - text
+  - regex
+  description: Which type of value takes from the value argument, 'text' (match target)
+    or 'regex'.
+  defaultValue: text
+- name: flags
+  description: The comma separated flags for pattern matching in regex. "dotall" (s),
+    "multiline" (m), "ignorecase" (i) and "unicode" (u) are supported.
+- name: search_limit
+  description: The maximum limit for scanning patterns. (0 means unlimited)
+  defaultValue: "0"
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.9.25564
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

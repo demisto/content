@@ -66,10 +66,10 @@ script:
       description: The country code of the IP address.
       type: String
     - contextPath: IP.Malicious.Description
-      description: Describes the reason why the IP address is in the blacklist.
+      description: Describes the reason why the IP address is in the block list.
       type: Unknown
     - contextPath: IP.PositiveDetections
-      description: The number of sources that positively reported the indicator as blacklist.
+      description: The number of sources that positively reported the indicator as block list.
       type: Number
     - contextPath: DBotScore.Score
       description: The DBot score.
@@ -96,7 +96,7 @@ script:
       description: Last time that the IoC was seen.
       type: Date
     - contextPath: Maltiverse.IP.Blacklist.Description
-      description: Describes the reason why the IP is in the blacklist.
+      description: Describes the reason why the IP is in the block list.
       type: String
     - contextPath: Maltiverse.IP.Blacklist.Source
       description: The name of sources that reported the indicator.
@@ -105,7 +105,7 @@ script:
       description: The type of indicator.
       type: String
     - contextPath: IP.ThreatTypes
-      description: A list with the description of the elements in the blacklist.
+      description: A list with the description of the elements in the block list.
       type: Unknown
     - contextPath: IP.Tags
       description: The type of indicator.
@@ -169,7 +169,7 @@ script:
       description: Last time that the IoC was seen.
       type: Date
     - contextPath: Maltiverse.Domain.Blacklist.Description
-      description: Describes the reason why the domain is in the blacklist.
+      description: Describes the reason why the domain is in the block list.
       type: Unknown
     - contextPath: Maltiverse.Domain.Blacklist.Source
       description: The name of sources that reported the indicator.
@@ -193,7 +193,7 @@ script:
       description: Stores a timestamp when an IP address has been resolved by the domain.
       type: Date
     - contextPath: Domain.ThreatTypes
-      description: A list with the description of the elements in the blacklist.
+      description: A list with the description of the elements in the block list.
       type: Unknown
     - contextPath: Domain.Tags
       description: Attribute to label an IoC.
@@ -221,13 +221,13 @@ script:
       description: The URL that was checked.
       type: String
     - contextPath: URL.Malicious.Description
-      description: Describes the reason why the URL is in the blacklist.
+      description: Describes the reason why the URL is in the block list.
       type: String
     - contextPath: URL.Malicious.Vendor
       description: The vendor that sends the indicator for reputation check.
       type: String
     - contextPath: URL.PositiveDetections
-      description: The number of sources that positively reported the indicator as blacklist.
+      description: The number of sources that positively reported the indicator as block list.
       type: Number
     - contextPath: DBotScore.Score
       description: The DBot score
@@ -254,7 +254,7 @@ script:
       description: Last time that the IoC was seen.
       type: Date
     - contextPath: Maltiverse.URL.Blacklist.Description
-      description: Describes the reason why the URL is in the blacklist.
+      description: Describes the reason why the URL is in the block list.
       type: Date
     - contextPath: Maltiverse.URL.Blacklist.Source
       description: The name of sources that reported the indicator.
@@ -278,7 +278,7 @@ script:
       description: Top-level domain of the hostname.
       type: String
     - contextPath: URL.ThreatTypes
-      description: A list with the description of the elements in the blacklist.
+      description: A list with the description of the elements in the block list.
       type: Unknown
     - contextPath: URL.Tags
       description: Attribute to label an IoC.
@@ -351,7 +351,7 @@ script:
       description: For malicious files, describes the reason for the file to be malicious.
       type: String
     - contextPath: Maltiverse.File.PositiveDetections
-      description: The number of sources that positively reported the indicator as blacklist.
+      description: The number of sources that positively reported the indicator as block list.
       type: Number
     - contextPath: Maltiverse.File.Name
       description: The file name.
@@ -366,7 +366,7 @@ script:
       description: Last time that the IoC was seen.
       type: Date
     - contextPath: Maltiverse.File.Blacklist.Description
-      description: Describes the reason why the URL is in the blacklist.
+      description: Describes the reason why the URL is in the block list.
       type: String
     - contextPath: Maltiverse.File.Blacklist.Source
       description: The name of sources that reported the indicator.
@@ -390,12 +390,12 @@ script:
       description: List of hostnames resolved by the sample in runtime.
       type: String
     - contextPath: File.ThreatTypes
-      description: A list with the description of the elements in the blacklist.
+      description: A list with the description of the elements in the block list.
       type: Unknown
     - contextPath: File.Tags
       description: Attribute to label an IoC.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
   longRunning: false

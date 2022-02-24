@@ -2,11 +2,14 @@ commonfields:
   id: OpsGenie
   version: -1
 name: OpsGenie
-display: OpsGenie
+display: OpsGenie (Deprecated)
+deprecated: true
 category: Messaging
 image: data:image/png;base64,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
-description: Get current on-call assignments, schedules, and users info
-detaileddescription: OpsGenie integration allows querying for the current on-call users for a given Schedule. The integration requires an API key, that can be acquired from the OpsGenie interface, under Integrations / API.
+description:  Deprecated. Use the OpsGenie v3 integration instead
+detaileddescription: OpsGenie integration allows querying for the current on-call
+  users for a given Schedule. The integration requires an API key, that can be acquired
+  from the OpsGenie interface, under Integrations / API.
 configuration:
 - display: Base URL
   name: baseURL
@@ -56,8 +59,10 @@ script:
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            logError('OpsGenie error: Request failed for ' + requestUrl + '. Returned body is ' + JSON.stringify(res));
-            throw 'OpsGenie: Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+            logError('OpsGenie error: Request failed for ' + requestUrl + '. Returned
+    body is ' + JSON.stringify(res));
+            throw 'OpsGenie: Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody:
+    ' + JSON.stringify(res) + '.';
         }
 
         try {
@@ -65,8 +70,10 @@ script:
             jsonBody = JSON.parse(res.Body);
             return jsonBody;
         } catch (err) {
-            logError('OpsGenie error: Could not parse respons for ' + requestUrl + '. Error is ' + err + '. Returned body is ' + JSON.stringify(res));
-            throw 'OpsGenie error\n Could not parse respons for ' + requestUrl + '\n Error is ' + err;
+            logError('OpsGenie error: Could not parse respons for ' + requestUrl +
+    '. Error is ' + err + '. Returned body is ' + JSON.stringify(res));
+            throw 'OpsGenie error\n Could not parse respons for ' + requestUrl + '\n
+    Error is ' + err;
         }
     };
 
@@ -76,12 +83,14 @@ script:
         if (date) {
             urlParams.date = new Date(date).toISOString();
         }
-        var url = serviceURLs.schedules + '/' + encodeURIComponent(schedule) + '/on-calls' + encodeToURLQuery(urlParams);
+        var url = serviceURLs.schedules + '/' + encodeURIComponent(schedule) + '/on-calls'
+    + encodeToURLQuery(urlParams);
 
         var res = sendRequest(url);
         var md = '### OpsGenie On-Call Schedule __' + schedule + '__\n';
         var ec = {};
-        if (res && res.data && res.data.onCallParticipants && res.data.onCallParticipants.length > 0) {
+        if (res && res.data && res.data.onCallParticipants && res.data.onCallParticipants.length
+    > 0) {
             var onCall = dq(res.data.onCallParticipants,'name');
             md += 'Currently on-call for __' + schedule + '__ schedule:\n';
             ec.OpsGenie = {Schedule: schedule, OnCall: []};
@@ -93,7 +102,8 @@ script:
         } else {
             md += 'Cannot find on-call for __' + schedule + '__\n';
         }
-        return {Type: entryTypes.note, Contents: res.data.onCallParticipants, EntryContext: ec, ContentsFormat: formats.json, HumanReadable: md};
+        return {Type: entryTypes.note, Contents: res.data.onCallParticipants, EntryContext:
+    ec, ContentsFormat: formats.json, HumanReadable: md};
     };
 
 
@@ -107,7 +117,8 @@ script:
         } else {
             md = 'Cannot find user ' + userID + '\n';
         }
-        return {Type: entryTypes.note, Contents: res.data, EntryContext: ec, ContentsFormat: formats.json, HumanReadable: md};
+        return {Type: entryTypes.note, Contents: res.data, EntryContext: ec, ContentsFormat:
+    formats.json, HumanReadable: md};
     };
 
 
@@ -121,7 +132,8 @@ script:
         } else {
             md = 'No schedules\n';
         }
-        return {Type: entryTypes.note, Contents: res.data, EntryContext: ec, ContentsFormat: formats.json, HumanReadable: md};
+        return {Type: entryTypes.note, Contents: res.data, EntryContext: ec, ContentsFormat:
+    formats.json, HumanReadable: md};
     };
 
 
@@ -136,14 +148,16 @@ script:
                 md += '#### Rotation ' + rotation.name + '\n';
                 var periodsArr = [];
                 rotation.periods.forEach(function(period) {
-                    periodsArr.push({Start: period.startDate, End: period.endDate, 'On Call': period.recipient.name});
+                    periodsArr.push({Start: period.startDate, End: period.endDate,
+    'On Call': period.recipient.name});
                 });
                 md += tableToMarkdown('',periodsArr,['Start','End','On Call']) + '\n';
             });
         } else {
             md = 'No timeline\n';
         }
-        return {Type: entryTypes.note, Contents: res.data, EntryContext: ec, ContentsFormat: formats.json, HumanReadable: md};
+        return {Type: entryTypes.note, Contents: res.data, EntryContext: ec, ContentsFormat:
+    formats.json, HumanReadable: md};
     };
 
 

@@ -171,7 +171,7 @@ script:
       description: The password to use for authentication. If empty, the password
         from the instance configuration is used.
     description: Removes a directory from the given path.
-  dockerimage: demisto/smbprotocol:1.0.0.24037
+  dockerimage: demisto/smbprotocol:1.0.0.26484
   isfetch: false
   runonce: false
   script: '-'

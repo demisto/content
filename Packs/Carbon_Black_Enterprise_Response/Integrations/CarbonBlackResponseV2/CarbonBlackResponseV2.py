@@ -280,8 +280,12 @@ def _add_to_current_query(current_query: str = '', params: dict = None) -> str:
 
 
 def _get_sensor_isolation_change_body(client: Client, sensor_id: str, new_isolation: bool) -> dict:
-    new_sensor_data = client.get_sensors(sensor_id)[1][0]  # returns (length, [sensor_data])
-    new_sensor_data['network_isolation_enabled'] = new_isolation
+    sensor_data = client.get_sensors(sensor_id)[1][0]  # returns (length, [sensor_data])
+    new_sensor_data = {
+        'network_isolation_enabled': new_isolation,
+        'group_id': sensor_data.get('group_id')
+    }
+
     return new_sensor_data
 
 

@@ -1,5 +1,5 @@
 [file:README.md]
 ignore=RM106
 
-[file:ForwardXSOARAuditLogsToSplunkHEC]
+[file:pack_metadata.json]
 ignore=PA129

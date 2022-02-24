@@ -1,0 +1,83 @@
+category: Data Enrichment & Threat Intelligence
+fromversion: 5.0.0
+commonfields:
+  id: BotDefender
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: apikey
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: DBot Scoring - Bad Score Threshold
+  name: dbotBadThreshold
+  required: true
+  defaultvalue: 90
+  type: 0
+- display: DBot Scoring - Suspicious Score Threshold
+  name: dbotSuspiciousThreshold
+  required: true
+  defaultvalue: 50
+  type: 0
+- display: DBot Scoring - Good Score Threshold
+  name: dbotGoodThreshold
+  required: true
+  defaultvalue: 5
+  type: 0
+description: Gathers PerimeterX related data
+detaileddescription: This integration will query the PerimeterX API for useful information regarding the supplied item (IP, User Agent, path, etc...)
+display: PerimeterX BotDefender
+name: BotDefender
+script:
+  commands:
+  - arguments:
+    - description: The custom parameter value or IP address for which the report is requested
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+      default: true
+    deprecated: false
+    description: Gets the PerimeterX DBotScore decision for a particular IP
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IP address
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason that the vendor made the decision
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: Number
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.8.24399

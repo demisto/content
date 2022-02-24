@@ -16,9 +16,7 @@ You only need to fill in your subscription ID and resource group name. For more 
 
 #### Self-Deployed Azure App
 
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
+To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
 
-The application must have *user_impersonation* permission and must allow public client flows (can be found under the **Authentication** section of the app).
-
----
-Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
+* The application must have **user_impersonation** permission (can be found in *API permissions* section of the Azure Kubernetes Services app registrations).
+* The application must allow **public client flows** (can be found under the *Authentication* section of the Azure Kubernetes Services app registrations).
