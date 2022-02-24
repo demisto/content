@@ -14,8 +14,8 @@ from google.oauth2 import service_account
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from google_auth_httplib2 import AuthorizedHttp
-# from google.auth import aws
-# from google.auth import identity_pool
+from google.auth import aws
+from google.auth import identity_pool
 
 """ CONSTANTS """
 SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
