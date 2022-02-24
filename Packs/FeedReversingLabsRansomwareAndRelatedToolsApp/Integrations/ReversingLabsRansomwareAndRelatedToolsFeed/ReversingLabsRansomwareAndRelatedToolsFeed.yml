@@ -1,0 +1,156 @@
+commonfields:
+  id: ReversingLabs Ransomware and Related Tools Feed
+  version: -1
+name: ReversingLabs Ransomware and Related Tools Feed
+display: ReversingLabs Ransomware and Related Tools Feed
+category: Data Enrichment & Threat Intelligence
+description: A timely and curated threat intel list containing recent indicators extracted
+  from ransomware and the tools used to deploy ransomware which are suitable for threat
+  hunting or deployment to security controls.
+configuration:
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- display: ReversingLabs TitaniumCloud URL
+  name: host
+  defaultvalue: "https://data.reversinglabs.com"
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  required: true
+  type: 9
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ""
+  name: feedExpirationInterval
+  defaultvalue: "20160"
+  type: 1
+  required: false
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  defaultvalue: ""
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+- display: First fetch time
+  defaultvalue: 2
+  hidden: false
+  name: hours
+  required: false
+  type: 0
+  additionalinfo: Defines how many hours back in time should the indicators be fetched
+    from during the first run. Value should be between 1 and 4. Recommended value
+    is 2.
+- display: Indicator types
+  name: indicatorTypes
+  defaultvalue: ipv4,domain,hash,uri
+  additionalinfo: Which types of indicators should be fetched from the feed. Possible
+    values are 'ipv4', 'domain', 'hash', 'uri'.
+  required: false
+  type: 16
+  options:
+  - ipv4
+  - domain
+  - hash
+  - uri
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- name: tlp_color
+  display: Traffic Light Protocol Color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
+script:
+  script: ''
+  type: python
+  commands:
+  - name: reversinglabs-get-indicators
+    arguments:
+    - name: limit
+      default: false
+      defaultValue: 50
+      description: The maximum number of indicators to return. The default value is
+        50.
+      isArray: false
+      required: false
+      secret: false
+    - name: indicator_types
+      default: false
+      defaultValue: 'ipv4,domain,hash,uri'
+      description: Which indicator types should be fetched from the feed. Possible
+        values are 'ipv4', 'domain', 'hash', 'uri'.
+      required: false
+      secret: false
+    - name: hours_back
+      default: false
+      defaultValue: 1
+      description: Defines how many hours back in time should the indicators
+        be fetched from. Value should be between 1 and 4. Recommended value is 1.
+      isArray: false
+      required: false
+      secret: false
+    description: Gets indicators from the feed.
+  dockerimage: demisto/python3:3.10.1.25933
+  feed: true
+  runonce: false
+  subtype: python3
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
