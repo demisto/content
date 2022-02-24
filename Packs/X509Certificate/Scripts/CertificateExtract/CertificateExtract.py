@@ -251,11 +251,13 @@ def extension_context(oid: str, extension_name: str, critical: bool, extension_v
             ]
         )
     elif (isinstance(extension_value, extensions.AuthorityKeyIdentifier)):
+        identifier = extension_value.key_identifier
+        assert identifier is not None
         authority_key_identifier = Common.CertificateExtension.AuthorityKeyIdentifier(
             issuer=[map_gn(n) for n in list(extension_value.authority_cert_issuer)] if (
                 extension_value.authority_cert_issuer) else None,
-            serial_number=extension_value.authority_cert_serial_number,
-            key_identifier=extension_value.key_identifier.hex()
+            serial_number=str(extension_value.authority_cert_serial_number),
+            key_identifier=str(identifier.hex())
         )
         return Common.CertificateExtension(
             extension_type=Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER,
@@ -342,7 +344,7 @@ def extension_context(oid: str, extension_name: str, critical: bool, extension_v
         presct: extensions.SignedCertificateTimestamp
         for presct in extension_value:
             presigcerttimestamps.append(Common.CertificateExtension.SignedCertificateTimestamp(
-                entry_type=_SCT_LOG_ENTRY_TYPE_NAME.get(presct.entry_type, presct.entry_type.value),
+                entry_type=_SCT_LOG_ENTRY_TYPE_NAME.get(presct.entry_type, str(presct.entry_type.value)),
                 version=presct.version.value,
                 log_id=presct.log_id.hex(),
                 timestamp=presct.timestamp.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
@@ -357,7 +359,7 @@ def extension_context(oid: str, extension_name: str, critical: bool, extension_v
         sct: extensions.SignedCertificateTimestamp
         for sct in extension_value:
             sigcerttimestamps.append(Common.CertificateExtension.SignedCertificateTimestamp(
-                entry_type=_SCT_LOG_ENTRY_TYPE_NAME.get(sct.entry_type, sct.entry_type.value),
+                entry_type=_SCT_LOG_ENTRY_TYPE_NAME.get(sct.entry_type, str(sct.entry_type.value)),
                 version=sct.version.value,
                 log_id=sct.log_id.hex(),
                 timestamp=sct.timestamp.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
@@ -416,7 +418,7 @@ def certificate_to_context(certificate: x509.Certificate) -> Common.Certificate:
         extensions=extensions_contexts,
         signature_algorithm=certificate.signature_hash_algorithm.name,  # type: ignore[union-attr]
         signature=certificate.signature.hex(),
-        publickey=public_key_context(certificate.public_key()),
+        publickey=public_key_context(certificate.public_key()),  # type: ignore
         dbot_score=Common.DBotScore(
             indicator=indicator,
             indicator_type=DBotScoreType.CERTIFICATE,

@@ -329,9 +329,14 @@ def fetch_incidents(client: Client,
 
     # Handle first time fetch
     if last_fetch:
-        last_fetch = _ensure_timezone(dateparser.parse(last_fetch))
+        last_fetch_date = dateparser.parse(last_fetch)
+        assert last_fetch_date is not None
+        last_fetch = _ensure_timezone(last_fetch_date)
     else:
-        last_fetch = _ensure_timezone(dateparser.parse(first_fetch_time))
+        last_fetch_time_date = dateparser.parse(first_fetch_time)
+        assert last_fetch_time_date is not None
+        last_fetch = _ensure_timezone(last_fetch_time_date)
+
     # use the last fetch time to build a time frame in which to search for alerts.
     time_frame = _create_time_frame_string(last_fetch)
 
@@ -365,7 +370,9 @@ def fetch_incidents(client: Client,
         )
 
     for alert in data.get('results', []):
-        incident_created_time = _ensure_timezone(dateparser.parse(alert.get('time')))
+        time_date = dateparser.parse(alert.get('time'))
+        assert time_date is not None
+        incident_created_time = _ensure_timezone(time_date)
 
         # Alert was already fetched. Skipping
         if latest_alert_fetch and latest_alert_fetch >= incident_created_time:
