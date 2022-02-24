@@ -251,13 +251,11 @@ def extension_context(oid: str, extension_name: str, critical: bool, extension_v
             ]
         )
     elif (isinstance(extension_value, extensions.AuthorityKeyIdentifier)):
-        identifier = extension_value.key_identifier
-        assert identifier is not None
         authority_key_identifier = Common.CertificateExtension.AuthorityKeyIdentifier(
             issuer=[map_gn(n) for n in list(extension_value.authority_cert_issuer)] if (
                 extension_value.authority_cert_issuer) else None,
-            serial_number=str(extension_value.authority_cert_serial_number),
-            key_identifier=str(identifier.hex())
+            serial_number=extension_value.authority_cert_serial_number,  # type: ignore
+            key_identifier=extension_value.key_identifier.hex()  # type: ignore
         )
         return Common.CertificateExtension(
             extension_type=Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER,
@@ -344,7 +342,7 @@ def extension_context(oid: str, extension_name: str, critical: bool, extension_v
         presct: extensions.SignedCertificateTimestamp
         for presct in extension_value:
             presigcerttimestamps.append(Common.CertificateExtension.SignedCertificateTimestamp(
-                entry_type=_SCT_LOG_ENTRY_TYPE_NAME.get(presct.entry_type, str(presct.entry_type.value)),
+                entry_type=_SCT_LOG_ENTRY_TYPE_NAME.get(presct.entry_type, presct.entry_type.value),  # type: ignore
                 version=presct.version.value,
                 log_id=presct.log_id.hex(),
                 timestamp=presct.timestamp.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
@@ -359,7 +357,7 @@ def extension_context(oid: str, extension_name: str, critical: bool, extension_v
         sct: extensions.SignedCertificateTimestamp
         for sct in extension_value:
             sigcerttimestamps.append(Common.CertificateExtension.SignedCertificateTimestamp(
-                entry_type=_SCT_LOG_ENTRY_TYPE_NAME.get(sct.entry_type, str(sct.entry_type.value)),
+                entry_type=_SCT_LOG_ENTRY_TYPE_NAME.get(sct.entry_type, sct.entry_type.value),  # type: ignore
                 version=sct.version.value,
                 log_id=sct.log_id.hex(),
                 timestamp=sct.timestamp.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
