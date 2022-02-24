@@ -95,3 +95,4 @@ DomainTools
 replyTo
 FortiSIEM
 watchlists
+URLs
