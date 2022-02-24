@@ -102,13 +102,13 @@ def create_paramiko_ssh_client(host_name: str, user_name: str, password: str, ci
         if not ciphers.intersection(available_ciphers):
             raise DemistoException(f'Given ciphers are not available in server.\n'
                                    f'Ciphers available in server are: {available_ciphers}')
-        Transport._preferred_ciphers = (*ciphers,)
+        Transport._preferred_ciphers = (*ciphers,)  # type: ignore
     if key_algorithms:
         available_key_args = get_available_key_algorithms()
         if not key_algorithms.intersection(available_key_args):
             raise DemistoException(f'Given key algorithms are not available in server.\n'
                                    f'Key algorithms available in server are: {available_key_args}')
-        Transport._preferred_kex = (*key_algorithms,)
+        Transport._preferred_kex = (*key_algorithms,)  # type: ignore
     client = SSHClient()
     client.set_missing_host_key_policy(AutoAddPolicy())
     try:

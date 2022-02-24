@@ -134,6 +134,7 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
         # return the current time
         first_fetch = demisto.params().get('first_fetch')
         last_run_obj = dateparser.parse(first_fetch, [DATE_TIME_FORMAT])
+        assert last_run_obj is not None
         last_run = last_run_obj.strftime(DATE_TIME_FORMAT)
 
         if last_run_obj is None:

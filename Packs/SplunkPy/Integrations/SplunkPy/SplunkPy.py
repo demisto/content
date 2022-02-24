@@ -8,7 +8,7 @@ import splunklib.results as results
 import json
 from datetime import timedelta, datetime
 import pytz
-import dateparser
+import dateparser  # type: ignore
 import urllib2
 import hashlib
 import ssl

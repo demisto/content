@@ -87,10 +87,14 @@ def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y
 
     if isinstance(domain_date, str):
         # if str parse the value
-        return dateparser.parse(domain_date).strftime(date_format)
+        domain_date_obj = dateparser.parse(domain_date)
+        assert domain_date_obj is not None
+        return domain_date_obj.strftime(date_format)
     elif isinstance(domain_date, list) and len(domain_date) > 0 and isinstance(domain_date[0], str):
         # if list with at least one element, parse the first element
-        return dateparser.parse(domain_date[0]).strftime(date_format)
+        parsed_date = dateparser.parse(domain_date[0])
+        assert parsed_date is not None
+        return parsed_date.strftime(date_format)
     # in any other case return nothing
     return None
 
