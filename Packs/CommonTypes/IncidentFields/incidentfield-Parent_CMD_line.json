@@ -13,7 +13,9 @@
     "name": "Parent CMD line",
     "neverSetAsRequired": false,
     "ownerOnly": false,
-    "propagationLabels": ["all"],
+    "propagationLabels": [
+        "all"
+    ],
     "required": false,
     "sla": 0,
     "system": false,
