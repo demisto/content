@@ -45,9 +45,9 @@ script:
   commands:
   - name: acti-getThreatIntelReport
     arguments:
-    - name: uuid
+    - name: url
       default: true
-      description: uuid of the IA/IR there in the ACTI Indicator Query. 
+      description: url for viewing Intelligence Alert/Report (IA/IR) in the ACTI IntelGraph platform. 
       isArray: false
     outputs:
     description: Fetches Intelligence Alerts & Intelligence Reports.
