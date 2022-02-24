@@ -40,7 +40,7 @@ commonfields:
   id: ParseEmailFiles
   version: -1
 enabled: true
-name: ParseEmailFiles
+name: ParseEmailFiles test
 outputs:
 - contextPath: Email.To
   description: This shows to whom the message was addressed, but may not contain the
