@@ -7,7 +7,7 @@ This content pack includes playbooks that:
 - Orchestrate across multiple products, including cross-referencing against your external threat databases.
 The pack also leverages machine learning to intelligently identify phishing campaigns targeting multiple users in the organization, linking them together and allowing full interaction and control over the campaign from within the incident layout.
 
-
+ 
 ##### What does this pack do?
 - Retrieves emails from user inboxes or ingests them using mail listeners.
 - Creates a phishing incident within Cortex XSOAR associated with the email.
