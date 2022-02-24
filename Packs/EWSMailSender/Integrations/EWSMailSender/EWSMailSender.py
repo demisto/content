@@ -116,7 +116,7 @@ def get_account(account_email):
             response.root  # Check if you have access to root directory
             return response
         except UnauthorizedError:
-            demisto.debug("Got unauthorized error This is the {} attempt".format(i))
+            demisto.debug("Got unauthorized error, This is the: {} attempt".format(i))
             continue
     return response
 
@@ -411,5 +411,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
+if __name__ == "__builtin__" or __name__ == "builtins":
     main()
