@@ -14,8 +14,8 @@ from google.oauth2 import service_account
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from google_auth_httplib2 import AuthorizedHttp
-from google.auth import aws
-from google.auth import identity_pool
+# from google.auth import aws
+# from google.auth import identity_pool
 
 """ CONSTANTS """
 SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
@@ -270,7 +270,12 @@ class BaseGoogleClient:
                     proxy_user=parsed_proxy.username,
                     proxy_pass=parsed_proxy.password,
                 )
-        return httplib2.Http(proxy_info=proxy_info, timeout=TIMEOUT_TIME, disable_ssl_certificate_validation=insecure)
+        return httplib2.Http(
+            proxy_info=proxy_info,
+            timeout=TIMEOUT_TIME,
+            disable_ssl_certificate_validation=insecure,
+            ca_certs=os.getenv('REQUESTS_CA_BUNDLE') or os.getenv('SSL_CERT_FILE')
+        )
 
     @staticmethod
     def execute_request(request) -> Dict[str, Any]:
