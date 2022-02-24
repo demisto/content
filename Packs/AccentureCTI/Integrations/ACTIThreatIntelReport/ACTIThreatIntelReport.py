@@ -79,12 +79,12 @@ def _calculate_dbot_score(severity: int) -> int:
 
 def getThreatReport_command(client: Client, args: dict , reliability: DBotScoreReliability):
     try:
-        result={}; context={}
-        if 'uuid' in args:
-            ia_ir_uuid: str = str(args.get('uuid'))
-            result = client.document_download(url_suffix=f'/v0/{ia_ir_uuid}')
-            context, custom_indicator = _ia_ir_extract(result, reliability)
-            return CommandResults(indicator=custom_indicator, raw_response=result, readable_output=f"Report with UUID: {result['uuid']} has been fetched")
+        result={}
+        ia_ir_url: str = str(args.get('url'))
+        ia_ir_uuid: str = ia_ir_url.split('/')[-1]
+        result = client.document_download(url_suffix=f'/v0/{ia_ir_uuid}')
+        custom_indicator = _ia_ir_extract(result, reliability)
+        return CommandResults(indicator=custom_indicator, raw_response=result, readable_output=f"Report has been fetched!\nUUID: {result['uuid']}\nURL to view report:{ia_ir_url}")
         
     except Exception as e:
         if 'Failed to parse json object from response' in e.args[0]:
@@ -144,9 +144,9 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
             fqlink = 'NA'
         context['IAIR']['attachment_links'] = fqlink
         indicatortype = 'ACTI Intelligence Alert'
-    dbot_score = Common.DBotScore(indicator=uuid, indicator_type=DBotScoreType.CUSTOM, integration_name='ACTI Threat Intelligence Report', score=severity_dbot_score)
+    dbot_score = Common.DBotScore(indicator=uuid, indicator_type=DBotScoreType.CUSTOM, integration_name='ACTI Threat Intelligence Report', score=severity_dbot_score, reliability=reliability)
     custom_indicator = Common.CustomIndicator(indicator_type=indicatortype, dbot_score=dbot_score, value=uuid, data=context, context_prefix='ACTI')
-    return context, custom_indicator
+    return custom_indicator
 
 def main():
     params = demisto.params()
