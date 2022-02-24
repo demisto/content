@@ -93,3 +93,5 @@ TAXII
 Syslog
 DomainTools
 replyTo
+FortiSIEM
+watchlists
