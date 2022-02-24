@@ -116,9 +116,6 @@
                 "Hostnames": {
                     "simple": "computerDnsName"
                 },
-                "Parent CMD line": {
-                    "simple": "evidence.processCommandLine"
-                },
                 "Parent Process": {
                     "simple": "evidence.parentProcessFileName"
                 },
@@ -142,9 +139,6 @@
                 },
                 "Registry Value Type": {
                     "simple": "evidence.registryValueType"
-                },
-                "Source IPs": {
-                    "simple": "evidence.ipAddress"
                 },
                 "State": {
                     "simple": "status"
