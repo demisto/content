@@ -4,7 +4,7 @@ import EWSMailSender
 
 def test_prepare():
     res = EWSMailSender.prepare()
-    assert res.server == 'outlook.office365.com'
+    assert res.protocol.server == 'outlook.office365.com'
 
 
 def test_start_logging():
