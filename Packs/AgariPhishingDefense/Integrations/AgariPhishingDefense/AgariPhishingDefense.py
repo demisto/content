@@ -678,12 +678,13 @@ def fetch_incidents(client: Client, last_run: Dict[str, Any], args: Dict[str, An
 
     # Handle first time fetch
     if last_fetch is None:
-        latest_created_time = dateparser.parse(first_fetch)
+        latest_created_time_date = dateparser.parse(first_fetch)
     else:
-        latest_created_time = dateparser.parse(last_fetch)
-    latest_created_time = latest_created_time.strftime(DATE_FORMAT)
+        latest_created_time_date = dateparser.parse(last_fetch)
+    assert latest_created_time_date is not None
+    latest_created_time_date_str = latest_created_time_date.strftime(DATE_FORMAT)
 
-    params = fetch_incidents_params(start_date=latest_created_time, fetch_limit=fetch_limit,
+    params = fetch_incidents_params(start_date=latest_created_time_date_str, fetch_limit=fetch_limit,
                                     fetch_policy_actions=fetch_policy_actions, exclude_alert_type=exclude_alert_type,
                                     policy_filter=policy_filter, id=id)
 
@@ -719,9 +720,10 @@ def fetch_incidents(client: Client, last_run: Dict[str, Any], args: Dict[str, An
         incidents.append(incident)
 
     # Update last run and add incident if the incident is newer than last fetch
-    latest_created_time = dateparser.parse(total_records[-1]['created_at'])
-    latest_created_time = latest_created_time.strftime(DATE_FORMAT)
-    next_run = {'last_fetch': latest_created_time, 'id': total_records[-1]['id']}
+    latest_created_time_date = dateparser.parse(total_records[-1]['created_at'])
+    assert latest_created_time_date is not None
+    latest_created_time_date_str = latest_created_time_date.strftime(DATE_FORMAT)
+    next_run = {'last_fetch': latest_created_time_date_str, 'id': total_records[-1]['id']}
     if call_from_test:
         # Returning None
         return {}, []

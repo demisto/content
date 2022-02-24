@@ -44,7 +44,9 @@ class Client(BaseClient):
             response = self._http_request('POST', '/access_token/', params={'secret_key': self._secret})
             token = response.get('data', {}).get('access_token')
             expiration = response.get('data', {}).get('expiration_utc')
-            self._token = AccessToken(token, dateparser.parse(expiration))
+            expiration_date = dateparser.parse(expiration)
+            assert expiration_date is not None
+            self._token = AccessToken(token, expiration_date)
         return self._token
 
     def search_by_aql_string(self,
@@ -320,7 +322,9 @@ def fetch_incidents(client: Client,
     last_fetch = last_run.get('last_fetch')
     latest_alert_fetch = last_run.get('latest_alert_fetch')
     if latest_alert_fetch:
-        latest_alert_fetch = _ensure_timezone(dateparser.parse(latest_alert_fetch))
+        latest_alert_fetch_date = dateparser.parse(latest_alert_fetch)
+        assert latest_alert_fetch_date is not None
+        latest_alert_fetch = _ensure_timezone(latest_alert_fetch_date)
     incomplete_fetches = last_run.get('incomplete_fetches', 0)
 
     # Handle first time fetch
@@ -362,6 +366,7 @@ def fetch_incidents(client: Client,
 
     for alert in data.get('results', []):
         incident_created_time = _ensure_timezone(dateparser.parse(alert.get('time')))
+
         # Alert was already fetched. Skipping
         if latest_alert_fetch and latest_alert_fetch >= incident_created_time:
             continue
