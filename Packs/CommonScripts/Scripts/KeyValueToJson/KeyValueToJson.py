@@ -10,7 +10,7 @@ def key_to_json(keys, values):
         if isinstance(value, list) or isinstance(value, tuple):
             values_has_lists = True
             break
-    
+
     # If there are sub-lists or tuples in the values, ensure the length matches the keys length
     if values_has_lists:
         for value in values:
@@ -18,14 +18,14 @@ def key_to_json(keys, values):
                 return_error("There are a mix of lists/tuples/values in the values")
             elif len(value) != key_length:
                 return_error("The number of sub-values provided do not match the length of keys")
-    
+
     # If the values are NOT lists or tuples
     if not values_has_lists:
 
         # Check that the lengths are equal
         if len(keys) != len(values):
             return_error("The number of values provided do not match the length of keys")
-        
+
         return_data = dict()
         try:
             for index in range(0, len(keys) - 1):
