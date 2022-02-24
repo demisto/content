@@ -1286,7 +1286,7 @@ def get_labels(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     offset = arg_to_number(data_args.get('offset'))
     raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/labels/')
     assert offset is not None
-    from_idx = min(offset or len(raw_response), len(raw_response))
+    from_idx = min(offset, len(raw_response))
     to_idx = min(offset + limit, len(raw_response))  # type: ignore
 
     labels = raw_response[from_idx:to_idx]
