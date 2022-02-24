@@ -402,7 +402,7 @@ def test_module(client: Client, is_fetch: bool, first_fetch: str = None):
     Performs basic get request to verify connection and creds.
     """
     if is_fetch:
-        first_fetch_date = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})
+        first_fetch_date = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})  # type: ignore
         assert first_fetch_date is not None
         last_fetch = date_to_timestamp(first_fetch_date)
         last_fetch_date_string = timestamp_to_datestring(last_fetch, '%Y-%m-%dT%H:%M:%S.%fZ')

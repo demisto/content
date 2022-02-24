@@ -1301,9 +1301,9 @@ def parse_ip_addresses(ip_addresses: List[Dict]) -> List[Dict]:
                 'Status': item['operationalStatus']
             }
         else:
-            mac_addresses[current_mac]['IPAddresses'].append(item['ipAddress'])
+            mac_addresses[current_mac]['IPAddresses'].append(item['ipAddress'])  # type: ignore
 
-    return list(mac_addresses.values())
+    return list(mac_addresses.values())  # type: ignore
 
 
 def print_ip_addresses(parsed_ip_addresses: List[Dict]) -> str:

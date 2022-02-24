@@ -424,7 +424,7 @@ def get_event_details(entry, workday_user, demisto_user, days_before_hire_to_syn
     """
     user_email = workday_user.get(EMAIL_ADDRESS_FIELD)
     changed_fields = get_profile_changed_fields_str(demisto_user, workday_user)
-    demisto.debug(f'{changed_fields=}')  # type: Ignore
+    demisto.debug(f'{changed_fields=}')  # type: ignore
 
     if not has_reached_threshold_date(days_before_hire_to_sync, workday_user) \
             or new_hire_email_already_taken(workday_user, demisto_user, email_to_user_profile) \
