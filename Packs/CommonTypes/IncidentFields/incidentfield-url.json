@@ -1,7 +1,7 @@
 {
   "id": "incident_urls",
   "version": -1,
-  "name": "URL",
+  "name": "URLs",
   "ownerOnly": false,
   "cliName": "urls",
   "type": "multiSelect",

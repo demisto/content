@@ -161,7 +161,7 @@
                 "Ticket Number": {
                     "simple": "incidentId"
                 },
-                "URL": {
+                "URLs": {
                     "simple": "evidence.url"
                 },
                 "User SID": {
