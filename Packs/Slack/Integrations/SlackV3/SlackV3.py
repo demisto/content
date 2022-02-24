@@ -1730,7 +1730,7 @@ def slack_send():
     entry_object = args.get('entryObject')  # From server, available from demisto v6.1 and above
     entitlement = ''
 
-    if message_type and (message_type not in PERMITTED_NOTIFICATION_TYPES):
+    if message_type and (message_type not in PERMITTED_NOTIFICATION_TYPES) and message_type != 'externalAskSubmit':
         if message_type != MIRROR_TYPE:
             demisto.info(f"Message type is not in permitted options. Received: {message_type}")
             return
