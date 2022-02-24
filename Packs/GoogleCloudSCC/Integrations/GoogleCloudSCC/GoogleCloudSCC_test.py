@@ -815,13 +815,15 @@ def test_get_http_client_with_proxy(mock1, client):
     Scenario: Validate that proxy is set in http object
 
     Given:
-    - proxy is given
+    - proxy
+      insecure
+      path to custom certificate
 
     When:
-    - correct proxy provided
+    - correct proxy, insecure and certificate path arguments provided
 
     Then:
-    - Ensure command that proxy should set in Http object
+    - Ensure command that proxy, insecure and certificate path should set in Http object
     """
     mock1.return_value = {"https": "admin:password@127.0.0.1:3128"}
     Mock.patch.dict(os.environ, {"SSL_CERT_FILE": "path/to/cert"})
