@@ -2799,6 +2799,412 @@ script:
       - contextPath: Core.OriginalAlert.event.ingestion_time
         description: Ingestion time.
         type: String
+
+  - arguments:
+      - default: false
+        description: A comma-separated list of alert IDs.
+        isArray: true
+        name: alert_ids
+        required: true
+        secret: false
+    deprecated: false
+    description: Returns information about each alert ID.
+    execution: false
+    name: core-get-dynamic-analysis
+    outputs:
+      - contextPath: Core.DynamicAnalysis.causalityId
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.name
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.factName
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.timestamp
+        description: ''
+        type: Date
+      - contextPath: Core.DynamicAnalysis.internals.eventId
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.user_presence
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.shellcode_address
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.tid
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.parent_pid
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.is_sign
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.sync_action
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.is_remote_session
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.peb
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.process_image_path
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.command_line
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.scanned_buffer_crc32_stacktrace_allocation_base_buffer
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.page_base_shellcode_buffer
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.os_sig_status
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.file_info_legal_copyright
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.user_name
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.is_heavens_gate
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.is_impersonated
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.os_parent_instance_id
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.file_info_internal_name
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.stack_trace
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.is_injected
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.pid
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.thread_context_eip_image_path
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.image_path_sha256
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.montepi_err
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.file_info_company_name
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.file_info_original_name
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.instance_id
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.yara_file_scan_result
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.file_obj_flags
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.should_obfuscate
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.file_size
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.file_info_is_dot_net
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.call_region_shellcode_buffer
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.allocation_base_shellcode_buffer
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.signer_name
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.original_command_line
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.yara_rules_results_stacktrace_page_base_buffer
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.rpc_interface_uuid
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.rpc_interface_minor_version
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.telem
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.is_trusted_signer
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.thread_context_eip
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.requested_parent_instance_id
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.is_cgo
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.parent_cid
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.enabled_privileges
+        description: ''
+        type: Date
+      - contextPath: Core.DynamicAnalysis.internals.attributes.peb32
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.is_embedded_sign
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.rpc_function_opnum
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.parent_thread_instance_id
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.remote_causality_actor_ip
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.canonized_process_image_path
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.scanned_buffer_crc32_stacktrace_call_region_buffer
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.yara_rules_results_stacktrace_allocation_base_buffer
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.entry_point_rva
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.is_stack_pivot
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.os_parent_pid
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.image_path_md5
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.causality_actor_type
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.timestamp
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.is_in_transaction
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.cid
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.integrity_level
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.actor_type
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.file_info_description
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.chisq_prob
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.parent_tid
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.rpc_interface_major_version
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.dse_internal
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.telem_bit_mask
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.process_image_name
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.parent_instance_id
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.entropy
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.call_region_base_address
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.yara_rules_results_stacktrace_call_region_buffer
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.scanned_buffer_crc32_stacktrace_page_base_buffer
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.image_base
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.sync_id
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.effective_user_sid
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.requested_parent_pid
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.event_id
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.rpc_protocol
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.processIdx
+        description: ''
+        type: Number
+      - contextPath: Core.DynamicAnalysis.internals.instanceId
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.scriptblock_text
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.script_path
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.actor_pid
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.actor_instance_id
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.actor_thread_instance_id
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.etw_event_id
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.actor_tid
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.suspicious_strings
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.suspicious_strings_context
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.content_version
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.script_hash
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.dotnet_callstack
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.hook_type
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.appdomain_id
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.ps_assembly_version
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.original_length
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.invoke_expression_count
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.file_path
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.content
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.edr_assembly_version
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.expression_tree_scan_result
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.content_length
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.local_analysis_verdict
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.clr_version
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.powershell_version
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.script_source
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.prio
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.internals.attributes.build_timestamp
+        description: ''
+        type: Date
+      - contextPath: Core.DynamicAnalysis.potentialPreventionActionOverride
+        description: ''
+        type: Boolean
+      - contextPath: Core.DynamicAnalysis.isBiocRule
+        description: ''
+        type: Boolean
+      - contextPath: Core.DynamicAnalysis.biocId
+        description: ''
+        type: Number
+      - contextPath: Core.DynamicAnalysis.additionalData
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.biocRuleName
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.reachedMaxActivationsPerRule
+        description: ''
+        type: Boolean
+      - contextPath: Core.DynamicAnalysis.syncActionStatus
+        description: ''
+        type: Number
+      - contextPath: Core.DynamicAnalysis.spawnerImagePath
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.spawnerCmdline
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.spawnerSigner
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.osSpawnerImagePath
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.osSpawnerCmdline
+        description: ''
+        type: String
+      - contextPath: Core.DynamicAnalysis.osSpawnerSigner
+        description: ''
+        type: String
   feed: false
   isfetch: false
   longRunning: false
