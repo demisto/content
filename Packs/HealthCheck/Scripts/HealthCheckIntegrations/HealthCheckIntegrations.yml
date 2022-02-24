@@ -1,4 +1,4 @@
-comment: Trend graph for incidents created per day
+comment: Collect integrations name and count number of engines
 commonfields:
   id: HealthCheckIntegrations
   version: -1
