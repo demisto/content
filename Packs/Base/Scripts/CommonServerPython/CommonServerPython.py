@@ -5229,7 +5229,7 @@ class Common(object):
             if (
                 extensions
                 and not isinstance(extensions, list)
-                and any(isinstance(e, Common.CertificateExtension) for e in extensions) # type: ignore
+                and any(isinstance(e, Common.CertificateExtension) for e in extensions)  # type: ignore
             ):
                 raise TypeError('extensions must be of type List[Common.CertificateExtension]')
             self.extensions = extensions
