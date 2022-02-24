@@ -1061,7 +1061,7 @@ def test_build_search_human_readable(mocker):
     ]
     args = {
         'query': 'something | table ID "Header with space" header3 header_without_space '
-                 'comma,separated "Single,Header,with,Commas" | something else'
+                 'comma,separated "Single,Header,with,Commas" old_header_1 old_header_2 | something else'
                  ' | rename old_header_1 AS new_header_1 old_header_2 AS new_header_2'
     }
     expected_headers = ['ID', 'Header with space', 'header3', 'header_without_space',
