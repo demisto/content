@@ -1908,20 +1908,35 @@ def schedule_polling_command(command, args, interval_in_secs):
     )
 
 
+def _get_query_entry_args(query, arg_name):
+    search_args = re.search(r' {} (?P<{}>.*)(\|)?'.format(arg_name, arg_name), query)
+    args = ''
+    if search_args:
+        args = search_args.group(arg_name)
+        args = args if '|' not in args else args.split(' |')[0]
+
+    return args
+
+
 def build_search_human_readable(args, parsed_search_results):
     headers = ""
     if parsed_search_results and len(parsed_search_results) > 0:
         if not isinstance(parsed_search_results[0], dict):
             headers = "results"
         else:
-            search_for_table_args = re.search(r' table (?P<table>.*)(\|)?', args.get('query', ''))
-            if search_for_table_args:
-                table_args = search_for_table_args.group('table')
-                table_args = table_args if '|' not in table_args else table_args.split(' |')[0]
-                chosen_fields = [field.strip('"')
-                                 for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', table_args) if field]
+            query = args.get('query', '')
+            table_args = _get_query_entry_args(query, 'table')
+            rename_args = _get_query_entry_args(query, 'rename')
 
-                headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
+            chosen_fields = [field.strip('"')
+                             for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', table_args) if field]
+            rename_dict = {field[0]: field[-1].strip('"') for field in
+                           re.findall(r'((?:".*?")|(?:[^\s,]+))( AS )((?:".*?")|(?:[^\s,]+))', rename_args) if field}
+
+            # replace renamed headers
+            chosen_fields = [rename_dict.get(field, field) for field in chosen_fields]
+
+            headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
     query = args['query'].replace('`', r'\`')
     human_readable = tableToMarkdown("Splunk Search results for query: {}".format(query),
