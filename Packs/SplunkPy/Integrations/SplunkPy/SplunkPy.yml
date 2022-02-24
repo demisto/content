@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SplunkPy test
+  id: SplunkPy
   version: -1
 configuration:
 - display: Host - IP (x.x.x.x)
@@ -206,8 +206,8 @@ configuration:
   additionalinfo: Use this parameter to specify a list of comma separated fields, which
     together are a unique identifier for the events you wish to fetch.
 description: Runs queries on Splunk servers.
-display: SplunkPy test
-name: SplunkPy test
+display: SplunkPy
+name: SplunkPy
 script:
   commands:
   - arguments:
