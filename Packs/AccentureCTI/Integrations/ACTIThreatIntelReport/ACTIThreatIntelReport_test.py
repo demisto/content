@@ -18,6 +18,7 @@ import requests_mock
 from CommonServerPython import DBotScoreReliability
 
 API_URL = "https://test.com"
+DBOT_SCORE = "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)"
 
 
 def util_load_json(path):
@@ -61,24 +62,43 @@ def test_getThreatReport_command():
         - return command results containing Vulnerability, dbotscore
 
     """
-    url = 'https://test.com/rest/vulnerability/v0?key.values=CVE-2022-23021'
+    url = 'https://test.com/rest/document/v0/a487dfdc-08b4-4909-82ea-2d934c27d901'
     status_code = 200
-    json_res = JSON_IA1
+    json_res = RES_JSON_IA_IR
 
-    expected_output = {}
+    expected_output = expected_output_ia_ir
 
-    uuid_to_check = {'uuid': ''}
+    url_to_check = {'url': 'https://intelgraph.idefense.com/#/node/intelligence_alert/view/a487dfdc-08b4-4909-82ea-2d934c27d901'}
 
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_res)
         client = Client(API_URL, 'api_token', True, False, '/rest/document')
-        results = getThreatReport_command(client, uuid_to_check, DBotScoreReliability.B)
-        output = results[0].to_context().get('EntryContext', {})
+       
+        results = getThreatReport_command(client, url_to_check, DBotScoreReliability.B)
+       
+        output = results.to_context().get('EntryContext', {})
 
-        assert True
-        assert True
+        assert output.get('ACTI(val.value && val.value == obj.value)', []) == expected_output.get('IA_IR')
+        assert output.get(DBOT_SCORE, []) == expected_output.get('DBot')
+       
 
 
 
 def test_getThreatReport_not_found():
-    pass
+    url = 'https://test.com/rest/document/v0/a487dfdc-08b4-49a09-82ea-2d934c27d901'
+    status_code = 200
+    json_res = None
+
+    expected_output = 'No report was found for UUID: a487dfdc-08b4-49a09-82ea-2d934c27d901 !!'
+
+    url_to_check = {'url': 'https://intelgraph.idefense.com/#/node/intelligence_alert/view/a487dfdc-08b4-49a09-82ea-2d934c27d901'}
+
+    with requests_mock.Mocker() as m:
+        m.get(url, status_code=status_code, json=json_res)
+        client = Client(API_URL, 'api_token', True, False, '/rest/document')
+       
+        results = getThreatReport_command(client, url_to_check, DBotScoreReliability.B)
+       
+        output = results.to_context().get('HumanReadable')
+
+        assert expected_output in output
