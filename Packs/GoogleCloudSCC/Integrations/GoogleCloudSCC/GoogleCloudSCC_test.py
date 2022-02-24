@@ -809,8 +809,7 @@ def test_validate_project_and_subscription_id(mock1, pubsub_client):
     assert pubsub_client.pull_messages.call_count == 1
 
 
-@patch('GoogleCloudSCC.handle_proxy')
-def test_get_http_client_with_proxy(mock1, client):
+def test_get_http_client_with_proxy(mocker, client):
     """
     Scenario: Validate that proxy is set in http object
 
@@ -825,8 +824,8 @@ def test_get_http_client_with_proxy(mock1, client):
     Then:
     - Ensure command that proxy, insecure and certificate path should set in Http object
     """
-    mock1.return_value = {"https": "admin:password@127.0.0.1:3128"}
-    Mock.patch.dict(os.environ, {"SSL_CERT_FILE": "path/to/cert"})
+    mocker.patch('GoogleCloudSCC.handle_proxy', return_value={"https": "admin:password@127.0.0.1:3128"})
+    mocker.patch.dict(os.environ, {"SSL_CERT_FILE": "path/to/cert"})
     http_obj = client.get_http_client_with_proxy(True, True)
 
     assert http_obj.proxy_info.proxy_host == "127.0.0.1"
