@@ -1,4 +1,5 @@
 import json
+import os
 from unittest.mock import patch, Mock
 
 import pytest
@@ -823,12 +824,15 @@ def test_get_http_client_with_proxy(mock1, client):
     - Ensure command that proxy should set in Http object
     """
     mock1.return_value = {"https": "admin:password@127.0.0.1:3128"}
-    http_obj = client.get_http_client_with_proxy(True)
+    Mock.patch.dict(os.environ, {"SSL_CERT_FILE": "path/to/cert"})
+    http_obj = client.get_http_client_with_proxy(True, True)
 
     assert http_obj.proxy_info.proxy_host == "127.0.0.1"
     assert http_obj.proxy_info.proxy_port == 3128
     assert http_obj.proxy_info.proxy_user == "admin"
     assert http_obj.proxy_info.proxy_pass == "password"
+    assert http_obj.disable_ssl_certificate_validation
+    assert http_obj.ca_certs == "path/to/cert"
 
 
 def test_google_name_parser():
