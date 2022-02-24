@@ -1686,7 +1686,16 @@ def get_remote_data_command(args: Dict[str, Any]):
 
 
 def set_delta(delta: Dict[str, Any], mirrored_data, mirroring_fields):
-    # todo add documentation that we can have the value nested in a dict or list then dict
+    """
+    Sets the delta for the incident or detection we want to mirror in, from the mirrored data, according to the mirroring fields.
+    In the mirrored data, the mirroring fields might be nested in a dict or in a dict inside a list (if so, their name will have
+    a dot in it).
+
+    :param delta: The dictionary to set its values, so it will hold the fields we want to mirror in, with their values.
+    :param mirrored_data: The data of the incident or detection we want to mirror in.
+    :param mirroring_fields: The mirroring fields that we want to mirror in, given according to whether we want to mirror an
+        incident or a detection.
+    """
     for field in mirroring_fields:
         if mirrored_data.get(field):
             delta[field] = mirrored_data.get(field)

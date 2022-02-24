@@ -116,6 +116,92 @@ IOCS_JSON_LIST = [{'type': 'ipv4', 'value': '4.4.4.4', 'source': 'cortex xsoar',
                        'expiration': '2022-02-15T15:55:09Z', 'applied_globally': True,
                        }]
 
+response_detection = {"cid": "20879a8064904ecfbb62c118a6a19411",
+                      "created_timestamp": "2021-12-19T13:53:34.708949512Z",
+                      "detection_id": "ldt:15dbb9d8f06b89fe9f61eb46e829d986:528715079668",
+                      "device": {
+                          "device_id": "15dbb9d7f06b45fe0f61eb46e829d986",
+                          "cid": "20897a8064904ecfbb62c118a3a19411",
+                          "agent_load_flags": "0",
+                          "agent_local_time": "2021-12-03T22:06:35.590Z",
+                          "agent_version": "6.30.14406.0",
+                          "bios_manufacturer": "Google",
+                          "bios_version": "Google",
+                          "config_id_base": "65994853",
+                          "config_id_build": "14706",
+                          "config_id_platform": "3",
+                          "external_ip": "34.224.163.137",
+                          "hostname": "FALCON-CROWDSTR",
+                          "first_seen": "2020-02-10T12:40:18Z",
+                          "last_seen": "2021-12-19T13:35:53Z",
+                          "local_ip": "10.128.0.7",
+                          "mac_address": "42-03-0a-80-92-07",
+                          "major_version": "10",
+                          "minor_version": "0",
+                          "os_version": "Windows Server 2019",
+                          "platform_id": "0",
+                          "platform_name": "Windows",
+                          "product_type": "3",
+                          "product_type_desc": "Server",
+                          "status": "normal",
+                          "system_manufacturer": "Google",
+                          "system_product_name": "Google Compute Engine",
+                          "modified_timestamp": "2021-12-19T13:51:07Z",
+                          "instance_id": "5278723726495898635",
+                          "service_provider": "GCP",
+                          "service_provider_account_id": "578609343865"
+                      },
+                      "behaviors": [
+                          {
+                              "device_id": "15dbb9d8f06b45fe9f61eb46e829d986",
+                              "timestamp": "2021-12-19T13:53:27Z",
+                              "template_instance_id": "382",
+                              "behavior_id": "10197",
+                              "filename": "choice.exe",
+                              "filepath": "\\Device\\HarddiskVolume1\\Windows\\System32\\choice.exe",
+                              "alleged_filetype": "exe",
+                              "cmdline": "choice  /m crowdstrike_sample_detection",
+                              "scenario": "suspicious_activity",
+                              "objective": "Falcon Detection Method",
+                              "tactic": "Malware",
+                              "tactic_id": "CSTA0001",
+                              "technique": "Malicious File",
+                              "technique_id": "CST0001",
+                              "display_name": "SampleTemplateDetection",
+                              "description": "For evaluation only - benign, no action needed.",
+                              "severity": 30,
+                              "confidence": 80,
+                              "ioc_type": "",
+                              "ioc_value": "",
+                              "ioc_source": "",
+                              "ioc_description": "",
+                              "user_name": "admin",
+                              "user_id": "S-1-5-21-3482992587-1103702653-2661900019-1000",
+                              "control_graph_id": "ctg:15dbb9d8f06b45fe9f61eb46e829d986:528715219540",
+                              "triggering_process_graph_id": "pid:15dbb9d8f06b45fe9f61eb46e829d986:1560553487562",
+                              "sha256": "90f352c1fb7b21cc0216b2f0701a236db92b786e4301904d28f4ec4cb81f2a8b",
+                              "md5": "463b5477ff96ab86a01ba44bcc02b539",
+                              "pattern_disposition": 0,
+                          }
+                      ],
+                      "email_sent": False,
+                      "first_behavior": "2021-12-19T13:53:27Z",
+                      "last_behavior": "2021-12-19T13:53:27Z",
+                      "max_confidence": 80,
+                      "max_severity": 30,
+                      "max_severity_displayname": "Low",
+                      "show_in_ui": True,
+                      "status": "new",
+                      "hostinfo": {
+                          "domain": ""
+                      },
+                      "seconds_to_triaged": 0,
+                      "seconds_to_resolved": 0,
+                      "behaviors_processed": [
+                          "pid:15dbb9d8f06b45fe9f61eb46e829d986:1560553487562:10194"
+                      ],
+                      "date_updated": "2021-12-19T13:53:34.708949512Z"}
+
 
 def test_incident_to_incident_context():
     from CrowdStrikeFalcon import incident_to_incident_context
@@ -3566,3 +3652,48 @@ def test_list_incident_summaries_command_with_given_ids(requests_mock, mocker):
 
     assert outputs[0]['assigned_to'] == 'Test with ids'
     assert get_incidents_ids_func.call_count == 0
+
+
+keeping_delta = ({'incident_type': 'incident'}, {}, [], {'incident_type': 'incident'})
+
+keeping_empty_delta = ({}, {}, [], {})
+
+no_nested_fields = ({'incident_type': 'incident'}, response_incident, ['state', 'status', 'tags'],
+                    {'incident_type': 'incident', 'state': 'closed', 'status': 20, 'tags': ['Objective/Keep Access']})
+
+fields_not_existing = ({}, response_incident, ['tactics', 'techniques', 'objectives'], {})
+
+field_nested_dict_in_list = ({'incident_type': 'incident'}, response_incident, ['state', 'hosts.hostname'],
+                             {'incident_type': 'incident', 'state': 'closed', 'hosts.hostname': 'SFO-M-Y81WHJ'})
+
+field_nested_in_dict = ({}, response_detection, ['behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
+                                                 'behaviors.technique'],
+                        {'behaviors.objective': 'Falcon Detection Method', 'behaviors.scenario': 'suspicious_activity',
+                         'behaviors.tactic': 'Malware', 'behaviors.technique': 'Malicious File'})
+
+fields_nested_all_options = ({'incident_type': 'detection'}, response_detection,
+                             ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
+                              'behaviors.technique', 'device.hostname'],
+                             {'incident_type': 'detection', 'status': 'new', 'behaviors.objective': 'Falcon Detection Method',
+                              'behaviors.scenario': 'suspicious_activity', 'behaviors.tactic': 'Malware',
+                              'behaviors.technique': 'Malicious File', 'device.hostname': 'FALCON-CROWDSTR'})
+
+
+@pytest.mark.parametrize('delta, mirrored_data, mirroring_fields, output',
+                         [keeping_delta, keeping_empty_delta, no_nested_fields, fields_not_existing, field_nested_dict_in_list,
+                          field_nested_in_dict, fields_nested_all_options])
+def test_set_delta(delta, mirrored_data, mirroring_fields, output):
+    """
+    Given:
+        get-remote-data command runs and determines what the delta is
+
+    When:
+        get-remote-data command runs when mirroring in
+
+    Then:
+        The delta is set correctly, also for nested fields
+    """
+    from CrowdStrikeFalcon import set_delta
+
+    set_delta(delta, mirrored_data, mirroring_fields)
+    assert delta == output
