@@ -1221,8 +1221,8 @@ def is_bot_message(data: dict) -> bool:
     """
     subtype = data.get('subtype', '')
     message_bot_id = data.get('bot_id', '')
-    if subtype == 'bot_message' or message_bot_id or data.get('message', {}).get(
-            'subtype') == 'bot_message':
+    event: dict = data.get('event', {})
+    if subtype == 'bot_message' or message_bot_id or event.get('bot_id', None):
         return True
     elif data.get('event', {}).get('subtype') == 'bot_message':
         return True
@@ -1427,7 +1427,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             f'Slack API has thrown an error. Code: {error_code}, Message: {error_msg}.')
         return
     try:
-        data: dict = req.payload
+        data: dict = req.get('payload')
         event: dict = data.get('event', {})
         text = event.get('text', '')
         user_id = data.get('user', {}).get('id', '')
