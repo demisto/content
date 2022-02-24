@@ -1909,16 +1909,6 @@ def schedule_polling_command(command, args, interval_in_secs):
     )
 
 
-def _get_query_entry_args(query, arg_name):
-    search_args = re.search(r' {} (?P<{}>.*)(\|)?'.format(arg_name, arg_name), query)
-    args = ''
-    if search_args:
-        args = search_args.group(arg_name)
-        args = args if '|' not in args else args.split(' |')[0]
-
-    return args
-
-
 def build_search_human_readable(args, parsed_search_results):
     headers = ""
     if parsed_search_results and len(parsed_search_results) > 0:
@@ -1926,8 +1916,8 @@ def build_search_human_readable(args, parsed_search_results):
             headers = "results"
         else:
             query = args.get('query', '')
-            table_args = _get_query_entry_args(query, 'table')
-            rename_args = _get_query_entry_args(query, 'rename')
+            table_args = re.findall(r' {} (?P<{}>[^|]*)'.format('table', 'table'), query)
+            rename_args = re.findall(r' {} (?P<{}>[^|]*)'.format('rename', 'rename'), query)
 
             chosen_fields = [field.strip('"')
                              for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', table_args) if field]
