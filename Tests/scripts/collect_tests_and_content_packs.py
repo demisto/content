@@ -8,7 +8,7 @@ import glob
 import json
 import re
 from copy import deepcopy
-from distutils.version import LooseVersion
+from packaging.version import Version
 from typing import Dict, Tuple, Optional
 
 import os
@@ -139,12 +139,15 @@ _FAILED = False
 ID_SET = {}
 CONF: TestConf = None  # type: ignore[assignment]
 
-if os.path.isfile('./artifacts/id_set.json'):
-    with open('./artifacts/id_set.json', 'r') as conf_file:
+ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
+ARTIFACTS_ID_SET_PATH = os.path.join(ARTIFACTS_FOLDER, 'id_set.json')
+ARTIFACTS_CONF_PATH = os.path.join(ARTIFACTS_FOLDER, 'conf.json')
+if os.path.isfile(ARTIFACTS_ID_SET_PATH):
+    with open(ARTIFACTS_ID_SET_PATH, 'r') as conf_file:
         ID_SET = json.load(conf_file)
 
-if os.path.isfile('./artifacts/conf.json'):
-    with open('./artifacts/conf.json', 'r') as conf_file:
+if os.path.isfile(ARTIFACTS_CONF_PATH):
+    with open(ARTIFACTS_CONF_PATH, 'r') as conf_file:
         CONF = TestConf(json.load(conf_file))
 
 
@@ -1283,9 +1286,9 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
         logging.debug('landingPage_sections.json is the only modified file, running only marketplace instances')
         return '6.0.0', '99.99.99'
     modified_packs = modified_packs if modified_packs else set([])
-    max_to_version = LooseVersion('0.0.0')
-    min_from_version = LooseVersion('99.99.99')
-    max_from_version = LooseVersion('0.0.0')
+    max_to_version = Version('0.0.0')
+    min_from_version = Version('99.99.99')
+    max_from_version = Version('0.0.0')
 
     logging.info("\n\n Tests list:")
     logging.info(modified_packs)
@@ -1295,10 +1298,10 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
         from_version = pack_metadata.get('serverMinVersion')
         to_version = pack_metadata.get('serverMaxVersion')
         if from_version:
-            min_from_version = min(min_from_version, LooseVersion(from_version))
-            max_from_version = max(max_from_version, LooseVersion(from_version))
+            min_from_version = min(min_from_version, Version(from_version))
+            max_from_version = max(max_from_version, Version(from_version))
         if to_version:
-            max_to_version = max(max_to_version, LooseVersion(to_version))
+            max_to_version = max(max_to_version, Version(to_version))
 
     for artifacts in id_set.values():
 
@@ -1312,20 +1315,20 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
                     from_version = artifact_details.get('fromversion')
                     to_version = artifact_details.get('toversion')
                     if from_version:
-                        min_from_version = min(min_from_version, LooseVersion(from_version))
-                        max_from_version = max(max_from_version, LooseVersion(from_version))
+                        min_from_version = min(min_from_version, Version(from_version))
+                        max_from_version = max(max_from_version, Version(from_version))
                     if to_version:
-                        max_to_version = max(max_to_version, LooseVersion(to_version))
+                        max_to_version = max(max_to_version, Version(to_version))
 
-    if max_to_version.vstring == '0.0.0' or max_to_version < max_from_version:
-        max_to_version = LooseVersion('99.99.99')
-    if min_from_version.vstring == '99.99.99':
-        min_from_version = LooseVersion('0.0.0')
+    if str(max_to_version) == '0.0.0' or max_to_version < max_from_version:
+        max_to_version = Version('99.99.99')
+    if str(min_from_version) == '99.99.99':
+        min_from_version = Version('0.0.0')
     logging.debug(f'modified files are {all_modified_files_paths}')
     logging.debug(f'lowest from version found is {min_from_version}')
     logging.debug(f'highest from version found is {max_from_version}')
     logging.debug(f'highest to version found is {max_to_version}')
-    return min_from_version.vstring, max_to_version.vstring
+    return str(min_from_version), str(max_to_version)
 
 
 def create_filter_envs_file(from_version: str, to_version: str, documentation_changes_only: bool = False):
@@ -1355,7 +1358,7 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
         }
 
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
-    with open("./artifacts/filter_envs.json", "w") as filter_envs_file:
+    with open(os.path.join(ARTIFACTS_FOLDER, 'filter_envs.json'), 'w') as filter_envs_file:
         json.dump(envs_to_test, filter_envs_file)
 
 
@@ -1418,11 +1421,11 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
 
     if not skip_save:
         logging.info("Creating filter_file.txt")
-        with open("./artifacts/filter_file.txt", "w") as filter_file:
+        with open(os.path.join(ARTIFACTS_FOLDER, 'filter_file.txt'), 'w') as filter_file:
             filter_file.write(tests_string)
         # content_packs_to_install.txt is not used in nightly build
         logging.info("Creating content_packs_to_install.txt")
-        with open("./artifacts/content_packs_to_install.txt", "w") as content_packs_to_install:
+        with open(os.path.join(ARTIFACTS_FOLDER, 'content_packs_to_install.txt'), 'w') as content_packs_to_install:
             content_packs_to_install.write(packs_to_install_string)
 
     if is_nightly:

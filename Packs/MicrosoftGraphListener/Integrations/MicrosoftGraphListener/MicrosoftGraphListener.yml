@@ -63,7 +63,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Microsoft Graph grants Demisto authorized access to a user's Microsoft
+description: Microsoft Graph grants Cortex XSOAR authorized access to a user's Microsoft
   Outlook mail data in a personal account or organization account.
 display: O365 Outlook Mail Single User (Using Graph API)
 name: Microsoft Graph Mail Single User
@@ -413,6 +413,19 @@ script:
       name: attach_cids
       required: false
       secret: false
+    - default: false
+      description: The email address from which to reply.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: Email addresses that need to be used to reply to the message. Supports
+        comma-separated values.
+      isArray: true
+      name: replyTo
+      required: false
+      secret: false
     deprecated: false
     description: Sends an email using Microsoft Graph.
     execution: false
@@ -445,6 +458,9 @@ script:
     - contextPath: MicrosoftGraph.Email.bccRecipients
       description: The BCC recipients of the email.
       type: String
+    - contextPath: MicrosoftGraph.Email.replyTo
+      description: The replyTo recipients of the email.
+      type: String
   - arguments:
     - default: false
       description: The ID of the message.
@@ -463,6 +479,27 @@ script:
       isArray: true
       name: to
       required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of War Room entry IDs that contain files,
+        which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
+      isArray: true
+      name: attach_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of names of attachments to display in the
+        email to send. Must be the same number of elements as attach_ids.
+      isArray: true
+      name: attach_names
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of CIDs to embed attachments within the
+        actual email.
+      isArray: true
+      name: attach_cids
+      required: false
       secret: false
     deprecated: false
     description: The replies to the recipients of a message.

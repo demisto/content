@@ -1,0 +1,23 @@
+{
+    "id": "Azure DevOps",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Azure DevOps",
+    "prevName": "Azure DevOps",
+    "color": "#0097A7",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "layout": "Azure DevOps Layout",
+    "fromVersion": "6.0.0"
+}

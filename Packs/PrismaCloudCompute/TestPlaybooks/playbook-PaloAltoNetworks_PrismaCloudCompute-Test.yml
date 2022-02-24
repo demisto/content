@@ -18,18 +18,18 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8e23793f-13eb-4596-8169-0c3881b5849b
+      id: deabec74-93e3-4288-8588-4b278300dacb
       iscommand: false
       name: ""
       version: -1
-    taskid: 8e23793f-13eb-4596-8169-0c3881b5849b
+    taskid: deabec74-93e3-4288-8588-4b278300dacb
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
           "x": 265,
-          "y": -130
+          "y": -270
         }
       }
   "1":
@@ -49,20 +49,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 4b9842fb-50a9-4528-8645-6dc8922a393c
+      id: 917c5a8e-2b0e-4266-8c6b-760482c49495
       iscommand: false
       name: DeleteContext
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 4b9842fb-50a9-4528-8645-6dc8922a393c
+    taskid: 917c5a8e-2b0e-4266-8c6b-760482c49495
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 45
+          "y": -65
         }
       }
   "2":
@@ -86,20 +86,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 29516647-29ce-41d9-8cee-75df4821e46c
+      id: da2959c9-b525-4b37-8561-1491777cff73
       iscommand: false
       name: Get alert data using PrismaCloudComputeParseAuditAlert script
       script: PrismaCloudComputeParseAuditAlert
       type: regular
       version: -1
-    taskid: 29516647-29ce-41d9-8cee-75df4821e46c
+    taskid: da2959c9-b525-4b37-8561-1491777cff73
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 400
+          "y": 390
         }
       }
   "3":
@@ -145,12 +145,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f372bd46-9920-4878-88ad-2b6b37d3f7e0
+      id: efab1c79-12af-435c-8e47-dcd4ea67820c
       iscommand: false
       name: Verify received audit data
       type: condition
       version: -1
-    taskid: f372bd46-9920-4878-88ad-2b6b37d3f7e0
+    taskid: efab1c79-12af-435c-8e47-dcd4ea67820c
     timertriggers: []
     type: condition
     view: |-
@@ -174,13 +174,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 3fafb5ca-70c1-428e-8488-1118a6b2a5af
+      id: d7d38801-2e04-4789-8915-c3cfaac52e17
       iscommand: false
       name: Test Failed
       script: PrintErrorEntry
       type: regular
       version: -1
-    taskid: 3fafb5ca-70c1-428e-8488-1118a6b2a5af
+    taskid: d7d38801-2e04-4789-8915-c3cfaac52e17
     timertriggers: []
     type: regular
     view: |-
@@ -201,12 +201,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: cfea110a-139a-4718-8ac4-8548f989924e
+      id: 48a6e171-6b2c-4871-8f39-b485137de783
       iscommand: false
       name: Done
       type: title
       version: -1
-    taskid: cfea110a-139a-4718-8ac4-8548f989924e
+    taskid: 48a6e171-6b2c-4871-8f39-b485137de783
     timertriggers: []
     type: title
     view: |-
@@ -233,13 +233,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: b7739235-9321-4a70-843d-869300daaf6d
+      id: 0e47e4bd-7234-49a6-8f47-01d14f739192
       iscommand: false
       name: Print the context
       script: PrintContext
       type: regular
       version: -1
-    taskid: b7739235-9321-4a70-843d-869300daaf6d
+    taskid: 0e47e4bd-7234-49a6-8f47-01d14f739192
     timertriggers: []
     type: regular
     view: |-
@@ -264,24 +264,28 @@ tasks:
         simple: "true"
       brand_name:
         simple: PaloAltoNetworks_PrismaCloudCompute
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "15"
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: ac9ef9b5-d6eb-41f9-8c48-cca663bfe0cb
+      id: 47483520-c1b6-40f2-8398-8cdae0309881
       iscommand: false
       name: FetchFromInstance
       script: FetchFromInstance
       type: regular
       version: -1
-    taskid: ac9ef9b5-d6eb-41f9-8c48-cca663bfe0cb
+    taskid: 47483520-c1b6-40f2-8398-8cdae0309881
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 220
+          "y": 160
         }
       }
   "8":
@@ -304,13 +308,13 @@ tasks:
       description: Get information about the hosts and their profile events, this
         command supports asterisks which allows you to get host profiles that contain
         a specific substring
-      id: e33570fd-2e17-4692-894a-bd1f95e5e903
+      id: e33c16a5-72f2-437e-8f5a-b0c44ecc7211
       iscommand: true
       name: prisma-cloud-compute-profile-host-list
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-profile-host-list
       type: regular
       version: -1
-    taskid: e33570fd-2e17-4692-894a-bd1f95e5e903
+    taskid: e33c16a5-72f2-437e-8f5a-b0c44ecc7211
     timertriggers: []
     type: regular
     view: |-
@@ -340,13 +344,13 @@ tasks:
       description: Get information about the containers and their profile events,
         this command supports asterisks which allows you to get container profiles
         that contain a specific substring
-      id: da7ea39c-f00d-4f28-8273-4b2b184312ad
+      id: c32427af-cf49-4597-8fb9-434be229c5c2
       iscommand: true
       name: prisma-cloud-compute-profile-container-list
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-profile-container-list
       type: regular
       version: -1
-    taskid: da7ea39c-f00d-4f28-8273-4b2b184312ad
+    taskid: c32427af-cf49-4597-8fb9-434be229c5c2
     timertriggers: []
     type: regular
     view: |-
@@ -432,12 +436,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 855c986c-6f6f-4fb6-84c7-cb71312bdb99
+      id: 909076bb-6769-47dc-810a-c12d11f4a71f
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 855c986c-6f6f-4fb6-84c7-cb71312bdb99
+    taskid: 909076bb-6769-47dc-810a-c12d11f4a71f
     timertriggers: []
     type: condition
     view: |-
@@ -465,13 +469,13 @@ tasks:
     task:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: Get the hosts where a specific container is running.
-      id: 99862ee3-35cd-4dd0-8f74-58aefb5a86d0
+      id: 83f57d94-321c-4738-8759-81905f04f2dc
       iscommand: true
       name: prisma-cloud-compute-profile-container-hosts-list
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-profile-container-hosts-list
       type: regular
       version: -1
-    taskid: 99862ee3-35cd-4dd0-8f74-58aefb5a86d0
+    taskid: 83f57d94-321c-4738-8759-81905f04f2dc
     timertriggers: []
     type: regular
     view: |-
@@ -510,12 +514,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: b8d7c088-c817-4d1a-829c-d2fd99713e35
+      id: 8a1f3d29-5842-4133-86dd-9e59ce0d5c20
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: b8d7c088-c817-4d1a-829c-d2fd99713e35
+    taskid: 8a1f3d29-5842-4133-86dd-9e59ce0d5c20
     timertriggers: []
     type: condition
     view: |-
@@ -556,13 +560,13 @@ tasks:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: Get runtime forensics data for a specific container on a specific
         host
-      id: a562f31c-19f2-4899-82b8-691b7a0c88d5
+      id: a13e032b-30eb-4ee3-8514-bfd49603249a
       iscommand: true
       name: prisma-cloud-compute-profile-container-forensic-list
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-profile-container-forensic-list
       type: regular
       version: -1
-    taskid: a562f31c-19f2-4899-82b8-691b7a0c88d5
+    taskid: a13e032b-30eb-4ee3-8514-bfd49603249a
     timertriggers: []
     type: regular
     view: |-
@@ -590,13 +594,13 @@ tasks:
     task:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: Get forensics on a specific host
-      id: 069c342e-b62f-47c3-85b4-7dbfa9413e2b
+      id: 330798b2-0901-4239-8ae6-437c60669211
       iscommand: true
       name: prisma-cloud-compute-host-forensic-list
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-host-forensic-list
       type: regular
       version: -1
-    taskid: 069c342e-b62f-47c3-85b4-7dbfa9413e2b
+    taskid: 330798b2-0901-4239-8ae6-437c60669211
     timertriggers: []
     type: regular
     view: |-
@@ -621,13 +625,13 @@ tasks:
     task:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: Get the console version
-      id: 272c8e1e-2a86-48de-8da7-177b99a9de70
+      id: a613d95d-572a-4115-8349-3e149d493988
       iscommand: true
       name: prisma-cloud-compute-console-version-info
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-console-version-info
       type: regular
       version: -1
-    taskid: 272c8e1e-2a86-48de-8da7-177b99a9de70
+    taskid: a613d95d-572a-4115-8349-3e149d493988
     timertriggers: []
     type: regular
     view: |-
@@ -662,12 +666,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 4f1362e4-b389-45e3-879e-452cb247333b
+      id: cc63f7b3-9ee3-4952-856d-0e64cb50fdf6
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 4f1362e4-b389-45e3-879e-452cb247333b
+    taskid: cc63f7b3-9ee3-4952-856d-0e64cb50fdf6
     timertriggers: []
     type: condition
     view: |-
@@ -692,13 +696,13 @@ tasks:
     task:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: Get all the BlackListed IP addresses in the system
-      id: 581f2827-c925-4314-8603-78eb1a12a068
+      id: eb4cf9c1-39d9-44a6-8c20-92e3b31d86e9
       iscommand: true
       name: prisma-cloud-compute-custom-feeds-ip-list
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-custom-feeds-ip-list
       type: regular
       version: -1
-    taskid: 581f2827-c925-4314-8603-78eb1a12a068
+    taskid: eb4cf9c1-39d9-44a6-8c20-92e3b31d86e9
     timertriggers: []
     type: regular
     view: |-
@@ -718,7 +722,7 @@ tasks:
           operator: hasLength
           right:
             value:
-              simple: "2"
+              simple: "1"
       - - left:
             iscontext: true
             value:
@@ -727,14 +731,6 @@ tasks:
           right:
             value:
               simple: 1.1.1.1
-      - - left:
-            iscontext: true
-            value:
-              simple: PrismaCloudCompute.CustomFeedIP.feed
-          operator: containsGeneral
-          right:
-            value:
-              simple: 2.2.2.2
       label: "yes"
     id: "21"
     ignoreworker: false
@@ -749,12 +745,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: c3ec2b46-82c0-4c2f-8a0c-11ba3c8a3fb9
+      id: 3b3f6b67-5182-4c5f-89cb-cb92b31c1ff3
       iscommand: false
       name: Verify outputs
       type: condition
       version: -1
-    taskid: c3ec2b46-82c0-4c2f-8a0c-11ba3c8a3fb9
+    taskid: 3b3f6b67-5182-4c5f-89cb-cb92b31c1ff3
     timertriggers: []
     type: condition
     view: |-
@@ -776,19 +772,19 @@ tasks:
     quietmode: 0
     scriptarguments:
       ip:
-        simple: 1.1.1.1,2.2.2.2
+        simple: 1.1.1.1
     separatecontext: false
     skipunavailable: false
     task:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: Add a list of banned IPs to be blocked by the system
-      id: f38d589f-d38e-45ab-8ec3-9f436ce40aa5
+      id: 6cb169bb-e4a9-4e8c-8482-af03b8dfd71c
       iscommand: true
       name: prisma-cloud-compute-custom-feeds-ip-add
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-custom-feeds-ip-add
       type: regular
       version: -1
-    taskid: f38d589f-d38e-45ab-8ec3-9f436ce40aa5
+    taskid: 6cb169bb-e4a9-4e8c-8482-af03b8dfd71c
     timertriggers: []
     type: regular
     view: |-
@@ -852,12 +848,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: abdc8740-3fdb-4bf8-887e-818631943785
+      id: 6a65da6b-8d13-4062-880a-cd07eaa6270f
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: abdc8740-3fdb-4bf8-887e-818631943785
+    taskid: 6a65da6b-8d13-4062-880a-cd07eaa6270f
     timertriggers: []
     type: condition
     view: |-
@@ -894,12 +890,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 6023793f-3f9b-49a6-8bb6-c9e381fef068
+      id: a037a7e9-6ccd-4748-858f-bd9f75a343b7
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 6023793f-3f9b-49a6-8bb6-c9e381fef068
+    taskid: a037a7e9-6ccd-4748-858f-bd9f75a343b7
     timertriggers: []
     type: condition
     view: |-
@@ -936,12 +932,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8ec47e74-6283-4141-82ea-d27854ac0c32
+      id: 9f427e43-e91b-4196-87ca-312f3b59650e
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 8ec47e74-6283-4141-82ea-d27854ac0c32
+    taskid: 9f427e43-e91b-4196-87ca-312f3b59650e
     timertriggers: []
     type: condition
     view: |-
@@ -966,13 +962,13 @@ tasks:
     task:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: List all custom uploaded md5 malwares.
-      id: ca28693a-e7e8-4bde-88b4-805ede6f4318
+      id: 7972ce2c-73bc-41ef-8835-e21a6b5fdd1a
       iscommand: true
       name: prisma-cloud-compute-custom-feeds-malware-list
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-custom-feeds-malware-list
       type: regular
       version: -1
-    taskid: ca28693a-e7e8-4bde-88b4-805ede6f4318
+    taskid: 7972ce2c-73bc-41ef-8835-e21a6b5fdd1a
     timertriggers: []
     type: regular
     view: |-
@@ -1014,12 +1010,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 0a66b14b-1c9d-4341-8f01-27c73bb8e9ec
+      id: 42ba5548-1cef-46fc-84e3-17274d4276e9
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 0a66b14b-1c9d-4341-8f01-27c73bb8e9ec
+    taskid: 42ba5548-1cef-46fc-84e3-17274d4276e9
     timertriggers: []
     type: condition
     view: |-
@@ -1051,13 +1047,13 @@ tasks:
       description: Get infomration about the cves in the system, will return maximum
         of 50 records, it is possible to query for partial cve description such as
         cve-2020 or cve-2014 or by severity/distro/package
-      id: 1e1fc307-84c5-4605-884c-2831823323cc
+      id: e3e0c41a-289c-4d39-8476-f2d63c38cc97
       iscommand: true
       name: cve
       script: PaloAltoNetworks_PrismaCloudCompute|||cve
       type: regular
       version: -1
-    taskid: 1e1fc307-84c5-4605-884c-2831823323cc
+    taskid: e3e0c41a-289c-4d39-8476-f2d63c38cc97
     timertriggers: []
     type: regular
     view: |-
@@ -1108,12 +1104,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 1f7890cb-f11e-42be-8587-53ed3c75ffab
+      id: 8e2b9fdf-c50e-466f-8a65-216d17d1e481
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 1f7890cb-f11e-42be-8587-53ed3c75ffab
+    taskid: 8e2b9fdf-c50e-466f-8a65-216d17d1e481
     timertriggers: []
     type: condition
     view: |-
@@ -1141,13 +1137,13 @@ tasks:
     task:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: prisma-cloud-compute-vulnerabilities-impacted-resources-list
-      id: c93a1741-7fb2-4879-8be7-6e1ff7ab34f9
+      id: 7a68e5f9-3ff3-4d70-821c-c3b50cddd868
       iscommand: true
       name: prisma-cloud-compute-vulnerabilities-impacted-resources-list
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-vulnerabilities-impacted-resources-list
       type: regular
       version: -1
-    taskid: c93a1741-7fb2-4879-8be7-6e1ff7ab34f9
+    taskid: 7a68e5f9-3ff3-4d70-821c-c3b50cddd868
     timertriggers: []
     type: regular
     view: |-
@@ -1194,12 +1190,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 3bd60728-a7c9-433b-8b02-3572defb462d
+      id: ac831932-98da-4c48-8499-6cbe566c64b2
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 3bd60728-a7c9-433b-8b02-3572defb462d
+    taskid: ac831932-98da-4c48-8499-6cbe566c64b2
     timertriggers: []
     type: condition
     view: |-
@@ -1229,13 +1225,13 @@ tasks:
     task:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: Retrieve a list of defenders and their information
-      id: 179fc07b-72bc-4962-8d9c-57c76aa2f061
+      id: 7c77313e-8563-4d83-87b9-5b106cde3898
       iscommand: true
       name: prisma-cloud-compute-defenders-list
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-defenders-list
       type: regular
       version: -1
-    taskid: 179fc07b-72bc-4962-8d9c-57c76aa2f061
+    taskid: 7c77313e-8563-4d83-87b9-5b106cde3898
     timertriggers: []
     type: regular
     view: |-
@@ -1297,12 +1293,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: dcf52d44-c1d5-47d9-80d7-f53354554789
+      id: 58fe5da8-3a1b-4fa5-867d-f8ab6da1c6c5
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: dcf52d44-c1d5-47d9-80d7-f53354554789
+    taskid: 58fe5da8-3a1b-4fa5-867d-f8ab6da1c6c5
     timertriggers: []
     type: condition
     view: |-
@@ -1327,13 +1323,13 @@ tasks:
     task:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: Retrieves a list of all collections
-      id: 98076431-5068-450c-805b-adf02834ff98
+      id: 5ec6667f-ba7c-4d43-814b-0ccbcb45dc97
       iscommand: true
       name: prisma-cloud-compute-collections-list
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-collections-list
       type: regular
       version: -1
-    taskid: 98076431-5068-450c-805b-adf02834ff98
+    taskid: 5ec6667f-ba7c-4d43-814b-0ccbcb45dc97
     timertriggers: []
     type: regular
     view: |-
@@ -1405,12 +1401,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9814480c-bbdf-4547-81db-4759b2888605
+      id: a569e515-ad4c-4414-84c2-90c3cee30534
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 9814480c-bbdf-4547-81db-4759b2888605
+    taskid: a569e515-ad4c-4414-84c2-90c3cee30534
     timertriggers: []
     type: condition
     view: |-
@@ -1435,13 +1431,13 @@ tasks:
     task:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: Get the containers namespaces names
-      id: e25cb1ca-964b-4edb-8345-6f332b2ee68e
+      id: 13ed7cd7-d910-404e-86b2-a1345ffec23e
       iscommand: true
       name: prisma-cloud-compute-container-namespace-list
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-container-namespace-list
       type: regular
       version: -1
-    taskid: e25cb1ca-964b-4edb-8345-6f332b2ee68e
+    taskid: 13ed7cd7-d910-404e-86b2-a1345ffec23e
     timertriggers: []
     type: regular
     view: |-
@@ -1473,12 +1469,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: cd4f1c22-8ebc-4322-880a-f9d4867c4735
+      id: 5d424c36-3901-452b-89d8-d07e043ebf5c
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: cd4f1c22-8ebc-4322-880a-f9d4867c4735
+    taskid: 5d424c36-3901-452b-89d8-d07e043ebf5c
     timertriggers: []
     type: condition
     view: |-
@@ -1511,13 +1507,13 @@ tasks:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: Get images scan report, the report includes vulnerabilities, compliance
         issues, binaries, etc.
-      id: 6c28165f-2273-4b31-88cb-8c781c3cd8d5
+      id: 2e4885cd-2f51-4032-8cf3-db5c5ddcec6b
       iscommand: true
       name: prisma-cloud-compute-images-scan-list
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-images-scan-list
       type: regular
       version: -1
-    taskid: 6c28165f-2273-4b31-88cb-8c781c3cd8d5
+    taskid: 2e4885cd-2f51-4032-8cf3-db5c5ddcec6b
     timertriggers: []
     type: regular
     view: |-
@@ -1610,12 +1606,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 10a911c4-b5ed-43ce-84a2-1744bbed859d
+      id: 25ad0b9c-b052-4ddb-8ea7-8c261b5353ef
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 10a911c4-b5ed-43ce-84a2-1744bbed859d
+    taskid: 25ad0b9c-b052-4ddb-8ea7-8c261b5353ef
     timertriggers: []
     type: condition
     view: |-
@@ -1648,13 +1644,13 @@ tasks:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: Get images scan report, the report includes vulnerabilities, compliance
         issues, binaries, etc.
-      id: 968989c1-4d98-4074-8ebd-999a1315660e
+      id: 6fae5d26-d4c3-479b-88c3-be65158a009c
       iscommand: true
       name: prisma-cloud-compute-hosts-scan-list
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-hosts-scan-list
       type: regular
       version: -1
-    taskid: 968989c1-4d98-4074-8ebd-999a1315660e
+    taskid: 6fae5d26-d4c3-479b-88c3-be65158a009c
     timertriggers: []
     type: regular
     view: |-
@@ -1747,12 +1743,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: d551f69c-5d31-4b5f-8fce-bda19507c4e5
+      id: 70d40add-717f-4526-81c2-0e2b93d2ed2e
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: d551f69c-5d31-4b5f-8fce-bda19507c4e5
+    taskid: 70d40add-717f-4526-81c2-0e2b93d2ed2e
     timertriggers: []
     type: condition
     view: |-
@@ -1782,13 +1778,13 @@ tasks:
     task:
       brand: PaloAltoNetworks_PrismaCloudCompute
       description: Add custom md5 malware hashes
-      id: 38750952-8e1e-44ad-841d-a85ac176425b
+      id: 272e4540-b0e7-463e-8868-036910f11c08
       iscommand: true
       name: prisma-cloud-compute-custom-feeds-malware-add
       script: PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-custom-feeds-malware-add
       type: regular
       version: -1
-    taskid: 38750952-8e1e-44ad-841d-a85ac176425b
+    taskid: 272e4540-b0e7-463e-8868-036910f11c08
     timertriggers: []
     type: regular
     view: |-
@@ -1804,10 +1800,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 7285,
+        "height": 7425,
         "width": 985,
         "x": 40,
-        "y": -130
+        "y": -270
       }
     }
   }

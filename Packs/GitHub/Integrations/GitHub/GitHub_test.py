@@ -5,7 +5,8 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import CommandResults
 from GitHub import main, list_branch_pull_requests, list_all_projects_command, \
-    add_issue_to_project_board_command, get_path_data, github_releases_list_command, get_branch_command
+    add_issue_to_project_board_command, get_path_data, github_releases_list_command, get_branch_command, \
+    list_issue_comments
 import GitHub
 
 REGULAR_BASE_URL = 'https://api.github.com'
@@ -333,3 +334,39 @@ def test_url_parameter_value(mocker, mock_params, expected_url):
     main()
 
     assert GitHub.BASE_URL == expected_url
+
+
+def test_list_issue_comments_no_since(mocker):
+    """
+    Given:
+        A call to list_issue_comments
+    When:
+        No since date was provided
+    Then:
+        The url_suffix argument provided to the http request should not include a since parameter
+    """
+    patched_request = mocker.patch('GitHub.http_request')
+    GitHub.ISSUE_SUFFIX = 'test'
+    issue_number = 1234
+    since_date = None
+    list_issue_comments(issue_number, since_date)
+    request_args = patched_request.call_args
+    assert 'since' not in request_args.kwargs['url_suffix']
+
+
+def test_list_issue_comments_since(mocker):
+    """
+    Given:
+        A call to list_issue_comments
+    When:
+        since date was provided
+    Then:
+        The url_suffix argument provided to the http request should include a since parameter
+    """
+    patched_request = mocker.patch('GitHub.http_request')
+    GitHub.ISSUE_SUFFIX = 'test'
+    issue_number = 1234
+    since_date = '2022-10-01'
+    list_issue_comments(issue_number, since_date)
+    request_args = patched_request.call_args
+    assert 'since' in request_args.kwargs['params']

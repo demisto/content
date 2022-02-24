@@ -12,7 +12,7 @@
 </ol>
 <hr>
 <h3 id="h_27761285331529904975109">Get a lock</h3>
-<p>Gets a specified lock. If the lock is already in use, the command waits until the lock is released or until timeout is reached.</p>
+<p>Gets a specific lock. If the lock doesn't exist, it creates one. If the lock is already in use, the command waits until the lock is released or until timeout is reached. If timeout is reached and the lock hasn't been released, the command fails to get the lock.</p>
 <h5>Base Command</h5>
 <p><code>lock-get</code></p>
 <h5>Input</h5>

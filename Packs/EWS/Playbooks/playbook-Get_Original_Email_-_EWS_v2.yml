@@ -4,7 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Get Original Email - EWS v2
 description: |-
-  This v2 playbook retrieves the original email in a thread as an EML file (and not an email object as in the previous version) by using the EWS v2 integration.
+  This v2 playbook retrieves the original email in a thread as an EML file (and not an email object as in the previous version) by using the EWS v2 or EWSO365 integration.
   It also reduces the number of tasks to perform the fetch action.
   Note: You must have the necessary eDiscovery permissions in the EWS integration to execute a global search.
 starttaskid: "0"
@@ -22,13 +22,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "8"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 122.5,
-          "y": 280
+          "y": 90
         }
       }
     note: false
@@ -46,8 +46,7 @@ tasks:
       id: 43203523-8fe7-4403-8c1b-ba175d568d59
       version: -1
       name: Is EWS v2 enabled?
-      description: Returns 'yes' if an integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if an integration brand is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -66,8 +65,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 122.5,
-          "y": 430
+          "x": -90,
+          "y": 390
         }
       }
     note: false
@@ -112,8 +111,8 @@ tasks:
       id: 15ad973f-06c8-417d-8f63-9fcb9dfc7bef
       version: -1
       name: Verify required inputs
-      description: Verifies that the required input values exist for retrieving the original
-        email.
+      description: Verifies the required input values exist for retrieving the
+        original email.
       type: condition
       iscommand: false
       brand: ""
@@ -154,17 +153,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: f5a63cbd-d9d6-49ca-8812-88c74426bb82
+    taskid: b069057c-c912-4f3c-874f-8427e1a5a131
     type: regular
     task:
-      id: f5a63cbd-d9d6-49ca-8812-88c74426bb82
+      id: b069057c-c912-4f3c-874f-8427e1a5a131
       version: -1
       name: Search for messages by MessageID
-      description: Retrieves all messages found in the thread of the forwarded email.
-      script: EWS v2|||ews-search-mailbox
+      description: Searches for items in the specified mailbox. Specific permissions
+        are needed to search in a target mailbox other than the
+        default.
+      script: '|||ews-search-mailbox'
       type: regular
       iscommand: true
-      brand: EWS v2
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -173,7 +174,7 @@ tasks:
         complex:
           root: inputs.MessageID
       selected-fields:
-        simple: item_id
+        simple: message_id
       target-mailbox:
         complex:
           root: inputs.TargetMailbox
@@ -200,8 +201,8 @@ tasks:
       id: 2c433705-840b-4ad0-8214-ed8db8588d35
       version: -1
       name: Was a matching email found?
-      description: Verifies that an email object with a message ID that matches the
-        InReplayTo ID of the forwarded email was found.
+      description: Verifies that an email object with a message ID matching the
+        InReplyTo ID of the forwarded email was found.
       type: condition
       iscommand: false
       brand: ""
@@ -237,17 +238,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 095d6baa-7a84-4f34-87d1-5b2d5a4287f2
+    taskid: eaaa6c31-f4f3-4c0e-8b72-e5bb226c3c5b
     type: regular
     task:
-      id: 095d6baa-7a84-4f34-87d1-5b2d5a4287f2
+      id: eaaa6c31-f4f3-4c0e-8b72-e5bb226c3c5b
       version: -1
       name: Get original email as eml
-      description: Retrieves items by item ID and uploads the content as an EML file.
-      script: EWS v2|||ews-get-items-as-eml
+      description: Retrieves an item by item ID and uploads its content as an EML file.
+      script: '|||ews-get-items-as-eml'
       type: regular
       iscommand: true
-      brand: EWS v2
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -274,16 +275,88 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 4bfdaffd-f35c-4305-8c60-1d734b46e014
+    type: title
+    task:
+      id: 4bfdaffd-f35c-4305-8c60-1d734b46e014
+      version: -1
+      name: Check integrations
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 122.5,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: b3af9bc1-18c4-4022-8ac7-4f41e030b055
+    type: condition
+    task:
+      id: b3af9bc1-18c4-4022-8ac7-4f41e030b055
+      version: -1
+      name: Is EWSO365 enabled?
+      description: Returns 'yes' if an integration brand is available. 
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    scriptarguments:
+      brandname:
+        simple: EWSO365
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "1_2_#default#": 0.25,
+      "9_2_#default#": 0.23
+    },
     "paper": {
       "dimensions": {
-        "height": 1355,
-        "width": 380,
-        "x": 122.5,
-        "y": 280
+        "height": 1545,
+        "width": 820,
+        "x": -90,
+        "y": 90
       }
     }
   }

@@ -1,31 +1,87 @@
-Integration to GitHub API.
+## Overview
+[GitHub](https://github.com/about) is an internet hosting provider that uses Git for software development and version control. It offers the distributed version control and source code management (SCM) functionality of Git, plus its own features. It provides access control and collaboration features such as bug tracking, feature requests, task management, continuous integration, and wikis for every project.
 
-## Configure GitHub on Cortex XSOAR
+## Use Cases
+This integration enables you to:
+- Create, close, or update a GitHub issue.
+- Get a list of all GitHub issues you have access to.
+- Create a branch in GitHub.
+- Get a list of a GitHub issue comments.
+- Create or update a GitHub pull request.
+- Search for a GitHub pull request.
+- Get a list of files for a GitHub pull request.
+- Get a list of inactive GitHub pull requests.
+- Get the contents of a file in GitHub.
+- Create a release.
+
+## Configuration
+To configure the GitHub integration on Cortex XSOAR you need to do the following (see below for more details):
+1. Configure access to GitHub.
+2. Configure integration parameters.
+
+### Configure Access to GitHub
+
+You can configure access to GitHub by either creating a personal access token or by creating a new GitHub app for Cortex XSOAR.
+
+#### Create a Personal Access Token 
+Personal access tokens (PATs) are an alternative to using passwords for authentication to GitHub when using the GitHub API. 
+To generate a new token:
+1. Navigate to the upper-right corner of any page and click your **profile photo**. 
+2. In the left sidebar, click **Developer settings**. 
+3. In the left sidebar, click **Personal access tokens** and click **Generate new token**. 
+4. Give your token a descriptive name. 
+5. To give your token an expiration, select the **Expiration drop-down** menu, then click a default or use the calendar picker. 
+6. Select the **scopes**, or **permissions**, you want to grant this token. The minimum is read-only on repo.
+7. Click **Generate token** and copy the token generated.
+
+#### Create a new GitHub App for Cortex XSOAR
+
+Another authentication option is to create and register a GitHub app under your personal account or under any organization you have administrative access to.
+1. Navigate to the upper-right corner of any page and click your **profile photo**:
+   - For a personal account owned app, go to your **Account Settings**.
+   - For an organization owned app, click Your organizations. To the right of the organization, click **Settings**.
+2. In the left sidebar, click **Developer settings**, from the sub-menu, click **GitHub Apps**.
+3. Click **New GitHub App**. 
+   - In **GitHub App name**, type the name of your app. 
+   - In **Homepage URL**, type any URL (this field is required).
+   - Deselect the **Active** option under the **Webhook settings**.
+   - In **Permissions**, choose the permissions your app will request. For each type of permission, use the drop-down menu and click Read-only, Read & write, or No access. The minimum is read-only permissions for **Pull requests**, **Checks**, **Pull requests**, **Security events**, and **Commit statuses**.
+   - Click **Create GitHub App**. 
+   - Click to generate a **private key** to install your GitHub app.
+4. Once you create a private GitHub app, you can install it on one of your org or user repositories.
+   - From the **GitHub Apps settings** page, select your app.
+   - In the left sidebar, click **Install App**.
+   - Click **Install** next to the organization or user account containing the correct repository.
+   - Install the app on all repositories or on selected repositories. 
+   - Once installed, you will see configuration options for the app on your selected account. 
+5. Copy the **private key** generated above to a new credentials object.
+
+### Configure Integration Parameters
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for GitHub.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
+    | **Parameter**                                                                                                    | **Required** |
     | --- | --- |
-    | Fetch incidents | False |
-    | Select an Issue or Pull requests to Fetch | False |
-    | API Token | False |
-    | Credentials | False |
-    | Username of the repository owner, for example: github.com/repos/{_owner_}/{repo}/issues | False |
-    | The name of the requested repository | False |
-    | First fetch interval (in days) | False |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
-    | Incident type | False |
-    | GitHub app integration ID | False |
-    | GitHub app installation ID | False |
+    | Fetch incidents                                                                                                  | False |
+    | Select an Issue or Pull requests to Fetch                                                                        | False |
+    | API Token, use the personal token created above                                                                                                        | False |
+    | Credentials, use the credentials object created above                                                                                                     | False |
+    | Username of the repository owner or the ogranization name, for example: github.com/repos/{_owner_}/{repo}/issues | False |
+    | The name of the requested repository                                                                             | False |
+    | First fetch interval (in days)                                                                                   | False |
+    | Use system proxy settings                                                                                        | False |
+    | Trust any certificate (not secure)                                                                               | False |
+    | Incident type                                                                                                    | False |
+    | GitHub app integration ID                                                                                        | False |
+    | GitHub app installation ID                                                                                       | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully
+You can execute these commands from the Cortex XSOAR CLI as part of an automation or in a playbook. After you successfully
 execute a command, a DBot message appears in the War Room with the command details.
 
 ### GitHub-create-issue
@@ -55,12 +111,12 @@ Creates an issue in GitHub.
 | GitHub.Issue.Title | String | The title of the created issue. | 
 | GitHub.Issue.Body | Unknown | The body of the created issue. | 
 | GitHub.Issue.State | String | The state of the created issue. | 
-| GitHub.Issue.Labels | String | Labels applied to the issue. | 
-| GitHub.Issue.Assignees | String | Users assigned to this issue. | 
-| GitHub.Issue.Created_at | Date | Date when the issue was created. | 
-| GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
-| GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
-| GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Labels | String | The labels applied to the issue. | 
+| GitHub.Issue.Assignees | String | The users assigned to this issue. | 
+| GitHub.Issue.Created_at | Date | The date the issue was created. | 
+| GitHub.Issue.Updated_at | Date | The date the issue was last updated. | 
+| GitHub.Issue.Closed_at | Date | The date the issue was closed. | 
+| GitHub.Issue.Closed_by | String | The user who closed the issue. | 
 | GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
@@ -97,12 +153,12 @@ Closes an existing issue.
 | GitHub.Issue.Title | String | The title of the closed issue | 
 | GitHub.Issue.Body | Unknown | The body of the closed issue. | 
 | GitHub.Issue.State | String | The state of the closed issue. | 
-| GitHub.Issue.Labels | String | Labels applied to the issue. | 
-| GitHub.Issue.Assignees | String | Users assigned to the issue. | 
-| GitHub.Issue.Created_at | Date | Date when the issue was created. | 
-| GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
-| GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
-| GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Labels | String | The labels applied to the issue. | 
+| GitHub.Issue.Assignees | String | The users assigned to the issue. | 
+| GitHub.Issue.Created_at | Date | The date the issue was created. | 
+| GitHub.Issue.Updated_at | Date | The date the issue was last updated. | 
+| GitHub.Issue.Closed_at | Date | The date the issue was closed. | 
+| GitHub.Issue.Closed_by | String | The user who closed the issue. | 
 | GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
@@ -144,12 +200,12 @@ Updates the parameters of a specified issue.
 | GitHub.Issue.Title | String | The title of the updated issue. | 
 | GitHub.Issue.Body | Unknown | The body of the updated issue. | 
 | GitHub.Issue.State | String | The state of the updated issue. | 
-| GitHub.Issue.Labels | String | Labels applied to the issue. | 
-| GitHub.Issue.Assignees | String | Users assigned to the issue. | 
-| GitHub.Issue.Created_at | Date | Date when the issue was created. | 
-| GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
-| GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
-| GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Labels | String | The labels applied to the issue. | 
+| GitHub.Issue.Assignees | String | The users assigned to the issue. | 
+| GitHub.Issue.Created_at | Date | The date the issue was created. | 
+| GitHub.Issue.Updated_at | Date | The date the issue was last updated. | 
+| GitHub.Issue.Closed_at | Date | The date the issue was closed. | 
+| GitHub.Issue.Closed_by | String | The user who closed the issue. | 
 | GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
@@ -177,7 +233,7 @@ Lists all issues that the user has access to view.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | state | The state of the issues to return. Can be 'open', 'closed' or 'all'. Default is 'open'. Possible values are: open, closed, all. Default is open. | Required | 
-| limit | The number of issues to return. Default is 50. Maximum is 200. Default is 50. | Optional | 
+| limit | The number of issues to return. Default is 50. Maximum is 200. | Optional | 
 
 #### Context Output
 
@@ -188,12 +244,12 @@ Lists all issues that the user has access to view.
 | GitHub.Issue.Title | String | The title of the issue. | 
 | GitHub.Issue.Body | Unknown | The body of the issue. | 
 | GitHub.Issue.State | String | The state of the issue. | 
-| GitHub.Issue.Labels | String | Labels applied to the issue. | 
-| GitHub.Issue.Assignees | String | Users assigned to the issue. | 
-| GitHub.Issue.Created_at | Date | Date when the issue was created. | 
-| GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
-| GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
-| GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Labels | String | The labels applied to the issue. | 
+| GitHub.Issue.Assignees | String | The users assigned to the issue. | 
+| GitHub.Issue.Created_at | Date | The date the issue was created. | 
+| GitHub.Issue.Updated_at | Date | The date the issue was last updated. | 
+| GitHub.Issue.Closed_at | Date | The date the issue was closed. | 
+| GitHub.Issue.Closed_by | String | The user who closed the issue. | 
 | GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
@@ -220,7 +276,7 @@ Searches for code in repositories that match a given query.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query line for the search. For more information see the GitHub documentation at https://docs.github.com/en/github/searching-for-information-on-github/searching-code. | Required | 
+| query | The query line for the search. For more information see the [GitHub documentation](https://docs.github.com/en/github/searching-for-information-on-github/searching-code). | Required | 
 | page_number | The page number. | Optional | 
 | page_size | The size of the requested page. Maximum is 100. | Optional | 
 | limit | The number of results to return. Default is 50. | Optional | 
@@ -230,17 +286,17 @@ Searches for code in repositories that match a given query.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.CodeSearchResults.name | String | The file name where the code found. | 
-| GitHub.CodeSearchResults.path | String | The full file path where the code found. | 
-| GitHub.CodeSearchResults.html_url | String | The url to the file. | 
+| GitHub.CodeSearchResults.name | String | The file name where the code is found. | 
+| GitHub.CodeSearchResults.path | String | The full file path where the code is found. | 
+| GitHub.CodeSearchResults.html_url | String | The URL to the file. | 
 | GitHub.CodeSearchResults.repository.full_name | String | The repository name. | 
-| GitHub.CodeSearchResults.repository.html_url | String | The url to the repository. | 
-| GitHub.CodeSearchResults.repository.description | String | Repository description. | 
-| GitHub.CodeSearchResults.repository.private | Boolean | True if repository is private. and false if public. | 
+| GitHub.CodeSearchResults.repository.html_url | String | The URL to the repository. | 
+| GitHub.CodeSearchResults.repository.description | String | The repository description. | 
+| GitHub.CodeSearchResults.repository.private | Boolean | True if the repository is private, false if public. | 
 | GitHub.CodeSearchResults.repository.id | String | The ID of the repository. | 
-| GitHub.CodeSearchResults.repository.releases_url | String | The url to the releases of the repository. | 
-| GitHub.CodeSearchResults.repository.branches_url | String | The url to the branches of the repository. | 
-| GitHub.CodeSearchResults.repository.commits_url | String | The url to the commits of the repository. | 
+| GitHub.CodeSearchResults.repository.releases_url | String | The URL to the releases of the repository. | 
+| GitHub.CodeSearchResults.repository.branches_url | String | The URL to the branches of the repository. | 
+| GitHub.CodeSearchResults.repository.commits_url | String | The URL to the commits of the repository. | 
 
 
 #### Command Example
@@ -353,12 +409,12 @@ Searches for and returns issues that match a given query.
 | GitHub.Issue.Title | String | The title of the issue. | 
 | GitHub.Issue.Body | Unknown | The body of the issue. | 
 | GitHub.Issue.State | String | The state of the issue. | 
-| GitHub.Issue.Labels | String | Labels applied to the issue. | 
-| GitHub.Issue.Assignees | String | Users assigned to the issue. | 
-| GitHub.Issue.Created_at | Date | Date when the issue was created. | 
-| GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
-| GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
-| GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Labels | String | The labels applied to the issue. | 
+| GitHub.Issue.Assignees | String | The users assigned to the issue. | 
+| GitHub.Issue.Created_at | Date | The date the issue was created. | 
+| GitHub.Issue.Updated_at | Date | The date the issue was last updated. | 
+| GitHub.Issue.Closed_at | Date | The date the issue was closed. | 
+| GitHub.Issue.Closed_by | String | The user who closed the issue. | 
 | GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
@@ -388,12 +444,12 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.Release.ID | Number | ID of the release. | 
-| GitHub.Release.Download_count | Number | Download count for the release. | 
-| GitHub.Release.Name | String | Name of the release. | 
-| GitHub.Release.Body | String | Body of the release. | 
-| GitHub.Release.Created_at | Date | Date when the release was created. | 
-| GitHub.Release.Published_at | Date | Date when the release was published. | 
+| GitHub.Release.ID | Number | The ID of the release. | 
+| GitHub.Release.Download_count | Number | The download count for the release. | 
+| GitHub.Release.Name | String | The name of the release. | 
+| GitHub.Release.Body | String | The body of the release. | 
+| GitHub.Release.Created_at | Date | The date the release was created. | 
+| GitHub.Release.Published_at | Date | The date the release was published. | 
 
 #### Command Example
 
@@ -410,7 +466,7 @@ There are no input arguments for this command.
 ### GitHub-get-stale-prs
 
 ***
-Get inactive pull requests
+Gets inactive pull requests.
 
 #### Base Command
 
@@ -463,13 +519,13 @@ Get a branch
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.Branch.Name | String | The name of the branch | 
-| GitHub.Branch.CommitSHA | String | The SHA of the commit the branch references | 
-| GitHub.Branch.CommitNodeID | String | The Node ID of the commit the branch references | 
-| GitHub.Branch.CommitAuthorID | Number | The GitHub ID number of the author of the commit the branch references | 
-| GitHub.Branch.CommitAuthorLogin | String | The GitHub login of the author of the commit the branch references | 
-| GitHub.Branch.CommitParentSHA | String | The SHAs of parent commits | 
-| GitHub.Branch.Protected | Boolean | Whether the branch is a protected one or not | 
+| GitHub.Branch.Name | String | The name of the branch. | 
+| GitHub.Branch.CommitSHA | String | The SHA of the commit the branch references. | 
+| GitHub.Branch.CommitNodeID | String | The Node ID of the commit the branch references. | 
+| GitHub.Branch.CommitAuthorID | Number | The GitHub ID number of the author of the commit the branch references. | 
+| GitHub.Branch.CommitAuthorLogin | String | The GitHub login of the author of the commit the branch references. | 
+| GitHub.Branch.CommitParentSHA | String | The SHAs of parent commits. | 
+| GitHub.Branch.Protected | Boolean | Whether the branch is protected. | 
 
 #### Command Example
 
@@ -512,7 +568,7 @@ Branch "new-branch-example" Created Successfully.
 ### GitHub-get-team-membership
 
 ***
-Retrieve a user's membership status with a team
+Retrieves a user membership status with a team.
 
 #### Base Command
 
@@ -529,10 +585,10 @@ Retrieve a user's membership status with a team
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.Team.Member.Role | String | The user's role on a team | 
-| GitHub.Team.Member.State | String | The user's state for a team | 
-| GitHub.Team.ID | Number | The ID number of the team | 
-| GitHub.Team.Member.Login | String | The login of the team member | 
+| GitHub.Team.Member.Role | String | The user's role on a team .| 
+| GitHub.Team.Member.State | String | The user's state for a team. | 
+| GitHub.Team.ID | Number | The ID number of the team. | 
+| GitHub.Team.Member.Login | String | The login of the team member. | 
 
 #### Command Example
 
@@ -548,7 +604,7 @@ Retrieve a user's membership status with a team
 ### GitHub-request-review
 
 ***
-Request reviews from GitHub users for a given Pull Request
+Requests reviews from GitHub users for a given pull request.
 
 #### Base Command
 
@@ -558,19 +614,19 @@ Request reviews from GitHub users for a given Pull Request
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pull_number | The number of the Pull Request for which you wish to request review. | Required | 
-| reviewers | A CSV list of GitHub users to request review from for a Pull Request. | Required | 
+| pull_number | The number of the pull request you want to request review for. | Required | 
+| reviewers | A CSV list of GitHub users to request review from for a pull request. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.PR.Number | Number | The number of the Pull Request | 
-| GitHub.PR.RequestedReviewer.Login | String | The login of the user requested for review | 
-| GitHub.PR.RequestedReviewer.ID | Number | The ID of the user requested for review | 
-| GitHub.PR.RequestedReviewer.NodeID | String | The node ID of the user requested for review | 
-| GitHub.PR.RequestedReviewer.Type | String | The type of the user requested for review | 
-| GitHub.PR.RequestedReviewer.SiteAdmin | Boolean | Whether the user requested for review is a site admin or not | 
+| GitHub.PR.Number | Number | The number of the pull request. | 
+| GitHub.PR.RequestedReviewer.Login | String | The login of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.ID | Number | The ID of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.NodeID | String | The node ID of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.Type | String | The type of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.SiteAdmin | Boolean | Whether the user requested for review is a site admin. | 
 
 #### Command Example
 
@@ -586,7 +642,7 @@ Request reviews from GitHub users for a given Pull Request
 ### GitHub-create-comment
 
 ***
-Create a comment for a given issue
+Creates a comment for a given issue.
 
 #### Base Command
 
@@ -603,15 +659,15 @@ Create a comment for a given issue
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.Comment.IssueNumber | Number | The number of the issue to which the comment belongs | 
-| GitHub.Comment.ID | Number | The ID of the comment | 
-| GitHub.Comment.NodeID | String | The node ID of the comment | 
-| GitHub.Comment.Body | String | The body content of the comment | 
-| GitHub.Comment.User.Login | String | The login of the user who commented | 
-| GitHub.Comment.User.ID | Number | The ID of the user who commented | 
-| GitHub.Comment.User.NodeID | String | The node ID of the user who commented | 
-| GitHub.Comment.User.Type | String | The type of the user who commented | 
-| GitHub.Comment.User.SiteAdmin | Boolean | Whether the user who commented is a site admin or not | 
+| GitHub.Comment.IssueNumber | Number | The number of the issue to which the comment belongs. | 
+| GitHub.Comment.ID | Number | The ID of the comment. | 
+| GitHub.Comment.NodeID | String | The node ID of the comment. | 
+| GitHub.Comment.Body | String | The body content of the comment. | 
+| GitHub.Comment.User.Login | String | The login of the user who commented. | 
+| GitHub.Comment.User.ID | Number | The ID of the user who commented. | 
+| GitHub.Comment.User.NodeID | String | The node ID of the user who commented. | 
+| GitHub.Comment.User.Type | String | The type of the user who commented. | 
+| GitHub.Comment.User.SiteAdmin | Boolean | Whether the user who commented is a site admin. | 
 
 #### Command Example
 
@@ -621,13 +677,13 @@ Create a comment for a given issue
 ## Created Comment
 |Body|ID|IssueNumber|NodeID|User|
 |--- |--- |--- |--- |--- |
-|Look this comment was made using the GitHub integration|532700206|1|MDEyOklzc3VlQ29tbWVudDUzMjcwMDIwNg==|Login: example-user1 ID: 55035720 NodeID: MDQ6VXNlcjU1MDM1NzIw Type: User SiteAdmin: false|
+|This comment was made using the GitHub integration|532700206|1|MDEyOklzc3VlQ29tbWVudDUzMjcwMDIwNg==|Login: example-user1 ID: 55035720 NodeID: MDQ6VXNlcjU1MDM1NzIw Type: User SiteAdmin: false|
 
 
 ### GitHub-list-issue-comments
 
 ***
-List comments on an issue
+Lists comments on an issue.
 
 #### Base Command
 
@@ -637,21 +693,22 @@ List comments on an issue
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_number | The number of the issue to list comments for. | Required | 
+| issue_number | The number of the issue to list comments for. | Required |
+| since | Only show notifications updated after the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.Comment.IssueNumber | Number | The number of the issue to which the comment belongs | 
-| GitHub.Comment.ID | Number | The ID of the comment | 
-| GitHub.Comment.NodeID | String | The node ID of the comment | 
-| GitHub.Comment.Body | String | The body content of the comment | 
-| GitHub.Comment.User.Login | String | The login of the user who commented | 
-| GitHub.Comment.User.ID | Number | The ID of the user who commented | 
-| GitHub.Comment.User.NodeID | String | The node ID of the user who commented | 
-| GitHub.Comment.User.Type | String | The type of the user who commented | 
-| GitHub.Comment.User.SiteAdmin | Boolean | Whether the user who commented is a site admin or not | 
+| GitHub.Comment.IssueNumber | Number | The number of the issue to which the comment belongs. | 
+| GitHub.Comment.ID | Number | The ID of the comment. | 
+| GitHub.Comment.NodeID | String | The node ID of the comment. | 
+| GitHub.Comment.Body | String | The body content of the comment. | 
+| GitHub.Comment.User.Login | String | The login of the user who commented. | 
+| GitHub.Comment.User.ID | Number | The ID of the user who commented. | 
+| GitHub.Comment.User.NodeID | String | The node ID of the user who commented. | 
+| GitHub.Comment.User.Type | String | The type of the user who commented. | 
+| GitHub.Comment.User.SiteAdmin | Boolean | Whether the user who commented is a site admin. | 
 
 #### Command Example
 
@@ -688,7 +745,7 @@ Lists the pull request files.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.PR.Number | Number | The number of the pull request | 
+| GitHub.PR.Number | Number | The number of the pull request. | 
 | GitHub.PR.File.SHA | String | The SHA hash of the last commit involving the file. | 
 | GitHub.PR.File.Name | String | The name of the file. | 
 | GitHub.PR.File.Status | String | The status of the file. | 
@@ -710,7 +767,7 @@ Lists the pull request files.
 ### GitHub-list-pr-reviews
 
 ***
-List reviews on a pull request
+Lists reviews on a pull request.
 
 #### Base Command
 
@@ -726,17 +783,17 @@ List reviews on a pull request
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.PR.Number | Number | The number of the pull request | 
-| GitHub.PR.Review.ID | Number | The ID of the review | 
-| GitHub.PR.Review.NodeID | String | The node ID of the review | 
-| GitHub.PR.Review.Body | String | The content of the review | 
-| GitHub.PR.Review.CommitID | String | The ID of the commit for which the review is applicable | 
-| GitHub.PR.Review.State | String | The state of the review | 
-| GitHub.PR.Review.User.Login | String | The reviewer's user login | 
-| GitHub.PR.Review.User.ID | Number | The reviewer's user ID | 
-| GitHub.PR.Review.User.NodeID | String | The reviewer's user node ID | 
-| GitHub.PR.Review.User.Type | String | The reviewer user type | 
-| GitHub.PR.Review.User.SiteAdmin | Boolean | Whether the reviewer is a site admin or not | 
+| GitHub.PR.Number | Number | The number of the pull request. | 
+| GitHub.PR.Review.ID | Number | The ID of the review. | 
+| GitHub.PR.Review.NodeID | String | The node ID of the review. | 
+| GitHub.PR.Review.Body | String | The content of the review. | 
+| GitHub.PR.Review.CommitID | String | The ID of the commit the review is for. | 
+| GitHub.PR.Review.State | String | The state of the review. | 
+| GitHub.PR.Review.User.Login | String | The reviewer's user login. | 
+| GitHub.PR.Review.User.ID | Number | The reviewer's user ID. | 
+| GitHub.PR.Review.User.NodeID | String | The reviewer's user node ID. | 
+| GitHub.PR.Review.User.Type | String | The reviewer user type. | 
+| GitHub.PR.Review.User.SiteAdmin | Boolean | Whether the reviewer is a site admin. | 
 
 #### Command Example
 
@@ -752,7 +809,7 @@ List reviews on a pull request
 ### GitHub-get-commit
 
 ***
-Get a commit
+Gets a commit.
 
 #### Base Command
 
@@ -768,20 +825,20 @@ Get a commit
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.Commit.SHA | String | The SHA hash of the commit | 
-| GitHub.Commit.Author.Date | String | The commit author date | 
-| GitHub.Commit.Author.Name | String | The name of the author | 
-| GitHub.Commit.Author.Email | String | The email of the author | 
-| GitHub.Commit.Committer.Date | String | The date the commiter committed | 
-| GitHub.Commit.Committer.Name | String | The name of the committer | 
-| GitHub.Commit.Committer.Email | String | The email of the committer | 
-| GitHub.Commit.Message | String | The message associated with the commit | 
-| GitHub.Commit.Parent | Unknown | List of parent SHA hashes | 
-| GitHub.Commit.TreeSHA | String | The SHA hash of the commit's tree | 
-| GitHub.Commit.Verification.Verified | Boolean | Whether the commit was verified or not | 
-| GitHub.Commit.Verification.Reason | String | The reason why the commit was or was not verified | 
-| GitHub.Commit.Verification.Signature | Unknown | The commit verification signature | 
-| GitHub.Commit.Verification.Payload | Unknown | The commit verification payload | 
+| GitHub.Commit.SHA | String | The SHA hash of the commit. | 
+| GitHub.Commit.Author.Date | String | The commit author date. | 
+| GitHub.Commit.Author.Name | String | The name of the author. | 
+| GitHub.Commit.Author.Email | String | The email of the author. | 
+| GitHub.Commit.Committer.Date | String | The date the committer committed. | 
+| GitHub.Commit.Committer.Name | String | The name of the committer. | 
+| GitHub.Commit.Committer.Email | String | The email of the committer.| 
+| GitHub.Commit.Message | String | The message associated with the commit. | 
+| GitHub.Commit.Parent | Unknown | List of parent SHA hashes. | 
+| GitHub.Commit.TreeSHA | String | The SHA hash of the commit's tree. | 
+| GitHub.Commit.Verification.Verified | Boolean | Whether the commit was verified. | 
+| GitHub.Commit.Verification.Reason | String | The reason why the commit was or was not verified. | 
+| GitHub.Commit.Verification.Signature | Unknown | The commit verification signature. | 
+| GitHub.Commit.Verification.Payload | Unknown | The commit verification payload. | 
 
 #### Command Example
 
@@ -797,7 +854,7 @@ Get a commit
 ### GitHub-add-label
 
 ***
-Add labels to an issue
+Adds labels to an issue.
 
 #### Base Command
 
@@ -824,7 +881,7 @@ Label "Content" Successfully Added to Issue #1
 ### GitHub-get-pull-request
 
 ***
-Get a pull request
+Gets a pull request.
 
 #### Base Command
 
@@ -842,167 +899,167 @@ Get a pull request
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.PR.ID | Number | The ID number of the pull request | 
-| GitHub.PR.NodeID | String | The node ID of the pull request | 
-| GitHub.PR.Number | Number | The issue number of the pull request | 
-| GitHub.PR.State | String | The state of the pull request | 
-| GitHub.PR.Locked | Boolean | Whether the pull request is locked or not | 
-| GitHub.PR.Title | String | The title of the pull request | 
-| GitHub.PR.User.Login | String | The login of the user who opened the pull request | 
-| GitHub.PR.User.ID | Number | The ID of the user who opened the pull request | 
-| GitHub.PR.User.NodeID | String | The node ID of the user who opened the pull request | 
-| GitHub.PR.User.Type | String | The type of the user who opened the pull request | 
-| GitHub.PR.User.SiteAdmin | Boolean | Whether the user who opened the pull request is a site admin or not | 
-| GitHub.PR.Body | String | The body content of the pull request | 
-| GitHub.PR.Label.ID | Number | The ID of the label | 
-| GitHub.PR.Label.NodeID | String | The node ID of the label | 
-| GitHub.PR.Label.Name | String | The name of the label | 
-| GitHub.PR.Label.Description | String | The description of the label | 
-| GitHub.PR.Label.Color | String | The hex color value of the label | 
-| GitHub.PR.Label.Default | Boolean | Whether the label is a default or not | 
-| GitHub.PR.Milestone.ID | Number | The ID of the milestone | 
-| GitHub.PR.Milestone.NodeID | String | The node ID of the milestone | 
-| GitHub.PR.Milestone.Number | Number | The number of the milestone | 
-| GitHub.PR.Milestone.State | String | The state of the milestone | 
-| GitHub.PR.Milestone.Title | String | The title of the milestone | 
-| GitHub.PR.Milestone.Description | String | The description of the milestone | 
-| GitHub.PR.Milestone.Creator.Login | String | The login of the milestone creator | 
-| GitHub.PR.Milestone.Creator.ID | Number | The ID the milestone creator | 
-| GitHub.PR.Milestone.Creator.NodeID | String | The node ID of the milestone creator | 
-| GitHub.PR.Milestone.Creator.Type | String | The type of the milestone creator | 
-| GitHub.PR.Milestone.Creator.SiteAdmin | Boolean | Whether the milestone creator is a site admin or not | 
-| GitHub.PR.Milestone.OpenIssues | Number | The number of open issues with this milestone | 
-| GitHub.PR.Milestone.ClosedIssues | Number | The number of closed issues with this milestone | 
-| GitHub.PR.Milestone.CreatedAt | String | The date the milestone was created | 
-| GitHub.PR.Milestone.UpdatedAt | String | The date the milestone was updated | 
-| GitHub.PR.Milestone.ClosedAt | String | The date the milestone was closed | 
-| GitHub.PR.Milestone.DueOn | String | The due date for the milestone | 
-| GitHub.PR.ActiveLockReason | String | The reason the pull request is locked | 
-| GitHub.PR.CreatedAt | String | The date the pull request was created | 
-| GitHub.PR.UpdatedAt | String | The date the pull request was updated | 
-| GitHub.PR.ClosedAt | String | The date the pull request was closed | 
-| GitHub.PR.MergedAt | String | The date the pull request was merged | 
-| GitHub.PR.MergeCommitSHA | String | The SHA hash of the pull request's merge commit | 
-| GitHub.PR.Assignee.Login | String | The login of the user assigned to the pull request | 
-| GitHub.PR.Assignee.ID | Number | The ID of the user assigned to the pull request | 
-| GitHub.PR.Assignee.NodeID | String | The node ID of the user assigned to the pull request | 
-| GitHub.PR.Assignee.Type | String | The type of the user assigned to the pull request | 
-| GitHub.PR.Assignee.SiteAdmin | Boolean | Whether the user assigned to the pull request is a site admin or not | 
-| GitHub.PR.RequestedReviewer.Login | String | The login of the user requested for review | 
-| GitHub.PR.RequestedReviewer.ID | Number | The ID of the user requested for review | 
-| GitHub.PR.RequestedReviewer.NodeID | String | The node ID of the user requested for review | 
-| GitHub.PR.RequestedReviewer.Type | String | The type of the user requested for review | 
-| GitHub.PR.RequestedReviewer.SiteAdmin | Boolean | Whether the user requested for review is a site admin or not | 
-| GitHub.PR.RequestedTeam.ID | Number | The ID of the team requested for review | 
-| GitHub.PR.RequestedTeam.NodeID | String | The node ID of the team requested for review | 
-| GitHub.PR.RequestedTeam.Name | String | The name of the team requested for review | 
-| GitHub.PR.RequestedTeam.Slug | String | The slug of the team requested for review | 
-| GitHub.PR.RequestedTeam.Description | String | The description of the team requested for review | 
-| GitHub.PR.RequestedTeam.Privacy | String | The privacy setting of the team requested for review | 
-| GitHub.PR.RequestedTeam.Permission | String | The permissions of the team requested for review | 
-| GitHub.PR.RequestedTeam.Parent | Unknown | The parent of the team requested for review | 
-| GitHub.PR.Head.Label | String | The label of the branch that HEAD points to | 
-| GitHub.PR.Head.Ref | String | The reference of the branch that HEAD points to | 
-| GitHub.PR.Head.SHA | String | The SHA hash of the commit that HEAD points to | 
-| GitHub.PR.Head.User.Login | String | The login of the committer of the HEAD commit of the checked out branch | 
-| GitHub.PR.Head.User.ID | Number | The ID of the committer of the HEAD commit of the checked out branch | 
-| GitHub.PR.Head.User.NodeID | String | The node ID of the committer of the HEAD commit of the checked out branch | 
-| GitHub.PR.Head.User.Type | String | The type of the committer of the HEAD commit of the checked out branch | 
-| GitHub.PR.Head.User.SiteAdmin | Boolean | Whether the committer of the HEAD commit of the checked out branch is a site admin or not | 
-| GitHub.PR.Head.Repo.ID | Number | The ID of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.NodeID | String | The node ID of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.Name | String | The name of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.FullName | String | The full name of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.Owner.Login | String | The user login of the owner of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.Owner.ID | Number | The user ID of the owner of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.Owner.NodeID | String | The user node ID of the owner of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.Owner.Type | String | The user type of the owner of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository of the checked out branch is a site admin or not | 
-| GitHub.PR.Head.Repo.Private | Boolean | Whether the repository of the checked out branch is private or not | 
-| GitHub.PR.Head.Repo.Description | String | The description of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.Fork | Boolean | Whether the repository of the checked out branch is a fork or not | 
-| GitHub.PR.Head.Repo.Language | Unknown | The language of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.ForksCount | Number | The number of forks of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.StargazersCount | Number | The number of stars of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.WatchersCount | Number | The number of entities watching the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.Size | Number | The size of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.DefaultBranch | String | The default branch of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.OpenIssuesCount | Number | The open issues of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.Topics | Unknown | Topics listed for the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.HasIssues | Boolean | Whether the repository of the checked out branch has issues or not | 
-| GitHub.PR.Head.Repo.HasProjects | Boolean | Whether the repository of the checked out branch has projects or not | 
-| GitHub.PR.Head.Repo.HasWiki | Boolean | Whether the repository of the checked out branch has a wiki or not | 
-| GitHub.PR.Head.Repo.HasPages | Boolean | Whether the repository of the checked out branch has pages or not | 
-| GitHub.PR.Head.Repo.HasDownloads | Boolean | Whether the repository of the checked out branch has downloads or not | 
-| GitHub.PR.Head.Repo.Archived | Boolean | Whether the repository of the checked out branch has been arvhived or not | 
-| GitHub.PR.Head.Repo.Disabled | Boolean | Whether the repository of the checked out branch has been disabled or not | 
-| GitHub.PR.Head.Repo.PushedAt | String | The date of the latest push to the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.CreatedAt | String | The date of creation of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.UpdatedAt | String | The date the repository of the checked out branch was last updated | 
-| GitHub.PR.Head.Repo.AllowRebaseMerge | Boolean | Whether the repository of the checked out branch permits rebase-style merges or not | 
-| GitHub.PR.Head.Repo.AllowSquashMerge | Boolean | Whether the repository of the checked out branch permits squash merges or not | 
-| GitHub.PR.Head.Repo.AllowMergeCommit | Boolean | Whether the repository of the checked out branch permits merge commits or not | 
-| GitHub.PR.Head.Repo.SubscribersCount | Number | The number of entities subscribing to the repository of the checked out branch | 
-| GitHub.PR.Base.Label | String | The label of the base branch | 
-| GitHub.PR.Base.Ref | String | The reference of the base branch | 
-| GitHub.PR.Base.SHA | String | The SHA hash of the base branch | 
-| GitHub.PR.Base.User.Login | String | The login of the committer of the commit that the base branch points to | 
-| GitHub.PR.Base.User.ID | Number | The ID of the committer of the commit that the base branch points to | 
-| GitHub.PR.Base.User.NodeID | String | The node ID of the committer of the commit that the base branch points to | 
+| GitHub.PR.ID | Number | The ID number of the pull request. | 
+| GitHub.PR.NodeID | String | The node ID of the pull request. | 
+| GitHub.PR.Number | Number | The issue number of the pull request. | 
+| GitHub.PR.State | String | The state of the pull request. | 
+| GitHub.PR.Locked | Boolean | Whether the pull request is locked. | 
+| GitHub.PR.Title | String | The title of the pull request. | 
+| GitHub.PR.User.Login | String | The login of the user who opened the pull request. | 
+| GitHub.PR.User.ID | Number | The ID of the user who opened the pull request. | 
+| GitHub.PR.User.NodeID | String | The node ID of the user who opened the pull request. | 
+| GitHub.PR.User.Type | String | The type of the user who opened the pull request. | 
+| GitHub.PR.User.SiteAdmin | Boolean | Whether the user who opened the pull request is a site admin. | 
+| GitHub.PR.Body | String | The body content of the pull request. | 
+| GitHub.PR.Label.ID | Number | The ID of the label. | 
+| GitHub.PR.Label.NodeID | String | The node ID of the label. | 
+| GitHub.PR.Label.Name | String | The name of the label. | 
+| GitHub.PR.Label.Description | String | The description of the label. | 
+| GitHub.PR.Label.Color | String | The hex color value of the label. | 
+| GitHub.PR.Label.Default | Boolean | Whether the label is a default. | 
+| GitHub.PR.Milestone.ID | Number | The ID of the milestone. | 
+| GitHub.PR.Milestone.NodeID | String | The node ID of the milestone. | 
+| GitHub.PR.Milestone.Number | Number | The number of the milestone. | 
+| GitHub.PR.Milestone.State | String | The state of the milestone. | 
+| GitHub.PR.Milestone.Title | String | The title of the milestone. | 
+| GitHub.PR.Milestone.Description | String | The description of the milestone. | 
+| GitHub.PR.Milestone.Creator.Login | String | The login of the milestone creator. | 
+| GitHub.PR.Milestone.Creator.ID | Number | The ID the milestone creator. | 
+| GitHub.PR.Milestone.Creator.NodeID | String | The node ID of the milestone creator. | 
+| GitHub.PR.Milestone.Creator.Type | String | The type of the milestone creator. | 
+| GitHub.PR.Milestone.Creator.SiteAdmin | Boolean | Whether the milestone creator is a site admin. | 
+| GitHub.PR.Milestone.OpenIssues | Number | The number of open issues with this milestone. | 
+| GitHub.PR.Milestone.ClosedIssues | Number | The number of closed issues with this milestone. | 
+| GitHub.PR.Milestone.CreatedAt | String | The date the milestone was created. | 
+| GitHub.PR.Milestone.UpdatedAt | String | The date the milestone was updated. | 
+| GitHub.PR.Milestone.ClosedAt | String | The date the milestone was closed. | 
+| GitHub.PR.Milestone.DueOn | String | The due date for the milestone. | 
+| GitHub.PR.ActiveLockReason | String | The reason the pull request is locked. | 
+| GitHub.PR.CreatedAt | String | The date the pull request was created. | 
+| GitHub.PR.UpdatedAt | String | The date the pull request was updated. | 
+| GitHub.PR.ClosedAt | String | The date the pull request was closed. | 
+| GitHub.PR.MergedAt | String | The date the pull request was merged. | 
+| GitHub.PR.MergeCommitSHA | String | The SHA hash of the pull request's merge commit. | 
+| GitHub.PR.Assignee.Login | String | The login of the user assigned to the pull request. | 
+| GitHub.PR.Assignee.ID | Number | The ID of the user assigned to the pull request. | 
+| GitHub.PR.Assignee.NodeID | String | The node ID of the user assigned to the pull request. | 
+| GitHub.PR.Assignee.Type | String | The type of the user assigned to the pull request. | 
+| GitHub.PR.Assignee.SiteAdmin | Boolean | Whether the user assigned to the pull request is a site admin. | 
+| GitHub.PR.RequestedReviewer.Login | String | The login of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.ID | Number | The ID of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.NodeID | String | The node ID of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.Type | String | The type of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.SiteAdmin | Boolean | Whether the user requested for review is a site admin. | 
+| GitHub.PR.RequestedTeam.ID | Number | The ID of the team requested for review. | 
+| GitHub.PR.RequestedTeam.NodeID | String | The node ID of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Name | String | The name of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Slug | String | The slug of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Description | String | The description of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Privacy | String | The privacy setting of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Permission | String | The permissions of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Parent | Unknown | The parent of the team requested for review. | 
+| GitHub.PR.Head.Label | String | The label of the branch that HEAD points to. | 
+| GitHub.PR.Head.Ref | String | The reference of the branch that HEAD points to. | 
+| GitHub.PR.Head.SHA | String | The SHA hash of the commit that HEAD points to. | 
+| GitHub.PR.Head.User.Login | String | The login of the committer of the HEAD commit of the checked out branch. | 
+| GitHub.PR.Head.User.ID | Number | The ID of the committer of the HEAD commit of the checked out branch. | 
+| GitHub.PR.Head.User.NodeID | String | The node ID of the committer of the HEAD commit of the checked out branch. | 
+| GitHub.PR.Head.User.Type | String | The type of the committer of the HEAD commit of the checked out branch. | 
+| GitHub.PR.Head.User.SiteAdmin | Boolean | Whether the committer of the HEAD commit of the checked out branch is a site admin. | 
+| GitHub.PR.Head.Repo.ID | Number | The ID of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.NodeID | String | The node ID of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Name | String | The name of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.FullName | String | The full name of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.Login | String | The user login of the owner of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.ID | Number | The user ID of the owner of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.NodeID | String | The user node ID of the owner of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.Type | String | The user type of the owner of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository of the checked out branch is a site admin. | 
+| GitHub.PR.Head.Repo.Private | Boolean | Whether the repository of the checked out branch is private. | 
+| GitHub.PR.Head.Repo.Description | String | The description of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Fork | Boolean | Whether the repository of the checked out branch is a fork. | 
+| GitHub.PR.Head.Repo.Language | Unknown | The language of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.ForksCount | Number | The number of forks of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.StargazersCount | Number | The number of stars of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.WatchersCount | Number | The number of entities watching the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Size | Number | The size of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.DefaultBranch | String | The default branch of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.OpenIssuesCount | Number | The open issues of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Topics | Unknown | Topics listed for the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.HasIssues | Boolean | Whether the repository of the checked out branch has issues. | 
+| GitHub.PR.Head.Repo.HasProjects | Boolean | Whether the repository of the checked out branch has projects. | 
+| GitHub.PR.Head.Repo.HasWiki | Boolean | Whether the repository of the checked out branch has a wiki. | 
+| GitHub.PR.Head.Repo.HasPages | Boolean | Whether the repository of the checked out branch has pages. | 
+| GitHub.PR.Head.Repo.HasDownloads | Boolean | Whether the repository of the checked out branch has downloads. | 
+| GitHub.PR.Head.Repo.Archived | Boolean | Whether the repository of the checked out branch has been archived. | 
+| GitHub.PR.Head.Repo.Disabled | Boolean | Whether the repository of the checked out branch has been disabled. | 
+| GitHub.PR.Head.Repo.PushedAt | String | The date of the latest push to the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.CreatedAt | String | The date of creation of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.UpdatedAt | String | The date the repository of the checked out branch was last updated. | 
+| GitHub.PR.Head.Repo.AllowRebaseMerge | Boolean | Whether the repository of the checked out branch permits rebase-style merges. | 
+| GitHub.PR.Head.Repo.AllowSquashMerge | Boolean | Whether the repository of the checked out branch permits squash merges. | 
+| GitHub.PR.Head.Repo.AllowMergeCommit | Boolean | Whether the repository of the checked out branch permits merge commits. | 
+| GitHub.PR.Head.Repo.SubscribersCount | Number | The number of entities subscribing to the repository of the checked out branch. | 
+| GitHub.PR.Base.Label | String | The label of the base branch. | 
+| GitHub.PR.Base.Ref | String | The reference of the base branch. | 
+| GitHub.PR.Base.SHA | String | The SHA hash of the base branch. | 
+| GitHub.PR.Base.User.Login | String | The login of the committer of the commit that the base branch points to. | 
+| GitHub.PR.Base.User.ID | Number | The ID of the committer of the commit that the base branch points to. | 
+| GitHub.PR.Base.User.NodeID | String | The node ID of the committer of the commit that the base branch points to. | 
 | GitHub.PR.Base.User.Type | String | The user type of the committer of the commit that the base branch points to | 
-| GitHub.PR.Base.User.SiteAdmin | Boolean | Whether the committer of the commit that the base branch points to is a site admin or not | 
-| GitHub.PR.Base.Repo.ID | Number | The ID of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.NodeID | String | The node ID of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.Name | String | The name of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.FullName | String | The full name of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.Owner.Login | String | The user login of the owner of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.Owner.ID | Number | The user ID of the owner of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.Owner.NodeID | String | The user node ID of the owner of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.Owner.Type | String | The user type of the owner of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository that the base branch belongs to is a site admin or not | 
-| GitHub.PR.Base.Repo.Private | Boolean | Whether the repository that the base branch belongs to is private or not | 
-| GitHub.PR.Base.Repo.Description | String | The description of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.Fork | Boolean | Whether the repository that the base branch belongs to is a fork or not | 
-| GitHub.PR.Base.Repo.Language | Unknown | The language of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.ForksCount | Number | The number of times that the repository that the base branch belongs to has been forked | 
-| GitHub.PR.Base.Repo.StargazersCount | Number | The number of times that the repository that the base branch belongs to has been starred | 
-| GitHub.PR.Base.Repo.WatchersCount | Number | The number of entities watching the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.Size | Number | The size of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.DefaultBranch | String | The default branch of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.OpenIssuesCount | Number | The number of open issues in the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.Topics | String | Topics listed for the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.HasIssues | Boolean | Whether the repository that the base branch belongs to has issues or not | 
-| GitHub.PR.Base.Repo.HasProjects | Boolean | Whether the repository that the base branch belongs to has projects or not | 
-| GitHub.PR.Base.Repo.HasWiki | Boolean | Whether the repository that the base branch belongs to has a wiki or not | 
-| GitHub.PR.Base.Repo.HasPages | Boolean | Whether the repository that the base branch belongs to has pages or not | 
-| GitHub.PR.Base.Repo.HasDownloads | Boolean | Whether the repository that the base branch belongs to has downloads or not | 
-| GitHub.PR.Base.Repo.Archived | Boolean | Whether the repository that the base branch belongs to is archived or not | 
-| GitHub.PR.Base.Repo.Disabled | Boolean | Whether the repository that the base branch belongs to is disabled or not | 
-| GitHub.PR.Base.Repo.PushedAt | String | The date that the repository that the base branch belongs to was last pushed to | 
-| GitHub.PR.Base.Repo.CreatedAt | String | The date of creation of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.UpdatedAt | String | The date that the repository that the base branch belongs to was last updated | 
-| GitHub.PR.Base.Repo.AllowRebaseMerge | Boolean | Whether the repository that the base branch belongs to allows rebase-style merges or not | 
-| GitHub.PR.Base.Repo.AllowSquashMerge | Boolean | Whether the repository that the base branch belongs to allows squash merges or not | 
-| GitHub.PR.Base.Repo.AllowMergeCommit | Boolean | Whether the repository that the base branch belongs to allows merge commits or not | 
-| GitHub.PR.Base.Repo.SubscribersCount | Number | The number of entities that subscribe to the repository that the base branch belongs to | 
-| GitHub.PR.AuthorAssociation | String | The pull request author association | 
-| GitHub.PR.Draft | Boolean | Whether the pull request is a draft or not | 
-| GitHub.PR.Merged | Boolean | Whether the pull request is merged or not | 
-| GitHub.PR.Mergeable | Boolean | Whether the pull request is mergeable or not | 
-| GitHub.PR.Rebaseable | Boolean | Whether the pull request is rebaseable or not | 
-| GitHub.PR.MergeableState | String | The mergeable state of the pull request | 
-| GitHub.PR.MergedBy.Login | String | The login of the user who merged the pull request | 
-| GitHub.PR.MergedBy.ID | Number | The ID of the user who merged the pull request | 
-| GitHub.PR.MergedBy.NodeID | String | The node ID of the user who merged the pull request | 
-| GitHub.PR.MergedBy.Type | String | The type of the user who merged the pull request | 
-| GitHub.PR.MergedBy.SiteAdmin | Boolean | Whether the user who merged the pull request is a site admin or not | 
-| GitHub.PR.Comments | Number | The number of comments on the pull request | 
-| GitHub.PR.ReviewComments | Number | The number of review comments on the pull request | 
-| GitHub.PR.MaintainerCanModify | Boolean | Whether the maintainer can modify the pull request or not | 
-| GitHub.PR.Commits | Number | The number of commits in the pull request | 
-| GitHub.PR.Additions | Number | The number of additions in the pull request | 
-| GitHub.PR.Deletions | Number | The number of deletions in the pull request | 
-| GitHub.PR.ChangedFiles | Number | The number of changed files in the pull request | 
+| GitHub.PR.Base.User.SiteAdmin | Boolean | Whether the committer of the commit that the base branch points to is a site admin. | 
+| GitHub.PR.Base.Repo.ID | Number | The ID of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.NodeID | String | The node ID of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Name | String | The name of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.FullName | String | The full name of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.Login | String | The user login of the owner of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.ID | Number | The user ID of the owner of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.NodeID | String | The user node ID of the owner of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.Type | String | The user type of the owner of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository that the base branch belongs to is a site admin. | 
+| GitHub.PR.Base.Repo.Private | Boolean | Whether the repository that the base branch belongs to is private. | 
+| GitHub.PR.Base.Repo.Description | String | The description of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Fork | Boolean | Whether the repository that the base branch belongs to is a fork. | 
+| GitHub.PR.Base.Repo.Language | Unknown | The language of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.ForksCount | Number | The number of times that the repository that the base branch belongs to has been forked. | 
+| GitHub.PR.Base.Repo.StargazersCount | Number | The number of times that the repository that the base branch belongs to has been starred. | 
+| GitHub.PR.Base.Repo.WatchersCount | Number | The number of entities watching the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Size | Number | The size of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.DefaultBranch | String | The default branch of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.OpenIssuesCount | Number | The number of open issues in the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Topics | String | Topics listed for the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.HasIssues | Boolean | Whether the repository that the base branch belongs to has issues. | 
+| GitHub.PR.Base.Repo.HasProjects | Boolean | Whether the repository that the base branch belongs to has projects. | 
+| GitHub.PR.Base.Repo.HasWiki | Boolean | Whether the repository that the base branch belongs to has a wiki. | 
+| GitHub.PR.Base.Repo.HasPages | Boolean | Whether the repository that the base branch belongs to has pages. | 
+| GitHub.PR.Base.Repo.HasDownloads | Boolean | Whether the repository that the base branch belongs to has downloads. | 
+| GitHub.PR.Base.Repo.Archived | Boolean | Whether the repository that the base branch belongs to is archived. | 
+| GitHub.PR.Base.Repo.Disabled | Boolean | Whether the repository that the base branch belongs to is disabled. | 
+| GitHub.PR.Base.Repo.PushedAt | String | The date that the repository that the base branch belongs to was last pushed to. | 
+| GitHub.PR.Base.Repo.CreatedAt | String | The date of creation of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.UpdatedAt | String | The date that the repository that the base branch belongs to was last updated. | 
+| GitHub.PR.Base.Repo.AllowRebaseMerge | Boolean | Whether the repository that the base branch belongs to allows rebase-style merges. | 
+| GitHub.PR.Base.Repo.AllowSquashMerge | Boolean | Whether the repository that the base branch belongs to allows squash merges. | 
+| GitHub.PR.Base.Repo.AllowMergeCommit | Boolean | Whether the repository that the base branch belongs to allows merge commits. | 
+| GitHub.PR.Base.Repo.SubscribersCount | Number | The number of entities that subscribe to the repository that the base branch belongs to. | 
+| GitHub.PR.AuthorAssociation | String | The pull request author association. | 
+| GitHub.PR.Draft | Boolean | Whether the pull request is a draft. | 
+| GitHub.PR.Merged | Boolean | Whether the pull request is merged. | 
+| GitHub.PR.Mergeable | Boolean | Whether the pull request is mergeable. | 
+| GitHub.PR.Rebaseable | Boolean | Whether the pull request is rebaseable. | 
+| GitHub.PR.MergeableState | String | The mergeable state of the pull request. | 
+| GitHub.PR.MergedBy.Login | String | The login of the user who merged the pull request. | 
+| GitHub.PR.MergedBy.ID | Number | The ID of the user who merged the pull request. | 
+| GitHub.PR.MergedBy.NodeID | String | The node ID of the user who merged the pull request. | 
+| GitHub.PR.MergedBy.Type | String | The type of the user who merged the pull request. | 
+| GitHub.PR.MergedBy.SiteAdmin | Boolean | Whether the user who merged the pull request is a site admin. | 
+| GitHub.PR.Comments | Number | The number of comments on the pull request. | 
+| GitHub.PR.ReviewComments | Number | The number of review comments on the pull request. | 
+| GitHub.PR.MaintainerCanModify | Boolean | Whether the maintainer can modify the pull request. | 
+| GitHub.PR.Commits | Number | The number of commits in the pull request. | 
+| GitHub.PR.Additions | Number | The number of additions in the pull request. | 
+| GitHub.PR.Deletions | Number | The number of deletions in the pull request. | 
+| GitHub.PR.ChangedFiles | Number | The number of changed files in the pull request. | 
 
 #### Command Example
 
@@ -1018,7 +1075,7 @@ Get a pull request
 ### GitHub-list-teams
 
 ***
-List the teams for an organization. Note that this API call is only available to authenticated members of the organization.
+Lists the teams for an organization. Note that this API call is only available to authenticated members of the organization.
 
 #### Base Command
 
@@ -1034,14 +1091,14 @@ List the teams for an organization. Note that this API call is only available to
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.Team.ID | Number | The ID of the team | 
-| GitHub.Team.NodeID | String | The node ID of the team | 
-| GitHub.Team.Name | String | The name of the team | 
-| GitHub.Team.Slug | String | The slug of the team | 
-| GitHub.Team.Description | String | The description of the team | 
-| GitHub.Team.Privacy | String | The privacy setting of the team | 
-| GitHub.Team.Permission | String | The permissions of the team | 
-| GitHub.Team.Parent | Unknown | The parent of the team | 
+| GitHub.Team.ID | Number | The ID of the team. | 
+| GitHub.Team.NodeID | String | The node ID of the team. | 
+| GitHub.Team.Name | String | The name of the team. | 
+| GitHub.Team.Slug | String | The slug of the team. | 
+| GitHub.Team.Description | String | The description of the team. | 
+| GitHub.Team.Privacy | String | The privacy setting of the team. | 
+| GitHub.Team.Permission | String | The permissions of the team. | 
+| GitHub.Team.Parent | Unknown | The parent of the team. | 
 
 #### Command Example
 
@@ -1058,7 +1115,7 @@ List the teams for an organization. Note that this API call is only available to
 ### GitHub-delete-branch
 
 ***
-Delete a branch
+Deletes a branch.
 
 #### Base Command
 
@@ -1104,18 +1161,18 @@ Lists all the review comments for a pull request.
 | GitHub.PR.ReviewComment.ID | Number | The ID number of the pull request review comment. | 
 | GitHub.PR.ReviewComment.NodeID | String | The Node ID of the pull request review comment. | 
 | GitHub.PR.ReviewComment.PullRequestReviewID | Number | The ID of the pull request review. | 
-| GitHub.PR.ReviewComment.DiffHunk | String | The diff hunk for which the review comment applies. | 
-| GitHub.PR.ReviewComment.Path | String | The file path of the proposed file changes for which the review comment applies. | 
-| GitHub.PR.ReviewComment.Position | Number | The position of the change for which the review comment applies. | 
-| GitHub.PR.ReviewComment.OriginalPosition | Number | The original position of the change for which the review comment applies. | 
+| GitHub.PR.ReviewComment.DiffHunk | String | The diff hunk the review comment applies to. | 
+| GitHub.PR.ReviewComment.Path | String | The file path of the proposed file changes the review comment applies to. | 
+| GitHub.PR.ReviewComment.Position | Number | The position of the change the review comment applies to. | 
+| GitHub.PR.ReviewComment.OriginalPosition | Number | The original position of the change the review comment applies to. | 
 | GitHub.PR.ReviewComment.CommitID | String | The commit ID of the proposed change. | 
 | GitHub.PR.ReviewComment.OriginalCommitID | String | The commit ID of the commit before the proposed change. | 
-| GitHub.PR.ReviewComment.InReplyToID | Number | The reply ID of the comment for which the review comment applies. | 
+| GitHub.PR.ReviewComment.InReplyToID | Number | The reply ID of the comment the review comment applies to. | 
 | GitHub.PR.ReviewComment.User.Login | String | The login of the user who created the review comment. | 
 | GitHub.PR.ReviewComment.User.ID | Number | The ID of the user who created the review comment. | 
 | GitHub.PR.ReviewComment.User.NodeID | String | The Node ID of the user who created the review comment. | 
 | GitHub.PR.ReviewComment.User.Type | String | The type of the user who created the review comment. | 
-| GitHub.PR.ReviewComment.User.SiteAdmin | Boolean | Whether the user who created the review comment is a site administrator. or not | 
+| GitHub.PR.ReviewComment.User.SiteAdmin | Boolean | Whether the user who created the review comment is a site administrator. | 
 | GitHub.PR.ReviewComment.Body | String | The body content of the review comment. | 
 | GitHub.PR.ReviewComment.CreatedAt | String | The time the review comment was created. | 
 | GitHub.PR.ReviewComment.UpdatedAt | String | The time the review comment was updated. | 
@@ -1146,10 +1203,10 @@ Updates a pull request in a repository.
 | --- | --- | --- |
 | title | The new title of the pull request. | Optional | 
 | body | The new body content of the pull request. | Optional | 
-| state | The new state of the pull request. Can be "open", or "closed". Possible values are: open, closed. | Optional | 
-| base | The name of the branch that you want your changes pulled, which must be an existing branch in the current repository. You cannot update the base branch in a pull request to point to another repository. | Optional | 
-| maintainer_can_modify | Indicates whether maintainers can modify the pull request. Possible values are: true, false. | Optional | 
-| pull_number | The issue number of the pull request for which to modify. | Required | 
+| state | The new state of the pull request. Possible values are: open, closed. | Optional | 
+| base | The name of the branch to pull your changes from. It must be an existing branch in the current repository. You cannot update the base branch in a pull request to point to another repository. | Optional | 
+| maintainer_can_modify | Indicates whether maintainers can modify the pull request. | Optional | 
+| pull_number | The issue number of the pull request to modify. | Required | 
 
 #### Context Output
 
@@ -1200,7 +1257,7 @@ Updates a pull request in a repository.
 | GitHub.PR.Assignee.ID | Number | The ID of the user assigned to the pull request. | 
 | GitHub.PR.Assignee.NodeID | String | The Node ID of the user assigned to the pull request. | 
 | GitHub.PR.Assignee.Type | String | The type of the user assigned to the pull request. | 
-| GitHub.PR.Assignee.SiteAdmin | Boolean | Whether the user assigned to the pull request is a site administrator. not | 
+| GitHub.PR.Assignee.SiteAdmin | Boolean | Whether the user assigned to the pull request is a site administrator. | 
 | GitHub.PR.RequestedReviewer.Login | String | The login of the user requested for review. | 
 | GitHub.PR.RequestedReviewer.ID | Number | The ID of the user requested for review. | 
 | GitHub.PR.RequestedReviewer.NodeID | String | The Node ID of the user requested for review. | 
@@ -1214,9 +1271,9 @@ Updates a pull request in a repository.
 | GitHub.PR.RequestedTeam.Privacy | String | The privacy setting of the team requested for review. | 
 | GitHub.PR.RequestedTeam.Permission | String | The permissions of the team requested for review. | 
 | GitHub.PR.RequestedTeam.Parent | Unknown | The parent of the team requested for review. | 
-| GitHub.PR.Head.Label | String | The label of the branch for which the HEAD points. | 
-| GitHub.PR.Head.Ref | String | The reference of the branch for which the HEAD points. | 
-| GitHub.PR.Head.SHA | String | The SHA hash of the commit for which the HEAD points. | 
+| GitHub.PR.Head.Label | String | The label of the branch the HEAD points to. | 
+| GitHub.PR.Head.Ref | String | The reference of the branch the HEAD points to. | 
+| GitHub.PR.Head.SHA | String | The SHA hash of the commit the HEAD points to. | 
 | GitHub.PR.Head.User.Login | String | The committer login of the HEAD commit of the checked out branch. | 
 | GitHub.PR.Head.User.ID | Number | The committer ID of the HEAD commit of the checked out branch. | 
 | GitHub.PR.Head.User.NodeID | String | The Node committer ID of the HEAD commit of the checked out branch. | 
@@ -1228,7 +1285,7 @@ Updates a pull request in a repository.
 | GitHub.PR.Head.Repo.FullName | String | The full name of the repository of the checked out branch. | 
 | GitHub.PR.Head.Repo.Owner.Login | String | The user login of the owner of the repository of the checked out branch. | 
 | GitHub.PR.Head.Repo.Owner.ID | Number | The user ID of the owner of the repository of the checked out branch. | 
-| GitHub.PR.Head.Repo.Owner.NodeID | String | The user node ID of the owner of the repository of the checked. out branch | 
+| GitHub.PR.Head.Repo.Owner.NodeID | String | The user node ID of the owner of the repository of the checked out branch. | 
 | GitHub.PR.Head.Repo.Owner.Type | String | The user type of the owner of the repository of the checked out branch. | 
 | GitHub.PR.Head.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository of the checked out branch is a site administrator. | 
 | GitHub.PR.Head.Repo.Private | Boolean | Whether the repository of the checked out branch is private. | 
@@ -1259,45 +1316,45 @@ Updates a pull request in a repository.
 | GitHub.PR.Base.Label | String | The label of the base branch. | 
 | GitHub.PR.Base.Ref | String | The reference of the base branch. | 
 | GitHub.PR.Base.SHA | String | The SHA hash of the base branch. | 
-| GitHub.PR.Base.User.Login | String | The committer login of the commit for which the base branch points. | 
-| GitHub.PR.Base.User.ID | Number | The ID of the committer of the commit for which the base branch points. | 
-| GitHub.PR.Base.User.NodeID | String | The committer Node ID of the commit for which the base branch points. | 
-| GitHub.PR.Base.User.Type | String | The user committer type of the commit for which the base branch points. | 
-| GitHub.PR.Base.User.SiteAdmin | Boolean | Whether the committer of the commit for which the base branch points is a site administrator. | 
-| GitHub.PR.Base.Repo.ID | Number | The ID of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.NodeID | String | The Node ID of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.Name | String | The name of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.FullName | String | The full name of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.Owner.Login | String | The user login of the owner of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.Owner.ID | Number | The user ID of the owner of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.Owner.NodeID | String | The user node ID of the owner of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.Owner.Type | String | The user type of the owner of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository for which the base branch belongs to is a site administrator. | 
-| GitHub.PR.Base.Repo.Private | Boolean | Whether the repository for which the base branch belongs is private. | 
-| GitHub.PR.Base.Repo.Description | String | The description of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.Fork | Boolean | Whether the repository for which the base branch belongs to is a fork. | 
-| GitHub.PR.Base.Repo.Language | Unknown | The language of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.ForksCount | Number | The number of times that the repository for which the base branch belongs has been forked. | 
-| GitHub.PR.Base.Repo.StargazersCount | Number | The number of times that the repository for which the base branch belongs has been starred. | 
-| GitHub.PR.Base.Repo.WatchersCount | Number | The number of entities watching the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.Size | Number | The size of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.DefaultBranch | String | The default branch of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.OpenIssuesCount | Number | The number of open issues in the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.Topics | String | Topics listed for the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.HasIssues | Boolean | Whether the repository for which the base branch belongs has issues. | 
-| GitHub.PR.Base.Repo.HasProjects | Boolean | Whether the repository for which the base branch belongs has projects. | 
-| GitHub.PR.Base.Repo.HasWiki | Boolean | Whether the repository for which the base branch belongs has a wiki. | 
-| GitHub.PR.Base.Repo.HasPages | Boolean | Whether the repository for which the base branch belongs to has pages. | 
-| GitHub.PR.Base.Repo.HasDownloads | Boolean | Whether the repository for which the base branch belongs has downloads. | 
-| GitHub.PR.Base.Repo.Archived | Boolean | Whether the repository for which the base branch belongs is archived. | 
-| GitHub.PR.Base.Repo.Disabled | Boolean | Whether the repository for which the base branch belongs is disabled. | 
-| GitHub.PR.Base.Repo.PushedAt | String | The date that the repository for which the base branch belongs to was last pushed. | 
-| GitHub.PR.Base.Repo.CreatedAt | String | The date of creation of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.UpdatedAt | String | The date that the repository for which the base branch belongs was last updated. | 
-| GitHub.PR.Base.Repo.AllowRebaseMerge | Boolean | Whether the repository for which the base branch belongs allows rebase-style merges. | 
-| GitHub.PR.Base.Repo.AllowSquashMerge | Boolean | Whether the repository for which the base branch belongs allows squash merges. | 
-| GitHub.PR.Base.Repo.AllowMergeCommit | Boolean | Whether the repository for which the base branch belongs allows merge commits. | 
-| GitHub.PR.Base.Repo.SubscribersCount | Number | The number of entities for which subscribe to the repository that the base branch belongs. | 
+| GitHub.PR.Base.User.Login | String | The committer login of the commit the base branch points to. | 
+| GitHub.PR.Base.User.ID | Number | The ID of the committer of the commit the base branch points to. | 
+| GitHub.PR.Base.User.NodeID | String | The committer Node ID of the commit the base branch points to. | 
+| GitHub.PR.Base.User.Type | String | The user committer type of the commit the base branch points to. | 
+| GitHub.PR.Base.User.SiteAdmin | Boolean | Whether the committer of the commit the base branch points to is a site administrator. | 
+| GitHub.PR.Base.Repo.ID | Number | The ID of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.NodeID | String | The Node ID of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Name | String | The name of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.FullName | String | The full name of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.Login | String | The user login of the owner of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.ID | Number | The user ID of the owner of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.NodeID | String | The user node ID of the owner of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.Type | String | The user type of the owner of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository the base branch belongs to is a site administrator. | 
+| GitHub.PR.Base.Repo.Private | Boolean | Whether the repository the base branch belongs to is private. | 
+| GitHub.PR.Base.Repo.Description | String | The description of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Fork | Boolean | Whether the repository the base branch to belongs to is a fork. | 
+| GitHub.PR.Base.Repo.Language | Unknown | The language of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.ForksCount | Number | The number of times the repository the base branch belongs to has been forked. | 
+| GitHub.PR.Base.Repo.StargazersCount | Number | The number of times the repository the base branch belongs to has been starred. | 
+| GitHub.PR.Base.Repo.WatchersCount | Number | The number of entities watching the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Size | Number | The size of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.DefaultBranch | String | The default branch of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.OpenIssuesCount | Number | The number of open issues in the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Topics | String | Topics listed for the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.HasIssues | Boolean | Whether the repository the base branch belongs to has issues. | 
+| GitHub.PR.Base.Repo.HasProjects | Boolean | Whether the repository the base branch belongs to has projects. | 
+| GitHub.PR.Base.Repo.HasWiki | Boolean | Whether the repository the base branch belongs to has a wiki. | 
+| GitHub.PR.Base.Repo.HasPages | Boolean | Whether the repository the base branch belongs to has pages. | 
+| GitHub.PR.Base.Repo.HasDownloads | Boolean | Whether the repository the base branch belongs to has downloads. | 
+| GitHub.PR.Base.Repo.Archived | Boolean | Whether the repository the base branch belongs to is archived. | 
+| GitHub.PR.Base.Repo.Disabled | Boolean | Whether the repository the base branch belongs to is disabled. | 
+| GitHub.PR.Base.Repo.PushedAt | String | The date the repository the base branch belongs to was last pushed. | 
+| GitHub.PR.Base.Repo.CreatedAt | String | The date of creation of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.UpdatedAt | String | The date the repository the base branch belongs to was last updated. | 
+| GitHub.PR.Base.Repo.AllowRebaseMerge | Boolean | Whether the repository the base branch belongs to allows rebase-style merges. | 
+| GitHub.PR.Base.Repo.AllowSquashMerge | Boolean | Whether the repository the base branch belongs to allows squash merges. | 
+| GitHub.PR.Base.Repo.AllowMergeCommit | Boolean | Whether the repository the base branch belongs to allows merge commits. | 
+| GitHub.PR.Base.Repo.SubscribersCount | Number | The number of entities to subscribe to the repository that the base branch belongs to. | 
 | GitHub.PR.AuthorAssociation | String | The pull request author association. | 
 | GitHub.PR.Draft | Boolean | Whether the pull request is a draft. | 
 | GitHub.PR.Merged | Boolean | Whether the pull request is merged. | 
@@ -1331,7 +1388,7 @@ Updates a pull request in a repository.
 
 ***
 Returns a merged pull request. If the pull request has been merged, the API returns 'Status: 204 No Content'. If the pull request
-has not been merged the API returns 'Status: 404 Not Found'
+has not been merged, the API returns 'Status: 404 Not Found'
 
 #### Base Command
 
@@ -1371,8 +1428,8 @@ Creates a new pull request.
 | head | The name of the branch where the changes are made. | Required | 
 | base | The name of the branch you want the changes pulled into, which must be an existing branch on the current repository. | Required | 
 | body | The contents of the pull request. | Optional | 
-| maintainer_can_modify | Indicates whether maintainers can modify the pull request. Possible values are: true, false. | Optional | 
-| draft | Indicates whether the pull request is a draft. For more information, see https://help.github.com/en/articles/about-pull-requests#draft-pull-requests. Possible values are: true, false. | Optional | 
+| maintainer_can_modify | Indicates whether maintainers can modify the pull request. | Optional | 
+| draft | Indicates whether the pull request is a draft. For more information, see https://help.github.com/en/articles/about-pull-requests#draft-pull-requests. | Optional | 
 
 #### Context Output
 
@@ -1437,9 +1494,9 @@ Creates a new pull request.
 | GitHub.PR.RequestedTeam.Privacy | String | The privacy setting of the team requested for review. | 
 | GitHub.PR.RequestedTeam.Permission | String | The permissions of the team requested for review. | 
 | GitHub.PR.RequestedTeam.Parent | Unknown | The parent of the team requested for review. | 
-| GitHub.PR.Head.Label | String | The label of the branch for which the HEAD points. | 
-| GitHub.PR.Head.Ref | String | The reference of the branch for which the HEAD points. | 
-| GitHub.PR.Head.SHA | String | The SHA hash of the commit for which the HEAD points. | 
+| GitHub.PR.Head.Label | String | The label of the branch the HEAD points to. | 
+| GitHub.PR.Head.Ref | String | The reference of the branch the HEAD points to. | 
+| GitHub.PR.Head.SHA | String | The SHA hash of the commit the HEAD points to. | 
 | GitHub.PR.Head.User.Login | String | The committer login of the HEAD commit of the checked out branch. | 
 | GitHub.PR.Head.User.ID | Number | The committer ID of the HEAD commit of the checked out branch. | 
 | GitHub.PR.Head.User.NodeID | String | The Node ID of the committer of the HEAD commit of the checked out branch. | 
@@ -1482,45 +1539,45 @@ Creates a new pull request.
 | GitHub.PR.Base.Label | String | The label of the base branch. | 
 | GitHub.PR.Base.Ref | String | The reference of the base branch. | 
 | GitHub.PR.Base.SHA | String | The SHA hash of the base branch. | 
-| GitHub.PR.Base.User.Login | String | The committer login of the commit for which the base branch points. | 
-| GitHub.PR.Base.User.ID | Number | The ID of the committer of the commit for which the base branch points. to | 
-| GitHub.PR.Base.User.NodeID | String | The committer Node ID of the commit for which the base branch points. | 
-| GitHub.PR.Base.User.Type | String | The user type of the committer for which the commit base branch points. | 
-| GitHub.PR.Base.User.SiteAdmin | Boolean | Whether the committer of the commit for which the base branch points to is a site administrator. | 
-| GitHub.PR.Base.Repo.ID | Number | The ID of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.NodeID | String | The Node ID of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.Name | String | The name of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.FullName | String | The full name of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.Owner.Login | String | The user login of the owner of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.Owner.ID | Number | The user ID of the owner of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.Owner.NodeID | String | The user node ID of the owner of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.Owner.Type | String | The user type of the owner of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository that the base branch belongs to is a site administrator. | 
-| GitHub.PR.Base.Repo.Private | Boolean | Whether the repository for which the base branch belongs to is private. | 
-| GitHub.PR.Base.Repo.Description | String | The description of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.Fork | Boolean | Whether the repository that the base branch belongs to is a fork. | 
-| GitHub.PR.Base.Repo.Language | Unknown | The language of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.ForksCount | Number | The number of times that the repository for which the base branch belongs has been forked. | 
-| GitHub.PR.Base.Repo.StargazersCount | Number | The number of times that the repository that the base branch belongs to has been starred. | 
-| GitHub.PR.Base.Repo.WatchersCount | Number | The number of entities watching the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.Size | Number | The size of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.DefaultBranch | String | The default branch of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.OpenIssuesCount | Number | The number of open issues in the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.Topics | String | Topics listed for the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.HasIssues | Boolean | Whether the repository for which the base branch belongs to has issues. | 
-| GitHub.PR.Base.Repo.HasProjects | Boolean | Whether the repository for which the base branch belongs to has projects. | 
-| GitHub.PR.Base.Repo.HasWiki | Boolean | Whether the repository for which the base branch belongs to has a wiki. | 
-| GitHub.PR.Base.Repo.HasPages | Boolean | Whether the repository for which the base branch belongs to has pages. | 
-| GitHub.PR.Base.Repo.HasDownloads | Boolean | Whether the repository for which the base branch belongs to has downloads. | 
-| GitHub.PR.Base.Repo.Archived | Boolean | Whether the repository for which the base branch belongs to is archived. | 
-| GitHub.PR.Base.Repo.Disabled | Boolean | Whether the repository for which the base branch belongs to is disabled. | 
-| GitHub.PR.Base.Repo.PushedAt | String | The date that the repository for which the base branch belongs was last pushed. | 
-| GitHub.PR.Base.Repo.CreatedAt | String | The date of creation of the repository for which the base branch belongs. | 
-| GitHub.PR.Base.Repo.UpdatedAt | String | The date that the repository for which the base branch belongs was last updated. | 
-| GitHub.PR.Base.Repo.AllowRebaseMerge | Boolean | Whether the repository for which the base branch belongs allows rebase-style merges. | 
-| GitHub.PR.Base.Repo.AllowSquashMerge | Boolean | Whether the repository for which the base branch belongs allows squash merges. | 
-| GitHub.PR.Base.Repo.AllowMergeCommit | Boolean | Whether the repository for which the base branch belongs allows merge commits. | 
-| GitHub.PR.Base.Repo.SubscribersCount | Number | The number of entities that subscribe to the repository for which the base branch belongs. | 
+| GitHub.PR.Base.User.Login | String | The committer login of the commit the base branch points to. | 
+| GitHub.PR.Base.User.ID | Number | The ID of the committer of the commit the base branch points to. | 
+| GitHub.PR.Base.User.NodeID | String | The committer Node ID of the commit the base branch points to. | 
+| GitHub.PR.Base.User.Type | String | The user type of the committer the commit base branch points to. | 
+| GitHub.PR.Base.User.SiteAdmin | Boolean | Whether the committer of the commit the base branch points to is a site administrator. | 
+| GitHub.PR.Base.Repo.ID | Number | The ID of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.NodeID | String | The Node ID of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Name | String | The name of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.FullName | String | The full name of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.Login | String | The user login of the owner of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.ID | Number | The user ID of the owner of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.NodeID | String | The user node ID of the owner of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.Type | String | The user type of the owner of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository the base branch belongs to is a site administrator. | 
+| GitHub.PR.Base.Repo.Private | Boolean | Whether the repository the base branch belongs to is private. | 
+| GitHub.PR.Base.Repo.Description | String | The description of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Fork | Boolean | Whether the repository the base branch belongs to is a fork. | 
+| GitHub.PR.Base.Repo.Language | Unknown | The language of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.ForksCount | Number | The number of times the repository the base branch belongs to has been forked. | 
+| GitHub.PR.Base.Repo.StargazersCount | Number | The number of times the repository the base branch belongs to has been starred. | 
+| GitHub.PR.Base.Repo.WatchersCount | Number | The number of entities watching the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Size | Number | The size of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.DefaultBranch | String | The default branch of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.OpenIssuesCount | Number | The number of open issues in the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Topics | String | Topics listed for the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.HasIssues | Boolean | Whether the repository the base branch belongs to has issues. | 
+| GitHub.PR.Base.Repo.HasProjects | Boolean | Whether the repository the base branch belongs to has projects. | 
+| GitHub.PR.Base.Repo.HasWiki | Boolean | Whether the repository the base branch belongs to has a wiki. | 
+| GitHub.PR.Base.Repo.HasPages | Boolean | Whether the repository the base branch belongs to has pages. | 
+| GitHub.PR.Base.Repo.HasDownloads | Boolean | Whether the repository the base branch belongs to has downloads. | 
+| GitHub.PR.Base.Repo.Archived | Boolean | Whether the repository the base branch belongs to is archived. | 
+| GitHub.PR.Base.Repo.Disabled | Boolean | Whether the repository the base branch belongs to is disabled. | 
+| GitHub.PR.Base.Repo.PushedAt | String | The date the repository the base branch belongs to was last pushed. | 
+| GitHub.PR.Base.Repo.CreatedAt | String | The date of creation of the repository the base branch belongs to. | 
+| GitHub.PR.Base.Repo.UpdatedAt | String | The date the repository the base branch belongs to was last updated. | 
+| GitHub.PR.Base.Repo.AllowRebaseMerge | Boolean | Whether the repository the base branch belongs to allows rebase-style merges. | 
+| GitHub.PR.Base.Repo.AllowSquashMerge | Boolean | Whether the repository the base branch belongs to allows squash merges. | 
+| GitHub.PR.Base.Repo.AllowMergeCommit | Boolean | Whether the repository the base branch belongs to allows merge commits. | 
+| GitHub.PR.Base.Repo.SubscribersCount | Number | The number of entities that subscribe to the repository the base branch belongs to. | 
 | GitHub.PR.AuthorAssociation | String | The pull request author association. | 
 | GitHub.PR.Draft | Boolean | Whether the pull request is a draft. | 
 | GitHub.PR.Merged | Boolean | Whether the pull request is merged. | 
@@ -1554,7 +1611,7 @@ Creates a new pull request.
 ### Github-get-github-actions-usage
 
 ***
-Gets the usage details of GitHub action workflows of private repositories, by repository owner.
+Gets the usage details of GitHub action workflows of private repositories by repository owner.
 
 #### Base Command
 
@@ -1573,7 +1630,7 @@ Gets the usage details of GitHub action workflows of private repositories, by re
 | GitHub.ActionsUsage.RepositoryName | String | The name of the private repository. | 
 | GitHub.ActionsUsage.WorkflowID | Number | The workflow ID of the GitHub action. | 
 | GitHub.ActionsUsage.WorkflowName | String | The display name of the GitHub action workflow. | 
-| GitHub.ActionsUsage.WorkflowUsage | Unknown | GitHub action worflow usage on different OS. | 
+| GitHub.ActionsUsage.WorkflowUsage | Unknown | The GitHub action workflow usage on different OS. | 
 
 #### Command Example
 
@@ -1599,9 +1656,9 @@ Gets the content of a file from GitHub.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | file_path | The path of the file. | Required | 
-| branch_name | The branch name from which to get the file. | Optional | 
-| media_type | The media type in which the file contents will be fetched. Possible values are: "raw" and "html". Default value is "raw". Possible values are: raw, html. Default is raw. | Optional | 
-| create_file_from_content | Whether to create a file entry in the War Room with the file contents. Possible values are: "true" and "false". Default value is "false". | Optional | 
+| branch_name | The branch name to get the file from. | Optional | 
+| media_type | The media type in which the file contents will be fetched. Possible values are: "raw" and "html". Default value is "raw". | Optional | 
+| create_file_from_content | Whether to create a file entry in the War Room with the file contents. Default value is "false". | Optional | 
 | organization | The name of the organization. | Optional | 
 | repository | The name of the repository. | Optional | 
 
@@ -1626,7 +1683,7 @@ Gets the content of a file from GitHub.
 
 ### Github-list-files
 ***
-Get list of files from the given path in the repository.
+Gets a list of files from the given path in the repository.
 
 
 #### Base Command
@@ -1649,7 +1706,7 @@ Get list of files from the given path in the repository.
 | GitHub.File.Type | String | Whether the item is file or directory. | 
 | GitHub.File.Size | Number | The size of the file in bytes. | 
 | GitHub.File.Path | String | The file path inside the repository. | 
-| GitHub.File.DownloadUrl | String | Link to download the file content. | 
+| GitHub.File.DownloadUrl | String | The link to download the file content. | 
 | GitHub.File.SHA | String | The SHA of the file. | 
 
 #### Command Example
@@ -1671,8 +1728,8 @@ List team members.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | organization | The name of the organization. | Required | 
-| team_slug | The name of the team under the organiztion. | Required | 
-| maximum_users | The maximum number of users to return | Optional | 
+| team_slug | The name of the team under the organization. | Required | 
+| maximum_users | The maximum number of users to return. | Optional | 
 #### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -1722,166 +1779,166 @@ Get pull requests corresponding to the given branch name.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.PR.ID | Number | The ID number of the pull request | 
-| GitHub.PR.NodeID | String | The node ID of the pull request | 
-| GitHub.PR.Number | Number | The issue number of the pull request | 
-| GitHub.PR.State | String | The state of the pull request | 
-| GitHub.PR.Locked | Boolean | Whether the pull request is locked or not | 
-| GitHub.PR.User.Login | String | The login of the user who opened the pull request | 
-| GitHub.PR.User.ID | Number | The ID of the user who opened the pull request | 
-| GitHub.PR.User.NodeID | String | The node ID of the user who opened the pull request | 
-| GitHub.PR.User.Type | String | The type of the user who opened the pull request | 
-| GitHub.PR.User.SiteAdmin | Boolean | Whether the user who opened the pull request is a site admin or not | 
-| GitHub.PR.Body | String | The body content of the pull request | 
-| GitHub.PR.Label.ID | Number | The ID of the label | 
-| GitHub.PR.Label.NodeID | String | The node ID of the label | 
-| GitHub.PR.Label.Name | String | The name of the label | 
-| GitHub.PR.Label.Description | String | The description of the label | 
-| GitHub.PR.Label.Color | String | The hex color value of the label | 
-| GitHub.PR.Label.Default | Boolean | Whether the label is a default or not | 
-| GitHub.PR.Milestone.ID | Number | The ID of the milestone | 
-| GitHub.PR.Milestone.NodeID | String | The node ID of the milestone | 
-| GitHub.PR.Milestone.Number | Number | The number of the milestone | 
-| GitHub.PR.Milestone.State | String | The state of the milestone | 
-| GitHub.PR.Milestone.Title | String | The title of the milestone | 
-| GitHub.PR.Milestone.Description | String | The description of the milestone | 
-| GitHub.PR.Milestone.Creator.Login | String | The login of the milestone creator | 
-| GitHub.PR.Milestone.Creator.ID | Number | The ID the milestone creator | 
-| GitHub.PR.Milestone.Creator.NodeID | String | The node ID of the milestone creator | 
-| GitHub.PR.Milestone.Creator.Type | String | The type of the milestone creator | 
-| GitHub.PR.Milestone.Creator.SiteAdmin | Boolean | Whether the milestone creator is a site admin or not | 
-| GitHub.PR.Milestone.OpenIssues | Number | The number of open issues with this milestone | 
-| GitHub.PR.Milestone.ClosedIssues | Number | The number of closed issues with this milestone | 
-| GitHub.PR.Milestone.CreatedAt | String | The date the milestone was created | 
-| GitHub.PR.Milestone.UpdatedAt | String | The date the milestone was updated | 
-| GitHub.PR.Milestone.ClosedAt | String | The date the milestone was closed | 
-| GitHub.PR.Milestone.DueOn | String | The due date for the milestone | 
-| GitHub.PR.ActiveLockReason | String | The reason the pull request is locked | 
-| GitHub.PR.CreatedAt | String | The date the pull request was created | 
-| GitHub.PR.UpdatedAt | String | The date the pull request was updated | 
-| GitHub.PR.ClosedAt | String | The date the pull request was closed | 
-| GitHub.PR.MergedAt | String | The date the pull request was merged | 
-| GitHub.PR.MergeCommitSHA | String | The SHA hash of the pull request's merge commit | 
-| GitHub.PR.Assignee.Login | String | The login of the user assigned to the pull request | 
-| GitHub.PR.Assignee.ID | Number | The ID of the user assigned to the pull request | 
-| GitHub.PR.Assignee.NodeID | String | The node ID of the user assigned to the pull request | 
-| GitHub.PR.Assignee.Type | String | The type of the user assigned to the pull request | 
-| GitHub.PR.Assignee.SiteAdmin | Boolean | Whether the user assigned to the pull request is a site admin or not | 
-| GitHub.PR.RequestedReviewer.Login | String | The login of the user requested for review | 
-| GitHub.PR.RequestedReviewer.ID | Number | The ID of the user requested for review | 
-| GitHub.PR.RequestedReviewer.NodeID | String | The node ID of the user requested for review | 
-| GitHub.PR.RequestedReviewer.Type | String | The type of the user requested for review | 
-| GitHub.PR.RequestedReviewer.SiteAdmin | Boolean | Whether the user requested for review is a site admin or not | 
-| GitHub.PR.RequestedTeam.ID | Number | The ID of the team requested for review | 
-| GitHub.PR.RequestedTeam.NodeID | String | The node ID of the team requested for review | 
-| GitHub.PR.RequestedTeam.Name | String | The name of the team requested for review | 
-| GitHub.PR.RequestedTeam.Slug | String | The slug of the team requested for review | 
-| GitHub.PR.RequestedTeam.Description | String | The description of the team requested for review | 
-| GitHub.PR.RequestedTeam.Privacy | String | The privacy setting of the team requested for review | 
-| GitHub.PR.RequestedTeam.Permission | String | The permissions of the team requested for review | 
-| GitHub.PR.RequestedTeam.Parent | Unknown | The parent of the team requested for review | 
-| GitHub.PR.Head.Label | String | The label of the branch that HEAD points to | 
-| GitHub.PR.Head.Ref | String | The reference of the branch that HEAD points to | 
-| GitHub.PR.Head.SHA | String | The SHA hash of the commit that HEAD points to | 
-| GitHub.PR.Head.User.Login | String | The login of the committer of the HEAD commit of the checked out branch | 
-| GitHub.PR.Head.User.ID | Number | The ID of the committer of the HEAD commit of the checked out branch | 
-| GitHub.PR.Head.User.NodeID | String | The node ID of the committer of the HEAD commit of the checked out branch | 
-| GitHub.PR.Head.User.Type | String | The type of the committer of the HEAD commit of the checked out branch | 
-| GitHub.PR.Head.User.SiteAdmin | Boolean | Whether the committer of the HEAD commit of the checked out branch is a site admin or not | 
-| GitHub.PR.Head.Repo.ID | Number | The ID of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.NodeID | String | The node ID of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.Name | String | The name of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.FullName | String | The full name of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.Owner.Login | String | The user login of the owner of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.Owner.ID | Number | The user ID of the owner of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.Owner.NodeID | String | The user node ID of the owner of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.Owner.Type | String | The user type of the owner of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository of the checked out branch is a site admin or not | 
-| GitHub.PR.Head.Repo.Private | Boolean | Whether the repository of the checked out branch is private or not | 
-| GitHub.PR.Head.Repo.Description | String | The description of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.Fork | Boolean | Whether the repository of the checked out branch is a fork or not | 
-| GitHub.PR.Head.Repo.Language | Unknown | The language of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.ForksCount | Number | The number of forks of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.StargazersCount | Number | The number of stars of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.WatchersCount | Number | The number of entities watching the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.Size | Number | The size of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.DefaultBranch | String | The default branch of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.OpenIssuesCount | Number | The open issues of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.Topics | Unknown | Topics listed for the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.HasIssues | Boolean | Whether the repository of the checked out branch has issues or not | 
-| GitHub.PR.Head.Repo.HasProjects | Boolean | Whether the repository of the checked out branch has projects or not | 
-| GitHub.PR.Head.Repo.HasWiki | Boolean | Whether the repository of the checked out branch has a wiki or not | 
-| GitHub.PR.Head.Repo.HasPages | Boolean | Whether the repository of the checked out branch has pages or not | 
-| GitHub.PR.Head.Repo.HasDownloads | Boolean | Whether the repository of the checked out branch has downloads or not | 
-| GitHub.PR.Head.Repo.Archived | Boolean | Whether the repository of the checked out branch has been arvhived or not | 
-| GitHub.PR.Head.Repo.Disabled | Boolean | Whether the repository of the checked out branch has been disabled or not | 
-| GitHub.PR.Head.Repo.PushedAt | String | The date of the latest push to the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.CreatedAt | String | The date of creation of the repository of the checked out branch | 
-| GitHub.PR.Head.Repo.UpdatedAt | String | The date the repository of the checked out branch was last updated | 
-| GitHub.PR.Head.Repo.AllowRebaseMerge | Boolean | Whether the repository of the checked out branch permits rebase-style merges or not | 
-| GitHub.PR.Head.Repo.AllowSquashMerge | Boolean | Whether the repository of the checked out branch permits squash merges or not | 
-| GitHub.PR.Head.Repo.AllowMergeCommit | Boolean | Whether the repository of the checked out branch permits merge commits or not | 
-| GitHub.PR.Head.Repo.SubscribersCount | Number | The number of entities subscribing to the repository of the checked out branch | 
-| GitHub.PR.Base.Label | String | The label of the base branch | 
-| GitHub.PR.Base.Ref | String | The reference of the base branch | 
-| GitHub.PR.Base.SHA | String | The SHA hash of the base branch | 
-| GitHub.PR.Base.User.Login | String | The login of the committer of the commit that the base branch points to | 
-| GitHub.PR.Base.User.ID | Number | The ID of the committer of the commit that the base branch points to | 
-| GitHub.PR.Base.User.NodeID | String | The node ID of the committer of the commit that the base branch points to | 
-| GitHub.PR.Base.User.Type | String | The user type of the committer of the commit that the base branch points to | 
-| GitHub.PR.Base.User.SiteAdmin | Boolean | Whether the committer of the commit that the base branch points to is a site admin or not | 
-| GitHub.PR.Base.Repo.ID | Number | The ID of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.NodeID | String | The node ID of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.Name | String | The name of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.FullName | String | The full name of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.Owner.Login | String | The user login of the owner of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.Owner.ID | Number | The user ID of the owner of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.Owner.NodeID | String | The user node ID of the owner of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.Owner.Type | String | The user type of the owner of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository that the base branch belongs to is a site admin or not | 
-| GitHub.PR.Base.Repo.Private | Boolean | Whether the repository that the base branch belongs to is private or not | 
-| GitHub.PR.Base.Repo.Description | String | The description of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.Fork | Boolean | Whether the repository that the base branch belongs to is a fork or not | 
-| GitHub.PR.Base.Repo.Language | Unknown | The language of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.ForksCount | Number | The number of times that the repository that the base branch belongs to has been forked | 
-| GitHub.PR.Base.Repo.StargazersCount | Number | The number of times that the repository that the base branch belongs to has been starred | 
-| GitHub.PR.Base.Repo.WatchersCount | Number | The number of entities watching the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.Size | Number | The size of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.DefaultBranch | String | The default branch of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.OpenIssuesCount | Number | The number of open issues in the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.Topics | String | Topics listed for the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.HasIssues | Boolean | Whether the repository that the base branch belongs to has issues or not | 
-| GitHub.PR.Base.Repo.HasProjects | Boolean | Whether the repository that the base branch belongs to has projects or not | 
-| GitHub.PR.Base.Repo.HasWiki | Boolean | Whether the repository that the base branch belongs to has a wiki or not | 
-| GitHub.PR.Base.Repo.HasPages | Boolean | Whether the repository that the base branch belongs to has pages or not | 
-| GitHub.PR.Base.Repo.HasDownloads | Boolean | Whether the repository that the base branch belongs to has downloads or not | 
-| GitHub.PR.Base.Repo.Archived | Boolean | Whether the repository that the base branch belongs to is archived or not | 
-| GitHub.PR.Base.Repo.Disabled | Boolean | Whether the repository that the base branch belongs to is disabled or not | 
-| GitHub.PR.Base.Repo.PushedAt | String | The date that the repository that the base branch belongs to was last pushed to | 
-| GitHub.PR.Base.Repo.CreatedAt | String | The date of creation of the repository that the base branch belongs to | 
-| GitHub.PR.Base.Repo.UpdatedAt | String | The date that the repository that the base branch belongs to was last updated | 
-| GitHub.PR.Base.Repo.AllowRebaseMerge | Boolean | Whether the repository that the base branch belongs to allows rebase-style merges or not | 
-| GitHub.PR.Base.Repo.AllowSquashMerge | Boolean | Whether the repository that the base branch belongs to allows squash merges or not | 
-| GitHub.PR.Base.Repo.AllowMergeCommit | Boolean | Whether the repository that the base branch belongs to allows merge commits or not | 
-| GitHub.PR.Base.Repo.SubscribersCount | Number | The number of entities that subscribe to the repository that the base branch belongs to | 
-| GitHub.PR.AuthorAssociation | String | The pull request author association | 
-| GitHub.PR.Draft | Boolean | Whether the pull request is a draft or not | 
-| GitHub.PR.Merged | Boolean | Whether the pull request is merged or not | 
-| GitHub.PR.Mergeable | Boolean | Whether the pull request is mergeable or not | 
-| GitHub.PR.Rebaseable | Boolean | Whether the pull request is rebaseable or not | 
-| GitHub.PR.MergeableState | String | The mergeable state of the pull request | 
-| GitHub.PR.MergedBy.Login | String | The login of the user who merged the pull request | 
-| GitHub.PR.MergedBy.ID | Number | The ID of the user who merged the pull request | 
-| GitHub.PR.MergedBy.NodeID | String | The node ID of the user who merged the pull request | 
-| GitHub.PR.MergedBy.Type | String | The type of the user who merged the pull request | 
-| GitHub.PR.MergedBy.SiteAdmin | Boolean | Whether the user who merged the pull request is a site admin or not | 
-| GitHub.PR.Comments | Number | The number of comments on the pull request | 
-| GitHub.PR.ReviewComments | Number | The number of review comments on the pull request | 
-| GitHub.PR.MaintainerCanModify | Boolean | Whether the maintainer can modify the pull request or not | 
-| GitHub.PR.Commits | Number | The number of commits in the pull request | 
-| GitHub.PR.Additions | Number | The number of additions in the pull request | 
-| GitHub.PR.Deletions | Number | The number of deletions in the pull request | 
-| GitHub.PR.ChangedFiles | Number | The number of changed files in the pull request | 
+| GitHub.PR.ID | Number | The ID number of the pull request. | 
+| GitHub.PR.NodeID | String | The node ID of the pull request. | 
+| GitHub.PR.Number | Number | The issue number of the pull request. | 
+| GitHub.PR.State | String | The state of the pull request. | 
+| GitHub.PR.Locked | Boolean | Whether the pull request is locked. | 
+| GitHub.PR.User.Login | String | The login of the user who opened the pull request. | 
+| GitHub.PR.User.ID | Number | The ID of the user who opened the pull request. | 
+| GitHub.PR.User.NodeID | String | The node ID of the user who opened the pull request. | 
+| GitHub.PR.User.Type | String | The type of the user who opened the pull request. | 
+| GitHub.PR.User.SiteAdmin | Boolean | Whether the user who opened the pull request is a site admin. | 
+| GitHub.PR.Body | String | The body content of the pull request. | 
+| GitHub.PR.Label.ID | Number | The ID of the label. | 
+| GitHub.PR.Label.NodeID | String | The node ID of the label. | 
+| GitHub.PR.Label.Name | String | The name of the label. | 
+| GitHub.PR.Label.Description | String | The description of the label. | 
+| GitHub.PR.Label.Color | String | The hex color value of the label. | 
+| GitHub.PR.Label.Default | Boolean | Whether the label is a default. | 
+| GitHub.PR.Milestone.ID | Number | The ID of the milestone. | 
+| GitHub.PR.Milestone.NodeID | String | The node ID of the milestone. | 
+| GitHub.PR.Milestone.Number | Number | The number of the milestone. | 
+| GitHub.PR.Milestone.State | String | The state of the milestone. | 
+| GitHub.PR.Milestone.Title | String | The title of the milestone. | 
+| GitHub.PR.Milestone.Description | String | The description of the milestone. | 
+| GitHub.PR.Milestone.Creator.Login | String | The login of the milestone creator. | 
+| GitHub.PR.Milestone.Creator.ID | Number | The ID the milestone creator. | 
+| GitHub.PR.Milestone.Creator.NodeID | String | The node ID of the milestone creator. | 
+| GitHub.PR.Milestone.Creator.Type | String | The type of the milestone creator. | 
+| GitHub.PR.Milestone.Creator.SiteAdmin | Boolean | Whether the milestone creator is a site admin. | 
+| GitHub.PR.Milestone.OpenIssues | Number | The number of open issues with this milestone. | 
+| GitHub.PR.Milestone.ClosedIssues | Number | The number of closed issues with this milestone. | 
+| GitHub.PR.Milestone.CreatedAt | String | The date the milestone was created. | 
+| GitHub.PR.Milestone.UpdatedAt | String | The date the milestone was updated. | 
+| GitHub.PR.Milestone.ClosedAt | String | The date the milestone was closed. | 
+| GitHub.PR.Milestone.DueOn | String | The due date for the milestone. | 
+| GitHub.PR.ActiveLockReason | String | The reason the pull request is locked. | 
+| GitHub.PR.CreatedAt | String | The date the pull request was created. | 
+| GitHub.PR.UpdatedAt | String | The date the pull request was updated. | 
+| GitHub.PR.ClosedAt | String | The date the pull request was closed. | 
+| GitHub.PR.MergedAt | String | The date the pull request was merged. | 
+| GitHub.PR.MergeCommitSHA | String | The SHA hash of the pull request's merge commit. | 
+| GitHub.PR.Assignee.Login | String | The login of the user assigned to the pull request. | 
+| GitHub.PR.Assignee.ID | Number | The ID of the user assigned to the pull request. | 
+| GitHub.PR.Assignee.NodeID | String | The node ID of the user assigned to the pull request. | 
+| GitHub.PR.Assignee.Type | String | The type of the user assigned to the pull request. | 
+| GitHub.PR.Assignee.SiteAdmin | Boolean | Whether the user assigned to the pull request is a site admin. | 
+| GitHub.PR.RequestedReviewer.Login | String | The login of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.ID | Number | The ID of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.NodeID | String | The node ID of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.Type | String | The type of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.SiteAdmin | Boolean | Whether the user requested for review is a site admin. | 
+| GitHub.PR.RequestedTeam.ID | Number | The ID of the team requested for review. | 
+| GitHub.PR.RequestedTeam.NodeID | String | The node ID of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Name | String | The name of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Slug | String | The slug of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Description | String | The description of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Privacy | String | The privacy setting of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Permission | String | The permissions of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Parent | Unknown | The parent of the team requested for review. | 
+| GitHub.PR.Head.Label | String | The label of the branch the HEAD points to. | 
+| GitHub.PR.Head.Ref | String | The reference of the branch the HEAD points to. | 
+| GitHub.PR.Head.SHA | String | The SHA hash of the commit the HEAD points to. | 
+| GitHub.PR.Head.User.Login | String | The login of the committer of the HEAD commit of the checked out branch. | 
+| GitHub.PR.Head.User.ID | Number | The ID of the committer of the HEAD commit of the checked out branch. | 
+| GitHub.PR.Head.User.NodeID | String | The node ID of the committer of the HEAD commit of the checked out branch. | 
+| GitHub.PR.Head.User.Type | String | The type of the committer of the HEAD commit of the checked out branch. | 
+| GitHub.PR.Head.User.SiteAdmin | Boolean | Whether the committer of the HEAD commit of the checked out branch is a site admin. | 
+| GitHub.PR.Head.Repo.ID | Number | The ID of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.NodeID | String | The node ID of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Name | String | The name of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.FullName | String | The full name of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.Login | String | The user login of the owner of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.ID | Number | The user ID of the owner of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.NodeID | String | The user node ID of the owner of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.Type | String | The user type of the owner of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository of the checked out branch is a site admin. | 
+| GitHub.PR.Head.Repo.Private | Boolean | Whether the repository of the checked out branch is private. | 
+| GitHub.PR.Head.Repo.Description | String | The description of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Fork | Boolean | Whether the repository of the checked out branch is a fork. | 
+| GitHub.PR.Head.Repo.Language | Unknown | The language of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.ForksCount | Number | The number of forks of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.StargazersCount | Number | The number of stars of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.WatchersCount | Number | The number of entities watching the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Size | Number | The size of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.DefaultBranch | String | The default branch of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.OpenIssuesCount | Number | The open issues of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Topics | Unknown | The topics listed for the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.HasIssues | Boolean | Whether the repository of the checked out branch has issues. | 
+| GitHub.PR.Head.Repo.HasProjects | Boolean | Whether the repository of the checked out branch has projects. | 
+| GitHub.PR.Head.Repo.HasWiki | Boolean | Whether the repository of the checked out branch has a wiki. | 
+| GitHub.PR.Head.Repo.HasPages | Boolean | Whether the repository of the checked out branch has pages. | 
+| GitHub.PR.Head.Repo.HasDownloads | Boolean | Whether the repository of the checked out branch has downloads. | 
+| GitHub.PR.Head.Repo.Archived | Boolean | Whether the repository of the checked out branch has been archived. | 
+| GitHub.PR.Head.Repo.Disabled | Boolean | Whether the repository of the checked out branch has been disabled. | 
+| GitHub.PR.Head.Repo.PushedAt | String | The date of the latest push to the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.CreatedAt | String | The date of creation of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.UpdatedAt | String | The date the repository of the checked out branch was last updated. | 
+| GitHub.PR.Head.Repo.AllowRebaseMerge | Boolean | Whether the repository of the checked out branch permits rebase-style merges. | 
+| GitHub.PR.Head.Repo.AllowSquashMerge | Boolean | Whether the repository of the checked out branch permits squash merges. | 
+| GitHub.PR.Head.Repo.AllowMergeCommit | Boolean | Whether the repository of the checked out branch permits merge commits. | 
+| GitHub.PR.Head.Repo.SubscribersCount | Number | The number of entities subscribing to the repository of the checked out branch. | 
+| GitHub.PR.Base.Label | String | The label of the base branch. | 
+| GitHub.PR.Base.Ref | String | The reference of the base branch. | 
+| GitHub.PR.Base.SHA | String | The SHA hash of the base branch. | 
+| GitHub.PR.Base.User.Login | String | The login of the committer of the commit that the base branch points to. | 
+| GitHub.PR.Base.User.ID | Number | The ID of the committer of the commit that the base branch points to. | 
+| GitHub.PR.Base.User.NodeID | String | The node ID of the committer of the commit that the base branch points to. | 
+| GitHub.PR.Base.User.Type | String | The user type of the committer of the commit that the base branch points to. | 
+| GitHub.PR.Base.User.SiteAdmin | Boolean | Whether the committer of the commit that the base branch points to is a site admin. | 
+| GitHub.PR.Base.Repo.ID | Number | The ID of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.NodeID | String | The node ID of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Name | String | The name of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.FullName | String | The full name of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.Login | String | The user login of the owner of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.ID | Number | The user ID of the owner of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.NodeID | String | The user node ID of the owner of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.Type | String | The user type of the owner of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository that the base branch belongs to is a site admin. | 
+| GitHub.PR.Base.Repo.Private | Boolean | Whether the repository that the base branch belongs to is private. | 
+| GitHub.PR.Base.Repo.Description | String | The description of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Fork | Boolean | Whether the repository that the base branch belongs to is a fork. | 
+| GitHub.PR.Base.Repo.Language | Unknown | The language of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.ForksCount | Number | The number of times the repository that the base branch belongs to has been forked. | 
+| GitHub.PR.Base.Repo.StargazersCount | Number | The number of times the repository that the base branch belongs to has been starred. | 
+| GitHub.PR.Base.Repo.WatchersCount | Number | The number of entities watching the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Size | Number | The size of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.DefaultBranch | String | The default branch of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.OpenIssuesCount | Number | The number of open issues in the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.Topics | String | Topics listed for the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.HasIssues | Boolean | Whether the repository that the base branch belongs to has issues. | 
+| GitHub.PR.Base.Repo.HasProjects | Boolean | Whether the repository that the base branch belongs to has projects. | 
+| GitHub.PR.Base.Repo.HasWiki | Boolean | Whether the repository that the base branch belongs to has a wiki. | 
+| GitHub.PR.Base.Repo.HasPages | Boolean | Whether the repository that the base branch belongs to has pages. | 
+| GitHub.PR.Base.Repo.HasDownloads | Boolean | Whether the repository that the base branch belongs to has downloads. | 
+| GitHub.PR.Base.Repo.Archived | Boolean | Whether the repository that the base branch belongs to is archived. | 
+| GitHub.PR.Base.Repo.Disabled | Boolean | Whether the repository that the base branch belongs to is disabled. | 
+| GitHub.PR.Base.Repo.PushedAt | String | The date the repository the base branch belongs to was last pushed to. | 
+| GitHub.PR.Base.Repo.CreatedAt | String | The date of creation of the repository that the base branch belongs to. | 
+| GitHub.PR.Base.Repo.UpdatedAt | String | The date the repository the base branch belongs to was last updated. | 
+| GitHub.PR.Base.Repo.AllowRebaseMerge | Boolean | Whether the repository the base branch belongs to allows rebase-style merges. | 
+| GitHub.PR.Base.Repo.AllowSquashMerge | Boolean | Whether the repository the base branch belongs to allows squash merges. | 
+| GitHub.PR.Base.Repo.AllowMergeCommit | Boolean | Whether the repository the base branch belongs to allows merge commits. | 
+| GitHub.PR.Base.Repo.SubscribersCount | Number | The number of entities that subscribe to the repository the base branch belongs to. | 
+| GitHub.PR.AuthorAssociation | String | The pull request author association. | 
+| GitHub.PR.Draft | Boolean | Whether the pull request is a draft. | 
+| GitHub.PR.Merged | Boolean | Whether the pull request is merged. | 
+| GitHub.PR.Mergeable | Boolean | Whether the pull request is mergeable. | 
+| GitHub.PR.Rebaseable | Boolean | Whether the pull request is rebaseable. | 
+| GitHub.PR.MergeableState | String | The mergeable state of the pull request. | 
+| GitHub.PR.MergedBy.Login | String | The login of the user who merged the pull request. | 
+| GitHub.PR.MergedBy.ID | Number | The ID of the user who merged the pull request. | 
+| GitHub.PR.MergedBy.NodeID | String | The node ID of the user who merged the pull request. | 
+| GitHub.PR.MergedBy.Type | String | The type of the user who merged the pull request. | 
+| GitHub.PR.MergedBy.SiteAdmin | Boolean | Whether the user who merged the pull request is a site admin. | 
+| GitHub.PR.Comments | Number | The number of comments on the pull request. | 
+| GitHub.PR.ReviewComments | Number | The number of review comments on the pull request. | 
+| GitHub.PR.MaintainerCanModify | Boolean | Whether the maintainer can modify the pull request. | 
+| GitHub.PR.Commits | Number | The number of commits in the pull request. | 
+| GitHub.PR.Additions | Number | The number of additions in the pull request. | 
+| GitHub.PR.Deletions | Number | The number of deletions in the pull request. | 
+| GitHub.PR.ChangedFiles | Number | The number of changed files in the pull request. | 
 
 
 #### Command Example
@@ -2059,11 +2116,11 @@ Commits a given file.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | commit_message | Commit message. | Required | 
-| path_to_file | Path to the file in the Github repo (including file name and file ending). | Required | 
-| entry_id | Entry ID for the file to commit. Either "entry_id" or "file_text" must be provided. | Optional | 
-| file_text | Plain text for the file to commit. Either "entry_id" or "file_text" must be provided. | Optional | 
+| path_to_file | The path to the file in the GitHub repo (including file name and file ending). | Required | 
+| entry_id | The entry ID for the file to commit. Either "entry_id" or "file_text" must be provided. | Optional | 
+| file_text | The plain text for the file to commit. Either "entry_id" or "file_text" must be provided. | Optional | 
 | branch_name | The branch name. | Required | 
-| file_sha | The blob SHA of the file being replaced. Use the Github-list-files command to get the SHA value of the file.  Required if you are updating a file. | Optional | 
+| file_sha | The blob SHA of the file being replaced. Use the GitHub-list-files command to get the SHA value of the file.  Required if you are updating a file. | Optional | 
 
 
 #### Context Output
@@ -2078,7 +2135,7 @@ The file TEST.md committed successfully. Link to the commit: https://github.com/
 
 ### GitHub-create-release
 ***
-Create a release.
+Creates a release.
 
 
 #### Base Command
@@ -2091,7 +2148,7 @@ Create a release.
 | name | The name of the release. | Optional | 
 | tag_name | The name of the release tag. | Required | 
 | body | Text describing the contents of the tag. | Optional | 
-| draft | True to create a draft (unpublished) release, false to create a published one. Possible values are: True, False. Default is True. | Optional | 
+| draft | Set to true to create a draft (unpublished) release, set to false to create a published one. Default is True. | Optional | 
 
 
 #### Context Output
@@ -2101,7 +2158,7 @@ Create a release.
 | GitHub.Release.draft | Boolean | Whether the release is a draft. | 
 | GitHub.Release.html_url | String | The release URL. | 
 | GitHub.Release.id | Number | The ID of the release. | 
-| GitHub.Release.url | String | Github API URL link to the release. | 
+| GitHub.Release.url | String | GitHub API URL link to the release. | 
 
 
 #### Command Example
@@ -2137,7 +2194,7 @@ Returns events corresponding to the given issue.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_number | The issue number for which to retrieve events. | Required | 
+| issue_number | The issue number to retrieve events for. | Required | 
 
 
 #### Context Output
@@ -2164,14 +2221,14 @@ Returns events corresponding to the given issue.
 | GitHub.IssueEvent.actor.events_url | String | Event actor events URL. | 
 | GitHub.IssueEvent.actor.received_events_url | String | Event actor received events URL. | 
 | GitHub.IssueEvent.actor.type | String | Event actor type. | 
-| GitHub.IssueEvent.actor.site_admin | Boolean | Indicates whether the event actor is site admin. | 
-| GitHub.IssueEvent.event | String | Issue event type, e.g labeled, closed. | 
+| GitHub.IssueEvent.actor.site_admin | Boolean | Indicates whether the event actor is the site admin. | 
+| GitHub.IssueEvent.event | String | Issue event type, for example labeled, closed. | 
 | GitHub.IssueEvent.commit_id | Unknown | Event commit ID. | 
 | GitHub.IssueEvent.commit_url | Unknown | Event commit URL. | 
 | GitHub.IssueEvent.created_at | Date | Event created time. | 
 | GitHub.IssueEvent.label.name | String | Event label name. | 
-| GitHub.IssueEvent.label.color | String | Event label color | 
-| GitHub.IssueEvent.performed_via_github_app | Unknown | Indicates whether event was performed via GitHub application. | 
+| GitHub.IssueEvent.label.color | String | Event label color. | 
+| GitHub.IssueEvent.performed_via_github_app | Unknown | Indicates whether event was performed via a GitHub application. | 
 | GitHub.IssueEvent.assignee.login | String | Assignee login username. | 
 | GitHub.IssueEvent.assignee.id | Number | Assignee ID. | 
 | GitHub.IssueEvent.assignee.node_id | String | Assignee node ID. | 
@@ -2189,7 +2246,7 @@ Returns events corresponding to the given issue.
 | GitHub.IssueEvent.assignee.events_url | String | Assignee events URL. | 
 | GitHub.IssueEvent.assignee.received_events_url | String | Assignee received events URL. | 
 | GitHub.IssueEvent.assignee.type | String | Assignee type. | 
-| GitHub.IssueEvent.assignee.site_admin | Boolean | Indicates whether the assignee is site admin. | 
+| GitHub.IssueEvent.assignee.site_admin | Boolean | Indicates whether the assignee is a site admin. | 
 | GitHub.IssueEvent.assigner.login | String | Assigner login username. | 
 | GitHub.IssueEvent.assigner.id | Number | Assigner ID. | 
 | GitHub.IssueEvent.assigner.node_id | String | Assigner node ID. | 
@@ -2207,7 +2264,7 @@ Returns events corresponding to the given issue.
 | GitHub.IssueEvent.assigner.events_url | String | Assigner events URL. | 
 | GitHub.IssueEvent.assigner.received_events_url | String | Assigner received events URL. | 
 | GitHub.IssueEvent.assigner.type | String | Assigner type. | 
-| GitHub.IssueEvent.assigner.site_admin | Boolean | Indicates whether the assignee is site admin. | 
+| GitHub.IssueEvent.assigner.site_admin | Boolean | Indicates whether the assignee is a site admin. | 
 
 
 #### Command Example
@@ -2298,7 +2355,7 @@ Returns events corresponding to the given issue.
 ### GitHub-list-all-projects
 
 ***
-List all project boards a user can see.
+Lists all project boards a user can see.
 
 #### Base Command
 
@@ -2308,7 +2365,7 @@ List all project boards a user can see.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_filter | Only list projects with the following numbers (Ids) | Optional | 
+| project_filter | Only list projects with the specified numbers (IDs). | Optional | 
 | limit | The number of projects to return. Default is 20. Maximum is 100. | Optional |
 
 #### Context Output
@@ -2317,8 +2374,8 @@ List all project boards a user can see.
 | --- | --- | --- |
 | GitHub.Project.Name | String | The name of the project board. | 
 | GitHub.Project.ID | Number | The ID of the  project board. | 
-| GitHub.Project.Number | Number | Project board number. | 
-| GitHub.Project.Columns.Name | String | Column Name. | 
+| GitHub.Project.Number | Number | The project board number. | 
+| GitHub.Project.Columns.Name | String | The column Name. | 
 | GitHub.Project.Columns.ColumnID | Number | The ID of the column. | 
 | GitHub.Project.Columns.Cards.CardID | Number | The ID of the card. | 
 | GitHub.Project.Columns.Cards.ContentNumber | Number | The content number of this card, usually this is the issue number. | 
@@ -2382,7 +2439,7 @@ List all project boards a user can see.
 ### GitHub-move-issue-to-project-board
 
 ***
-Move an issue in the project board to a different column.
+Moves an issue in the project board to a different column.
 
 #### Base Command
 
@@ -2392,9 +2449,9 @@ Move an issue in the project board to a different column.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| column_id | Destination column ID | Required | 
-| card_id | Card ID to move | Required | 
-| position | The position of the card in the new column | Optional | 
+| column_id | The destination column ID. | Required | 
+| card_id | The card ID to move. | Required | 
+| position | The position of the card in the new column. | Optional | 
 
            
 #### Command Example
@@ -2431,18 +2488,18 @@ Gets the data of the a given path.
 | GitHub.PathData.html_url | String | Path HTML URL. | 
 | GitHub.PathData.git_url | String | Path Git URL. | 
 | GitHub.PathData.download_url | String | Path download URL. If a directory path was given will be empty. | 
-| GitHub.PathData.type | String | Path data, e.g file, dir. | 
+| GitHub.PathData.type | String | Path data, for example file, dir. | 
 | GitHub.PathData.content | String | Content of the path if a file path was given. | 
 | GitHub.PathData.encoding | String | Encoding method if path to a file was given. | 
-| GitHub.PathData.entries.name | String | If dir was given in file_path, name of the dir entry. | 
-| GitHub.PathData.entries.path | String | If dir was given in file_path, path of the dir entry. | 
-| GitHub.PathData.entries.sha | String | If dir was given in file_path, SHA of the dir entry. | 
-| GitHub.PathData.entries.size | Number | If dir was given in file_path, size of the dir entry. Will be 0 if entry is also a dir. | 
-| GitHub.PathData.entries.url | String | If dir was given in file_path, URL of the dir entry. | 
-| GitHub.PathData.entries.html_url | String | If dir was given in file_path, HTML URL of the dir entry. | 
-| GitHub.PathData.entries.git_url | String | If dir was given in file_path, Git URL of the dir entry. | 
-| GitHub.PathData.entries.download_url | String | If dir was given in file_path, download URL of the dir entry. Will be empty if entry is also a dir. | 
-| GitHub.PathData.entries.type | String | If dir was given in file_path, type of the dir entry. | 
+| GitHub.PathData.entries.name | String | If a dir was given in file_path, name of the dir entry. | 
+| GitHub.PathData.entries.path | String | If a dir was given in file_path, path of the dir entry. | 
+| GitHub.PathData.entries.sha | String | If a dir was given in file_path, SHA of the dir entry. | 
+| GitHub.PathData.entries.size | Number | If a dir was given in file_path, size of the dir entry. Will be 0 if entry is also a dir. | 
+| GitHub.PathData.entries.url | String | If a dir was given in file_path, URL of the dir entry. | 
+| GitHub.PathData.entries.html_url | String | If a dir was given in file_path, HTML URL of the dir entry. | 
+| GitHub.PathData.entries.git_url | String | If a dir was given in file_path, Git URL of the dir entry. | 
+| GitHub.PathData.entries.download_url | String | If a dir was given in file_path, download URL of the dir entry. Will be empty if entry is also a dir. | 
+| GitHub.PathData.entries.type | String | If a dir was given in file_path, type of the dir entry. | 
 
 
 #### Command Example
@@ -2577,7 +2634,7 @@ Gets the data of the a given path.
 
 ### GitHub-releases-list
 ***
-Get releases data from given repository and organization.
+Gets release data from a given repository and organization.
 
 
 #### Base Command
@@ -2587,10 +2644,10 @@ Get releases data from given repository and organization.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number to retrieve releases from. If limit argument is not given, defaults to 1. | Optional | 
-| page_size | Size of the page. If limit argument is not given, defaults to 50. | Optional |
-| limit | Maximum number of releases data to retrieve. Will get results of the first pages. Cannot be given with page_size or page arguments. | Optional |
-| organization | The name of the organization containing the repository. Defaults to organization instance parameter if not given. | Optional | 
+| page | The page number to retrieve releases from. If limit argument is not given, defaults to 1. | Optional | 
+| page_size | The size of the page. If the limit argument is not specified, defaults to 50. | Optional |
+| limit | The maximum number of releases to retrieve data for. Will get results of the first pages. Cannot be given with page_size or page arguments. | Optional |
+| organization | The name of the organization containing the repository. Defaults to the organization instance parameter if not given. | Optional | 
 | repository | The repository containing the releases. Defaults to repository instance parameter if not given. | Optional | 
 
 
@@ -2598,11 +2655,11 @@ Get releases data from given repository and organization.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.Release.url | String | Release URL. | 
-| GitHub.Release.assets_url | String | Release assets URL. | 
-| GitHub.Release.upload_url | String | Upload URL. | 
-| GitHub.Release.html_url | String | HTML URL. | 
-| GitHub.Release.id | Number | Release ID. | 
+| GitHub.Release.url | String | The release URL. | 
+| GitHub.Release.assets_url | String | The release assets URL. | 
+| GitHub.Release.upload_url | String | The upload URL. | 
+| GitHub.Release.html_url | String | The HTML URL. | 
+| GitHub.Release.id | Number | The release ID. | 
 | GitHub.Release.author.login | String | The release author login username. | 
 | GitHub.Release.author.id | Number | The release author user ID. | 
 | GitHub.Release.author.node_id | String | The release author node ID. | 
@@ -2619,19 +2676,19 @@ Get releases data from given repository and organization.
 | GitHub.Release.author.repos_url | String | The release author repos URL. | 
 | GitHub.Release.author.events_url | String | The release author events URL. | 
 | GitHub.Release.author.received_events_url | String | The release author received events URL. | 
-| GitHub.Release.author.type | String | The release author type. \(E.g, "User"\). | 
-| GitHub.Release.author.site_admin | Boolean | Whether the release author is site admin. | 
-| GitHub.Release.node_id | String | Release Node ID. | 
-| GitHub.Release.tag_name | String | Release tag name. | 
-| GitHub.Release.target_commitish | String | Release target commit. | 
-| GitHub.Release.name | String | Release name. | 
-| GitHub.Release.draft | Boolean | Whether release is draft. | 
-| GitHub.Release.prerelease | Boolean | Whether release is pre release. | 
-| GitHub.Release.created_at | Date | Date when release was created. | 
-| GitHub.Release.published_at | Date | Date when release was published. | 
-| GitHub.Release.tarball_url | String | Release tar URL download. | 
-| GitHub.Release.zipball_url | String | Release zip URL download. | 
-| GitHub.Release.body | String | Release body. | 
+| GitHub.Release.author.type | String | The release author type, for example "User". | 
+| GitHub.Release.author.site_admin | Boolean | Whether the release author is the site admin. | 
+| GitHub.Release.node_id | String | The release Node ID. | 
+| GitHub.Release.tag_name | String | The release tag name. | 
+| GitHub.Release.target_commitish | String | The release target commit. | 
+| GitHub.Release.name | String | The release name. | 
+| GitHub.Release.draft | Boolean | Whether the release is a draft. | 
+| GitHub.Release.prerelease | Boolean | Whether the release is a pre release. | 
+| GitHub.Release.created_at | Date | The date the release was created. | 
+| GitHub.Release.published_at | Date | The date the release was published. | 
+| GitHub.Release.tarball_url | String | The release tar URL download. | 
+| GitHub.Release.zipball_url | String | The release zip URL download. | 
+| GitHub.Release.body | String | The release body. | 
 
 
 #### Command Example

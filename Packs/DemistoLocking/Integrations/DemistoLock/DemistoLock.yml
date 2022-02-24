@@ -32,8 +32,9 @@ script:
     - name: timeout
       description: Timeout (seconds) for wait on lock to be freed
       defaultValue: "600"
-    description: Get a lock. If the lock is already in use - will wait until it is
-      released or until timeout is reached
+    description: Gets a specific lock. If the lock doesn't exist, it creates one.
+      If the lock is already in use, the command waits until the lock is released or until timeout is reached.
+      If timeout is reached and the lock hasn't been released, the command fails to get the lock.
   - name: demisto-lock-release
     arguments:
     - name: name

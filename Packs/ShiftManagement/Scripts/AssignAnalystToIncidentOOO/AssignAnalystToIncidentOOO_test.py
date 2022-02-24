@@ -18,7 +18,7 @@ def execute_command_mock(command, args):
     if command == 'getUsers':
         return [{'Type': 6, 'Contents': user_data}]
     if command == 'GetAwayUsers':
-        return [{'Type': 6, 'Contents': away_user_data}]
+        return [{'Type': 6, 'EntryContext': {'AwayUsers': away_user_data}}]
     if command == 'GetUsersOOO':
         return [{'Type': 6, 'EntryContext': {'ShiftManagment.OOOUsers': ooo_user_data}}]
     if command == 'setOwner':
