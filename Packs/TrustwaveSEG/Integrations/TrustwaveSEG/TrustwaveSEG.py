@@ -516,11 +516,11 @@ def trustwave_seg_statistics_command(client: Client, start_time: str = None, end
         raise Exception(
             'Invalid time format. Must provide start_time or time_range.')
 
-    start_time = dateparser.parse(time_range if time_range else start_time)
+    start_time = dateparser.parse(time_range if time_range else start_time)  # type: ignore
 
     # if end time not provided - set it to current date
     end_time = dateparser.parse("now" if not end_time else end_time)
-
+    assert start_time is not None and end_time is not None
     start_info = start_time.strftime(DATE_FORMAT)
     end_info = end_time.strftime(DATE_FORMAT)
 
@@ -782,11 +782,11 @@ def trustwave_seg_find_quarantine_message_command(client: Client, max_rows: str,
         raise Exception(
             'Invalid time format. Must provide start_time or time_range.')
 
-    start_time = dateparser.parse(time_range if time_range else start_time)
+    start_time = dateparser.parse(time_range if time_range else start_time)  # type: ignore
 
     # if end time not provided - set it to current date
     end_time = dateparser.parse("now" if not end_time else end_time)
-
+    assert start_time is not None and end_time is not None
     start_time = int(datetime.timestamp(start_time))
     end_time = int(datetime.timestamp(end_time))
 

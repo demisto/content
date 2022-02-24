@@ -126,6 +126,7 @@ def has_reached_threshold_date(num_of_days_before_hire, workday_user):
         return True
 
     hire_date = dateparser.parse(workday_user.get(HIRE_DATE_FIELD)).date()
+    assert hire_date is not None
     today = datetime.today().date()
     delta = (hire_date - today).days
     if delta > num_of_days_before_hire:

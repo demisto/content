@@ -4,12 +4,12 @@ import ssl
 import urllib3
 import demistomock as demisto  # noqa: F401
 import pyVim.task
-import dateparser
+import dateparser  # type: ignore
 from CommonServerPython import *  # noqa: F401
 from cStringIO import StringIO
 from pyVim.connect import Disconnect, SmartConnect
 from pyVmomi import vim, vmodl
-from vmware.vapi.vsphere.client import create_vsphere_client
+from vmware.vapi.vsphere.client import create_vsphere_client  # type: ignore
 
 
 def parse_params(params):
