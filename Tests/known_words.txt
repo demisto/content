@@ -88,7 +88,9 @@ FireEye
 FormatURL
 Gitlab
 GitHub
+VMware
 TAXII
 Syslog
 DomainTools
 replyTo
+URLs
