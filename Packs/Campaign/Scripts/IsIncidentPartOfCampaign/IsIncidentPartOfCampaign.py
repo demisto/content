@@ -26,9 +26,6 @@ def get_incidents_ids_by_type(incident_type: str) -> Iterable[str]:
     incidents = execute_command("GetIncidentsByQuery", search_args)
     demisto.debug(f"Incidents getting from response: {incidents}")
 
-    if is_error(incidents):
-        return_error(incidents)
-
     incidents = json.loads(incidents)
     campaign_ids = [incident.get('id') for incident in incidents]
     demisto.debug(f"Found campaing incident ids: {campaign_ids}")
