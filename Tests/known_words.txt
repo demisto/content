@@ -25,6 +25,7 @@ CMD
 CVSS
 DNS
 Hostnames
+LTM
 Src
 Srcs
 Subdomains
@@ -41,6 +42,7 @@ regex
 Bambenek
 csv
 Cloudflare
+PenfieldAssign
 DShield
 Feodo
 Blocklist
@@ -86,9 +88,10 @@ FireEye
 FormatURL
 Gitlab
 GitHub
+VMware
 TAXII
 Syslog
 DomainTools
 replyTo
 FortiSIEM
-watchlists 
+watchlists
