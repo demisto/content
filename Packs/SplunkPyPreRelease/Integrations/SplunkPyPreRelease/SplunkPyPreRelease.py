@@ -1946,7 +1946,7 @@ def build_search_human_readable(args, parsed_search_results):
 
 def update_headers_from_field_names(search_result, chosen_fields):
     headers = []
-    search_result_keys = set().union(*(d.keys() for d in search_result))  # type: Set[str]
+    search_result_keys = set().union(*(d.keys() for d in search_result))  # type: Set
     for field in chosen_fields:
         if field[-1] == '*':
             temp_field = field.replace('*', '.*')
