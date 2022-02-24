@@ -5,7 +5,7 @@ import uuid
 from dateutil import parser
 
 PREFIXES_TO_REMOVE = ['incident.']
-PAGE_SIZE = int(demisto.args().get('pageSize', 500))
+PAGE_SIZE = int(demisto.args().get('pageSize', 100))
 PYTHON_MAGIC = "$$##"
 
 
@@ -206,6 +206,8 @@ def main():
             fields_to_populate.append('id')
             fields_to_populate = set([x for x in fields_to_populate if x])  # type: ignore
         include_context = d_args['includeContext'] == 'true'
+        if arg_to_number(d_args['limit']) > 500:
+            raise Exception("Maximum limit is 500")
         incidents = get_incidents(query, d_args['timeField'],
                                   int(d_args['limit']),
                                   d_args.get('fromDate'),
