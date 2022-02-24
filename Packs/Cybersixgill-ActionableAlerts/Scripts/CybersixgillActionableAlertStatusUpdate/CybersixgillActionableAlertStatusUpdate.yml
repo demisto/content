@@ -1,0 +1,25 @@
+commonfields:
+  id: c918decb-1358-4774-8090-fe9540ea63ae
+  version: 84
+vcShouldKeepItemLegacyProdMachine: false
+name: CybersixgillActionableAlertStatusUpdate
+script: ''
+type: python
+tags:
+- field-change-triggered
+- Cybersixgill
+comment: Updates the Actionable alert status.
+enabled: true
+scripttarget: 0
+subtype: python3
+dependson:
+  must:
+  - Cybersixgill_Actionable_Alerts|||cybersixgill-update-alert-status
+  should:
+  - Cybersixgill_Actionable_Alerts|||cybersixgill-update-alert-status
+timeout: 180ns
+pswd: ""
+runonce: false
+dockerimage: demisto/sixgill:1.0.0.24417
+runas: DBotWeakRole
+engineinfo: {}
