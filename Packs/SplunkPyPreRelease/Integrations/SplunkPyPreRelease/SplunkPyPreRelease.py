@@ -1932,8 +1932,8 @@ def build_search_human_readable(args, parsed_search_results):
                              for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', table_args) if field]
             rename_dict = {field[0]: field[-1].strip('"') for field in
                            re.findall(r'((?:".*?")|(?:[^\s,]+))( AS )((?:".*?")|(?:[^\s,]+))', rename_args) if field}
-
-            # replace renamed headers
+ 
+            # replace renamed fields
             chosen_fields = [rename_dict.get(field, field) for field in chosen_fields]
 
             headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
@@ -1946,7 +1946,7 @@ def build_search_human_readable(args, parsed_search_results):
 
 def update_headers_from_field_names(search_result, chosen_fields):
     headers = []
-    search_result_keys = search_result[0].keys()
+    search_result_keys = set().union(*(d.keys() for d in search_result))
     for field in chosen_fields:
         if field[-1] == '*':
             temp_field = field.replace('*', '.*')

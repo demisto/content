@@ -1037,6 +1037,22 @@ def test_get_cim_mapping_field_command(mocker):
         'Identity Data': IDENTITY
     }
 
+def test__get_query_entry_args():
+    """
+    Given:
+        query and arg name
+
+    When:
+        running _get_query_entry_args
+
+    Then:
+        return the argument string 
+    """
+    query = 'query: * | table _time action |  rename action AS "action 2" dest AS "Destination" FailureReason AS "Failure Code" vendor_action AS "Event Name" user AS "User Account" src AS "Source IP" | head 5'
+    arg_name = 'rename'
+    result = splunk._get_query_entry_args(query, arg_name)
+    assert result == 'action AS "action 2" dest AS "Destination" FailureReason AS "Failure Code" vendor_action AS "Event Name" user AS "User Account" src AS "Source IP"'
+
 
 def test_build_search_human_readable(mocker):
     """
