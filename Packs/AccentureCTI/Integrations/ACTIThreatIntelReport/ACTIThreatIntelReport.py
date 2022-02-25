@@ -83,7 +83,7 @@ def getThreatReport_command(client: Client, args: dict , reliability: DBotScoreR
         ia_ir_url: str = str(args.get('url'))
         ia_ir_uuid: str = ia_ir_url.split('/')[-1]
         result = client.document_download(url_suffix=f'/v0/{ia_ir_uuid}')
-        custom_indicator = _ia_ir_extract(result, reliability)
+        custom_indicator = _ia_ir_extract(result, reliability, ia_ir_url)
         return CommandResults(indicator=custom_indicator, raw_response=result, readable_output=f"Report has been fetched!\nUUID: {result['uuid']}\nURL to view report:{ia_ir_url}")
         
     except Exception as e:
@@ -94,7 +94,7 @@ def getThreatReport_command(client: Client, args: dict , reliability: DBotScoreR
             raise e
 
 
-def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
+def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability, ia_ir_url: str):
     """
     """
     threat_types = Res.get('threat_types','')
@@ -104,7 +104,6 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
             for threat_type in threat_types:
                 threattypes= threattypes+'\n- '+threat_type
     context = {
-        "IAIR": {
                 'created_on' : Res.get('created_on','NA'),
                 'display_text' : Res.get('display_text','NA'),
                 'dynamic_properties' : Res.get('dynamic_properties','NA'),
@@ -119,22 +118,22 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
                 'uuid' : uuid,
                 'analysis' : Res.get('analysis','NA'),
                 'sources_external' : Res.get('sources_external','NA')
-            }
+
         }
     
     type_of_report = Res.get('type','NA')
     if 'intelligence_report' in type_of_report:
-        context['IAIR']['conclusion'] = Res.get('conclusion','NA')
-        context['IAIR']['summary'] = Res.get('summary','NA')
+        context['conclusion'] = Res.get('conclusion','NA')
+        context['summary'] = Res.get('summary','NA')
         severity_dbot_score = Common.DBotScore.NONE
         indicatortype = 'ACTI Intelligence Report'
     else:
         severity_dbot_score = Res.get('severity','NA')
         if severity_dbot_score != 'NA':
             severity_dbot_score = _calculate_dbot_score(severity_dbot_score)
-        context['IAIR']['mitigation'] = Res.get('mitigation','NA')
-        context['IAIR']['severity'] = Res.get('severity','NA')
-        context['IAIR']['abstract'] = Res.get('abstract','NA')
+        context['mitigation'] = Res.get('mitigation','NA')
+        context['severity'] = Res.get('severity','NA')
+        context['abstract'] = Res.get('abstract','NA')
         attachment_links = Res.get('attachment_links','')
         fqlink: str = ''
         if attachment_links:
@@ -142,10 +141,10 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
                 fqlink= fqlink+'\n- '+(ATTACHMENT_LINK+link)
         else:
             fqlink = 'NA'
-        context['IAIR']['attachment_links'] = fqlink
+        context['attachment_links'] = fqlink
         indicatortype = 'ACTI Intelligence Alert'
     dbot_score = Common.DBotScore(indicator=uuid, indicator_type=DBotScoreType.CUSTOM, integration_name='ACTI Threat Intelligence Report', score=severity_dbot_score, reliability=reliability)
-    custom_indicator = Common.CustomIndicator(indicator_type=indicatortype, dbot_score=dbot_score, value=uuid, data=context, context_prefix='ACTI')
+    custom_indicator = Common.CustomIndicator(indicator_type=indicatortype, dbot_score=dbot_score, value=ia_ir_url, data=context, context_prefix='IAIR')
     return custom_indicator
 
 def main():
