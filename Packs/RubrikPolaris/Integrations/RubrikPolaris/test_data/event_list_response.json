@@ -1,0 +1,125 @@
+{
+  "raw_response": {
+    "data": {
+      "activitySeriesConnection": {
+        "edges": [
+          {
+            "node": {
+              "id": 7739500,
+              "startTime": "2021-10-25T12:15:36.911Z",
+              "fid": "6e307121-e5dc-5e6a-9a6b-37e1c9afd6b1",
+              "activitySeriesId": "422d17c0-737d-44df-98a0-a7fa9f714c0d",
+              "lastUpdated": "2021-10-25T12:16:10.212Z",
+              "lastActivityType": "Index",
+              "lastActivityStatus": "Success",
+              "location": "172.24.98.42",
+              "objectName": "AllTheThings",
+              "objectId": "Fileset:::f2666679-5b94-4116-9cbf-6ab69e575522",
+              "objectType": "LinuxFileset",
+              "severity": "Info",
+              "progress": null,
+              "cluster": {
+                "id": "cc19573c-db6c-418a-9d48-067a256543ba",
+                "name": "sand1-rbk01"
+              },
+              "activityConnection": {
+                "nodes": [
+                  {
+                    "id": "fb9d6b7e-85d4-41c8-a6d5-2b549832379a",
+                    "message": "Indexing operation completed on Fileset 'AllTheThings' from location 172.24.98.42.",
+                    "severity": "Info",
+                    "time": "2021-10-25T12:16:10.212Z"
+                  },
+                  {
+                    "id": "571c8891-c03d-4197-9b2b-518110f4b2d9",
+                    "message": "Completed building global index for Fileset 'AllTheThings' from location 172.24.98.42.",
+                    "severity": "Info",
+                    "time": "2021-10-25T12:16:02.091Z"
+                  },
+                  {
+                    "id": "81858fa5-b314-40b6-9c73-1bfe6703e5f3",
+                    "message": "Building global index for Fileset 'AllTheThings' from location 172.24.98.42.",
+                    "severity": "Info",
+                    "time": "2021-10-25T12:15:38.967Z"
+                  },
+                  {
+                    "id": "5f7a6159-42c0-4d05-9ee9-23982917181e",
+                    "message": "Indexing operation started on Fileset 'AllTheThings' from location 172.24.98.42.",
+                    "severity": "Info",
+                    "time": "2021-10-25T12:15:38.116Z"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "pageInfo": {
+          "endCursor": "xyz",
+          "hasNextPage": true,
+          "hasPreviousPage": false
+        }
+      }
+    }
+  },
+  "outputs": [
+    {
+      "id": 7739500,
+      "startTime": "2021-10-25T12:15:36.911Z",
+      "fid": "6e307121-e5dc-5e6a-9a6b-37e1c9afd6b1",
+      "activitySeriesId": "422d17c0-737d-44df-98a0-a7fa9f714c0d",
+      "lastUpdated": "2021-10-25T12:16:10.212Z",
+      "lastActivityType": "Index",
+      "lastActivityStatus": "Success",
+      "location": "172.24.98.42",
+      "objectName": "AllTheThings",
+      "objectId": "Fileset:::f2666679-5b94-4116-9cbf-6ab69e575522",
+      "objectType": "LinuxFileset",
+      "severity": "Info",
+      "progress": null,
+      "cluster": {
+        "id": "cc19573c-db6c-418a-9d48-067a256543ba",
+        "name": "sand1-rbk01"
+      },
+      "activityConnection": {
+        "nodes": [
+          {
+            "id": "fb9d6b7e-85d4-41c8-a6d5-2b549832379a",
+            "message": "Indexing operation completed on Fileset 'AllTheThings' from location 172.24.98.42.",
+            "severity": "Info",
+            "time": "2021-10-25T12:16:10.212Z"
+          },
+          {
+            "id": "571c8891-c03d-4197-9b2b-518110f4b2d9",
+            "message": "Completed building global index for Fileset 'AllTheThings' from location 172.24.98.42.",
+            "severity": "Info",
+            "time": "2021-10-25T12:16:02.091Z"
+          },
+          {
+            "id": "81858fa5-b314-40b6-9c73-1bfe6703e5f3",
+            "message": "Building global index for Fileset 'AllTheThings' from location 172.24.98.42.",
+            "severity": "Info",
+            "time": "2021-10-25T12:15:38.967Z"
+          },
+          {
+            "id": "5f7a6159-42c0-4d05-9ee9-23982917181e",
+            "message": "Indexing operation started on Fileset 'AllTheThings' from location 172.24.98.42.",
+            "severity": "Info",
+            "time": "2021-10-25T12:15:38.116Z"
+          }
+        ]
+      }
+    }
+  ],
+  "empty_response": {
+    "data": {
+      "activitySeriesConnection": {
+        "edges": []
+      }
+    }
+  },
+  "page_token": {
+    "has_next_page": true,
+    "next_page_token": "xyz",
+    "name": "rubrik-event-list"
+  }
+}

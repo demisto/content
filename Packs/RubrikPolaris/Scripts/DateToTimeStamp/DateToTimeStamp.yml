@@ -1,0 +1,40 @@
+commonfields:
+  id: DateToTimeStamp
+  version: -1
+name: DateToTimeStamp
+script: |
+  import dateparser
+
+
+  def date_to_time_stamp(date: str) -> int:
+      date_obj=dateparser.parse(date)
+      return int(date_obj.timestamp())
+
+
+  def main():
+      args = demisto.args()
+      date_value = str(args['value'])
+      demisto.results(date_to_time_stamp(date_value))
+
+
+  # python2 uses __builtin__ python3 uses builtins
+  if __name__ == "__builtin__" or __name__ == "builtins":
+      main()
+type: python
+tags:
+- transformer
+- date
+comment: Converts a date to timestamp.
+enabled: true
+args:
+- name: value
+  required: true
+  description: Date to convert
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.1.26972
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

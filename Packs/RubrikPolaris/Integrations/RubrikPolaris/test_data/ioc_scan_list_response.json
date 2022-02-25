@@ -1,0 +1,95 @@
+{
+  "raw_response": {
+    "data": {
+      "malwareScans": {
+        "data": [
+          {
+            "startTime": "2021-10-12T04:52:08.777Z",
+            "id": "fcac511b-20b4-472d-9b65-9198cff8cd49",
+            "endTime": null,
+            "snapshots": [
+              {
+                "id": "VirtualMachine:::90da5ffb-432f-4dac-8c73-39260ff5493e-vm-5952003d-f95c-4ae0-bf9b-b5a80b210935",
+                "snapshots": [
+                  "3f02c410-c275-4fb9-b37f-238222aad7ec",
+                  "e3bb6432-bf80-47f9-b035-19d9ca1fe223"
+                ]
+              }
+            ]
+          },
+          {
+            "startTime": "2021-10-28T06:05:53.059Z",
+            "id": "ad435ff1-617b-468a-b5d3-736fa0e278b0",
+            "snapshots": [
+              {
+                "id": "VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-72277",
+                "snapshots": [
+                  "17271143-617f-4738-ab12-01c8520f78f2",
+                  "1ab04498-b930-4959-b825-814677f58a54",
+                  "407185e2-017d-403a-8605-f586e94af6ea",
+                  "4f8351a2-39e7-4db7-a922-3e757714280d",
+                  "e67d27a8-0114-499d-b0ea-e9a8ac9c3527",
+                  "f56cc7dd-42ba-4ee0-a0f9-5304147c7805",
+                  "ff6a8d03-83fd-4584-ae62-e5b5df21d925"
+                ]
+              },
+              {
+                "id": "VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-72279",
+                "snapshots": [
+                  "756cc7dd-42ba-4ee0-a0f9-5304147c7805",
+                  "ff6a9d03-83fd-4584-ae62-e5b5df21d925"
+                ]
+              }
+            ],
+            "endTime": "2021-10-28T07:16:16.715Z"
+          }
+        ],
+        "total": 2
+      }
+    }
+  },
+  "empty_response": {
+    "data": {}
+  },
+  "outputs": [
+    {
+      "startTime": "2021-10-12T04:52:08.777Z",
+      "id": "fcac511b-20b4-472d-9b65-9198cff8cd49",
+      "snapshots": [
+        {
+          "id": "VirtualMachine:::90da5ffb-432f-4dac-8c73-39260ff5493e-vm-5952003d-f95c-4ae0-bf9b-b5a80b210935",
+          "snapshots": [
+            "3f02c410-c275-4fb9-b37f-238222aad7ec",
+            "e3bb6432-bf80-47f9-b035-19d9ca1fe223"
+          ]
+        }
+      ]
+    },
+    {
+      "startTime": "2021-10-28T06:05:53.059Z",
+      "id": "ad435ff1-617b-468a-b5d3-736fa0e278b0",
+      "snapshots": [
+        {
+          "id": "VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-72277",
+          "snapshots": [
+            "17271143-617f-4738-ab12-01c8520f78f2",
+            "1ab04498-b930-4959-b825-814677f58a54",
+            "407185e2-017d-403a-8605-f586e94af6ea",
+            "4f8351a2-39e7-4db7-a922-3e757714280d",
+            "e67d27a8-0114-499d-b0ea-e9a8ac9c3527",
+            "f56cc7dd-42ba-4ee0-a0f9-5304147c7805",
+            "ff6a8d03-83fd-4584-ae62-e5b5df21d925"
+          ]
+        },
+        {
+          "id": "VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-72279",
+          "snapshots": [
+            "756cc7dd-42ba-4ee0-a0f9-5304147c7805",
+            "ff6a9d03-83fd-4584-ae62-e5b5df21d925"
+          ]
+        }
+      ],
+      "endTime": "2021-10-28T07:16:16.715Z"
+    }
+  ]
+}
