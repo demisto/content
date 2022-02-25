@@ -85,6 +85,35 @@ After you successfully execute a command, a DBot message appears in the War Room
 ```
 
 
+
+### taegis-execute-playbook
+
+#### Base Command
+`!taegis-execute-playbook`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Playbook instance ID to execute | True |
+| inputs | JSON object of inputs to pass into the playbook execution | False |
+
+#### Command Example
+
+```
+!taegis-execute-playbook id=UGxheWJvb2tJbnN0YW5jZTphZDNmNzBlZi1mN2U0LTQ0OWYtODJiMi1hYWQwMjQzZTA2NTg=
+!taegis-execute-playbook id=UGxheWJvb2tJbnN0YW5jZTphZDNmNzBlZi1mN2U0LTQ0OWYtODJiMi1hYWQwMjQzZTA2NTg= inputs=`{'myvar': 'myval'}`
+```
+
+#### Context Example
+
+```
+{
+    "id": "UGxheWJvb2tFeGVjdXRpb246NGYwZDZiNGQtNWNiZS00NDkxLTg3YzYtMDZkNjkxYzMwMTg4"
+}
+```
+
+
 ### taegis-fetch-investigation
 
 #### Base Command

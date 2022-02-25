@@ -114,6 +114,19 @@ script:
       description: List of alerts related to a Taegis investigation
     description: Fetch Alert IDs related to a specific investigation
   dockerimage: demisto/python3:3.9.8.24399
+  - name: taegis-execute-playbook
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the playbook instance to execute
+    - name: inputs
+      description: JSON Object of optional playbook inputs
+    outputs:
+    - contextPath: TaegisXDR.Result
+      description: The playbook execution ID
+      type: string
+    description: Executes a Taegis playbook instance
+    execution: true
   runonce: false
   subtype: python3
 fromversion: 5.5.0

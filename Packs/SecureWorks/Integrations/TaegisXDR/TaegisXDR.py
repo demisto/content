@@ -143,6 +143,55 @@ def create_investigation_command(client: Client, env: str, args=None):
     return results
 
 
+def execute_playbook_command(client: Client, env: str, args=None):
+    playbook_id = args.get("id")
+    if not playbook_id:
+        raise ValueError("Cannot execute playbook, missing playbook id")
+
+    query = """
+    mutation executePlaybookInstance(
+        $playbookInstanceId: ID!
+        $parameters: JSONObject
+    ) {
+        executePlaybookInstance(
+            playbookInstanceId: $playbookInstanceId
+            parameters: $parameters
+        ) {
+            id
+        }
+    }
+    """
+
+    playbook_inputs = args.get("inputs", {})
+
+    variables = {
+        "playbookInstanceId": playbook_id,
+        "parameters": playbook_inputs,
+    }
+
+    result = client.graphql_run(query=query, variables=variables)
+
+    if not result.get("data"):
+        raise ValueError(f"Failed to execute playbook: {result['errors'][0]['message']}")
+
+    execution_url = f"{ENV_URLS[env]['xdr']}/automations/playbook-executions/{result['data']['executePlaybookInstance']['id']}"
+    readable_output = f"""
+## Results
+* Executed Playbook Instance: [{result['data']['executePlaybookInstance']['id']}]({execution_url})
+"""
+    outputs = result["data"]["executePlaybookInstance"]
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.Result",
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=result,
+    )
+
+    return results
+
+
 def fetch_alerts_command(client: Client, env: str, args=None):
     """
     The results from listing alerts is not always the most recent. It's recommended
@@ -404,6 +453,7 @@ def main():
 
     commands: Dict[str, Any] = {
         "taegis-create-investigation": create_investigation_command,
+        "taegis-execute-playbook": execute_playbook_command,
         "taegis-fetch-alerts": fetch_alerts_command,
         "taegis-fetch-investigation": fetch_investigation_command,
         "taegis-fetch-investigation-alerts": fetch_investigation_alerts_command,
