@@ -792,7 +792,14 @@ def add_responders_to_incident(incident_id, message, user_requests=None, escalat
 
 
 def run_response_play(incident_id, from_email, response_play_uuid):
-    """Add the responders to an incident"""
+    """
+    Run a specified response play on a given incident.
+    Response Plays are a package of Incident Actions that can be applied during an Incident's life cycle.
+    Args:
+        incident_id:string The ID of the PagerDuty Incident
+        from_email:string, The email address of a valid user associated with the account making the request.
+        response_play_uuid:list, The response play ID of the response play associated with the request.
+    """
     url = SERVER_URL + RESPONSE_PLAY_SUFFIX.format(response_play_uuid)
     body = {
         'incident': {
@@ -800,14 +807,11 @@ def run_response_play(incident_id, from_email, response_play_uuid):
             'type': 'incident_reference'
         }
     }
-    extra_headers = {
-        "From": from_email
-    }
-    response = http_request('POST', url, json_data=body, additional_headers=extra_headers)
+    response = http_request('POST', url, json_data=body, additional_headers={"From": from_email})
     if response != {"status": "ok"}:
         raise Exception("Status NOT Ok - {}".format(response))
     return CommandResults(
-        readable_output="Responder added to the incident",
+        readable_output="Response play successfully run to the incident "+incident_id+" by "+from_email,
         raw_response=response
     )
 
