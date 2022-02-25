@@ -185,6 +185,7 @@ def test_add_responders(requests_mock, mocker):
     assert demisto.params().get('DefaultRequestor') == res.outputs[1].get('RequesterID')
     assert demisto.args().get('user_requests') == expected_users_requested
 
+
 def test_add_responders_default(requests_mock, mocker):
     """
     Test sending request to a responder without specifying responders
@@ -204,8 +205,8 @@ def test_add_responders_default(requests_mock, mocker):
         'args',
         return_value={
             "incident_id": "PXP12GZ",
-            "message": "Please help with issue - join bridge at +1(234)-567-8910",
-         }
+            "message": "Please help with issue - join bridge at +1(234)-567-8910"
+        }
     )
     requests_mock.post(
         'https://api.pagerduty.com/incidents/PXP12GZ/responder_requests',
@@ -283,6 +284,7 @@ def test_add_responders_default(requests_mock, mocker):
     assert demisto.params().get('DefaultRequestor') == res.outputs[0].get('RequesterID')
     assert demisto.params().get('DefaultRequestor') == expected_users_requested
 
+
 def test_play_response_play(requests_mock, mocker):
     """
     Test sending request to a responder without specifying responders
@@ -308,9 +310,7 @@ def test_play_response_play(requests_mock, mocker):
     )
     requests_mock.post(
         'https://api.pagerduty.com/response_plays/response_play_id/run',
-        json={
-          "status": "ok"
-        }
+        json={"status": "ok"}
     )
 
     from PagerDuty import run_response_play
