@@ -127,6 +127,15 @@ script:
       type: string
     description: Executes a Taegis playbook instance
     execution: true
+  - name: taegis-fetch-playbook-execution
+    arguments:
+    - name: id
+      required: true
+      description: Playbook execution ID
+    outputs:
+    - contextPath: TaegisXDR.Result
+      description: Returns related execution information
+    description: Fetch the results of a Taegis playbook instance execution
   runonce: false
   subtype: python3
 fromversion: 5.5.0

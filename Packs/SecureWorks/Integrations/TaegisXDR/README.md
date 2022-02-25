@@ -203,6 +203,48 @@ After you successfully execute a command, a DBot message appears in the War Room
 ```
 
 
+### taegis-fetch-playbook-execution
+
+#### Base Command
+`!taegis-fetch-playbook-execution`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Playbook execution ID to fetch | True |
+
+#### Command Example
+
+```
+!taegis-fetch-playbook-execution id=UGxheWJvb2tFeGVjdXRpb246NGYwZDZiNGQtNWNiZS00NDkxLTg3YzYtMDZkNjkxYzMwMTg4
+```
+
+#### Context Example
+
+```
+{
+            "createdAt": "2022-01-01T13:51:24Z",
+            "executionTime": 1442,
+            "id": "UGxheWJvb2tFeGVjdXRpb246NGYwZDZiNGQtNWNiZS00NDkxLTg3YzYtMDZkNjkxYzMwMTg4",
+            "inputs": {
+                "alert": {
+                    "message": "Test Alert",
+                }
+            },
+            "instance": {
+                "name": "Test Alert Instance",
+                "playbook": {
+                    "name": "Taegis.PagerDutyAlertEvent"
+                }
+            },
+            "outputs": "d6b65662-c1da-4109-8553-c5664918c952",
+            "state": "Completed",
+            "updatedAt": "2022-01-01T13:51:31Z"
+        }
+```
+
+
 ### taegis-update-investigation
 
 #### Base Command

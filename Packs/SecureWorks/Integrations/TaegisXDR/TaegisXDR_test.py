@@ -4,6 +4,7 @@ from TaegisXDR import (
     fetch_alerts_command,
     fetch_investigation_command,
     fetch_investigation_alerts_command,
+    fetch_playbook_execution_command,
     create_investigation_command,
     update_investigation_command,
 )
@@ -195,6 +196,29 @@ def test_fetch_investigation_alerts(requests_mock):
 
     assert response.outputs[0] == TAEGIS_ALERT
     assert len(response.outputs) == len([TAEGIS_ALERT])
+
+
+def test_fetch_playbook_execution(requests_mock):
+    """Tests taegis-fetch-playbook-execution command function
+
+    Test fetching a playbook's execution
+    """
+
+    mock_response = {
+        "data": {
+            "playbookExecution": TAEGIS_PLAYBOOK_EXECUTION
+        }
+    }
+
+    client = mock_client(requests_mock, mock_response)
+
+    args = {
+        "id": TAEGIS_PLAYBOOK_EXECUTION_ID,
+    }
+
+    response = fetch_playbook_execution_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    assert response.outputs == TAEGIS_PLAYBOOK_EXECUTION
 
 
 def test_create_investigation(requests_mock):
