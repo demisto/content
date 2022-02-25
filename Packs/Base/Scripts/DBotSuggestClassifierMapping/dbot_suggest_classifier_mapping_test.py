@@ -266,3 +266,26 @@ def test_custom_field(mocker, capfd):
     mapper = main()
     assert len(mapper) == 1
     assert 'payload_type' == get_complex_value_key(mapper['Payload Type']['complex'])
+
+
+def test_unmapped_field(mocker):
+    incidents = json.load(open('TestData/splunk_scheme.json'))
+    fields = [{INCIDENT_FIELD_SYSTEM: False,
+               INCIDENT_FIELD_MACHINE_NAME: 'payloadtype',
+               INCIDENT_FIELD_NAME: 'Payload Type'},
+              {INCIDENT_FIELD_SYSTEM: False,
+               INCIDENT_FIELD_MACHINE_NAME: 'action',
+               INCIDENT_FIELD_NAME: 'Action',
+               INCIDENT_FIELD_UNMAPPED: True}
+              ]
+    args = {
+        'incidentSamples': incidents,
+        'incidentSamplesType': 'scheme',
+        'incidentFields': fields,
+    }
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mapper = main()
+    print(mapper)
+    assert len(mapper) == 1
+    assert 'Action' not in mapper
+
