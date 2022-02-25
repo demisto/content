@@ -811,7 +811,7 @@ def run_response_play(incident_id, from_email, response_play_uuid):
     if response != {"status": "ok"}:
         raise Exception("Status NOT Ok - {}".format(response))
     return CommandResults(
-        readable_output="Response play successfully run to the incident "+incident_id+" by "+from_email,
+        readable_output="Response play successfully run to the incident " + incident_id + " by " + from_email,
         raw_response=response
     )
 
