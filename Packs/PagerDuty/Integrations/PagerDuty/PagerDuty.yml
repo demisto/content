@@ -597,8 +597,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: UserID sending the request (if blank, uses the default for the
-        integraiton)
+      description: UserID sending the request (if blank, uses the default for the integration)
       isArray: false
       name: requestor_id
       required: false
