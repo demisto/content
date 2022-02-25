@@ -42,7 +42,7 @@ class Client(BaseClient):
         client_secret: str,
         base_url: str,
         proxy: bool = False,
-        verify: bool = False,
+        verify: bool = True,
     ) -> None:
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.base_url = base_url
@@ -636,23 +636,23 @@ def main():
 
     PARAMS = demisto.params()
     try:
+        if command not in commands:
+            raise NotImplementedError(f'The "{command}" command has not been implemented.')
+
         environment = PARAMS.get("environment", "us1").lower()
         if not ENV_URLS.get(environment):
             raise ValueError(f"Unknown Environment Provided: {environment}")
+
+        verify_cert = not PARAMS.get("insecure", False)
 
         client = Client(
             client_id=PARAMS.get("client_id"),
             client_secret=PARAMS.get("client_secret"),
             base_url=ENV_URLS[environment]["api"],
             proxy=PARAMS.get("proxy", False),
-            verify=PARAMS.get("verify", True),
+            verify=verify_cert,
         )
         client.auth()
-
-        if command not in commands:
-            raise NotImplementedError(
-                f'The "{command}" command has not been implemented.'
-            )
 
         if command == "test-module":
             result = test_module(client)
