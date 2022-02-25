@@ -788,14 +788,18 @@ There are no input arguments for this command.
 ```
 
 #### Human Readable Output
+>### Service List
+>|ID|Name|Status|Created At|Integration|
+>|---|---|---|---|---|
+>| someid | API Service | critical | 2016-03-20T14:00:55+02:00 | Name: API Service, Vendor: Missing Vendor information, Key: somekey<br/> |
 
 ### PagerDuty-add-responders
 ***
 Add responders to an incident
 
 #### Base Command
-`PagerDuty-add-responders`
 
+`PagerDuty-add-responders`
 #### Input
 | **Argument Name** | **Description**                                                                  | **Required** |
 | --- |----------------------------------------------------------------------------------| --- |
@@ -809,7 +813,40 @@ Add responders to an incident
 #### Command Example
 ```!PagerDuty-add-responders incident_id=PXP12GZ UserRequests=P09TT3C,PAIXXX  Message="Please join zoom meeting" ```
 
->### Service List
->|ID|Name|Status|Created At|Integration|
->|---|---|---|---|---|
->| someid | API Service | critical | 2016-03-20T14:00:55+02:00 | Name: API Service, Vendor: Missing Vendor information, Key: somekey<br/> |
+#### Context Output
+
+| **Path** | **Type** | **Description**       |
+| --- | --- |-----------------------|
+| PagerDuty.ResponderRequests.ResponderID | string | ID of the Responder   | 
+| PagerDuty.ResponderRequests.ResponderName | string | Name of the Responder | 
+
+#### Context Example
+```json
+{
+    "PagerDuty": {
+    {
+        "ResponderRequests": [
+            {
+                "ID": "P09TT3C",
+                "IncidentID": "PXP12GZ",
+                "IncidentSummary": "[#31028] Test Incident for Demisto Integration - No Action",
+                "Message": "Please help with issue - join bridge at +1(234)-567-8910",
+                "RequesterID": "P09TT3C",
+                "ResponderName": "John Doe",
+                "ResponderType": "user_reference",
+                "Type": "user"
+            },
+            {
+                "ID": "PAIXXX",
+                "IncidentID": "PXP12GZ",
+                "IncidentSummary": "[#31028] Test Incident for Demisto Integration - No Action",
+                "Message": "Please help with issue - join bridge at +1(234)-567-8910",
+                "RequesterID": "P09TT3C",
+                "ResponderName": "Jane Doe",
+                "ResponderType": "user_reference",
+                "Type": "user"
+            }
+        ]
+    }
+}
+```
