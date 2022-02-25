@@ -769,20 +769,20 @@ def add_responders_to_incident(incident_id, message, user_requests=None, escalat
         requestor_id = DEFAULT_REQUESTOR
     url = SERVER_URL + RESPONDER_REQUESTS_SUFFIX.format(incident_id)
     body = {
-        'requestor_id': requestor_id,
+        'requester_id': requestor_id,
         'message': message,
         'responder_request_targets': []
     }
     for user_id in user_requests.split(","):
         body['responder_request_targets'].append({
-            'responder_request': {
+            'responder_request_target': {
                 "id": user_id,
                 "type": 'user_reference'
             }
         })
     for escalation_policy_id in escalation_policy_requests:
         body['responder_request_targets'].append({
-            'responder_request': {
+            'responder_request_target': {
                 "id": escalation_policy_id,
                 "type": 'escalation_policy_reference'
             }
