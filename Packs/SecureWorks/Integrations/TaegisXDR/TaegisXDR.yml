@@ -154,7 +154,6 @@ script:
     - contextPath: TaegisXDR.Result
       description: List of alerts related to a Taegis investigation
     description: Fetch Alert IDs related to a specific investigation
-  dockerimage: demisto/python3:3.9.8.24399
   - name: taegis-execute-playbook
     arguments:
     - name: id
@@ -177,6 +176,7 @@ script:
     - contextPath: TaegisXDR.Result
       description: Returns related execution information
     description: Fetch the results of a Taegis playbook instance execution
+  dockerimage: demisto/python3:3.10.1.26972
   runonce: false
   subtype: python3
   isfetch: true
