@@ -322,7 +322,7 @@ def fetch_incidents(client: Client, env: str, args=None):
 
     variables = {
         "orderByField": "created_at",
-        "orderDirection": "asc",
+        "orderDirection": "desc",
         "page": page,
         "perPage": page_size,
         "status": status
@@ -362,7 +362,7 @@ def fetch_incidents(client: Client, env: str, args=None):
 
     demisto.debug(f"Located {len(incidents)} Incidents")
 
-    last_run = str(now) if not incidents else incidents[-1]["occured"]
+    last_run = str(now) if not incidents else incidents[0]["occured"]
     demisto.debug(f"Last Run/Incident Time: {last_run}")
     demisto.setLastRun({"start_time": last_run})
 
