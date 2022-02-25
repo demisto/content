@@ -430,6 +430,9 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             severity
             message
         }
+        archived_at
+        created_at
+        updated_at
         service_desk_id
         service_desk_type
         latest_activity
