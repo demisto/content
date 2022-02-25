@@ -225,8 +225,8 @@ def test_main_outgoing(mocker):
     }
     mocker.patch.object(demisto, 'args', return_value=args)
     mapper = main()
-
-    assert 'severity' == get_complex_value_key(mapper['user_priority'])
+    assert 'severity' == get_complex_value_key(mapper.get('user_priority', {})) \
+           or 'severity' == get_complex_value_key(mapper.get('src_priority', {}))
     assert 'category' == get_complex_value_key(mapper['category'])
 
 
@@ -243,13 +243,12 @@ def test_main_splunk_schemes(mocker, capfd):
     assert 'protocol' == get_complex_value_key(mapper['Protocol']['complex'])
     assert 'severity' == get_complex_value_key(mapper['severity']['complex'])
     assert 'body' == get_complex_value_key(mapper['Email Body']['complex'])
-    assert 'ssl_subject_email' == get_complex_value_key(mapper['Email Subject']['complex'])
+    assert 'subject_email' in get_complex_value_key(mapper['Email Subject']['complex'])
     assert 'country' == get_complex_value_key(mapper['Country']['complex'])
     assert 'vendor_product' == get_complex_value_key(mapper['Vendor Product']['complex'])
     assert 'signature' == get_complex_value_key(mapper['Signature']['complex'])
     assert 'os' == get_complex_value_key(mapper['OS']['complex'])
     assert 'app' == get_complex_value_key(mapper['App']['complex'])
-    assert 'description' == get_complex_value_key(mapper['Description']['complex'])
 
 
 def test_custom_field(mocker, capfd):
@@ -285,7 +284,5 @@ def test_unmapped_field(mocker):
     }
     mocker.patch.object(demisto, 'args', return_value=args)
     mapper = main()
-    print(mapper)
     assert len(mapper) == 1
     assert 'Action' not in mapper
-
