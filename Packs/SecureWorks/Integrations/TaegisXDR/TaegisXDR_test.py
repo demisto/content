@@ -7,6 +7,8 @@ from TaegisXDR import (
     update_investigation_command,
 )
 
+TAEGIS_ENVIRONMENT = "us1"
+
 TAEGIS_ALERT = {
     "id": "c4f33b53-eaba-47ac-8272-199af0f7935b",
     "description": "Test Alert",
@@ -59,7 +61,7 @@ def test_fetch_alerts(requests_mock):
         "ids": ["c4f33b53-eaba-47ac-8272-199af0f7935b"]
     }
 
-    response = fetch_alerts_command(client, args)
+    response = fetch_alerts_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
     assert response.outputs[0] == TAEGIS_ALERT
     assert len(response.outputs) == len([TAEGIS_ALERT])
@@ -85,7 +87,7 @@ def test_fetch_investigaton(requests_mock):
         "page_sie": 1,
     }
 
-    response = fetch_investigation_command(client, args)
+    response = fetch_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
     assert response.outputs[0] == TAEGIS_INVESTIGATION
 
@@ -109,7 +111,7 @@ def test_fetch_investigatons(requests_mock):
         "page_sie": 1,
     }
 
-    response = fetch_investigation_command(client, args)
+    response = fetch_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
     assert response.outputs == [TAEGIS_INVESTIGATION]
 
@@ -157,7 +159,7 @@ def test_create_investigation(requests_mock):
         "priority": 3,
     }
 
-    response = create_investigation_command(client, args)
+    response = create_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
     assert response.outputs["id"] == mock_response["data"]["createInvestigation"]["id"]
 
@@ -182,6 +184,6 @@ def test_update_investigation(requests_mock):
         "priority": 2,
     }
 
-    response = update_investigation_command(client, args)
+    response = update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
     assert response.outputs["id"] == args["id"]
