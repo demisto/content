@@ -78,7 +78,7 @@ def test_getThreatReport_command():
        
         output = results.to_context().get('EntryContext', {})
 
-        assert output.get('ACTI(val.value && val.value == obj.value)', []) == expected_output.get('IA_IR')
+        assert output.get('IAIR(val.value && val.value == obj.value)', []) == expected_output.get('IA_IR')
         assert output.get(DBOT_SCORE, []) == expected_output.get('DBot')
        
 
