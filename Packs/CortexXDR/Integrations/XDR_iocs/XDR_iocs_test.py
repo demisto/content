@@ -4,7 +4,7 @@ from freezegun import freeze_time
 
 
 Client.severity = 'INFO'
-client = Client({'url': 'test'})
+client = Client({'url': 'https://example.com'})
 
 
 def d_sort(in_dict):
@@ -47,45 +47,54 @@ class TestGetHeaders:
 
 
 class TestHttpRequest:
-    class Res:
-        content = 'error'.encode()
+    def test_http_request_ok(self, requests_mock):
+        """
+            Given:
+                - a client
+            When:
+                - http_request returns status code 200.
+            Then:
+                - do not raise an error
+        """
+        requests_mock.post('https://example.com/public_api/v1/indicators/suffix', status_code=200, json={})
+        client.http_request(url_suffix='suffix', requests_kwargs={})
 
-        def __init__(self, code):
-            self.status_code = code
-
-        @staticmethod
-        def json():
-            return {}
-
-    XDR_SERVER_ERROR = 500
-    INVALID_CREDS = 401
-    LICENSE_ERROR = 402
-    PERMISSION_ERROR = 403
-    OK = 200
-    data_test_http_request_error_codes = [
-        (OK, {}),
-        (XDR_SERVER_ERROR, 'XDR internal server error.\t(error)'),
-        (INVALID_CREDS, 'Unauthorized access. An issue occurred during authentication. This can indicate an incorrect key, id, or other invalid authentication parameters.\t(error)'),  # noqa: E501
-        (LICENSE_ERROR, 'Unauthorized access. User does not have the required license type to run this API.\t(error)'),
-        (PERMISSION_ERROR, 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API.\t(error)')   # noqa: E501
-    ]
-
-    @pytest.mark.parametrize('res, expected_output', data_test_http_request_error_codes)
-    def test_http_request_error_codes(self, res, expected_output, mocker):
+    @pytest.mark.parametrize('status_code', client.error_codes.keys())
+    def test_http_request_error(self, requests_mock, status_code):
         """
             Given:
                 - Status code
             When:
                 - http_request returns this status code.
             Then:
-                - Verify error/success format.
+                - Verify error message.
+                - Verify exception.res status code matches the http status code.
         """
-        mocker.patch('requests.post', return_value=self.Res(res))
-        try:
-            output = client.http_request('', {})
-        except DemistoException as error:
-            output = str(error)
-        assert output == expected_output, f'status code {res}\n\treturns: {output}\n\tinstead: {expected_output}'
+        with pytest.raises(DemistoException) as e:
+            requests_mock.post('https://example.com/public_api/v1/indicators/suffix', status_code=status_code)
+            client.http_request('suffix', requests_kwargs={})
+        assert e.value.message == client.error_codes[status_code]
+        assert e.value.res.status_code == status_code
+
+    def test_http_request_bad_json(self, requests_mock):
+        """
+            Given:
+                - a client
+            When:
+                - http_request returns a response that is not a json.
+            Then:
+                - Verify error message.
+                - Verify demisto exception
+        """
+        text = 'not a json'
+
+        with pytest.raises(DemistoException) as e:
+            requests_mock.post('https://example.com/public_api/v1/indicators/suffix', status_code=200, text=text)
+            client.http_request('suffix', requests_kwargs={})
+        assert e.value.message == f'Could not parse json out of {text}'
+        assert e.value.res.status_code == 200
+        assert isinstance(e.value.exception, json.JSONDecodeError)
+        assert e.value.exception.args == ('Expecting value: line 1 column 1 (char 0)',)
 
 
 class TestGetRequestsKwargs:
@@ -265,13 +274,9 @@ class TestCreateFile:
         all_iocs['iocs'].append(defective_indicator)
         all_iocs['total'] += 1
         mocker.patch.object(demisto, 'searchIndicators', return_value=all_iocs)
-        warnings = mocker.patch.object(demisto, 'debug')
         create_file_sync(TestCreateFile.path)
         data = self.get_file(TestCreateFile.path)
         assert data == expected_data, f'create_file_sync with all iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
-        error_msg = warnings.call_args.args[0]
-        assert error_msg.startswith("unexpected IOC format in key: '"), f"create_file_sync empty message\n\tstarts: {error_msg}\n\tinstead: unexpected IOC format in key: '"    # noqa: E501
-        assert error_msg.endswith(f"', {str(defective_indicator)}"), f"create_file_sync empty message\n\tends: {error_msg}\n\tinstead: ', {str(defective_indicator)}"     # noqa: E501
 
     def test_create_file_iocs_to_keep_without_iocs(self, mocker):
         """
@@ -616,16 +621,37 @@ class TestCommands:
 
     def test_sync(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')
-        iocs, data = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'txt')
+        iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'txt')
         mocker.patch.object(demisto, 'searchIndicators', returnvalue=iocs)
         mocker.patch('XDR_iocs.return_outputs')
         sync(client)
         assert http_request.call_args.args[0] == 'sync_tim_iocs', 'sync command url changed'
 
+    def test_get_sync_file(self, mocker):
+        iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'txt')
+        mocker.patch.object(demisto, 'searchIndicators', returnvalue=iocs)
+        return_results_mock = mocker.patch('XDR_iocs.return_results')
+        get_sync_file()
+        assert return_results_mock.call_args[0][0]['File'] == 'xdr-sync-file'
+
+    def test_set_sync_time(self, mocker):
+        mocker_reurn_results = mocker.patch('XDR_iocs.return_results')
+        mocker_set_context = mocker.patch.object(demisto, 'setIntegrationContext')
+        set_sync_time('2021-11-25T00:00:00')
+        mocker_reurn_results.assert_called_once_with('set sync time to 2021-11-25T00:00:00 seccedded.')
+        call_args = mocker_set_context.call_args[0][0]
+        assert call_args['ts'] == 1637798400000
+        assert call_args['time'] == '2021-11-25T00:00:00Z'
+        assert call_args['iocs_to_keep_time']
+
+    def test_set_sync_time_with_invalid_time(self):
+        with pytest.raises(ValueError, match='invalid time format.'):
+            set_sync_time('test')
+
     @freeze_time('2020-06-03T02:00:00Z')
     def test_iocs_to_keep(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')
-        iocs, data = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_iocs_to_keep, 'txt')
+        iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_iocs_to_keep, 'txt')
         mocker.patch.object(demisto, 'searchIndicators', returnvalue=iocs)
         mocker.patch('XDR_iocs.return_outputs')
         iocs_to_keep(client)
@@ -701,3 +727,39 @@ class TestParams:
         output = outputs.call_args.args[0]
         assert output[0]['fields']['tags'] == expected_tags
         assert output[0]['fields'].get('trafficlightprotocol') == expected_tlp_color
+
+
+def test_file_deleted_for_create_file_sync(mocker):
+    file_path = 'test'
+    mocker.patch('XDR_iocs.get_temp_file', return_value=file_path)
+    open(file_path, 'w').close()
+
+    def raise_function(*_args, **_kwargs):
+        raise DemistoException(file_path)
+
+    mocker.patch('XDR_iocs.create_file_sync', new=raise_function)
+    with pytest.raises(DemistoException):
+        get_sync_file()
+    assert os.path.exists(file_path) is False
+
+
+data_test_test_file_deleted = [
+    (sync, 'create_file_sync'),
+    (iocs_to_keep, 'create_file_iocs_to_keep'),
+]
+
+
+@pytest.mark.parametrize('method_to_test,iner_method', data_test_test_file_deleted)
+@freeze_time('2020-06-03T02:00:00Z')
+def test_file_deleted(mocker, method_to_test, iner_method):
+    file_path = 'test'
+    mocker.patch('XDR_iocs.get_temp_file', return_value=file_path)
+    open(file_path, 'w').close()
+
+    def raise_function(*_args, **_kwargs):
+        raise DemistoException(file_path)
+
+    mocker.patch(f'XDR_iocs.{iner_method}', new=raise_function)
+    with pytest.raises(DemistoException):
+        method_to_test(None)
+    assert os.path.exists(file_path) is False

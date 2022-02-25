@@ -892,10 +892,13 @@ script:
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
+      type: Unknown
     - contextPath: DBotScore.Type
       description: The indicator type.
+      type: Unknown
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the DBot score.
+      type: Unknown
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
@@ -1123,6 +1126,25 @@ script:
       type: String
     - contextPath: PassiveTotal.Domain.techTelephone
       description: The telephone number of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.score
+      description: Reputation score of the indicator.
+      type: Number
+    - contextPath: PassiveTotal.Domain.classification
+      description: Reputation classification of the indicator. (Can be GOOD, SUSPICIOUS,
+        MALICIOUS, or UNKNOWN)
+      type: String
+    - contextPath: PassiveTotal.Domain.rules.name
+      description: Name of the rule that informed the reputation score of the indicator.
+      type: String
+    - contextPath: PassiveTotal.Domain.rules.description
+      description: Description of the rule.
+      type: String
+    - contextPath: PassiveTotal.Domain.rules.severity
+      description: Severity of the rule.
+      type: Number
+    - contextPath: PassiveTotal.Domain.rules.link
+      description: Link to the rule.
       type: String
   - arguments:
     - default: false
@@ -1448,7 +1470,1200 @@ script:
     - contextPath: PassiveTotal.Cookie.lastSeen
       description: The date and time when the cookie was most recently observed.
       type: Date
-  dockerimage: demisto/python3:3.9.7.24076
+  - arguments:
+    - default: false
+      description: 'The domain, host or IP address to be queried. For example: riskiq.com,
+        1.1.1.1'
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a summary data card associated with the given query.
+    execution: false
+    name: pt-get-data-card
+    outputs:
+    - contextPath: PassiveTotal.DataCard.type
+      description: Type of the indicator.
+      type: String
+    - contextPath: PassiveTotal.DataCard.name
+      description: Name of the indicator.
+      type: String
+    - contextPath: PassiveTotal.DataCard.link
+      description: Link to the indicator.
+      type: String
+    - contextPath: PassiveTotal.DataCard.netblock
+      description: Netblock associated with the indicator.
+      type: String
+    - contextPath: PassiveTotal.DataCard.os
+      description: Operating system associated with the indicator.
+      type: String
+    - contextPath: PassiveTotal.DataCard.organization
+      description: The organization of the indicator.
+      type: String
+    - contextPath: PassiveTotal.DataCard.asn
+      description: Autonomous system number assigned to the indicator.
+      type: String
+    - contextPath: PassiveTotal.DataCard.hosting_provider
+      description: Host provider of the indicator.
+      type: String
+    - contextPath: PassiveTotal.DataCard.data_summary.resolutions.count
+      description: Number of resolutions attached to the indicator.
+      type: Number
+    - contextPath: PassiveTotal.DataCard.data_summary.resolutions.link
+      description: Link of the resolutions attached to the indicator.
+      type: String
+    - contextPath: PassiveTotal.DataCard.data_summary.services.count
+      description: Number of service records for the indicator.
+      type: Number
+    - contextPath: PassiveTotal.DataCard.data_summary.services.link
+      description: Link to the service records of the indicator.
+      type: String
+    - contextPath: PassiveTotal.DataCard.data_summary.certificates.count
+      description: Number of certificates for the given indicator.
+      type: Number
+    - contextPath: PassiveTotal.DataCard.data_summary.certificates.link
+      description: Link to the certificates associated with the indicator.
+      type: String
+    - contextPath: PassiveTotal.DataCard.data_summary.hashes.count
+      description: Number of hashes associated with the indicator.
+      type: Number
+    - contextPath: PassiveTotal.DataCard.data_summary.hashes.link
+      description: Link to the hashes associated with the indicator.
+      type: String
+    - contextPath: PassiveTotal.DataCard.data_summary.projects.count
+      description: Number of projects containing the indicator.
+      type: Number
+    - contextPath: PassiveTotal.DataCard.data_summary.projects.link
+      description: Number of projects containing the indicator.
+      type: String
+    - contextPath: PassiveTotal.DataCard.data_summary.articles.count
+      description: Number of articles referencing the indicator.
+      type: Number
+    - contextPath: PassiveTotal.DataCard.data_summary.articles.link
+      description: Link to the articles referencing the indicator.
+      type: String
+    - contextPath: PassiveTotal.DataCard.data_summary.trackers.count
+      description: Number of trackers associated with the indicator.
+      type: Number
+    - contextPath: PassiveTotal.DataCard.data_summary.trackers.link
+      description: Link to the trackers associated with the indicator.
+      type: String
+    - contextPath: PassiveTotal.DataCard.data_summary.components.count
+      description: Number of components associated with the indicator.
+      type: Number
+    - contextPath: PassiveTotal.DataCard.data_summary.components.link
+      description: Link to the components associated with the indicator.
+      type: String
+    - contextPath: PassiveTotal.DataCard.data_summary.host_pairs.count
+      description: Number of host pairs associated with the indicator.
+      type: Number
+    - contextPath: PassiveTotal.DataCard.data_summary.host_pairs.link
+      description: Link to the host pairs associated with the indicator.
+      type: String
+    - contextPath: PassiveTotal.DataCard.data_summary.reverse_dns.count
+      description: Number of DNS records for the indicator.
+      type: Number
+    - contextPath: PassiveTotal.DataCard.data_summary.reverse_dns.link
+      description: Link to the DNS records of the indicator.
+      type: String
+    - contextPath: PassiveTotal.DataCard.data_summary.cookies.count
+      description: Number of available cookie records for the indicator.
+      type: Number
+    - contextPath: PassiveTotal.DataCard.data_summary.cookies.link
+      description: Link to the cookie records for the indicator.
+      type: String
+  - arguments:
+    - default: false
+      description: 'The domain, host or IP address to be queried. For example: riskiq.com,
+        1.1.1.1'
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets reputation for a given domain, host or IP.
+    execution: false
+    name: pt-get-reputation
+    outputs:
+    - contextPath: PassiveTotal.Reputation.query
+      description: The value of the indicator.
+      type: String
+    - contextPath: PassiveTotal.Reputation.score
+      description: Reputation score of the indicator.
+      type: Number
+    - contextPath: PassiveTotal.Reputation.classification
+      description: Reputation classification of the indicator. (Can be GOOD, SUSPICIOUS,
+        MALICIOUS, or UNKNOWN)
+      type: String
+    - contextPath: PassiveTotal.Reputation.rules.name
+      description: Name of the rule that informed the reputation score of the indicator.
+      type: String
+    - contextPath: PassiveTotal.Reputation.rules.description
+      description: Description of the rule.
+      type: String
+    - contextPath: PassiveTotal.Reputation.rules.severity
+      description: Severity of the rule.
+      type: Number
+    - contextPath: PassiveTotal.Reputation.rules.link
+      description: Link to the rule.
+      type: String
+  - arguments:
+    - default: true
+      description: The IP address to check.
+      isArray: true
+      name: ip
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks the reputation of an IP address.
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: PassiveTotal.IP.query
+      description: The value of the indicator.
+      type: String
+    - contextPath: PassiveTotal.IP.score
+      description: Reputation score of the indicator.
+      type: Number
+    - contextPath: PassiveTotal.IP.classification
+      description: Reputation classification of the indicator. (Can be GOOD, SUSPICIOUS,
+        MALICIOUS, or UNKNOWN)
+      type: String
+    - contextPath: PassiveTotal.IP.rules.name
+      description: Name of the rule that informed the reputation score of the indicator.
+      type: String
+    - contextPath: PassiveTotal.IP.rules.description
+      description: Description of the rule.
+      type: String
+    - contextPath: PassiveTotal.IP.rules.severity
+      description: Severity of the rule.
+      type: Number
+    - contextPath: PassiveTotal.IP.rules.link
+      description: Link to the rule.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The reputation score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: IP.Address
+      description: The IP Address.
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        Specify the ID of the profile to retrieve the specific profile.
+
+        Note: If 'id' argument is provided, all other arguments will be neglected.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: 'Filter the result based on title or aliases. '
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Filter the results based on the profile type. \n\nPossible values:\
+        \ actor, tool, backdoor."
+      isArray: false
+      name: type
+      predefined:
+      - actor
+      - tool
+      - backdoor
+      required: false
+      secret: false
+    - default: false
+      description: "Specify the indicator value to retrieve the profiles containing\
+        \ the given indicator.\n\nNote: To retrieve the list of indicators, execute\
+        \ the \"pt-list-intel-profile-indicators\" command. \nWhen both indicator_value\
+        \ and query are provided, higher priority will be given to indicator_value."
+      isArray: false
+      name: indicator_value
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Filter the result based on the indicator source. \n\nPossible\
+        \ values: osint, riskiq.\n\nNote: Requires 'indicator_value' argument."
+      isArray: false
+      name: source
+      predefined:
+      - osint
+      - riskiq
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Filter the result based on the indicator category. \n\nPossible\
+        \ values: host, network.\n\nNote: Requires 'indicator_value' argument."
+      isArray: false
+      name: category
+      predefined:
+      - host
+      - network
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Maximum number of results to return per page.
+
+        Note: The minimum value supported is 1 and maximum value supported is 1000.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the list of all profiles.
+    execution: false
+    name: pt-list-intel-profiles
+    outputs:
+    - contextPath: PassiveTotal.IntelProfile.id
+      description: ID of the intel profile.
+      type: String
+    - contextPath: PassiveTotal.IntelProfile.title
+      description: Title of the intel profile.
+      type: String
+    - contextPath: PassiveTotal.IntelProfile.link
+      description: Link to the intel profile.
+      type: String
+    - contextPath: PassiveTotal.IntelProfile.osintIndicatorsCount
+      description: Count of the open source intelligence indicators referencing the
+        intel profile.
+      type: Number
+    - contextPath: PassiveTotal.IntelProfile.riskIqIndicatorsCount
+      description: Count of the riskiq indicators referencing the intel profile.
+      type: Number
+    - contextPath: PassiveTotal.IntelProfile.indicators
+      description: Link to the indicators referencing the intel profile.
+      type: String
+    - contextPath: PassiveTotal.IntelProfile.aliases
+      description: Aliases of the intel profile.
+      type: String
+    - contextPath: PassiveTotal.IntelProfile.tags.label
+      description: Labels associated with the intel profile.
+      type: String
+    - contextPath: PassiveTotal.IntelProfile.tags.countryCode
+      description: Country code of the tags associated with the intel profile.
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        Specify the ID of the profile to retrieve indicators for the specific profile.
+
+        Note: To retrieve the list of profile IDs, execute the "pt-list-intel-profile" command.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Filter the results based on the indicator type. \n\nPossible values:\
+        \ certificate_sha1, domain, email, hash_md5, hash_sha256, ip, pdb_path, soa_email,\
+        \ url, whois_email."
+      isArray: false
+      name: type
+      predefined:
+      - certificate_sha1
+      - domain
+      - email
+      - hash_md5
+      - hash_sha256
+      - ip
+      - pdb_path
+      - soa_email
+      - url
+      - whois_email
+      required: false
+      secret: false
+    - default: false
+      description: Specify the indicator value to retrieve the specific indicator.
+      isArray: false
+      name: indicator_value
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Filter the result based on the indicator source. \n\nPossible\
+        \ values: osint, riskiq."
+      isArray: false
+      name: source
+      predefined:
+      - osint
+      - riskiq
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Filter the result based on the indicator category. \n\nPossible\
+        \ values: host, network."
+      isArray: false
+      name: category
+      predefined:
+      - host
+      - network
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: |-
+        Page number for paging through results.
+
+        Note: The minimum value supported is 0 and maximum value supported is int32.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Maximum number of results to return per page.
+
+        Note: The minimum value supported is 1 and maximum value supported is int32.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the indicators for the given profile.
+    execution: false
+    name: pt-list-intel-profile-indicators
+    outputs:
+    - contextPath: PassiveTotal.IntelProfile.id
+      description: Profile ID containing the indicator.
+      type: String
+    - contextPath: PassiveTotal.IntelProfile.indicator.id
+      description: ID of the indicator.
+      type: String
+    - contextPath: PassiveTotal.IntelProfile.indicator.type
+      description: Type of the indicator.
+      type: String
+    - contextPath: PassiveTotal.IntelProfile.indicator.value
+      description: Value of the indicator.
+      type: String
+    - contextPath: PassiveTotal.IntelProfile.indicator.category
+      description: Category of the indicator.
+      type: String
+    - contextPath: PassiveTotal.IntelProfile.indicator.firstSeen
+      description: Date & time the record was first seen.
+      type: String
+    - contextPath: PassiveTotal.IntelProfile.indicator.lastSeen
+      description: Date & time the record was most recently observed.
+      type: String
+    - contextPath: PassiveTotal.IntelProfile.indicator.osint
+      description: Whether the indicator was published in open source intelligence
+        articles.
+      type: String
+    - contextPath: PassiveTotal.IntelProfile.indicator.osintUrl
+      description: Link to the osint source of the indicator.
+      type: String
+    - contextPath: PassiveTotal.IntelProfile.indicator.articleGuids
+      description: List of RiskIQ OSINT article GUIDs associated with the indicator.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Filter the results based on the priority level specified.
+
+        Possible values: high, medium, low.
+      isArray: false
+      name: priority
+      predefined:
+      - high
+      - medium
+      - low
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Maximum number of results to return per page.
+
+        Note: The minimum value supported is 1 and maximum value supported is 1000.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the attack surface insight  information of the individual's
+      account.
+    execution: false
+    name: pt-list-my-attack-surface-insights
+    outputs:
+    - contextPath: PassiveTotal.Summary.Insight.name
+      description: The command name.
+      type: String
+    - contextPath: PassiveTotal.Summary.Insight.activeInsightCount
+      description: Total number of active insights.
+      type: Number
+    - contextPath: PassiveTotal.Summary.Insight.totalInsightCount
+      description: Total number of insights.
+      type: Number
+    - contextPath: PassiveTotal.Summary.Insight.totalObservations
+      description: Total number of observations.
+      type: Number
+    - contextPath: PassiveTotal.Insight.priorityLevel
+      description: Priority level of insights.
+      type: String
+    - contextPath: PassiveTotal.Insight.insight.name
+      description: Name of the insight.
+      type: String
+    - contextPath: PassiveTotal.Insight.insight.description
+      description: Description of the insight.
+      type: String
+    - contextPath: PassiveTotal.Insight.insight.observationCount
+      description: Number of observations for the given insight.
+      type: Number
+    - contextPath: PassiveTotal.Insight.insight.link
+      description: Link to the insight.
+      type: String
+    - contextPath: PassiveTotal.Insight.insight.insightId
+      description: ID of the third party insight.
+      type: String
+    - contextPath: PassiveTotal.Insight.insight.segmentBy
+      description: Segment by of the insight.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Maximum number of results to return per page.
+
+        Note: The minimum value supported is 1 and maximum value supported is 1000.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the attack surface information of the individual's account.
+    execution: false
+    name: pt-list-my-attack-surfaces
+    outputs:
+    - contextPath: PassiveTotal.AttackSurface.id
+      description: ID of the attack surface.
+      type: Number
+    - contextPath: PassiveTotal.AttackSurface.name
+      description: Name of the attack surface.
+      type: String
+    - contextPath: PassiveTotal.AttackSurface.priority.high.observationCount
+      description: Total observations of high priority attack surface.
+      type: Number
+    - contextPath: PassiveTotal.AttackSurface.priority.high.link
+      description: Link to the high priority attack surface.
+      type: String
+    - contextPath: PassiveTotal.AttackSurface.priority.medium.observationCount
+      description: Total observations of medium priority attack surface.
+      type: Number
+    - contextPath: PassiveTotal.AttackSurface.priority.medium.link
+      description: Link to the medium priority attack surface.
+      type: String
+    - contextPath: PassiveTotal.AttackSurface.priority.low.observationCount
+      description: Total observations of low priority attack surface.
+      type: Number
+    - contextPath: PassiveTotal.AttackSurface.priority.low.link
+      description: Link to the low priority attack surface.
+      type: String
+  - arguments:
+    - default: false
+      description: Specify the vendor ID to retrieve the attack surface third party
+        information.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: |-
+        Page number for paging through results.
+
+        Note: The minimum value supported is 0 and maximum value supported is int32.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Maximum number of results to return per page.
+
+        Note: The minimum value supported is 1 and maximum value supported is int32.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the attack surface observations by severity level for the
+      given third-party account.
+    execution: false
+    name: pt-list-third-party-attack-surface
+    outputs:
+    - contextPath: PassiveTotal.ThirdParty.id
+      description: ID of the vendor.
+      type: Number
+    - contextPath: PassiveTotal.ThirdParty.name
+      description: Name of the vendor.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.priority.high.observationCount
+      description: Total observations of high priority attack surface.
+      type: Number
+    - contextPath: PassiveTotal.ThirdParty.priority.high.link
+      description: Link to the high priority attack surface.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.priority.medium.observationCount
+      description: Total observations of medium priority attack surface.
+      type: Number
+    - contextPath: PassiveTotal.ThirdParty.priority.medium.link
+      description: Link to the medium priority attack surface.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.priority.low.observationCount
+      description: Total observations of low priority attack surface.
+      type: Number
+    - contextPath: PassiveTotal.ThirdParty.priority.low.link
+      description: Link to the low priority attack surface.
+      type: String
+    - contextPath: PassiveTotal.Summary.ThirdPartyASI.name
+      description: The command name.
+      type: String
+    - contextPath: PassiveTotal.Summary.ThirdPartyASI.totalCount
+      description: Total number of attack surfaces.
+      type: Number
+    - contextPath: PassiveTotal.Summary.ThirdPartyASI.totalPages
+      description: Number of pages.
+      type: Number
+    - contextPath: PassiveTotal.Summary.ThirdPartyASI.nextPage
+      description: Link to the next page.
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        Specify the vendor ID to retrieve the third-party insights information.
+
+        Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Filter the results based on the priority level specified.
+
+        Possible values: high, medium, low.
+      isArray: false
+      name: priority
+      predefined:
+      - high
+      - medium
+      - low
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Maximum number of results to return per page.
+
+        Note: The minimum value supported is 1 and maximum value supported is 1000.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the attack surface insight information of the given third-party
+      account.
+    execution: false
+    name: pt-list-third-party-attack-surface-insights
+    outputs:
+    - contextPath: PassiveTotal.Summary.ThirdPartyInsight.activeInsightCount
+      description: Total number of active third party insights.
+      type: Number
+    - contextPath: PassiveTotal.Summary.ThirdPartyInsight.totalInsightCount
+      description: Total number of third party insights.
+      type: Number
+    - contextPath: PassiveTotal.Summary.ThirdPartyInsight.totalObservations
+      description: Total number of third party observations.
+      type: Number
+    - contextPath: PassiveTotal.ThirdParty.id
+      description: Vendor ID associated with the third party insights.
+      type: Number
+    - contextPath: PassiveTotal.ThirdParty.priorityLevel
+      description: Priority level of third party insights.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.Insight.insight.name
+      description: Name of the third party insight.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.Insight.insight.description
+      description: Description of the third party insight.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.Insight.insight.observationCount
+      description: Number of observations for the given third party insight.
+      type: Number
+    - contextPath: PassiveTotal.ThirdParty.Insight.insight.link
+      description: Link to the third party insight.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.Insight.insight.insightId
+      description: ID of the third party insight.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.Insight.insight.segmentBy
+      description: Segment by of the third party insight.
+      type: String
+    - contextPath: PassiveTotal.Summary.ThirdPartyInsight.name
+      description: The command name.
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        Specify the insight ID to retrieve the assets.
+
+        Note: To retrieve the list of insight IDs, execute the "pt-list-my-attack-surface-insights" command.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        Specify the segment_by to retrieve the assets.
+
+        Note: To retrieve the list of segment by, execute the "pt-list-my-attack-surface-insights" command.
+      isArray: false
+      name: segment_by
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: |-
+        Page number for paging through results.
+
+        Note: The minimum value supported is 0 and maximum value supported is int32.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Maximum number of results to return per page.
+
+        Note: The minimum value supported is 1 and maximum value supported is int32.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the attack surface asset information of the individual's
+      account.
+    execution: false
+    name: pt-list-my-attack-surface-assets
+    outputs:
+    - contextPath: PassiveTotal.Summary.Asset.totalCount
+      description: Total number of available assets.
+      type: Number
+    - contextPath: PassiveTotal.Summary.Asset.totalPages
+      description: Number of pages.
+      type: Number
+    - contextPath: PassiveTotal.Summary.Asset.nextPage
+      description: Link to the next page.
+      type: String
+    - contextPath: PassiveTotal.Asset.insightId
+      description: Insight ID for which assets are retrieved.
+      type: String
+    - contextPath: PassiveTotal.Asset.segmentBy
+      description: Segment by for which assets are retrieved.
+      type: String
+    - contextPath: PassiveTotal.Asset.asset.type
+      description: Type of the asset.
+      type: String
+    - contextPath: PassiveTotal.Asset.asset.name
+      description: Name of the asset.
+      type: String
+    - contextPath: PassiveTotal.Asset.asset.firstSeen
+      description: Date & time the record was first seen.
+      type: Date
+    - contextPath: PassiveTotal.Asset.asset.lastSeen
+      description: Date & time the record was most recently observed.
+      type: Date
+    - contextPath: PassiveTotal.Summary.Asset.name
+      description: The command name.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '0'
+      description: |-
+        Page number for paging through results.
+
+        Note: The minimum value supported is 0 and maximum value supported is int32.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Maximum number of results to return per page.
+
+        Note: The minimum value supported is 1 and maximum value supported is int32.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the attack surface vulnerable component information of
+      the individual's account.
+    execution: false
+    name: pt-list-my-attack-surface-vulnerable-components
+    outputs:
+    - contextPath: PassiveTotal.Summary.VulnerableComponent.name
+      description: The command name.
+      type: String
+    - contextPath: PassiveTotal.Summary.VulnerableComponent.totalCount
+      description: Total number of available vulnerable components.
+      type: Number
+    - contextPath: PassiveTotal.Summary.VulnerableComponent.totalPages
+      description: Number of pages.
+      type: Number
+    - contextPath: PassiveTotal.Summary.VulnerableComponent.nextPage
+      description: Link to the next page.
+      type: String
+    - contextPath: PassiveTotal.VulnerableComponent.name
+      description: Name of the vulnerable component.
+      type: String
+    - contextPath: PassiveTotal.VulnerableComponent.type
+      description: Type of the vulnerable component.
+      type: String
+    - contextPath: PassiveTotal.VulnerableComponent.severity
+      description: Severity of the vulnerable component.
+      type: String
+    - contextPath: PassiveTotal.VulnerableComponent.count
+      description: Number of assets affected.
+      type: Number
+  - arguments:
+    - default: false
+      defaultValue: '0'
+      description: |-
+        Page number for paging through results.
+
+        Note: The minimum value supported is 0 and maximum value supported is int32.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Maximum number of results to return per page.
+
+        Note: The minimum value supported is 1 and maximum value supported is int32.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the attack surface vulnerability information of the individual's
+      account.
+    execution: false
+    name: pt-list-my-attack-surface-vulnerabilities
+    outputs:
+    - contextPath: PassiveTotal.Vulnerability.cveId
+      description: ID of the CVE.
+      type: String
+    - contextPath: PassiveTotal.Vulnerability.cwes.cweId
+      description: CWE ID associated with the CVE.
+      type: String
+    - contextPath: PassiveTotal.Vulnerability.priorityScore
+      description: Priority score of the CVE.
+      type: Number
+    - contextPath: PassiveTotal.Vulnerability.observationCount
+      description: Number of observations of CVE.
+      type: Number
+    - contextPath: PassiveTotal.Vulnerability.cveLink
+      description: Link to the CVE.
+      type: String
+    - contextPath: PassiveTotal.Summary.Vulnerability.name
+      description: The command name.
+      type: String
+    - contextPath: PassiveTotal.Summary.Vulnerability.totalCount
+      description: Total number of vulnerabilities.
+      type: Number
+    - contextPath: PassiveTotal.Summary.Vulnerability.totalPages
+      description: Number of pages.
+      type: Number
+    - contextPath: PassiveTotal.Summary.Vulnerability.nextPage
+      description: Link to the next page.
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        Specify the CVE ID to retrieve observations of that CVE.
+
+        Note: To retrieve the list of CVE IDs, execute the "pt-list-my-attack-surface-vulnerabilities" command.
+      isArray: false
+      name: cve_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: |-
+        Page number for paging through results.
+
+        Note: The minimum value supported is 0 and maximum value supported is int32.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Maximum number of results to return per page.
+
+        Note: The minimum value supported is 1 and maximum value supported is int32.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the attack surface vulnerability observation information
+      of the individual's account.
+    execution: false
+    name: pt-list-my-attack-surface-observations
+    outputs:
+    - contextPath: PassiveTotal.Observation.asset.type
+      description: Type of the asset.
+      type: String
+    - contextPath: PassiveTotal.Observation.asset.name
+      description: Name of the asset.
+      type: String
+    - contextPath: PassiveTotal.Observation.asset.firstSeen
+      description: Date & time the record was first seen.
+      type: Date
+    - contextPath: PassiveTotal.Observation.asset.lastSeen
+      description: Date & time the record was most recently observed.
+      type: Date
+    - contextPath: PassiveTotal.Observation.cveId
+      description: ID of the CVE.
+      type: String
+    - contextPath: PassiveTotal.Observation.cwe.cweId
+      description: CWE ID associated with the CVE.
+      type: String
+    - contextPath: PassiveTotal.Summary.Observation.name
+      description: The command name.
+      type: String
+    - contextPath: PassiveTotal.Summary.Observation.totalCount
+      description: Total number of vulnerabilities.
+      type: Number
+    - contextPath: PassiveTotal.Summary.Observation.totalPages
+      description: Number of pages.
+      type: Number
+    - contextPath: PassiveTotal.Summary.Observation.nextPage
+      description: Link to the next page.
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        Specify the insight ID to retrieve the assets.
+
+        Note: To retrieve the list of insight IDs, execute the "pt-list-third-party-attack-surface-insights" command.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        Specify the vendor ID to retrieve the assets of a specific vendor.
+
+        Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command.
+      isArray: false
+      name: vendor_id
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        Specify the segment_by to retrieve the assets.
+
+        Note: To retrieve the list of segment by, execute the "pt-list-third-party-attack-surface-insights" command.
+      isArray: false
+      name: segment_by
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: |-
+        Page number for paging through results.
+
+        Note: The minimum value supported is 0 and maximum value supported is int32.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Maximum number of results to return per page.
+
+        Note: The minimum value supported is 1 and maximum value supported is int32.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the attack surface asset information of the given third-party
+      account.
+    execution: false
+    name: pt-list-third-party-attack-surface-assets
+    outputs:
+    - contextPath: PassiveTotal.ThirdParty.id
+      description: ID of the vendor.
+      type: Number
+    - contextPath: PassiveTotal.Summary.ThirdPartyInsightAsset.name
+      description: The command name.
+      type: String
+    - contextPath: PassiveTotal.Summary.ThirdPartyInsightAsset.totalCount
+      description: Total number of available assets.
+      type: Number
+    - contextPath: PassiveTotal.Summary.ThirdPartyInsightAsset.totalPages
+      description: Number of pages.
+      type: Number
+    - contextPath: PassiveTotal.Summary.ThirdPartyInsightAsset.nextPage
+      description: Link to the next page.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.InsightAsset.insightId
+      description: Insight ID for which assets are retrieved.
+      type: Number
+    - contextPath: PassiveTotal.ThirdParty.InsightAsset.segmentBy
+      description: Segment by for which assets are retrieved.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.InsightAsset.asset.type
+      description: Type of the asset.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.InsightAsset.asset.name
+      description: Name of the asset.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.InsightAsset.asset.firstSeen
+      description: Date & time the record was first seen.
+      type: Date
+    - contextPath: PassiveTotal.ThirdParty.InsightAsset.asset.lastSeen
+      description: Date & time the record was most recently observed.
+      type: Date
+  - arguments:
+    - default: false
+      description: |-
+        Specify the vendor ID to retrieve the vulnerable components for a particular vendor.
+
+        Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: |-
+        Page number for paging through results.
+
+        Note: The minimum value supported is 0 and maximum value supported is int32.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Maximum number of results to return per page.
+
+        Note: The minimum value supported is 1 and maximum value supported is int32.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the attack surface vulnerable component information of
+      the given third-party account.
+    execution: false
+    name: pt-list-third-party-attack-surface-vulnerable-components
+    outputs:
+    - contextPath: PassiveTotal.ThirdParty.id
+      description: ID of the vendor.
+      type: String
+    - contextPath: PassiveTotal.Summary.ThirdPartyVulnerableComponent.name
+      description: The command name.
+      type: String
+    - contextPath: PassiveTotal.Summary.ThirdPartyVulnerableComponent.totalCount
+      description: Total number of available vulnerable components.
+      type: Number
+    - contextPath: PassiveTotal.Summary.ThirdPartyVulnerableComponent.totalPages
+      description: Number of pages.
+      type: Number
+    - contextPath: PassiveTotal.Summary.ThirdPartyVulnerableComponent.nextPage
+      description: Link to the next page.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.VulnerableComponent.name
+      description: Name of the vulnerable component.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.VulnerableComponent.type
+      description: Type of the vulnerable component.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.VulnerableComponent.severity
+      description: Severity of the vulnerable component.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.VulnerableComponent.count
+      description: Number of assets affected.
+      type: Number
+  - arguments:
+    - default: false
+      description: |-
+        Specify the vendor ID to retrieve the vulnerabilities for a particular vendor.
+
+        Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: |-
+        Page number for paging through results.
+
+        Note: The minimum value supported is 0 and maximum value supported is int32.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Maximum number of results to return per page.
+
+        Note: The minimum value supported is 1 and maximum value supported is int32.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the attack surface vulnerability information of the given
+      third-party account.
+    execution: false
+    name: pt-list-third-party-attack-surface-vulnerabilities
+    outputs:
+    - contextPath: PassiveTotal.ThirdParty.id
+      description: ID of the vendor.
+      type: Number
+    - contextPath: PassiveTotal.ThirdParty.Vulnerability.cveId
+      description: ID of the CVE.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.Vulnerability.cwes.cweId
+      description: CWE ID associated with the CVE.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.Vulnerability.priorityScore
+      description: Priority score of the CVE.
+      type: Number
+    - contextPath: PassiveTotal.ThirdParty.Vulnerability.observationCount
+      description: Number of observations of CVE.
+      type: Number
+    - contextPath: PassiveTotal.ThirdParty.Vulnerability.cveLink
+      description: Link to the CVE.
+      type: String
+    - contextPath: PassiveTotal.Summary.ThirdPartyVulnerability.name
+      description: The command name.
+      type: String
+    - contextPath: PassiveTotal.Summary.ThirdPartyVulnerability.totalCount
+      description: Total number of vulnerabilities.
+      type: Number
+    - contextPath: PassiveTotal.Summary.ThirdPartyVulnerability.totalPages
+      description: Number of pages.
+      type: Number
+    - contextPath: PassiveTotal.Summary.ThirdPartyVulnerability.nextPage
+      description: Link to the next page.
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        Specify the vendor ID to retrieve the vulnerability observations for a particular vendor.
+
+        Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        Specify the CVE ID to retrieve observations of the CVE.
+
+        Note: To retrieve the list of CVE IDs, execute the "pt-list-third-party-attack-surface-vulnerabilities" command.
+      isArray: false
+      name: cve_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: |-
+        Page number for paging through results.
+
+        Note: The minimum value supported is 0 and maximum value supported is int32.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Maximum number of results to return per page.
+
+        Note: The minimum value supported is 1 and maximum value supported is int32.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the attack surface vulnerability observation information
+      of the given third-party account.
+    execution: false
+    name: pt-list-third-party-attack-surface-observations
+    outputs:
+    - contextPath: PassiveTotal.ThirdParty.id
+      description: ID of the vendor.
+      type: Number
+    - contextPath: PassiveTotal.ThirdParty.Observation.asset.type
+      description: Type of the asset.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.Observation.asset.name
+      description: Name of the asset.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.Observation.asset.firstSeen
+      description: Date & time the record was first seen.
+      type: Date
+    - contextPath: PassiveTotal.ThirdParty.Observation.asset.lastSeen
+      description: Date & time the record was most recently observed.
+      type: Date
+    - contextPath: PassiveTotal.ThirdParty.Observation.cveId
+      description: ID of the CVE.
+      type: String
+    - contextPath: PassiveTotal.ThirdParty.Observation.cwe.cweId
+      description: CWE ID associated with the CVE.
+      type: String
+    - contextPath: PassiveTotal.Summary.ThirdPartyObservation.name
+      description: The command name.
+      type: String
+    - contextPath: PassiveTotal.Summary.ThirdPartyObservation.totalCount
+      description: Total number of observations.
+      type: Number
+    - contextPath: PassiveTotal.Summary.ThirdPartyObservation.totalPages
+      description: Number of pages.
+      type: Number
+    - contextPath: PassiveTotal.Summary.ThirdPartyObservation.nextPage
+      description: Link to the next page.
+      type: String
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
   longRunning: false

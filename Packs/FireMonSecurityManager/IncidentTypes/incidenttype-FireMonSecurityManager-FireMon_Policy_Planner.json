@@ -1,0 +1,30 @@
+{
+    "id": "FireMon Policy Planner",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "FireMon Policy Planner",
+    "prevName": "FireMon Policy Planner",
+    "color": "#64dc17",
+    "playbookId": "FireMon Create Policy Planner Ticket",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "FireMon Incident Policy Planner",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.0.0"
+}

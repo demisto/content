@@ -1,12 +1,13 @@
 import argparse
-import logging
 import sys
+
+from demisto_sdk.commands.common.tools import get_json
 
 from Tests.configure_and_test_integration_instances import set_marketplace_url, MARKET_PLACE_CONFIGURATION, \
     Build, Server
-from Tests.test_content import get_json_file
 from Tests.Marketplace.search_and_install_packs import install_all_content_packs_from_build_bucket
 from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 from Tests.Marketplace.marketplace_constants import GCPConfig
 
 
@@ -30,14 +31,14 @@ def options_handler():
 
 
 def main():
-    install_logging('Install_Packs.log')
+    install_logging('Install_Packs.log', logger=logging)
     options = options_handler()
 
     # Get the host by the ami env
     server_to_port_mapping, server_version = Build.get_servers(ami_env=options.ami_env)
 
     logging.info('Retrieving the credentials for Cortex XSOAR server')
-    secret_conf_file = get_json_file(path=options.secret)
+    secret_conf_file = get_json(file_path=options.secret)
     username: str = secret_conf_file.get('username')
     password: str = secret_conf_file.get('userPassword')
     branch_name: str = options.branch
@@ -57,7 +58,8 @@ def main():
         success_flag = install_all_content_packs_from_build_bucket(
             client=server.client, host=server_host, server_version=server_version,
             bucket_packs_root_path=GCPConfig.BUILD_BUCKET_PACKS_ROOT_PATH.format(branch=branch_name,
-                                                                                 build=build_number),
+                                                                                 build=build_number,
+                                                                                 marketplace='xsoar'),
             service_account=options.service_account, extract_destination_path=options.extract_path
         )
 

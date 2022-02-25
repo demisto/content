@@ -88,6 +88,7 @@ configuration:
   - ip
   - hash
   - url
+  - CVE(vulnerability)
   required: true
   type: 15
 - display: API token
@@ -105,9 +106,11 @@ configuration:
   required: true
   type: 16
 - additionalinfo: |-
-    Limit the indicators list to a specific risk rule. To see available
-    risk rules run the rf-feed-get-risk-rules command. This parameter will only be
-    used for the 'connectApi' service.
+    A comma-separated list of risk rules which limits the indicators list to a specific risk rule.
+    For example: 'dhsAis,phishingUrl'.
+    If more than one risk rule is set, the indicators fetching and the 'rf-feed-get-indicators' command will be executed for each risk rule.
+    To see available risk rules run the rf-feed-get-risk-rules command.
+    This parameter will only be used for the 'connectApi' service.
     Using the 'large' risk rule is not recommended.
   display: Risk Rule
   hidden: false
@@ -143,6 +146,15 @@ configuration:
   name: threshold
   required: false
   type: 0
+- additionalinfo: If selected, will be used to filter out the ingested indicators,
+    and only indicators with equivalent and higher risk score will be ingested into
+    XSOAR.
+  defaultvalue: '0'
+  display: IOC Risk Score Threshold
+  hidden: false
+  name: risk_score_threshold
+  required: false
+  type: 0
 description: Ingests indicators from Recorded Future feeds into Demisto.
 display: Recorded Future RiskList Feed
 name: Recorded Future Feed
@@ -158,7 +170,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The indicator type. Can be "ip", "domain", "hash", or "url".
+      description: The indicator type. Can be "ip", "domain", "hash", "vulnerability"
+        or "url".
       isArray: false
       name: indicator_type
       predefined:
@@ -166,6 +179,7 @@ script:
       - domain
       - hash
       - url
+      - vulnerability
       required: false
       secret: false
     deprecated: false
@@ -183,6 +197,7 @@ script:
       - domain
       - hash
       - url
+      - vulnerability
       required: true
       secret: false
     deprecated: false
@@ -201,7 +216,7 @@ script:
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
       description: The risk rule criticality.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.1.25933
   feed: true
   isfetch: false
   longRunning: false

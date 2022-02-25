@@ -3,6 +3,7 @@ Enriches an endpoint by hostname using one or more integrations.
 Supported integrations:
 - Active Directory Query v2
 - McAfee ePolicy Orchestrator
+- McAfee ePolicy Orchestrator v2
 - Carbon Black Enterprise Response v2
 - Cylance Protect v2
 - CrowdStrike Falcon Host
@@ -29,6 +30,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * ad-get-computer
 * cs-device-details
 * cs-device-search
+
 
 ## Playbook Inputs
 ---
@@ -59,7 +61,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | ExtraHop.Device.DiscoveryId | The UUID given by the Discover appliance. | String |
 | ExtraHop.Device.DefaultName | The default name of the device. | String |
 | ExtraHop.Device.DisplayName | The display name of device. | String |
-| ExtraHop.Device.OnWatchlist | Whether the device is on the advanced analysis whitelist. | Boolean |
+| ExtraHop.Device.OnWatchlist | Whether the device is on the advanced analysis allow list. | Boolean |
 | ExtraHop.Device.ModTime | The time of the most recent update, expressed in milliseconds since the epoch. | Number |
 | ExtraHop.Device.IsL3 | Indicates whether the device is a Layer 3 device. | Boolean |
 | ExtraHop.Device.Role | The role of the device. | String |

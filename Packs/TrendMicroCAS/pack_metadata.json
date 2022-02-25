@@ -1,16 +1,20 @@
 {
-  "name": "TrendMicro Cloud App Security",
-  "description": "Use Trend Micro - Cloud App Security to: Log retrieval - Threat investigation: - Threat mitigation - Threat remediation - Intelligent investigation.",
-  "support": "xsoar",
-  "currentVersion": "1.0.4",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-07-30T09:36:20Z",
-  "categories": [
-    "CASB"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "Trend Micro Cloud App Security",
+    "description": "Use Trend Micro - Cloud App Security to: Log retrieval - Threat investigation: - Threat mitigation - Threat remediation - Intelligent investigation.",
+    "support": "xsoar",
+    "currentVersion": "1.0.8",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-07-30T09:36:20Z",
+    "categories": [
+        "CASB"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

@@ -1,3 +1,6 @@
+
+# type: ignore[attr-defined]
+
 import shutil
 import pytest
 import json
@@ -7,17 +10,20 @@ import glob
 from unittest.mock import mock_open
 from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
-from distutils.version import LooseVersion
+from packaging.version import Version
 from freezegun import freeze_time
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple, Any
+
+# pylint: disable=no-member
+
 
 from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_valid_bool, convert_price, \
     get_updated_server_version, load_json, \
     store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file, \
     is_the_only_rn_in_block
 from Tests.Marketplace.marketplace_constants import PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
-    PACKS_FOLDER, PackTags
+    PACKS_FOLDER, PackTags, BASE_PACK_DEPENDENCY_DICT
 
 CHANGELOG_DATA_INITIAL_VERSION = {
     "1.0.0": {
@@ -57,6 +63,9 @@ AGGREGATED_CHANGELOG = {
     }
 }
 
+DUMMY_PACKS_DICT = {'HelloWorld': '', 'ServiceNow': '', 'Ipstack': '', 'Active_Directory_Query': '', 'SlackV2': '',
+                    'CommonTypes': '', 'CommonPlaybooks': '', 'Base': ''}
+
 
 @pytest.fixture(scope="module")
 def dummy_pack_metadata():
@@ -88,10 +97,9 @@ class TestMetadataParsing:
         dummy_pack._downloads_count = 10
         dummy_pack._displayed_integration_images = []
         dummy_pack._user_metadata = dummy_pack_metadata
-        dummy_pack._enhance_pack_attributes(
-            index_folder_path="", pack_was_modified=False,
-            dependencies_data={}, statistics_handler=None
-        )
+        dummy_pack._is_modified = False
+        dummy_pack._enhance_pack_attributes(index_folder_path="", dependencies_metadata_dict={},
+                                            statistics_handler=None)
         parsed_metadata = dummy_pack._parse_pack_metadata(build_number="dummy_build_number", commit_hash="dummy_commit")
 
         assert parsed_metadata['name'] == 'Test Pack Name'
@@ -127,8 +135,9 @@ class TestMetadataParsing:
         """
         dummy_pack._displayed_integration_images = []
         dummy_pack._user_metadata = dummy_pack_metadata
+        dummy_pack._is_modified = False
         dummy_pack._enhance_pack_attributes(
-            index_folder_path="", pack_was_modified=False, dependencies_data={}, statistics_handler=None
+            index_folder_path="", dependencies_metadata_dict={}, statistics_handler=None
         )
 
         assert dummy_pack._pack_name == 'Test Pack Name'
@@ -153,8 +162,9 @@ class TestMetadataParsing:
 
         dummy_pack._displayed_integration_images = []
         dummy_pack._user_metadata = {}
+        dummy_pack._is_modified = False
         dummy_pack._enhance_pack_attributes(
-            index_folder_path="", pack_was_modified=False, dependencies_data={}, statistics_handler=None
+            index_folder_path="", dependencies_metadata_dict={}, statistics_handler=None
         )
 
         assert dummy_pack._support_type == Metadata.XSOAR_SUPPORT
@@ -514,13 +524,6 @@ class TestVersionSorting:
         """
         return Pack(pack_name="TestPack", pack_path="dummy_path")
 
-    def test_not_existing_changelog_json(self, mocker, dummy_pack):
-        """ In case changelog.json doesn't exists, expected result should be initial version 1.0.0
-        """
-        mocker.patch("os.path.exists", return_value=False)
-        latest_version = dummy_pack.latest_version
-        assert latest_version == "1.0.0"
-
 
 class TestChangelogCreation:
     """ Test class for changelog.json creation step.
@@ -842,10 +845,11 @@ This is visible
         release_notes = "dummy release notes"
         version_display_name = "1.2.3"
         build_number = "5555"
+        dummy_pack._is_modified = True
         version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                version_display_name=version_display_name,
                                                                build_number=build_number, new_version=False,
-                                                               pack_was_modified=True)
+                                                               )
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
         assert version_changelog['displayName'] == f'{version_display_name} - R{build_number}'
@@ -881,10 +885,10 @@ This is visible
         release_notes = "dummy release notes"
         version_display_name = "1.0.0"
         build_number = "5555"
+        dummy_pack._is_modified = True
         version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                version_display_name=version_display_name,
-                                                               build_number=build_number, new_version=False,
-                                                               pack_was_modified=True)
+                                                               build_number=build_number, new_version=False)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
         assert version_changelog['displayName'] == f'{version_display_name} - R{build_number}'
@@ -901,10 +905,10 @@ This is visible
         release_notes = "dummy release notes"
         version_display_name = "1.0.0"
         build_number = "5555"
+        dummy_pack._is_modified = False
         version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                version_display_name=version_display_name,
-                                                               build_number=build_number, new_version=False,
-                                                               pack_was_modified=False)
+                                                               build_number=build_number, new_version=False)
 
         assert not version_changelog
 
@@ -936,7 +940,7 @@ This is visible
             return TestChangelogCreation.dummy_pack_changelog(CHANGELOG_DATA_INITIAL_VERSION)
         if path == 'changelog_new_exist':
             return TestChangelogCreation.dummy_pack_changelog(CHANGELOG_DATA_MULTIPLE_VERSIONS)
-        if path == 'changelog_not_exist' or path == 'metadata_not_exist':
+        if path in ['changelog_not_exist', 'metadata_not_exist']:
             return path_to_non_existing_changelog
 
     @freeze_time("2020-11-04T13:34:14.75Z")
@@ -1011,7 +1015,8 @@ This is visible
        """
         from Tests.Marketplace.marketplace_services import os
         mocker.patch.object(os.path, 'join', side_effect=self.mock_os_path_join)
-        pack_update_date = dummy_pack._get_pack_update_date(is_changelog_exist, False)
+        dummy_pack._is_modified = False
+        pack_update_date = dummy_pack._get_pack_update_date(is_changelog_exist)
         if is_changelog_exist == 'changelog_new_exist':
             os.remove(os.path.join(os.getcwd(), 'dummy_changelog.json'))
         assert pack_update_date == expected_date
@@ -1355,13 +1360,13 @@ class TestSetDependencies:
                 }
             }
         }
-
+        generated_dependencies['ImpossibleTraveler']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
         p = Pack('ImpossibleTraveler', 'dummy_path')
         dependencies = json.dumps(metadata['dependencies'])
         dependencies = json.loads(dependencies)
         dependencies.update(generated_dependencies['ImpossibleTraveler']['dependencies'])
         p._user_metadata = metadata
-        p.set_pack_dependencies(generated_dependencies)
+        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert p.user_metadata['dependencies'] == dependencies
 
@@ -1413,11 +1418,11 @@ class TestSetDependencies:
                 }
             }
         }
-
+        generated_dependencies['ImpossibleTraveler']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
         metadata['dependencies'] = {}
         p = Pack('ImpossibleTraveler', 'dummy_path')
         p._user_metadata = metadata
-        p.set_pack_dependencies(generated_dependencies)
+        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert p.user_metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
 
@@ -1437,7 +1442,7 @@ class TestSetDependencies:
         dependencies = metadata['dependencies']
         p = Pack('ImpossibleTraveler', 'dummy_path')
         p._user_metadata = metadata
-        p.set_pack_dependencies({})
+        p.set_pack_dependencies({}, {})
         assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_core_pack(self):
@@ -1461,13 +1466,14 @@ class TestSetDependencies:
                         'mandatory': True,
                         'minVersion': '1.0.0',
                         'author': 'Cortex XSOAR',
-                        'name': 'ServiceNow',
+                        'name': 'Common Playbooks',
                         'certification': 'certified'
                     }
                 }
             }
         }
 
+        generated_dependencies['HelloWorld']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
         metadata['dependencies'] = {}
         metadata['name'] = 'HelloWorld'
         metadata['id'] = 'HelloWorld'
@@ -1476,7 +1482,7 @@ class TestSetDependencies:
         dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
         dependencies = json.loads(dependencies)
 
-        p.set_pack_dependencies(generated_dependencies)
+        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert p.user_metadata['dependencies'] == dependencies
 
@@ -1515,12 +1521,13 @@ class TestSetDependencies:
             }
         }
 
+        generated_dependencies['HelloWorld']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
         metadata['dependencies'] = {}
         p = Pack('HelloWorld', 'dummy_path')
         p._user_metadata = metadata
 
         with pytest.raises(Exception) as e:
-            p.set_pack_dependencies(generated_dependencies)
+            p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert str(e.value) == "New mandatory dependencies ['SlackV2'] were found in the core pack HelloWorld"
 
@@ -1559,6 +1566,7 @@ class TestSetDependencies:
             }
         }
 
+        generated_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
         p = Pack('HelloWorld', 'dummy_path')
         user_dependencies = metadata['dependencies']
         dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
@@ -1566,7 +1574,7 @@ class TestSetDependencies:
         dependencies.update(user_dependencies)
         p._user_metadata = metadata
 
-        p.set_pack_dependencies(generated_dependencies)
+        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert p.user_metadata['dependencies'] == dependencies
 
@@ -1620,7 +1628,7 @@ class TestReleaseNotes:
         mocker.patch('os.path.exists', return_value=True)
         changelog, changelog_latest_rn_version, changelog_latest_rn = dummy_pack.get_changelog_latest_rn('fake_path')
         assert changelog == original_changelog_dict
-        assert changelog_latest_rn_version == LooseVersion('2.0.0')
+        assert changelog_latest_rn_version == Version('2.0.0')
         assert changelog_latest_rn == "Second release notes"
 
     def test_create_local_changelog(self, mocker, dummy_pack):
@@ -1672,7 +1680,7 @@ class TestReleaseNotes:
         open_mocker['rn_dir_fake_path/2_0_0.md'].read_data = rn_two
         mocker.patch('builtins.open', open_mocker)
         rn_lines, latest_rn, new_versions = \
-            dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.0'), '')
+            dummy_pack.get_release_notes_lines('rn_dir_fake_path', Version('1.0.0'), '')
         assert latest_rn == '2.0.0'
         assert rn_lines == aggregated_rn
         assert new_versions == ['1.1.0', '2.0.0']
@@ -1694,7 +1702,7 @@ class TestReleaseNotes:
         mocker.patch('builtins.open', mock_open(read_data=rn))
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
         rn_lines, latest_rn, new_versions = \
-            dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'), rn)
+            dummy_pack.get_release_notes_lines('rn_dir_fake_path', Version('1.0.1'), rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == rn
         assert new_versions == []
@@ -1717,31 +1725,31 @@ class TestReleaseNotes:
 
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
         rn_lines, latest_rn, new_versions = \
-            dummy_pack.get_release_notes_lines('wow', LooseVersion('1.0.1'), changelog_latest_rn)
+            dummy_pack.get_release_notes_lines('wow', Version('1.0.1'), changelog_latest_rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == changelog_latest_rn
         assert new_versions == []
 
-    CHANGELOG_ENTRY_CONTAINS_BC_VERSION_INPUTS = [(LooseVersion('0.0.0'), LooseVersion('1.0.0'), [], dict(), dict()),
+    CHANGELOG_ENTRY_CONTAINS_BC_VERSION_INPUTS = [(Version('0.0.0'), Version('1.0.0'), [], dict(), dict()),
                                                   (
-                                                      LooseVersion('0.0.0'), LooseVersion('1.0.0'),
-                                                      [LooseVersion('1.0.1')], {'1.0.1': 'BC text'}, dict()),
+                                                      Version('0.0.0'), Version('1.0.0'),
+                                                      [Version('1.0.1')], {'1.0.1': 'BC text'}, dict()),
                                                   (
-                                                      LooseVersion('0.0.0'), LooseVersion('1.0.0'),
-                                                      [LooseVersion('1.0.0')], {'1.0.0': None},
+                                                      Version('0.0.0'), Version('1.0.0'),
+                                                      [Version('1.0.0')], {'1.0.0': None},
                                                       {'1.0.0': None}),
                                                   (
-                                                      LooseVersion('2.3.1'), LooseVersion('2.4.0'),
-                                                      [LooseVersion('2.3.1')], {'2.3.1': 'BC text'},
+                                                      Version('2.3.1'), Version('2.4.0'),
+                                                      [Version('2.3.1')], {'2.3.1': 'BC text'},
                                                       dict()),
-                                                  (LooseVersion('2.3.1'), LooseVersion('2.4.0'),
-                                                   [LooseVersion('2.3.1'), LooseVersion('2.3.2')],
+                                                  (Version('2.3.1'), Version('2.4.0'),
+                                                   [Version('2.3.1'), Version('2.3.2')],
                                                    {'2.3.1': None, '2.3.2': 'BC Text 232'}, {'2.3.2': 'BC Text 232'})]
 
     @pytest.mark.parametrize('predecessor_version, rn_version, bc_versions_list,bc_version_to_text, expected',
                              CHANGELOG_ENTRY_CONTAINS_BC_VERSION_INPUTS)
-    def test_changelog_entry_contains_bc_version(self, predecessor_version: LooseVersion, rn_version: LooseVersion,
-                                                 bc_versions_list: List[LooseVersion], bc_version_to_text, expected):
+    def test_changelog_entry_contains_bc_version(self, predecessor_version: Version, rn_version: Version,
+                                                 bc_versions_list: List[Version], bc_version_to_text, expected):
         """
            Given:
            - predecessor_version: Predecessor version of the changelog entry.
@@ -2075,7 +2083,10 @@ class TestStoreInCircleCIArtifacts:
 
     @staticmethod
     def get_successful_packs():
-        successful_packs = [Pack(pack_name='TestPack1', pack_path='.'), Pack(pack_name='TestPack2', pack_path='.')]
+        successful_packs = [
+            Pack(pack_name='TestPack1', pack_path='.'),
+            Pack(pack_name='TestPack2', pack_path='.'),
+        ]
         for pack in successful_packs:
             pack._status = PackStatus.SUCCESS.name
             pack._aggregated = True
@@ -2085,7 +2096,10 @@ class TestStoreInCircleCIArtifacts:
 
     @staticmethod
     def get_failed_packs():
-        failed_packs = [Pack(pack_name='TestPack3', pack_path='.'), Pack(pack_name='TestPack4', pack_path='.')]
+        failed_packs = [
+            Pack(pack_name='TestPack3', pack_path='.'),
+            Pack(pack_name='TestPack4', pack_path='.'),
+        ]
         for pack in failed_packs:
             pack._status = PackStatus.FAILED_UPLOADING_PACK.name
             pack._aggregated = False

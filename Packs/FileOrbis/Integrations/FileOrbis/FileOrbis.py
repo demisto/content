@@ -164,7 +164,7 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == 'change-user-status':
+        elif demisto.command() == 'fileorbis-change-user-status':
             return_results(change_user_status_command(client, demisto.args()))
 
         else:

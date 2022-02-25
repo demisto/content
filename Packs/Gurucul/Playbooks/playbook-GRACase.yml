@@ -1,0 +1,107 @@
+id: GRACase
+version: -1
+fromversion: 5.0.0
+name: GRACase
+starttaskid: "0"
+description: Playbook for fetching cases assosiated to high risk users.
+tasks:
+  "0":
+    id: "0"
+    taskid: a9cbb9ae-190e-45ad-831e-7d9bc9525459
+    type: start
+    task:
+      id: a9cbb9ae-190e-45ad-831e-7d9bc9525459
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ca33bc13-2f6c-4ce2-8b82-29f9d9291e35
+    type: regular
+    task:
+      id: ca33bc13-2f6c-4ce2-8b82-29f9d9291e35
+      version: -1
+      name: Print
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: ${incident.graanomalyname}${incident.gracaseanomalydetails}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4b26f050-ef80-49db-8735-7e8fb559c3d2
+    type: title
+    task:
+      id: 4b26f050-ef80-49db-8735-7e8fb559c3d2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 450,
+        "y": 240
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- TestGraPlayBook

@@ -1,0 +1,83 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Intel471 Watcher Alerts
+  version: -1
+configuration:
+- defaultvalue: 'true'
+  display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- defaultvalue: 'Intel 471 Watcher Alert'
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: '100'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to incidents
+    fetched from the feed
+  defaultvalue: 'AMBER'
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- additionalinfo: The severity to apply to incidents
+  defaultvalue: 'Medium'
+  display: Severity
+  name: severity
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: true
+  type: 15
+- additionalinfo: How far back in time to go when performing the first fetch.
+  defaultvalue: '7 days'
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: The UID(s) of the watcher group(s) for which alerts should be fetched (comma separated).
+  display: Watcher group UID(s)
+  name: watcher_group_uids
+  required: false
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: |-
+  'Intel 471's watcher alerts provide a mechanism by which customers can be notified in a timely manner of Titan content that is most relevant to them.'
+display: Intel471 Watcher Alerts
+name: Intel471 Watcher Alerts
+script:
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  isfetch: true
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/py3-tools:0.0.1.25751
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

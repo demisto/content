@@ -10,13 +10,13 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-PATALG_BINARY = 0
+PATALG_BINARY: int = 0
 PATALG_WILDCARD: int = 1
-PATALG_REGEX = 2
+PATALG_REGEX: int = 2
 
-ITERATE_NODE = 0
-ITERATE_VALUE = 1
-ITERATE_KEY = 2
+ITERATE_NODE: int = 0
+ITERATE_VALUE: int = 1
+ITERATE_KEY: int = 2
 
 
 class Value:
@@ -76,14 +76,15 @@ class Ddict:
     @staticmethod
     def get_value(node: Dict[str, Any], path: str) -> Optional[Value]:
         val = None
+        key = None
         comps = path.split('.')
         while comps:
             res = Ddict.__search(node if val is None else val, comps)
             if res is None:
                 return None
-            _, val, comps = res
+            key, val, comps = res
 
-        return None if val is None else Value(val)
+        return None if key is None else Value(val)
 
     @staticmethod
     def get(node: Dict[str, Any], path: str) -> Any:
@@ -117,7 +118,7 @@ class ContextData:
         """
         if key is not None:
             dx = self.__demisto
-            if key != '.' and key.startswith('.'):
+            if key != '.' and not key.startswith('.=') and key.startswith('.'):
                 dx = delistize(node)
                 key = key[1:]
             else:
@@ -128,8 +129,7 @@ class ContextData:
                         break
             if not key or key == '.':
                 return dx
-            elif isinstance(dx, (list, dict)):
-                return demisto.dt(dx, key)
+            return demisto.dt(dx, key)
         return None
 
 
@@ -355,19 +355,22 @@ def extract_value(source: Any,
                  extractor: Optional[Callable[[str,
                                                Optional[ContextData],
                                                Optional[Dict[str, Any]]],
-                                              Optional[Dict[str, Any]]]],
+                                              Any]],
                  dx: Optional[ContextData],
                  node: Optional[Dict[str, Any]],
                  si: int,
-                 endc: Optional[str]) -> Tuple[str, int]:
-        val = ''
+                 endc: Optional[str]) -> Tuple[Any, int]:
+        val = None
         ci = si
         while ci < len(source):
             if endc is not None and source[ci] == endc:
                 if not extractor:
                     return '', ci + len(endc)
                 xval = extractor(source[si:ci], dx, node)
-                val += str(xval) if xval is not None else ''
+                if val is None:
+                    val = xval
+                elif xval is not None:
+                    val = str(val) + str(xval)
                 si = ci = ci + len(endc)
                 endc = None
             else:
@@ -376,14 +379,22 @@ def extract_value(source: Any,
                 if nextec:
                     _, ci = _extract(source, None, dx, node, ci + 1, nextec)
                 elif extractor and source[ci:ci + 2] == '${':
-                    val += source[si:ci]
+                    if si != ci:
+                        val = source[si:ci] if val is None else str(val) + source[si:ci]
                     si = ci = ci + 2
                     endc = '}'
                 elif source[ci] == '\\':
                     ci += 2
                 else:
                     ci += 1
-        return (val + source[si:], 0) if extractor else ('', ci)
+        if not extractor:
+            return ('', ci)
+        elif si >= len(source):
+            return (val, 0)
+        elif val is None:
+            return (source[si:], 0)
+        else:
+            return (str(val) + source[si:], 0)
 
     if isinstance(source, dict):
         return {
@@ -392,11 +403,7 @@ def extract_value(source: Any,
     elif isinstance(source, list):
         return [extract_value(v, extractor, dx, node) for v in source]
     elif isinstance(source, str):
-        if source.startswith('${') and source.endswith('}'):
-            return extractor(source[2:-1], dx, node)
-        else:
-            dst, _ = _extract(source, extractor, dx, node, 0, None)
-            return dst
+        return _extract(source, extractor, dx, node, 0, None)[0] if source else ''
     else:
         return source
 
@@ -873,11 +880,17 @@ class ExtFilter:
 
             for x in self.__conds_items(conds, root):
                 coptype, cconds = x
-                child = self.filter_value(
-                    child, coptype, cconds, None, inlist and parent is None)
-                if not child:
-                    return None
-                child = child.value
+
+                if coptype in ("is", "isn't") and \
+                   isinstance(cconds, str) and cconds == "existing key":
+                    if (coptype == "is") != bool(path and Ddict.get_value(root, path)):
+                        return None
+                else:
+                    child = self.filter_value(
+                        child, coptype, cconds, None, inlist and parent is None)
+                    if not child:
+                        return None
+                    child = child.value
 
                 if parent:
                     if isinstance(parent, dict):
@@ -1118,15 +1131,11 @@ class ExtFilter:
             if not inlist and isinstance(root, list):
                 return self.filter_values(root, optype, conds, path)
 
-            filstr = conds
-            if isinstance(filstr, str) and filstr == "existing key":
-                if optype == "is":
-                    if path and Ddict.get_value(root, path):
-                        return Value(root)
-                else:  # isn't
-                    if not path or not Ddict.get_value(root, path):
-                        return Value(root)
+            if isinstance(conds, str) and conds == "existing key":
+                if (optype == "is") == bool(path and Ddict.get_value(root, path)):
+                    return Value(root)
                 return None
+
         if path:
             if not inlist and isinstance(root, list):
                 return self.filter_values(root, optype, conds, path)
@@ -1707,64 +1716,67 @@ class ExtFilter:
 
     def parse_conds_json(
             self,
-            jstr: str,
-            only_parse_for_string: bool = True) -> Any:
+            jstr: str) -> Any:
         """ parse a json string
 
         :param self: This instance.
         :param jstr: A json string.
-        :param only_parse_for_string: True: only parse the JSON when jstr is `string`, otherwise returns the raw jstr.
         :return: The value extracted.
         """
-        if only_parse_for_string and not isinstance(jstr, str):
+        if not isinstance(jstr, str):
             return jstr
-        return json.loads(jstr)
+        try:
+            return json.loads(jstr)
+        except json.JSONDecodeError:
+            return jstr
 
     def parse_and_extract_conds_json(
             self,
             jstr: str,
-            node: Any,
-            only_parse_for_string: bool = True) -> Any:
+            node: Any) -> Any:
         """ parse a json string and extract value
 
         :param self: This instance.
         :param jstr: A json string.
         :param node: The current node.
-        :param only_parse_for_string: True if only parse the JSON when jstr is `string`, False otherwise.
         :return: The value extracted.
         """
-        if only_parse_for_string and not isinstance(jstr, str):
-            return extract_value(jstr, extract_dt, self.__dx, node)
+        return extract_value(self.parse_conds_json(jstr), extract_dt, self.__dx, node)
 
-        return extract_value(json.loads(jstr), extract_dt, self.__dx, node)
+
+def main():
+    args = demisto.args()
+    try:
+        value = args['value']
+        path = args.get('path', '')
+        optype = args['operation']
+        conds = args['filter']
+
+        # Setup demisto context
+        dx = args.get('ctx_demisto')
+        if dx and isinstance(dx, str):
+            dx = json.loads(dx)
+        elif not dx:
+            dx = value if isinstance(value, dict) else None
+        dx = ContextData(
+            demisto=dx,
+            inputs=args.get('ctx_inputs'),
+            lists=args.get('ctx_lists'),
+            incident=args.get('ctx_incident'),
+            local=value)
+
+        # Extract value
+        xfilter = ExtFilter(dx)
+        value = xfilter.filter_value(value, optype, conds, path)
+        value = value.value if value else None
+        value = marshal(value)
+        value = value if value is not None else []
+        value = value if isinstance(value, list) else [value]
+    except Exception as err:
+        return_error(err)
+
+    demisto.results(value)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
-    args = demisto.args()
-    value = args['value']
-    path = args.get('path', '')
-    optype = args['operation']
-    conds = args['filter']
-
-    # Setup demisto context
-    dx = args.get('ctx_demisto')
-    if dx and isinstance(dx, str):
-        dx = json.loads(dx)
-    elif not dx:
-        dx = value if isinstance(value, dict) else None
-    dx = ContextData(
-        demisto=dx,
-        inputs=args.get('ctx_inputs'),
-        lists=args.get('ctx_lists'),
-        incident=args.get('ctx_incident'),
-        local=value)
-
-    # Extract value
-    xfilter = ExtFilter(dx)
-    value = xfilter.filter_value(value, optype, conds, path)
-    value = value.value if value else None
-    value = marshal(value)
-    value = value if value is not None else []
-    value = value if isinstance(value, list) else [value]
-
-    demisto.results(value)
+    main()

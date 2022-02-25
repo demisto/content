@@ -12,6 +12,8 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 SAAS_SECURITY_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
+SAAS_SECURITY_INCIDENT_TYPE_NAME = 'Saas Security Incident'
+
 CLIENT_CREDS = 'client_credentials'
 
 # Token life time is 119 minutes
@@ -43,6 +45,18 @@ STATUS_MAP = {
     'Dismiss': 'closed-dismiss',
     'All': '',
 }
+
+MIRROR_DIRECTION = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'Both'
+}
+
+POSSIBLE_CATEGORIES_TO_MIRROR_OUT = ['no_reason', 'business_justified', 'misidentified']
+
+OUTGOING_MIRRORED_FIELDS = ['state', 'category']
+INCOMING_MIRRORED_FIELDS = ['state', 'category', 'status', 'assigned_to', 'resolved_by', 'asset_sha256']
 
 
 class Scopes:
@@ -404,7 +418,7 @@ def get_remediation_status_command(client: Client, args: dict) -> CommandResults
 
 
 def fetch_incidents(client: Client, first_fetch_time, fetch_limit, fetch_state, fetch_severity, fetch_status,
-                    fetch_app_ids):
+                    fetch_app_ids, mirror_direction=None, integration_instance=''):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('last_run_time')
 
@@ -417,17 +431,202 @@ def fetch_incidents(client: Client, first_fetch_time, fetch_limit, fetch_state, 
                                    status=fetch_status, app_ids=fetch_app_ids).get('resources', [])
     incidents = list()
     for inc in results:
+
+        inc['mirror_direction'] = mirror_direction
+        inc['mirror_instance'] = integration_instance
+        inc['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
+
         incident = convert_to_xsoar_incident(inc)
         incidents.append(incident)
 
         date_updated = inc.get('updated_at')
-        date_updated_dt = datetime.strptime(date_updated, SAAS_SECURITY_DATE_FORMAT)
+        date_updated_dt = datetime.strptime(date_updated, SAAS_SECURITY_DATE_FORMAT) + timedelta(milliseconds=1)
 
         if date_updated_dt > datetime.strptime(current_fetch, SAAS_SECURITY_DATE_FORMAT):
-            current_fetch = date_updated
+            current_fetch = date_updated_dt.strftime(SAAS_SECURITY_DATE_FORMAT)[:-4] + 'Z'
 
     demisto.setLastRun({'last_run_time': current_fetch})
     demisto.incidents(incidents)
+
+
+def get_remote_data_command(client, args):
+    """
+    get-remote-data command: Returns an updated remote incident.
+    Args:
+        client: The client object.
+        args:
+            id: incident id to retrieve.
+            lastUpdate: when was the last time we retrieved data.
+
+    Returns:
+        GetRemoteDataResponse object, which contain the incident data to update.
+    """
+    remote_args = GetRemoteDataArgs(args)
+    demisto.debug('Performing get-remote-data command with incident id: {} and last_update: {}'
+                  .format(remote_args.remote_incident_id, remote_args.last_update))
+
+    incident_data = {}
+    try:
+        incident_data = client.get_incident_by_id(remote_args.remote_incident_id)
+        delta = {field: incident_data.get(field) for field in INCOMING_MIRRORED_FIELDS if incident_data.get(field)}
+
+        if not delta or date_to_timestamp(incident_data.get('updated_at'), '%Y-%m-%dT%H:%M:%S.%fZ') \
+                <= int(dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'}).timestamp()):
+            demisto.debug("Nothing new in the incident.")
+            delta = {
+                'id': remote_args.remote_incident_id,
+                'in_mirror_error': ""
+            }
+
+            return GetRemoteDataResponse(
+                mirrored_object=delta,
+                entries=[]
+            )
+
+        entries = []
+
+        state = delta and delta.get('state')
+        if state and state.lower() == 'closed':
+            if demisto.params().get('close_incident'):
+
+                demisto.debug(f'Incident is closed: {remote_args.remote_incident_id}')
+                entries.append({
+                    'Type': EntryType.NOTE,
+                    'Contents': {
+                        'dbotIncidentClose': True,
+                        'closeReason': f'From SaasSecurity: {delta.get("category")}'
+                    },
+                    'ContentsFormat': EntryFormat.JSON
+                })
+
+        demisto.debug(f"Update incident {remote_args.remote_incident_id} with fields: {delta}")
+        return GetRemoteDataResponse(
+            mirrored_object=delta,
+            entries=entries
+        )
+
+    except Exception as e:
+        demisto.debug(f"Error in Saas Security incoming mirror for incident {remote_args.remote_incident_id} \n"
+                      f"Error message: {str(e)}")
+
+        if incident_data:
+            incident_data['in_mirror_error'] = str(e)
+
+        else:
+            incident_data = {
+                'id': remote_args.remote_incident_id,
+                'in_mirror_error': str(e)
+            }
+
+        return GetRemoteDataResponse(
+            mirrored_object=incident_data,
+            entries=[]
+        )
+
+
+def get_modified_remote_data_command(client, args):
+    """
+    Gets the modified remote incident IDs.
+    Args:
+        client: The client object.
+        args:
+            last_update: the last time we retrieved modified incidents.
+
+    Returns:
+        GetModifiedRemoteDataResponse object, which contains a list of the retrieved incident IDs.
+    """
+    remote_args = GetModifiedRemoteDataArgs(args)
+
+    last_update_utc = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
+    last_update_utc = last_update_utc.strftime(SAAS_SECURITY_DATE_FORMAT)[:-4] + 'Z'  # format ex: 2021-08-23T09:26:25.872Z
+    demisto.debug(f'last_update in UTC is {last_update_utc}')
+
+    raw_incidents = client.get_incidents(from_time=last_update_utc, limit=100).get('resources', [])
+
+    modified_incident_ids = list()
+    for raw_incident in raw_incidents:
+        incident_id = raw_incident.get('incident_id')
+        modified_incident_ids.append(str(incident_id))
+
+    return GetModifiedRemoteDataResponse(modified_incident_ids)
+
+
+def get_mapping_fields_command():
+    """
+    Gets a list of fields for an incident type.
+
+    Returns: GetMappingFieldsResponse object which contain the field names.
+    """
+    saas_security_incident_type_scheme = SchemeTypeMapping(type_name=SAAS_SECURITY_INCIDENT_TYPE_NAME)
+
+    for field in OUTGOING_MIRRORED_FIELDS:
+        saas_security_incident_type_scheme.add_field(field)
+
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(saas_security_incident_type_scheme)
+
+    return mapping_response
+
+
+def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
+    """
+    update-remote-system command: pushes local changes to the remote system.
+    Since the API limitation doesn't allow to update the category when the incident state is open,
+    The only use cases the update-remote-system can update are:
+     1. When the incident were closed in XSOAR, so this command will close the mirror remote incident as well.
+     2. If the category of an incident which was already closed in the remote and fetched was changed.
+
+    :type client: ``Client``
+    :param client: XSOAR client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['data']`` the data to send to the remote system
+        ``args['entries']`` the entries to send to the remote system
+        ``args['incidentChanged']`` boolean telling us if the local incident indeed changed or not
+        ``args['remoteId']`` the remote incident id
+
+    :return:
+        ``str`` containing the remote incident id - really important if the incident is newly created remotely
+    :rtype: ``str``
+    """
+    parsed_args = UpdateRemoteSystemArgs(args)
+    if parsed_args.delta:
+        demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
+
+    if parsed_args.incident_changed:
+        # Check if the incident were closed in XSOAR,
+        # or the category of an incident which was already closed in the remote was changed,
+        # since these are the only use cases we wanna mirror out.
+        if parsed_args.inc_status == IncidentStatus.DONE or (parsed_args.data.get('state') == 'closed'
+                                                             and 'category' in parsed_args.data):
+
+            category = parsed_args.data.get('category').replace(' ', '_').lower() \
+                if 'category' in parsed_args.data else None
+            if category in POSSIBLE_CATEGORIES_TO_MIRROR_OUT:
+
+                try:
+                    demisto.debug(f'Sending incident with remote ID {parsed_args.remote_incident_id} to remote system.')
+                    result = client.update_incident_state(inc_id=parsed_args.remote_incident_id,
+                                                          category=category)
+                    demisto.debug(f'Incident updated successfully. Result: {result}')
+
+                except Exception as e:
+                    demisto.error(
+                        f"Error in Saas Security outgoing mirror for incident {parsed_args.remote_incident_id} \n"
+                        f"Error message: {str(e)}")
+            else:
+                demisto.debug(f'The value of category {parsed_args.data.get("category")} is invalid.'
+                              f' The category can be one of the following {POSSIBLE_CATEGORIES_TO_MIRROR_OUT}.')
+        else:
+            demisto.debug('Skipping updating the remote incident since the incident is not closed. '
+                          'Could not update the category for open incident due to an API limitation.')
+    else:
+        demisto.debug(f'Skipping updating remote incident fields [{parsed_args.remote_incident_id}] '
+                      f'as it is not new nor changed.')
+
+    return parsed_args.remote_incident_id
 
 
 ''' MAIN FUNCTION '''
@@ -449,6 +648,9 @@ def main() -> None:
     fetch_status = ','.join(STATUS_MAP.get(x) for x in argToList(params.get('status', [])))  # type: ignore[misc]
     fetch_app_ids = ','.join(argToList(params.get('app_ids', [])))
 
+    mirror_direction = MIRROR_DIRECTION.get(params.get('mirror_direction', 'None'), None)
+    instance = demisto.integrationInstance()
+
     commands = {
         'saas-security-incidents-get': get_incidents_command,
         'saas-security-incident-get-by-id': get_incident_by_id_command,
@@ -456,6 +658,9 @@ def main() -> None:
         'saas-security-get-apps': get_apps_command,
         'saas-security-asset-remediate': remediate_asset_command,
         'saas-security-remediation-status-get': get_remediation_status_command,
+        'get-remote-data': get_remote_data_command,
+        'get-modified-remote-data': get_modified_remote_data_command,
+        'update-remote-system': update_remote_system_command,
     }
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -474,7 +679,10 @@ def main() -> None:
                                        fetch_status, fetch_app_ids))
         elif command == 'fetch-incidents':
             fetch_incidents(client, first_fetch_time, fetch_limit, fetch_state, fetch_severity, fetch_status,
-                            fetch_app_ids)
+                            fetch_app_ids, mirror_direction, instance)
+        elif command == 'get-mapping-fields':
+            return_results(get_mapping_fields_command())
+
         elif command in commands:
             return_results(commands[command](client, demisto.args()))
 

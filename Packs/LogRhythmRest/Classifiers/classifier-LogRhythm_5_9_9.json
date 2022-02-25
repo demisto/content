@@ -1,0 +1,96 @@
+{
+    "id": "af6945d1-8209-4c7f-8458-f88dfc77b9e9",
+    "version": -1,
+    "mapping": {
+        "LogRhythm Case": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Assigned User": {
+                    "complex": null,
+                    "simple": "owner.name"
+                },
+                "LogRhythm Case Collaborators": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "collaborators",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Description": {
+                    "complex": null,
+                    "simple": "summary"
+                },
+                "Last Update Time": {
+                    "complex": null,
+                    "simple": "dateUpdated"
+                },
+                "LogRhythm Case Updated User": {
+                    "complex": null,
+                    "simple": "lastUpdatedBy.name"
+                },
+                "LogRhythm Status": {
+                    "complex": null,
+                    "simple": "status.name"
+                },
+                "LogRhythm Case Priority": {
+                    "complex": null,
+                    "simple": "priority"
+                },
+                "Tags": {
+                    "complex": null,
+                    "simple": "tags"
+                },
+                "LogRhythm Ticket Due Date": {
+                    "complex": null,
+                    "simple": "dueDate"
+                },
+                "name": {
+                    "complex": null,
+                    "simple": "name"
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "dateCreated"
+                }
+            }
+        },
+        "Logrhythm Alarm": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "LogRhythm Associated Cases": {
+                    "complex": null,
+                    "simple": "associatedCases"
+                },
+                "LogRhythm Entity": {
+                    "complex": null,
+                    "simple": "entityName"
+                },
+                "LogRhythm Status": {
+                    "complex": null,
+                    "simple": "alarmStatus"
+                },
+                "Rule Name": {
+                    "complex": null,
+                    "simple": "alarmRuleName"
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "dateInserted"
+                }
+            }
+        }
+    },
+    "transformer": {
+        "simple": "incidentType",
+        "complex": null
+    },
+    "keyTypeMap": {
+        "Alarm": "LogRhythm Alarm",
+        "Case": "LogRhythm Case"
+    },
+    "brandName": "LogRhythmRest V2",
+    "toVersion": "5.9.9",
+    "fromVersion": "5.5.0"
+}

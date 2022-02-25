@@ -1,0 +1,1 @@
+wait(parseInt(args.seconds));

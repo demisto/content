@@ -3,12 +3,13 @@ from CommonServerPython import *
 from typing import Dict, List, Tuple, Any, Callable, Optional
 
 import urllib3
-from bs4 import BeautifulSoup
+
 
 # disable insecure warnings
 urllib3.disable_warnings()
 
 INTEGRATION_NAME = "Zoom Feed"
+ZOOM_DOCS_IP_RANGES_URL = "https://assets.zoom.us/docs/ipranges"
 
 
 class Client(BaseClient):
@@ -25,21 +26,39 @@ class Client(BaseClient):
         """
         super().__init__(base_url, verify=verify, proxy=proxy)
 
+    def get_indicators(self) -> Set:
+        """
+        Uses 5 text files which contains zoom endpoints. This files are linked from:
+        https://support.zoom.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom
+        and contains all the endpoints listed on the zoom firewall rules tables, accept the domains and ipv6 addresses.
+        Using the text files instead of parsing the http page ןs due to blockage of the zoom support site.
+        """
+        params = demisto.params()
+        list_ips_txt_files = ['Zoom.txt',
+                              'ZoomMeetings.txt',
+                              'ZoomCRC.txt',
+                              'ZoomPhone.txt',
+                              'ZoomCDN.txt']
+
+        indicators = set(argToList(params.get('zoom_clients_certificate_validation', [])))
+        indicators.update(set(argToList(params.get('zoom_clients_user_browser', []))))
+
+        for url in list_ips_txt_files:
+            res = self._http_request(method='GET', url_suffix=url, resp_type='text')
+            for ip in res.split('\n'):
+                indicators.add(ip)
+        return indicators
+
     def build_iterator(self) -> List:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
         """
         result = []
-        r = self._http_request("GET", url_suffix="", full_url=self._base_url, resp_type="text")
-
-        soup = BeautifulSoup(r, "html.parser")
 
         try:
-            raw_data: List = sum(
-                [cell.get_text(strip=True, separator=" ").split(" ") for cell in soup.select("table tbody tr td")], []
-            )
-            indicators = list(set(raw_data))
+            indicators = list(self.get_indicators())
+
             for indicator in indicators:
                 if auto_detect_indicator_type(indicator):
                     result.append(
@@ -160,7 +179,6 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-    base_url = params.get("url")
     insecure = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
@@ -168,7 +186,7 @@ def main():
     demisto.info(f"Command being called is {command}")
 
     try:
-        client = Client(base_url=base_url, verify=insecure, proxy=proxy, )
+        client = Client(base_url=ZOOM_DOCS_IP_RANGES_URL, verify=insecure, proxy=proxy, )
 
         commands: Dict[
             str, Callable[[Client, Dict[str, str], Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]

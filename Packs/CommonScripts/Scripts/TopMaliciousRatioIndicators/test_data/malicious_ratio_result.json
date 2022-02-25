@@ -1,0 +1,114 @@
+[
+  {
+    "ModuleName": "InnerServicesModule",
+    "Brand": "Builtin",
+    "Category": "Builtin",
+    "ID": "",
+    "Version": 0,
+    "Type": 1,
+    "Contents": [
+      {
+        "indicatorId": "7570",
+        "maliciousRatio": 0.1111111111111111
+      },
+      {
+        "indicatorId": "7569",
+        "maliciousRatio": 0.08333333333333333
+      },
+      {
+        "indicatorId": "7825",
+        "maliciousRatio": 0
+      },
+      {
+        "indicatorId": "7826",
+        "maliciousRatio": 0
+      },
+      {
+        "indicatorId": "7714",
+        "maliciousRatio": 0
+      },
+      {
+        "indicatorId": "7769",
+        "maliciousRatio": 0
+      },
+      {
+        "indicatorId": "7730",
+        "maliciousRatio": 0
+      },
+      {
+        "indicatorId": "7694",
+        "maliciousRatio": 0
+      },
+      {
+        "indicatorId": "7644",
+        "maliciousRatio": 0
+      }
+    ],
+    "HumanReadable": "None",
+    "ImportantEntryContext": "None",
+    "EntryContext": "None",
+    "IgnoreAutoExtract": "False",
+    "ReadableContentsFormat": "",
+    "ContentsFormat": "json",
+    "File": "",
+    "FileID": "",
+    "FileMetadata": "None",
+    "System": "",
+    "Note": "False",
+    "Evidence": "False",
+    "EvidenceID": "",
+    "Tags": "None",
+    "Metadata": {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "type": 1,
+      "created": "2021-11-23T23:22:09.293627+02:00",
+      "incidentCreationTime": "0001-01-01T00:00:00Z",
+      "retryTime": "0001-01-01T00:00:00Z",
+      "user": "",
+      "errorSource": "",
+      "contents": "",
+      "format": "json",
+      "investigationId": "31464236-3748-4800-8a0e-e09ed2c8ccf9",
+      "file": "",
+      "fileID": "",
+      "parentId": "2362@31464236-3748-4800-8a0e-e09ed2c8ccf9",
+      "pinned": "False",
+      "fileMetadata": "None",
+      "parentContent": "!maliciousRatio id=\"6619,6546,7571,7570,7569,7825,7826,7827,7714,7757,7769,7730,7694,7754,7764,7644,7674,7654,7759,7671,7682,7703,7739,7767,7724,7695,7650,7737,7649,7740,7689,7663,7651,7697,7705,7753,7704,7642,7655,7762,7768,7660,7661,7728,7673,7657,7693,7652,7726,7685,7638,7667,7669,7747,7725,7734,7668,7637,7691,7679,7659,7736,7717,7670,7665,7636,7741,7643,7653,7751,7688,7690,7711,7706,7686,7756,7698,7648,7720,7749,7733,7738,7744,7752,7641,7742,7729,7675,7755,7761,7633,7758,7748,7634,7721,7727,7766,7699,7696,7723,7708,7664,7640,7680,7662,7645,7639,7731,7681,7760,7701,7718,7709,7666,7735,7746,7765,7692,7683,7732,7750,7658,7707,7716,7719,7672,7687,7678,7700,7712,7677,7646,7632,7684,7763,7713,7715,7710,7722,7647,7656,7635,7676,7745,7702,7743,725,709,710,712,711,704,705,807,716,808,720,719,715,713,805,812,806,726,810,811\"",
+      "parentEntryTruncated": "False",
+      "system": "",
+      "reputations": "None",
+      "category": "",
+      "note": "False",
+      "isTodo": "False",
+      "tags": "None",
+      "tagsRaw": "None",
+      "startDate": "0001-01-01T00:00:00Z",
+      "times": 0,
+      "recurrent": "False",
+      "endingDate": "0001-01-01T00:00:00Z",
+      "timezoneOffset": 0,
+      "cronView": "False",
+      "scheduled": "False",
+      "entryTask": "None",
+      "taskId": "",
+      "playbookId": "",
+      "reputationSize": 0,
+      "contentsSize": 0,
+      "brand": "Builtin",
+      "instance": "Builtin",
+      "InstanceID": "InternalModule",
+      "IndicatorTimeline": "None",
+      "Relationships": "None",
+      "mirrored": "False"
+    },
+    "IndicatorTimeline": "None",
+    "NextRun": "",
+    "Timeout": "",
+    "PollingCommand": "",
+    "PollingArgs": "None",
+    "Relationships": "None"
+  }
+]

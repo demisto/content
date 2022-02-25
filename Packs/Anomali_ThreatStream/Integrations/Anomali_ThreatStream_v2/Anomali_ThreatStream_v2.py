@@ -932,7 +932,7 @@ def submit_report(client: Client, submission_type, submission_value, submission_
     if str(res.get('success', '')).lower() == 'true':
         report_info = res['reports'][report_platform]
         report_id = report_info['id']
-        report_status, _ = get_submission_status(report_id, False)
+        report_status, _ = get_submission_status(client, report_id, False)
 
         report_outputs = {'ReportID': report_id, 'Status': report_status, 'Platform': report_platform}
         ec = {'ThreatStream.Analysis': report_outputs}
@@ -993,7 +993,6 @@ def get_indicators(client: Client, **kwargs):
     if limit > 1000:
         while len(iocs_context) < limit:
             offset += len(iocs_list)
-            limit -= len(iocs_list)
             kwargs['limit'] = limit
             kwargs['offset'] = offset
             params = build_params(**kwargs)

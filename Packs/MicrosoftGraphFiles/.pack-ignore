@@ -2,4 +2,4 @@
 ignore=auto-test
 
 [file:MicrosoftGraphFiles.yml]
-ignore=DS107
+ignore=DS107,IN145

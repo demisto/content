@@ -1,0 +1,167 @@
+[
+    {
+        "value": "http://example.org/?n",
+        "type": "URL",
+        "title": "URL: http://example.org/?n...",
+        "description": "URL: http://example.org/?n| isOnline:yes| dateVerified:2021-10-19T04:13:43+00:00",
+        "stixindicatorname": "phishTank.com id:7324360 with malicious URL:http://app.example...",
+        "stixindicatordescription": "This URL:[http://example.org/?n] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-10-19T04:13:43+00:00. More detailed infomation can be found at http://www.phishtank.com/phish_detail.php?phish_id=7324360",
+        "confidence": "High",
+        "fields": {},
+        "relationships": [
+            {
+                "name": "related-to",
+                "reverseName": "related-to",
+                "type": "IndicatorToIndicator",
+                "entityA": "http://example.org/?n",
+                "entityAFamily": "Indicator",
+                "entityAType": "URL",
+                "entityB": "URL embedded in Email",
+                "entityBFamily": "Indicator",
+                "entityBType": "Attack Pattern",
+                "fields": {}
+            }
+        ],
+        "rawJSON": {
+            "indicator": "http://example.org/?n",
+            "type": "URL",
+            "indicator_ref": "opensource:Observable-335290e0-3496-4644-bdaa-25b323814b46",
+            "stix_title": "URL: http://example.org/?n...",
+            "stix_description": "URL: http://example.org/?n| isOnline:yes| dateVerified:2021-10-19T04:13:43+00:00",
+            "TLP": "WHITE",
+            "share_level": "white",
+            "stix_indicator_name": "phishTank.com id:7324360 with malicious URL:http://app.example...",
+            "stix_indicator_description": "This URL:[http://example.org/?n] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-10-19T04:13:43+00:00. More detailed infomation can be found at http://www.phishtank.com/phish_detail.php?phish_id=7324360",
+            "confidence": "High",
+            "ttp_ref": [
+                "opensource:ttp-c819f3ef-fbc3-4077-8d56-bf619c8d9b29"
+            ],
+            "relationships": [
+                {
+                    "stix_ttp_title": "Email Emmbedded URL",
+                    "ttp_description": "Target Users via Email by adding a malicious URL",
+                    "type": "Attack Pattern",
+                    "indicator": "URL embedded in Email",
+                    "value": "URL embedded in Email"
+                }
+            ],
+            "value": "http://example.org/?n"
+        }
+    },
+    {
+        "value": "https://pancakeswap.finance.exchange-goswap.com/",
+        "type": "URL",
+        "title": "URL: https://pancakeswap.finance.exchange-goswap.com/...",
+        "description": "URL: https://pancakeswap.finance.exchange-goswap.com/| isOnline:yes| dateVerified:2021-10-19T04:13:43+00:00",
+        "stixindicatorname": "phishTank.com id:7324397 with malicious URL:https://example...",
+        "stixindicatordescription": "This URL:[https://pancakeswap.finance.exchange-goswap.com/] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-10-19T04:13:43+00:00. More detailed infomation can be found at http://www.phishtank.com/phish_detail.php?phish_id=7324397",
+        "confidence": "High",
+        "fields": {},
+        "relationships": [
+            {
+                "name": "related-to",
+                "reverseName": "related-to",
+                "type": "IndicatorToIndicator",
+                "entityA": "https://pancakeswap.finance.exchange-goswap.com/",
+                "entityAFamily": "Indicator",
+                "entityAType": "URL",
+                "entityB": "URL embedded in Email",
+                "entityBFamily": "Indicator",
+                "entityBType": "Attack Pattern",
+                "fields": {}
+            }
+        ],
+        "rawJSON": {
+            "indicator": "https://pancakeswap.finance.exchange-goswap.com/",
+            "type": "URL",
+            "indicator_ref": "opensource:Observable-5af3d9a1-b0ac-4846-95b0-efd498c14594",
+            "stix_title": "URL: https://pancakeswap.finance.exchange-goswap.com/...",
+            "stix_description": "URL: https://pancakeswap.finance.exchange-goswap.com/| isOnline:yes| dateVerified:2021-10-19T04:13:43+00:00",
+            "TLP": "WHITE",
+            "share_level": "white",
+            "stix_indicator_name": "phishTank.com id:7324397 with malicious URL:https://example...",
+            "stix_indicator_description": "This URL:[https://pancakeswap.finance.exchange-goswap.com/] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-10-19T04:13:43+00:00. More detailed infomation can be found at http://www.phishtank.com/phish_detail.php?phish_id=7324397",
+            "confidence": "High",
+            "ttp_ref": [
+                "opensource:ttp-c819f3ef-fbc3-4077-8d56-bf619c8d9b29"
+            ],
+            "relationships": [
+                {
+                    "stix_ttp_title": "Email Emmbedded URL",
+                    "ttp_description": "Target Users via Email by adding a malicious URL",
+                    "type": "Attack Pattern",
+                    "indicator": "URL embedded in Email",
+                    "value": "URL embedded in Email"
+                }
+            ],
+            "value": "https://pancakeswap.finance.exchange-goswap.com/"
+        }
+    },
+    {
+        "value": "http://example.org/",
+        "type": "URL",
+        "title": "URL: http://example.org/...",
+        "description": "URL: http://example.org/| isOnline:yes| dateVerified:2021-10-19T10:07:34+00:00",
+        "stixindicatorname": "phishTank.com id:7324767 with malicious URL:https://example...",
+        "stixindicatordescription": "This URL:[http://example.org/] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-10-19T10:07:34+00:00. More detailed infomation can be found at http://www.phishtank.com/phish_detail.php?phish_id=7324767",
+        "confidence": "High",
+        "fields": {},
+        "relationships": [
+            {
+                "name": "related-to",
+                "reverseName": "related-to",
+                "type": "IndicatorToIndicator",
+                "entityA": "http://example.org/",
+                "entityAFamily": "Indicator",
+                "entityAType": "URL",
+                "entityB": "URL embedded in Email",
+                "entityBFamily": "Indicator",
+                "entityBType": "Attack Pattern",
+                "fields": {}
+            }
+        ],
+        "rawJSON": {
+            "indicator": "http://example.org/",
+            "type": "URL",
+            "indicator_ref": "opensource:Observable-cfe14953-f986-450b-93f1-0041a597b8d2",
+            "stix_title": "URL: http://example.org/...",
+            "stix_description": "URL: http://example.org/| isOnline:yes| dateVerified:2021-10-19T10:07:34+00:00",
+            "TLP": "WHITE",
+            "share_level": "white",
+            "stix_indicator_name": "phishTank.com id:7324767 with malicious URL:https://example...",
+            "stix_indicator_description": "This URL:[http://example.org/] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-10-19T10:07:34+00:00. More detailed infomation can be found at http://www.phishtank.com/phish_detail.php?phish_id=7324767",
+            "confidence": "High",
+            "ttp_ref": [
+                "opensource:ttp-c819f3ef-fbc3-4077-8d56-bf619c8d9b29"
+            ],
+            "relationships": [
+                {
+                    "stix_ttp_title": "Email Emmbedded URL",
+                    "ttp_description": "Target Users via Email by adding a malicious URL",
+                    "type": "Attack Pattern",
+                    "indicator": "URL embedded in Email",
+                    "value": "URL embedded in Email"
+                }
+            ],
+            "value": "http://example.org/"
+        }
+    },
+    {
+        "value": "URL embedded in Email",
+        "type": "Attack Pattern",
+        "title": null,
+        "description": null,
+        "shortdescription": null,
+        "stixindicatordescription": "Target Users via Email by adding a malicious URL",
+        "stixttptitle": "Email Emmbedded URL",
+        "score": 2,
+        "fields": {},
+        "rawJSON": {
+            "stix_ttp_title": "Email Emmbedded URL",
+            "ttp_description": "Target Users via Email by adding a malicious URL",
+            "type": "Attack Pattern",
+            "indicator": "URL embedded in Email",
+            "value": "URL embedded in Email"
+        }
+    }
+]

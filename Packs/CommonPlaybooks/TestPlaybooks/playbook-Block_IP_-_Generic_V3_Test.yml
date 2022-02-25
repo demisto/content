@@ -1,0 +1,259 @@
+id: Block IP - Generic V3_Test
+version: -1
+name: Block IP - Generic V3_Test
+description: |-
+  Test Playbook for the "Block IP - generic V3" playbook.
+  This playbook will attempt to block - 1.1.1.1 IP (which is considered malicious by VT) o the following integrations:
+  * Pan-OS FW
+  * ThreatX
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0904ffce-b274-4eff-89da-167044ff160e
+    type: start
+    task:
+      id: 0904ffce-b274-4eff-89da-167044ff160e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 42d36a82-4520-4563-80c4-9ddfdc08ae40
+    type: playbook
+    task:
+      id: 42d36a82-4520-4563-80c4-9ddfdc08ae40
+      version: -1
+      name: Block IP - Generic v3
+      description: "This playbook blocks malicious IP addresses using all integrations\
+        \ that are enabled. The direction of the traffic that will be blocked is determined\
+        \ by the XSOAR user (and set by default to outgoing)\nNote the following:\n\
+        -  some of those integrations require specific parameters to run, which are\
+        \ based on the playbook inputs. Also, certain integrations use FW rules or\
+        \ appended network objects.\n- Note that the appended network objects should\
+        \ be specified in blocking rules inside the system later on. \n\n\nSupported\
+        \ integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]:\
+        \ \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n\
+        * Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n\
+        * Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n\
+        * Sophos Firewall\n\n"
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "false"
+      IP:
+        simple: 1.1.1.1
+      InputEnrichment:
+        simple: "False"
+      ResolveIP:
+        simple: "False"
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${incident.id}
+      Tag:
+        simple: testpb
+      UserVerification:
+        simple: "False"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 31db64ee-000c-4ddf-8486-9f4010f87368
+    type: regular
+    task:
+      id: 31db64ee-000c-4ddf-8486-9f4010f87368
+      version: -1
+      name: Get indicator by tag
+      description: commands.local.cmd.find.indicators
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      extend-context:
+        simple: indicator=
+      query:
+        simple: tags:testpb
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7ddab282-fe27-4675-8654-15af8e503166
+    type: condition
+    task:
+      id: 7ddab282-fe27-4675-8654-15af8e503166
+      version: -1
+      name: Check if the tag was applied for EDL
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${indicator.value}
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 94b850d4-cac9-4898-8fce-87910687ea86
+    type: title
+    task:
+      id: 94b850d4-cac9-4898-8fce-87910687ea86
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 8fe41eff-1f02-43fc-8dc2-128c90bfc888
+    type: regular
+    task:
+      id: 8fe41eff-1f02-43fc-8dc2-128c90bfc888
+      version: -1
+      name: Error in the test playbook
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      message:
+        simple: 'IP was not matched '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 690,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0

@@ -1,23 +1,25 @@
+# type: ignore[attr-defined]
+# pylint: disable=no-member
 import copy
 import json
-import logging
 import os
 import tempfile
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 from ruamel.yaml import YAML
 
 import demisto_sdk.commands.common.tools as demisto_sdk_tools
 import Tests
+from Tests.scripts.utils import logging_wrapper as logging
 from demisto_sdk.commands.common.constants import (PACK_METADATA_SUPPORT,
-                                                   PACKS_PACK_META_FILE_NAME)
+                                                   PACKS_PACK_META_FILE_NAME,
+                                                   PACKS_DIR)
 from Tests.scripts.collect_tests_and_content_packs import (
-    PACKS_DIR, SANITY_TESTS, TestConf, collect_content_packs_to_install,
+    SANITY_TESTS, TestConf, collect_content_packs_to_install,
     create_filter_envs_file, get_from_version_and_to_version_bounderies,
     get_test_list_and_content_packs_to_install, is_documentation_changes_only,
-    remove_ignored_tests, remove_tests_for_non_supported_packs, is_release_branch, check_if_test_should_not_be_missed)
+    remove_ignored_tests, remove_tests_for_non_supported_packs, check_if_test_should_not_be_missed)
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing, ModifiedFiles
 from Tests.scripts.utils import content_packs_util
 
@@ -273,11 +275,8 @@ class TestChangedTestPlaybook:
         create_filter_envs_file('0.0.0', '99.99.99')
         with open("./artifacts/filter_envs.json", "r") as filter_envs_file:
             filter_envs = json.load(filter_envs_file)
-        assert filter_envs.get('Server 5.5') is True
-        assert filter_envs.get('Server 5.0') is True
-        if not is_release_branch():
-            assert filter_envs.get('Server Master') is True
-            assert filter_envs.get('Server 6.0') is True
+        assert filter_envs.get('Server Master') is True
+        assert filter_envs.get('Server 6.0') is True
 
     def test_get_from_version_and_to_version_from_modified_files(self):
         """
@@ -304,11 +303,8 @@ class TestChangedTestPlaybook:
         create_filter_envs_file(from_version, to_version)
         with open("./artifacts/filter_envs.json", "r") as filter_envs_file:
             filter_envs = json.load(filter_envs_file)
-        assert filter_envs.get('Server 5.5') is True
-        assert filter_envs.get('Server 5.0') is False
-        if not is_release_branch():
-            assert filter_envs.get('Server Master') is True
-            assert filter_envs.get('Server 6.0') is True
+        assert filter_envs.get('Server Master') is True
+        assert filter_envs.get('Server 6.0') is True
 
     def test_get_from_and_to_version_from_modified_files(self):
         """
@@ -1174,7 +1170,7 @@ def test_remove_ignored_tests(tests_to_filter, ignored_tests, expected_result, m
     """
     mocker.patch.object(Tests.scripts.collect_tests_and_content_packs.tools, 'get_ignore_pack_skipped_tests',
                         return_value=ignored_tests)
-    mocker.patch('logging.info')
+    mocker.patch.object(logging, 'info')
     res = remove_ignored_tests(tests_to_filter, MOCK_ID_SET, tests_to_filter)
     assert res == expected_result
     if ignored_tests:
@@ -1199,7 +1195,7 @@ def test_remove_tests_for_non_supported_packs(tests_to_filter, should_test_conte
         """
     mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
                         return_value=should_test_content)
-    mocker.patch('logging.debug')
+    mocker.patch.object(logging, 'debug')
     filtered_tests = copy.deepcopy(tests_to_filter)
     res = remove_tests_for_non_supported_packs(tests_to_filter, MOCK_ID_SET)
     assert res == expected_result
@@ -1237,7 +1233,7 @@ def test_get_from_version_and_to_version_bounderies_modified_metadata():
         - Check that the minimum version is 6.1.0
 
     """
-    all_modified_files_paths = set([])
+    all_modified_files_paths: set = set([])
     pack_list = {'Pack1'}
 
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -1254,33 +1250,6 @@ def test_get_from_version_and_to_version_bounderies_modified_metadata():
 
     assert '6.1.0' in from_version
     assert '99.99.99' in to_version
-
-
-@patch.dict('os.environ', {'CI_COMMIT_BRANCH': '21.12.0'})
-def test_is_release_branch_positive():
-    """
-    Given:
-        - That branch name found from 'CI_COMMIT_BRANCH' env variable is a release branch.
-    When:
-        - running is_release_branch method.
-    Then:
-        - Validate the response is positive.
-    """
-    assert is_release_branch()
-
-
-@pytest.mark.parametrize('mocked_branch_name', ['some_branch_name', ''])
-def test_is_release_branch_negative(mocked_branch_name):
-    """
-    Given:
-        - That branch name found from 'CI_COMMIT_BRANCH' env variable is a regular branch name or an empty value
-    When:
-        - running is_release_branch method.
-    Then:
-        - Validate the response is negative.
-    """
-    with patch.dict('os.environ', {'CI_COMMIT_BRANCH': mocked_branch_name}):
-        assert not is_release_branch()
 
 
 @pytest.mark.parametrize('support_level, expected', [('partner', False), ('community', False), ('xsoar', True)])

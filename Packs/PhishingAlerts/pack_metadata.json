@@ -1,0 +1,23 @@
+{
+    "name": "PhishingAlerts",
+    "description": "This pack will help you handle your email security gateway alerts",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Messaging"
+    ],
+    "tags": [
+        "Scam",
+        "Spam",
+        "Email"],
+    "itemPrefix": ["Email"],
+    "useCases": ["Phishing"],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

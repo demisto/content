@@ -44,7 +44,10 @@ class GSuiteClient:
                  base_url: str = '', headers: Optional[Dict[str, str]] = None,
                  user_id: str = ''):
         self.headers = headers
-        self.credentials = service_account.Credentials.from_service_account_info(info=service_account_dict)
+        try:
+            self.credentials = service_account.Credentials.from_service_account_info(info=service_account_dict)
+        except Exception:
+            raise ValueError(COMMON_MESSAGES['JSON_PARSE_ERROR'])
         self.proxy = proxy
         self.verify = verify
         self.authorized_http: Any = None

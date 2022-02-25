@@ -1,0 +1,73 @@
+{
+    "name": "Github Classifier",
+    "id": "Github_Classifier_v1",
+    "description": "Github Classifier",
+    "feed": false,
+    "keyTypeMap": {
+        "closed": "DevSecOps New Git PR",
+        "open": "DevSecOps New Git PR"
+    },
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [
+                [
+                    {
+                        "ignoreCase": false,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "complex": null,
+                                "simple": "state"
+                            }
+                        },
+                        "operator": "isEqualString",
+                        "right": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "open"
+                            }
+                        }
+                    }
+                ],
+                [
+                    {
+                        "ignoreCase": false,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "complex": null,
+                                "simple": "head.sha"
+                            }
+                        },
+                        "operator": "isNotEmpty",
+                        "right": null
+                    }
+                ]
+            ],
+            "root": ".",
+            "transformers": [
+                {
+                    "args": {
+                        "field": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "state"
+                            }
+                        }
+                    },
+                    "operator": "getField"
+                }
+            ]
+        },
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

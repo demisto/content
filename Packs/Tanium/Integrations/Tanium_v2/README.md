@@ -128,12 +128,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-package</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -564,12 +558,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-ask-question</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -652,12 +640,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-question-result</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -746,12 +728,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-list-sensors</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -971,12 +947,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-sensor</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1247,12 +1217,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-create-saved-question</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1341,12 +1305,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-list-saved-questions</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1571,12 +1529,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-saved-question-result</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1666,12 +1618,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-system-status</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1823,12 +1769,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-create-package</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2056,12 +1996,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-list-packages</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2273,12 +2207,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-question-metadata</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2432,12 +2360,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-list-saved-actions</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2691,12 +2613,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-saved-action</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2954,12 +2870,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-saved-question-metadata</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3186,12 +3096,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-create-saved-action</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3448,12 +3352,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-create-action</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3732,12 +3630,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-list-actions</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3988,12 +3880,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-action</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4242,12 +4128,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-list-saved-actions-pending-approval</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4361,12 +4241,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-group</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4491,12 +4365,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-create-manual-group</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4603,12 +4471,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-create-filter-based-group</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4704,12 +4566,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-list-groups</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4830,12 +4686,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-delete-group</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4892,12 +4742,6 @@ There are no context output for this command.
   <code>tn-create-action-by-host</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>

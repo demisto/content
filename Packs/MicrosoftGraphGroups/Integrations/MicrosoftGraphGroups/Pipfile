@@ -28,4 +28,4 @@ weakrefmethod = "==1.0.3"
 PySocks = "==1.6.8"
 
 [requires]
-python_version = "2.7"
+python_version = "*"

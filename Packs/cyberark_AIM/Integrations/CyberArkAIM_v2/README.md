@@ -22,7 +22,7 @@ Further information is available from CyberArk at:
 | app_id | AppID as configured in AIM | False |
 | folder | Folder to search in safe | True |
 | safe | Safe to search in | True |
-| credential_names | Credential names \- comma\-seperated list of credentials names in the safe | False |
+| credential_names | Credential names \- comma\-separated list of credentials names in the safe. Partial names are not supported. | False |
 | credentials | Username | False |
 | cert_text | Certificate file as text | False |
 | key_text | Key file as text | False |
@@ -36,7 +36,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cyberark-aim-list-credentials
 ***
-Lists all credentials available
+Lists all available credentials according to the list of credential names configured. 
 
 
 #### Base Command

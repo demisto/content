@@ -457,12 +457,13 @@ def log(msg):
     logging.getLogger().info(msg)
 
 
-def get(obj, field):
+def get(obj, field, defaultParam=None):
     """Extracts field value from nested object
 
     Args:
       obj (dict): The object to extract the field from
       field (str): The field to extract from the object, given in dot notation
+      defaultParam (object): The default value to return in case the field doesn't exist in obj
 
     Returns:
       str: The value of the extracted field
@@ -473,7 +474,7 @@ def get(obj, field):
         if obj and part in obj:
             obj = obj[part]
         else:
-            return None
+            return defaultParam
     return obj
 
 
@@ -600,7 +601,7 @@ def results(results):
       None: No data returned
 
     """
-    if type(results) is dict and results.get("contents"):
+    if isinstance(results, dict) and results.get("contents"):
         results = results.get("contents")
     log("demisto results: {}".format(json.dumps(results, indent=4, sort_keys=True)))
 
@@ -764,7 +765,7 @@ def incidents(incidents=None):
 
     """
     if incidents is None:
-        return exampleIncidents[0]['Contents']['data']
+        return exampleIncidents[0]['Contents']['data']  # type: ignore[index]
     else:
         return results(
             {"Type": 1, "Contents": json.dumps(incidents), "ContentsFormat": "json"}
@@ -1076,7 +1077,7 @@ def mapObject(obj, mapper, mapper_type):
       dict: the obj after mapping
 
     """
-    return {}
+    return obj
 
 
 def getModules():
@@ -1139,6 +1140,52 @@ def parentEntry():
 
     Returns:
       dict: information regarding the current war room entry
+
+    """
+    return {}
+
+
+def getLicenseCustomField(api_key):
+    return api_key
+
+
+def getLastMirrorRun():
+    """(Integration only)
+    Retrieves the LastMirrorRun object
+
+    Returns:
+      dict: LastMirrorRun object
+
+    """
+    return {}
+
+
+def setLastMirrorRun(obj):
+    """(Integration only)
+    Stores given object in the LastMirrorRun object
+
+    Args:
+      obj (dict): The object to store
+
+    Returns:
+      None: No data returned
+
+    """
+    return None
+
+
+def _apiCall(name, params=None, data=None):
+    """
+    Special apiCall to internal xdr api. Only available to OOB content.
+
+    Args:
+        name: name of the api (currently only wfReportIncorrectVerdict is supported)
+        params: url query args to pass. Use a dictionary such as: `{"key":"value"}
+        data: POST data as a string. Make sure to json.dumps.
+        Note: if data is empty then a GET request is performed instead of a POST.
+
+    Returns:
+        dict: The response of the api call
 
     """
     return {}

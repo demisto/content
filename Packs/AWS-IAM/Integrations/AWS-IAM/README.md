@@ -1575,3 +1575,117 @@ Retrieves information about the specified managed policy, including the policy's
 
 #### Command Example
 ``` !aws-iam-get-policy policyName=testPolicy```
+
+### aws-iam-list-user-policies
+***
+Lists the names of the inline policies embedded in the specified IAM user.
+
+#### Base Command
+
+`aws-iam-list-user-policies`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The name (friendly name, not ARN) of the user to list inline policies for. | Required | 
+| limit | Number of results to display. Default value is 50. | Optional | 
+| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
+| page_size | Number of results per page to display. | Optional | 
+| marker | Starting item of the next page to view. Can be retrieved from context (AttachedPoliciesMarker). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.UserPolicies.UserName | string | A list of the user's inline policy names. |
+| AWS.IAM.UserPolicies.PolicyName | string | The name of the policy. |
+| AWS.IAM.Users.InlinePoliciesMarker | string | First element of next page of items. | 
+
+#### Command Example
+``` !aws-iam-list-user-policies userName=testUser```
+
+### aws-iam-list-attached-user-polices
+***
+Lists all managed policies that are attached to the specified IAM user.
+
+#### Base Command
+
+`aws-iam-list-attached-user-policies`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The name (friendly name, not ARN) of the user to list attached policies for. | Required | 
+| limit | Number of results to display. Default value is 50. | Optional | 
+| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
+| page_size | Number of results per page to display. | Optional | 
+| marker | Starting item of the next page to view. Can be retrieved from context (AttachedPoliciesMarker). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.AttachedUserPolicies.UserName | string | The name (friendly name, not ARN) of the user to list attached policies for. |
+| AWS.IAM.AttachedUserPolicies.PolicyName | string | Policy Name | 
+| AWS.IAM.AttachedUserPolicies.PolicyArn | string | The Amazon Resource Name (ARN) of the attached policy. | 
+| AWS.IAM.Users.AttachedPoliciesMarker | string | First element of next page of items. | 
+
+#### Command Example
+``` !aws-iam-list-attached-user-policies userName=testUser```
+
+### aws-iam-list-attached-group-policies
+***
+Lists all managed policies that are attached to the specified IAM group.
+
+#### Base Command
+
+`aws-iam-list-attached-group-policies`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupName | The name (friendly name, not ARN) of the group to list attached policies for. | Required | 
+| limit | Number of results to display. Default value is 50. | Optional | 
+| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional | 
+| page_size | Number of results per page to display. | Optional | 
+| marker | Starting item of the next page to view. Can be retrieved from context (AttachedPoliciesMarker). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.AttachedGroupPolicies.GroupName | string | The name (friendly name, not ARN) of the group to list attached policies for. |
+| AWS.IAM.AttachedGroupPolicies.PolicyName | string | Policy Name | 
+| AWS.IAM.AttachedGroupPolicies.PolicyArn | string | The Amazon Resource Name (ARN) of the attached policy. | 
+| AWS.IAM.Groups.AttachedPoliciesMarker | string | First element of next page of items. | 
+
+#### Command Example
+``` !aws-iam-list-attached-group-policies groupName=testGroup```
+
+### aws-iam-get-user-login-profile
+***
+Lists all managed policies that are attached to the specified IAM user.
+
+#### Base Command
+
+`aws-iam-get-user-login-profile`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The name (friendly name, not ARN) of the user to retrieve login profile for. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.Users.LoginProfile.CreateDate | date | The date when the password for the user was created. | 
+| AWS.IAM.Users.LoginProfile.PasswordResetRequired | boolean | Specifies whether the user is required to set a new password on next sign-in. | 
+
+#### Command Example
+``` !aws-iam-get-user-login-profile userName=testUser```
+

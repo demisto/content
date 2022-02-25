@@ -2026,7 +2026,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 ### linux-kernel-blacklist
 ***
-Blacklist kernel modules
+Deny list kernel modules
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/kernel_blacklist_module.html
 
 
@@ -2038,9 +2038,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host | hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance. | Required | 
-| name | Name of kernel module to black- or whitelist. | Required | 
-| state | Whether the module should be present in the blacklist or absent. Possible values are: absent, present. Default is present. | Optional | 
-| blacklist_file | If specified, use this blacklist file instead of `/etc/modprobe.d/blacklist-ansible.conf`. | Optional | 
+| name | Name of kernel module to add to block list or allow list. | Required | 
+| state | Whether the module should be present in the block list or absent. Possible values are: absent, present. Default is present. | Optional | 
+| blacklist_file | If specified, use this block list file instead of `/etc/modprobe.d/blacklist-ansible.conf`. | Optional | 
 
 
 #### Context Output
@@ -2168,7 +2168,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.ListenPortsFacts.ansible_facts | unknown | Dictionary containing details of TCP and UDP ports with listening servers | 
+| Linux.ListenPortsFacts.facts | unknown | Dictionary containing details of TCP and UDP ports with listening servers | 
 
 
 #### Command Example
@@ -2757,7 +2757,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
             "not_found": [],
             "python": "/usr/libexec/platform-python",
             "python_system_path": [
-                "/tmp/ansible_python_requirements_info_payload_ppjh5d0o/ansible_python_requirements_info_payload.zip",
+                "/tmp/python_requirements_info_payload_ppjh5d0o/python_requirements_info_payload.zip",
                 "/usr/lib64/python36.zip",
                 "/usr/lib64/python3.6",
                 "/usr/lib64/python3.6/lib-dynload",
@@ -2784,7 +2784,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >  * ## Mismatched
 >  * ## Not_Found
 >  * ## Python_System_Path
->    * 0: /tmp/ansible_python_requirements_info_payload_ppjh5d0o/ansible_python_requirements_info_payload.zip
+>    * 0: /tmp/python_requirements_info_payload_ppjh5d0o/python_requirements_info_payload.zip
 >    * 1: /usr/lib64/python36.zip
 >    * 2: /usr/lib64/python3.6
 >    * 3: /usr/lib64/python3.6/lib-dynload
@@ -3053,7 +3053,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | enabled | Whether the service should start on boot.<br/>`At least one of state and enabled are required.`. | Optional | 
 | runlevel | For OpenRC init scripts (e.g. Gentoo) only.<br/>The runlevel that this service belongs to. Default is default. | Optional | 
 | arguments | Additional arguments provided on the command line. | Optional | 
-| use | The service module actually uses system specific modules, normally through auto detection, this setting can force a specific module.<br/>Normally it uses the value of the 'ansible_service_mgr' fact and falls back to the old 'service' module when none matching is found. Default is auto. | Optional | 
+| use | The service module actually uses system specific modules, normally through auto detection, this setting can force a specific module.<br/>Normally it uses the value of the 'service_mgr' fact and falls back to the old 'service' module when none matching is found. Default is auto. | Optional | 
 
 
 #### Context Output
@@ -3329,7 +3329,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.ServiceFacts.ansible_facts | unknown | Facts to add to ansible_facts about the services on the system | 
+| Linux.ServiceFacts.facts | unknown | Facts to add to facts about the services on the system | 
 
 
 #### Command Example
@@ -5200,7 +5200,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | gather_subset | If supplied, restrict the additional facts collected to the given subset. Possible values: `all`, `min`, `hardware`, `network`, `virtual`, `ohai`, and `facter`. Can specify a list of values to specify a larger subset. Values can also be used with an initial `!` to specify that that specific subset should not be collected.  For instance: `!hardware,!network,!virtual,!ohai,!facter`. If `!all` is specified then only the min subset is collected. To avoid collecting even the min subset, specify `!all,!min`. To collect only specific facts, use `!all,!min`, and specify the particular fact subsets. Use the filter parameter if you do not want to display some collected facts. Default is all. | Optional | 
 | gather_timeout | Set the default timeout in seconds for individual fact gathering. Default is 10. | Optional | 
 | filter | If supplied, only return facts that match this shell-style (fnmatch) wildcard. Default is *. | Optional | 
-| fact_path | Path used for local ansible facts (`*.fact`) - files in this dir will be run (if executable) and their results be added to `ansible_local` facts if a file is not executable it is read. Check notes for Windows options. (from 2.1 on) File/results format can be JSON or INI-format. The default `fact_path` can be specified in `ansible.cfg` for when setup is automatically called as part of `gather_facts`. Default is /etc/ansible/facts.d. | Optional | 
+| fact_path | Path used for local ansible facts (`*.fact`) - files in this dir will be run (if executable) and their results be added to `local` facts if a file is not executable it is read. Check notes for Windows options. (from 2.1 on) File/results format can be JSON or INI-format. The default `fact_path` can be specified in `ansible.cfg` for when setup is automatically called as part of `gather_facts`. Default is /etc/ansible/facts.d. | Optional | 
 
 
 #### Context Output
@@ -6552,7 +6552,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | host | hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance. | Required | 
 | src | Path on the source host that will be synchronized to the destination.<br/>The path can be absolute or relative. | Required | 
 | dest | Path on the destination host that will be synchronized from the source.<br/>The path can be absolute or relative. | Required | 
-| dest_port | Port number for ssh on the destination host.<br/>Prior to Ansible 2.0, the ansible_ssh_port inventory var took precedence over this value.<br/>This parameter defaults to the value of `ansible_ssh_port` or `ansible_port`, the `remote_port` config setting or the value from ssh client configuration if none of the former have been set. | Optional | 
+| dest_port | Port number for ssh on the destination host.<br/>Prior to Ansible 2.0, the ssh_port inventory var took precedence over this value.<br/>This parameter defaults to the value of `ssh_port` or `port`, the `remote_port` config setting or the value from ssh client configuration if none of the former have been set. | Optional | 
 | mode | Specify the direction of the synchronization.<br/>In push mode the localhost or delegate is the source.<br/>In pull mode the remote host in context is the source. Possible values are: pull, push. Default is push. | Optional | 
 | archive | Mirrors the rsync archive flag, enables recursive, links, perms, times, owner, group flags and -D. Possible values are: Yes, No. Default is Yes. | Optional | 
 | checksum | Skip based on checksum, rather than mod-time &amp; size; Note that that "archive" option is still enabled by default - the "checksum" option will not disable it. Possible values are: Yes, No. Default is No. | Optional | 
@@ -6567,7 +6567,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | times | Preserve modification times.<br/>This parameter defaults to the value of the archive option. | Optional | 
 | owner | Preserve owner (super user only).<br/>This parameter defaults to the value of the archive option. | Optional | 
 | group | Preserve group.<br/>This parameter defaults to the value of the archive option. | Optional | 
-| rsync_path | Specify the rsync command to run on the remote host. See `--rsync-path` on the rsync man page.<br/>To specify the rsync command to run on the local host, you need to set this your task var `ansible_rsync_path`. | Optional | 
+| rsync_path | Specify the rsync command to run on the remote host. See `--rsync-path` on the rsync man page.<br/>To specify the rsync command to run on the local host, you need to set this your task var `rsync_path`. | Optional | 
 | rsync_timeout | Specify a `--timeout` for the rsync command in seconds. Default is 0. | Optional | 
 | set_remote_user | Put user@ for the remote paths.<br/>If you have a custom ssh config to define the remote user for a host that does not match the inventory user, you should set this parameter to `no`. Possible values are: Yes, No. Default is Yes. | Optional | 
 | use_ssh_args | Use the ssh_args specified in ansible.cfg. Possible values are: Yes, No. Default is No. | Optional | 
@@ -6963,7 +6963,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | version | The maven version coordinate. Default is latest. | Optional | 
 | classifier | The maven classifier coordinate. | Optional | 
 | extension | The maven type/extension coordinate. Default is jar. | Optional | 
-| repository_url | The URL of the Maven Repository to download from.<br/>Use s3://... if the repository is hosted on Amazon S3, added in version 2.2.<br/>Use file://... if the repository is local, added in version 2.6. Default is http://repo1.maven.org/maven2. | Optional | 
+| repository_url | The URL of the Maven Repository to download from.<br/>Use s3://... if the repository is hosted on Amazon S3, added in version 2.2.<br/>Use file://... if the repository is local, added in version 2.6. Default is https://repo1.maven.org/maven2. | Optional | 
 | username | The username to authenticate as to the Maven Repository. Use AWS secret key of the repository is hosted on S3. | Optional | 
 | password | The password to authenticate with to the Maven Repository. Use AWS secret access key of the repository is hosted on S3. | Optional | 
 | headers | Add custom HTTP headers to a request in hash/dict format. | Optional | 
@@ -7653,7 +7653,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.PackageFacts.ansible_facts | unknown | facts to add to ansible_facts | 
+| Linux.PackageFacts.facts | unknown | facts to add to facts | 
 
 
 #### Command Example
@@ -7750,7 +7750,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host | hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance. | Required | 
-| use_backend | This module supports `yum` (as it always has), this is known as `yum3`/`YUM3`/`yum-deprecated` by upstream yum developers. As of Ansible 2.7+, this module also supports `YUM4`, which is the "new yum" and it has an `dnf` backend.<br/>By default, this module will select the backend based on the `ansible_pkg_mgr` fact. Possible values are: auto, yum, yum4, dnf. Default is auto. | Optional | 
+| use_backend | This module supports `yum` (as it always has), this is known as `yum3`/`YUM3`/`yum-deprecated` by upstream yum developers. As of Ansible 2.7+, this module also supports `YUM4`, which is the "new yum" and it has an `dnf` backend.<br/>By default, this module will select the backend based on the `pkg_mgr` fact. Possible values are: auto, yum, yum4, dnf. Default is auto. | Optional | 
 | name | A package name or package specifier with version, like `name-1.0`.<br/>If a previous version is specified, the task also needs to turn `allow_downgrade` on. See the `allow_downgrade` documentation for caveats with downgrading packages.<br/>When using state=latest, this can be `'*'` which means run `yum -y update`.<br/>You can also pass a url or a local path to a rpm file (using state=present). To operate on several packages this can accept a comma separated string of packages or (as of 2.0) a list of packages. | Optional | 
 | exclude | Package name(s) to exclude when state=present, or latest. | Optional | 
 | list | Package name to run the equivalent of yum list --show-duplicates &lt;package&gt; against. In addition to listing packages, use can also list the following: `installed`, `updates`, `available` and `repos`.<br/>This parameter is mutually exclusive with `name`. | Optional | 

@@ -4,7 +4,9 @@ import requests
 from CommonServerPython import *
 
 ''' GLOBAL PARAMS '''
-API_KEY = demisto.params()['api_key']
+API_KEY = demisto.params().get('api_key') or demisto.params().get('credentials', {}).get('password')
+if not API_KEY:
+    raise ValueError('The API Key parameter is required.')
 SERVER = (
     demisto.params()['server'][:-1]
     if (demisto.params()['server'] and demisto.params()['server'].endswith('/'))

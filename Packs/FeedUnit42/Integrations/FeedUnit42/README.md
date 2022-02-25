@@ -1,3 +1,5 @@
+Deprecated. Use ***Unit42 ATOMs Feed*** instead.
+
 Unit42 feed of published IOCs, which contains known malicious indicators.
 
 Note: Install the MITRE ATT&CK pack if you want the feed to create MITRE ATT&CK indicators in your environment from the the STIX reports.

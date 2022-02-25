@@ -139,7 +139,7 @@ def main():
                                                                 pre_update=False,
                                                                 use_mock=False)
     #  Gather tests to add to test pack
-    test_playbooks_from_id_set = build.id_set.get('TestPlaybooks', [])
+    test_playbooks_from_id_set = build.id_set.get('TestPlaybooks', []) if build.id_set else None
     tests_to_add_to_test_pack = find_needed_test_playbook_paths(test_playbooks=test_playbooks_from_id_set,
                                                                 tests_to_run=build.tests_to_run,
                                                                 path_to_content=build.content_root)

@@ -1,0 +1,30 @@
+commonfields:
+  id: AddEvidence
+  version: -1
+name: AddEvidence
+fromversion: 5.0.0
+script: ''
+type: javascript
+tags:
+- Utility
+comment: |
+  Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+enabled: true
+args:
+- name: entryIDs
+  description: Entry IDs to add its output to Evidence Board
+  defaultValue: ${lastCompletedTaskEntries}
+  required: true
+  default: true
+- name: desc
+  description: Description to add to Evidence Board
+  deprecated: true
+- name: description
+  description: Description to add to Evidence Board
+- name: occurred
+  description: "Occurred time of the evidence (time format: 2008-01-02T15:04:05)"
+- name: tags
+  description: Evidence tags
+scripttarget: 0
+tests:
+- No tests

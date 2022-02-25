@@ -18,6 +18,7 @@
     "default": false,
     "autorun": true,
     "disabled": false,
+    "layout": "New Git PR",
     "reputationCalc": 0,
     "fromVersion": "6.0.0"
 }

@@ -1,0 +1,40 @@
+args:
+- default: true
+  description: The list to apply the transformer to.
+  name: value
+  required: true
+- auto: PREDEFINED
+  description: The field to extract from each item (Optional).
+  name: getField
+  predefined:
+  - ""
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: Whether the argument should be saved as a string (Optional).
+  name: stringify
+  predefined:
+  - "true"
+  - "false"
+comment: Retrieves fields from an object using dot notation
+commonfields:
+  id: GetFields
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+name: GetFields
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- general
+- entirelist
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

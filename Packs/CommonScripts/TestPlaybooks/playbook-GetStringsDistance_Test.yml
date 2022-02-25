@@ -1,0 +1,194 @@
+id: GetStringsDistance - Test
+version: -1
+name: GetStringsDistance - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 39695501-9812-4c70-854d-e8e5a737cb71
+    type: start
+    task:
+      id: 39695501-9812-4c70-854d-e8e5a737cb71
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 8ab3af93-5d9f-4ddb-8f5e-5dc490a98188
+    type: regular
+    task:
+      id: 8ab3af93-5d9f-4ddb-8f5e-5dc490a98188
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 968bb7ec-06b4-43b9-8a35-952ad8c668b6
+    type: regular
+    task:
+      id: 968bb7ec-06b4-43b9-8a35-952ad8c668b6
+      version: -1
+      name: GetStringsDistance
+      scriptName: GetStringsDistance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      compareString:
+        simple: Paloalto Networks
+      distance:
+        simple: "8"
+      extend-context:
+        simple: StringDistance=
+      inputString:
+        simple: Pa10altO Netw0rks
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 8a91a228-b590-4f87-8962-9f5b8084e2ee
+    type: condition
+    task:
+      id: 8a91a228-b590-4f87-8962-9f5b8084e2ee
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: StringDistance.Distances.[0].LevenshteinDistance
+            iscontext: true
+          right:
+            value:
+              simple: "4"
+      - - operator: isTrue
+          left:
+            value:
+              simple: StringDistance.Distances.[0].TooClose
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: e618ca46-6015-4ddf-84e9-496143789393
+    type: title
+    task:
+      id: e618ca46-6015-4ddf-84e9-496143789393
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 815,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: 'Test playbook for GetStringsDistance'

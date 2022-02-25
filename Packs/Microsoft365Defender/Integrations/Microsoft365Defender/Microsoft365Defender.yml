@@ -6,9 +6,9 @@ configuration:
 - additionalinfo: The API key to use to connect.
   defaultvalue: 9093c354-630a-47f1-b087-6768eb9427e6
   display: Application ID
-  name: app_id
-  required: true
-  type: 4
+  name: _app_id
+  required: false
+  type: 0
 - additionalinfo: |-
     The United States: api-us.security.microsoft.com
     Europe: api-eu.security.microsoft.com
@@ -25,13 +25,14 @@ configuration:
   required: false
   type: 8
 - display: Tenant ID (for Client Credentials mode)
-  name: tenant_id
+  name: _tenant_id
   required: false
-  type: 4
+  type: 0
 - display: Client Secret (for Client Credentials mode)
-  name: enc_key
+  name: credentials
   required: false
-  type: 4
+  type: 9
+  hiddenusername: true
 - defaultvalue: 12 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
@@ -70,6 +71,21 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Application ID (Deprecated)
+  name: app_id
+  required: false
+  type: 4
+  hidden: true
+- display: Tenant ID (for Client Credentials mode) (Deprecated)
+  name: tenant_id
+  required: false
+  type: 4
+  hidden: true
+- display: Client Secret (for Client Credentials mode) (Deprecated)
+  name: enc_key
+  required: false
+  type: 4
+  hidden: true
 description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense
   suite that natively coordinates detection, prevention, investigation, and response
   across endpoints, identities, email, and applications to provide integrated protection
@@ -318,7 +334,7 @@ script:
     - contextPath: Microsoft365Defender.Hunt.results.
       description: The results of the query.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.24037
+  dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true
   longRunning: false

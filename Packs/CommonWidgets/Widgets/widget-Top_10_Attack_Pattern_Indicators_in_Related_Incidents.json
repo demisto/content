@@ -1,0 +1,65 @@
+{
+    "dataType": "indicators",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 180,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "8d75816f-f9c2-451d-8479-08af6b18c3e9",
+    "isPredefined": true,
+    "name": "Top 10 Attack Pattern Indicators in Related Incidents",
+    "params": {
+        "enablePagination": true,
+        "tableColumns": [
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "indicator_type",
+                "width": 120
+            },
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "value",
+                "width": 300
+            },
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "relatedIncCount",
+                "width": 150
+            },
+            {
+                "displayed": true,
+                "key": "Kill Chain Phases",
+                "width": 200
+            },
+            {
+                "displayed": true,
+                "key": "Tags",
+                "width": 200
+            }
+        ]
+    },
+    "query": "type:\"Attack Pattern\" and (verdict:Malicious or verdict:Suspicious) and incident.id:*",
+    "size": 10,
+    "sort": [
+        {
+            "asc": false,
+            "field": "relatedIncCount",
+            "fieldType": ""
+        }
+    ],
+    "version": -1,
+    "widgetType": "table",
+    "fromVersion": "6.2.0",
+    "description": ""
+}

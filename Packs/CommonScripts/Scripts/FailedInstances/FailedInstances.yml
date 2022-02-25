@@ -1,0 +1,57 @@
+commonfields:
+  id: FailedInstances
+  version: -1
+name: FailedInstances
+script: ''
+type: javascript
+tags: []
+comment: Executes a test for all integration instances available and returns detailed
+  information about succeeded and failed integration instances.
+enabled: true
+outputs:
+- contextPath: FailedInstances.instance
+  description: The name of the failed integration instance.
+  type: string
+- contextPath: FailedInstances.brand
+  description: The brand name of the failed integration instance.
+  type: string
+- contextPath: FailedInstances.category
+  description: The category of the failed integration instance.
+  type: string
+- contextPath: FailedInstances.information
+  description: Error information about the failed integration instance.
+  type: string
+- contextPath: FailedInstances.status
+  description: The status of the instance.
+  type: string
+- contextPath: InstancesCount.FailedCount
+  description: The number of failed instances.
+  type: string
+- contextPath: InstancesCount.SuccessCount
+  description: The number of working instances.
+  type: string
+- contextPath: InstancesCount.TotalCount
+  description: The number of total enabled instances.
+  type: string
+- contextPath: SuccessInstances.brand
+  description: The brand name of the successful integration instance.
+  type: string
+- contextPath: SuccessInstances.category
+  description: The category of the successful integration instance.
+  type: string
+- contextPath: SuccessInstances.information
+  description: Information that the integration instance was succesful.
+  type: string
+- contextPath: SuccessInstances.instance
+  description: The name of the successful integration instance.
+  type: string
+- contextPath: SuccessInstances.status
+  description: The status of the instance.
+  type: string
+scripttarget: 0
+timeout: 10.8µs
+runonce: false
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- FailedInstances - Test

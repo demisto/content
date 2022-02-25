@@ -48,6 +48,7 @@ Search for events in MISP. This search command will return only information abou
 | uuid | The event UUID to be returned by the search. For example, 59523300-4be8-4fa6-8867-0037ac110002. | Optional | 
 | page | If a limit is set, sets the page to be returned. For example, page 3, limit 100 will return records 201-&gt;300. Default is 1. | Optional | 
 | limit | Limit the number of events returned. Default is 50. | Optional | 
+| include_feed_correlations | Whether to return the event related feeds. Possible values are: true, false. Note: Only if this argument set to "true" the response will include attributes' feed hits values.| Optional | 
 
 
 #### Context Output
@@ -88,7 +89,20 @@ Search for events in MISP. This search command will return only information abou
 | MISP.Event.Object.Description | String | Description of the object. | 
 | MISP.Event.Object.ID | Number | ID of the object. | 
 | MISP.Event.Object.UUID | String | UUID of the object. | 
-
+| MISP.Event.Feed.ID | String | Feed id. | 
+| MISP.Event.Feed.Name | String | Feed name. | 
+| MISP.Event.Feed.Provider | String | Feed provider. | 
+| MISP.Event.Feed.SourceFormat | String | Feed source format \(MISP for example\). | 
+| MISP.Event.Feed.URL | String | Feed url. | 
+| MISP.Event.Feed.EventUUIDS | Unknown | List of event uuids include the feed. | 
+| MISP.Event.Attribute.Feed.ID | String | Attribute feed id. | 
+| MISP.Event.Attribute.Feed.Name | String | Attribute feed name. | 
+| MISP.Event.Attribute.Feed.Provider | String | Attribute feed provider. | 
+| MISP.Event.Attribute.Feed.SourceFormat | String | Attribute feed source format \(MISP for example\). | 
+| MISP.Event.Attribute.Feed.URL | String | Attribute feed url. | 
+| MISP.Event.Attribute.Feed.EventUUIDS | Unknown | List of event uuids include the attribute feed. | 
+| MISP.Event.Attribute.ID | String | MISP attribute ID. | 
+| MISP.Event.Attribute.Value | String | MISP attribute value. | 
 
 #### Command Example
 ```!misp-search-events category="Other" limit=3 page=1```
@@ -2501,9 +2515,10 @@ Adds a tag to the given UUID event .
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| uuid | UUID of the event. For example, 59575300-4be8-4ff6-8767-0037ac110032. | Required | 
-| tag | Tag to add to the event. | Required | 
+| --- | --- |--------------|
+| uuid | UUID of the event. For example, 59575300-4be8-4ff6-8767-0037ac110032. | Required     | 
+| tag | Tag to add to the event. | Required     | 
+| is_local | Whether to add the tag as a local tag. | Optional     | 
 
 
 #### Context Output
@@ -2616,6 +2631,7 @@ Adds a tag to the given UUID attribute.
 | --- | --- | --- |
 | uuid | UUID of the attribute. For example, 59575300-4be8-4ff6-8767-0037ac110032. | Required | 
 | tag | Tag to add to the attribute. | Required | 
+| is_local | Whether to add the tag as a local tag. | Optional     | 
 
 
 #### Context Output
@@ -3789,4 +3805,25 @@ Update an attribute of an existing MISP event.
 >## MISP update attribute
 >Attribute: c0ba7147-d99a-418a-a23a-d9be62590c33 was updated.
 
+### misp-delete-attribute
+***
+Delete an attribute according to the given attribute ID.
 
+#### Base Command
+
+`misp-delete-attribute`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| attribute_id | Attribute ID to delete. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!misp-delete-attribute attribute_id=3f5917b3-100c-4e21-91c3-48b265337232```
+#### Human Readable Output
+
+>Attribute 3f5917b3-100c-4e21-91c3-48b265337232 has been deleted

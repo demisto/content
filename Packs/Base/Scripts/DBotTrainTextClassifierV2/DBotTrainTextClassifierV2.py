@@ -136,13 +136,10 @@ def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix, t
                                                    })
     if is_error(res):
         return_error(get_error(res))
-    confusion_matrix_no_all = {k: v for k, v in confusion_matrix.items() if k != 'All'}
-    confusion_matrix_no_all = {k: {sub_k: sub_v for sub_k, sub_v in v.items() if sub_k != 'All'}
-                               for k, v in confusion_matrix_no_all.items()}
 
     y_test_pred_prob = [float(x) for x in y_test_pred_prob]
     res = demisto.executeCommand('evaluateMLModel',
-                                 {'modelConfusionMatrix': confusion_matrix_no_all,
+                                 {'modelConfusionMatrix': confusion_matrix,
                                   'modelName': model_name,
                                   'modelEvaluationVectors': {'Ypred': y_test_pred,
                                                              'Ytrue': y_test_true,
@@ -221,6 +218,9 @@ def output_model_evaluation(model_name, y_test, y_pred, res, context_field, huma
         }
     }
     demisto.results(result_entry)
+    confusion_matrix_at_thresh = {k: v for k, v in confusion_matrix_at_thresh.items() if k != 'All'}
+    confusion_matrix_at_thresh = {k: {sub_k: sub_v for sub_k, sub_v in v.items() if sub_k != 'All'}
+                                  for k, v in confusion_matrix_at_thresh.items()}
     return confusion_matrix_at_thresh, metrics_df
 
 
@@ -347,7 +347,7 @@ def get_X_and_y_from_data(data, text_field):
 
 
 def validate_labels_and_decide_algorithm(y, algorithm):
-    labels_counter = Counter(y)   # type: Dict[str, int]
+    labels_counter = Counter(y)  # type: Dict[str, int]
     illegal_labels_for_fine_tune = [label for label in labels_counter if label not in FINETUNE_LABELS]
     if algorithm == FINETUNE_TRAINING_ALGO and len(illegal_labels_for_fine_tune) > 0:
         error = ['When trainingAlgorithm is set to {}, all labels mus be mapped to {}.\n'.format(algorithm,
@@ -360,6 +360,15 @@ def validate_labels_and_decide_algorithm(y, algorithm):
         return FASTTEXT_TRAINING_ALGO
     else:
         return algorithm
+
+
+def validate_confusion_matrix(confusion_matrix):
+    for label in confusion_matrix:
+        tp = confusion_matrix[label][label]
+        fp = sum(confusion_matrix[label_other][label] for label_other in confusion_matrix if label != label_other)
+        if tp == fp == 0:
+            return False
+    return True
 
 
 def main():
@@ -430,6 +439,9 @@ def main():
     if store_model:
         del phishing_model
         gc.collect()
+        if not validate_confusion_matrix(confusion_matrix):
+            return_error("The trained model didn't manage to predict some of the classes. This model won't be stored."
+                         "Please try to retrain the model using a different configuration.")
         y_test_pred = [y_tuple[0] for y_tuple in ft_test_predictions]
         y_test_pred_prob = [y_tuple[1] for y_tuple in ft_test_predictions]
         threshold = float(threshold_metrics_entry['Contents']['threshold'])

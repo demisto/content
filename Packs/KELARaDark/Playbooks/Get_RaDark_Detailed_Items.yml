@@ -19,19 +19,19 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 3841c366-c1a2-493f-8c77-3ba90e90986e
+      description: Playbook triggered.
+      id: e01dfafc-be99-4321-8541-9c8ded3a71c6
       iscommand: false
       name: ""
       version: -1
-      description: ''
-    taskid: 3841c366-c1a2-493f-8c77-3ba90e90986e
+    taskid: e01dfafc-be99-4321-8541-9c8ded3a71c6
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
-          "x": -170,
-          "y": -20
+          "x": -1370,
+          "y": 30
         }
       }
   "1":
@@ -52,20 +52,20 @@ tasks:
     task:
       brand: RaDark
       description: Get detailed items from RaDark by incident_id.
-      id: 9770b3af-cbda-48c3-85a2-da02c1b4dcb3
+      id: 8c22b835-703d-41a1-8743-174990fe754c
       iscommand: true
       name: RaDark - Get items
       script: RaDark|||radark-incident-get-items
       type: regular
       version: -1
-    taskid: 9770b3af-cbda-48c3-85a2-da02c1b4dcb3
+    taskid: 8c22b835-703d-41a1-8743-174990fe754c
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": 250
+          "x": -960,
+          "y": 370
         }
       }
   "2":
@@ -88,20 +88,20 @@ tasks:
     task:
       brand: ""
       description: Map RaDark items to the incident.
-      id: d204a870-fda9-4466-8885-5e0f7fb044fa
+      id: b8c2ead3-a45e-47c2-8791-63ff4640d901
       iscommand: false
       name: RaDark - Map Details
       script: MapRaDarkIncidentDetails
       type: regular
       version: -1
-    taskid: d204a870-fda9-4466-8885-5e0f7fb044fa
+    taskid: b8c2ead3-a45e-47c2-8791-63ff4640d901
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": 400
+          "x": -960,
+          "y": 500
         }
       }
   "3":
@@ -111,7 +111,7 @@ tasks:
     isoversize: false
     nexttasks:
       "no":
-      - "4"
+      - "26"
       "yes":
       - "1"
     note: false
@@ -125,20 +125,20 @@ tasks:
       brand: ""
       description: Returns 'yes' if integration brand is available. Otherwise returns
         'no'
-      id: 8e4a85d5-f3be-4b0c-8b83-f6cae41791fc
+      id: a6ac657b-1f10-4bf7-85f6-24150f764c23
       iscommand: false
       name: RaDark  - Is Integration Available
       script: IsIntegrationAvailable
       type: condition
       version: -1
-    taskid: 8e4a85d5-f3be-4b0c-8b83-f6cae41791fc
+    taskid: a6ac657b-1f10-4bf7-85f6-24150f764c23
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": -170,
-          "y": 100
+          "x": -1370,
+          "y": 180
         }
       }
   "4":
@@ -152,62 +152,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f2ab29d6-acb3-482f-8e6b-08a559735838
+      description: Done.
+      id: ccc98b8a-9aa9-4733-8fd1-d93c8dcab354
       iscommand: false
       name: Done
       type: title
       version: -1
-      description: ''
-    taskid: f2ab29d6-acb3-482f-8e6b-08a559735838
+    taskid: ccc98b8a-9aa9-4733-8fd1-d93c8dcab354
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": -170,
-          "y": 1250
-        }
-      }
-  "5":
-    id: "5"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "4"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      columns:
-        simple: Item ID, Bot ID, Updated Date, Resource, Username, Password, Additional
-          Data, Country, Source IP, Price
-      context_path:
-        simple: Radark.itemDetails.items
-      grid_id:
-        simple: kelaradarktablebotnets
-      keys:
-        simple: item_id, bot_id, updated_date, resource, username, password, additional_data,
-          country, source_ip, price
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Creates a Grid table from items or key-value pairs.
-      id: c1ee5ed6-df10-47d9-8e4f-169704887828
-      iscommand: false
-      name: Set Grid - Botnets
-      script: SetGridField
-      type: regular
-      version: -1
-    taskid: c1ee5ed6-df10-47d9-8e4f-169704887828
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1050,
-          "y": 965
+          "x": -960,
+          "y": 1280
         }
       }
   "6":
@@ -217,11 +175,41 @@ tasks:
             iscontext: true
             value:
               simple: incident.kelaradarksubtype
-          operator: isEqualString
+          operator: inList
           right:
             value:
-              simple: "2"
-      label: "2"
+              simple: 2, 3, 19, 23
+      label: Leaked Credentials
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: inList
+          right:
+            value:
+              simple: 16, 17, 18, 26
+      label: Compromised Accounts
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: inList
+          right:
+            value:
+              simple: 4, 5, 6, 7, 8, 9, 10, 11, 14, 20
+      label: Network Vulnerabilities
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: inList
+          right:
+            value:
+              simple: 13, 24
+      label: Credit Cards
     - condition:
       - - left:
             iscontext: true
@@ -230,104 +218,50 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: "3"
-      label: "3"
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: incident.kelaradarksubtype
-          operator: isEqualString
-          right:
-            value:
-              simple: "16"
-      label: "16"
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: incident.kelaradarksubtype
-          operator: isEqualString
-          right:
-            value:
-              simple: "17"
-      label: "17"
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: incident.kelaradarksubtype
-          operator: isEqualString
-          right:
-            value:
-              simple: "18"
-      label: "18"
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: incident.kelaradarksubtype
-          operator: isEqualString
-          right:
-            value:
-              simple: "19"
-      label: "19"
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: incident.kelaradarksubtype
-          operator: isEqualString
-          right:
-            value:
-              simple: "23"
-      label: "23"
+              simple: "1"
+      label: Hacking Discussions
     id: "6"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "4"
-      "2":
-      - "7"
-      "3":
-      - "8"
-      "16":
-      - "5"
-      "17":
-      - "9"
-      "18":
-      - "10"
-      "19":
-      - "11"
-      "23":
-      - "12"
+      - "26"
+      Compromised Accounts:
+      - "28"
+      Credit Cards:
+      - "30"
+      Hacking Discussions:
+      - "31"
+      Leaked Credentials:
+      - "27"
+      Network Vulnerabilities:
+      - "29"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
+      brand: ""
       description: Return the sub type of the incident in order to set the proper
         grid table.
-      brand: ""
-      id: 5028a5a3-7b9f-401f-8d5f-ccedf35cf94b
+      id: fb1268df-724f-4f8c-8afc-89989274853f
       iscommand: false
       name: RaDark - Extract Grid Type
       type: condition
       version: -1
-    taskid: 5028a5a3-7b9f-401f-8d5f-ccedf35cf94b
+    taskid: fb1268df-724f-4f8c-8afc-89989274853f
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": 550
+          "x": -960,
+          "y": 630
         }
       }
-  "7":
-    id: "7"
+  "26":
+    id: "26"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -336,254 +270,231 @@ tasks:
       - "4"
     note: false
     quietmode: 0
-    scriptarguments:
-      columns:
-        simple: Item ID, Email, Domain, Password, Password Type, Source, Date
-      context_path:
-        simple: Radark.itemDetails.items
-      grid_id:
-        simple: kelaradarktableleakedcredentialsfromhackingdiscussions
-      keys:
-        simple: item_id, email, domain, password, password_type, source, date
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Creates a Grid table from items or key-value pairs.
-      id: e744d71b-51b6-4a64-8114-ac2f6677071c
+      description: No action required.
+      id: d8fce382-0e0a-4370-80ec-54b0c9dd34d9
       iscommand: false
-      name: Set Grid - Leaked Credentials From Hacking Discussions
-      script: SetGridField
-      type: regular
+      name: No Grid Type Incident
+      type: title
       version: -1
-    taskid: e744d71b-51b6-4a64-8114-ac2f6677071c
+    taskid: d8fce382-0e0a-4370-80ec-54b0c9dd34d9
     timertriggers: []
-    type: regular
+    type: title
     view: |-
       {
         "position": {
-          "x": 1490,
-          "y": 750
+          "x": -2010,
+          "y": 870
         }
       }
-  "8":
-    id: "8"
+  "27":
+    id: "27"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
     nexttasks:
       '#none#':
       - "4"
     note: false
     quietmode: 0
     scriptarguments:
-      columns:
-        simple: Item ID, Email, Domain, Password, Password Type
-      context_path:
-        simple: Radark.itemDetails.items
-      grid_id:
-        simple: kelaradarktableleakedcredentialsfromdump
-      keys:
-        simple: item_id, email, domain, password, password_type
+      items:
+        simple: ${Radark.itemDetails.items}
+      sub_type:
+        simple: ${incident.kelaradarksubtype}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Creates a Grid table from items or key-value pairs.
-      id: 80358131-5ae6-4538-8be8-7bef543f0173
+      description: Set grid for RaDark - Leaked Credentials incidents.
+      id: 4a6ce80c-d0d3-4c59-8e08-ea9c89a58e1c
       iscommand: false
-      name: Set Grid - Leaked Credentials From Dump
-      script: SetGridField
-      type: regular
+      name: Set RaDark Grid For Leaked Credentials
+      playbookId: Set RaDark Grid For Leaked Credentials
+      type: playbook
       version: -1
-    taskid: 80358131-5ae6-4538-8be8-7bef543f0173
+    taskid: 4a6ce80c-d0d3-4c59-8e08-ea9c89a58e1c
     timertriggers: []
-    type: regular
+    type: playbook
     view: |-
       {
         "position": {
-          "x": 1270,
-          "y": 860
+          "x": -1490,
+          "y": 900
         }
       }
-  "9":
-    id: "9"
+  "28":
+    id: "28"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
     nexttasks:
       '#none#':
       - "4"
     note: false
     quietmode: 0
     scriptarguments:
-      columns:
-        simple: Item ID, Bot ID, Updated Date, Resource, Username, Password, Country,
-          Source IP, Infection Type
-      context_path:
-        simple: Radark.itemDetails.items
-      grid_id:
-        simple: kelaradarktableagressor
-      keys:
-        simple: item_id, bot_id, updated_date, resource, username, password, country,
-          source_ip, infection_type
+      items:
+        simple: ${Radark.itemDetails.items}
+      sub_type:
+        simple: ${incident.kelaradarksubtype}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Creates a Grid table from items or key-value pairs.
-      id: 083ea99e-e1b0-49af-8a66-8060aae85265
+      description: Set grid for RaDark - Compromised Accounts incidents.
+      id: d17ef0bf-bcb0-4b04-88fb-bd6a989b7c3a
       iscommand: false
-      name: Set Grid - Agressor
-      script: SetGridField
-      type: regular
+      name: Set RaDark Grid For Compromised Accounts
+      playbookId: Set RaDark Grid For Compromised Accounts
+      type: playbook
       version: -1
-    taskid: 083ea99e-e1b0-49af-8a66-8060aae85265
+    taskid: d17ef0bf-bcb0-4b04-88fb-bd6a989b7c3a
     timertriggers: []
-    type: regular
+    type: playbook
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": 1075
+          "x": -1270,
+          "y": 1005
         }
       }
-  "10":
-    id: "10"
+  "29":
+    id: "29"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
     nexttasks:
       '#none#':
       - "4"
     note: false
     quietmode: 0
     scriptarguments:
-      columns:
-        simple: Item ID, Bot ID, Updated Date, Resource, Username, Password, Additional
-          Data, Country, ISP, Infection Type, Price
-      context_path:
-        simple: Radark.itemDetails.items
-      grid_id:
-        simple: kelaradarktablerussianmarket
-      keys:
-        simple: item_id, bot_id, updated_date, resource, username, password, additional_data,
-          country, isp, infection_type, price
+      items:
+        simple: ${Radark.itemDetails.items}
+      sub_type:
+        simple: ${incident.kelaradarksubtype}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Creates a Grid table from items or key-value pairs.
-      id: 72575243-670a-499c-8fc1-d6bdcf9bdcac
+      description: Set grid for RaDark - Network Vulnerabilities incidents.
+      id: f46d6f71-03da-4780-8764-dcdc8d76b979
       iscommand: false
-      name: Set Grid - Russian Market
-      script: SetGridField
-      type: regular
+      name: Set RaDark Grid For Network Vulnerabilities
+      playbookId: Set RaDark Grid For Network Vulnerabilities
+      type: playbook
       version: -1
-    taskid: 72575243-670a-499c-8fc1-d6bdcf9bdcac
+    taskid: f46d6f71-03da-4780-8764-dcdc8d76b979
     timertriggers: []
-    type: regular
+    type: playbook
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 965
+          "x": -960,
+          "y": 1110
         }
       }
-  "11":
-    id: "11"
+  "30":
+    id: "30"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
     nexttasks:
       '#none#':
       - "4"
     note: false
     quietmode: 0
-    scriptarguments:
-      columns:
-        simple: Item ID, Email, Domain, Password, Password Type, Dump Post Date, Compromised
-          Website
-      context_path:
-        simple: Radark.itemDetails.items
-      grid_id:
-        simple: kelaradarktableleakedcredentialsfromcitadel
-      keys:
-        simple: item_id, email, domain, password, password_type, dump_post_date, compromised_website
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Creates a Grid table from items or key-value pairs.
-      id: 131d3e08-28bc-4ccb-876e-2a0b23f6fd96
+      description: Set grid for RaDark - Credit Cards incidents.
+      id: 36cf1d1f-a101-42b5-8201-a28e83d73545
       iscommand: false
-      name: Set Grid - Leaked Credentials From Citadel
-      script: SetGridField
-      type: regular
+      name: Set RaDark Grid For Credit Cards
+      playbookId: Set RaDark Grid For Credit Cards
+      type: playbook
       version: -1
-    taskid: 131d3e08-28bc-4ccb-876e-2a0b23f6fd96
+    taskid: 36cf1d1f-a101-42b5-8201-a28e83d73545
     timertriggers: []
-    type: regular
+    type: playbook
     view: |-
       {
         "position": {
-          "x": 380,
-          "y": 860
+          "x": -650,
+          "y": 1005
         }
       }
-  "12":
-    id: "12"
+  "31":
+    id: "31"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
     nexttasks:
       '#none#':
       - "4"
     note: false
     quietmode: 0
-    scriptarguments:
-      columns:
-        simple: Item ID, Email, Domain, Password, Password Type, Source, Date
-      context_path:
-        simple: Radark.itemDetails.items
-      grid_id:
-        simple: kelaradarktableleakedcredentialsfrominstantmessaging
-      keys:
-        simple: item_id, email, domain, password, password_type, source, date
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Creates a Grid table from items or key-value pairs.
-      id: f9b481d5-74d5-4461-8de8-50e623ed7548
+      description: Set grid for RaDark - Hacking Discussions incidents.
+      id: 2c17e6ed-33e3-4c96-80d1-c24137948bb5
       iscommand: false
-      name: Set Grid - Leaked Credentials From Instant Messaging
-      script: SetGridField
-      type: regular
+      name: Set RaDark Grid For Hacking Discussions
+      playbookId: Set RaDark Grid For Hacking Discussions
+      type: playbook
       version: -1
-    taskid: f9b481d5-74d5-4461-8de8-50e623ed7548
+    taskid: 2c17e6ed-33e3-4c96-80d1-c24137948bb5
     timertriggers: []
-    type: regular
+    type: playbook
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 750
+          "x": -430,
+          "y": 900
         }
       }
 version: -1
 view: |-
   {
-    "linkLabelsPosition": {
-      "6_4_#default#": 0.63,
-      "6_7_2": 0.76
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1335,
-        "width": 2040,
-        "x": -170,
-        "y": -20
+        "height": 1315,
+        "width": 1960,
+        "x": -2010,
+        "y": 30
       }
     }
   }

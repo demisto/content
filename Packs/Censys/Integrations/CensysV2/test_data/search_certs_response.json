@@ -1,0 +1,25 @@
+{
+    "results": [
+        {
+            "parsed": {
+                "fingerprint_sha256": "f3ade17dffcadd9532aeb2514f10d66e22941393725aa65366ac286df9b41234",
+                "issuer": {
+                    "organization": [
+                        "Let's Encrypt"
+                    ]
+                },
+                "issuer_dn": "C=US, O=Let's Encrypt, CN=Let's Encrypt Authority X3",
+                "names": [
+                    "*.45g4rg43g4fr3434g.gb.net",
+                    "45g4rg43g4fr3434g.gb.net"
+                ],
+                "subject_dn": "CN=45g4rg43g4fr3434g.gb.net",
+                "validity": {
+                    "end": "2021-01-10T14:46:11Z",
+                    "start": "2020-10-12T14:46:11Z"
+                }
+            }
+        }
+    ],
+    "status": "ok"
+}

@@ -1,0 +1,30 @@
+{
+    "fromVersion": "5.0.0",
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GRACase"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gracaseownername",
+    "closeForm": false,
+    "content": true,
+    "description": "GRA Case Owner Name",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gracaseownername",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GRA Case Owner Name",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1
+}

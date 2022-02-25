@@ -134,11 +134,26 @@ class Client(BaseClient):
             kwargs['verify'] = self._verify
             kwargs['timeout'] = self.polling_timeout
 
+            if is_demisto_version_ge('6.5.0'):
+                # Set the If-None-Match and If-Modified-Since headers if we have etag or
+                # last_modified values in the context.
+                last_run = demisto.getLastRun()
+                etag = last_run.get(url, {}).get('etag')
+                last_modified = last_run.get(url, {}).get('last_modified')
+
+                if etag:
+                    self.headers['If-None-Match'] = etag
+
+                if last_modified:
+                    self.headers['If-Modified-Since'] = last_modified
+
+            # set request headers
+            if 'headers' in kwargs:
+                self.headers.update(kwargs['headers'])
+                del kwargs['headers']
+
             if self.headers:
-                if 'headers' in kwargs:
-                    kwargs['headers'].update(self.headers)
-                else:
-                    kwargs['headers'] = self.headers
+                prepreq.headers = self.headers
 
             try:
                 r = _session.send(prepreq, **kwargs)
@@ -193,8 +208,8 @@ class Client(BaseClient):
 
             if skip_first_line:
                 next(csvreader)
-
-            results.append({url: csvreader})
+            no_update = get_no_update_value(r, url) if is_demisto_version_ge('6.5.0') else True
+            results.append({url: {'result': csvreader, 'no_update': no_update}})
 
         return results
 
@@ -214,6 +229,40 @@ class Client(BaseClient):
             response_content = raw_response.content
 
         return response_content.decode(self.encoding).split('\n')
+
+
+def get_no_update_value(response: requests.models.Response, url: str) -> bool:
+    """
+    detect if the feed response has been modified according to the headers etag and last_modified.
+    For more information, see this:
+    https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Last-Modified
+    https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag
+    Args:
+        response: (requests.Response) The feed response.
+        url: (str) The feed URL (service).
+    Returns:
+        boolean with the value for noUpdate argument.
+        The value should be False if the response was modified.
+    """
+    if response.status_code == 304:
+        demisto.debug('No new indicators fetched, createIndicators will be executed with noUpdate=True.')
+        return True
+
+    etag = response.headers.get('ETag')
+    last_modified = response.headers.get('Last-Modified')
+
+    if not etag and not last_modified:
+        demisto.debug('Last-Modified and Etag headers are not exists,'
+                      'createIndicators will be executed with noUpdate=False.')
+        return False
+
+    last_run = demisto.getLastRun()
+    last_run[url] = {'last_modified': last_modified, 'etag': etag}
+    demisto.setLastRun(last_run)
+
+    demisto.debug('New indicators fetched - the Last-Modified value has been updated,'
+                  ' createIndicators will be executed with noUpdate=False.')
+    return False
 
 
 def determine_indicator_type(indicator_type, default_indicator_type, auto_detect, value):
@@ -292,10 +341,14 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
     relationships_of_indicator = []
     indicators = []
     config = client.feed_url_to_config or {}
+
+    # set noUpdate flag in createIndicators command True only when all the results from all the urls are True.
+    no_update = all([next(iter(item.values())).get('no_update', False) for item in iterator])
+
     for url_to_reader in iterator:
         for url, reader in url_to_reader.items():
             mapping = config.get(url, {}).get('mapping', {})
-            for item in reader:
+            for item in reader.get('result', []):
                 raw_json = dict(item)
                 fields_mapping = create_fields_mapping(raw_json, mapping) if mapping else {}
                 value = item.get(client.value_field) or fields_mapping.get('Value')
@@ -335,9 +388,9 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                     indicators.append(indicator)
                     # exit the loop if we have more indicators than the limit
                     if limit and len(indicators) >= limit:
-                        return indicators
+                        return indicators, no_update
 
-    return indicators
+    return indicators, no_update
 
 
 def get_indicators_command(client, args: dict, tags: Optional[List[str]] = None):
@@ -350,13 +403,13 @@ def get_indicators_command(client, args: dict, tags: Optional[List[str]] = None)
         raise ValueError('The limit argument must be a number.')
     auto_detect = demisto.params().get('auto_detect_type')
     relationships = demisto.params().get('create_relationships', False)
-    indicators_list = fetch_indicators_command(client, itype, auto_detect, limit, relationships)
+    indicators_list, _ = fetch_indicators_command(client, itype, auto_detect, limit, relationships)
     entry_result = indicators_list[:limit]
     hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type', 'fields'])
     return hr, {}, indicators_list
 
 
-def feed_main(feed_name, params=None, prefix=''):
+def feed_main(feed_name, params=None, prefix=''):   # pragma: no cover
     if not params:
         params = {k: v for k, v in demisto.params().items() if v is not None}
     handle_proxy()
@@ -373,16 +426,30 @@ def feed_main(feed_name, params=None, prefix=''):
     }
     try:
         if command == 'fetch-indicators':
-            indicators = fetch_indicators_command(
+            indicators, no_update = fetch_indicators_command(
                 client,
                 params.get('indicator_type'),
                 params.get('auto_detect_type'),
                 params.get('limit'),
                 params.get('create_relationships')
             )
-            # we submit the indicators in batches
-            for b in batch(indicators, batch_size=2000):
-                demisto.createIndicators(b)  # type: ignore
+
+            # check if the version is higher than 6.5.0 so we can use noUpdate parameter
+            if is_demisto_version_ge('6.5.0'):
+                if not indicators:
+                    demisto.createIndicators(indicators, noUpdate=no_update)  # type: ignore
+                else:
+                    # we submit the indicators in batches
+                    for b in batch(indicators, batch_size=2000):
+                        demisto.createIndicators(b, noUpdate=no_update)  # type: ignore
+            else:
+                # call createIndicators without noUpdate arg
+                if not indicators:
+                    demisto.createIndicators(indicators)  # type: ignore
+                else:
+                    for b in batch(indicators, batch_size=2000):  # type: ignore
+                        demisto.createIndicators(b)
+
         else:
             args = demisto.args()
             args['feed_name'] = feed_name

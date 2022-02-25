@@ -1,0 +1,306 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Cyren Inbox Security Mapper",
+    "mapping": {
+        "Cyren Inbox Security": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Cyren Case ID": {
+                    "complex": null,
+                    "simple": "case_id"
+                },
+                "Cyren Confidence": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "confidence",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "else": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "high"
+                                        }
+                                    },
+                                    "equals": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "2"
+                                        }
+                                    },
+                                    "then": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "medium"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Connection ID": {
+                    "complex": null,
+                    "simple": "connection_id"
+                },
+                "Cyren Connection Name": {
+                    "complex": null,
+                    "simple": "connection_name"
+                },
+                "Cyren Email Subject": {
+                    "complex": null,
+                    "simple": "message_details.email_subject"
+                },
+                "Cyren External From": {
+                    "complex": {
+                        "accessor": "is_external_from",
+                        "filters": [],
+                        "root": "message_details",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "else": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "equals": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "then": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "False"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren External Reply To": {
+                    "complex": {
+                        "accessor": "is_external_reply_to",
+                        "filters": [],
+                        "root": "message_details",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "else": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "True"
+                                        }
+                                    },
+                                    "equals": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "then": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "False"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren External Reply To Address": {
+                    "complex": null,
+                    "simple": "message_details.reply_to.[0].address"
+                },
+                "Cyren External Sender": {
+                    "complex": {
+                        "accessor": "is_external_sender",
+                        "filters": [],
+                        "root": "message_details",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "else": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "True"
+                                        }
+                                    },
+                                    "equals": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "then": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "False"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren From Address": {
+                    "complex": null,
+                    "simple": "message_details.from.address"
+                },
+                "Cyren From Name": {
+                    "complex": null,
+                    "simple": "message_details.from.name"
+                },
+                "Cyren Incident ID": {
+                    "complex": null,
+                    "simple": "incident_id"
+                },
+                "Cyren Internet Message ID": {
+                    "complex": null,
+                    "simple": "message_details.internet_message_id"
+                },
+                "Cyren Message Details": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "message_details",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Cyren Message Folder": {
+                    "complex": null,
+                    "simple": "message_details.folder"
+                },
+                "Cyren Message ID": {
+                    "complex": null,
+                    "simple": "message_details.message_id"
+                },
+                "Cyren Message Read State": {
+                    "complex": {
+                        "accessor": "is_read",
+                        "filters": [],
+                        "root": "message_details",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "else": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "read"
+                                        }
+                                    },
+                                    "equals": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "then": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "unread"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Microsoft Tenant ID": {
+                    "complex": null,
+                    "simple": "tenant_id"
+                },
+                "Cyren Org ID": {
+                    "complex": null,
+                    "simple": "org_id"
+                },
+                "Cyren Remediation Status": {
+                    "complex": null,
+                    "simple": "remediation_data.remediation"
+                },
+                "Cyren Reported By": {
+                    "complex": null,
+                    "simple": "reported_by"
+                },
+                "Cyren Sender Address": {
+                    "complex": null,
+                    "simple": "message_details.sender.address"
+                },
+                "Cyren Sender Name": {
+                    "complex": null,
+                    "simple": "message_details.sender.name"
+                },
+                "Cyren Targeted Address": {
+                    "complex": null,
+                    "simple": "message_details.targeted_employee.address"
+                },
+                "Cyren Targeted User": {
+                    "complex": null,
+                    "simple": "message_details.targeted_employee.name"
+                },
+                "Cyren Threat Indicators": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "threat_indicators",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Cyren Threat Type": {
+                    "complex": null,
+                    "simple": "threat_type"
+                },
+                "Cyren User Comment": {
+                    "complex": null,
+                    "simple": "feedback.[0].details"
+                },
+                "Cyren User Reported As": {
+                    "complex": null,
+                    "simple": "feedback.[0].feedback_type"
+                },
+                "Cyren User Selected Indicators": {
+                    "complex": null,
+                    "simple": "feedback.[0].threat_indicators_type"
+                }
+            }
+        }
+    },
+    "name": "Cyren Inbox Security Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

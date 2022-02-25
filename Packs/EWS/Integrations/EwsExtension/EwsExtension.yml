@@ -16,6 +16,10 @@ configuration:
   name: insecure
   required: false
   type: 8
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
 description: This integration enables you to manage and interact with Microsoft O365
   - Exchange Online from within XSOAR.
 display: O365 - EWS - Extension
@@ -1824,7 +1828,7 @@ script:
       description: The date in UTC format of when the mailbox audit bypass association
         was created.
       type: Date
-  dockerimage: demisto/powershell-ubuntu:7.1.3.22304
+  dockerimage: demisto/powershell-ubuntu:7.1.4.24032
   feed: false
   isfetch: false
   longRunning: false

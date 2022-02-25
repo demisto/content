@@ -46,7 +46,6 @@ ExpanseV2
 ### Commands
 * expanse-assign-tags-to-asset
 * expanse-get-issue-comments
-* expanse-get-risky-flows
 * expanse-update-issue
 * closeInvestigation
 * setIncident
@@ -72,7 +71,6 @@ ExpanseV2
 | WriteToExpanse | Write data back to Expanse? | True | Optional |
 | OwnerNotificationSubject | Subject of the email to send to the OU Owner. | New security issue on a public service owned by your team | Optional |
 | OwnerNotificationBody | Body of the email to send to the OU Owner. | Infosec identified a security issue on a service owned by your team and exposed on the internet. Get in touch with your Infosec team to define proper remediation access. | Optional |
-| UseBehavior | Enrich flows using Expanse Behavior. | True | Optional |
 | ShadowITIncidentType | If set, specifies the type of incident that gets automatically created during the Shadow IT flow. If not set, the incident is to be created manually. | Shadow IT | Optional |
 | OrganizationUnitsToOwnerName | Name of the Cortex XSOAR list that contains the mapping between OU and owners. | ExpanseOrganizationUnitsToOwner | Optional |
 | OrganizationUnitsToTagName | Name of the Cortex XSOAR list that contains the mapping between OU and tag names, | ExpanseOrganizationUnitsToTag | Optional |

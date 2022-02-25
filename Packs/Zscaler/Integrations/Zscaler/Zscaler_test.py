@@ -1,5 +1,6 @@
 import demistomock as demisto
 import CommonServerPython
+from CommonServerPython import urljoin
 import pytest
 import json
 import requests_mock
@@ -62,6 +63,20 @@ def test_url_command(mocker):
                      response_path='test_data/responses/url.json',
                      expected_result_path='test_data/results/url.json',
                      mocker=mocker)
+
+
+def test_url_fails_unknown_error_code(mocker, requests_mock):
+    """url"""
+    import Zscaler
+    Zscaler.BASE_URL = 'http://cloud/api/v1'
+
+    requests_mock.post(urljoin(Zscaler.BASE_URL, 'urlLookup'), status_code=501)
+    args = {'url': 'https://www.demisto-news.com,https://www.demisto-search.com'}
+
+    try:
+        Zscaler.url_lookup(args)
+    except Exception as ex:
+        assert 'following error: 501' in str(ex)
 
 
 def test_url_command_with_urlClassificationsWithSecurityAlert(mocker):
@@ -163,6 +178,98 @@ def test_get_blacklist(mocker):
                      response_path='test_data/responses/blacklist_urls.json',
                      expected_result_path='test_data/results/blacklist.json',
                      mocker=mocker)
+
+
+def test_get_blacklist_filter(requests_mock):
+    """
+    Given:
+        - The `filter` arg set to `url`
+        - API response with a URL and IP
+
+    When:
+        - Running the get-blacklist command
+
+    Then:
+        - Ensure only the URL is returned
+    """
+    import Zscaler
+    api_res = {
+        'blacklistUrls': [
+            'demisto.com',
+            '8.8.8.8',
+        ],
+    }
+    requests_mock.get(
+        'http://cloud/api/v1/security/advanced',
+        json=api_res,
+    )
+    args = {
+        'filter': 'url',
+    }
+    cmd_res = Zscaler.get_blacklist_command(args)
+    assert cmd_res['Contents'] == [api_res['blacklistUrls'][0]]
+
+
+def test_get_blacklist_query(requests_mock):
+    """
+    Given:
+        - The `query` arg set to `demisto`
+        - API response with a URL and IP
+
+    When:
+        - Running the get-blacklist command
+
+    Then:
+        - Ensure only the URL (which contains `demisto`) is returned
+    """
+    import Zscaler
+    api_res = {
+        'blacklistUrls': [
+            'demisto.com',
+            '8.8.8.8',
+        ],
+    }
+    requests_mock.get(
+        'http://cloud/api/v1/security/advanced',
+        json=api_res,
+    )
+    args = {
+        'query': 'demisto',
+    }
+    cmd_res = Zscaler.get_blacklist_command(args)
+    assert cmd_res['Contents'] == [api_res['blacklistUrls'][0]]
+
+
+def test_get_blacklist_query_and_filter(requests_mock):
+    """
+    Given:
+        - The `filter` arg set to `ip`
+        - The `query` arg set to `8.8.*.8`
+        - API response with a URL and IP
+
+    When:
+        - Running the get-blacklist command
+
+    Then:
+        - Ensure only the IP is returned
+    """
+    import Zscaler
+    api_res = {
+        'blacklistUrls': [
+            'demisto.com',
+            '8.8.8.8',
+        ],
+    }
+    requests_mock.get(
+        'http://cloud/api/v1/security/advanced',
+        json=api_res,
+    )
+    args = {
+        'filter': 'ip',
+        'query': '8.8.*.8',
+    }
+    cmd_res = Zscaler.get_blacklist_command(args)
+    assert cmd_res['Contents'] == [api_res['blacklistUrls'][1]]
 
 
 def test_get_whitelist(mocker):

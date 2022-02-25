@@ -1,0 +1,21 @@
+{
+    "fromVersion": "6.0.0",
+    "name": "ZeroTrustAnalyticsPlatform - Outgoing Mapper",
+    "defaultIncidentType": "ZTAP Alert",
+    "description": "Maps outgoing ZTAP incidents fields.",
+    "feed": false,
+    "id": "ZeroTrustAnalyticsPlatform - Outgoing Mapper",
+    "mapping": {
+        "ZTAP Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "status": {
+                    "complex": null,
+                    "simple": "ztapstatus"
+                }
+            }
+        }
+    },
+    "type": "mapping-outgoing",
+    "version": -1
+}

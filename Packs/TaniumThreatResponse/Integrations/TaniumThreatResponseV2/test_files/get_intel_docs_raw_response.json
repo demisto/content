@@ -1,0 +1,70 @@
+[
+    {
+        "id": 431,
+        "revisionId": 2,
+        "type": "openioc",
+        "typeVersion": "1.0",
+        "isSchemaValid": true,
+        "intrinsicId": "test1",
+        "md5": "test1",
+        "name": "test1",
+        "size": 5930,
+        "alertCount": 0,
+        "compiled": null,
+        "unresolvedAlertCount": 0,
+        "labelIds": [],
+        "sourceId": 1,
+        "mitreAttack": null,
+        "platforms": null,
+        "createdAt": "2021-07-14T16:45:57.316Z",
+        "updatedAt": "2021-07-14T16:49:21.328Z"
+    },
+    {
+        "id": 430,
+        "revisionId": 3,
+        "type": "openioc",
+        "typeVersion": "1.0",
+        "isSchemaValid": true,
+        "intrinsicId": "test2",
+        "md5": "test2",
+        "name": "test2",
+        "size": 854,
+        "alertCount": 0,
+        "compiled": null,
+        "unresolvedAlertCount": 0,
+        "labelIds": [],
+        "sourceId": 1,
+        "mitreAttack": null,
+        "platforms": null,
+        "createdAt": "2021-07-14T10:08:38.229Z",
+        "updatedAt": "2021-07-14T10:10:27.947Z"
+    },
+    {
+        "id": 423,
+        "revisionId": 1,
+        "type": "tanium-signal",
+        "typeVersion": "1.0",
+        "isSchemaValid": true,
+        "intrinsicId": "test3",
+        "md5": "test3",
+        "name": "test3",
+        "size": 699,
+        "alertCount": 0,
+        "compiled": "test3",
+        "unresolvedAlertCount": 0,
+        "labelIds": [
+            5,
+            8,
+            9,
+            16
+        ],
+        "suppressionRules": [],
+        "sourceId": 2,
+        "mitreAttack": "test3",
+        "platforms": [
+            "windows"
+        ],
+        "createdAt": "2021-05-25T22:29:09.224Z",
+        "updatedAt": "2021-05-25T22:29:09.224Z"
+    }
+]

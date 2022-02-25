@@ -3,10 +3,11 @@ commonfields:
   id: cymulate_v2
   version: -1
 configuration:
-- display: API token
-  name: api_key
-  required: true
-  type: 4
+- displaypassword: API token
+  name: credentials
+  required: false
+  type: 9
+  hiddenusername: true
 - defaultvalue: https://api.app.cymulate.com/v1/
   display: Base URL
   name: base_url
@@ -55,6 +56,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: API token (Deprecated)
+  name: api_key
+  required: false
+  type: 4
+  hidden: true
 description: Multi-Vector Cyber Attack, Breach and Attack Simulation.
 display: Cymulate v2
 name: cymulate_v2
@@ -831,7 +837,7 @@ script:
     - contextPath: Cymulate.Simulations.Template
       description: Attack template.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: true
   longRunning: false

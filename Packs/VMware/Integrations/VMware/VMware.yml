@@ -3,39 +3,79 @@ commonfields:
   id: VMware
   version: -1
 configuration:
-- display: Server URL (i.e., 192.168.0.1:30022)
-  name: url
+- name: url
+  display: Server URL (i.e., 192.168.0.1:30022)
   required: true
+  defaultvalue:
   type: 0
-- display: Credentials
-  name: credentials
+  additionalinfo: The server URL of the VCenter.
+- name: credentials
+  display: Credentials
   required: true
+  defaultvalue:
   type: 9
-- defaultvalue: ''
+  additionalinfo: Username and password used to login into the system.
+  displaypassword: ""
+  hiddenusername: false
+- name: insecure
   display: Trust any certificate (not secure)
-  name: insecure
   required: false
+  defaultvalue: ""
   type: 8
-- defaultvalue: 'false'
+  additionalinfo:
+- name: proxy
   display: Use system proxy settings
-  name: proxy
   required: false
+  defaultvalue: "false"
   type: 8
+  additionalinfo:
 description: VMware vCenter server is a centralized management application that lets
   you manage virtual machines and ESXi hosts centrally.
 display: VMware
 name: VMware
 script:
   commands:
-  - arguments: []
+  - arguments:
+    - name: ip
+      description: A comma-separated list of IPs to filter VMs by.
+      required: false
+      isArray: true
+    - name: hostname
+      description: Hostname to filter VMs by.
+      required: false
+      isArray: false
+    - name: vm_name
+      description: A comma-separated list of VM names to filter VMs by.
+      required: false
+      isArray: true
+    - name: uuid
+      description: A comma-separated list of UUIDs to filter VMs by.
+      required: false
+      isArray: true
+    - description: Number of results to display.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - description: Page number you would like to view. Each page contains page_size
+        values. Must be used along with page_size.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - description: Number of results per page to display.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     description: Returns all virtual machines on a system.
     important:
     - contextPath: VMWare.UUID
       description: VM instance UUID.
-      related: ''
+      related: ""
     - contextPath: VMWare.State
       description: VM State (i.e., poweredOn, poweredOff, suspended, HardRebooted).
-      related: ''
+      related: ""
     name: vmware-get-vms
     outputs:
     - contextPath: VMWare.Name
@@ -65,6 +105,15 @@ script:
     - contextPath: VMWare.MACAddress
       description: MAC address of VM.
       type: String
+    - contextPath: VMWare.SnapshotCreateDate
+      description: The date and time when the last snapshot was created.
+      type: String
+    - contextPath: VMWare.SnapshotUUID
+      description: UUID of the last snapshot of the VM.
+      type: String
+    - contextPath: VMWare.Deleted
+      description: If true, the VM was deleted.
+      type: Boolean
   - arguments:
     - description: VM UUID of virtual machine to be powered on.
       name: vm-uuid
@@ -74,10 +123,10 @@ script:
     important:
     - contextPath: VMWare.UUID
       description: VM instance UUID.
-      related: ''
+      related: ""
     - contextPath: VMWare.State
       description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
-      related: ''
+      related: ""
     name: vmware-poweron
     outputs:
     - contextPath: VMWare.UUID
@@ -95,10 +144,10 @@ script:
     important:
     - contextPath: VMWare.UUID
       description: VM instance UUID.
-      related: ''
+      related: ""
     - contextPath: VMWare.State
       description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
-      related: ''
+      related: ""
     name: vmware-poweroff
     outputs:
     - contextPath: VMWare.UUID
@@ -116,10 +165,10 @@ script:
     important:
     - contextPath: VMWare.UUID
       description: VM instance UUID.
-      related: ''
+      related: ""
     - contextPath: VMWare.State
       description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
-      related: ''
+      related: ""
     name: vmware-hard-reboot
     outputs:
     - contextPath: VMWare.UUID
@@ -137,10 +186,10 @@ script:
     important:
     - contextPath: VMWare.UUID
       description: VM instance UUID.
-      related: ''
+      related: ""
     - contextPath: VMWare.State
       description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
-      related: ''
+      related: ""
     name: vmware-suspend
     outputs:
     - contextPath: VMWare.UUID
@@ -156,6 +205,7 @@ script:
     description: Issues a command to the guest operating system asking it to perform
       a reboot.
     name: vmware-soft-reboot
+    outputs: []
   - arguments:
     - description: VM UUID of virtual machine to take snapshot of.
       name: vm-uuid
@@ -165,21 +215,23 @@ script:
     - description: Snapshot description.
       name: description
     - auto: PREDEFINED
-      defaultValue: 'True'
+      defaultValue: "true"
       description: Snapshot the virtual machine's memory. Default is "True".
       name: memory
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - auto: PREDEFINED
-      defaultValue: 'False'
-      description: Quiesce guest file system (needs VMWare Tools installed). Default is "False".
+      defaultValue: "false"
+      description: Quiesce guest file system (needs VMWare Tools installed). Default
+        is "False".
       name: quiesce
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     description: Creates VM snapshot
     name: vmware-create-snapshot
+    outputs: []
   - arguments:
     - description: Snapshot name to revert to.
       name: snapshot-name
@@ -192,10 +244,10 @@ script:
     important:
     - contextPath: VMWare.UUID
       description: VM instance UUID.
-      related: ''
+      related: ""
     - contextPath: VMWare.Snapshot
       description: Name of the snapshot reverted to.
-      related: ''
+      related: ""
     name: vmware-revert-snapshot
     outputs:
     - contextPath: VMWare.UUID
@@ -208,11 +260,54 @@ script:
     - description: VM UUID of virtual machine to get events of.
       name: vm-uuid
       required: true
-    - defaultValue: VmGuestRebootEvent,VmGuestShutdownEvent,VmPoweredOnEvent,VmPoweredOffEvent,VmSuspendedEvent
+    - name: event-type
       description: Type of events to get, given in CSV (i.e.,  VmGuestRebootEvent,VmGuestShutdownEvent).
-      name: event-type
+      required: false
+      isArray: false
+      defaultValue: VmGuestRebootEvent,VmGuestShutdownEvent,VmPoweredOnEvent,VmPoweredOffEvent,VmSuspendedEvent
+    - name: start_date
+      description: Date from which to start the event search.
+      required: false
+      isArray: false
+    - name: end_date
+      description: Date at which to stop the event search.
+      required: false
+      isArray: false
+    - name: user
+      description: If specified, only events triggered by the given user are retrieved.
+      required: false
+      isArray: false
+    - description: Number of results to display.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - description: The page number from which to start the search. Must be used along
+        with page_size.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - description: The number of results per page to display.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     description: Gets events of VM.
     name: vmware-get-events
+    outputs:
+    - contextPath: VMWareEvents.id
+      description: The ID of the event.
+      type: String
+    - contextPath: VMWareEvents.Event
+      description: Description of the event.
+      type: String
+    - contextPath: VMWareEvents.CreatedTime
+      description: Creation time of the event.
+      type: String
+    - contextPath: VMWareEvents.UserName
+      description: The user name of the user who triggered the event.
+      type: Date
   - arguments:
     - description: VM UUID of virtual machine to change NIC state.
       name: vm-uuid
@@ -232,10 +327,10 @@ script:
     important:
     - contextPath: VMWare.UUID
       description: VM instance UUID.
-      related: ''
+      related: ""
     - contextPath: VMWare.NICState
       description: VM NIC state (i.e., connected, disconnected, delete).
-      related: ''
+      related: ""
     name: vmware-change-nic-state
     outputs:
     - contextPath: VMWare.UUID
@@ -244,11 +339,290 @@ script:
     - contextPath: VMWare.NICState
       description: VM NIC state (i.e., connected, disconnected, delete).
       type: String
-  dockerimage: demisto/vmware:1.0-alpine
+  - name: vmware-list-vms-by-tag
+    description: Lists all virtual storage objects attached to the tag.
+    deprecated: false
+    arguments:
+    - name: category
+      description: The category to which the tag belongs.
+      required: true
+      isArray: false
+    - name: tag
+      description: The tag to be queried.
+      required: true
+      isArray: false
+    outputs:
+    - contextPath: VMWareTag.TagName
+      description: The tag that was queried.
+      type: String
+    - contextPath: VMwareTag.Category
+      description: The category to which the tag belongs.
+      type: String
+    - contextPath: VMwareTag.VM
+      description: VM name to which the tag is attached.
+      type: String
+  - name: vmware-create-vm
+    description: Creates a new virtual machine in the current folder and attaches
+      it to the specified resource pool. This operation creates a virtual machine,
+      rather than cloning an existing one.
+    deprecated: false
+    arguments:
+    - name: name
+      description: Display name of the virtual machine.
+      required: true
+      isArray: false
+    - name: cpu-num
+      description: Number of virtual processors in a virtual machine.
+      required: true
+      isArray: false
+    - name: cpu-allocation
+      description: Resource limits for CPU.
+      required: true
+      isArray: false
+    - name: memory
+      description: Resource limits for memory.
+      required: true
+      isArray: false
+    - name: virtual-memory
+      description: Size of a virtual machine's memory, in MB.
+      required: true
+      isArray: false
+    - name: guest_id
+      description: Short guest operating system identifier.
+      required: false
+      isArray: false
+    - name: host
+      description: The target host on which the virtual machine will run.
+      required: true
+      isArray: false
+    - name: folder
+      description: The target folder in which the virtual machine will be located.
+      required: true
+      isArray: false
+    outputs:
+    - contextPath: VMWare.vName
+      description: VM name.
+      type: String
+    - contextPath: VMWare.Template
+      description: If true, then the VM is a template, false otherwise.
+      type: Boolean
+    - contextPath: VMWare.Path
+      description: Path to VM.
+      type: String
+    - contextPath: VMWare.Guest
+      description: Guest full name.
+      type: String
+    - contextPath: VMWare.UUID
+      description: VM instance UUID.
+      type: String
+    - contextPath: VMWare.IP
+      description: VM IP address.
+      type: String
+    - contextPath: VMWare.State
+      description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
+      type: String
+    - contextPath: VMWare.HostName
+      description: Host name of VM.
+      type: String
+    - contextPath: VMWare.MACAddress
+      description: MAC address of VM.
+      type: String
+    - contextPath: VMWare.SnapshotCreateDate
+      description: The date and time when the last snapshot was created.
+      type: String
+    - contextPath: VMWare.SnapshotUUID
+      description: UUID of the last snapshot of the VM.
+      type: String
+    - contextPath: VMWare.Deleted
+      description: If true, the VM was deleted.
+      type: Boolean
+  - name: vmware-clone-vm
+    description: Creates a clone of this virtual machine. If the virtual machine is
+      used as a template, this method corresponds to the deploy command.
+    deprecated: false
+    arguments:
+    - name: uuid
+      description: The UUID of the VM to clone.
+      required: true
+      isArray: false
+    - name: name
+      description: The name of the new virtual machine.
+      required: true
+      isArray: false
+    - name: folder
+      description: The location of the new virtual machine.
+      required: true
+      isArray: false
+    - name: template
+      description: Specifies whether or not the new virtual machine should be marked
+        as a template.
+      required: false
+      isArray: false
+    - auto: PREDEFINED
+      name: powerOn
+      description: Specifies whether or not the new VirtualMachine should be powered
+        on after creation.
+      required: true
+      isArray: false
+      defaultValue: "False"
+      predefined:
+      - "true"
+      - "false"
+    - name: datastore
+      description: The datastore where the virtual machine should be located.
+      required: false
+      isArray: false
+    - name: host
+      description: The target host for the virtual machine.
+      required: false
+      isArray: false
+    - name: pool
+      description: The resource pool to which this virtual machine should be attached.
+      required: false
+      isArray: false
+    outputs:
+    - contextPath: VMWare.Name
+      description: VM name.
+      type: String
+    - contextPath: VMWare.Template
+      description: true if template, else false.
+      type: Boolean
+    - contextPath: VMWare.Path
+      description: Path to VM.
+      type: String
+    - contextPath: VMWare.Guest
+      description: Guest full name.
+      type: String
+    - contextPath: VMWare.UUID
+      description: VM instance UUID.
+      type: String
+    - contextPath: VMWare.IP
+      description: VM IP address.
+      type: String
+    - contextPath: VMWare.State
+      description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
+      type: String
+    - contextPath: VMWare.HostName
+      description: Host name of VM.
+      type: String
+    - contextPath: VMWare.MACAddress
+      description: MAC address of VM.
+      type: String
+    - contextPath: VMWare.SnapshotCreateDate
+      description: The date and time when the last snapshot was created.
+      type: String
+    - contextPath: VMWare.SnapshotUUID
+      description: UUID of the last snapshot of the VM.
+      type: String
+    - contextPath: VMWare.Deleted
+      description: If true, the VM was deleted.
+      type: Boolean
+  - name: vmware-relocate-vm
+    description: Relocates a virtual machine to a specified location.
+    deprecated: false
+    arguments:
+    - name: datastore
+      description: The datastore where the virtual machine should be located. If not
+        specified, the current datastore is used.
+      required: false
+      isArray: false
+    - name: folder
+      description: The folder where the virtual machine should be located.
+      required: true
+      isArray: false
+    - name: host
+      description: The target host for the virtual machine.
+      required: false
+      isArray: false
+    - name: pool
+      description: The resource pool to which this virtual machine should be attached.
+      required: false
+      isArray: false
+    - name: service
+      description: The service endpoint of vCenter where the virtual machine should
+        be located. If not specified, the current vCenter service is used.
+      required: false
+      isArray: false
+    - name: profile
+      description: Storage profile requirement for Virtual Machine's home directory.
+      required: false
+      isArray: false
+    - auto: PREDEFINED
+      name: priority
+      description: The task priorityץ
+      required: true
+      isArray: false
+      predefined:
+      - defaultPriority
+      - highPriority
+      - lowPriority
+    - name: uuid
+      description: The UUID of the VM to relocate
+      required: true
+      isArray: false
+    outputs: []
+  - name: vmware-delete-vm
+    description: Destroys this object, deleting its contents and removing it from
+      its parent folder (if any).
+    deprecated: false
+    arguments:
+    - name: uuid
+      description: The UUID of the VM to delete.
+      required: true
+      isArray: false
+    outputs:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID.
+      type: String
+    - contextPath: VMWare.Deleted
+      description: If true, the VM was deleted.
+      type: String
+  - name: vmware-register-vm
+    description: Adds an existing virtual machine to the folder.
+    deprecated: false
+    arguments:
+    - name: path
+      description: A datastore path to the virtual machine.
+      required: true
+      isArray: true
+    - name: name
+      description: The name to be assigned to the virtual machine.
+      required: true
+      isArray: false
+    - name: host
+      description: The target host on which the virtual machine will run.
+      required: true
+      isArray: false
+    - auto: PREDEFINED
+      defaultValue: "False"
+      name: as_template
+      description: Specifies whether or not the virtual machine should be marked as
+        a template.
+      required: false
+      isArray: false
+      predefined:
+      - "true"
+      - "false"
+    - name: folder
+      description: Folder to register the VM to.
+      required: true
+      isArray: false
+    outputs: []
+  - name: vmware-unregister-vm
+    description: Removes this virtual machine from the inventory without removing
+      any of the virtual machine's files on disk.
+    deprecated: false
+    arguments:
+    - name: uuid
+      description: The UUID of the VM to remove.
+      required: true
+      isArray: true
+    outputs: []
+  dockerimage: demisto/vmware:1.0.0.25599
   runonce: false
-  script: ''
+  script: ""
   subtype: python2
   type: python
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- VMWare Test
