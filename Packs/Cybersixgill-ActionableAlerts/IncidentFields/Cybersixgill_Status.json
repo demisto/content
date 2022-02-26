@@ -33,5 +33,5 @@
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.0.0",
-    "script": "c918decb-1358-4774-8090-fe9540ea63ae"
+    "script": "CybersixgillActionableAlertStatusUpdate"
 }

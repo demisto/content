@@ -1,7 +1,6 @@
 commonfields:
-  id: c918decb-1358-4774-8090-fe9540ea63ae
-  version: 84
-vcShouldKeepItemLegacyProdMachine: false
+  id: CybersixgillActionableAlertStatusUpdate
+  version: -1
 name: CybersixgillActionableAlertStatusUpdate
 script: ''
 type: python
@@ -18,8 +17,9 @@ dependson:
   should:
   - Cybersixgill_Actionable_Alerts|||cybersixgill-update-alert-status
 timeout: 180ns
-pswd: ""
 runonce: false
-dockerimage: demisto/sixgill:1.0.0.24417
+dockerimage: demisto/sixgill:1.0.0.26756
 runas: DBotWeakRole
-engineinfo: {}
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
