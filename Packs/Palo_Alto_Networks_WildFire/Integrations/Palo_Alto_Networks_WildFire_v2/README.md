@@ -109,7 +109,7 @@ Uploads a file to WildFire for analysis.
 | md5 | Used for the inner polling flow. For uploading a file, use the 'upload' argument instead. | Optional | 
 | format | The type of structured report (XML or PDF) to request. Only relevant when polling=true. Possible values are: xml, pdf. Default is pdf. | Optional | 
 | verbose | Whether to receive extended information from WildFire. Only relevant when polling=true. Possible values are: true, false. Default is false. | Optional | 
-
+| extended_data | If set to “true”, the report will return extended data which includes the additional outputs. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -139,10 +139,17 @@ Uploads a file to WildFire for analysis.
 | InfoFile.Type | string | The report file type. | 
 | WildFire.Report.Network.UDP.IP | string | Submission related IPs, in UDP protocol. | 
 | WildFire.Report.Network.UDP.Port | string | Submission related ports, in UDP protocol. | 
+| WildFire.Report.Network.UDP.JA3 | string | Submission related JA3s, in UDP protocol. | 
+| WildFire.Report.Network.UDP.JA3S | string | Submission related JA3Ss, in UDP protocol. | 
+| WildFire.Report.Network.UDP.Country | string | Submission related Countries, in UDP protocol. |
 | WildFire.Report.Network.TCP.IP | string | Submission related IPs, in TCP protocol. | 
+| WildFire.Report.Network.TCP.JA3 | string | Submission related JA3s, in TCP protocol. | 
+| WildFire.Report.Network.TCP.JA3S | string | Submission related JA3Ss, in TCP protocol. | 
+| WildFire.Report.Network.TCP.Country | string | Submission related Countries, in TCP protocol. | 
 | WildFire.Report.Network.TCP.Port | string | Submission related ports, in TCP protocol. | 
 | WildFire.Report.Network.DNS.Query | string | Submission DNS queries. | 
 | WildFire.Report.Network.DNS.Response | string | Submission DNS responses. | 
+| WildFire.Report.Network.DNS.Type | string | Submission DNS Types. | 
 | WildFire.Report.Evidence.md5 | string | Submission evidence MD5 hash. | 
 | WildFire.Report.Evidence.Text | string | Submission evidence text. | 
 | WildFire.Report.detection_reasons.description | string | Reason for the detection verdict. | 
@@ -183,7 +190,7 @@ Uploads the URL of a remote file to WildFire for analysis.
 | interval_in_seconds | Interval in seconds between each poll. Default is 60. | Optional | 
 | format | The type of structured report (XML or PDF) to request. Only relevant when polling=true. Possible values are: xml, pdf. Default is pdf. | Optional | 
 | verbose | Whether to receive extended information from WildFire. Only relevant when polling=true. Possible values are: true, false. Default is false. | Optional | 
-
+| extended_data | If set to “true”, the report will return extended data which includes the additional outputs. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -212,10 +219,17 @@ Uploads the URL of a remote file to WildFire for analysis.
 | InfoFile.Type | string | The report file type. | 
 | WildFire.Report.Network.UDP.IP | string | Submission related IPs, in UDP protocol. | 
 | WildFire.Report.Network.UDP.Port | string | Submission related ports, in UDP protocol. | 
+| WildFire.Report.Network.UDP.JA3 | string | Submission related JA3s, in UDP protocol. | 
+| WildFire.Report.Network.UDP.JA3S | string | Submission related JA3Ss, in UDP protocol. | 
+| WildFire.Report.Network.UDP.Country | string | Submission related Countries, in UDP protocol. |
 | WildFire.Report.Network.TCP.IP | string | Submission related IPs, in TCP protocol. | 
+| WildFire.Report.Network.TCP.JA3 | string | Submission related JA3s, in TCP protocol. | 
+| WildFire.Report.Network.TCP.JA3S | string | Submission related JA3Ss, in TCP protocol. | 
+| WildFire.Report.Network.TCP.Country | string | Submission related Countries, in TCP protocol. | 
 | WildFire.Report.Network.TCP.Port | string | Submission related ports, in TCP protocol. | 
 | WildFire.Report.Network.DNS.Query | string | Submission DNS queries. | 
 | WildFire.Report.Network.DNS.Response | string | Submission DNS responses. | 
+| WildFire.Report.Network.DNS.Type | string | Submission DNS Types. | 
 | WildFire.Report.Evidence.md5 | string | Submission evidence MD5 hash. | 
 | WildFire.Report.Evidence.Text | string | Submission evidence text. | 
 | WildFire.Report.detection_reasons.description | string | Reason for the detection verdict. | 
@@ -256,7 +270,7 @@ Retrieves results for a file hash using WildFire.
 | format | The type of structured report (XML or PDF) to request. Possible values are: xml, pdf. Default is pdf. | Optional | 
 | verbose | Receive extended information from WildFire. Possible values are: true, false. Default is false. | Optional | 
 | url | Retrieves results for a URL using WildFire. The report format is in JSON. | Optional | 
-
+| extended_data | If set to “true”, the report will return extended data which includes the additional outputs. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -283,10 +297,17 @@ Retrieves results for a file hash using WildFire.
 | InfoFile.Type | string | The report file type. | 
 | WildFire.Report.Network.UDP.IP | string | Submission related IPs, in UDP protocol. | 
 | WildFire.Report.Network.UDP.Port | string | Submission related ports, in UDP protocol. | 
+| WildFire.Report.Network.UDP.JA3 | string | Submission related JA3s, in UDP protocol. | 
+| WildFire.Report.Network.UDP.JA3S | string | Submission related JA3Ss, in UDP protocol. | 
+| WildFire.Report.Network.UDP.Country | string | Submission related Countries, in UDP protocol. |
 | WildFire.Report.Network.TCP.IP | string | Submission related IPs, in TCP protocol. | 
+| WildFire.Report.Network.TCP.JA3 | string | Submission related JA3s, in TCP protocol. | 
+| WildFire.Report.Network.TCP.JA3S | string | Submission related JA3Ss, in TCP protocol. | 
+| WildFire.Report.Network.TCP.Country | string | Submission related Countries, in TCP protocol. | 
 | WildFire.Report.Network.TCP.Port | string | Submission related ports, in TCP protocol. | 
 | WildFire.Report.Network.DNS.Query | string | Submission DNS queries. | 
 | WildFire.Report.Network.DNS.Response | string | Submission DNS responses. | 
+| WildFire.Report.Network.DNS.Type | string | Submission DNS Types. | 
 | WildFire.Report.Evidence.md5 | string | Submission evidence MD5 hash. | 
 | WildFire.Report.Evidence.Text | string | Submission evidence text. | 
 | WildFire.Report.detection_reasons.description | string | Reason for the detection verdict. | 
@@ -408,7 +429,7 @@ Uploads a URL of a webpage to WildFire for analysis.
 | interval_in_seconds | Interval in seconds between each poll. Default is 60. | Optional | 
 | format | The type of structured report (XML or PDF) to request. Only relevant when polling=true. Possible values are: xml, pdf. Default is pdf. | Optional | 
 | verbose | Whether to receive extended information from WildFire. Only relevant when polling=true. Possible values are: true, false. Default is false. | Optional | 
-
+| extended_data | If set to “true”, the report will return extended data which includes the additional outputs. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -437,10 +458,17 @@ Uploads a URL of a webpage to WildFire for analysis.
 | InfoFile.Type | string | The report file type. | 
 | WildFire.Report.Network.UDP.IP | string | Submission related IPs, in UDP protocol. | 
 | WildFire.Report.Network.UDP.Port | string | Submission related ports, in UDP protocol. | 
+| WildFire.Report.Network.UDP.JA3 | string | Submission related JA3s, in UDP protocol. | 
+| WildFire.Report.Network.UDP.JA3S | string | Submission related JA3Ss, in UDP protocol. | 
+| WildFire.Report.Network.UDP.Country | string | Submission related Countries, in UDP protocol. |
 | WildFire.Report.Network.TCP.IP | string | Submission related IPs, in TCP protocol. | 
+| WildFire.Report.Network.TCP.JA3 | string | Submission related JA3s, in TCP protocol. | 
+| WildFire.Report.Network.TCP.JA3S | string | Submission related JA3Ss, in TCP protocol. | 
+| WildFire.Report.Network.TCP.Country | string | Submission related Countries, in TCP protocol. | 
 | WildFire.Report.Network.TCP.Port | string | Submission related ports, in TCP protocol. | 
 | WildFire.Report.Network.DNS.Query | string | Submission DNS queries. | 
 | WildFire.Report.Network.DNS.Response | string | Submission DNS responses. | 
+| WildFire.Report.Network.DNS.Type | string | Submission DNS Types. | 
 | WildFire.Report.Evidence.md5 | string | Submission evidence MD5 hash. | 
 | WildFire.Report.Evidence.Text | string | Submission evidence text. | 
 | WildFire.Report.detection_reasons.description | string | Reason for the detection verdict. | 
@@ -528,3 +556,23 @@ Get web artifacts for a URL webpage. An empty tgz will be returned, no matter wh
 There is no human-readable output for this command.
 
 
+### wildfire-update-verdict
+***
+Changes the WildFire verdict applied to a sample. Verdict changes apply only to those samples submitted to the WildFire appliance, and the verdict for the same sample remains unchanged in the WildFire global cloud. If a user inserts multiple hashes, the same comment and verdict will apply to all - mention in the command description!
+
+
+#### Base Command
+
+`wildfire-update-verdict`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hash | hash values of the samples, supports only sha256. | Required | 
+| comment | A description of the change request in quotes, If you send multiple hashes, this comment will apply to each hash. (Maximum length 2,048 characters). | Required | 
+| verdict | The new verdict to be applied to the sample, If you send multiple hashes, this verdict will apply to each hash. Possible values are: benign, malware, grayware, phishing. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.

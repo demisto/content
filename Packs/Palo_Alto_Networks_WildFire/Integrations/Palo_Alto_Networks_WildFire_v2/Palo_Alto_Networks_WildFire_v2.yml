@@ -205,12 +205,12 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: false
-      description: ''
+      description: If set to “true”, the report will return extended data which includes the additional outputs
       isArray: false
       name: extended_data
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -288,16 +288,16 @@ script:
       description: The report file type.
       type: string
     - contextPath: WildFire.Report.Network.URL.Host
-      description: 
+      description: ' '
       type: string
     - contextPath: WildFire.Report.Network.URL.Method
-      description: 
+      description: ' '
       type: string
     - contextPath: WildFire.Report.Network.URL.URI
-      description: 
+      description: ' '
       type: string
     - contextPath: WildFire.Report.Network.URL.UserAgent
-      description: 
+      description: ' '
       type: string
     - contextPath: WildFire.Report.Network.UDP.IP
       description: Submission related IPs, in UDP protocol.
@@ -423,12 +423,12 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: false
-      description: ''
+      description: If set to “true”, the report will return extended data which includes the additional outputs
       isArray: false
       name: extended_data
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -503,16 +503,16 @@ script:
       description: The report file type.
       type: string
     - contextPath: WildFire.Report.Network.URL.Host
-      description: 
+      description: ' '
       type: string
     - contextPath: WildFire.Report.Network.URL.Method
-      description: 
+      description: ' '
       type: string
     - contextPath: WildFire.Report.Network.URL.URI
-      description: 
+      description: ' '
       type: string
     - contextPath: WildFire.Report.Network.URL.UserAgent
-      description: 
+      description: ' '
       type: string
     - contextPath: WildFire.Report.Network.UDP.IP
       description: Submission related IPs, in UDP protocol.
@@ -631,12 +631,12 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: false
-      description: ''
+      description: If set to “true”, the report will return extended data which includes the additional outputs
       isArray: false
       name: extended_data
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -705,16 +705,16 @@ script:
       description: The report file type.
       type: string
     - contextPath: WildFire.Report.Network.URL.Host
-      description: 
+      description: ' '
       type: string
     - contextPath: WildFire.Report.Network.URL.Method
-      description: 
+      description: ' '
       type: string
     - contextPath: WildFire.Report.Network.URL.URI
-      description: 
+      description: ' '
       type: string
     - contextPath: WildFire.Report.Network.URL.UserAgent
-      description: 
+      description: ' '
       type: string
     - contextPath: WildFire.Report.Network.UDP.IP
       description: Submission related IPs, in UDP protocol.
@@ -934,12 +934,12 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: false
-      description: ''
+      description: If set to “true”, the report will return extended data which includes the additional outputs
       isArray: false
       name: extended_data
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -1014,16 +1014,16 @@ script:
       description: The report file type.
       type: string
     - contextPath: WildFire.Report.Network.URL.Host
-      description: 
+      description: ' '
       type: string
     - contextPath: WildFire.Report.Network.URL.Method
-      description: 
+      description: ' '
       type: string
     - contextPath: WildFire.Report.Network.URL.URI
-      description: 
+      description: ' '
       type: string
     - contextPath: WildFire.Report.Network.URL.UserAgent
-      description: 
+      description: ' '
       type: string
     - contextPath: WildFire.Report.Network.UDP.IP
       description: Submission related IPs, in UDP protocol.
