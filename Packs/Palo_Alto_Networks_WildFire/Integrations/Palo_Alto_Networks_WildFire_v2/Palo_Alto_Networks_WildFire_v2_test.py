@@ -362,12 +362,50 @@ def test_parse_file_report_network():
                         "@host": "test1.com",
                         "@method": "GET",
                         "@uri": "/test/72t0jjhmv7takwvisfnz_eejvf_h6v2ix/",
-                        "@user_agent": ""
+                        "@user_agent": "test"
                     }
-            }
+            },
+        "platform": "60",
+                    "process_list": {
+                        "process": {
+                            "@command": "C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE",
+                            "@name": "WINWORD.EXE",
+                            "@pid": "952",
+                            "file": 'test',
+                            "java_api": 'test',
+                            "service": 'test'
+                        }},
+                    "process_tree": {
+                        "process": {
+                            "@name": "WINWORD.EXE",
+                            "@pid": "952",
+                            "@text": "C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE"
+                        }},
     }
-    expected_outputs_network = {'TCP': {'IP': ['1.1.1.1', '1.0.1.0'], 'Port': ['443', '80']},
-                                'UDP': {'IP': ['1.1.1.1'], 'Port': ['55']},
-                                'DNS': {'Query': ['test.com'], 'Response': ['1.1.1.1.']}}
-    outputs, feed_related_indicators, behavior = parse_file_report(reports=report, file_info={})
+    expected_outputs_network = {'TCP': {'IP': ['1.1.1.1', '1.0.1.0'],
+                                        'Port': ['443', '80'],
+                                        'Country': ['US', 'US'],
+                                        'JA3': ['test', 'test'],
+                                        'JA3S': ['test']},
+                                'UDP': {'IP': ['1.1.1.1'], 'Port': ['55'], 'Country': ['US'], 'JA3': ['test'], 'JA3S': ['test']},
+                                'DNS': {'Query': ['test.com'], 'Response': ['1.1.1.1.'], 'Type': ['A']},
+                                'URL': {'Host': 'test1.com',
+                                        'Method': 'GET',
+                                        'URI': '/test/72t0jjhmv7takwvisfnz_eejvf_h6v2ix/',
+                                        'UserAgent': 'test'}}
+    expected_outputs_ProcessTree = {'ProcessName': ['WINWORD.EXE'],
+                                    'ProcessPid': ['952'],
+                                    'ProcessText': ['C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE']}
+    expected_outputs_ProcessList = {'ProcessCommand': ['C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE'],
+                                    'ProcessName': ['WINWORD.EXE'],
+                                    'ProcessPid': ['952'],
+                                    'ProcessFile': ['test'],
+                                    'Service': ['test'],
+                                    }
+    outputs, feed_related_indicators, behavior, relationships = parse_file_report(file_hash='test',
+                                                                                  reports=report,
+                                                                                  file_info={},
+                                                                                  extended_data=True)
     assert expected_outputs_network == outputs.get('Network')
+    assert expected_outputs_ProcessTree == outputs.get('ProcessTree')
+    assert expected_outputs_ProcessList == outputs.get('ProcessList')

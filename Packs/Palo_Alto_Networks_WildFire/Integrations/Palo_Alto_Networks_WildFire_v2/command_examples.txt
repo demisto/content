@@ -6,3 +6,4 @@
 !wildfire-get-sample sha256=afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc
 !wildfire-get-verdict hash=afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc
 !wildfire-get-url-webartifacts url=http://royalmail-login.com
+!wildfire-update-verdict hash=c85f1ee5b83d3d1caa8d12ea4b2486cb3b9b60348a475c350a3ddeab9353ad3e verdict=malware comment=test

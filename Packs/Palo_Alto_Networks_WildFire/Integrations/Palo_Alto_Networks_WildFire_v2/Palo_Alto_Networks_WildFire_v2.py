@@ -41,7 +41,7 @@ if URL and not URL.endswith('/publicapi'):
 URL_DICT = {
     'verdict': '/get/verdict',
     'verdicts': '/get/verdicts',
-    'change_verdict': '/submit/local-verdict-change/',
+    'change_verdict': '/submit/local-verdict-change',
     'upload_file': '/submit/file',
     'upload_url': '/submit/link',
     'upload_file_url': '/submit/url',
@@ -94,6 +94,13 @@ VERDICTS_TO_CHANGE_DICT = {
     'malware': 1,
     'grayware': 2,
     'phishing': 3
+}
+
+RELATIONSHIPS_TYPE = {
+    'file': FeedIndicatorType.File,
+    'url': FeedIndicatorType.URL,
+    'domain': FeedIndicatorType.Domain,
+    'ip': FeedIndicatorType.IP
 }
 
 ''' HELPER FUNCTIONS '''
@@ -344,6 +351,20 @@ def hash_list_to_file(hash_list):
     return [file_path]
 
 
+def create_relationship(name: str, entities: Tuple, types: Tuple) -> EntityRelationship:
+
+    return EntityRelationship(
+        name=name,
+        entity_a=entities[0],
+        entity_a_type=RELATIONSHIPS_TYPE[types[0]],
+        entity_b=entities[1],
+        entity_b_type=RELATIONSHIPS_TYPE[types[1]],
+        reverse_name=name,
+        source_reliability=RELIABILITY,
+        brand='WildFire-v2'
+    )
+
+
 ''' COMMANDS '''
 
 
@@ -583,15 +604,16 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
 
 
 def update_verdict_command(args: Dict[str, Any]) -> CommandResults:
-    
+
     hashes = argToList(args.get('hash'))
     comment = args.get('comment')
-    verdict = VERDICTS_TO_CHANGE_DICT[args.get('verdict')]
+    verdict = VERDICTS_TO_CHANGE_DICT[args.get('verdict', '')]
 
     update_verdict_url = URL + URL_DICT['change_verdict']
     params = {
         'comment': comment,
-        'verdict': verdict
+        'verdict': verdict,
+        'apikey': TOKEN
     }
 
     human_readable = ''
@@ -600,6 +622,7 @@ def update_verdict_command(args: Dict[str, Any]) -> CommandResults:
             human_readable += f'\nHash File -> "{hash}" invalid'
             continue
         try:
+            params['hash'] = hash
             http_request(
                 url=update_verdict_url,
                 method='POST',
@@ -608,11 +631,11 @@ def update_verdict_command(args: Dict[str, Any]) -> CommandResults:
                 return_raw=True
             )
             human_readable += f'\nVerdict Hash File -> "{hash}" is changed'
-        except:
-            human_readable += f'\nVerdict Hash File -> "{hash}" is not changed'
+        except Exception as e:
+            human_readable += f'\nVerdict Hash File -> "{hash}" is not changed - \n {str(e)}'
 
     return CommandResults(readable_output=human_readable)
-    
+
 
 @logger
 def wildfire_get_verdict(file_hash: Optional[str] = None, url: Optional[str] = None) -> Tuple[dict, dict]:
@@ -770,7 +793,28 @@ def wildfire_get_url_webartifacts_command():
             return_results('Webartifacts were not found. For more info contact your WildFire representative.')
 
 
-def parse_file_report(reports, file_info, extended_data: bool):
+'''
+# def parse(report, keys, outputs):
+
+#     for i in keys:
+#         if isinstance(i, tuple):
+#             if i[0] in report and report[i[0]]:
+#                 if i[0] in outputs:
+#                     parse(report[i[0]],i[1],outputs[i[0]])
+#                 else:
+#                     outputs[i[0]] = parse(report[i[0]],i[1],{})
+
+#         else:
+#             if i in report and report[i]:
+#                 if i in outputs:
+#                     outputs[i].append(report[i])
+#                 else:
+#                     outputs[i] = [report[i]]
+#     return outputs
+'''
+
+
+def parse_file_report(file_hash, reports, file_info, extended_data: bool):
     udp_ip = []
     udp_port = []
     udp_country = []
@@ -790,6 +834,7 @@ def parse_file_report(reports, file_info, extended_data: bool):
     process_list_name = []
     process_list_pid = []
     process_list_file = []
+    process_list_service = []
     process_tree_text = []
     process_tree_name = []
     process_tree_pid = []
@@ -799,13 +844,15 @@ def parse_file_report(reports, file_info, extended_data: bool):
     entry_text = []
     entry_details = []
     entry_behavior = []
+    extract_urls_url = []
+    extract_urls_verdict = []
     elf_shell_commands = []
     feed_related_indicators = []
     platform_report = []
     software_report = []
     behavior = []
+    relationships = []
     network_url = {}
-
 
     # When only one report is in response, it's returned as a single json object and not a list.
     if not isinstance(reports, list):
@@ -818,46 +865,48 @@ def parse_file_report(reports, file_info, extended_data: bool):
                 if not isinstance(udp_objects, list):
                     udp_objects = [udp_objects]
                 for udp_obj in udp_objects:
-                    if '@ip' in udp_obj:
+                    if '@ip' in udp_obj and udp_obj['@ip']:
                         udp_ip.append(udp_obj["@ip"])
                         feed_related_indicators.append({'value': udp_obj["@ip"], 'type': 'IP'})
+                        relationships.append(create_relationship('related-to', (file_hash, udp_obj["@ip"]), ('file', 'ip')))
                     if '@port' in udp_obj:
                         udp_port.append(udp_obj["@port"])
                     if extended_data:
-                        if '@country' in udp_obj:
+                        if '@country' in udp_obj and udp_obj['@country']:
                             udp_country.append(udp_obj['@country'])
-                        if '@ja3' in udp_obj:
+                        if '@ja3' in udp_obj and udp_obj['@ja3']:
                             udp_ja3.append(udp_obj['@ja3'])
-                        if '@ja3s' in udp_obj:
+                        if '@ja3s' in udp_obj and udp_obj['@ja3s']:
                             udp_ja3s.append(udp_obj['@ja3s'])
             if 'TCP' in report["network"]:
                 tcp_objects = report["network"]["TCP"]
                 if not isinstance(tcp_objects, list):
                     tcp_objects = [tcp_objects]
                 for tcp_obj in tcp_objects:
-                    if '@ip' in tcp_obj:
+                    if '@ip' in tcp_obj and tcp_obj['@ip']:
                         tcp_ip.append(tcp_obj["@ip"])
                         feed_related_indicators.append({'value': tcp_obj["@ip"], 'type': 'IP'})
+                        relationships.append(create_relationship('related-to', (file_hash, tcp_obj["@ip"]), ('file', 'ip')))
                     if '@port' in tcp_obj:
                         tcp_port.append(tcp_obj['@port'])
                     if extended_data:
-                        if '@country' in tcp_obj:
+                        if '@country' in tcp_obj and tcp_obj['@country']:
                             tcp_country.append(tcp_obj['@country'])
-                        if '@ja3' in tcp_obj:
+                        if '@ja3' in tcp_obj and tcp_obj['@ja3']:
                             tcp_ja3.append(tcp_obj['@ja3'])
-                        if '@ja3s' in tcp_obj:
+                        if '@ja3s' in tcp_obj and tcp_obj['@ja3s']:
                             tcp_ja3s.append(tcp_obj['@ja3s'])
             if 'dns' in report["network"]:
                 dns_objects = report["network"]["dns"]
                 if not isinstance(dns_objects, list):
                     dns_objects = [dns_objects]
                 for dns_obj in dns_objects:
-                    if '@query' in dns_obj:
+                    if '@query' in dns_obj and dns_obj['@query']:
                         dns_query.append(dns_obj['@query'])
-                    if '@response' in dns_obj:
+                    if '@response' in dns_obj and dns_obj['@response']:
                         dns_response.append(dns_obj['@response'])
                     if extended_data:
-                        if '@type' in dns_obj:
+                        if '@type' in dns_obj and dns_obj['@type']:
                             dns_type.append(dns_obj['@type'])
             if 'url' in report["network"]:
                 url = ''
@@ -869,10 +918,11 @@ def parse_file_report(reports, file_info, extended_data: bool):
                     network_url['URI'] = report["network"]["url"]["@uri"]
                 if url:
                     feed_related_indicators.append({'value': url, 'type': 'URL'})
+                    relationships.append(create_relationship('related-to', (file_hash, url), ('file', 'url')))
                 if '@method' in report['network']['url']:
                     network_url['Method'] = report["network"]["url"]["@method"]
                 if '@user_agent' in report['network']['url']:
-                    network_url['User_Agent'] = report["network"]["url"]["@user_agent"]
+                    network_url['UserAgent'] = report["network"]["url"]["@user_agent"]
 
         if 'evidence' in report and report["evidence"]:
             if 'file' in report["evidence"]:
@@ -891,6 +941,7 @@ def parse_file_report(reports, file_info, extended_data: bool):
                         entry = [entry]
                     for domain in entry:
                         feed_related_indicators.append({'value': domain, 'type': 'Domain'})
+                        relationships.append(create_relationship('related-to', (file_hash, domain), ('file', 'domain')))
             if 'IP_Addresses' in report["elf_info"]:
                 if isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in \
                         report["elf_info"]["IP_Addresses"]:
@@ -900,6 +951,7 @@ def parse_file_report(reports, file_info, extended_data: bool):
                         entry = [entry]
                     for ip in entry:
                         feed_related_indicators.append({'value': ip, 'type': 'IP'})
+                        relationships.append(create_relationship('related-to', (file_hash, ip), ('file', 'ip')))
             if 'suspicious' in report["elf_info"]:
                 if isinstance(report["elf_info"]["suspicious"], dict) and 'entry' in report["elf_info"]['suspicious']:
                     entry = report["elf_info"]["suspicious"]["entry"]
@@ -917,25 +969,33 @@ def parse_file_report(reports, file_info, extended_data: bool):
                         entry = [entry]
                     for url in entry:
                         feed_related_indicators.append({'value': url, 'type': 'URL'})
+                        relationships.append(create_relationship('related-to', (file_hash, url), ('file', 'url')))
+            if extended_data:
+                if 'Shell_Commands' in report['elf_info'] and 'entry' in report['elf_info']['Shell_Commands'] and \
+                        report['elf_info']['Shell_Commands']['entry']:
+                    elf_shell_commands.append(report['elf_info']['Shell_Commands']['entry'])
+
         if extended_data:
             if 'process_list' in report and 'process' in report['process_list'] and report['process_list']['process']:
                 process_list = report['process_list']['process']
                 if not isinstance(process_list, list):
                     process_list = [process_list]
                 for process in process_list:
-                    if '@command' in process:
+                    if '@command' in process and process['@command']:
                         process_list_command.append(process['@command'])
-                    if '@name' in process:
+                    if '@name' in process and process['@name']:
                         process_list_name.append(process['@name'])
-                    if '@pid' in process:
+                    if '@pid' in process and process['@pid']:
                         process_list_pid.append(process['@pid'])
-                    if 'file' in process:
+                    if 'file' in process and process['file']:
                         process_list_file.append(process['file'])
-            
+                    if 'service' in process and process['service']:
+                        process_list_service.append(process['service'])
+
             if 'process_tree' in report and 'process' in report['process_tree'] and report['process_tree']['process']:
-                process_tree = report['process_list']['process']
+                process_tree = report['process_tree']['process']
                 if not isinstance(process_tree, list):
-                    process_list = [process_tree]
+                    process_tree = [process_tree]
                 for process in process_tree:
                     if '@text' in process:
                         process_tree_text.append(process['@text'])
@@ -948,13 +1008,13 @@ def parse_file_report(reports, file_info, extended_data: bool):
                         if not isinstance(child_process, list):
                             child_process = [child_process]
                         for child in child_process:
-                            if '' in child:
+                            if '@name' in child:
                                 child_name.append(child['@name'])
-                            if '' in child:
+                            if '@pid' in child:
                                 child_pid.append(child['@pid'])
                             if '@text' in child:
                                 child_text.append(child['@text'])
-            
+
             if 'summary' in report and 'entry' in report['summary'] and report['summary']['entry']:
                 entries = report['summary']['entry']
                 if not isinstance(entries, list):
@@ -967,11 +1027,20 @@ def parse_file_report(reports, file_info, extended_data: bool):
                     if '@behavior' in entry:
                         entry_behavior.append(entry['@behavior'])
 
-            if 'elf_info' in report and 'Shell_Commands' in report['elf_info'] and 'entry' in report['elf_info']['Shell_Commands'] and report['elf_info']['Shell_Commands']['entry']:
-                elf_shell_commands.append(report['elf_info']['Shell_Commands']['entry'])
+            if 'extracted_urls' in report and report['extracted_urls'] and 'entry' in report['extracted_urls'] \
+                    and report['extracted_urls']['entry']:
+                extract_urls = report['extracted_urls']['entry']
+                if not isinstance(extract_urls, list):
+                    extract_urls = [extract_urls]
+                for urls in extract_urls:
+                    if '@url' in urls and urls['@url']:
+                        extract_urls_url.append(urls['@url'])
+                    if '@verdict' in urls and urls['@verdict']:
+                        extract_urls_verdict.append(urls['@verdict'])
 
             if 'platform' in report:
                 platform_report.append(report['platform'])
+
             if 'software' in report:
                 software_report.append(report['software'])
 
@@ -1019,31 +1088,36 @@ def parse_file_report(reports, file_info, extended_data: bool):
             if len(dns_type) > 0:
                 outputs["Network"]["DNS"]["Type"] = dns_type
 
-        if platform_report:
-            outputs['Platform'] = platform_report
+        if extended_data and network_url:
+            outputs['Network']['URL'] = network_url
 
-        if software_report:
-            outputs['Software'] = software_report
-        
-        if process_list_command or process_list_file or process_list_name or process_list_pid:
-            outputs['ProcessList'] = {}
-            if process_list_command:
-                outputs['ProcessList']['ProcessCommand'] = process_list_command
-            if process_list_command:
-                outputs['ProcessList']['ProcessName'] = process_list_name
-            if process_list_command:
-                outputs['ProcessList']['ProcessPid'] = process_list_pid
-            if process_list_command:
-                outputs['ProcessList']['ProcessFile'] = process_list_file
+    if platform_report:
+        outputs['Platform'] = platform_report
 
-        if process_tree_name or process_tree_pid or process_tree_text:
-            outputs['ProcessTree'] = {}
-            if process_tree_name:
-                outputs['ProcessTree']['ProcessName']= process_tree_name
-            if process_tree_pid:
-                outputs['ProcessTree']['ProcessPid']= process_tree_pid
-            if process_tree_text:
-                outputs['ProcessTree']['ProcessText']= process_tree_text
+    if software_report:
+        outputs['Software'] = software_report
+
+    if process_list_command or process_list_file or process_list_name or process_list_pid:
+        outputs['ProcessList'] = {}
+        if process_list_command:
+            outputs['ProcessList']['ProcessCommand'] = process_list_command
+        if process_list_name:
+            outputs['ProcessList']['ProcessName'] = process_list_name
+        if process_list_pid:
+            outputs['ProcessList']['ProcessPid'] = process_list_pid
+        if process_list_file:
+            outputs['ProcessList']['ProcessFile'] = process_list_file
+        if process_list_service:
+            outputs['ProcessList']['Service'] = process_list_service
+
+    if process_tree_name or process_tree_pid or process_tree_text:
+        outputs['ProcessTree'] = {}
+        if process_tree_name:
+            outputs['ProcessTree']['ProcessName'] = process_tree_name
+        if process_tree_pid:
+            outputs['ProcessTree']['ProcessPid'] = process_tree_pid
+        if process_tree_text:
+            outputs['ProcessTree']['ProcessText'] = process_tree_text
 
         if child_name or child_pid or child_text:
             outputs['ProcessTree']['Process'] = {}
@@ -1054,8 +1128,17 @@ def parse_file_report(reports, file_info, extended_data: bool):
             if child_text:
                 outputs['ProcessTree']['Process']['ChildText'] = child_text
 
-        if extended_data and network_url:
-            outputs['Network']['URL'] = network_url
+    if entry_text or entry_details or entry_behavior:
+        outputs['Summary'] = {}
+        if entry_text:
+            outputs['Summary']['Text'] = entry_text
+        if entry_details:
+            outputs['Summary']['Details'] = entry_details
+        if entry_behavior:
+            outputs['Summary']['Behavior'] = entry_behavior
+
+    if elf_shell_commands:
+        outputs['ELF']['ShellCommands'] = elf_shell_commands
 
     if len(evidence_md5) > 0 or len(evidence_text) > 0:
         outputs["Evidence"] = {}
@@ -1064,10 +1147,9 @@ def parse_file_report(reports, file_info, extended_data: bool):
         if len(evidence_text) > 0:
             outputs["Evidence"]["Text"] = evidence_text
 
-
     feed_related_indicators = create_feed_related_indicators_object(feed_related_indicators)
     behavior = create_behaviors_object(behavior)
-    return outputs, feed_related_indicators, behavior
+    return outputs, feed_related_indicators, behavior, relationships
 
 
 def create_feed_related_indicators_object(feed_related_indicators):
@@ -1093,9 +1175,11 @@ def create_behaviors_object(behaviors):
     return behaviors_objects_list
 
 
-def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml', verbose: bool = False, extended_data: bool = False):
+def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
+                       verbose: bool = False, extended_data: bool = False):
 
-    outputs, feed_related_indicators, behavior = parse_file_report(reports, file_info, extended_data)
+    outputs, feed_related_indicators, behavior, relationships = parse_file_report(file_hash, reports,
+                                                                                  file_info, extended_data)
 
     dbot_score = 3 if file_info["malware"] == 'yes' else 1
 
@@ -1105,7 +1189,7 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
                        file_type=file_info.get('filetype'), md5=file_info.get('md5'), sha1=file_info.get('sha1'),
                        sha256=file_info.get('sha256'), size=file_info.get('size'),
                        feed_related_indicators=feed_related_indicators, tags=['malware'],
-                       digital_signature__publisher=file_info.get('file_signer'), behaviors=behavior)
+                       digital_signature__publisher=file_info.get('file_signer'), behaviors=behavior, relationships=relationships)
 
     if format_ == 'pdf':
         get_report_uri = URL + URL_DICT["report"]
@@ -1130,7 +1214,7 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
                 if isinstance(report, dict):
                     human_readable += tableToMarkdown('Report ', report, list(report), removeNull=True)
 
-    return human_readable, outputs, file
+    return human_readable, outputs, file, relationships
 
 
 def get_sha256_of_file_from_report(report):
@@ -1209,8 +1293,9 @@ def wildfire_get_file_report(file_hash: str, args: dict):
         extended_data = argToBoolean(args.get('extended_data', False))
 
         if reports and file_info:
-            human_readable, entry_context, indicator = create_file_report(file_hash,
-                                                                          reports, file_info, format_, verbose, extended_data)
+            human_readable, entry_context, indicator, relationships = create_file_report(file_hash, reports,
+                                                                                         file_info, format_,
+                                                                                         verbose, extended_data)
 
         else:
             entry_context['Status'] = 'Pending'
@@ -1235,7 +1320,8 @@ def wildfire_get_file_report(file_hash: str, args: dict):
         try:
             command_results = CommandResults(outputs_prefix=WILDFIRE_REPORT_DT_FILE,
                                              outputs=remove_empty_elements(entry_context),
-                                             readable_output=human_readable, indicator=indicator, raw_response=json_res)
+                                             readable_output=human_readable, indicator=indicator, raw_response=json_res,
+                                             relationships=relationships)
             return command_results, entry_context['Status']
         except Exception:
             raise DemistoException('Error while trying to get the report from the API.')

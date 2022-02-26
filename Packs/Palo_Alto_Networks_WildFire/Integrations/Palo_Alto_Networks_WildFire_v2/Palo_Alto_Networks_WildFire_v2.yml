@@ -1,6 +1,6 @@
 category: Forensics & Malware Analysis
 commonfields:
-  id: WildFire-v2-Copy
+  id: WildFire-v2
   version: -1
 configuration:
 - defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
@@ -45,8 +45,8 @@ configuration:
   type: 4
   hidden: true
 description: Perform malware dynamic analysis
-display: Palo Alto Networks WildFire v2 Copy
-name: WildFire-v2-Copy
+display: Palo Alto Networks WildFire v2
+name: WildFire-v2
 script:
   commands:
   - arguments:
@@ -287,14 +287,44 @@ script:
     - contextPath: InfoFile.Type
       description: The report file type.
       type: string
+    - contextPath: WildFire.Report.Network.URL.Host
+      description: 
+      type: string
+    - contextPath: WildFire.Report.Network.URL.Method
+      description: 
+      type: string
+    - contextPath: WildFire.Report.Network.URL.URI
+      description: 
+      type: string
+    - contextPath: WildFire.Report.Network.URL.UserAgent
+      description: 
+      type: string
     - contextPath: WildFire.Report.Network.UDP.IP
       description: Submission related IPs, in UDP protocol.
       type: string
     - contextPath: WildFire.Report.Network.UDP.Port
       description: Submission related ports, in UDP protocol.
       type: string
+    - contextPath: WildFire.Report.Network.UDP.JA3
+      description: Submission related JA3s, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.UDP.JA3S
+      description: Submission related JA3Ss, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.UDP.Country
+      description: Submission related Countries, in UDP protocol.
+      type: string
     - contextPath: WildFire.Report.Network.TCP.IP
       description: Submission related IPs, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.JA3
+      description: Submission related JA3s, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.JA3S
+      description: Submission related JA3Ss, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.Country
+      description: Submission related Countries, in TCP protocol.
       type: string
     - contextPath: WildFire.Report.Network.TCP.Port
       description: Submission related ports, in TCP protocol.
@@ -304,6 +334,9 @@ script:
       type: string
     - contextPath: WildFire.Report.Network.DNS.Response
       description: Submission DNS responses.
+      type: string
+    - contextPath: WildFire.Report.Network.DNS.Type
+      description: Submission DNS Types.
       type: string
     - contextPath: WildFire.Report.Evidence.md5
       description: Submission evidence MD5 hash.
@@ -469,14 +502,44 @@ script:
     - contextPath: InfoFile.Type
       description: The report file type.
       type: string
+    - contextPath: WildFire.Report.Network.URL.Host
+      description: 
+      type: string
+    - contextPath: WildFire.Report.Network.URL.Method
+      description: 
+      type: string
+    - contextPath: WildFire.Report.Network.URL.URI
+      description: 
+      type: string
+    - contextPath: WildFire.Report.Network.URL.UserAgent
+      description: 
+      type: string
     - contextPath: WildFire.Report.Network.UDP.IP
       description: Submission related IPs, in UDP protocol.
       type: string
     - contextPath: WildFire.Report.Network.UDP.Port
       description: Submission related ports, in UDP protocol.
       type: string
+    - contextPath: WildFire.Report.Network.UDP.JA3
+      description: Submission related JA3s, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.UDP.JA3S
+      description: Submission related JA3Ss, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.UDP.Country
+      description: Submission related Countries, in UDP protocol.
+      type: string
     - contextPath: WildFire.Report.Network.TCP.IP
       description: Submission related IPs, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.JA3
+      description: Submission related JA3s, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.JA3S
+      description: Submission related JA3Ss, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.Country
+      description: Submission related Countries, in TCP protocol.
       type: string
     - contextPath: WildFire.Report.Network.TCP.Port
       description: Submission related ports, in TCP protocol.
@@ -486,6 +549,9 @@ script:
       type: string
     - contextPath: WildFire.Report.Network.DNS.Response
       description: Submission DNS responses.
+      type: string
+    - contextPath: WildFire.Report.Network.DNS.Type
+      description: Submission DNS Types.
       type: string
     - contextPath: WildFire.Report.Evidence.md5
       description: Submission evidence MD5 hash.
@@ -638,14 +704,44 @@ script:
     - contextPath: InfoFile.Type
       description: The report file type.
       type: string
+    - contextPath: WildFire.Report.Network.URL.Host
+      description: 
+      type: string
+    - contextPath: WildFire.Report.Network.URL.Method
+      description: 
+      type: string
+    - contextPath: WildFire.Report.Network.URL.URI
+      description: 
+      type: string
+    - contextPath: WildFire.Report.Network.URL.UserAgent
+      description: 
+      type: string
     - contextPath: WildFire.Report.Network.UDP.IP
       description: Submission related IPs, in UDP protocol.
       type: string
     - contextPath: WildFire.Report.Network.UDP.Port
       description: Submission related ports, in UDP protocol.
       type: string
+    - contextPath: WildFire.Report.Network.UDP.JA3
+      description: Submission related JA3s, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.UDP.JA3S
+      description: Submission related JA3Ss, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.UDP.Country
+      description: Submission related Countries, in UDP protocol.
+      type: string
     - contextPath: WildFire.Report.Network.TCP.IP
       description: Submission related IPs, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.JA3
+      description: Submission related JA3s, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.JA3S
+      description: Submission related JA3Ss, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.Country
+      description: Submission related Countries, in TCP protocol.
       type: string
     - contextPath: WildFire.Report.Network.TCP.Port
       description: Submission related ports, in TCP protocol.
@@ -655,6 +751,9 @@ script:
       type: string
     - contextPath: WildFire.Report.Network.DNS.Response
       description: Submission DNS responses.
+      type: string
+    - contextPath: WildFire.Report.Network.DNS.Type
+      description: Submission DNS Types.
       type: string
     - contextPath: WildFire.Report.Evidence.md5
       description: Submission evidence MD5 hash.
@@ -914,14 +1013,44 @@ script:
     - contextPath: InfoFile.Type
       description: The report file type.
       type: string
+    - contextPath: WildFire.Report.Network.URL.Host
+      description: 
+      type: string
+    - contextPath: WildFire.Report.Network.URL.Method
+      description: 
+      type: string
+    - contextPath: WildFire.Report.Network.URL.URI
+      description: 
+      type: string
+    - contextPath: WildFire.Report.Network.URL.UserAgent
+      description: 
+      type: string
     - contextPath: WildFire.Report.Network.UDP.IP
       description: Submission related IPs, in UDP protocol.
       type: string
     - contextPath: WildFire.Report.Network.UDP.Port
       description: Submission related ports, in UDP protocol.
       type: string
+    - contextPath: WildFire.Report.Network.UDP.JA3
+      description: Submission related JA3s, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.UDP.JA3S
+      description: Submission related JA3Ss, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.UDP.Country
+      description: Submission related Countries, in UDP protocol.
+      type: string
     - contextPath: WildFire.Report.Network.TCP.IP
       description: Submission related IPs, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.JA3
+      description: Submission related JA3s, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.JA3S
+      description: Submission related JA3Ss, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.Country
+      description: Submission related Countries, in TCP protocol.
       type: string
     - contextPath: WildFire.Report.Network.TCP.Port
       description: Submission related ports, in TCP protocol.
@@ -931,6 +1060,9 @@ script:
       type: string
     - contextPath: WildFire.Report.Network.DNS.Response
       description: Submission DNS responses.
+      type: string
+    - contextPath: WildFire.Report.Network.DNS.Type
+      description: Submission DNS Types.
       type: string
     - contextPath: WildFire.Report.Evidence.md5
       description: Submission evidence MD5 hash.
