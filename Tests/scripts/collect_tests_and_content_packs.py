@@ -1469,7 +1469,7 @@ if __name__ == "__main__":
     options = parser.parse_args()
 
     # Create test file based only on committed files
-    create_test_file(options.nightly, options.skip_save, options.changed_pack_path, options.marketplace_version)
+    create_test_file(options.nightly, options.skip_save, options.changed_pack_path, options.marketplace)
     if not _FAILED:
         logging.info("Finished test configuration")
         sys.exit(0)
