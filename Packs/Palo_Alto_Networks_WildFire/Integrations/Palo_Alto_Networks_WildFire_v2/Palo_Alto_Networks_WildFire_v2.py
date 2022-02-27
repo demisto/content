@@ -90,10 +90,10 @@ VERDICTS_TO_DBOTSCORE = {
 }
 
 VERDICTS_TO_CHANGE_DICT = {
-    'benign': 0,
-    'malware': 1,
-    'grayware': 2,
-    'phishing': 3
+    'benign': '0',
+    'malware': '1',
+    'grayware': '2',
+    'phishing': '3'
 }
 
 RELATIONSHIPS_TYPE = {
@@ -632,7 +632,7 @@ def update_verdict_command(args: Dict[str, Any]) -> CommandResults:
             )
             human_readable += f'\nVerdict Hash File -> "{hash}" is changed'
         except Exception as e:
-            human_readable += f'\nVerdict Hash File -> "{hash}" is not changed - \n {str(e)}'
+            human_readable += f'\nVerdict Hash File -> "{hash}" is not changed - {str(e)}'
 
     return CommandResults(readable_output=human_readable)
 
@@ -791,27 +791,6 @@ def wildfire_get_url_webartifacts_command():
         except NotFoundError as exc:
             demisto.error(f'Webartifacts were not found. Error: {exc}')
             return_results('Webartifacts were not found. For more info contact your WildFire representative.')
-
-
-'''
-# def parse(report, keys, outputs):
-
-#     for i in keys:
-#         if isinstance(i, tuple):
-#             if i[0] in report and report[i[0]]:
-#                 if i[0] in outputs:
-#                     parse(report[i[0]],i[1],outputs[i[0]])
-#                 else:
-#                     outputs[i[0]] = parse(report[i[0]],i[1],{})
-
-#         else:
-#             if i in report and report[i]:
-#                 if i in outputs:
-#                     outputs[i].append(report[i])
-#                 else:
-#                     outputs[i] = [report[i]]
-#     return outputs
-'''
 
 
 def parse_file_report(file_hash, reports, file_info, extended_data: bool):
@@ -1138,6 +1117,7 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
             outputs['Summary']['Behavior'] = entry_behavior
 
     if elf_shell_commands:
+        outputs['ELF'] = {}
         outputs['ELF']['ShellCommands'] = elf_shell_commands
 
     if len(evidence_md5) > 0 or len(evidence_text) > 0:

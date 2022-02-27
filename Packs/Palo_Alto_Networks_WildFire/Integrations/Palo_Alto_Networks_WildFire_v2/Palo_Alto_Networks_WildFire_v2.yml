@@ -365,6 +365,63 @@ script:
     - contextPath: WildFire.Report.verdict
       description: The verdict of the report.
       type: string
+    - contextPath: WildFire.Report.Platform
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.Software
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.Service
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessCommand
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessName
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessPid
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessFile
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessName
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessPid
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessText
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildName
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildPid
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildText
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ExtractedURL.URL
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ExtractedURL.Verdict
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Summary.Text
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Summary.Details
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Summary.Behavior
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ELF.ShellCommands
+      description: ' '
+      type: string
     polling: true
   - arguments:
     - default: false
@@ -580,6 +637,63 @@ script:
     - contextPath: WildFire.Report.verdict
       description: The verdict of the report.
       type: string
+    - contextPath: WildFire.Report.Platform
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.Software
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.Service
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessCommand
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessName
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessPid
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessFile
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessName
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessPid
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessText
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildName
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildPid
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildText
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ExtractedURL.URL
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ExtractedURL.Verdict
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Summary.Text
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Summary.Details
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Summary.Behavior
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ELF.ShellCommands
+      description: ' '
+      type: string
     polling: true
   - arguments:
     - default: false
@@ -781,6 +895,63 @@ script:
       type: unknown
     - contextPath: WildFire.Report.verdict
       description: The verdict of the report.
+      type: string
+    - contextPath: WildFire.Report.Platform
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.Software
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.Service
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessCommand
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessName
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessPid
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessFile
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessName
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessPid
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessText
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildName
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildPid
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildText
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ExtractedURL.URL
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ExtractedURL.Verdict
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Summary.Text
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Summary.Details
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Summary.Behavior
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ELF.ShellCommands
+      description: ' '
       type: string
   - arguments:
     - default: false
@@ -1090,6 +1261,63 @@ script:
       type: unknown
     - contextPath: WildFire.Report.verdict
       description: The verdict of the report.
+      type: string
+    - contextPath: WildFire.Report.Platform
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.Software
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.Service
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessCommand
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessName
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessPid
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessList.ProcessFile
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessName
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessPid
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ProcessText
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildName
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildPid
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Process.ChildText
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ExtractedURL.URL
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ExtractedURL.Verdict
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Summary.Text
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Summary.Details
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.Summary.Behavior
+      description: ' '
+      type: string
+    - contextPath: WildFire.Report.ProcessTree.ELF.ShellCommands
+      description: ' '
       type: string
     polling: true
   - arguments:

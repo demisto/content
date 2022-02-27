@@ -159,6 +159,25 @@ Uploads a file to WildFire for analysis.
 | WildFire.Report.detection_reasons.artifacts | unknown | Artifacts of the detection reasons. | 
 | WildFire.Report.iocs | unknown | Associated IOCs. | 
 | WildFire.Report.verdict | string | The verdict of the report. | 
+| WildFire.Report.Platform | string |   | 
+| WildFire.Report.Software | string |   | 
+| WildFire.Report.Service | string |   | 
+| WildFire.Report.ProcessList.ProcessCommand | string |   | 
+| WildFire.Report.ProcessList.ProcessName | string |   | 
+| WildFire.Report.ProcessList.ProcessPid | string |   | 
+| WildFire.Report.ProcessList.ProcessFile | string |   | 
+| WildFire.Report.ProcessTree.ProcessName | string |   | 
+| WildFire.Report.ProcessTree.ProcessPid | string |   | 
+| WildFire.Report.ProcessTree.ProcessText | string |   | 
+| WildFire.Report.ProcessTree.Process.ChildName | string |   | 
+| WildFire.Report.ProcessTree.Process.ChildPid | string |   | 
+| WildFire.Report.ProcessTree.Process.ChildText | string |   | 
+| WildFire.Report.ProcessTree.ExtractedURL.URL | string |   | 
+| WildFire.Report.ProcessTree.ExtractedURL.Verdict | string |   | 
+| WildFire.Report.ProcessTree.Summary.Text | string |   | 
+| WildFire.Report.ProcessTree.Summary.Details | string |   | 
+| WildFire.Report.ProcessTree.Summary.Behavior | string |   | 
+| WildFire.Report.ProcessTree.ELF.ShellCommands | string |   | 
 
 
 #### Command Example
@@ -239,6 +258,25 @@ Uploads the URL of a remote file to WildFire for analysis.
 | WildFire.Report.detection_reasons.artifacts | unknown | Artifacts of the detection reasons. | 
 | WildFire.Report.iocs | unknown | Associated IOCs. | 
 | WildFire.Report.verdict | string | The verdict of the report. | 
+| WildFire.Report.Platform | string |   | 
+| WildFire.Report.Software | string |   | 
+| WildFire.Report.Service | string |   | 
+| WildFire.Report.ProcessList.ProcessCommand | string |   | 
+| WildFire.Report.ProcessList.ProcessName | string |   | 
+| WildFire.Report.ProcessList.ProcessPid | string |   | 
+| WildFire.Report.ProcessList.ProcessFile | string |   | 
+| WildFire.Report.ProcessTree.ProcessName | string |   | 
+| WildFire.Report.ProcessTree.ProcessPid | string |   | 
+| WildFire.Report.ProcessTree.ProcessText | string |   | 
+| WildFire.Report.ProcessTree.Process.ChildName | string |   | 
+| WildFire.Report.ProcessTree.Process.ChildPid | string |   | 
+| WildFire.Report.ProcessTree.Process.ChildText | string |   | 
+| WildFire.Report.ProcessTree.ExtractedURL.URL | string |   | 
+| WildFire.Report.ProcessTree.ExtractedURL.Verdict | string |   | 
+| WildFire.Report.ProcessTree.Summary.Text | string |   | 
+| WildFire.Report.ProcessTree.Summary.Details | string |   | 
+| WildFire.Report.ProcessTree.Summary.Behavior | string |   | 
+| WildFire.Report.ProcessTree.ELF.ShellCommands | string |   | 
 
 
 #### Command Example
@@ -317,6 +355,25 @@ Retrieves results for a file hash using WildFire.
 | WildFire.Report.detection_reasons.artifacts | unknown | Artifacts of the detection reasons. | 
 | WildFire.Report.iocs | unknown | Associated IOCs. | 
 | WildFire.Report.verdict | string | The verdict of the report. | 
+| WildFire.Report.Platform | string |   | 
+| WildFire.Report.Software | string |   | 
+| WildFire.Report.Service | string |   | 
+| WildFire.Report.ProcessList.ProcessCommand | string |   | 
+| WildFire.Report.ProcessList.ProcessName | string |   | 
+| WildFire.Report.ProcessList.ProcessPid | string |   | 
+| WildFire.Report.ProcessList.ProcessFile | string |   | 
+| WildFire.Report.ProcessTree.ProcessName | string |   | 
+| WildFire.Report.ProcessTree.ProcessPid | string |   | 
+| WildFire.Report.ProcessTree.ProcessText | string |   | 
+| WildFire.Report.ProcessTree.Process.ChildName | string |   | 
+| WildFire.Report.ProcessTree.Process.ChildPid | string |   | 
+| WildFire.Report.ProcessTree.Process.ChildText | string |   | 
+| WildFire.Report.ProcessTree.ExtractedURL.URL | string |   | 
+| WildFire.Report.ProcessTree.ExtractedURL.Verdict | string |   | 
+| WildFire.Report.ProcessTree.Summary.Text | string |   | 
+| WildFire.Report.ProcessTree.Summary.Details | string |   | 
+| WildFire.Report.ProcessTree.Summary.Behavior | string |   | 
+| WildFire.Report.ProcessTree.ELF.ShellCommands | string |   | 
 
 
 #### Command Example
@@ -478,6 +535,25 @@ Uploads a URL of a webpage to WildFire for analysis.
 | WildFire.Report.detection_reasons.artifacts | unknown | Artifacts of the detection reasons. | 
 | WildFire.Report.iocs | unknown | Associated IOCs. | 
 | WildFire.Report.verdict | string | The verdict of the report. | 
+| WildFire.Report.Platform | string |   | 
+| WildFire.Report.Software | string |   | 
+| WildFire.Report.Service | string |   | 
+| WildFire.Report.ProcessList.ProcessCommand | string |   | 
+| WildFire.Report.ProcessList.ProcessName | string |   | 
+| WildFire.Report.ProcessList.ProcessPid | string |   | 
+| WildFire.Report.ProcessList.ProcessFile | string |   | 
+| WildFire.Report.ProcessTree.ProcessName | string |   | 
+| WildFire.Report.ProcessTree.ProcessPid | string |   | 
+| WildFire.Report.ProcessTree.ProcessText | string |   | 
+| WildFire.Report.ProcessTree.Process.ChildName | string |   | 
+| WildFire.Report.ProcessTree.Process.ChildPid | string |   | 
+| WildFire.Report.ProcessTree.Process.ChildText | string |   | 
+| WildFire.Report.ProcessTree.ExtractedURL.URL | string |   | 
+| WildFire.Report.ProcessTree.ExtractedURL.Verdict | string |   | 
+| WildFire.Report.ProcessTree.Summary.Text | string |   | 
+| WildFire.Report.ProcessTree.Summary.Details | string |   | 
+| WildFire.Report.ProcessTree.Summary.Behavior | string |   | 
+| WildFire.Report.ProcessTree.ELF.ShellCommands | string |   | 
 
 
 #### Command Example

@@ -7,7 +7,8 @@ import demistomock as demisto
 from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
     create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
     file_args_handler, wildfire_get_sample_command, wildfire_get_report_command, run_polling_command, \
-    wildfire_upload_url_command, prettify_url_verdict, create_dbot_score_from_url_verdict, parse_file_report
+    wildfire_upload_url_command, prettify_url_verdict, create_dbot_score_from_url_verdict, parse_file_report, \
+    update_verdict_command
 
 
 def test_will_return_ok():
@@ -305,6 +306,21 @@ def test_running_polling_command_new_search(mocker):
     assert command_results[0].scheduled_command is not None
 
 
+def test_update_verdict_command(mocker):
+
+    args = {'hash': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12'
+            ',c85f1ee5b83d3d1caa8d12ea4b2486cb3b9b60348a475c350a3ddeab9353ad3e',
+            'comment': 'test comment', 'verdict': 'benign'}
+    mocker_results = ['test', Exception('502')]
+    mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', side_effect=mocker_results)
+    results = update_verdict_command(args)
+    expected_results = '\nVerdict Hash File -> "f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12" is changed' \
+                       '\nVerdict Hash File -> "c85f1ee5b83d3d1caa8d12ea4b2486cb3b9b60348a475c350a3ddeab9353ad3e"' \
+                       ' is not changed - 502'
+
+    assert results.readable_output == expected_results
+
+
 def test_parse_file_report_network():
     """
     Given:
@@ -366,21 +382,43 @@ def test_parse_file_report_network():
                     }
             },
         "platform": "60",
-                    "process_list": {
-                        "process": {
-                            "@command": "C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE",
-                            "@name": "WINWORD.EXE",
-                            "@pid": "952",
-                            "file": 'test',
-                            "java_api": 'test',
-                            "service": 'test'
-                        }},
-                    "process_tree": {
-                        "process": {
-                            "@name": "WINWORD.EXE",
-                            "@pid": "952",
-                            "@text": "C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE"
-                        }},
+        "process_list": {
+            "process": {
+                "@command": "C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE",
+                "@name": "WINWORD.EXE",
+                "@pid": "952",
+                "file": 'test',
+                "java_api": 'test',
+                "service": 'test'
+            }},
+        "process_tree": {
+            "process": {
+                "@name": "WINWORD.EXE",
+                "@pid": "952",
+                "@text": "C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE",
+                'child': {
+                    'process': {
+                        '@name': 'test',
+                        '@pid': 'test',
+                        '@text': 'test'
+                    }
+                }
+            }},
+        'summary': {
+            'entry': {
+                '#text': 'test',
+                '@details': 'test',
+                '@behavior': 'test'
+            }},
+        'extracted_urls': {
+            'entry': {
+                '@url': 'test',
+                '@verdict': 'test'
+            }},
+        'elf_info': {
+            'Shell_Commands': {
+                'entry': 'test'
+            }}
     }
     expected_outputs_network = {'TCP': {'IP': ['1.1.1.1', '1.0.1.0'],
                                         'Port': ['443', '80'],
@@ -395,13 +433,23 @@ def test_parse_file_report_network():
                                         'UserAgent': 'test'}}
     expected_outputs_ProcessTree = {'ProcessName': ['WINWORD.EXE'],
                                     'ProcessPid': ['952'],
-                                    'ProcessText': ['C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE']}
+                                    'ProcessText': ['C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE'],
+                                    'Process': {
+                                        'ChildName': ['test'],
+                                        'ChildPid': ['test'],
+                                        'ChildText': ['test']}}
     expected_outputs_ProcessList = {'ProcessCommand': ['C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE'],
                                     'ProcessName': ['WINWORD.EXE'],
                                     'ProcessPid': ['952'],
                                     'ProcessFile': ['test'],
                                     'Service': ['test'],
                                     }
+    expected_outputs_Summary = {
+        'Text': ['test'],
+        'Details': ['test'],
+        'Behavior': ['test']
+    }
+    expected_outputs_elf = {'ShellCommands': ['test']}
     outputs, feed_related_indicators, behavior, relationships = parse_file_report(file_hash='test',
                                                                                   reports=report,
                                                                                   file_info={},
@@ -409,3 +457,5 @@ def test_parse_file_report_network():
     assert expected_outputs_network == outputs.get('Network')
     assert expected_outputs_ProcessTree == outputs.get('ProcessTree')
     assert expected_outputs_ProcessList == outputs.get('ProcessList')
+    assert expected_outputs_Summary == outputs.get('Summary')
+    assert expected_outputs_elf == outputs.get('ELF')
