@@ -5,11 +5,11 @@ from CrowdStrikeFalconX import Client, \
     get_full_report_command, get_report_summary_command, get_analysis_status_command, \
     check_quota_status_command, find_sandbox_reports_command, find_submission_id_command, run_polling_command, \
     pop_polling_related_args, is_new_polling_search, arrange_args_for_upload_func, remove_polling_related_args, \
-    DBotScoreReliability
+    DBotScoreReliability, parse_indicator
 from TestsInput.context import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT, \
     GET_FULL_REPORT_CONTEXT, GET_REPORT_SUMMARY_CONTEXT, GET_ANALYSIS_STATUS_CONTEXT, CHECK_QUOTA_STATUS_CONTEXT, \
     FIND_SANDBOX_REPORTS_CONTEXT, FIND_SUBMISSION_ID_CONTEXT, MULTIPLE_ERRORS_RESULT, GET_FULL_REPORT_CONTEXT_EXTENDED
-from TestsInput.http_responses import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE, \
+from TestsInput.http_responses import SEND_UPLOADED_FILE_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, \
     SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, GET_FULL_REPORT_HTTP_RESPONSE, GET_REPORT_SUMMARY_HTTP_RESPONSE, \
     CHECK_QUOTA_STATUS_HTTP_RESPONSE, FIND_SANDBOX_REPORTS_HTTP_RESPONSE, FIND_SUBMISSION_ID_HTTP_RESPONSE, \
     GET_ANALYSIS_STATUS_HTTP_RESPONSE, MULTI_ERRORS_HTTP_RESPONSE, NO_ERRORS_HTTP_RESPONSE, \
@@ -146,12 +146,12 @@ def test_cs_falconx_commands(command, args, http_response, context, mocker):
     if isinstance(context, dict) and len(outputs) == 1:
         outputs = outputs[0]
 
-    assert outputs == context, ddiff(outputs, context) # todo remove ddiff
+    assert outputs == context, ddiff(outputs, context)  # todo remove ddiff
 
 
 @pytest.mark.parametrize('command, args, http_response, context', [
     (send_uploaded_file_to_sandbox_analysis_command, SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS,
-     SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE, SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT),
+     SEND_UPLOADED_FILE_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT),
     (send_url_to_sandbox_analysis_command, SEND_URL_TO_SANDBOX_ANALYSIS_ARGS,
      SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT),
     (get_full_report_command, GET_FULL_REPORT_ARGS, GET_FULL_REPORT_HTTP_RESPONSE, GET_FULL_REPORT_CONTEXT),
@@ -180,12 +180,12 @@ def test_cs_falcon_x_polling_related_commands(command, args, http_response, cont
         command_res, status = command(client, **args)
     else:
         command_res = command(client, **args)
-    if not isinstance(command_res, list):
-        command_res = [command_res]
-    else:
+    if isinstance(command_res, list):
         assert len(command_res) == 1
+    else:
+        command_res = [command_res]
 
-    assert command_res[0].outputs == context, ddiff(command_res[0].outputs, context)# todo remove ddiff
+    assert command_res[0].outputs == context, ddiff(command_res[0].outputs, context)  # todo remove ddiff
 
 
 @pytest.mark.parametrize('http_response, output', [
@@ -284,7 +284,7 @@ def test_running_polling_command_success_for_file(mocker):
                                           send_uploaded_file_to_sandbox_analysis_command,
                                           get_full_report_command, 'FILE')
     assert isinstance(command_results, list) and len(command_results) == 1
-    print(ddiff(command_results[0].outputs, expected_outputs)) # todo remove
+    print(ddiff(command_results[0].outputs, expected_outputs))  # todo remove
     assert command_results[0].outputs == expected_outputs
     assert command_results[0].scheduled_command is None
 
@@ -358,7 +358,7 @@ def test_running_polling_command_new_search_for_url(mocker):
                     proxy=False, reliability=DBotScoreReliability.B)
 
     mocker.patch.object(Client, 'send_url_to_sandbox_analysis',
-                        return_value=SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE)
+                        return_value=SEND_UPLOADED_FILE_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE)
     mocker.patch.object(Client, 'get_full_report', return_value=GET_FULL_REPORT_HTTP_RESPONSE)
 
     expected_outputs = SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT
@@ -387,7 +387,7 @@ def test_running_polling_command_new_search_for_file(mocker):
                     proxy=False, reliability=DBotScoreReliability.B)
 
     mocker.patch.object(Client, 'send_uploaded_file_to_sandbox_analysis',
-                        return_value=SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE)
+                        return_value=SEND_UPLOADED_FILE_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE)
     mocker.patch.object(Client, 'get_full_report', return_value=GET_FULL_REPORT_HTTP_RESPONSE)
 
     expected_outputs = SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT
@@ -447,3 +447,45 @@ def test_remove_polling_related_args():
     remove_polling_related_args(args)
     assert 'interval_in_seconds' not in args
     assert 'extended_data' not in args
+
+
+def test_parse_indicator():
+    sandbox = {
+        'sha256': 'sha256',
+        'verdict': 'suspicious',
+        'submit_name': 'submit_name',
+        'file_size': 123,
+        'file_type': 'foo type',
+        'version_info': [{'id': k, 'value': k} for k in
+                         ('CompanyName', 'ProductName', 'LegalCopyright', 'FileDescription', 'FileVersion',
+                          'InternalName', 'OriginalFilename')
+                         ],
+        'submission_type': 'file',
+        'dns_requests': [{'address': 'example0.com/foo', 'domain': 'example0.com'}],
+        'contacted_hosts': [{'address': 'example1.com'},
+                            {'address': 'example2.com'}]
+    }
+    indicator = parse_indicator(sandbox=sandbox, reliability_str=DBotScoreReliability.A_PLUS)
+    expected_context = {'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || '
+                        'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || '
+                        'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || '
+                        'val.SSDeep && val.SSDeep == obj.SSDeep)': {
+        'Name': 'submit_name', 'Size': 123, 'SHA256': 'sha256', 'Type': 'foo type', 'Company': 'CompanyName',
+        'ProductName': 'ProductName',
+        'Signature': {'Authentihash': '', 'Copyright': 'LegalCopyright', 'Description': 'FileDescription',
+                      'FileVersion': 'FileVersion', 'InternalName': 'InternalName',
+                      'OriginalName': 'OriginalFilename'},
+        'Relationships': [{'Relationship': 'communicates-with', 'EntityA': 'submit_name', 'EntityAType': 'File',
+                           'EntityB': 'example0.com/foo', 'EntityBType': 'IP'},
+                          {'Relationship': 'communicates-with', 'EntityA': 'submit_name', 'EntityAType': 'File',
+                           'EntityB': 'example0.com', 'EntityBType': 'Domain'},
+                          {'Relationship': 'communicates-with', 'EntityA': 'submit_name', 'EntityAType': 'File',
+                           'EntityB': 'example1.com', 'EntityBType': 'IP'},
+                          {'Relationship': 'communicates-with', 'EntityA': 'submit_name', 'EntityAType': 'File',
+                           'EntityB': 'example2.com', 'EntityBType': 'IP'}]},
+        'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
+        'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
+            'Indicator': 'sha256', 'Type': 'file', 'Vendor': '', 'Score': 2,
+            'Reliability': 'A+ - 3rd party enrichment'}}
+
+    assert indicator.to_context() == expected_context, ddiff(indicator.to_context(), expected_context)

@@ -1,4 +1,4 @@
-SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE = {
+SEND_UPLOADED_FILE_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE = {
     "errors": [],
     "meta": {
         "powered_by": "falconx-api",

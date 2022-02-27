@@ -588,26 +588,28 @@ def parse_indicator_relationships(sandbox: dict, indicator_name: str, reliabilit
                                   entity_b_type=entity_b_type,
                                   source_reliability=reliability)
 
-    if request_address := demisto.get(sandbox, 'dns_requests.address'):
-        relationships.append(_create_relationship(
-            relationship_name=EntityRelationship.Relationships.COMMUNICATES_WITH,
-            entity_b=request_address,
-            entity_b_type=FeedIndicatorType.IP)
-        )
+    for request in sandbox.get('dns_requests', []):
+        if request_address := request.get('address'):
+            relationships.append(_create_relationship(
+                relationship_name=EntityRelationship.Relationships.COMMUNICATES_WITH,
+                entity_b=request_address,
+                entity_b_type=FeedIndicatorType.IP)
+            )
 
-    if request_domain := demisto.get(sandbox, 'dns_requests.domain'):
-        relationships.append(_create_relationship(
-            relationship_name=EntityRelationship.Relationships.COMMUNICATES_WITH,
-            entity_b=request_domain,
-            entity_b_type=FeedIndicatorType.Domain)
-        )
+        if request_domain := request.get('domain'):
+            relationships.append(_create_relationship(
+                relationship_name=EntityRelationship.Relationships.COMMUNICATES_WITH,
+                entity_b=request_domain,
+                entity_b_type=FeedIndicatorType.Domain)
+            )
 
-    if host_address := demisto.get(sandbox, 'contacted_hosts.address'):
-        relationships.append(_create_relationship(
-            relationship_name=EntityRelationship.Relationships.COMMUNICATES_WITH,
-            entity_b=host_address,
-            entity_b_type=FeedIndicatorType.IP)
-        )
+    for host in sandbox.get('contacted_hosts', []):
+        if host_address := host.get('address'):
+            relationships.append(_create_relationship(
+                relationship_name=EntityRelationship.Relationships.COMMUNICATES_WITH,
+                entity_b=host_address,
+                entity_b_type=FeedIndicatorType.IP)
+            )
     return relationships
 
 
@@ -820,13 +822,13 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
                                               readable_output=readable_output,
                                               raw_response=result.response,
                                               indicator=result.indicator))
-    else:  # empty result list
-        command_results = [
-            CommandResults(readable_output=
-                           f'There are no results yet for the any of the queried samples ({ids}),'
-                           f' analysis might not have been completed. '  # todo add file may not exist? 
-                           'Please wait to download the report.\n'
-                           'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.')
+    if not command_results:
+        command_results = [CommandResults(
+            readable_output=
+            f'There are no results yet for the any of the queried samples ({ids}),'
+            f' analysis might not have been completed. '  # todo add file may not exist? 
+            'Please wait to download the report.\n'
+            'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.')
         ]
     return command_results, is_command_finished
 
