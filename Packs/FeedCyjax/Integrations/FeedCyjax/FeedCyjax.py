@@ -280,7 +280,7 @@ def convert_cyjax_indicator(cyjax_indicator: dict, score: Optional[int] = None, 
         fields['trafficlightprotocol'] = tlp
 
     if tags:
-        fields['tags'] = tags
+        fields['tags'] = tags  # type: ignore
 
     if 'description' in cyjax_indicator:
         fields['description'] = cyjax_indicator['description']
