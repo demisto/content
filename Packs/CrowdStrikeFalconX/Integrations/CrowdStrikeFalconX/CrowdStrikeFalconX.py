@@ -422,7 +422,7 @@ class Client:
             "sort": sort,
             "hash": hash
         }
-        if limit:
+        if filter:
             params.pop('hash')
 
         return self._http_request("Get", url_suffix, params=assign_params(**params))
@@ -453,7 +453,8 @@ class Client:
 
     def file(self, file_hashes: list[str]) -> list[CommandResults]:
         params = {'filter': ",".join(f'sandbox.sha256:"{sha256}"' for sha256 in file_hashes)}
-        report_ids = self._http_request('get', '/queries/reports/v1', params=params).get('resources', [])
+        response = self._http_request('get', '/queries/reports/v1', params=params)
+        report_ids = response.get('resources', [])
         command_results, _ = get_full_report_command(self, ids=report_ids, extended_data='FILE')
         return command_results
 
@@ -765,7 +766,7 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
     :param client: the client object with an access token
     :param ids: ids of a submitted malware samples.
     :param extended_data: Whether to return extended data which includes mitre attacks and signature information.
-    :return: Demisto outputs when entry_context and responses are lists
+    :return: list of CommandResults, and a boolean marking at least one of them has `resources` (used for polling)
     """
     results: list[CommandResultArguments] = []
     is_command_finished: bool = False
@@ -792,7 +793,7 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
     for id_ in argToList(ids):
         response = client.get_full_report(id_)
         if response.get('resources'):
-            is_command_finished = True
+            is_command_finished = True  # flag used when commands
 
         if extended_data == 'true':
             extra_sandbox_fields.extend(["mitre_attacks", "signatures"])
@@ -823,7 +824,7 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
                                               readable_output=readable_output,
                                               raw_response=result.response,
                                               indicator=result.indicator))
-    return command_results, is_command_finished  # latter is only relevant for polling, where it's necessary single file
+    return command_results, is_command_finished
 
 
 def get_report_summary_command(
