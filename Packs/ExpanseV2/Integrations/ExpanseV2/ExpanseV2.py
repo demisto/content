@@ -585,7 +585,8 @@ class Client(BaseClient):
                             and (re := rri[0].get('registryEntities'))
                             and isinstance(re, list)
                     ):
-                        ml_feature_list.extend(set(r['formattedName'] for r in re if 'formattedName' in r))
+                        ml_feature_list.extend(set(r['formattedName']
+                                                   for r in re if 'formattedName' in r))  # pylint: disable=E1133
 
                 elif a.get('assetType') == "Certificate":
                     # for Certificate collect issuerOrg, issuerName,

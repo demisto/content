@@ -23,4 +23,3 @@ timeout-decorator==0.5.0
 sendgrid==6.6.0
 blessings==1.7
 slack_sdk==3.11.2
-cryptography==36.0.1

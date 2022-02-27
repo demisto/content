@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa # pylint: disable=unused-wildcard-import
-
+# mypy: ignore-errors
 from cryptography.hazmat import backends
 from cryptography.hazmat.primitives import (
     hashes,
