@@ -532,7 +532,7 @@ def events_search_results_command(client: FortiSIEMClient, args: Dict[str, Any])
     outputs, total_pages = format_search_events_results(response, limit)
     header = format_readable_output_header(f"Search Query: {search_id} Results", limit, page, total_pages)
     readable_outputs = tableToMarkdown(header, get_list_events_readable_output(outputs),
-                                       headers=["eventID", "EventReceiveTime", "EventType", "rawMessage", "sourceIP",
+                                       headers=["eventID", "eventReceiveTime", "eventType", "message", "sourceIP",
                                                 "destinationIP",
                                                 "hostName", "hostIp", "user", "fileName", "command", "filePath",
                                                 "SHA256Hash", "MD5Hash", "rawEventLog"], headerTransform=pascalToSpace)
