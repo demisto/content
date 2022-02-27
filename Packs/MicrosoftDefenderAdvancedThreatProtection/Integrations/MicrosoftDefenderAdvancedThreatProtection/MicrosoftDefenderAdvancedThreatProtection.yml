@@ -3940,7 +3940,7 @@ script:
       secret: false
     - default: false
       auto: PREDEFINED
-      description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256",
+      description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256", "FileMd5",
         "IpAddress", "DomainName", and "Url".'
       isArray: false
       name: indicator_type
@@ -3948,6 +3948,7 @@ script:
       predefined:
       - FileSha1
       - FileSha256
+      - FileMd5
       - IpAddress
       - DomainName
       - Url
@@ -3959,8 +3960,8 @@ script:
       name: action
       required: true
       predefined:
-      - Alert
-      - AlertAndBlock
+      - Audit
+      - BlockAndRemediate
       - Allowed
     - default: false
       auto: PREDEFINED
@@ -4135,7 +4136,7 @@ script:
       secret: false
     - default: false
       auto: PREDEFINED
-      description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256",
+      description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256", "FileMd5",
         "IpAddress", "DomainName", and "Url".'
       isArray: false
       name: indicator_type
@@ -4143,6 +4144,7 @@ script:
       predefined:
       - FileSha1
       - FileSha256
+      - FileMd5
       - IpAddress
       - DomainName
       - Url
@@ -4154,8 +4156,8 @@ script:
       name: action
       required: true
       predefined:
-      - Alert
-      - AlertAndBlock
+      - Audit
+      - BlockAndRemediate
       - Allowed
     - default: false
       auto: PREDEFINED

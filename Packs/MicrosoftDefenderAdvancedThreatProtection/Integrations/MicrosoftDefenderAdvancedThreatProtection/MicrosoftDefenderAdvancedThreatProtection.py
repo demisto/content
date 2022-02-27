@@ -899,6 +899,7 @@ class MsClient:
             'action': action,
             'title': indicator_title,
             'description': description,
+            'generateAlert': True,
         }
         body.update(assign_params(  # optional params
             severity=severity,
@@ -2563,6 +2564,7 @@ def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str
             ],
             removeNull=True
         )
+
         outputs = {'MicrosoftATP.Indicators(val.id == obj.id)': indicators}
         std_outputs = build_std_output(indicators)
         outputs.update(std_outputs)
@@ -2825,7 +2827,8 @@ def sc_create_update_indicator_command(client: MsClient, args: Dict[str, str]) -
 
     indicator = client.create_update_indicator_security_center_api(
         indicator_value=indicator_value, expiration_date_time=expiration_time,
-        description=indicator_description, severity=severity, indicator_type=indicator_type, action=action,
+        description=indicator_description, severity=severity, indicator_type=indicator_type,
+        action=action,
         indicator_title=indicator_title, indicator_application=indicator_application,
         recommended_actions=recommended_actions, rbac_group_names=rbac_group_names
     )
