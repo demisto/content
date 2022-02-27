@@ -467,13 +467,16 @@ def list_incidents_command(client, args, is_fetch_incidents=False, first_fetch=F
     demisto.debug(f"{is_fetch_incidents=}, {first_fetch=}")
 
     if next_link:
+        demisto.debug(f"next link")
         next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
         result = client.http_request('GET', full_url=next_link)
 
     elif is_fetch_incidents and not first_fetch:
+        demisto.debug(f"is_fetch_incidents and not first_fetch")
         params = {'$orderby': 'properties/incidentNumber asc'}
 
     else:  # it is a first fetch, or not a part of a fetch command
+        demisto.debug(f"not is_fetch_incidents or first_fetch")
         params = {'$orderby': 'properties/createdTimeUtc asc'}
 
     if not result:
@@ -483,7 +486,6 @@ def list_incidents_command(client, args, is_fetch_incidents=False, first_fetch=F
 
         result = client.http_request('GET', url_suffix, params=params)
 
-    demisto.debug(f"{params=}")
     incidents = [incident_data_to_xsoar_format(inc) for inc in result.get('value')]
     demisto.debug(f"number of incidents: {len(incidents)}")
     if is_fetch_incidents:
