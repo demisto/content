@@ -40,13 +40,13 @@ display: FireMon Security Manager
 name: FireMonSecurityManager
 script:
   commands:
-  - arguments: []
-    description: Returns authentication token
+  - description: Returns authentication token
     name: firemon-user-authentication
     outputs:
     - contextPath: FireMonSecurityManager.Authentication.token
       description: Authentication token
       type: String
+    arguments: []
   - arguments:
     - description: Domain Id
       name: domain_id
@@ -110,12 +110,12 @@ script:
     - contextPath: FireMonSecurityManager.SIQL.matchId
       description: Resposne for the SIQL query
       type: Unknown
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.1.26972
   isfetch: true
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
+fromversion: 5.5.0
