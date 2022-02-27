@@ -88,8 +88,10 @@ FireEye
 FormatURL
 Gitlab
 GitHub
+Lastline
 VMware
 TAXII
 Syslog
 DomainTools
 replyTo
+URLs
