@@ -306,12 +306,12 @@ def test_running_polling_command_new_search(mocker):
 
 
 def test_update_verdict_command(mocker):
-
+    import Palo_Alto_Networks_WildFire_v2
     args = {'hash': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12'
             ',c85f1ee5b83d3d1caa8d12ea4b2486cb3b9b60348a475c350a3ddeab9353ad3e',
             'comment': 'test comment', 'verdict': 'benign'}
     mocker_results = ['test', Exception('502')]
-    mocker.patch.object(demisto, 'params', return_value={'server': "https://wildfire.paloaltonetworks.com/publicapi"})
+    Palo_Alto_Networks_WildFire_v2.update_verdict_url = 'test'
     mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', side_effect=mocker_results)
     results = update_verdict_command(args)
     expected_results = '\nVerdict Hash File -> "f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12" is changed' \
