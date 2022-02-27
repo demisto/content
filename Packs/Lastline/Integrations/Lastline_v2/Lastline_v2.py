@@ -300,6 +300,7 @@ def get_report_context(result: Dict, threshold=None) -> Dict:
             context_entry['Lastline'] = lastline
             context_entry[key] = data
 
+        # in case of a file indicator
         if dbotscore_list and dbotscore_list[0]['Score'] != 0:
             context_entry['DBotScore'] = dbotscore_list
 
