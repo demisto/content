@@ -17,7 +17,7 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "longText",
+    "type": "markdown",
     "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,
