@@ -595,7 +595,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
         logging.warning(deprecated_commands_message)
 
     packs_to_install = collect_content_packs_to_install(id_set, integration_ids, playbook_names, script_names)
-
+    logging.info(f'**{tests_set}**')
     return tests_set, catched_scripts, catched_playbooks, packs_to_install
 
 
@@ -1068,6 +1068,7 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: dict, marketplace_v
     tests_that_should_not_be_tested = set()
     for test in tests:
         content_pack_name_list = list(get_content_pack_name_of_test({test}, id_set))
+        logging.info(f'{test} in pack {content_pack_name_list}')
         if content_pack_name_list:
             id_set_test_playbook_pack_name = content_pack_name_list[0]
 
@@ -1202,7 +1203,7 @@ def get_test_list_and_content_packs_to_install(files_string,
 
     # Check if only README file in file string, if so, no need to create the servers.
     documentation_changes_only = is_documentation_changes_only(files_string)
-    create_filter_envs_file(from_version, to_version, documentation_changes_only=documentation_changes_only)
+    # create_filter_envs_file(from_version, to_version, documentation_changes_only=documentation_changes_only)
 
     tests = set([])
     packs_to_install = set([])
@@ -1252,6 +1253,7 @@ def get_test_list_and_content_packs_to_install(files_string,
     # All filtering out of packs should be done here
     packs_to_install = filter_installed_packs(packs_to_install, marketplace_version, id_set)
 
+    logging.info(tests)
     # All filtering out of tests should be done here
     tests = filter_tests(tests, id_set, modified_packs, marketplace_version)
 
