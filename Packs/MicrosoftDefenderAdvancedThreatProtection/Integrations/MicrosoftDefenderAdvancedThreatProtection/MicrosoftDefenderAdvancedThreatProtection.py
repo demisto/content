@@ -3555,7 +3555,7 @@ def main():
             return_outputs(*remove_app_restriction_command(client, args))
 
         elif command == 'microsoft-atp-stop-and-quarantine-file':
-            return_results(*stop_and_quarantine_file_command(client, args))
+            return_results(stop_and_quarantine_file_command(client, args))
 
         elif command == 'microsoft-atp-list-investigations':
             return_outputs(*get_investigations_by_id_command(client, args))
