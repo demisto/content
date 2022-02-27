@@ -1368,7 +1368,7 @@ def format_update_incident_readable_output(incident_id: str, response: str) -> s
         str: Formatted message.
     """
     if response == 'OK':
-        return f"The incident: {incident_id} was successfully updated."
+        return f"Incident ID {incident_id} was successfully updated."
     return f"Failed to update The incident: {incident_id}."
 
 
