@@ -756,7 +756,7 @@ def watchlist_get_command(client: FortiSIEMClient, args: Dict[str, Any]) -> List
     Returns:
        List[CommandResults]: Command results with raw response, outputs and readable outputs.
     """
-    watchlist_id_list = argToList(args.get('watchlist_id'))
+    watchlist_id_list = argToList(args.get('watchlist_ids'))
     entry_id_list = argToList(args.get('entry_id'))
     command_results_list: List[CommandResults] = []
     for watchlist_id in watchlist_id_list:

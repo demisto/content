@@ -641,7 +641,7 @@ script:
     - default: false
       description: Comma separate list of watchlist group ID.
       isArray: false
-      name: watchlist_id
+      name: watchlist_ids
       required: false
       secret: false
     - default: false
