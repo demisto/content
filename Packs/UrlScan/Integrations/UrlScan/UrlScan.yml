@@ -8,8 +8,8 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
-- additionalinfo: Determines the visbility level of the scan. This will override the 'public submissions' setting.
-  display: Scan Visbibility
+- additionalinfo: Determines the visibility level of the scan. This will override the 'public submissions' setting.
+  display: Scan Visibility
   name: scan_visibility
   options:
   - public
