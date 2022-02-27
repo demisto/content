@@ -158,6 +158,7 @@ def fetch_incidents(last_run, first_run_time_range):
             alert_time_min = alert_time_max - timedelta(days=first_run_time_range)
         else:
             alert_time_min = dateparser.parse(last_fetch)
+        assert alert_time_min is not None
 
         cov_alerts = list_alerts(target_org=target_org,
                                  max_count=FETCH_LIMIT,
