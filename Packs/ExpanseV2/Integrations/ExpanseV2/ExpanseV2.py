@@ -1082,24 +1082,16 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     sort = ','.join(arg_list)
 
     d = args.get('created_before', None)
-    parsed_date = parse(d)
-    assert parsed_date is not None
-    created_before = parsed_date.strftime(DATE_FORMAT) if d else None
+    created_before = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     d = args.get('created_after', None)
-    parsed_date = parse(d)
-    assert parsed_date is not None
-    created_after = parsed_date.strftime(DATE_FORMAT) if d else None
+    created_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     d = args.get('modified_before', None)
-    parsed_date = parse(d)
-    assert parsed_date is not None
-    modified_before = parsed_date.strftime(DATE_FORMAT) if d else None
+    modified_before = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     d = args.get('modified_after', None)
-    parsed_date = parse(d)
-    assert parsed_date is not None
-    modified_after = parsed_date.strftime(DATE_FORMAT) if d else None
+    modified_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     issues = list(
         islice(
@@ -1272,9 +1264,7 @@ def get_issue_updates_command(client: Client, args: Dict[str, Any]) -> CommandRe
         raise ValueError(f'Invalid update_type: {update_types}. Must include: {",".join(ISSUE_UPDATE_TYPES.keys())}')
 
     d = args.get('created_after')
-    parsed_date = parse(d)  # type: ignore
-    assert parsed_date is not None
-    created_after = parsed_date.strftime(DATE_FORMAT) if d else None
+    created_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     issue_updates = [
         {**u, "issueId": issue_id}  # this adds the issue id to the resulting dict
@@ -1304,9 +1294,7 @@ def get_issue_comments_command(client: Client, args: Dict[str, Any]) -> CommandR
         raise ValueError('issue_id not specified')
 
     d = args.get('created_after')
-    parsed_date = parse(d)  # type: ignore
-    assert parsed_date is not None
-    created_after = parsed_date.strftime(DATE_FORMAT) if d else None
+    created_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     issue_comments = [
         {**u, "issueId": issue_id}  # this adds the issue id to the resulting dict
