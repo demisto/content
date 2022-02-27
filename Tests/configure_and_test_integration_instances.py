@@ -34,7 +34,7 @@ from Tests.Marketplace.search_and_install_packs import search_and_install_packs_
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.test_content import get_server_numeric_version
-from Tests.test_integration import __get_integration_config, __test_integration_instance, disable_all_integrations
+from Tests.test_integration import __get_integration_config, test_integration_instance, disable_all_integrations
 from Tests.tools import run_with_proxy_configured
 from Tests.update_content_data import update_content
 
@@ -73,6 +73,14 @@ class Running(IntEnum):
 
 
 class Server:
+    pass
+
+
+class XSIAMServer(Server):
+    pass
+
+
+class XSOARServer(Server):
 
     def __init__(self, internal_ip, port, user_name, password):
         self.__ssh_client = None
@@ -138,15 +146,9 @@ class Build:
         self.branch_name = options.branch
         self.ci_build_number = options.build_number
         self.is_nightly = options.is_nightly
-        self.ami_env = options.ami_env
-        self.server_to_port_mapping, self.server_numeric_version = self.get_servers(options.ami_env)
         self.secret_conf = get_json_file(options.secret)
         self.username = options.user if options.user else self.secret_conf.get('username')
         self.password = options.password if options.password else self.secret_conf.get('userPassword')
-        self.servers = [Server(internal_ip,
-                               port,
-                               self.username,
-                               self.password) for internal_ip, port in self.server_to_port_mapping.items()]
         self.is_private = options.is_private
         conf = get_json_file(options.conf)
         self.tests = conf['tests']
@@ -158,21 +160,6 @@ class Build:
         self.tests_to_run = self.fetch_tests_list(options.tests_to_run)
         self.content_root = options.content_root
         self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
-        self.service_account = options.service_account
-
-    @property
-    def proxy(self) -> MITMProxy:
-        """
-        A property method that should create and return a single proxy instance through out the build
-        Returns:
-            The single proxy instance that should be used in this build.
-        """
-        if not self._proxy:
-            self._proxy = MITMProxy(self.servers[0].internal_ip,
-                                    logging_module=logging,
-                                    build_number=self.ci_build_number,
-                                    branch_name=self.branch_name)
-        return self._proxy
 
     @staticmethod
     def fetch_tests_list(tests_to_run_path: str):
@@ -215,6 +202,371 @@ class Build:
         else:
             server_numeric_version = Build.DEFAULT_SERVER_VERSION
         return server_to_port_mapping, server_numeric_version
+
+    def configure_servers_and_restart(self):
+        pass
+
+    def disable_instances(self):
+        pass
+
+    def get_changed_integrations(self) -> tuple:
+        """
+        Return 2 lists - list of new integrations and list of modified integrations since the commit of the git_sha1.
+
+        Args:
+            self: the build object
+        Returns:
+            list of new integrations and list of modified integrations
+        """
+        new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(
+            self.branch_name) if not self.is_private else ([], [])
+        new_integrations_names, modified_integrations_names = [], []
+
+        if new_integrations_files:
+            new_integrations_names = get_integration_names_from_files(new_integrations_files)
+            logging.debug(f'New Integrations Since Last Release:\n{new_integrations_names}')
+
+        if modified_integrations_files:
+            modified_integrations_names = get_integration_names_from_files(modified_integrations_files)
+            logging.debug(f'Updated Integrations Since Last Release:\n{modified_integrations_names}')
+        return new_integrations_names, modified_integrations_names
+
+    def install_packs_pre_update(self) -> bool:
+        """
+        Install packs on server according to server version
+        Args:
+            build: A build object
+
+        Returns:
+            A boolean that indicates whether the installation was successful or not
+        """
+        installed_content_packs_successfully = False
+        if self.is_nightly:
+            self.install_nightly_pack()
+            installed_content_packs_successfully = True
+        else:
+            if not self.is_private:
+                pack_ids = get_non_added_packs_ids(self)
+                installed_content_packs_successfully = self.install_packs(pack_ids=pack_ids)
+        return installed_content_packs_successfully
+
+    def nightly_install_packs(self, install_method=None, pack_path=None, service_account=None):
+        threads_list = []
+
+        if not install_method:
+            raise Exception('Install method was not provided.')
+
+        # For each server url we install pack/ packs
+        for server in self.servers:
+            kwargs = {'client': server.client, 'host': server.internal_ip}
+            if service_account:
+                kwargs['service_account'] = service_account
+            if pack_path:
+                kwargs['pack_path'] = pack_path
+            threads_list.append(Thread(target=install_method, kwargs=kwargs))
+        run_threads_list(threads_list)
+
+    def install_nightly_pack(self):
+        self.nightly_install_packs(install_method=install_all_content_packs_for_nightly,
+                                   service_account=self.service_account)
+        create_nightly_test_pack()
+        self.nightly_install_packs(install_method=upload_zipped_packs,
+                                   pack_path=f'{Build.test_pack_target}/test_pack.zip')
+
+        logging.info('Sleeping for 45 seconds while installing nightly packs')
+        sleep(45)
+
+    def install_packs(self, pack_ids=None):
+        pack_ids = self.pack_ids_to_install if pack_ids is None else pack_ids
+        installed_content_packs_successfully = True
+        for server in self.servers:
+            try:
+                _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client)
+                if not flag:
+                    raise Exception('Failed to search and install packs.')
+            except Exception:
+                logging.exception('Failed to search and install packs')
+                installed_content_packs_successfully = False
+
+        return installed_content_packs_successfully
+
+    def get_tests(self) -> List[dict]:
+        """
+        Selects the tests from that should be run in this execution and filters those that cannot run in this server version
+        Args:
+            build: Build object
+
+        Returns:
+            Test configurations from conf.json that should be run in this execution
+        """
+        server_numeric_version: str = self.server_numeric_version
+        tests: dict = self.tests
+        if Build.run_environment == Running.CI_RUN:
+            filtered_tests = BuildContext._extract_filtered_tests()
+            if self.is_nightly:
+                # skip test button testing
+                logging.debug('Not running instance tests in nightly flow')
+                tests_for_iteration = []
+            else:
+                tests_for_iteration = [test for test in tests
+                                       if not filtered_tests or test.get('playbookID', '') in filtered_tests]
+
+            tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version)
+            return tests_for_iteration
+
+        # START CHANGE ON LOCAL RUN #
+        return [
+            {
+                "playbookID": "Docker Hardening Test",
+                "fromversion": "5.0.0"
+            },
+            {
+                "integrations": "SplunkPy",
+                "playbookID": "SplunkPy-Test-V2",
+                "memory_threshold": 500,
+                "instance_names": "use_default_handler"
+            }
+        ]
+        #  END CHANGE ON LOCAL RUN  #
+
+    def configure_server_instances(self, tests_for_iteration, all_new_integrations, modified_integrations):
+        modified_module_instances = []
+        new_module_instances = []
+        testing_client = self.servers[0].client
+        for test in tests_for_iteration:
+            integrations = get_integrations_for_test(test, self.skipped_integrations_conf)
+
+            playbook_id = test.get('playbookID')
+
+            new_integrations, modified_integrations, unchanged_integrations, integration_to_status = group_integrations(
+                integrations, self.skipped_integrations_conf, all_new_integrations, modified_integrations
+            )
+            integration_to_status_string = '\n\t\t\t\t\t\t'.join(
+                [f'"{key}" - {val}' for key, val in integration_to_status.items()])
+            if integration_to_status_string:
+                logging.info(f'All Integrations for test "{playbook_id}":\n\t\t\t\t\t\t{integration_to_status_string}')
+            else:
+                logging.info(f'No Integrations for test "{playbook_id}"')
+            instance_names_conf = test.get('instance_names', [])
+            if not isinstance(instance_names_conf, list):
+                instance_names_conf = [instance_names_conf]
+
+            integrations_to_configure = modified_integrations[:]
+            integrations_to_configure.extend(unchanged_integrations)
+            placeholders_map = {'%%SERVER_HOST%%': self.servers[0]}
+            new_ints_params_set = set_integration_params(self,
+                                                         new_integrations,
+                                                         self.secret_conf['integrations'],
+                                                         instance_names_conf,
+                                                         placeholders_map)
+            ints_to_configure_params_set = set_integration_params(self,
+                                                                  integrations_to_configure,
+                                                                  self.secret_conf['integrations'],
+                                                                  instance_names_conf, placeholders_map)
+            if not new_ints_params_set:
+                logging.error(f'failed setting parameters for integrations: {new_integrations}')
+            if not ints_to_configure_params_set:
+                logging.error(f'failed setting parameters for integrations: {integrations_to_configure}')
+            if not (new_ints_params_set and ints_to_configure_params_set):
+                continue
+
+            modified_module_instances_for_test, new_module_instances_for_test = self.configure_modified_and_new_integrations(
+                integrations_to_configure,
+                new_integrations,
+                testing_client)
+
+            modified_module_instances.extend(modified_module_instances_for_test)
+            new_module_instances.extend(new_module_instances_for_test)
+        return modified_module_instances, new_module_instances
+
+    def configure_modified_and_new_integrations(self,
+                                                modified_integrations_to_configure: list,
+                                                new_integrations_to_configure: list,
+                                                demisto_client_: demisto_client) -> tuple:
+        """
+        Configures old and new integrations in the server configured in the demisto_client.
+        Args:
+            self: The build object
+            modified_integrations_to_configure: Integrations to configure that are already exists
+            new_integrations_to_configure: Integrations to configure that were created in this build
+            demisto_client: A demisto client
+
+        Returns:
+            A tuple with two lists:
+            1. List of configured instances of modified integrations
+            2. List of configured instances of new integrations
+        """
+        modified_modules_instances = []
+        new_modules_instances = []
+        for integration in modified_integrations_to_configure:
+            placeholders_map = {'%%SERVER_HOST%%': self.servers[0]}
+            module_instance = configure_integration_instance(integration, demisto_client_, placeholders_map)
+            if module_instance:
+                modified_modules_instances.append(module_instance)
+        for integration in new_integrations_to_configure:
+            placeholders_map = {'%%SERVER_HOST%%': self.servers[0]}
+            module_instance = configure_integration_instance(integration, demisto_client_, placeholders_map)
+            if module_instance:
+                new_modules_instances.append(module_instance)
+        return modified_modules_instances, new_modules_instances
+
+    def instance_testing(self,
+                         all_module_instances: list,
+                         pre_update: bool,
+                         use_mock: bool = True,
+                         first_call: bool = True) -> Tuple[set, set]:
+        """
+        Runs 'test-module' command for the instances detailed in `all_module_instances`
+        Args:
+            self: An object containing the current build info.
+            all_module_instances: The integration instances that should be tested
+            pre_update: Whether this instance testing is before or after the content update on the server.
+            use_mock: Whether to use mock while testing mockable integrations. Should be used mainly with
+            private content build which aren't using the mocks.
+            first_call: indicates if its the first time the function is called from the same place
+
+        Returns:
+            A set of the successful tests containing the instance name and the integration name
+            A set of the failed tests containing the instance name and the integration name
+        """
+        update_status = 'Pre' if pre_update else 'Post'
+        failed_tests = set()
+        successful_tests = set()
+        # Test all module instances (of modified + unchanged integrations) pre-updating content
+        if all_module_instances:
+            # only print start message if there are instances to configure
+            logging.info(f'Start of Instance Testing ("Test" button) ({update_status}-update)')
+        else:
+            logging.info(f'No integrations to configure for the chosen tests. ({update_status}-update)')
+        failed_instances = []
+        for instance in all_module_instances:
+            integration_of_instance = instance.get('brand', '')
+            instance_name = instance.get('name', '')
+            # If there is a failure, test_integration_instance will print it
+            if integration_of_instance not in self.unmockable_integrations and use_mock:
+                success = self.test_integration_with_mock(instance, pre_update)
+            else:
+                testing_client = self.servers[0].reconnect_client()
+                success, _ = test_integration_instance(testing_client, instance)
+            if not success:
+                failed_tests.add((instance_name, integration_of_instance))
+                failed_instances.append(instance)
+            else:
+                successful_tests.add((instance_name, integration_of_instance))
+
+        # in case some tests failed post update, wait a 15 secs, runs the tests again
+        if failed_instances and not pre_update and first_call:
+            logging.info("some post-update tests failed, sleeping for 15 seconds, then running the failed tests again")
+            sleep(15)
+            _, failed_tests = self.instance_testing(failed_instances, pre_update=False, first_call=False)
+
+        return successful_tests, failed_tests
+
+    def test_integration_with_mock(self, instance: dict, pre_update: bool):
+        """
+        Runs 'test-module' for given integration with mitmproxy
+        In case the playback mode fails and this is a pre-update run - a record attempt will be executed.
+        Args:
+            build: An object containing the current build info.
+            instance: A dict containing the instance details
+            pre_update: Whether this instance testing is before or after the content update on the server.
+
+        Returns:
+            The result of running the 'test-module' command for the given integration.
+            If a record was executed - will return the result of the 'test--module' with the record mode only.
+        """
+        testing_client = self.servers[0].reconnect_client()
+        integration_of_instance = instance.get('brand', '')
+        logging.debug(f'Integration "{integration_of_instance}" is mockable, running test-module with mitmproxy')
+        has_mock_file = self.proxy.has_mock_file(integration_of_instance)
+        success = False
+        if has_mock_file:
+            with run_with_mock(self.proxy, integration_of_instance) as result_holder:
+                success, _ = test_integration_instance(testing_client, instance)
+                result_holder[RESULT] = success
+                if not success:
+                    logging.warning(f'Running test-module for "{integration_of_instance}" has failed in playback mode')
+        if not success and not pre_update:
+            logging.debug(f'Recording a mock file for integration "{integration_of_instance}".')
+            with run_with_mock(self.proxy, integration_of_instance, record=True) as result_holder:
+                success, _ = test_integration_instance(testing_client, instance)
+                result_holder[RESULT] = success
+                if not success:
+                    logging.debug(f'Record mode for integration "{integration_of_instance}" has failed.')
+        return success
+
+    def update_content_on_servers(self) -> bool:
+        """
+        Updates content on the build's server according to the server version
+        Args:
+            self: Build object
+
+        Returns:
+            A boolean that indicates whether the content installation was successful.
+            If the server version is lower then 5.9.9 will return the 'installed_content_packs_successfully' parameter as is
+            If the server version is higher or equal to 6.0 - will return True if the packs installation was successful
+            both before that update and after the update.
+        """
+        installed_content_packs_successfully = True
+        if not self.is_nightly:
+            set_marketplace_url(self.servers, self.branch_name, self.ci_build_number)
+            installed_content_packs_successfully = self.install_packs()
+        return installed_content_packs_successfully
+
+
+class XSOARBuild(Build):
+
+    def __init__(self, options):
+        self.ami_env = options.ami_env
+        self.server_to_port_mapping, self.server_numeric_version = self.get_servers(options.ami_env)
+        self.servers = [XSOARServer(internal_ip,
+                                    port,
+                                    self.username,
+                                    self.password) for internal_ip, port in self.server_to_port_mapping.items()]
+        self.service_account = options.service_account
+        super().__init__(options)
+
+    @property
+    def proxy(self) -> MITMProxy:
+        """
+        A property method that should create and return a single proxy instance through out the build
+        Returns:
+            The single proxy instance that should be used in this build.
+        """
+        if not self._proxy:
+            self._proxy = MITMProxy(self.servers[0].internal_ip,
+                                    logging_module=logging,
+                                    build_number=self.ci_build_number,
+                                    branch_name=self.branch_name)
+        return self._proxy
+
+    def configure_servers_and_restart(self):
+        manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
+        for server in self.servers:
+            configurations = dict()
+            configure_types = []
+            if is_redhat_instance(server.internal_ip):
+                configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
+                configurations.update(NO_PROXY_CONFIG)
+                configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
+            else:
+                configurations.update(DOCKER_HARDENING_CONFIGURATION)
+            configure_types.append('docker hardening')
+            configure_types.append('marketplace')
+            configurations.update(MARKET_PLACE_CONFIGURATION)
+
+            error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
+            server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
+
+        if manual_restart:
+            input('restart your server and then press enter.')
+        else:
+            logging.info('Done restarting servers. Sleeping for 1 minute')
+            sleep(60)
+
+    def disable_instances(self):
+        for server in self.servers:
+            disable_all_integrations(server.client)
 
 
 def options_handler():
@@ -881,324 +1233,6 @@ def get_json_file(path):
         return json.loads(json_file.read())
 
 
-def configure_servers_and_restart(build):
-    manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
-    for server in build.servers:
-        configurations = dict()
-        configure_types = []
-        if is_redhat_instance(server.internal_ip):
-            configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
-            configurations.update(NO_PROXY_CONFIG)
-            configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
-        else:
-            configurations.update(DOCKER_HARDENING_CONFIGURATION)
-        configure_types.append('docker hardening')
-        configure_types.append('marketplace')
-        configurations.update(MARKET_PLACE_CONFIGURATION)
-
-        error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
-        server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
-
-    if manual_restart:
-        input('restart your server and then press enter.')
-    else:
-        logging.info('Done restarting servers. Sleeping for 1 minute')
-        sleep(60)
-
-
-def get_tests(build: Build) -> List[dict]:
-    """
-    Selects the tests from that should be run in this execution and filters those that cannot run in this server version
-    Args:
-        build: Build object
-
-    Returns:
-        Test configurations from conf.json that should be run in this execution
-    """
-    server_numeric_version: str = build.server_numeric_version
-    tests: dict = build.tests
-    if Build.run_environment == Running.CI_RUN:
-        filtered_tests = BuildContext._extract_filtered_tests()
-        if build.is_nightly:
-            # skip test button testing
-            logging.debug('Not running instance tests in nightly flow')
-            tests_for_iteration = []
-        else:
-            tests_for_iteration = [test for test in tests
-                                   if not filtered_tests or test.get('playbookID', '') in filtered_tests]
-
-        tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version)
-        return tests_for_iteration
-
-    # START CHANGE ON LOCAL RUN #
-    return [
-        {
-            "playbookID": "Docker Hardening Test",
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "SplunkPy",
-            "playbookID": "SplunkPy-Test-V2",
-            "memory_threshold": 500,
-            "instance_names": "use_default_handler"
-        }
-    ]
-    #  END CHANGE ON LOCAL RUN  #
-
-
-def get_changed_integrations(build: Build) -> tuple:
-    """
-    Return 2 lists - list of new integrations and list of modified integrations since the commit of the git_sha1.
-
-    Args:
-        build: the build object
-    Returns:
-        list of new integrations and list of modified integrations
-    """
-    new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(
-        build.branch_name) if not build.is_private else ([], [])
-    new_integrations_names, modified_integrations_names = [], []
-
-    if new_integrations_files:
-        new_integrations_names = get_integration_names_from_files(new_integrations_files)
-        logging.debug(f'New Integrations Since Last Release:\n{new_integrations_names}')
-
-    if modified_integrations_files:
-        modified_integrations_names = get_integration_names_from_files(modified_integrations_files)
-        logging.debug(f'Updated Integrations Since Last Release:\n{modified_integrations_names}')
-    return new_integrations_names, modified_integrations_names
-
-
-def nightly_install_packs(build, install_method=None, pack_path=None, service_account=None):
-    threads_list = []
-
-    if not install_method:
-        raise Exception('Install method was not provided.')
-
-    # For each server url we install pack/ packs
-    for server in build.servers:
-        kwargs = {'client': server.client, 'host': server.internal_ip}
-        if service_account:
-            kwargs['service_account'] = service_account
-        if pack_path:
-            kwargs['pack_path'] = pack_path
-        threads_list.append(Thread(target=install_method, kwargs=kwargs))
-    run_threads_list(threads_list)
-
-
-def install_nightly_pack(build):
-    nightly_install_packs(build, install_method=install_all_content_packs_for_nightly,
-                          service_account=build.service_account)
-    create_nightly_test_pack()
-    nightly_install_packs(build, install_method=upload_zipped_packs,
-                          pack_path=f'{Build.test_pack_target}/test_pack.zip')
-
-    logging.info('Sleeping for 45 seconds while installing nightly packs')
-    sleep(45)
-
-
-def install_packs(build, pack_ids=None):
-    pack_ids = build.pack_ids_to_install if pack_ids is None else pack_ids
-    installed_content_packs_successfully = True
-    for server in build.servers:
-        try:
-            _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client)
-            if not flag:
-                raise Exception('Failed to search and install packs.')
-        except Exception:
-            logging.exception('Failed to search and install packs')
-            installed_content_packs_successfully = False
-
-    return installed_content_packs_successfully
-
-
-def configure_server_instances(build: Build, tests_for_iteration, all_new_integrations, modified_integrations):
-    modified_module_instances = []
-    new_module_instances = []
-    testing_client = build.servers[0].client
-    for test in tests_for_iteration:
-        integrations = get_integrations_for_test(test, build.skipped_integrations_conf)
-
-        playbook_id = test.get('playbookID')
-
-        new_integrations, modified_integrations, unchanged_integrations, integration_to_status = group_integrations(
-            integrations, build.skipped_integrations_conf, all_new_integrations, modified_integrations
-        )
-        integration_to_status_string = '\n\t\t\t\t\t\t'.join(
-            [f'"{key}" - {val}' for key, val in integration_to_status.items()])
-        if integration_to_status_string:
-            logging.info(f'All Integrations for test "{playbook_id}":\n\t\t\t\t\t\t{integration_to_status_string}')
-        else:
-            logging.info(f'No Integrations for test "{playbook_id}"')
-        instance_names_conf = test.get('instance_names', [])
-        if not isinstance(instance_names_conf, list):
-            instance_names_conf = [instance_names_conf]
-
-        integrations_to_configure = modified_integrations[:]
-        integrations_to_configure.extend(unchanged_integrations)
-        placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
-        new_ints_params_set = set_integration_params(build,
-                                                     new_integrations,
-                                                     build.secret_conf['integrations'],
-                                                     instance_names_conf,
-                                                     placeholders_map)
-        ints_to_configure_params_set = set_integration_params(build,
-                                                              integrations_to_configure,
-                                                              build.secret_conf['integrations'],
-                                                              instance_names_conf, placeholders_map)
-        if not new_ints_params_set:
-            logging.error(f'failed setting parameters for integrations: {new_integrations}')
-        if not ints_to_configure_params_set:
-            logging.error(f'failed setting parameters for integrations: {integrations_to_configure}')
-        if not (new_ints_params_set and ints_to_configure_params_set):
-            continue
-
-        modified_module_instances_for_test, new_module_instances_for_test = configure_modified_and_new_integrations(
-            build,
-            integrations_to_configure,
-            new_integrations,
-            testing_client)
-
-        modified_module_instances.extend(modified_module_instances_for_test)
-        new_module_instances.extend(new_module_instances_for_test)
-    return modified_module_instances, new_module_instances
-
-
-def configure_modified_and_new_integrations(build: Build,
-                                            modified_integrations_to_configure: list,
-                                            new_integrations_to_configure: list,
-                                            demisto_client_: demisto_client) -> tuple:
-    """
-    Configures old and new integrations in the server configured in the demisto_client.
-    Args:
-        build: The build object
-        modified_integrations_to_configure: Integrations to configure that are already exists
-        new_integrations_to_configure: Integrations to configure that were created in this build
-        demisto_client: A demisto client
-
-    Returns:
-        A tuple with two lists:
-        1. List of configured instances of modified integrations
-        2. List of configured instances of new integrations
-    """
-    modified_modules_instances = []
-    new_modules_instances = []
-    for integration in modified_integrations_to_configure:
-        placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
-        module_instance = configure_integration_instance(integration, demisto_client_, placeholders_map)
-        if module_instance:
-            modified_modules_instances.append(module_instance)
-    for integration in new_integrations_to_configure:
-        placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
-        module_instance = configure_integration_instance(integration, demisto_client_, placeholders_map)
-        if module_instance:
-            new_modules_instances.append(module_instance)
-    return modified_modules_instances, new_modules_instances
-
-
-def instance_testing(build: Build,
-                     all_module_instances: list,
-                     pre_update: bool,
-                     use_mock: bool = True,
-                     first_call: bool = True) -> Tuple[set, set]:
-    """
-    Runs 'test-module' command for the instances detailed in `all_module_instances`
-    Args:
-        build: An object containing the current build info.
-        all_module_instances: The integration instances that should be tested
-        pre_update: Whether this instance testing is before or after the content update on the server.
-        use_mock: Whether to use mock while testing mockable integrations. Should be used mainly with
-        private content build which aren't using the mocks.
-        first_call: indicates if its the first time the function is called from the same place
-
-    Returns:
-        A set of the successful tests containing the instance name and the integration name
-        A set of the failed tests containing the instance name and the integration name
-    """
-    update_status = 'Pre' if pre_update else 'Post'
-    failed_tests = set()
-    successful_tests = set()
-    # Test all module instances (of modified + unchanged integrations) pre-updating content
-    if all_module_instances:
-        # only print start message if there are instances to configure
-        logging.info(f'Start of Instance Testing ("Test" button) ({update_status}-update)')
-    else:
-        logging.info(f'No integrations to configure for the chosen tests. ({update_status}-update)')
-    failed_instances = []
-    for instance in all_module_instances:
-        integration_of_instance = instance.get('brand', '')
-        instance_name = instance.get('name', '')
-        # If there is a failure, __test_integration_instance will print it
-        if integration_of_instance not in build.unmockable_integrations and use_mock:
-            success = test_integration_with_mock(build, instance, pre_update)
-        else:
-            testing_client = build.servers[0].reconnect_client()
-            success, _ = __test_integration_instance(testing_client, instance)
-        if not success:
-            failed_tests.add((instance_name, integration_of_instance))
-            failed_instances.append(instance)
-        else:
-            successful_tests.add((instance_name, integration_of_instance))
-
-    # in case some tests failed post update, wait a 15 secs, runs the tests again
-    if failed_instances and not pre_update and first_call:
-        logging.info("some post-update tests failed, sleeping for 15 seconds, then running the failed tests again")
-        sleep(15)
-        _, failed_tests = instance_testing(build, failed_instances, pre_update=False, first_call=False)
-
-    return successful_tests, failed_tests
-
-
-def test_integration_with_mock(build: Build, instance: dict, pre_update: bool):
-    """
-    Runs 'test-module' for given integration with mitmproxy
-    In case the playback mode fails and this is a pre-update run - a record attempt will be executed.
-    Args:
-        build: An object containing the current build info.
-        instance: A dict containing the instance details
-        pre_update: Whether this instance testing is before or after the content update on the server.
-
-    Returns:
-        The result of running the 'test-module' command for the given integration.
-        If a record was executed - will return the result of the 'test--module' with the record mode only.
-    """
-    testing_client = build.servers[0].reconnect_client()
-    integration_of_instance = instance.get('brand', '')
-    logging.debug(f'Integration "{integration_of_instance}" is mockable, running test-module with mitmproxy')
-    has_mock_file = build.proxy.has_mock_file(integration_of_instance)
-    success = False
-    if has_mock_file:
-        with run_with_mock(build.proxy, integration_of_instance) as result_holder:
-            success, _ = __test_integration_instance(testing_client, instance)
-            result_holder[RESULT] = success
-            if not success:
-                logging.warning(f'Running test-module for "{integration_of_instance}" has failed in playback mode')
-    if not success and not pre_update:
-        logging.debug(f'Recording a mock file for integration "{integration_of_instance}".')
-        with run_with_mock(build.proxy, integration_of_instance, record=True) as result_holder:
-            success, _ = __test_integration_instance(testing_client, instance)
-            result_holder[RESULT] = success
-            if not success:
-                logging.debug(f'Record mode for integration "{integration_of_instance}" has failed.')
-    return success
-
-
-def update_content_till_v6(build: Build):
-    threads_list = []
-    # For each server url we install content
-    for server in build.servers:
-        t = Thread(target=update_content_on_demisto_instance,
-                   kwargs={'client': server.client, 'server': server.internal_ip, 'ami_name': build.ami_env})
-        threads_list.append(t)
-
-    run_threads_list(threads_list)
-
-
-def disable_instances(build: Build):
-    for server in build.servers:
-        disable_all_integrations(server.client)
-
-
 def create_nightly_test_pack():
     test_pack_zip(Build.content_path, Build.test_pack_target)
 
@@ -1318,29 +1352,8 @@ def test_integrations_post_update(build: Build, new_module_instances: list, modi
         * A list of integration names that have succeeded the 'test-module' execution post update
     """
     modified_module_instances.extend(new_module_instances)
-    successful_tests_post, failed_tests_post = instance_testing(build, modified_module_instances, pre_update=False)
+    successful_tests_post, failed_tests_post = build.instance_testing(modified_module_instances, pre_update=False)
     return successful_tests_post, failed_tests_post
-
-
-def update_content_on_servers(build: Build) -> bool:
-    """
-    Updates content on the build's server according to the server version
-    Args:
-        build: Build object
-
-    Returns:
-        A boolean that indicates whether the content installation was successful.
-        If the server version is lower then 5.9.9 will return the 'installed_content_packs_successfully' parameter as is
-        If the server version is higher or equal to 6.0 - will return True if the packs installation was successful
-        both before that update and after the update.
-    """
-    installed_content_packs_successfully = True
-    if Version(build.server_numeric_version) < Version('6.0.0'):
-        update_content_till_v6(build)
-    elif not build.is_nightly:
-        set_marketplace_url(build.servers, build.branch_name, build.ci_build_number)
-        installed_content_packs_successfully = install_packs(build)
-    return installed_content_packs_successfully
 
 
 @run_with_proxy_configured
@@ -1360,59 +1373,39 @@ def configure_and_test_integrations_pre_update(build: Build, new_integrations, m
         * A list of integrations that have succeeded the 'test-module' command execution
         * A list of new integrations names
     """
-    tests_for_iteration = get_tests(build)
-    modified_module_instances, new_module_instances = configure_server_instances(build,
+    tests_for_iteration = build.get_tests()
+    modified_module_instances, new_module_instances = build.configure_server_instances(
                                                                                  tests_for_iteration,
                                                                                  new_integrations,
                                                                                  modified_integrations)
-    successful_tests_pre, failed_tests_pre = instance_testing(build, modified_module_instances, pre_update=True)
+    successful_tests_pre, failed_tests_pre = build.instance_testing(modified_module_instances, pre_update=True)
     return modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre
-
-
-def install_packs_pre_update(build: Build) -> bool:
-    """
-    Install packs on server according to server version
-    Args:
-        build: A build object
-
-    Returns:
-        A boolean that indicates whether the installation was successful or not
-    """
-    installed_content_packs_successfully = False
-    if Version(build.server_numeric_version) >= Version('6.0.0'):
-        if build.is_nightly:
-            install_nightly_pack(build)
-            installed_content_packs_successfully = True
-        else:
-            if not build.is_private:
-                pack_ids = get_non_added_packs_ids(build)
-                installed_content_packs_successfully = install_packs(build, pack_ids=pack_ids)
-    else:
-        installed_content_packs_successfully = True
-    return installed_content_packs_successfully
 
 
 def main():
     install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
-    build = Build(options_handler())
+    build = XSOARBuild(options_handler())
     logging.info(f"Build Number: {build.ci_build_number}")
 
-    configure_servers_and_restart(build)
-    disable_instances(build)
-    install_packs_pre_update(build)
+    build.configure_servers_and_restart()      # add server config and restart servers
+    build.disable_instances()   # disable all enabled integrations (Todo in xsiam too)
+    build.install_packs_pre_update()  # install packs that currently in master
 
-    new_integrations, modified_integrations = get_changed_integrations(build)
+    new_integrations, modified_integrations = build.get_changed_integrations()   # compares master to commit_sha and return all changes
 
+    # Configures integration instances that currently in master (+ press test button)
     pre_update_configuration_results = configure_and_test_integrations_pre_update(build,
                                                                                   new_integrations,
                                                                                   modified_integrations)
-    modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
-    installed_content_packs_successfully = update_content_on_servers(build)
 
+    modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
+    installed_content_packs_successfully = build.update_content_on_servers()  # Installs new content from current branch
+
+    # After updating packs from branch, press test-module button to check that it was not broken
     successful_tests_post, failed_tests_post = test_integrations_post_update(build,
                                                                              new_module_instances,
                                                                              modified_module_instances)
-
+    # prints results
     success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
                                   new_integrations, build)
     if not success or not installed_content_packs_successfully:

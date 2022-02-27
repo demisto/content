@@ -65,8 +65,7 @@ def __get_integration_config(client, integration_name, logging_module=logging):
     return match_configurations[0]
 
 
-# __test_integration_instance
-def __test_integration_instance(client, module_instance, logging_module=logging):
+def test_integration_instance(client, module_instance, logging_module=logging):
     connection_retries = 3
     response_code = 0
     integration_of_instance = module_instance.get('brand', '')
@@ -253,7 +252,7 @@ def __create_integration_instance(server, username, password, integration_name, 
     # test integration
     refreshed_client = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
     if validate_test:
-        test_succeed, failure_message = __test_integration_instance(refreshed_client, module_instance, logging_manager)
+        test_succeed, failure_message = test_integration_instance(refreshed_client, module_instance, logging_manager)
     else:
         logging_manager.debug(
             f"Skipping test validation for integration: {integration_name} (it has test_validate set to false)"
