@@ -184,13 +184,14 @@ def get_new_indicators(client: MandiantClient, last_run: str, indicator_type: st
     if indicator_type == 'Indicators':
         # for indicator type the earliest time to fetch is 90 days ago
         earliest_fetch = arg_to_datetime('90 days ago')
-        start_date = max(earliest_fetch, start_date)
+        start_date = max(earliest_fetch, start_date)  # type:ignore
         params = {'start_epoch': int(start_date.timestamp()), 'limit': limit}  # type:ignore
 
     new_indicators_list = client.get_indicators(indicator_type, params=params)
 
-    if indicator_type != 'Indicators':
-        new_indicators_list.sort(key=lambda x: arg_to_datetime(x.get('last_updated')), reverse=True)  # new to old
+    if indicator_type != 'Indicators': \
+            # new to old
+        new_indicators_list.sort(key=lambda x: arg_to_datetime(x.get('last_updated')), reverse=True)  # type:ignore
         new_indicators_list = list(
             filter(lambda x: arg_to_datetime(x['last_updated']).timestamp() > start_date.timestamp(),  # type: ignore
                    new_indicators_list))

@@ -1493,6 +1493,7 @@ def handle_fetch_results(
         last_run_time_dt = dateparser.parse(
             max_publish_time if max_publish_time else last_run_time
         )
+        assert last_run_time_dt is not None
         last_run_time = convert_datetime_to_iso_str(
             last_run_time_dt + timedelta(microseconds=1)
         )

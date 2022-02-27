@@ -8,7 +8,7 @@ from oauth2client import service_account
 from google.oauth2 import service_account as google_service_account
 import googleapiclient.http
 from googleapiclient._auth import authorized_http
-import dateparser
+import dateparser  # type: ignore
 import io
 import os
 

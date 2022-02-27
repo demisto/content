@@ -336,7 +336,9 @@ def handle_first_fetch_timestamp():
     user_input = demisto.params().get('first_fetch_timestamp')
 
     try:
-        first_fetch_timestamp = parse(user_input).timestamp()
+        user_input_date = parse(user_input)
+        assert user_input_date is not None
+        first_fetch_timestamp = user_input_date.timestamp()
         first_fetch_timestamp = str(first_fetch_timestamp).split('.')[0]
         return first_fetch_timestamp
     except Exception:

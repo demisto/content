@@ -1540,8 +1540,8 @@ def generate_delayed_start_time(time_window: str, start_time: str) -> str:
     if not time_window:
         time_window = '15'
     delayed_start_time = dateparser.parse(start_time, settings={'STRICT_PARSING': True})
-    delayed_start_time = delayed_start_time - timedelta(minutes=int(time_window))
-    delayed_start_time = datetime.strftime(delayed_start_time, DATE_FORMAT)
+    delayed_start_time = delayed_start_time - timedelta(minutes=int(time_window))  # type: ignore
+    delayed_start_time = datetime.strftime(delayed_start_time, DATE_FORMAT)  # type: ignore
 
     return delayed_start_time
 
