@@ -8,6 +8,15 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
+- additionalinfo: Determines the visibility level of the scan. This will override the 'public submissions' setting.
+  display: Scan Visibility
+  name: scan_visibility
+  options:
+  - public
+  - private
+  - unlisted
+  required: false
+  type: 15
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -127,6 +136,17 @@ script:
       name: timeout
       required: false
       secret: false
+    - auto: PREDEFINED
+      defaultValue: 'public'
+      description: The submission visibility. If specified, overrides the 'public' parameter.
+      predefined:
+        - public
+        - private
+        - unlisted
+      isArray: false
+      name: scan_visibility
+      required: false
+      secret: false
     - default: false
       description: The submission type. Can be "public" or "private".
       isArray: false
@@ -239,6 +259,17 @@ script:
       isArray: true
       name: url
       required: true
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: 'public'
+      description: The submission visibility. If specified, overrides the 'public' parameter.
+      predefined:
+        - public
+        - private
+        - unlisted
+      isArray: false
+      name: scan_visibility
+      required: false
       secret: false
     - default: false
       defaultValue: '60'
