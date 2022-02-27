@@ -14,8 +14,6 @@ class CommandResultArguments:
     response: dict
     output: Optional[dict]
     indicator: Optional[Common.File]
-    human_readable_headers: Optional[list[str]] = None
-    human_readable_values: Optional[dict] = None
 
 
 DBOT_SCORE_DICT = {'malicious': Common.DBotScore.BAD,
@@ -452,9 +450,13 @@ class Client:
         return self._http_request("Get", url_suffix, params=params)
 
     def file(self, file_hashes: list[str]) -> list[CommandResults]:
+        demisto.debug('file called')
         params = {'filter': ",".join(f'sandbox.sha256:"{sha256}"' for sha256 in file_hashes)}
-        response = self._http_request('get', '/queries/reports/v1', params=params)
+        demisto.debug(f'{params=}')
+        response = self._http_request('get', url_suffix='/falconx/queries/reports/v1', params=params)
+        demisto.debug(f'{response=}')
         report_ids = response.get('resources', [])
+        demisto.debug(f'{report_ids=}')
         command_results, _ = get_full_report_command(self, ids=report_ids, extended_data='FILE')
         return command_results
 
@@ -798,29 +800,34 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
         result = parse_outputs(response, reliability=client.reliability,
                                resources_fields=resources_fields, sandbox_fields=sandbox_fields,
                                extra_sandbox_fields=extra_sandbox_fields)
-        result.human_readable_values = filter_dictionary(result.output, hr_fields, sort_by_field_list=True)
-        result.human_readable_headers = hr_fields
         results.append(result)
 
-    pending_result_readable_output = 'There are no results yet, the sample might still being analyzed.' \
-                                     ' Please wait to download the report.\n' \
-                                     'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.'
     command_results = []
     for result in results:
         if result.output:
-            if result.human_readable_headers and result.human_readable_values:
+            if human_readable_values := filter_dictionary(result.output, hr_fields, sort_by_field_list=True):
                 readable_output = tableToMarkdown("CrowdStrike Falcon X response:",
-                                                  result.human_readable_values, result.human_readable_headers)
+                                                  t=human_readable_values, headers=hr_fields)
             else:
                 readable_output = tableToMarkdown("CrowdStrike Falcon X response:", result.output)
         else:
-            readable_output = pending_result_readable_output
+            readable_output = 'There are no results yet for this sample, its analysis might not have been completed. ' \
+                              'Please wait to download the report.\n' \
+                              'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.',
         command_results.append(CommandResults(outputs_key_field='id',
                                               outputs_prefix=OUTPUTS_PREFIX,
                                               outputs=result.output,
                                               readable_output=readable_output,
                                               raw_response=result.response,
                                               indicator=result.indicator))
+    else:  # empty result list
+        command_results = [
+            CommandResults(readable_output=
+                           f'There are no results yet for the any of the queried samples ({ids}),'
+                           f' analysis might not have been completed. ' # todo add file may not exist? 
+                           'Please wait to download the report.\n'
+                           'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.')
+        ]
     return command_results, is_command_finished
 
 
