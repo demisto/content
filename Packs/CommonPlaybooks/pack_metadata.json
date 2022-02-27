@@ -351,6 +351,7 @@
         "McAfee ePO v2"
     ],
     "marketplaces": [
+        "xsoar",
         "marketplacev2"
     ]
 }

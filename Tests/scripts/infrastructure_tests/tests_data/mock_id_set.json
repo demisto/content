@@ -4,6 +4,7 @@
       "CommonServerPython": {
         "name": "CommonServerPython",
         "file_path": "Packs/Base/Scripts/CommonServerPython/CommonServerPython.yml",
+        "pack": "Base",
         "tests": [
           "TestCommonPython"
         ]
@@ -245,6 +246,7 @@
     {
       "TestCommonPython": {
         "name": "TestCommonPython",
+        "pack": "Base",
         "file_path": "TestPlaybooks/playbook-TestCommonPython.yml"
       }
     },
@@ -286,6 +288,7 @@
     {
       "skipped_test_playbook_1": {
         "name": "skipped_test_playbook_1",
+        "pack": "EWS",
         "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/skipped_test_playbook_1.yml",
         "command_to_integration": {
           "fake-command-skipped-1": ""
@@ -296,6 +299,7 @@
       "skipped_integration_test_playbook_1": {
         "name": "skipped_integration_test_playbook_1",
         "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
+        "pack": "EWS",
         "command_to_integration": {
           "fake-command-2": ""
         }
@@ -305,6 +309,7 @@
       "future_test_playbook_1": {
         "name": "future_test_playbook_1",
         "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
+        "pack": "EWS",
         "command_to_integration": {
           "fake-command-3": ""
         },
@@ -314,6 +319,7 @@
     {
       "future_test_playbook_2": {
         "name": "future_test_playbook_2",
+        "pack": "EWS",
         "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/future_test_playbook_2.yml",
         "fromversion": "99.99.99"
       }
@@ -321,6 +327,7 @@
     {
       "future_test_playbook_3": {
         "name": "future_test_playbook_3",
+        "pack": "EWS",
         "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
         "implementing_scripts": [
           "future-script-1"
@@ -339,6 +346,7 @@
     {
       "past_test_playbook_1": {
         "name": "past_test_playbook_1",
+        "pack": "EWS",
         "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/past_test_playbook_1.yml",
         "command_to_integration": {
           "fake-command-33": ""
@@ -348,6 +356,7 @@
     {
       "virtual_past_test_playbook_2": {
         "name": "virtual_past_test_playbook_2",
+        "pack": "EWS",
         "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
         "command_to_integration": {
           "fake-command-34": ""
@@ -357,6 +366,7 @@
     {
       "past_test_playbook_2": {
         "name": "past_test_playbook_2",
+        "pack": "EWS",
         "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
         "implementing_scripts": [
           "future-script-2"
@@ -375,6 +385,7 @@
     {
       "EWSv2_empty_attachment_test": {
         "name": "EWSv2_empty_attachment_test",
+        "pack": "EWS",
         "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
         "command_to_integration": {
           "ews-get-attachment": "EWS v2"
@@ -456,6 +467,11 @@
         ]
       },
       "fake_pack": {
+        "marketplaces": [
+          "xsoar"
+        ]
+      },
+      "Base": {
         "marketplaces": [
           "xsoar"
         ]

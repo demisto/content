@@ -63,10 +63,10 @@ def should_test_content_pack(pack_name: str, marketplace_version: str, id_set: d
         - Content pack is not in skipped packs
         - Content pack is certified
         - Content pack is not deprecated
-        - Content pack is not supported the marketplace_version
+        - Content pack is supported in the marketplace_version
     Args:
         pack_name (str): The pack name to check if it should be tested
-        marketplace_version (str):
+        marketplace_version (str): the marketplace version to collect tests for ('xsoar'/'marketplacev2').
         id_set (dict): Structure which holds all content entities to extract pack names from.
 
     Returns:
@@ -93,8 +93,8 @@ def should_install_content_pack(pack_name: str, marketplace_version: str, id_set
         - Content pack is not supported the marketplace_version
 
     Args:
-        pack_name (str): The pack name to check if it should be tested
-        marketplace_version (str):
+        pack_name (str): The pack name to check if it should be tested.
+        marketplace_version (str): the marketplace version to collect tests for ('xsoar'/'marketplacev2').
         id_set (dict): Structure which holds all content entities to extract pack names from.
     Returns:
         bool: True if should be installed, False otherwise

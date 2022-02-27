@@ -338,13 +338,14 @@ class TestChangedTestPlaybook:
         # future_playbook_1 is fromversion 99.99.99 in conf file
         test_id = 'future_test_playbook_1'
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/future_test_playbook_1.yml'
+        mocker.patch.object(content_packs_util, 'is_pack_deprecated', return_value=False)
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
         filterd_tests, content_packs = get_mock_test_list(get_modified_files_ret, mocker)
 
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
-        assert content_packs == {"Base", "DeveloperTools"}
+        assert content_packs == {"Base", "DeveloperTools", "EWS"}
 
     def test_changed_runnable_test__playbook_fromversion(self, mocker):
         # future_playbook_1 is toversion 99.99.99 in conf file
@@ -356,7 +357,7 @@ class TestChangedTestPlaybook:
 
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
-        assert content_packs == {"Base", "DeveloperTools"}
+        assert content_packs == {"Base", "EWS", "DeveloperTools"}
 
     def test_changed_unrunnable_test__skipped_test(self, mocker):
         test_id = 'skipped_integration_test_playbook_1'
@@ -367,7 +368,7 @@ class TestChangedTestPlaybook:
 
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
-        assert content_packs == {"Base", "DeveloperTools"}
+        assert content_packs == {"Base", "EWS", "DeveloperTools"}
 
     def test_changed_unrunnable_test__skipped_integration(self, mocker):
         test_id = 'skipped_test_playbook_1'
@@ -378,7 +379,7 @@ class TestChangedTestPlaybook:
 
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
-        assert content_packs == {"Base", "DeveloperTools"}
+        assert content_packs == {'Base', 'DeveloperTools', 'EWS'}
 
 
 class TestChangedIntegration:
@@ -402,7 +403,7 @@ class TestChangedIntegration:
 
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
-        assert content_packs == {"Base", "DeveloperTools"}
+        assert content_packs == {'DeveloperTools', 'EWS', 'Base'}
 
 
 class TestChangedIntegrationAndPlaybook:
@@ -542,7 +543,7 @@ class TestChangedScript:
 
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
-        assert content_packs == {"Base", "DeveloperTools"}
+        assert content_packs == {'DeveloperTools', 'EWS', 'Base'}
 
 
 class TestSampleTesting:
@@ -572,7 +573,7 @@ class TestSampleTesting:
         filterd_tests, content_packs = get_mock_test_list(mocker=mocker, git_diff_ret=self.GIT_DIFF_RET,
                                                           get_modified_files_ret=get_modified_files_ret)
         assert len(filterd_tests) == 1
-        assert content_packs == {"Base", "DeveloperTools"}
+        assert content_packs == {'DeveloperTools', 'EWS', 'Base'}
 
 
 class TestChangedCommonTesting:
@@ -843,7 +844,8 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
 
     # - test_playbook_a exists that should test FetchFromInstance of integration_a
     fake_test_playbook = TestUtils.create_test_playbook(name='test_playbook_a',
-                                                        with_scripts=['FetchFromInstance'])
+                                                        with_scripts=['FetchFromInstance'],
+                                                        with_pack='EWS')
 
     try:
         # - both in conf.json
@@ -994,7 +996,8 @@ def test_modified_integration_content_pack_is_collected(mocker):
     fake_integration = TestUtils.create_integration(
         name=integration_name, with_commands=["great-command"], pack=pack_name
     )
-    fake_test_playbook = TestUtils.create_test_playbook(name=test_name, with_scripts=["FetchFromInstance"])
+    fake_test_playbook = TestUtils.create_test_playbook(name=test_name, with_scripts=["FetchFromInstance"],
+                                                        with_pack="GreatTest")
 
     try:
         TestUtils.mock_get_modified_files(mocker, modified_files_list=[fake_integration['path']])
@@ -1180,7 +1183,7 @@ def test_collect_test_playbooks_no_results():
     """
 
     test_conf = TestConf(MOCK_CONF)
-    content_packs = test_conf.get_packs_of_collected_tests(['TestCommonPython'], MOCK_ID_SET)
+    content_packs = test_conf.get_packs_of_collected_tests(['virtual_future_test_playbook_4'], MOCK_ID_SET)
     assert set() == content_packs
 
 
