@@ -21,10 +21,11 @@ configuration:
   name: url
   required: false
   type: 0
-- display: API Token
-  name: token
+- displaypassword: API Token
+  name: api_token
   required: false
-  type: 4
+  type: 9
+  hiddenusername: true
 - display: Credentials
   name: credentials
   required: false
@@ -63,6 +64,11 @@ configuration:
   name: installation_id
   required: false
   type: 0
+- display: API Token
+  name: token
+  required: false
+  type: 4
+  hidden: true
 description: Integration to GitHub API
 display: GitHub
 name: GitHub

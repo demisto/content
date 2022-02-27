@@ -25,6 +25,7 @@ CMD
 CVSS
 DNS
 Hostnames
+LTM
 Src
 Srcs
 Subdomains
@@ -87,7 +88,11 @@ FireEye
 FormatURL
 Gitlab
 GitHub
+Lastline
+VMware
 TAXII
 Syslog
 DomainTools
 replyTo
+SentinelOne
+URLs

@@ -84,12 +84,14 @@ def get_headers(params: Dict) -> Dict:
             demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
             "Content-Type": "application/json"
         }
+        LOG.add_replace_strs(demisto.getLicenseCustomField("Core.ApiKey"))
     else:
         headers = {
             "Content-Type": "application/json",
             "x-xdr-auth-id": str(api_key_id),
             "Authorization": api_key
         }
+        LOG.add_replace_strs(api_key)
 
     return headers
 
@@ -341,27 +343,6 @@ def core_expiration_to_demisto(expiration) -> Union[str, None]:
     return None
 
 
-def core_ioc_to_demisto(ioc: Dict) -> Dict:
-    indicator = ioc.get('RULE_INDICATOR', '')
-    core_server_score = int(core_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
-    score = get_indicator_core_score(indicator, core_server_score)
-    entry: Dict = {
-        "value": indicator,
-        "type": core_types_to_demisto.get(ioc.get('IOC_TYPE')),
-        "score": score,
-        "fields": {
-            "tags": Client.tag,
-            "corestatus": ioc.get('RULE_STATUS', '').lower(),
-            "expirationdate": core_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME')),
-        },
-        "rawJSON": ioc
-    }
-    if Client.tlp_color:
-        entry['fields']['trafficlightprotocol'] = Client.tlp_color
-
-    return entry
-
-
 def module_test(client: Client):
     ts = int(datetime.now(timezone.utc).timestamp() * 1000) - 1
     path, requests_kwargs = prepare_get_changes(ts)
@@ -447,7 +428,6 @@ def main():
     params = demisto.params()
     Client.severity = params.get('severity', '').upper()
     Client.query = params.get('query', Client.query)
-    Client.tag = params.get('feedTags', params.get('tag', Client.tag))
     Client.tlp_color = params.get('tlp_color')
     client = Client(params)
     commands = {
