@@ -1,7 +1,0 @@
-!axonius-get-devices-by-savedquery saved_query_name=example_query
-!axonius-get-users-by-savedquery saved_query_name=example_query
-!axonius-get-users-by-mail value=Administrator@testdomain.test
-!axonius-get-users-by-username value=test_ldap_login_user
-!axonius-get-devices-by-hostname value=DC4
-!axonius-get-devices-by-ip value=192.168.20.17
-!axonius-get-devices-by-mac value=00:0C:29:B6:DA:46

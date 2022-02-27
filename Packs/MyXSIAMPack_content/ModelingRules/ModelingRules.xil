@@ -1,0 +1,31 @@
+| alter outcome_result = json_extract_scalar(outcome, "$.result")
+| alter XDM_Audit_Main_identity_uuid = json_extract_scalar(actor, "$.id"),
+        XDM_Audit_Main_identity_type = json_extract_scalar(actor, "$.type"),
+	XDM_Audit_Main_identity_name = json_extract_scalar(client, "$.geographicalContext.city"),
+	XDM_Audit_Main_cloud_zone = json_extract_scalar(client, "$.zone"),
+	XDM_Audit_triggered_by_ipv4 = json_extract_scalar(client,"$.ipAddress"),
+	XDM_Audit_triggered_by_location_city = json_extract_scalar(client, "$.geographicalContext.city"),
+	XDM_Audit_triggered_by_location_country = json_extract_scalar(client, "$.geographicalContext.country"),
+	XDM_Audit_triggered_by_location_geo_lat = json_extract_scalar(client, "$.geographicalContext.geolocation.lat"),
+	XDM_Audit_triggered_by_location_geo_lon = json_extract_scalar(client, "$.geographicalContext.geolocation.lon"),
+	XDM_Audit_Main_operation_type = eventType,
+	XDM_Audit_Main_outcome = if(outcome_result="SUCCESS", "SUCCESS", outcome_result="FAILURE", "FAILED", outcome_result="ALLOW", "SUCCESS", outcome_result="DENY", "FAILED", outcome_result="CHALLENGE", "PARTIAL", "UNKNOWN"),
+	XDM_Audit_Main_reason = json_extract_scalar(outcome, "$.reason"),
+    XDM_Audit_audited_resource_id = json_extract_scalar(`target`, "$.[0].alternateId"),
+	XDM_Audit_audited_resource_type =  json_extract_scalar(`target`, "$.[0].type");
+
+
+| alter outcome_result = json_extract_scalar(outcome, "$.result")
+| alter  XDM_Auth_Client_host_device_type = json_extract_scalar(Client, "$.device"),
+        XDM_Auth_Client_host_device_id = json_extract_scalar(Client, "$.id"),
+        XDM_Auth_Client_ipv4 = json_extract_scalar(Client, "$.ipAddress"),
+        XDM_Auth_Client_location_city = json_extract_scalar(Client, "$.geographicalContext.city"),
+        XDM_Auth_Client_location_country = json_extract_scalar(Client, "$.geographicalContext.country"),
+        XDM_Auth_Client_location_geo_lat = json_extract_scalar(Client, "$.geographicalContext.geolocation.lat"),
+        XDM_Auth_Client_location_geo_lan = json_extract_scalar(Client, "$.geographicalContext.geolocation.lan"),
+        XDM_Auth_Main_session_id = json_extract_scalar(authenticationContext, "$.externalSessionId"),
+        XDM_Auth_Main_logon_type = eventType,
+        XDM_Auth_Main_outcome = if(outcome_result="SUCCESS", "SUCCESS", outcome_result="FAILURE", "FAILED", outcome_result="ALLOW", "SUCCESS", outcome_result="DENY", "FAILED", outcome_result="CHALLENGE", "PARTIAL", "UNKNOWN"),
+        XDM_Auth_Main_reason = json_extract_scalar(outcome, "$.reason"),
+        XDM_Auth_Target_host_device_id = json_extract_scalar(`target`, "$.id"),
+        XDM_Auth_Target_host_device_type = json_extract_scalar(`target`, "$.type");

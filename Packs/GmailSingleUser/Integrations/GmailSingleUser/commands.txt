@@ -1,3 +1,0 @@
-!send-mail subject="this is the subject" to=test@demistodev.com body="this is the body"
-!gmail-auth-link
-!gmail-auth-test

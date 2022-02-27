@@ -1,0 +1,27 @@
+{
+  "name": "My rule name",
+  "description": "My descirption",
+  "dataset": "alerts",
+  "xql_query": "the XQL query",
+  "execution_mode": "SCHEDULED",
+  "crontab": "mandatory when execution mode is SCHEDULED. the cron schedule for this query",
+  "search_window": "1 day",
+  "timezone": "GMT",
+  "suppression_enabled": true,
+  "suppression_duration": "4 hours",
+  "suppression_fields": [
+    "MyField1",
+    "MyField2"
+  ],
+  "severity": "SEV_010_INFO",
+  "alert_category": "PERSISTENCE",
+  "alert_description": "host $agent_id reached $dest_count destinations",
+  "mitre_defs": "",
+  "investigation_query_link": "dataset = xdr_data | filter agent_id=$the_agent_id_field_in_the_result",
+  "drilldown_query_timeframe": "QUERY",
+  "mapping_strategy": "CUSTOM",
+  "alert_fields": [
+    "hash,domain",
+    "local_ip"
+  ]
+}

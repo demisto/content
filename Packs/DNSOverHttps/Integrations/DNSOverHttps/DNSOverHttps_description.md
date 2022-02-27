@@ -1,1 +1,0 @@
-Query Domain names using Cloudflare or Google DNS-over-HTTPS service.

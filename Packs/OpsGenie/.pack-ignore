@@ -1,8 +1,0 @@
-[file:integration-OpsGenie_README.md]
-ignore=RM106
-
-[file:integration-OpsGenie.yml]
-ignore=IN145
-
-[file:OpsGenieV3_image.png]
-ignore=IM111

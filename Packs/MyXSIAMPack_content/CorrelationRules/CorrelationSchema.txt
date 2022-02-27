@@ -1,0 +1,31 @@
+Main
+----
+name: rule name
+description (optional): rule description
+dataset: the name of the target datasets for the results. "alerts" here indicates that the rule will generate alerts and will not write to a dataset (the dataset can be a new one, and can't be an existing one with type which is not CORRELATION)
+xql_query: the XQL query
+
+Scheduling
+----------
+execution_mode: "REAL_TIME" or "SCHEDULED"
+crontab (optional): mandatory when execution mode is SCHEDULED. the cron schedule for this query
+search_window (optional): mandatory when execution mode is SCHEDULED. the XQL query timeframe. "X minutes/hours/days", while min is 10 minutes and max is 7 days
+timezone (optional): mandatory when execution mode is SCHEDULED. the timezone which the scheduling info should be applied with
+
+Suppression
+-----------
+suppression_enabled: boolean, whether to enable suppresssion or not
+suppression_duration (optional): mandatory when suppression_enabled is True. format "X minutes/hours/days", up to 1 day
+suppression_fields (optional): mandatory when suppression_enabled is True. a list of fields to apply the suppression on their identical values
+
+
+Alert - this section is allowed only when dataset=="alerts"
+-----
+severity (optional): mandatory when dataset=="alerts". severity of the alert. one of the options: SEV_010_INFO,SEV_020_LOW,SEV_030_MEDIUM,SEV_040_HIGH
+alert_category (optional): mandatory when dataset=="alerts". category of the alert. one of the options: OTHER,PERSISTENCE,EVASION,TAMPERING,FILE_TYPE_OBFUSCATION,PRIVILEGE_ESCALATION,CREDENTIAL_ACCESS,LATERAL_MOVEMENT,EXECUTION,COLLECTION,EXFILTRATION,INFILTRATION,DROPPER,FILE_PRIVILEGE_MANIPULATION,RECONNAISSANCE,DISCOVERY
+alert_description (optional): the description of the generated alert, can use place holders for results from the xql query. e.g. host $agent_id reached $dest_count destinations
+mitre_defs (optional): a mapping between mitre tactics to techniques
+investigation_query_link (optional): XQL query which should be used later to search data related to the alert. can use place holders for results from the xql query. e.g. dataset = xdr_data | filter agent_id=$the_agent_id_field_in_the_result
+drilldown_query_timeframe (optional): mandatory if investigation_query_link is specified. the timeframe which should be used for the drilldown query. (investigation query link is the former name of drilldown query). can be QUERY/ALERT, and QUERY is not allowed when execution mode is REAL_TIME
+mapping_strategy (optional): mandatory when dataset=="alerts". can be AUTO/CUSTOM, while AUTO is supported only when we know to populate the source schema into the alert fields (when the source is xdr_data or a data model). if CUSTOM is selected, alert_fields mapping can be provided
+alert_fields (optional): required when mapping_strategy==CUSTOM. a mapping between alert field in alerts table, to an output field from the XQL search. allowed keys: hash,domain,local_ip,remote_ip,username,hostname,cmd,remote_port,actor_path,actor_image

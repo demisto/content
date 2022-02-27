@@ -1,1 +1,0 @@
-## Netskope (API v2)

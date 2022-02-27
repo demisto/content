@@ -1,5 +1,0 @@
-[file:CoreIOCs.yml]
-ignore=IN145,IN129
-
-[file:CortexCoreIR.yml]
-ignore=IN145
