@@ -595,7 +595,7 @@ def cmdb_device_get_command(client: FortiSIEMClient, args: Dict[str, Any]) -> Li
     Returns:
        List[CommandResults]: Command results with raw response, outputs and readable outputs.
     """
-    ip_address_list = argToList(args['ip_address'])
+    ip_address_list = argToList(args['ips'])
     command_results_list: List[CommandResults] = []
 
     for ip_address in ip_address_list:

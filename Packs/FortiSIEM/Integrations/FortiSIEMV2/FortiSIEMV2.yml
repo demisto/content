@@ -455,7 +455,7 @@ script:
     - default: false
       description: Comma separate list of devices IP addresses.
       isArray: false
-      name: ip_address
+      name: ips
       required: true
       secret: false
     deprecated: false
