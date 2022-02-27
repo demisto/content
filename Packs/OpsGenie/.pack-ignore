@@ -6,3 +6,6 @@ ignore=IN145
 
 [file:OpsGenieV3_image.png]
 ignore=IM111
+
+[file:OpsGenie_image.png]
+ignore=IM111
