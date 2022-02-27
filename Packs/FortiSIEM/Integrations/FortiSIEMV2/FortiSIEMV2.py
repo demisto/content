@@ -1433,7 +1433,7 @@ def format_message_delete_entry(entry_id: int, response: Dict[str, Any]) -> str:
         deleted_count = int(message.split("- ")[1])
         if deleted_count >= 1:
             return f'The entry {entry_id} were deleted successfully.'
-    raise ValueError(f'Failed to delete entries: {entry_id}.')
+    raise ValueError(f'Failed to delete entry {entry_id}.')
 
 
 def validate_add_watchlist_args(first_seen: int, last_seen: int) -> None:
