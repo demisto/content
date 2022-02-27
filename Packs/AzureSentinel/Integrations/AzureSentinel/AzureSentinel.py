@@ -464,7 +464,7 @@ def list_incidents_command(client, args, is_fetch_incidents=False, first_fetch=F
     next_link = args.get('next_link', '')
     result = None
     params = {}
-    demisto.debug(f"is_fetch_incidents:{is_fetch_incidents}, first_fetch:{first_fetch}")
+    demisto.debug(f"{is_fetch_incidents=}, {first_fetch=}")
 
     if next_link:
         next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
