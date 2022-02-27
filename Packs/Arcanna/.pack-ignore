@@ -3,3 +3,6 @@ ignore=PB105
 
 [file:ArcannaAI.yml]
 ignore=IN145
+
+[file:ArcannaAI_image.png]
+ignore=IM111
