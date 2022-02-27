@@ -16,37 +16,32 @@ SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT = {
 }
 
 GET_REPORT_SUMMARY_CONTEXT = {
-    'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || '
-    'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 ||'
-    ' val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || '
-    'val.SSDeep && val.SSDeep == obj.SSDeep)': [
-        {'Signature': {'Authentihash': '', 'Copyright': '',
-                       'Description': '', 'FileVersion': '', 'InternalName': '',
-                       'OriginalName': ''}}
-    ],
-
-    'csfalconx.resource(val.id && val.id == obj.id)':
-        {
-            'id': 'id',
-            'verdict': 'no specific threat',
-            'created_timestamp': '2020-03-16T17:04:48Z',
-            'ioc_report_strict_csv_artifact_id': 'ioc_report_strict_csv_artifact_id',
-            'ioc_report_broad_csv_artifact_id': 'ioc_report_broad_csv_artifact_id',
-            'ioc_report_strict_json_artifact_id': 'ioc_report_strict_json_artifact_id',
-            'ioc_report_broad_json_artifact_id': 'ioc_report_broad_json_artifact_id',
-            'ioc_report_strict_stix_artifact_id': 'ioc_report_strict_stix_artifact_id',
-            'ioc_report_broad_stix_artifact_id': 'ioc_report_broad_stix_artifact_id',
-            'ioc_report_strict_maec_artifact_id': 'ioc_report_strict_maec_artifact_id',
-            'ioc_report_broad_maec_artifact_id': 'ioc_report_broad_maec_artifact_id',
-            'environment_id': 160,
-            'environment_description': 'Windows 10 64 bit',
-            'threat_score': 13,
-            'submit_url': 'hxxps://www.google.com',
-            'submission_type': 'page_url',
-            'sha256': 'sha256'
-        }
-}
-
+    'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 '
+    '|| val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 '
+    '|| val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH'
+    ' || val.SSDeep && val.SSDeep == obj.SSDeep)': [
+        {'SHA256': 'sha256', 'Company': 'Microsoft Corporation', 'ProductName': 'Microsoft Windows Operating System',
+         'Signature': {'Authentihash': '', 'Copyright': 'Microsoft Corporation. All rights reserved.',
+                       'Description': 'Microsoft Smartcard Certificate Propagation Service',
+                       'FileVersion': '10.0.19041.844 (WinBuild.160101.0800)', 'InternalName': 'certprop.dll',
+                       'OriginalName': 'certprop.dll'}}],
+    'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+        {'Indicator': 'sha256', 'Type': 'file', 'Vendor': '', 'Score': 2, 'Reliability': 'B - Usually reliable'}],
+    'csfalconx.resource(val.id && val.id == obj.id)': {
+        'environment_description': 'Windows 10 64 bit',
+        'environment_id': 160, 'sha256': 'sha256',
+        'submission_type': 'page_url',
+        'submit_url': 'hxxps://www.google.com', 'threat_score': 13,
+        'created_timestamp': '2020-03-16T17:04:48Z', 'id': 'id',
+        'ioc_report_broad_csv_artifact_id': 'ioc_report_broad_csv_artifact_id',
+        'ioc_report_broad_json_artifact_id': 'ioc_report_broad_json_artifact_id',
+        'ioc_report_broad_maec_artifact_id': 'ioc_report_broad_maec_artifact_id',
+        'ioc_report_broad_stix_artifact_id': 'ioc_report_broad_stix_artifact_id',
+        'ioc_report_strict_csv_artifact_id': 'ioc_report_strict_csv_artifact_id',
+        'ioc_report_strict_json_artifact_id': 'ioc_report_strict_json_artifact_id',
+        'ioc_report_strict_maec_artifact_id': 'ioc_report_strict_maec_artifact_id',
+        'ioc_report_strict_stix_artifact_id': 'ioc_report_strict_stix_artifact_id',
+        'verdict': 'suspicious'}}
 GET_ANALYSIS_STATUS_CONTEXT = {
     'csfalconx.resource(val.id && val.id == obj.id)':
         {

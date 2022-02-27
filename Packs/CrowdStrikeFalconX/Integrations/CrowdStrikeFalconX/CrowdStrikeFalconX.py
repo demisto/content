@@ -547,9 +547,9 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
     if sha256 := sandbox.get('sha256'):  # todo does the `if` make sense here?
         score_field = DBOT_SCORE_DICT.get(sandbox.get('verdict'), Common.DBotScore.NONE)
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability_str)
-        submit_name = sandbox.get('submit_name')
+        submit_name = sandbox.get('submit_name')  # todo is ever None? What about name=submit_name? all CR use `id` :|
 
-        dbot = Common.DBotScore(indicator=submit_name,
+        dbot = Common.DBotScore(indicator=sha256,
                                 indicator_type=DBotScoreType.FILE,
                                 score=score_field,
                                 reliability=reliability)
@@ -568,8 +568,8 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
                            file_type=sandbox.get('file_type'),
                            company=info.get('CompanyName'),
                            product_name=info.get('ProductName'),
-                           signature=Common.FileSignature(authentihash='',  # todo
-                                                          copyright='',  # todo
+                           signature=Common.FileSignature(authentihash='',  # N/A in data
+                                                          copyright=info.get('LegalCopyright', ''),
                                                           description=info.get('FileDescription', ''),
                                                           file_version=info.get('FileVersion', ''),
                                                           internal_name=info.get('InternalName', ''),
@@ -824,7 +824,7 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
         command_results = [
             CommandResults(readable_output=
                            f'There are no results yet for the any of the queried samples ({ids}),'
-                           f' analysis might not have been completed. ' # todo add file may not exist? 
+                           f' analysis might not have been completed. '  # todo add file may not exist? 
                            'Please wait to download the report.\n'
                            'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.')
         ]

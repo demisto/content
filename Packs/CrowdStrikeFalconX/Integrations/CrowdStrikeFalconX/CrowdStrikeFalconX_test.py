@@ -212,12 +212,17 @@ def test_handle_errors(http_response, output, mocker):
 
 
 def ddiff(dict1: dict, dict2: dict):  # todo remove
+    if not dict1:
+        print('dict1 is empty/None')
+        return
+    if not dict2:
+        print('dict1 is empty/None')
+        return
+
     for k in set(dict1.keys()).intersection(dict2.keys()):
         if dict1[k] != dict2[k]:
-            print('dict1:')
-            print(dict1[k])
-            print('dict2')
-            print(dict2[k])
+            print(f'{k} in dict1:', dict1[k])
+            print(f'{k} in dict2:', dict2[k])
     for k in set(dict1.keys()).difference(dict2.keys()):
         print(f'key {k} missing from dict2')
     for k in set(dict2.keys()).difference(dict1.keys()):
