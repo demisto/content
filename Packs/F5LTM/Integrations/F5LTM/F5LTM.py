@@ -28,10 +28,11 @@ class Client(BaseClient):
             'status.statusReason'
         }
 
-    def get_pools(self, expand_collection=False):
+    def get_pools(self, expand_collection=False, partition=None):
 
         url_suffix = f'ltm/pool?expandSubcollections={str(expand_collection).lower()}&' \
-                     f'$select=membersReference,name,partition,monitor&$filter=partition eq {self.partition}'
+                     f'$select=membersReference,name,partition,monitor&$filter=partition eq' \
+                     f' {partition if partition else self.partition}'
         response = self._http_request(method='GET', url_suffix=url_suffix,
                                       headers=self.headers, params={})
         if str(expand_collection).lower() == 'true':
@@ -48,14 +49,14 @@ class Client(BaseClient):
             pools = response.get('items')
         return pools
 
-    def get_pool(self, pool):
-        url_suffix = f'ltm/pool/~{self.partition}~{pool}'
+    def get_pool(self, pool, partition=None):
+        url_suffix = f'ltm/pool/~{partition if partition else self.partition}~{pool}'
         response = self._http_request(method='GET', url_suffix=url_suffix,
                                       headers=self.headers, params={})
         return response
 
-    def get_pool_members(self, pool):
-        url_suffix = f'ltm/pool/~{self.partition}~{pool}/members'
+    def get_pool_members(self, pool, partition=None):
+        url_suffix = f'ltm/pool/~{partition if partition else self.partition}~{pool}/members'
         response = self._http_request(method='GET', url_suffix=url_suffix,
                                       headers=self.headers, params={})
         return {
@@ -63,42 +64,39 @@ class Client(BaseClient):
             'members': response.get('items')
         }
 
-    def get_nodes(self):
-        url_suffix = 'ltm/node?$select=name,partition,address,ration,session,state'
+    def get_nodes(self, partition=None):
+        url_suffix = f'ltm/node?$select=name,partition,address,ration,session,state&$filter=partition eq ' \
+                     f'{partition if partition else self.partition}'
         response = self._http_request(method='GET', url_suffix=url_suffix,
                                       headers=self.headers, params={})
         return response.get('items')
 
-    def get_node(self, node):
-        url_suffix = f'ltm/node/~{self.partition}~{node}'
+    def get_node(self, node, partition=None):
+        url_suffix = f'ltm/node/~{partition if partition else self.partition}~{node}'
         response = self._http_request(method='GET', url_suffix=url_suffix,
                                       headers=self.headers, params={})
         return response
 
-    def disable_node(self, node):
-        url_suffix = f'ltm/node/~{self.partition}~{node}'
+    def disable_node(self, node, partition=None):
+        url_suffix = f'ltm/node/~{partition if partition else self.partition}~{node}'
         response = self._http_request(method='PATCH', url_suffix=url_suffix,
                                       headers=self.headers, json_data={"session": "user-disabled"})
         return response
 
-    def enable_node(self, node):
-        url_suffix = f'ltm/node/~{self.partition}~{node}'
+    def enable_node(self, node, partition=None):
+        url_suffix = f'ltm/node/~{partition if partition else self.partition}~{node}'
         response = self._http_request(method='PATCH', url_suffix=url_suffix,
                                       headers=self.headers, json_data={"session": "user-enabled"})
         return response
 
-    def get_pool_member_stats(self, pool, member):
+    def get_pool_member_stats(self, pool, member, partition=None):
         pool_stats = {}
-        url_suffix = f'ltm/pool/{pool}/members/~{self.partition}~{member}/stats'
+        partition_name = partition if partition else self.partition
+        url_suffix = f'ltm/pool/~{partition_name}~{pool}/members/~{partition_name}~{member}/stats'
         response = self._http_request(method='GET', url_suffix=url_suffix,
                                       headers=self.headers, params={})
-        member_stats = response.get('entries')[f'https://localhost/mgmt/tm/ltm/pool/{pool}/members/'
-                                               f'~{self.partition}~{member}/~{self.partition}~{pool}/'
-                                               f'stats']['nestedStats']['entries'][
-            f'https://localhost/mgmt/tm/ltm/pool/{pool}/members/~{self.partition}~{member}/~{self.partition}'
-            f'~{pool}/members/stats']['nestedStats']['entries'][
-            f'https://localhost/mgmt/tm/ltm/pool/{pool}/members/~{self.partition}~{member}/~{self.partition}'
-            f''f'~{pool}/members/~{self.partition}~{member}/stats']['nestedStats']['entries']
+        member_stats = response.get('entries')[f'https://localhost/mgmt/tm/ltm/pool/~{partition_name}~{pool}/members/'
+                                               f'~{partition_name}~{member}/stats']['nestedStats']['entries']
 
         for key, value in response.get('entries').items():
             raw_stats = value.get('nestedStats')['entries']
@@ -110,12 +108,13 @@ class Client(BaseClient):
             'members': [{'name': member, 'stats': member_stats}]
         }
 
-    def get_node_stats(self, node):
-        url_suffix = f'ltm/node/~{self.partition}~{node}/stats'
+    def get_node_stats(self, node, partition=None):
+        url_suffix = f'ltm/node/~{partition if partition else self.partition}~{node}/stats'
         response = self._http_request(method='GET', url_suffix=url_suffix,
                                       headers=self.headers, params={})
         node_stats = (response.get('entries')[f'https://localhost/mgmt/tm/ltm/node/~'
-                                              f'{self.partition}~{node}/stats']['nestedStats']['entries'])
+                                              f'{partition if partition else self.partition}~{node}/'
+                                              f'stats']['nestedStats']['entries'])
         return {
             'name': node,
             'stats': node_stats
@@ -154,8 +153,9 @@ def test_module(client: Client):
 
 
 def ltm_get_pools_command(client, args) -> CommandResults:
-    expand = args.get('expand')
-    results = client.get_pools(expand)
+    expand_collection = args.get('expand')
+    partition = args.get('partition')
+    results = client.get_pools(expand_collection=expand_collection, partition=partition)
 
     return CommandResults(
         outputs_prefix='F5.LTM.Pools',
@@ -166,7 +166,8 @@ def ltm_get_pools_command(client, args) -> CommandResults:
 
 def ltm_get_pool_command(client, args) -> CommandResults:
     pool = args.get('pool_name')
-    results = client.get_pool(pool)
+    partition = args.get('partition')
+    results = client.get_pool(pool=pool, partition=partition)
 
     return CommandResults(
         outputs_prefix='F5.LTM.Pools',
@@ -175,8 +176,9 @@ def ltm_get_pool_command(client, args) -> CommandResults:
     )
 
 
-def ltm_get_nodes_command(client) -> CommandResults:
-    results = client.get_nodes()
+def ltm_get_nodes_command(client, args) -> CommandResults:
+    partition = args.get('partition')
+    results = client.get_nodes(partition)
 
     return CommandResults(
         outputs_prefix='F5.LTM.Nodes',
@@ -187,7 +189,8 @@ def ltm_get_nodes_command(client) -> CommandResults:
 
 def ltm_get_node_command(client, args) -> CommandResults:
     node = args.get('node_name')
-    results = client.get_node(node)
+    partition = args.get('partition')
+    results = client.get_node(node=node, partition=partition)
 
     return CommandResults(
         outputs_prefix='F5.LTM.Nodes',
@@ -198,7 +201,8 @@ def ltm_get_node_command(client, args) -> CommandResults:
 
 def ltm_get_pool_members_command(client, args) -> CommandResults:
     pool = args.get('pool_name')
-    results = client.get_pool_members(pool)
+    partition = args.get('partition')
+    results = client.get_pool_members(pool=pool, partition=partition)
     readable_output = tableToMarkdown('Pool Members:', {
         'name': results.get('name'),
         'members': [member['name'] for member in results.get('members')]
@@ -214,7 +218,8 @@ def ltm_get_pool_members_command(client, args) -> CommandResults:
 
 def ltm_disable_node_command(client, args) -> CommandResults:
     node = args.get('node_name')
-    results = client.disable_node(node)
+    partition = args.get('partition')
+    results = client.disable_node(node=node, partition=partition)
 
     return CommandResults(
         outputs_prefix='F5.LTM.Nodes',
@@ -225,7 +230,8 @@ def ltm_disable_node_command(client, args) -> CommandResults:
 
 def ltm_enable_node_command(client, args) -> CommandResults:
     node = args.get('node_name')
-    results = client.enable_node(node)
+    partition = args.get('partition')
+    results = client.enable_node(node=node, partition=partition)
 
     return CommandResults(
         outputs_prefix='F5.LTM.Nodes',
@@ -237,7 +243,8 @@ def ltm_enable_node_command(client, args) -> CommandResults:
 def ltm_get_pool_member_stats_command(client, args) -> CommandResults:
     pool = args.get('pool_name')
     member = args.get('member_name')
-    results = client.get_pool_member_stats(pool=pool, member=member)
+    partition = args.get('partition')
+    results = client.get_pool_member_stats(pool=pool, member=member, partition=partition)
     readable_output = tableToMarkdown('Pool Member Stats:', {
         'pool': results.get('pool'),
         'member': [member.get('name') for member in results.get('members')],
@@ -254,7 +261,8 @@ def ltm_get_pool_member_stats_command(client, args) -> CommandResults:
 
 def ltm_get_node_stats_command(client, args) -> CommandResults:
     node = args.get('node_name')
-    results = client.get_node_stats(node=node)
+    partition = args.get('partition')
+    results = client.get_node_stats(node=node, partition=partition)
     readable_output = tableToMarkdown('Node Stats:', {
         'node': results.get('name'),
         'curConns': results.get('stats')['serverside.curConns']['value']
@@ -268,8 +276,9 @@ def ltm_get_node_stats_command(client, args) -> CommandResults:
 
 
 def ltm_get_node_by_address_command(client, args):
+    partition = args.get('partition')
     ip_address = args.get('ip_address')
-    results = client.get_nodes()
+    results = client.get_nodes(partition=partition)
     for item in results:
         if item.get('address') == ip_address:
             node = item
@@ -285,7 +294,8 @@ def ltm_get_node_by_address_command(client, args):
 def ltm_get_pools_by_node_command(client, args) -> CommandResults:
     node = args.get('node_name')
     pools = []
-    results = client.get_pools(expand_collection='true')
+    partition = args.get('partition')
+    results = client.get_pools(expand_collection='true', partition=partition)
     for item in results:
         for subitem in item.get('members'):
             if subitem.get('name').split(':')[0] == node:
@@ -346,7 +356,7 @@ def main() -> None:
             return_results(ltm_get_pool_members_command(client, args))
 
         elif demisto.command() == 'f5-ltm-get-nodes':
-            return_results(ltm_get_nodes_command(client))
+            return_results(ltm_get_nodes_command(client, args))
 
         elif demisto.command() == 'f5-ltm-get-node':
             return_results(ltm_get_node_command(client, args))
