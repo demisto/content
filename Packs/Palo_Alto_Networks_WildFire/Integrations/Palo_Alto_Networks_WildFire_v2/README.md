@@ -61,6 +61,7 @@ Retrieve results for a file hash using WildFire
 | File.SHA1 | string | SHA1 hash of the file. | 
 | File.SHA256 | string | SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
+| File.DigitalSignature.Publisher | string |   | 
 | DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
@@ -127,6 +128,7 @@ Uploads a file to WildFire for analysis.
 | File.SHA1 | string | SHA1 hash of the file. | 
 | File.SHA256 | string | SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
+| File.DigitalSignature.Publisher | string |   | 
 | DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | Vendor used to calculate the score. | 
@@ -137,6 +139,10 @@ Uploads a file to WildFire for analysis.
 | InfoFile.Info | string | Details of the report file. | 
 | InfoFile.Size | number | The size of the report file. | 
 | InfoFile.Type | string | The report file type. | 
+| WildFire.Report.Network.URL.Host | string |   | 
+| WildFire.Report.Network.URL.Method | string |   | 
+| WildFire.Report.Network.URL.URI | string |   | 
+| WildFire.Report.Network.URL.UserAgent | string |   | 
 | WildFire.Report.Network.UDP.IP | string | Submission related IPs, in UDP protocol. | 
 | WildFire.Report.Network.UDP.Port | string | Submission related ports, in UDP protocol. | 
 | WildFire.Report.Network.UDP.JA3 | string | Submission related JA3s, in UDP protocol. | 
@@ -226,6 +232,7 @@ Uploads the URL of a remote file to WildFire for analysis.
 | File.SHA1 | string | SHA1 hash of the file. | 
 | File.SHA256 | string | SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
+| File.DigitalSignature.Publisher | string |   | 
 | DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | Vendor used to calculate the score. | 
@@ -236,6 +243,10 @@ Uploads the URL of a remote file to WildFire for analysis.
 | InfoFile.Info | string | Details of the report file. | 
 | InfoFile.Size | number | The size of the report file. | 
 | InfoFile.Type | string | The report file type. | 
+| WildFire.Report.Network.URL.Host | string |   | 
+| WildFire.Report.Network.URL.Method | string |   | 
+| WildFire.Report.Network.URL.URI | string |   | 
+| WildFire.Report.Network.URL.UserAgent | string |   | 
 | WildFire.Report.Network.UDP.IP | string | Submission related IPs, in UDP protocol. | 
 | WildFire.Report.Network.UDP.Port | string | Submission related ports, in UDP protocol. | 
 | WildFire.Report.Network.UDP.JA3 | string | Submission related JA3s, in UDP protocol. | 
@@ -321,6 +332,7 @@ Retrieves results for a file hash using WildFire.
 | File.SHA1 | string | SHA1 hash of the file. | 
 | File.SHA256 | string | SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
+| File.DigitalSignature.Publisher | string |   | 
 | DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | Vendor used to calculate the score. | 
@@ -333,6 +345,10 @@ Retrieves results for a file hash using WildFire.
 | InfoFile.Info | string | Details of the report file. | 
 | InfoFile.Size | number | The size of the report file. | 
 | InfoFile.Type | string | The report file type. | 
+| WildFire.Report.Network.URL.Host | string |   | 
+| WildFire.Report.Network.URL.Method | string |   | 
+| WildFire.Report.Network.URL.URI | string |   | 
+| WildFire.Report.Network.URL.UserAgent | string |   | 
 | WildFire.Report.Network.UDP.IP | string | Submission related IPs, in UDP protocol. | 
 | WildFire.Report.Network.UDP.Port | string | Submission related ports, in UDP protocol. | 
 | WildFire.Report.Network.UDP.JA3 | string | Submission related JA3s, in UDP protocol. | 
@@ -503,6 +519,7 @@ Uploads a URL of a webpage to WildFire for analysis.
 | File.SHA1 | string | SHA1 hash of the file. | 
 | File.SHA256 | string | SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
+| File.DigitalSignature.Publisher | string |   | 
 | DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | Vendor used to calculate the score. | 
@@ -513,6 +530,10 @@ Uploads a URL of a webpage to WildFire for analysis.
 | InfoFile.Info | string | Details of the report file. | 
 | InfoFile.Size | number | The size of the report file. | 
 | InfoFile.Type | string | The report file type. | 
+| WildFire.Report.Network.URL.Host | string |   | 
+| WildFire.Report.Network.URL.Method | string |   | 
+| WildFire.Report.Network.URL.URI | string |   | 
+| WildFire.Report.Network.URL.UserAgent | string |   | 
 | WildFire.Report.Network.UDP.IP | string | Submission related IPs, in UDP protocol. | 
 | WildFire.Report.Network.UDP.Port | string | Submission related ports, in UDP protocol. | 
 | WildFire.Report.Network.UDP.JA3 | string | Submission related JA3s, in UDP protocol. | 

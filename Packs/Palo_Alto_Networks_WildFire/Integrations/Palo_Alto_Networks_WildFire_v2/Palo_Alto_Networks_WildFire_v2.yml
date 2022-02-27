@@ -54,7 +54,7 @@ script:
       description: File hash to check.
       isArray: true
       name: file
-      required: false
+      required: true
       secret: false
     - default: false
       description: MD5 hash to check.
@@ -157,7 +157,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the
+        result when it's ready.
       isArray: false
       name: polling
       predefined:
@@ -173,8 +174,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used for the inner polling flow. For uploading a file, use the 'upload'
-        argument instead.
+      description: Used for the inner polling flow. For uploading a file, use the
+        'upload' argument instead.
       isArray: true
       name: md5
       required: false
@@ -182,8 +183,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: The type of structured report (XML or PDF) to request. Only relevant when
-        polling=true.
+      description: The type of structured report (XML or PDF) to request. Only relevant
+        when polling=true.
       isArray: false
       name: format
       predefined:
@@ -194,8 +195,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to receive extended information from WildFire. Only relevant when
-        polling=true.
+      description: Whether to receive extended information from WildFire. Only relevant
+        when polling=true.
       isArray: false
       name: verbose
       predefined:
@@ -205,7 +206,8 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: false
-      description: If set to “true”, the report will return extended data which includes the additional outputs
+      description: If set to “true”, the report will return extended data which includes
+        the additional outputs
       isArray: false
       name: extended_data
       predefined:
@@ -439,7 +441,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the
+        result when it's ready.
       isArray: false
       name: polling
       predefined:
@@ -457,8 +460,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: The type of structured report (XML or PDF) to request. Only relevant when
-        polling=true.
+      description: The type of structured report (XML or PDF) to request. Only relevant
+        when polling=true.
       isArray: false
       name: format
       predefined:
@@ -469,8 +472,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to receive extended information from WildFire. Only relevant when
-        polling=true.
+      description: Whether to receive extended information from WildFire. Only relevant
+        when polling=true.
       isArray: false
       name: verbose
       predefined:
@@ -480,7 +483,8 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: false
-      description: If set to “true”, the report will return extended data which includes the additional outputs
+      description: If set to “true”, the report will return extended data which includes
+        the additional outputs
       isArray: false
       name: extended_data
       predefined:
@@ -745,7 +749,8 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: false
-      description: If set to “true”, the report will return extended data which includes the additional outputs
+      description: If set to “true”, the report will return extended data which includes
+        the additional outputs
       isArray: false
       name: extended_data
       predefined:
@@ -1064,7 +1069,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the
+        result when it's ready.
       isArray: false
       name: polling
       predefined:
@@ -1082,8 +1088,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: The type of structured report (XML or PDF) to request. Only relevant when
-        polling=true.
+      description: The type of structured report (XML or PDF) to request. Only relevant
+        when polling=true.
       isArray: false
       name: format
       predefined:
@@ -1094,8 +1100,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to receive extended information from WildFire. Only relevant when
-        polling=true.
+      description: Whether to receive extended information from WildFire. Only relevant
+        when polling=true.
       isArray: false
       name: verbose
       predefined:
@@ -1105,7 +1111,8 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: false
-      description: If set to “true”, the report will return extended data which includes the additional outputs
+      description: If set to “true”, the report will return extended data which includes
+        the additional outputs
       isArray: false
       name: extended_data
       predefined:
@@ -1384,13 +1391,13 @@ script:
       name: hash
       required: true
       isArray: true
-    - description: A description of the change request in quotes, 
-        If you send multiple hashes, this comment will apply to each hash. (Maximum length 2,048 characters)
+    - description: A description of the change request in quotes, If you send multiple
+        hashes, this comment will apply to each hash. (Maximum length 2,048 characters)
       name: comment
       required: true
       isArray: false
-    - description: The new verdict to be applied to the sample, 
-        If you send multiple hashes, this verdict will apply to each hash.
+    - description: The new verdict to be applied to the sample, If you send multiple
+        hashes, this verdict will apply to each hash.
       auto: PREDEFINED
       name: verdict
       required: true
@@ -1401,11 +1408,12 @@ script:
       - grayware
       - phishing
     name: wildfire-update-verdict
-    description: Changes the WildFire verdict applied to a sample. 
-      Verdict changes apply only to those samples submitted to the WildFire appliance,
-      and the verdict for the same sample remains unchanged in the WildFire global cloud. 
-      If a user inserts multiple hashes, the same comment and verdict will apply to all - mention in the command description!
-  dockerimage: demisto/python3:3.10.1.25933
+    description: Changes the WildFire verdict applied to a sample. Verdict changes
+      apply only to those samples submitted to the WildFire appliance, and the verdict
+      for the same sample remains unchanged in the WildFire global cloud. If a user
+      inserts multiple hashes, the same comment and verdict will apply to all - mention
+      in the command description!
+  dockerimage: demisto/python3:3.10.1.26972
   feed: false
   isfetch: false
   longRunning: false
