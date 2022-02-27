@@ -741,7 +741,7 @@ script:
       secret: false
     - default: false
       description: The time period in which the items will expire from the Watchlist
-        group if there is no activity for that time. For example, "3 days ago","in
+        group if there is no activity for that time. For example, "3 days","in
         2 weeks", "1 month". By default, the item will never expire from Watchlist.
       isArray: false
       name: age_out
@@ -766,7 +766,7 @@ script:
       secret: false
     - default: false
       description: The time period in which the entry will expire from the Watchlist
-        group if there is no activity for that time. For example, "3 days ago","in
+        group if there is no activity for that time. For example, "3 days","in
         2 weeks", "1 month". By default, the item will never expire from Watchlist.
       isArray: false
       name: entry_age_out
@@ -879,7 +879,7 @@ script:
       secret: false
     - default: false
       description: The time period in which the entry will expire from the Watchlist
-        group if there is no activity for that time. For example, "3 days ago","in
+        group if there is no activity for that time. For example, "3 days","in
         2 weeks", "1 month". By default, the item will never expire from Watchlist.
       isArray: false
       name: age_out
@@ -997,7 +997,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The first time the entry was seen. For example, "3 days ago", "1
+      description: The first time the entry was seen. For example, "3 days", "1
         month", "2019-10-10T12:22:00", "2019-10-10".
       isArray: false
       name: last_seen
