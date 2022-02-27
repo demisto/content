@@ -486,6 +486,8 @@ def test_parse_indicator():
         'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
         'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
             'Indicator': 'sha256', 'Type': 'file', 'Vendor': '', 'Score': 2,
-            'Reliability': 'A+ - 3rd party enrichment'}}
+            'Reliability': 'A+ - 3rd party enrichment'
+        }
+    }
 
     assert indicator.to_context() == expected_context, ddiff(indicator.to_context(), expected_context)
