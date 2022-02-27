@@ -223,6 +223,101 @@ INBOUND_MESSAGE_FROM_BOT_WITH_BOT_ID = {
     "event_context": "4-eyJldCI6Im1lc3NhZ2UiLCJ0aWQiOiJUQUJRTVBLUDAiLCJhaWQiOiJBMDFUWFFBR0IyUCIsImNpZCI6IkMwMzNITEwzTjgxIn0"
 }
 
+INBOUND_EVENT_MESSAGE = {
+    "envelope_id": "d515b90f-ba7f-425d-a1b2-b4fb4f0f0e2b",
+    "payload": {
+        "type": "block_actions",
+        "user": {
+            "id": "U01A5FGR0BT",
+            "username": "test",
+            "name": "test",
+            "team_id": "T019C4MM2VD"
+        },
+        "api_app_id": "123",
+        "token": "123",
+        "container": {
+            "type": "message",
+            "message_ts": "1645712173.407939",
+            "channel_id": "G01FZSE6HCG",
+            "is_ephemeral": False
+        },
+        "trigger_id": "3165963195265.1318157716999.f90b6e19a46a36ca5d2d76c77095748b",
+        "team": {
+            "id": "Test",
+            "domain": "test"
+        },
+        "enterprise": None,
+        "is_enterprise_install": False,
+        "channel": {
+            "id": "G01FZSE6HCG",
+            "name": "test"
+        },
+        "message": {
+            "type": "message",
+            "subtype": "bot_message",
+            "text": "Hi",
+            "ts": "1645712173.407939",
+            "username": "test",
+            "icons": {
+                "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2021-07-14\/2273797940146_48.png"
+            },
+            "bot_id": "B0342JWALTG",
+            "blocks": [{
+                "type": "section",
+                "block_id": "VpQ0F",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "Hi",
+                    "verbatim": False
+                }
+            }, {
+                "type": "actions",
+                "block_id": "06eO",
+                "elements": [{
+                    "type": "button",
+                    "action_id": "o2pI",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Yes",
+                        "emoji": True
+                    },
+                    "style": "primary",
+                    "value": "{\"entitlement\": \"8e8798e0-5f49-4dcd-85de-cf2c2b13bc3a@2200|57\", \"reply\": \"Hi\"}"
+                }, {
+                    "type": "button",
+                    "action_id": "CdRu",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "No",
+                        "emoji": True
+                    },
+                    "style": "danger",
+                    "value": "{\"entitlement\": \"8e8798e0-5f49-4dcd-85de-cf2c2b13bc3a@2200|57\", \"reply\": \"Hi\"}"
+                }]
+            }]
+        },
+        "state": {
+            "values": {}
+        },
+        "response_url": "https:\/\/hooks.slack.com\/actions\/T019C4MM2VD\/3146697353558\/Y6ic5jAvlJ6p9ZU9HmyU9sPZ",
+        "actions": [{
+            "action_id": "o2pI",
+            "block_id": "06eO",
+            "text": {
+                "type": "plain_text",
+                "text": "Yes",
+                "emoji": True
+            },
+            "value": "{\"entitlement\": \"8e8798e0-5f49-4dcd-85de-cf2c2b13bc3a@2200|57\", \"reply\": \"Hi\"}",
+            "style": "primary",
+            "type": "button",
+            "action_ts": "1645712301.478754"
+        }]
+    },
+    "type": "interactive",
+    "accepts_response_payload": False
+}
+
 
 def test_exception_in_invite_to_mirrored_channel(mocker):
     import SlackV3
@@ -4256,7 +4351,8 @@ def test_pin_message_invalid_thread_id(mocker):
 TEST_BANK_MSG = [
     (INBOUND_MESSAGE_FROM_BOT, True),
     (INBOUND_MESSAGE_FROM_USER, False),
-    (INBOUND_MESSAGE_FROM_BOT_WITH_BOT_ID, True)
+    (INBOUND_MESSAGE_FROM_BOT_WITH_BOT_ID, True),
+    (INBOUND_EVENT_MESSAGE, False)
 ]
 
 
@@ -4267,12 +4363,14 @@ def test_is_bot_message(message, expected_response):
         Test Case 1 - A message from a bot
         Test Case 2 - A message from a user
         Test Case 3 - A message from a bot, but only containing a bot id which matches our bot id.
+        Test Case 4 - A message from a user which is a reply to an action.
     When:
         Determining if the message is from a bot
     Then:
         Test Case 1 - Will determine True
         Test Case 2 - Will determine False
         Test Case 3 - Will determine True
+        Test Case 4 - Will determine False
     """
     import SlackV3
     SlackV3.BOT_ID = 'W12345678'
