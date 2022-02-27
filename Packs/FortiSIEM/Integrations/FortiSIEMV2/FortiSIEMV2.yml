@@ -1072,7 +1072,7 @@ script:
     - default: false
       description: Comma separate list of entry ID.
       isArray: true
-      name: entry_id
+      name: entry_ids
       required: true
       secret: false
     deprecated: false

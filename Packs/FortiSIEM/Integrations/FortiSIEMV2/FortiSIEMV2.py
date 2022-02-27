@@ -1078,7 +1078,7 @@ def watchlist_entry_get_command(client: FortiSIEMClient, args: Dict[str, Any]) -
     Returns:
        List[CommandResults] : Command results with raw response, outputs and readable outputs.
     """
-    entry_id_list = argToList(args['entry_id'])
+    entry_id_list = argToList(args['entry_ids'])
     command_results_list: List[CommandResults] = []
     for entry_id in entry_id_list:
         try:
