@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-defaultEnabled: true
 commonfields:
   id: Cortex Core - IOC
   version: -1
@@ -108,7 +107,7 @@ script:
     description: Disables IOCs in the Cortex server.
     execution: false
     name: core-iocs-disable
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.1.26972
   feed: false
   isfetch: false
   longRunning: false
@@ -120,3 +119,4 @@ script:
 tests:
 - No tests
 fromversion: 5.5.0
+defaultEnabled: true
