@@ -6,5 +6,8 @@
     "author": "Cortex XSOAR",
     "categories": [],
     "tags": [],
-    "marketplaces": []
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
