@@ -26,6 +26,7 @@ configuration:
   display: Source Reliability
   name: reliability
   options:
+  - A+ - 3rd party enrichment
   - A - Completely reliable
   - B - Usually reliable
   - C - Fairly reliable

@@ -486,7 +486,7 @@ def filter_dictionary(dictionary: dict, fields_to_keep: Optional[list], sort_by_
     return filtered
 
 
-def file_command(client: Client, args: dict):
+def file_command(client: Client, **args: dict):
     file_hashes: list[str] = argToList(args.get('file', ''))
     return client.file(file_hashes)
 
@@ -642,8 +642,7 @@ def upload_file_command(
         file_name: str,
         is_confidential: str = "true",
         comment: str = "",
-        submit_file: str = "no",
-):
+        submit_file: str = "no") -> CommandResults:
     """Upload a file for sandbox analysis.
     :param client: the client object with an access token
     :param file: content of the uploaded sample in binary format
@@ -681,8 +680,7 @@ def send_uploaded_file_to_sandbox_analysis_command(
         enable_tor: str = "false",
         submit_name: str = "",
         system_date: str = "",
-        system_time: str = ""
-):
+        system_time: str = "") -> CommandResults:
     """Submit a sample SHA256 for sandbox analysis.
     :param client: the client object with an access token
     :param sha256: SHA256 ID of the sample, which is a SHA256 hash value
@@ -727,8 +725,7 @@ def send_url_to_sandbox_analysis_command(
         enable_tor: str = "false",
         submit_name: str = "",
         system_date: str = "",
-        system_time: str = ""
-):
+        system_time: str = "") -> CommandResults:
     """Submit a URL or FTP for sandbox analysis.
     :param client: the client object with an access token
     :param url: a web page or file URL. It can be HTTP(S) or FTP.
@@ -902,7 +899,7 @@ def download_ioc_command(
         id: str,
         name: str = "",
         accept_encoding: str = ""
-) -> tuple[str, dict[str, list[dict[str, dict]]], list[dict]]:
+) -> CommandResults:
     """Download IOC packs, PCAP files, and other analysis artifacts.
     :param client: the client object with an access token
     :param id: id of an artifact, such as an IOC pack, PCAP file, or actor image
@@ -916,9 +913,11 @@ def download_ioc_command(
     except Exception as a:
         demisto.debug(f'Download ioc exception {a}')
 
-    entry_context = {'csfalconx.resource(val.id === obj.id)': [response]}
-
-    return tableToMarkdown("CrowdStrike Falcon X response:", response), entry_context, [response]
+    return CommandResults(outputs_prefix=OUTPUTS_PREFIX,
+                          outputs_key_field='id',
+                          outputs=response,
+                          readable_output=tableToMarkdown("CrowdStrike Falcon X response:", response),
+                          raw_response=response)
 
 
 def check_quota_status_command(
@@ -998,7 +997,7 @@ def find_submission_id_command(
                           indicator=result.indicator)
 
 
-def get_results_function_args(outputs, extended_data, item_type, interval_in_secs):
+def get_results_function_args(outputs, extended_data, item_type, interval_in_secs) -> dict:
     if isinstance(outputs, list):
         outputs = outputs[0]
 
@@ -1014,12 +1013,12 @@ def get_results_function_args(outputs, extended_data, item_type, interval_in_sec
     return results_function_args
 
 
-def pop_polling_related_args(args):
+def pop_polling_related_args(args) -> None:
     for key in ('submit_file', 'enable_tor', 'interval_in_seconds', 'polling'):
         args.pop(key, None)
 
 
-def is_new_polling_search(args):
+def is_new_polling_search(args) -> bool:
     """
     Check if the polling func is a new search or in the polling flow.
     if there ids argument in the args dict its mean that the first search is finished and we should run the polling flow
@@ -1027,14 +1026,15 @@ def is_new_polling_search(args):
     return not args.get('ids')
 
 
-def arrange_args_for_upload_func(args):
+def arrange_args_for_upload_func(args: dict) -> Any:
     args.pop('polling')
     args.pop('interval_in_seconds')
     extended_data = args.pop('extended_data')
     return extended_data
 
 
-def run_polling_command(client, args: dict, cmd: str, upload_function: Callable, results_function: Callable, item_type):
+def run_polling_command(client, args: dict, cmd: str, upload_function: Callable, results_function: Callable,
+                        item_type) -> Union[CommandResults, list[CommandResults]]:
     """
     This function is generically handling the polling flow. In the polling flow, there is always an initial call that
     starts the uploading to the API (referred here as the 'upload' function) and another call that retrieves the status
@@ -1105,7 +1105,7 @@ def submit_uploaded_url_polling_command(client, args):
                                get_full_report_command, 'URL')
 
 
-def validate_command_args(command, args):
+def validate_command_args(command, args) -> None:
     if 'ids' in args:  # for the polling result command
         return
     if command == 'cs-fx-upload-file':
@@ -1130,7 +1130,7 @@ def validate_command_args(command, args):
             raise Exception("sha256 argument is a mandatory for cs-fx-submit-url command")
 
 
-def remove_polling_related_args(args):
+def remove_polling_related_args(args) -> None:
     if 'interval_in_seconds' in args:
         args.pop('interval_in_seconds')
     if 'extended_data' in args:
@@ -1168,19 +1168,21 @@ def main():
             'cs-fx-download-ioc': download_ioc_command,
             'cs-fx-check-quota': check_quota_status_command,
             'cs-fx-find-reports': find_sandbox_reports_command,
-            'cs-fx-find-submission-id': find_submission_id_command
+            'cs-fx-find-submission-id': find_submission_id_command,
+            'file': file_command
         }
         if command in polling_commands:
             validate_command_args(command, args)
             if args.get('polling', '') == 'true':
-                return_results(polling_commands[command](client, args))  # type: ignore[operator]
+                return_results(polling_commands[command](client, args))
             else:
                 remove_polling_related_args(args)
-                return_results(commands[command](client, **args))  # type: ignore[operator]
+                return_results(commands[command](client, **args))
         elif command == 'cs-fx-get-full-report':
-            return_results(get_full_report_command(client, **args)[0])  # type: ignore[operator]
+            command_results, _ = get_full_report_command(client, **args)
+            return_results(command_results)
         elif command in commands:
-            return_outputs(*commands[command](client, **args))  # type: ignore[operator]
+            return_results(*commands[command](client, **args))
         else:
             raise NotImplementedError(f'{command} is not an existing CrowdStrike Falcon X command')
     except Exception as err:

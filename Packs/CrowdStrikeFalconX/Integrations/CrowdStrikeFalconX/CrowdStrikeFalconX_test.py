@@ -249,7 +249,7 @@ def test_running_polling_command_success_for_url(mocker):
                                           get_full_report_command, 'URL')
     assert isinstance(command_results, list) and len(command_results) == 1
 
-    print(ddiff(command_results[0].outputs, expected_outputs)) # todo remove
+    print(ddiff(command_results[0].outputs, expected_outputs))  # todo remove
     assert command_results[0].outputs == expected_outputs
     assert command_results[0].scheduled_command is None
 
