@@ -617,7 +617,7 @@ def cmdb_device_get_command(client: FortiSIEMClient, args: Dict[str, Any]) -> Li
             command_results_list.append(command_results)
         except Exception as error:
             error_results = CommandResults(
-                readable_output=f'An error occurred while retrieving device:{ip_address}.\n {error}'
+                readable_output= str(error)
             )
             command_results_list.append(error_results)
     return command_results_list
@@ -1346,6 +1346,8 @@ def format_outputs_time_attributes_to_iso(outputs: List[dict]) -> List[dict]:
      Returns:
         List[dict]: Formatted command output.
      """
+    if not outputs:
+        return []
     if not isinstance(outputs, list):
         outputs = [outputs]
     time_keys = ['lastModified', 'creationTime', 'receiveTime', 'discoverTime', 'firstSeen', 'lastSeen', 'expiredTime',
