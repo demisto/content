@@ -1050,7 +1050,7 @@ script:
     - default: false
       description: Comma separate list of Entries ID to delete.
       isArray: false
-      name: entry_id
+      name: entry_ids
       required: true
       secret: false
     deprecated: false

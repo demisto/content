@@ -985,7 +985,7 @@ def watchlist_entry_delete_command(client: FortiSIEMClient, args: Dict[str, Any]
     Returns:
         List[CommandResults]: List of Command results with raw response, outputs and readable outputs.
     """
-    entry_id_list = list(map(int, argToList(args['entry_id'])))
+    entry_id_list = list(map(int, argToList(args['entry_ids'])))
     command_results_list: List[CommandResults] = []
     for entry_id in entry_id_list:
         try:
