@@ -730,7 +730,7 @@ class TestTableToMarkdown:
     def test_with_json_transformer_simple():
         with open('test_data/simple_data_example.json') as f:
             simple_data_example = json.load(f)
-        name_transformer = JsonTransformer(keys=['first', 'second'])
+        name_transformer = JsonTransformer(keys=['first', 'second'], is_nested=False)
         json_transformer_mapping = {'name': name_transformer}
         table = tableToMarkdown("tableToMarkdown test", simple_data_example,
                                 json_transform_mapping=json_transformer_mapping)
@@ -738,15 +738,15 @@ class TestTableToMarkdown:
             expected_table = """### tableToMarkdown test
 |name|value|
 |---|---|
-| **first**:<br>	***a***: val<br><br>***second***: b | val1 |
-| **first**:<br>	***a***: val2<br><br>***second***: d | val2 |
+| **first**:<br>	***a***: val<br>***second***: b | val1 |
+| **first**:<br>	***a***: val2<br>***second***: d | val2 |
 """
         else:
             expected_table = u"""### tableToMarkdown test
 |name|value|
 |---|---|
-| <br>***second***: b<br>**first**:<br>	***a***: val | val1 |
-| <br>***second***: d<br>**first**:<br>	***a***: val2 | val2 |
+| ***second***: b<br>**first**:<br>	***a***: val | val1 |
+| ***second***: d<br>**first**:<br>	***a***: val2 | val2 |
 """
         assert expected_table == table
 
@@ -793,14 +793,20 @@ class TestTableToMarkdown:
         expected_table = """### tableToMarkdown test
 |name|changelog|
 |---|---|
-| Active Directory Query | **1.0.4**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.4**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>**1.0.5**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.5**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>**1.0.6**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>**1.0.6**:<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br> |
+| Active Directory Query | **1.0.4**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>Fixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.<br><br>**1.0.5**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed several typos.<br>- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.<br><br>**1.0.6**:<br>	**path**:<br>		**a**:<br>			**b**:<br>				***c***: we should see this value<br>	***releaseNotes***: <br>#### Integrations<br>##### Active Directory Query v2<br>- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.<br>- Updated the Docker image to *demisto/ldap:1.0.0.12410*.<br> |
 """
-
         assert expected_table == table
 
     @staticmethod
     def test_with_json_transformer_func():
-
+        """
+        Given:
+          - Double nested json table.
+        When:
+          - Calling tableToMarkdown with JsonTransformer set to custom function.
+        Then:
+          - The table constructed with the transforming function.
+        """
         def changelog_to_str(json_input):
             return ', '.join(json_input.keys())
 
@@ -814,6 +820,61 @@ class TestTableToMarkdown:
 |name|changelog|
 |---|---|
 | Active Directory Query | 1.0.4, 1.0.5, 1.0.6 |
+"""
+        assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transform_list():
+        """
+        Given:
+          - Nested json table with a list.
+        When:
+          - Calling tableToMarkdown with `is_auto_json_transform=True`.
+        Then:
+          - Create a markdown table with the list
+        """
+        with open('test_data/nested_data_in_list.json') as f:
+            data_with_list = json.load(f)
+        table = tableToMarkdown("tableToMarkdown test", data_with_list, is_auto_json_transform=True)
+        if IS_PY3:
+            expected_table = """### tableToMarkdown test
+|Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+|---|---|---|---|---|---|
+| **-**	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**errors**:<br>		***values***: error1, error2, error3<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**	***key***: Path<br>				***value***: test.txt<br>**-**	***startTime***: null<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**errors**:<br>		***values***: <br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**	***key***: Path<br>				***value***: test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+"""
+        else:
+            expected_table = u"""### tableToMarkdown test
+|Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+|---|---|---|---|---|---|
+| **-**	**command**:<br>		**params**:<br>			**-**	***value***: test.txt<br>				***key***: Path<br>		***type***: GetFile<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**errors**:<br>		***values***: error1, error2, error3<br>	***startTime***: null<br>**-**	**command**:<br>		**params**:<br>			**-**	***value***: test222.txt<br>				***key***: Path<br>		***type***: GetFile<br>	***endTime***: 2022-02-17T08:22:33.823Z<br>	***commandStatus***: Completed<br>	**errors**:<br>		***values***: <br>	***startTime***: null | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+"""
+        assert expected_table == table
+
+    @staticmethod
+    def test_with_json_transform_list_keys():
+        """
+        Given:
+          - Nested json table with a list.
+        When:
+          - Calling tableToMarkdown with `is_auto_json_transform=True`.
+        Then:
+          - Create a markdown table with the list only with given keys
+        """
+        with open('test_data/nested_data_in_list.json') as f:
+            data_with_list = json.load(f)
+        table = tableToMarkdown("tableToMarkdown test", data_with_list,
+                                json_transform_mapping={'Commands': JsonTransformer(keys=('commandStatus', 'command'))})
+        if IS_PY3:
+            expected_table = """### tableToMarkdown test
+|Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+|---|---|---|---|---|---|
+| **-**	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**	***key***: Path<br>				***value***: test.txt<br>**-**	***commandStatus***: Completed<br>	**command**:<br>		***type***: GetFile<br>		**params**:<br>			**-**	***key***: Path<br>				***value***: test222.txt | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
+"""
+        else:
+            expected_table = u"""### tableToMarkdown test
+|Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+|---|---|---|---|---|---|
+| **-**	**command**:<br>		**params**:<br>			**-**	***value***: test.txt<br>				***key***: Path<br>		***type***: GetFile<br>	***commandStatus***: Completed<br>**-**	**command**:<br>		**params**:<br>			**-**	***value***: test222.txt<br>				***key***: Path<br>		***type***: GetFile<br>	***commandStatus***: Completed | 2022-02-17T08:20:02.6180466Z | desktop-s2455r9 | 5b38733b-ed80-47be-b892-f2ffb52593fd | f70f9fe6b29cd9511652434919c6530618f06606 | Succeeded |
 """
         assert expected_table == table
 
