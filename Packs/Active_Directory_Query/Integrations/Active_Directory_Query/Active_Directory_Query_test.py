@@ -44,7 +44,7 @@ def test_bad_ssl(mocker):
     mocker.patch.object(demisto, 'params',
                         return_value=params)
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    demisto_info_mock = mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "info")
     # validate our mock of params
     assert demisto.params().get('secure_connection') == 'SSL'
     main()
@@ -54,10 +54,6 @@ def test_bad_ssl(mocker):
     assert len(err_msg) < 100
     assert 'Failed to access' in err_msg
     assert 'SSL error' in err_msg
-    # call_args_list holds all calls (we need the first) with a tuple of args list and kwargs
-    info_msg = demisto_info_mock.call_args_list[0][0][0]
-    # ip is not in the certificate. so it should fail on host match
-    assert "doesn't match any name" in info_msg
 
 
 def ssl_bad_socket_server(port):
