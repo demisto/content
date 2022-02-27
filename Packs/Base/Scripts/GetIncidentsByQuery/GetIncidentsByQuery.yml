@@ -29,7 +29,7 @@ args:
   secret: false
 - default: false
   defaultValue: '500'
-  description: The maximum number of incidents to fetch. The default value is 500.
+  description: The maximum number of incidents to fetch.
   isArray: false
   name: limit
   required: false
