@@ -699,7 +699,7 @@ def events_list_command(client: FortiSIEMClient, args: Dict[str, Any]) -> Comman
     readable_output = tableToMarkdown(
         format_readable_output_header(f'List Events for incident ID {incident_id}', limit, page),
         get_list_events_readable_output(outputs),
-        headers=["eventID", "EventReceiveTime", "EventType", "rawMessage", "sourceIP", "destinationIP",
+        headers=["eventID", "eventReceiveTime", "eventType", "message", "sourceIP", "destinationIP",
                  "hostName", "hostIp", "user", "fileName", "command", "filePath", "SHA256Hash", "MD5Hash", "rawEventLog"
                  ],
         headerTransform=pascalToSpace)
@@ -1726,10 +1726,10 @@ def get_list_events_readable_output(outputs: List[dict]) -> List[dict]:
     for event in outputs:
         attributes = event.get('attributes')
         readable_outputs.append({
-            "EventReceiveTime": event.get('receiveTime'),
+            "eventReceiveTime": event.get('receiveTime'),
             "eventID": event.get('id'),
             "eventType": event.get('eventType'),
-            "rawMessage": attributes.get('rawMessage') or event.get('msg'),
+            "message": attributes.get('rawMessage') or event.get('msg'),
             "sourceIP": attributes.get("Source IP") or attributes.get('srcIpAddr'),
             "destinationIP": attributes.get("Destination IP") or attributes.get('destIpAddr'),
             "hostName": attributes.get("Host Name") or attributes.get('hostName'),
