@@ -617,7 +617,7 @@ def cmdb_device_get_command(client: FortiSIEMClient, args: Dict[str, Any]) -> Li
             command_results_list.append(command_results)
         except Exception as error:
             error_results = CommandResults(
-                readable_output= str(error)
+                readable_output= f"**{error}**"
             )
             command_results_list.append(error_results)
     return command_results_list
@@ -763,7 +763,7 @@ def watchlist_get_command(client: FortiSIEMClient, args: Dict[str, Any]) -> List
         try:
             response = client.watchlist_get_by_id_request(watchlist_id)
             outputs, _ = format_watchlist_output(response,
-                                                 f"Watchlist with ID of {watchlist_id} does not exist.")
+                                                 f"**Watchlist ID {watchlist_id} doesn't exist.**")
             watchlist_readable_output = tableToMarkdown(f'Get Watchlist {watchlist_id}', outputs,
                                                         headers=['id', 'name', 'displayName', 'description',
                                                                  'valueType'],
@@ -784,7 +784,7 @@ def watchlist_get_command(client: FortiSIEMClient, args: Dict[str, Any]) -> List
 
         except Exception as error:
             error_results = CommandResults(
-                readable_output=f'An error occurred while retrieving watchlist {watchlist_id}.\n {error}'
+                readable_output=f'**{error}**'
             )
             command_results_list.append(error_results)
 
@@ -814,7 +814,7 @@ def watchlist_get_command(client: FortiSIEMClient, args: Dict[str, Any]) -> List
             command_results_list.append(command_results)
         except Exception as error:
             error_results = CommandResults(
-                readable_output=f'An error occurred while retrieving watchlist with entry:{entry_id}.\n {error}'
+                readable_output=f'**{error}**'
             )
             command_results_list.append(error_results)
     return command_results_list
@@ -969,7 +969,7 @@ def watchlist_delete_command(client: FortiSIEMClient, args: Dict[str, Any]) -> L
             command_results_list.append(command_results)
         except Exception as error:
             error_results = CommandResults(
-                readable_output=f'An error occurred while deleting Watchlist {watchlist_id}.\n {error}'
+                readable_output=f'**{error}**'
             )
             command_results_list.append(error_results)
     return command_results_list
@@ -995,7 +995,7 @@ def watchlist_entry_delete_command(client: FortiSIEMClient, args: Dict[str, Any]
             command_results_list.append(command_results)
         except Exception as error:
             error_results = CommandResults(
-                readable_output=f'An error occurred while deleting Entry {entry_id}.\n {error}'
+                readable_output=f'**{error}**'
             )
             command_results_list.append(error_results)
     return command_results_list
