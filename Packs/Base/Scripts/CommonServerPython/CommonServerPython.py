@@ -6870,6 +6870,7 @@ def is_demisto_version_ge(version, build_number=''):
     server_version = {}
     try:
         server_version = get_demisto_version()
+        demisto.debug('{} >? {}'.format(server_version.get('version'), version))
         if server_version.get('version') > version:
             return True
         elif server_version.get('version') == version:
@@ -8555,6 +8556,23 @@ class MirrorInvestigation(object):
             demisto.debug('Found file with entryID: {}'.format(entry))
             return entry
         raise ValueError('Could not validate the file ID')
+    
+    @staticmethod
+    def add_entry(        
+        id,
+        entry,
+        username,
+        email,
+        footer, 
+        entryType):
+        demisto.addEntry(
+        id,
+        entry,
+        username,
+        email,
+        footer, 
+        entryType
+        )
 
 def get_tenant_account_name():
     """Gets the tenant name from the server url.

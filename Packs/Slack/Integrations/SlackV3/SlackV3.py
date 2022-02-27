@@ -1341,7 +1341,8 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 investigation_id = mirror['investigation_id']
                 # Post to the warroom
                 if event.get('subtype') == 'file_share':
-                    if is_demisto_version_ge('6.7.0'):  # 
+                    version_for_fileshare = '6.6.0'
+                    if is_demisto_version_ge(version_for_fileshare):  # 
                         for file_obj in event.get('files', []):
                             data = await get_file(ASYNC_CLIENT, file_obj.get('url_private'))
                             name = file_obj.get('name')
@@ -1354,7 +1355,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                             )
                             demisto.error('done sending file')
                     else:
-                        demisto.debug('Found files but server version is below 7.0.0')
+                        demisto.debug(f'Found files but server version is below {version_for_fileshare}')
 
                 else:
                     await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
@@ -1407,7 +1408,7 @@ async def handle_file(
         entry=json.dumps(file_result),
         username=user.get('name', ''),
         email=user.get('profile', {}).get('email', ''),
-        footer=MESSAGE_FOOTER,
+        footer=MESSAGE_FOOTER, 
         entryType=EntryType.FILE
     )
 
