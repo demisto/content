@@ -319,7 +319,7 @@ def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
         else:
             relative = dateparser.parse(time_to_convert, settings={'TIMEZONE': 'UTC'})
             now_date = datetime.utcnow()
-            assert now_date is not None
+            assert now_date is not None and relative is not None
             return {'relativeTime': int((now_date - relative).total_seconds()) * 1000}
 
         raise ValueError(f'Invalid timeframe: {time_to_convert}')

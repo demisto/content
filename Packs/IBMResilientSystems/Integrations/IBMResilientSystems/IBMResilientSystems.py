@@ -1,7 +1,6 @@
 import json
 import logging
 import time
-from typing import no_type_check
 
 import requests
 
@@ -200,9 +199,8 @@ def search_incidents_command(client, args):
         return 'No results found.'
 
 
-@no_type_check
 def search_incidents(client, args):
-    conditions = []
+    conditions = []  # type: Any
     if 'severity' in args:
         value = []
         severity = args['severity'].split(',')
