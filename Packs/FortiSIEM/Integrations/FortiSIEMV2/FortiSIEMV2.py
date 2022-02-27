@@ -1083,7 +1083,7 @@ def watchlist_entry_get_command(client: FortiSIEMClient, args: Dict[str, Any]) -
     for entry_id in entry_id_list:
         try:
             response = client.watchlist_entry_get_request(entry_id)
-            outputs, _ = format_watchlist_output(response)
+            outputs, _ = format_watchlist_output(response,  f"**Watchlist Entry ID {entry_id} doesn't exist.**")
             readable_output = tableToMarkdown(f"Watchlist Entry {entry_id}", outputs,
                                               headers=['id', 'state', 'entryValue',
                                                        'triggeringRules', 'count', 'firstSeen', 'lastSeen'],
@@ -1096,9 +1096,9 @@ def watchlist_entry_get_command(client: FortiSIEMClient, args: Dict[str, Any]) -
                 readable_output=readable_output
             )
             command_results_list.append(command_results)
-        except Exception as exception:
+        except Exception as error:
             error = CommandResults(
-                readable_output=f'An error occurred while retrieving entry {entry_id}.\n {exception}'
+                readable_output=f'**{error}**'
             )
             command_results_list.append(error)
     return command_results_list
