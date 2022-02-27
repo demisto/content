@@ -1,6 +1,5 @@
 import json
 import io
-
 from requests import Response
 
 import demistomock as demisto
@@ -312,6 +311,7 @@ def test_update_verdict_command(mocker):
             ',c85f1ee5b83d3d1caa8d12ea4b2486cb3b9b60348a475c350a3ddeab9353ad3e',
             'comment': 'test comment', 'verdict': 'benign'}
     mocker_results = ['test', Exception('502')]
+    mocker.patch.object(demisto, 'params', return_value={'server': "https://wildfire.paloaltonetworks.com/publicapi"})
     mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', side_effect=mocker_results)
     results = update_verdict_command(args)
     expected_results = '\nVerdict Hash File -> "f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12" is changed' \
