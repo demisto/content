@@ -488,7 +488,8 @@ def get_candidates(json_field_name):
     json_field_terms = normilize(json_field_name)
     aliases_terms = ALIASING_TERMS_MAP.items()
     match_terms = list(map(lambda x: x[0],
-                      filter(lambda alias_terms: is_sublist_of_list(alias_terms[1], json_field_terms), aliases_terms)))
+                           filter(lambda alias_terms: is_sublist_of_list(alias_terms[1], json_field_terms),
+                                  aliases_terms)))
     return sorted(match_terms, reverse=True, key=number_of_terms)
 
 
@@ -497,7 +498,7 @@ def suggest_field_with_alias(json_field_name, json_field_value=None):
     candidates = get_candidates(json_field_name)
     if json_field_value is not None:
         candidates = list(filter(lambda c: validate_value_with_validator(c, json_field_value, norm_json_field_name),
-                            candidates))
+                                 candidates))
     if len(candidates) > 0:
         alias = candidates[0]
         return ALIASING_MAP[alias], alias
