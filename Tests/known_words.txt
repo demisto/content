@@ -93,3 +93,4 @@ TAXII
 Syslog
 DomainTools
 replyTo
+URLs
