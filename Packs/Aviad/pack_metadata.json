@@ -1,0 +1,10 @@
+{
+    "name": "Aviad",
+    "description": "Aviad test pack.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "categories": [],
+    "tags": [],
+    "marketplaces": []
+}
