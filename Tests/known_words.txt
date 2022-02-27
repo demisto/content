@@ -94,4 +94,5 @@ TAXII
 Syslog
 DomainTools
 replyTo
+SentinelOne
 URLs
