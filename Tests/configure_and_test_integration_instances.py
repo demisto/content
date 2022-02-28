@@ -73,7 +73,12 @@ class Running(IntEnum):
 
 
 class Server:
-    pass
+
+    def __init__(self):
+        self.internal_ip = None
+        self.ssh_tunnel_port = None
+        self.user_name = None
+        self.password = None
 
 
 class XSIAMServer(Server):
@@ -83,6 +88,7 @@ class XSIAMServer(Server):
 class XSOARServer(Server):
 
     def __init__(self, internal_ip, port, user_name, password):
+        super().__init__()
         self.__ssh_client = None
         self.__client = None
         self.internal_ip = internal_ip
@@ -142,6 +148,9 @@ class Build:
 
     def __init__(self, options):
         self._proxy = None
+        self.servers = None
+        self.service_account = None
+        self.server_numeric_version = None
         self.git_sha1 = options.git_sha1
         self.branch_name = options.branch
         self.ci_build_number = options.build_number
