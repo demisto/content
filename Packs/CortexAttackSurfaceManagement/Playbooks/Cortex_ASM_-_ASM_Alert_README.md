@@ -8,7 +8,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Cortex ASM - Extract IP Indicator
-* Cortex ASM - ServiceNow CMDB Enrichment
+* Cortex ASM - CMDB Enrichment
 * Cortex ASM - Vulnerability Management Enrichment
 
 ### Integrations
