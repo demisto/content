@@ -402,7 +402,7 @@ class Client:
         :return: http response
         """
 
-        url_suffix = f"/falconx/queries/reports/v1"
+        url_suffix = "/falconx/queries/reports/v1"
         params = {
             "filter": filter,
             "offset": offset,
@@ -503,7 +503,8 @@ def parse_outputs(
     :param sandbox_fields: the wanted params that appear in the sandbox section
     :param extra_sandbox_fields: the wanted params that appear in the extra sandbox section
     """
-    output, indicator = {}, None
+    output = dict()
+    indicator: Optional[Common.File] = None
 
     if api_res_meta := response.get("meta", dict()):
         output |= filter_dictionary(api_res_meta, meta_fields)
@@ -533,7 +534,7 @@ def parse_outputs(
 
 def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File]:
     if sha256 := sandbox.get('sha256'):  # todo does the `if` make sense here?
-        score_field = DBOT_SCORE_DICT.get(sandbox.get('verdict'), Common.DBotScore.NONE)
+        score_field: Common.DBotScore = DBOT_SCORE_DICT.get(sandbox.get('verdict'), Common.DBotScore.NONE)
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability_str)
         submit_name = sandbox.get('submit_name')  # todo is ever None? What about name=submit_name? all CR use `id` :|
 
@@ -544,17 +545,17 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
 
         info = {item['id']: item['value'] for item in sandbox.get('version_info', [])}
 
-        if sandbox.get('submission_type') in ('file_url', 'file'):
+        if sandbox.get('submission_type', '') in ('file_url', 'file'):
             relationships = parse_indicator_relationships(sandbox, indicator_name=submit_name, reliability=reliability)
         else:
             relationships = None
 
-        signature = Common.FileSignature(authentihash='',  # N/A in data
-                                         copyright=info.get('LegalCopyright', ''),
-                                         description=info.get('FileDescription', ''),
-                                         file_version=info.get('FileVersion', ''),
-                                         internal_name=info.get('InternalName', ''),
-                                         original_name=info.get('OriginalFilename', ''))
+        signature: Optional[Common.FileSignature] = Common.FileSignature(authentihash='',  # N/A in data
+                                                                         copyright=info.get('LegalCopyright', ''),
+                                                                         description=info.get('FileDescription', ''),
+                                                                         file_version=info.get('FileVersion', ''),
+                                                                         internal_name=info.get('InternalName', ''),
+                                                                         original_name=info.get('OriginalFilename', ''))
         if not any(signature.to_context().values()):  # if all values are empty
             signature = None
 
@@ -698,8 +699,9 @@ def send_uploaded_file_to_sandbox_analysis_command(
     resource_fields = ['id', 'state', 'created_timestamp', 'created_timestamp']
     result = parse_outputs(response, reliability=client.reliability,
                            sandbox_fields=sandbox_fields, resources_fields=resource_fields)
-    # in order identify the id source, upload or submit command, the id name changed
-    result.output["submitted_id"] = result.output.pop("id")
+    if result.output:  # the "if" is here to calm mypy down
+        # in order identify the id source, upload or submit command, the id name changed
+        result.output["submitted_id"] = result.output.pop("id")
 
     return CommandResults(
         outputs_key_field='submitted_id',
@@ -742,8 +744,9 @@ def send_url_to_sandbox_analysis_command(
     sandbox_fields = ["environment_id", "sha256"]
     result = parse_outputs(response, client.reliability, resources_fields=resources_fields,
                            sandbox_fields=sandbox_fields)
-    # in order identify the id source, upload or submit command, the id name changed
-    result.output["submitted_id"] = result.output.pop("id")
+    if result.output:  # the "if" is here to calm mypy down
+        # in order identify the id source, upload or submit command, the id name changed
+        result.output["submitted_id"] = result.output.pop("id")
 
     return CommandResults(
         outputs_key_field='submitted_id',
@@ -816,12 +819,11 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
                                               indicator=result.indicator))
     if not command_results:
         command_results = [CommandResults(
-            readable_output=
-            f'There are no results yet for the any of the queried samples ({ids}), '
-            'analysis might not have been completed. '  # todo add file may not exist? 
-            'Please wait to download the report.\n'
-            'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.')
-        ]
+            readable_output=f'There are no results yet for the any of the queried samples ({ids}), '
+                            'analysis might not have been completed. '
+                            'Please wait to download the report.\n'
+                            'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.')
+        ]  # todo add file may not exist?
     return command_results, is_command_finished
 
 
@@ -1158,7 +1160,7 @@ def main():
             'cs-fx-submit-uploaded-file': submit_uploaded_file_polling_command,
             'cs-fx-submit-url': submit_uploaded_url_polling_command
         }
-        commands = {
+        commands: dict[str, Callable] = {
             'test-module': test_module,
             'cs-fx-upload-file': upload_file_command,
             'cs-fx-submit-uploaded-file': send_uploaded_file_to_sandbox_analysis_command,

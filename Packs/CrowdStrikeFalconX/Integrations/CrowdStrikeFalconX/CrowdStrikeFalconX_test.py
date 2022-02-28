@@ -466,23 +466,25 @@ def test_parse_indicator():
                             {'address': 'example2.com'}]
     }
     indicator = parse_indicator(sandbox=sandbox, reliability_str=DBotScoreReliability.A_PLUS)
-    expected_context = {'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || '
-                        'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || '
-                        'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || '
-                        'val.SSDeep && val.SSDeep == obj.SSDeep)': {
-        'Name': 'submit_name', 'Size': 123, 'SHA256': 'sha256', 'Type': 'foo type', 'Company': 'CompanyName',
-        'ProductName': 'ProductName',
-        'Signature': {'Authentihash': '', 'Copyright': 'LegalCopyright', 'Description': 'FileDescription',
-                      'FileVersion': 'FileVersion', 'InternalName': 'InternalName',
-                      'OriginalName': 'OriginalFilename'},
-        'Relationships': [{'Relationship': 'communicates-with', 'EntityA': 'submit_name', 'EntityAType': 'File',
-                           'EntityB': 'example0.com/foo', 'EntityBType': 'IP'},
-                          {'Relationship': 'communicates-with', 'EntityA': 'submit_name', 'EntityAType': 'File',
-                           'EntityB': 'example0.com', 'EntityBType': 'Domain'},
-                          {'Relationship': 'communicates-with', 'EntityA': 'submit_name', 'EntityAType': 'File',
-                           'EntityB': 'example1.com', 'EntityBType': 'IP'},
-                          {'Relationship': 'communicates-with', 'EntityA': 'submit_name', 'EntityAType': 'File',
-                           'EntityB': 'example2.com', 'EntityBType': 'IP'}]},
+    expected_context = {
+        'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || '
+        'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || '
+        'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || '
+        'val.SSDeep && val.SSDeep == obj.SSDeep)': {
+            'Name': 'submit_name', 'Size': 123, 'SHA256': 'sha256', 'Type': 'foo type', 'Company': 'CompanyName',
+            'ProductName': 'ProductName',
+            'Signature': {'Authentihash': '', 'Copyright': 'LegalCopyright', 'Description': 'FileDescription',
+                          'FileVersion': 'FileVersion', 'InternalName': 'InternalName',
+                          'OriginalName': 'OriginalFilename'},
+            'Relationships': [{'Relationship': 'communicates-with', 'EntityA': 'submit_name', 'EntityAType': 'File',
+                               'EntityB': 'example0.com/foo', 'EntityBType': 'IP'},
+                              {'Relationship': 'communicates-with', 'EntityA': 'submit_name', 'EntityAType': 'File',
+                               'EntityB': 'example0.com', 'EntityBType': 'Domain'},
+                              {'Relationship': 'communicates-with', 'EntityA': 'submit_name', 'EntityAType': 'File',
+                               'EntityB': 'example1.com', 'EntityBType': 'IP'},
+                              {'Relationship': 'communicates-with', 'EntityA': 'submit_name', 'EntityAType': 'File',
+                               'EntityB': 'example2.com', 'EntityBType': 'IP'}]
+        },
         'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
         'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
             'Indicator': 'sha256', 'Type': 'file', 'Vendor': '', 'Score': 2,
@@ -494,13 +496,16 @@ def test_parse_indicator():
 
 
 @pytest.mark.parametrize('file,mocked_address,mocked_response', (
-        ('file',
-         'https://api.crowdstrike.com/falconx/queries/reports/v1?filter=sandbox.sha256%3A%22file%22',
-         {'resources': ['id_1']}),
-        ('file1, file2',
-         'https://api.crowdstrike.com/falconx/queries/reports/v1?filter=sandbox.sha256%3A%22file1%22'
-         '%2Csandbox.sha256%3A%22file2%22',
-         {'resources': ['id_1', 'id_2']})
+        (
+                'file',
+                'https://api.crowdstrike.com/falconx/queries/reports/v1?filter=sandbox.sha256%3A%22file%22',
+                {'resources': ['id_1']}),
+        (
+                'file1, file2',
+                'https://api.crowdstrike.com/falconx/queries/reports/v1?filter=sandbox.sha256%3A%22file1%22' +
+                '%2Csandbox.sha256%3A%22file2%22',
+                {'resources': ['id_1', 'id_2']}
+        )
 )
                          )
 def test_file_command(requests_mock, mocker, file: str, mocked_address: str, mocked_response: dict):
