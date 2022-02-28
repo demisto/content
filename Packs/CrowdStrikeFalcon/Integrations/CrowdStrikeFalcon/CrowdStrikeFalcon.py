@@ -2551,11 +2551,11 @@ def run_get_command(is_polling=False):
         })
         request_ids_for_polling.append(
             {'RequestID': response.get('batch_get_cmd_req_id'),
-             'HostID': resource.get('aid'),
-             })
+             'HostID': resource.get('aid'), })
 
     if is_polling:
         return request_ids_for_polling
+
     human_readable = tableToMarkdown(f'Get command has requested for a file {file_path}', output)
     entry_context = {
         'CrowdStrike.Command(val.TaskID === obj.TaskID)': output
@@ -2576,7 +2576,7 @@ def status_get_command(args, is_polling=False):
     files_output = []
     file_standard_context = []
 
-    sha256 = ""
+    sha256 = ""  # uses for the polling, if not empty indicates that the status is ready
     for request_id in request_ids:
         response = status_get_cmd(request_id, timeout, timeout_duration)
         responses.append(response)
@@ -2617,7 +2617,6 @@ def status_get_command(args, is_polling=False):
         'CrowdStrike.File(val.ID === obj.ID || val.TaskID === obj.TaskID)': files_output,
         outputPaths['file']: file_standard_context
     }
-
     if len(responses) == 1:
         return create_entry_object(contents=responses[0], ec=entry_context, hr=human_readable)
     else:
@@ -3200,37 +3199,42 @@ def add_error_message(failed_hosts, all_requested_hosts):
 
 def rtr_polling_retrieve_file_command(args: dict):
     """
-    This function is generically handling the polling flow. In the polling flow, there is always an initial call that
-    starts the uploading to the API (referred here as the 'upload' function) and another call that retrieves the status
-    of that upload (referred here as the 'results' function).
-    The run_polling_command function runs the 'upload' function and returns a ScheduledCommand object that schedules
-    the next 'results' function, until the polling is complete.
+    This function is generically handling the polling flow.
+    In this case, the polling flow is:
+    1. run the "cs-falcon-run-get-command" command to get the request id.
+    2. run the "cs-falcon-status-get-command" command to get the status of the first "get" command by the request id.
+    2.1 start polling - wait for the 2nd step to be finished (when we get at least sha256 one time).
+    3. run the "cs-falcon-get-extracted-file" command to get the extracted file.
     Args:
         args: the arguments required to the command being called, under cmd
     Returns:
-
+        The return value is:
+        1. All the extracted files.
+        2. A list of dictionaries. Each dict includes a host id and a file name.
     """
     cmd = "cs-falcon-rtr-retrieve-file"
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = int(args.get('interval_in_seconds', 60))
 
     if 'hosts_and_requests_ids' not in args:
-        # this is the very first time we call the polling function
+        # this is the very first time we call the polling function. We don't wont to call this function more that
+        # one time, so we store that arg between the different runs
         args['hosts_and_requests_ids'] = run_get_command(is_polling=True)  # run the first command to retrieve file
 
-    # we have request ids in args
+    # we are here after we ran the cs-falcon-run-get-command command at the current run or in previous
     if not args.get('SHA256'):
-        # this means that we don't have status yet, should so polling
+        # this means that we don't have status yet (i.e we didn't get sha256)
         hosts_and_requests_ids = args.pop('hosts_and_requests_ids')
         args['request_ids'] = [res.get('RequestID') for res in hosts_and_requests_ids]
         get_status_response, args = status_get_command(args, is_polling=True)
+
         if args.get('SHA256'):
-            # we can call the extract file
+            # the status is ready, we can get the extracted files
             args.pop('SHA256')
             return rtr_get_extracted_file(get_status_response, args.get('fileName'))
 
         else:
-            # we should call the polling on status
+            # we should call the polling on status, cause the status is not ready
             args['hosts_and_requests_ids'] = hosts_and_requests_ids
             args.pop('request_ids')
             args.pop('SHA256')
@@ -3247,14 +3251,15 @@ def rtr_polling_retrieve_file_command(args: dict):
 def rtr_get_extracted_file(args_to_get_files: dict, file_name: str):
     files = []
     outputs_data = []
+
     for host_id, values in args_to_get_files.items():
         arg = {'host_id': host_id, 'sha256': values.get('SHA256'), 'filename': file_name}
         file = get_extracted_file_command(arg)
         files.append(file)
         outputs_data.append(
             {'HostID': arg.get('host_id'),
-             'FileName': file.get('File')})
-
+             'FileName': file.get('File')
+             })
     return [CommandResults(readable_output="CrowdStrike Falcon files", outputs=outputs_data,
                            outputs_prefix="CrowdStrike.File"), files]
 
