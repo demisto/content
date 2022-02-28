@@ -1505,7 +1505,7 @@ def test_status_get(requests_mock, mocker):
         json=response,
         status_code=201
     )
-    results = status_get_command()
+    results = status_get_command(demisto.args())
     expected_results = {
         "CrowdStrike.File(val.ID === obj.ID || val.TaskID === obj.TaskID)": [
             {
