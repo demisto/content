@@ -517,6 +517,7 @@ class Build:
 class XSOARBuild(Build):
 
     def __init__(self, options):
+        super().__init__(options)
         self.ami_env = options.ami_env
         self.server_to_port_mapping, self.server_numeric_version = self.get_servers(options.ami_env)
         self.servers = [XSOARServer(internal_ip,
@@ -524,7 +525,6 @@ class XSOARBuild(Build):
                                     self.username,
                                     self.password) for internal_ip, port in self.server_to_port_mapping.items()]
         self.service_account = options.service_account
-        super().__init__(options)
 
     @property
     def proxy(self) -> MITMProxy:
