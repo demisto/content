@@ -1,4 +1,4 @@
-id: 2b659e9c-bf01-4280-8e8f-29e58a9f3175
+id: Cortex ASM - CMDB Enrichment
 version: -1
 name: Cortex ASM - CMDB Enrichment
 description: This playbook will look up a CI in ServiceNow CMDB by IP.
@@ -128,8 +128,7 @@ tasks:
       id: 5387384c-7fc2-48c9-8c22-7db769716a16
       version: -1
       name: IP address Exists?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -212,8 +211,7 @@ tasks:
       id: 4f858b34-ab27-4f9d-8068-49e4c48fc899
       version: -1
       name: Were search results found?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -428,8 +426,7 @@ tasks:
       id: 6e455b28-e3e0-4051-8390-0515d6ba66c2
       version: -1
       name: Related SysID Exists?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -550,7 +547,7 @@ inputs:
   value: {}
   required: true
   description: IP address to search in ServiceNow
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests

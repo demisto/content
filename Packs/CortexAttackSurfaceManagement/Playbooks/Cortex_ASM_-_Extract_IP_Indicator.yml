@@ -1,4 +1,4 @@
-id: 645e003a-1111-4538-8c8e-55dc39f40848
+id: Cortex ASM - Extract IP Indicator
 version: -1
 name: Cortex ASM - Extract IP Indicator
 description: Identifies IPv4 Address associated with Alert and creates a new Indicator.
@@ -123,8 +123,7 @@ tasks:
       id: 1b8d038f-9ccf-4557-8b0c-422addc34435
       version: -1
       name: IP Indicator Found
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -162,8 +161,7 @@ tasks:
       id: 05f468be-6651-4acb-84cf-91663bab2440
       version: -1
       name: Associate IP Indicator To Alert
-      description: Associate an indicator to a given alert, you can find the indicator
-        to connect either by it's value or it's id
+      description: Associate an indicator to a given alert, you can find the indicator to connect either by it's value or it's id
       script: Builtin|||associateIndicatorToAlert
       type: regular
       iscommand: true
@@ -243,7 +241,7 @@ inputs:
   value: {}
   required: false
   description: The formatted name of the alert
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: ExtractedIndicators
   description: outputs.extractindicators

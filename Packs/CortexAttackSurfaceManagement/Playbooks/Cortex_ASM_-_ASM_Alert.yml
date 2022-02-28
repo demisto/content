@@ -1,8 +1,7 @@
-id: ec207144-8396-41d7-8564-f7bea45307cd
+id: Cortex ASM - ASM Alert
 version: -1
 name: Cortex ASM - ASM Alert
-description: This playbook aims to provide enrichment of ASM alerts by searching for mentions of associated IP addresses within
-  other security and IT tools.
+description: This playbook aims to provide enrichment of ASM alerts by searching for mentions of associated IP addresses within other security and IT tools.
 starttaskid: "0"
 tasks:
   "0":
@@ -42,8 +41,7 @@ tasks:
       id: c38b00d2-bdfd-4dff-8e97-e4a6ac36fec2
       version: -1
       name: Cortex ASM - Extract IP Indicator
-      description: Identifies IPv4 Address associated with Alert and creates a new
-        Indicator.
+      description: Identifies IPv4 Address associated with Alert and creates a new Indicator.
       playbookName: Cortex ASM - Extract IP Indicator
       type: playbook
       iscommand: false
@@ -84,8 +82,7 @@ tasks:
       id: d29c2fe9-103e-4e00-88b4-46ae3f516cd6
       version: -1
       name: IP exists for Alert?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -194,8 +191,7 @@ tasks:
       id: e6142186-b7d5-4dcf-8b84-3cbaff6e0a7c
       version: -1
       name: Cortex ASM - Vulnerability Management Enrichment
-      description: This playbook will look up an IP address in Tenable.io or Rapid7
-        InsightVM.
+      description: This playbook will look up an IP address in Tenable.io or Rapid7 InsightVM.
       playbookName: Cortex ASM - Vulnerability Management Enrichment
       type: playbook
       iscommand: false
