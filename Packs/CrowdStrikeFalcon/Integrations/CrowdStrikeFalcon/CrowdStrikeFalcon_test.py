@@ -3567,7 +3567,7 @@ def test_list_incident_summaries_command_with_given_ids(requests_mock, mocker):
     assert get_incidents_ids_func.call_count == 0
 
 
-def test_parse_rtr_command_response_host_exists_strerr_output():
+def test_parse_rtr_command_response_host_exists_stderr_output():
     from CrowdStrikeFalcon import parse_rtr_command_response
     response_data = load_json('test_data/rtr_outputs_with_stderr.json')
     parsed_result = parse_rtr_command_response(response_data, ["1"])
@@ -3595,3 +3595,14 @@ def test_parse_rtr_command_response_host_not_exist():
             assert res.get('Error') == "Success"
         elif res.get('HostID') == "2":
             assert res.get('Error') == "The host ID was not found."
+
+
+def test_parse_rtr_stdout_response(mocker):
+    from CrowdStrikeFalcon import parse_rtr_stdout_response
+    response_data = load_json('test_data/rtr_list_processes_response.json')
+    mocker.patch('CrowdStrikeFalcon.fileResult',
+                 return_value={'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'netstat-1', 'FileID': 'c'})
+    parsed_result = parse_rtr_stdout_response(["1"], response_data, "netstat")
+    assert parsed_result[0][0].get('Stdout') == "example stdout"
+    assert parsed_result[0][0].get('FileName') == "netstat-1"
+    assert parsed_result[1][0].get('File') == "netstat-1"
