@@ -3634,7 +3634,7 @@ def test_add_error_message_raise_error(failed_devices, all_requested_devices):
 def test_rtr_kill_process_command(mocker):
     from CrowdStrikeFalcon import rtr_kill_process_command
     mocker.patch('CrowdStrikeFalcon.init_rtr_batch_session', return_value="1")
-    response_data = load_json('test_data/rtr_kill_process_response.json')
+    response_data = load_json('test_data/rtr_general_response.json')
     args = {'host_id': "1", 'process_ids': "2,3"}
     mocker.patch('CrowdStrikeFalcon.execute_run_batch_write_cmd_with_timer', return_value=response_data)
     parsed_result = rtr_kill_process_command(args).outputs
@@ -3651,3 +3651,14 @@ def test_rtr_kill_process_command(mocker):
 def test_match_remove_command_for_os(operating_system, expected_result):
     from CrowdStrikeFalcon import match_remove_command_for_os
     assert match_remove_command_for_os(operating_system, "test.txt") == expected_result
+
+
+def test_rtr_remove_file_command(mocker):
+    from CrowdStrikeFalcon import rtr_remove_file_command
+    mocker.patch('CrowdStrikeFalcon.init_rtr_batch_session', return_value="1")
+    response_data = load_json('test_data/rtr_general_response.json')
+    args = {'host_ids': "1", 'file_path': "c:\\test", 'os': "Windows"}
+    mocker.patch('CrowdStrikeFalcon.execute_run_batch_write_cmd_with_timer', return_value=response_data)
+    parsed_result = rtr_remove_file_command(args).outputs
+    for res in parsed_result:
+        assert res.get('Error') == "Success"
