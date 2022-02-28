@@ -2,6 +2,8 @@ import pytest
 import os
 import json
 
+from _pytest.python_api import raises
+
 import demistomock as demisto
 from CommonServerPython import outputPaths, entryTypes, DemistoException
 
@@ -3606,3 +3608,24 @@ def test_parse_rtr_stdout_response(mocker):
     assert parsed_result[0][0].get('Stdout') == "example stdout"
     assert parsed_result[0][0].get('FileName') == "netstat-1"
     assert parsed_result[1][0].get('File') == "netstat-1"
+
+
+@pytest.mark.parametrize('failed_devices, all_requested_devices, expected_result', [
+    ({}, ["id1", "id2"], ""),
+    ({'id1': "some error"}, ["id1", "id2"], "Note: you don't see the following IDs in the results as the request was"
+                                            " failed for them. \nID id1 failed as it was not found. \n"),
+])
+def test_add_error_message(failed_devices, all_requested_devices, expected_result):
+    from CrowdStrikeFalcon import add_error_message
+    assert add_error_message(failed_devices, all_requested_devices) == expected_result
+
+
+@pytest.mark.parametrize('failed_devices, all_requested_devices', [
+    ({'id1': "some error", 'id2': "some error"}, ["id1", "id2"]),
+    ({'id1': "some error1", 'id2': "some error2"}, ["id1", "id2"]),
+])
+def test_add_error_message_raise_error(failed_devices, all_requested_devices):
+    from CrowdStrikeFalcon import add_error_message
+    with raises(DemistoException,
+                match=f'CrowdStrike Falcon The command was failed with the errors: {failed_devices}'):
+        add_error_message(failed_devices, all_requested_devices)
