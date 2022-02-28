@@ -3106,7 +3106,7 @@ def rtr_kill_process_command(args: dict) -> CommandResults:
     for process_id in process_ids:
         full_command = f"{command_type} {process_id}"
         response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command)
-        outputs.extend(parse_command_response(response, host_ids, process_id=process_id))
+        outputs.extend(parse_rtr_command_response(response, host_ids, process_id=process_id))
         raw_response.append(response)
 
     human_readable = tableToMarkdown(
@@ -3124,7 +3124,7 @@ def get_human_readable_for_failed_command(outputs, required_elements, element_id
     return add_error_message(failed_hosts=failed_elements, all_requested_hosts=required_elements)
 
 
-def parse_command_response(response, host_ids, process_id=None) -> list:
+def parse_rtr_command_response(response, host_ids, process_id=None) -> list:
     outputs = []
     resources: dict = response.get('combined', {}).get('resources', {})
 
@@ -3173,7 +3173,7 @@ def rtr_remove_file_command(args: dict) -> CommandResults:
 
     batch_id = init_rtr_batch_session(host_ids)
     response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids)
-    outputs = parse_command_response(response, host_ids)
+    outputs = parse_rtr_command_response(response, host_ids)
     human_readable = tableToMarkdown(
         f'{INTEGRATION_NAME} {command_type} over the file: {file_path}', outputs, headers=["HostID", "Error"])
     human_readable += get_human_readable_for_failed_command(outputs, host_ids, "HostID")
@@ -3182,6 +3182,9 @@ def rtr_remove_file_command(args: dict) -> CommandResults:
 
 
 def execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids=None):
+    """
+    Executes a timer for keeping the session refreshed
+    """
     timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
     timer.start()
     try:
@@ -3205,23 +3208,29 @@ def execute_run_batch_admin_cmd_with_timer(batch_id, command_type, full_command,
 
 def rtr_general_command_on_hosts(host_ids: list, command: str, full_command: str, get_session_function: Callable,
                                  write_to_context=True) -> \
-        list[CommandResults, dict]:
+        list[CommandResults, dict]:  # type:ignore
+    """
+    General function to run RTR commands depending on the given command.
+    """
     batch_id = init_rtr_batch_session(host_ids)
     response = get_session_function(batch_id, command_type=command, full_command=full_command,
                                     host_ids=host_ids)  # type:ignore
-    output, file, not_found_hosts = parse_stdout_response(host_ids, response, command)
+    output, file, not_found_hosts = parse_rtr_stdout_response(host_ids, response, command)
+
     human_readable = tableToMarkdown(
         f'{INTEGRATION_NAME} {command} command on host {host_ids[0]}:', output, headers="Stdout")
     human_readable += add_error_message(not_found_hosts, host_ids)
+
     if write_to_context:
         outputs = {"Filename": file[0].get('File')}
         return [CommandResults(raw_response=response, readable_output=human_readable, outputs=outputs,
                                outputs_prefix=f"CrowdStrike.Command.{command}",
                                outputs_key_field="Filename"), file]
+
     return [CommandResults(raw_response=response, readable_output=human_readable), file]
 
 
-def parse_stdout_response(host_ids, response, command, file_name_suffix=""):
+def parse_rtr_stdout_response(host_ids, response, command, file_name_suffix=""):
     resources: dict = response.get('combined', {}).get('resources', {})
     outputs = []
     files = []
@@ -3259,8 +3268,8 @@ def rtr_read_registry_keys_command(args: dict):
     for registry_key in registry_keys:
         full_command = f"{command_type} query {registry_key}"
         response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids=host_ids)
-        output, file, not_found_host = parse_stdout_response(host_ids, response, command_type,
-                                                             file_name_suffix=registry_key)
+        output, file, not_found_host = parse_rtr_stdout_response(host_ids, response, command_type,
+                                                                 file_name_suffix=registry_key)
         not_found_hosts.update(not_found_host)
         outputs.extend(output)
         files.append(file)

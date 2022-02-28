@@ -2668,7 +2668,7 @@ def test_search_custom_iocs_command_exists(requests_mock):
     )
     results = search_custom_iocs_command()
     assert '| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | prevent | high | md5 |' \
-        in results["HumanReadable"]
+           in results["HumanReadable"]
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
 
@@ -2871,7 +2871,7 @@ def test_upload_custom_ioc_command_successful(requests_mock):
         platforms='mac,linux',
     )
     assert '| 2020-10-01T09:09:04Z | Eicar file | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r |' \
-        in results[0]["HumanReadable"]
+           in results[0]["HumanReadable"]
     assert results[0]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
 
@@ -3565,3 +3565,33 @@ def test_list_incident_summaries_command_with_given_ids(requests_mock, mocker):
 
     assert outputs[0]['assigned_to'] == 'Test with ids'
     assert get_incidents_ids_func.call_count == 0
+
+
+def test_parse_rtr_command_response_host_exists_strerr_output():
+    from CrowdStrikeFalcon import parse_rtr_command_response
+    response_data = load_json('test_data/rtr_outputs_with_stderr.json')
+    parsed_result = parse_rtr_command_response(response_data, ["1"])
+    assert len(parsed_result) == 1
+    assert parsed_result[0].get('HostID') == "1"
+    assert parsed_result[0].get('Error') == "Cannot find a process with the process identifier 5260."
+
+
+def test_parse_rtr_command_response_host_exists_error_output():
+    from CrowdStrikeFalcon import parse_rtr_command_response
+    response_data = load_json('test_data/rtr_outputs_with_error.json')
+    parsed_result = parse_rtr_command_response(response_data, ["1"])
+    assert len(parsed_result) == 1
+    assert parsed_result[0].get('HostID') == "1"
+    assert parsed_result[0].get('Error') == "Some error"
+
+
+def test_parse_rtr_command_response_host_not_exist():
+    from CrowdStrikeFalcon import parse_rtr_command_response
+    response_data = load_json('test_data/rtr_outputs_host_not_exist.json')
+    parsed_result = parse_rtr_command_response(response_data, ["1", "2"])
+    assert len(parsed_result) == 2
+    for res in parsed_result:
+        if res.get('HostID') == "1":
+            assert res.get('Error') == "Success"
+        elif res.get('HostID') == "2":
+            assert res.get('Error') == "The host ID was not found."
