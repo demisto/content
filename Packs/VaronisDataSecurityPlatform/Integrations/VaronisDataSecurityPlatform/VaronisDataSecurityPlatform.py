@@ -85,7 +85,7 @@ ALERT_OUTPUT = [
 ]
 
 EVENT_COLUMNS = [
-    'Event.ID',
+    'Event.ID',  # TODO need to clarify spec
     'Event.Type.Name',
     'Event.TimeUTC',
     'Event.Status.Name',
@@ -120,7 +120,7 @@ EVENT_COLUMNS = [
 ]
 
 EVENT_OUTPUT = [
-    'Varonis.Event.ID',
+    'Varonis.Event.ID',  # TODO need to clarify spec
     'Varonis.Event.Type',
     'Varonis.Event.UTCTime',
     'Varonis.Event.Status',
