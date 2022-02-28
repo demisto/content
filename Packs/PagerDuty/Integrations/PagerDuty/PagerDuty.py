@@ -763,7 +763,7 @@ def add_responders_to_incident(incident_id, message, user_requests=None, escalat
         requestor_id:string, The user id of the requester.
     """
 
-    if user_requests is None or user_requests == "":
+    if not user_requests:
         user_requests = DEFAULT_REQUESTOR
     if requestor_id is None or requestor_id == "":
         requestor_id = DEFAULT_REQUESTOR
