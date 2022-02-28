@@ -3662,3 +3662,16 @@ def test_rtr_remove_file_command(mocker):
     parsed_result = rtr_remove_file_command(args).outputs
     for res in parsed_result:
         assert res.get('Error') == "Success"
+
+
+def test_rtr_read_registry_keys_command(mocker):
+    from CrowdStrikeFalcon import rtr_read_registry_keys_command
+    mocker.patch('CrowdStrikeFalcon.init_rtr_batch_session', return_value="1")
+    response_data = load_json('test_data/rtr_general_response.json')
+    args = {'host_ids': "1", 'registry_keys': "key", 'os': "Windows"}
+    mocker.patch('CrowdStrikeFalcon.execute_run_batch_write_cmd_with_timer', return_value=response_data)
+    mocker.patch('CrowdStrikeFalcon.fileResult',
+                 return_value={'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'netstat-1', 'FileID': 'c'})
+    parsed_result = rtr_read_registry_keys_command(args)
+    assert len(parsed_result) == 2
+    assert "reg-1key" in parsed_result[0].readable_output
