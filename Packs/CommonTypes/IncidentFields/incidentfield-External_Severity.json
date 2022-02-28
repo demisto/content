@@ -1,7 +1,7 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "extermalseverity",
+    "cliName": "externalseverity",
     "closeForm": false,
     "content": true,
     "editForm": true,
@@ -10,7 +10,7 @@
     "id": "incident_extermalseverity",
     "isReadOnly": false,
     "locked": false,
-    "name": "Extermal Severity",
+    "name": "External Severity",
     "neverSetAsRequired": false,
     "openEnded": true,
     "ownerOnly": false,
