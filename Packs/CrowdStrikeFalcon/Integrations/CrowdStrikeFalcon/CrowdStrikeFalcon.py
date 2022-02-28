@@ -1224,39 +1224,6 @@ def get_custom_ioc(ioc_id: str) -> dict:
     return http_request('GET', '/iocs/entities/indicators/v1', params=params)
 
 
-def upload_custom_ioc(
-        ioc_type: str,
-        value: str,
-        action: str,
-        platforms: str,
-        severity: Optional[str] = None,
-        source: Optional[str] = None,
-        description: Optional[str] = None,
-        expiration: Optional[str] = None,
-        applied_globally: Optional[bool] = None,
-        host_groups: Optional[List[str]] = None,
-) -> dict:
-    """
-    Create a new IOC (or replace an existing one)
-    """
-    payload = {
-        'indicators': [assign_params(
-            type=ioc_type,
-            value=value,
-            action=action,
-            platforms=platforms,
-            severity=severity,
-            source=source,
-            description=description,
-            expiration=expiration,
-            applied_globally=applied_globally,
-            host_groups=host_groups,
-        )]
-    }
-
-    return http_request('POST', '/iocs/entities/indicators/v1', json=payload)
-
-
 def update_custom_ioc(
     ioc_id: str,
     action: Optional[str] = None,
