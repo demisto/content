@@ -178,13 +178,12 @@ Uploads a file to WildFire for analysis.
 | WildFire.Report.ProcessTree.Process.ChildName | string |   | 
 | WildFire.Report.ProcessTree.Process.ChildPid | string |   | 
 | WildFire.Report.ProcessTree.Process.ChildText | string |   | 
-| WildFire.Report.ProcessTree.ExtractedURL.URL | string |   | 
-| WildFire.Report.ProcessTree.ExtractedURL.Verdict | string |   | 
-| WildFire.Report.ProcessTree.Summary.Text | string |   | 
-| WildFire.Report.ProcessTree.Summary.Details | string |   | 
-| WildFire.Report.ProcessTree.Summary.Behavior | string |   | 
-| WildFire.Report.ProcessTree.ELF.ShellCommands | string |   | 
-
+| WildFire.Report.ExtractedURL.URL | string |   | 
+| WildFire.Report.ExtractedURL.Verdict | string |   | 
+| WildFire.Report.Summary.Text | string |   | 
+| WildFire.Report.Summary.Details | string |   | 
+| WildFire.Report.Summary.Behavior | string |   | 
+| WildFire.Report.ELF.ShellCommands | string |   | 
 
 #### Command Example
 ```!wildfire-upload upload=294@675f238c-ed75-4cae-83d2-02b6b820168b```
@@ -282,12 +281,12 @@ Uploads the URL of a remote file to WildFire for analysis.
 | WildFire.Report.ProcessTree.Process.ChildName | string |   | 
 | WildFire.Report.ProcessTree.Process.ChildPid | string |   | 
 | WildFire.Report.ProcessTree.Process.ChildText | string |   | 
-| WildFire.Report.ProcessTree.ExtractedURL.URL | string |   | 
-| WildFire.Report.ProcessTree.ExtractedURL.Verdict | string |   | 
-| WildFire.Report.ProcessTree.Summary.Text | string |   | 
-| WildFire.Report.ProcessTree.Summary.Details | string |   | 
-| WildFire.Report.ProcessTree.Summary.Behavior | string |   | 
-| WildFire.Report.ProcessTree.ELF.ShellCommands | string |   | 
+| WildFire.Report.ExtractedURL.URL | string |   | 
+| WildFire.Report.ExtractedURL.Verdict | string |   | 
+| WildFire.Report.Summary.Text | string |   | 
+| WildFire.Report.Summary.Details | string |   | 
+| WildFire.Report.Summary.Behavior | string |   | 
+| WildFire.Report.ELF.ShellCommands | string |   | 
 
 
 #### Command Example
@@ -384,13 +383,12 @@ Retrieves results for a file hash using WildFire.
 | WildFire.Report.ProcessTree.Process.ChildName | string |   | 
 | WildFire.Report.ProcessTree.Process.ChildPid | string |   | 
 | WildFire.Report.ProcessTree.Process.ChildText | string |   | 
-| WildFire.Report.ProcessTree.ExtractedURL.URL | string |   | 
-| WildFire.Report.ProcessTree.ExtractedURL.Verdict | string |   | 
-| WildFire.Report.ProcessTree.Summary.Text | string |   | 
-| WildFire.Report.ProcessTree.Summary.Details | string |   | 
-| WildFire.Report.ProcessTree.Summary.Behavior | string |   | 
-| WildFire.Report.ProcessTree.ELF.ShellCommands | string |   | 
-
+| WildFire.Report.ExtractedURL.URL | string |   | 
+| WildFire.Report.ExtractedURL.Verdict | string |   | 
+| WildFire.Report.Summary.Text | string |   | 
+| WildFire.Report.Summary.Details | string |   | 
+| WildFire.Report.Summary.Behavior | string |   | 
+| WildFire.Report.ELF.ShellCommands | string |   | 
 
 #### Command Example
 ```!wildfire-report url=https://www.demisto.com```
@@ -569,12 +567,12 @@ Uploads a URL of a webpage to WildFire for analysis.
 | WildFire.Report.ProcessTree.Process.ChildName | string |   | 
 | WildFire.Report.ProcessTree.Process.ChildPid | string |   | 
 | WildFire.Report.ProcessTree.Process.ChildText | string |   | 
-| WildFire.Report.ProcessTree.ExtractedURL.URL | string |   | 
-| WildFire.Report.ProcessTree.ExtractedURL.Verdict | string |   | 
-| WildFire.Report.ProcessTree.Summary.Text | string |   | 
-| WildFire.Report.ProcessTree.Summary.Details | string |   | 
-| WildFire.Report.ProcessTree.Summary.Behavior | string |   | 
-| WildFire.Report.ProcessTree.ELF.ShellCommands | string |   | 
+| WildFire.Report.ExtractedURL.URL | string |   | 
+| WildFire.Report.ExtractedURL.Verdict | string |   | 
+| WildFire.Report.Summary.Text | string |   | 
+| WildFire.Report.Summary.Details | string |   | 
+| WildFire.Report.Summary.Behavior | string |   | 
+| WildFire.Report.ELF.ShellCommands | string |   | 
 
 
 #### Command Example

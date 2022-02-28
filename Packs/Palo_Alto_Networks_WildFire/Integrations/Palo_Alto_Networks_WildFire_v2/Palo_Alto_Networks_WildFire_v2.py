@@ -1116,6 +1116,13 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
         if entry_behavior:
             outputs['Summary']['Behavior'] = entry_behavior
 
+    if extract_urls_url or extract_urls_verdict:
+        outputs['ExtractedURL'] = {}
+        if extract_urls_url:
+            outputs['ExtractedURL']['URL'] = extract_urls_url
+        if extract_urls_verdict:
+            outputs['ExtractedURL']['Verdict'] = extract_urls_verdict
+
     if elf_shell_commands:
         outputs['ELF'] = {}
         outputs['ELF']['ShellCommands'] = elf_shell_commands
