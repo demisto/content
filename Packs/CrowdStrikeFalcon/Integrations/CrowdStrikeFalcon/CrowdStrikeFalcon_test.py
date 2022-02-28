@@ -3642,12 +3642,12 @@ def test_rtr_kill_process_command(mocker):
         assert res.get('Error') == "Success"
 
 
-@pytest.mark.parametrize('os, expected_result', [
+@pytest.mark.parametrize('operating_system, expected_result', [
     ("Windows", 'rm test.txt --force'),
     ("Linux", 'rm test.txt -r -d'),
     ("Mac", 'rm test.txt -r -d'),
     ("bla", None),
 ])
-def test_match_remove_command_for_os(os, expected_result):
+def test_match_remove_command_for_os(operating_system, expected_result):
     from CrowdStrikeFalcon import match_remove_command_for_os
-    assert match_remove_command_for_os(os, "test.txt") == expected_result
+    assert match_remove_command_for_os(operating_system, "test.txt") == expected_result
