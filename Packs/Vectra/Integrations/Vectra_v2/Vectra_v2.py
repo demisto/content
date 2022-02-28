@@ -141,7 +141,9 @@ class Client:
             'query_string': query_string,
             'page_size': self.fetch_size,
             'page': 1,
+            'order_field': 'last_timestamp'
         }
+        demisto.debug(f'\n\nparams: {params}\n\n')
         raw_response = self.http_request(params=params, url_suffix='search/detections')  # type: ignore
         demisto.info("\n\n Queried Successfully\n\n")
         # Detections -> Incidents, if exists
@@ -582,6 +584,7 @@ def module_test(client: Client, last_run: dict):
 
 
 # COMMANDS MANAGER / SWITCH PANEL #
+
 def main():
     api_token = demisto.getParam('token')
 
