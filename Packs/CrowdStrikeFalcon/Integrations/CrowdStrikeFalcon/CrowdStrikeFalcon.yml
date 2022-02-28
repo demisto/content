@@ -3093,10 +3093,71 @@ script:
       name: filename
       required: false
       secret: false
+    - default: false
+      description: interval between polling. Default is 60 seconds. Must be higher than 10.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: This is an internal argument used for the polling process, not to be used by the user.
+      isArray: true
+      name: hosts_and_requests_ids
+      required: false
+      secret: false
+      deprecated: false
+    - default: false
+      description: This is an internal argument used for the polling process, not to be used by the user.
+      isArray: true
+      name: SHA256
+      required: false
+      secret: false
+      deprecated: false
     deprecated: false
     description: Gets the RTR extracted file contents for the specified file path.
     execution: false
+    polling: true
     name: cs-falcon-rtr-retrieve-file
+    outputs:
+    - contextPath: CrowdStrike.File.FileName
+      description: The file name.
+      type: String
+    - contextPath: CrowdStrike.File.HostID
+      description: The hosd ID.
+      type: string
+   - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: EntryID of the file
+      type: String
+    - contextPath: File.Info
+      description: Information about the file.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The extension of the file.
+      type: String
   dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: true

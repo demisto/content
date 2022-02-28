@@ -582,7 +582,7 @@ def status_get_cmd(request_id: str, timeout: int = None, timeout_duration: str =
 
       :param request_id: ID to the request of `get` command.
       :param timeout: Timeout for how long to wait for the request in seconds
-      :param timeout_duration: Timeout duration for for how long to wait for the request in duration syntax
+      :param timeout_duration: Timeout duration for how long to wait for the request in duration syntax
       :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-get-command/v1'
@@ -2516,7 +2516,8 @@ def run_script_command():
     return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
 
 
-def run_get_command():
+def run_get_command(is_polling=False):
+    request_ids_for_polling = []
     args = demisto.args()
     host_ids = argToList(args.get('host_ids'))
     file_path = args.get('file_path')
@@ -2548,7 +2549,13 @@ def run_get_command():
             'Complete': resource.get('complete') or False,
             'FilePath': file_path
         })
+        request_ids_for_polling.append(
+            {'RequestID': response.get('batch_get_cmd_req_id'),
+             'HostID': resource.get('aid'),
+             })
 
+    if is_polling:
+        return request_ids_for_polling
     human_readable = tableToMarkdown(f'Get command has requested for a file {file_path}', output)
     entry_context = {
         'CrowdStrike.Command(val.TaskID === obj.TaskID)': output
@@ -2557,8 +2564,8 @@ def run_get_command():
     return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
 
 
-def status_get_command():
-    args = demisto.args()
+def status_get_command(args, is_polling=False):
+    request_ids_for_polling = {}
     request_ids = argToList(args.get('request_ids'))
     timeout = args.get('timeout')
     timeout_duration = args.get('timeout_duration')
@@ -2569,13 +2576,14 @@ def status_get_command():
     files_output = []
     file_standard_context = []
 
+    sha256 = ""
     for request_id in request_ids:
         response = status_get_cmd(request_id, timeout, timeout_duration)
         responses.append(response)
 
         resources: dict = response.get('resources', {})
 
-        for _, resource in resources.items():
+        for host_id, resource in resources.items():
             errors = resource.get('errors', [])
             if errors:
                 error_message = errors[0].get('message', '')
@@ -2597,12 +2605,19 @@ def status_get_command():
                 'SHA256': resource.get('sha256'),
                 'Size': resource.get('size'),
             })
+            sha256 = resource.get('sha256', '')
+            request_ids_for_polling[host_id] = {'SHA256': sha256, 'RequestID': request_id}
+
+    if is_polling:
+        args['SHA256'] = sha256
+        return request_ids_for_polling, args
 
     human_readable = tableToMarkdown('CrowdStrike Falcon files', files_output)
     entry_context = {
         'CrowdStrike.File(val.ID === obj.ID || val.TaskID === obj.TaskID)': files_output,
         outputPaths['file']: file_standard_context
     }
+
     if len(responses) == 1:
         return create_entry_object(contents=responses[0], ec=entry_context, hr=human_readable)
     else:
@@ -2655,8 +2670,7 @@ def status_command():
     return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
 
 
-def get_extracted_file_command():
-    args = demisto.args()
+def get_extracted_file_command(args):
     host_id = args.get('host_id')
     sha256 = args.get('sha256')
     filename = args.get('filename')
@@ -3184,14 +3198,6 @@ def add_error_message(failed_hosts, all_requested_hosts):
     return human_readable
 
 
-def is_new_polling_search(args):
-    """
-    Check if the polling func is a new search or in the polling flow.
-    if ids argument in the args dict its mean that the first search is finished and we should run the polling flow
-    """
-    return not args.get('host_ids')
-
-
 def rtr_polling_retrieve_file_command(args: dict):
     """
     This function is generically handling the polling flow. In the polling flow, there is always an initial call that
@@ -3204,42 +3210,53 @@ def rtr_polling_retrieve_file_command(args: dict):
     Returns:
 
     """
+    cmd = "cs-falcon-rtr-retrieve-file"
     ScheduledCommand.raise_error_if_not_supported()
-    interval_in_secs = 600
-    # distinguish between the initial run, which is the upload run, and the results run
-    if is_new_polling_search(args):
-        # create new search
-        extended_data = arrange_args_for_upload_func(args)
-        command_results = upload_function(client, **args)
-        outputs = command_results.outputs
-        results_function_args = get_results_function_args(outputs, extended_data, item_type, interval_in_secs)
-        # schedule next poll
-        scheduled_command = ScheduledCommand(
-            command=cmd,
-            next_run_in_seconds=interval_in_secs,
-            args=results_function_args,
-            timeout_in_seconds=6000)
-        command_results.scheduled_command = scheduled_command
-        return command_results
+    interval_in_secs = int(args.get('interval_in_seconds', 60))
 
-    # not a new search, get search status
-    pop_polling_related_args(args)
-    command_result, status = results_function(client, **args)
-    if not status:
-        # schedule next poll
-        polling_args = {
-            'interval_in_seconds': interval_in_secs,
-            'polling': True,
-            **args
-        }
-        scheduled_command = ScheduledCommand(
-            command=cmd,
-            next_run_in_seconds=interval_in_secs,
-            args=polling_args,
-            timeout_in_seconds=6000)
+    if 'hosts_and_requests_ids' not in args:
+        # this is the very first time we call the polling function
+        args['hosts_and_requests_ids'] = run_get_command(is_polling=True)  # run the first command to retrieve file
 
-        command_result = CommandResults(scheduled_command=scheduled_command)
-    return command_result
+    # we have request ids in args
+    if not args.get('SHA256'):
+        # this means that we don't have status yet, should so polling
+        hosts_and_requests_ids = args.pop('hosts_and_requests_ids')
+        args['request_ids'] = [res.get('RequestID') for res in hosts_and_requests_ids]
+        get_status_response, args = status_get_command(args, is_polling=True)
+        if args.get('SHA256'):
+            # we can call the extract file
+            args.pop('SHA256')
+            return rtr_get_extracted_file(get_status_response, args.get('fileName'))
+
+        else:
+            # we should call the polling on status
+            args['hosts_and_requests_ids'] = hosts_and_requests_ids
+            args.pop('request_ids')
+            args.pop('SHA256')
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_secs,
+                args=args,
+                timeout_in_seconds=600)
+            command_results = CommandResults(scheduled_command=scheduled_command,
+                                             readable_output="Waiting for the polling execution")
+            return command_results
+
+
+def rtr_get_extracted_file(args_to_get_files: dict, file_name: str):
+    files = []
+    outputs_data = []
+    for host_id, values in args_to_get_files.items():
+        arg = {'host_id': host_id, 'sha256': values.get('SHA256'), 'filename': file_name}
+        file = get_extracted_file_command(arg)
+        files.append(file)
+        outputs_data.append(
+            {'HostID': arg.get('host_id'),
+             'FileName': file.get('File')})
+
+    return [CommandResults(readable_output="CrowdStrike Falcon files", outputs=outputs_data,
+                           outputs_prefix="CrowdStrike.File"), files]
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -3294,11 +3311,11 @@ def main():
         elif command == 'cs-falcon-run-get-command':
             demisto.results(run_get_command())
         elif command == 'cs-falcon-status-get-command':
-            demisto.results(status_get_command())
+            demisto.results(status_get_command(demisto.args()))
         elif command == 'cs-falcon-status-command':
             demisto.results(status_command())
         elif command == 'cs-falcon-get-extracted-file':
-            demisto.results(get_extracted_file_command())
+            demisto.results(get_extracted_file_command(demisto.args()))
         elif command == 'cs-falcon-list-host-files':
             demisto.results(list_host_files_command())
         elif command == 'cs-falcon-refresh-session':

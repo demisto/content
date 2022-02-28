@@ -1605,7 +1605,7 @@ def test_get_extracted_file(requests_mock, mocker):
         content=response_content,
         status_code=201
     )
-    results = get_extracted_file_command()
+    results = get_extracted_file_command(demisto.args())
 
     fpath = demisto.investigation()['id'] + '_' + results['FileID']
     with open(fpath, 'rb') as f:
