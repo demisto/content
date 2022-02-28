@@ -76,6 +76,8 @@ BOT_ICON_URL: str
 MAX_LIMIT_TIME: int
 PAGINATED_COUNT: int
 ENABLE_DM: bool
+DEFAULT_PERMITTED_NOTIFICATION_TYPES: List[str]
+CUSTOM_PERMITTED_NOTIFICATION_TYPES: List[str]
 PERMITTED_NOTIFICATION_TYPES: List[str]
 COMMON_CHANNELS: dict
 DISABLE_CACHING: bool
@@ -104,10 +106,10 @@ def test_module():
     """
     Sends a test message to the dedicated slack channel.
     """
-    if not DEDICATED_CHANNEL and len(PERMITTED_NOTIFICATION_TYPES) > 0:
+    if not DEDICATED_CHANNEL and len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) > 0:
         return_error(
             "When 'Types of Notifications to Send' is populated, a dedicated channel is required.")
-    elif not DEDICATED_CHANNEL and len(PERMITTED_NOTIFICATION_TYPES) == 0:
+    elif not DEDICATED_CHANNEL and len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) == 0:
         CLIENT.auth_test()  # type: ignore
     else:
         channel = get_conversation_by_name(DEDICATED_CHANNEL)
@@ -1221,8 +1223,8 @@ def is_bot_message(data: dict) -> bool:
     """
     subtype = data.get('subtype', '')
     message_bot_id = data.get('bot_id', '')
-    if subtype == 'bot_message' or message_bot_id or data.get('message', {}).get(
-            'subtype') == 'bot_message':
+    event: dict = data.get('event', {})
+    if subtype == 'bot_message' or message_bot_id or event.get('bot_id', None):
         return True
     elif data.get('event', {}).get('subtype') == 'bot_message':
         return True
@@ -1767,7 +1769,7 @@ def slack_send():
 
     if (channel == DEDICATED_CHANNEL and original_channel == INCIDENT_NOTIFICATION_CHANNEL
             and ((severity is not None and severity < SEVERITY_THRESHOLD)
-                 or not (len(PERMITTED_NOTIFICATION_TYPES) > 0))):
+                 or not (len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) > 0))):
         channel = None
 
     if not (to or group or channel or channel_id):
@@ -2496,7 +2498,8 @@ def init_globals(command_name: str = ''):
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, CACHED_INTEGRATION_CONTEXT, MIRRORING_ENABLED
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM, BOT_ID, CACHE_EXPIRY
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
-    global PERMITTED_NOTIFICATION_TYPES, COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, LONG_RUNNING_ENABLED
+    global DEFAULT_PERMITTED_NOTIFICATION_TYPES, CUSTOM_PERMITTED_NOTIFICATION_TYPES, PERMITTED_NOTIFICATION_TYPES
+    global COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, LONG_RUNNING_ENABLED
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -2522,7 +2525,9 @@ def init_globals(command_name: str = ''):
     MAX_LIMIT_TIME = int(demisto.params().get('max_limit_time', '60'))
     PAGINATED_COUNT = int(demisto.params().get('paginated_count', '200'))
     ENABLE_DM = demisto.params().get('enable_dm', True)
-    PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications', [])
+    DEFAULT_PERMITTED_NOTIFICATION_TYPES = ['externalAskSubmit']
+    CUSTOM_PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications', [])
+    PERMITTED_NOTIFICATION_TYPES = DEFAULT_PERMITTED_NOTIFICATION_TYPES + CUSTOM_PERMITTED_NOTIFICATION_TYPES
     MIRRORING_ENABLED = demisto.params().get('mirroring', True)
     LONG_RUNNING_ENABLED = demisto.params().get('longRunning', True)
     common_channels = demisto.params().get('common_channels', None)
