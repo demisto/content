@@ -1281,6 +1281,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
             entry_context['Status'] = 'Pending'
             human_readable = 'The sample is still being analyzed. Please wait to download the report.'
             indicator = None
+            relationships = None
 
     except NotFoundError as exc:
         entry_context['Status'] = 'NotFound'
@@ -1295,7 +1296,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
             reliability=RELIABILITY)
         indicator = Common.File(dbot_score=dbot_score_object, md5=md5, sha256=sha256)
         demisto.error(f'Report not found. Error: {exc}')
-
+        relationships = None
     finally:
         try:
             command_results = CommandResults(outputs_prefix=WILDFIRE_REPORT_DT_FILE,
