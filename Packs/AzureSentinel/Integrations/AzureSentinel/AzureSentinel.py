@@ -875,6 +875,16 @@ def update_next_link_in_context(result: dict, outputs: dict):
 
 
 def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_time: str, min_severity: int):
+    """Fetching incidents
+    Args:
+        first_fetch_time: The first fetch time.
+        client: An AzureSentinelClient client.
+        last_run: An dictionary of the last run.
+        min_severity: A minimum severity of incidents to fetch.
+
+    Returns:
+        An array of incidents, and a latest created time.
+    """
     demisto.debug("Starting fetch incidents")
     # Get the last fetch details, if exist
     last_fetch_time = last_run.get('last_fetch_time')
@@ -894,32 +904,58 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
 
 
 def fetch_incidents_via_timestamp(first_fetch_time: str, client: AzureSentinelClient):
+    """Fetching incidents
+    Args:
+        first_fetch_time: The first fetch time.
+        client: an AzureSentinelClient client.
+
+    Returns:
+        An array of incidents, and a latest created time.
+    """
     last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
     last_fetch_time = dateparser.parse(last_fetch_time_str)
     latest_created_time = last_fetch_time
     latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
     command_args = {'filter': f'properties/createdTimeUtc ge {latest_created_time_str}'}
-    first_fetch = True
 
-    demisto.debug(f"{command_args=}, {first_fetch=}")
-    command_result = list_incidents_command(client, command_args, is_fetch_incidents=True, first_fetch=first_fetch)
+    demisto.debug(f"{command_args=}")
+    command_result = list_incidents_command(client, command_args, is_fetch_incidents=True, first_fetch=True)
     demisto.debug(f"{command_result.outputs=}")
     return command_result.outputs, latest_created_time
 
 
 def fetch_incidents_via_incident_number(last_fetch_time: str, last_incident_number: int, client: AzureSentinelClient):
+    """Fetching incidents
+    Args:
+        last_fetch_time: The last fetch time.
+        last_incident_number: The last incident number.
+        client: an AzureSentinelClient client.
+
+    Returns:
+        An array of incidents, and a latest created time.
+    """
     last_fetch_time = dateparser.parse(last_fetch_time)
     latest_created_time = last_fetch_time
     command_args = {'filter': f'properties/incidentNumber ge {last_incident_number}'}
-    first_fetch = False
 
-    demisto.debug(f"{command_args=}, {first_fetch=}")
-    command_result = list_incidents_command(client, command_args, is_fetch_incidents=True, first_fetch=first_fetch)
+    demisto.debug(f"{command_args=}")
+    command_result = list_incidents_command(client, command_args, is_fetch_incidents=True, first_fetch=False)
     demisto.debug(f"{command_result.outputs=}")
     return command_result.outputs, latest_created_time
 
 
 def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: int, latest_created_time: datetime, last_incident_number: int):
+    """Processing the raw incidents
+    Args:
+        raw_incidents: The incidents that were fetched from the API.
+        last_fetch_ids: The last fetch ids from the last run.
+        last_incident_number: The last incident number that was fetched.
+        latest_created_time: The latest created time.
+        min_severity: The minimum severity.
+
+    Returns:
+        A next_run dictionary, and an array of incidents.
+    """
     demisto.debug(f"starting to process incidents")
     demisto.debug(f"{latest_created_time=}, {last_incident_number=}")
     incidents = []
