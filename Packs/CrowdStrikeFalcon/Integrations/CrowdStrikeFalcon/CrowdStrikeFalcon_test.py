@@ -205,7 +205,7 @@ response_detection = {"cid": "20879a8064904ecfbb62c118a6a19411",
 
 def test_incident_to_incident_context():
     from CrowdStrikeFalcon import incident_to_incident_context
-    res = incident_to_incident_context(response_incident)
+    res = incident_to_incident_context(response_incident.copy())
     assert res == incident_context
 
 
