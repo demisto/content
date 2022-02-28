@@ -495,19 +495,16 @@ def test_parse_indicator():
     assert indicator.to_context() == expected_context, ddiff(indicator.to_context(), expected_context)
 
 
-@pytest.mark.parametrize('file,mocked_address,mocked_response', (
-        (
-                'file',
-                'https://api.crowdstrike.com/falconx/queries/reports/v1?filter=sandbox.sha256%3A%22file%22',
-                {'resources': ['id_1']}),
-        (
-                'file1, file2',
-                'https://api.crowdstrike.com/falconx/queries/reports/v1?filter=sandbox.sha256%3A%22file1%22' +
-                '%2Csandbox.sha256%3A%22file2%22',
-                {'resources': ['id_1', 'id_2']}
-        )
-)
-                         )
+@pytest.mark.parametrize('file,mocked_address,mocked_response', (('file',
+                                                                  'https://api.crowdstrike.com/falconx/queries/reports'
+                                                                  '/v1?filter=sandbox.sha256%3A%22file%22',
+                                                                  {'resources': ['id_1']}),
+                                                                 ('file1, file2',
+                                                                  'https://api.crowdstrike.com/falconx/queries/reports/'
+                                                                  'v1?filter=sandbox.sha256%3A%22file1%22%2C'
+                                                                  'sandbox.sha256%3A%22file2%22',
+                                                                  {'resources': ['id_1', 'id_2']})
+                                                                 ))
 def test_file_command(requests_mock, mocker, file: str, mocked_address: str, mocked_response: dict):
     """
     Given
@@ -537,6 +534,7 @@ def test_file_command(requests_mock, mocker, file: str, mocked_address: str, moc
     assert isinstance(command_results, list) and len(command_results) == len(file_ids)
 
     for result in command_results:
+        # to avoid testing get_full_report, the context used is of an empty result
         assert result.to_context() == \
                {'Type': 1, 'ContentsFormat': 'json', 'Contents': None, 'HumanReadable': (
                    'There are no results yet for this sample, its analysis might not have been completed. '

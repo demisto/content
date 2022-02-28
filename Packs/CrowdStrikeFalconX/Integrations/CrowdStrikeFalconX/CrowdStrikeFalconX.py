@@ -537,8 +537,7 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
         score_field: int = DBOT_SCORE_DICT.get(sandbox.get('verdict', ''), Common.DBotScore.NONE)
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability_str)
         submit_name = sandbox.get('submit_name', '')  # todo is ever None? What about name=submit_name? all CR use `id`
-        # todo 2 mypy insists on using a default `''` value, is it right here?
-
+        # todo check submit_name
         dbot = Common.DBotScore(indicator=sha256,
                                 indicator_type=DBotScoreType.FILE,
                                 score=score_field,
@@ -551,11 +550,11 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
         else:
             relationships = None
         signature: Optional[Common.FileSignature] = Common.FileSignature(authentihash='',  # N/A in data
-                                         copyright=info.get('LegalCopyright', ''),
-                                         description=info.get('FileDescription', ''),
-                                         file_version=info.get('FileVersion', ''),
-                                         internal_name=info.get('InternalName', ''),
-                                         original_name=info.get('OriginalFilename', ''))
+                                                                         copyright=info.get('LegalCopyright', ''),
+                                                                         description=info.get('FileDescription', ''),
+                                                                         file_version=info.get('FileVersion', ''),
+                                                                         internal_name=info.get('InternalName', ''),
+                                                                         original_name=info.get('OriginalFilename', ''))
         if signature and not any(signature.to_context().values()):  # if all values are empty
             signature = None
 
@@ -575,8 +574,8 @@ def parse_indicator_relationships(sandbox: dict, indicator_name: str, reliabilit
 
     def _create_relationship(relationship_name: str, entity_b: str, entity_b_type: str) -> EntityRelationship:
         return EntityRelationship(name=relationship_name,
-                                  entity_a=indicator_name,  # todo ?
-                                  entity_a_type=FeedIndicatorType.File,  # todo feed? need str
+                                  entity_a=indicator_name,  # todo use indicator value
+                                  entity_a_type=FeedIndicatorType.File,
                                   entity_b=entity_b,
                                   entity_b_type=entity_b_type,
                                   source_reliability=reliability)
@@ -633,7 +632,7 @@ def test_module(client: Client) -> tuple[str, dict, list]:
     raise Exception("Quota limitation is unreachable")
 
 
-def upload_file_command(
+def upload_file_command(  # type: ignore[return]
         client: Client,
         file: str,
         file_name: str,
@@ -663,7 +662,7 @@ def upload_file_command(
             indicator=result.indicator)
 
     else:
-        sha256 = str(result.output.get("sha256"))  # todo isn't it dangerous? may be None
+        sha256 = str(result.output.get("sha256"))  # type: ignore[union-attr]
         return send_uploaded_file_to_sandbox_analysis_command(client, sha256, "160: Windows 10")
 
 
@@ -818,11 +817,12 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
                                               raw_response=result.response,
                                               indicator=result.indicator))
     if not command_results:
-        command_results = [CommandResults(
-            readable_output=f'There are no results yet for the any of the queried samples ({ids}), '
-                            'analysis might not have been completed. '
-                            'Please wait to download the report.\n'
-                            'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.')
+        command_results = [
+            CommandResults(readable_output=f'There are no results yet for the any of the queried samples ({ids}), '
+                                           'analysis might not have been completed. '
+                                           'Please wait to download the report.\n'
+                                           'You can use cs-fx-get-analysis-status to check the status '
+                                           'of a sandbox analysis.')
         ]  # todo add file may not exist?
     return command_results, is_command_finished
 
