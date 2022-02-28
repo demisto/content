@@ -170,6 +170,8 @@ class Client(BaseClient):
             'status': status,
         } if not next_page else {}
         remove_nulls_from_dictionary(params)
+        demisto.debug("This is the query params: ", params)
+        demisto.debug("This is the next_page: ", params)
 
         return self.http_request('GET', url_suffix=url_suffix, params=params)
 
@@ -432,6 +434,14 @@ def fetch_incidents(client: Client, first_fetch_time, fetch_limit, fetch_state, 
     incidents = list()
     for inc in results:
 
+        date_created = inc.get('created_at')
+        demisto.debug(f"The last fetch: {last_fetch}")
+        demisto.debug(f"The incident: ", inc)
+
+        demisto.debug(f"The result: {datetime.strptime(date_created, SAAS_SECURITY_DATE_FORMAT) < datetime.strptime(last_fetch, SAAS_SECURITY_DATE_FORMAT)}")
+        if datetime.strptime(date_created, SAAS_SECURITY_DATE_FORMAT) < datetime.strptime(last_fetch, SAAS_SECURITY_DATE_FORMAT):
+            continue
+
         inc['mirror_direction'] = mirror_direction
         inc['mirror_instance'] = integration_instance
         inc['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
@@ -467,7 +477,9 @@ def get_remote_data_command(client, args):
 
     incident_data = {}
     try:
+        demisto.debug(f'The incident ID: {remote_args.remote_incident_id}')
         incident_data = client.get_incident_by_id(remote_args.remote_incident_id)
+        demisto.debug(f'The incident data: {incident_data}')
         delta = {field: incident_data.get(field) for field in INCOMING_MIRRORED_FIELDS if incident_data.get(field)}
 
         if not delta or date_to_timestamp(incident_data.get('updated_at'), '%Y-%m-%dT%H:%M:%S.%fZ') \
