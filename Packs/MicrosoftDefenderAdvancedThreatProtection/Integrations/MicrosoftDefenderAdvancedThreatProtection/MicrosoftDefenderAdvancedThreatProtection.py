@@ -1866,7 +1866,7 @@ def stop_and_quarantine_file_command(client: MsClient, args: dict):
     """Stop execution of a file on a machine and delete it.
 
     Returns:
-        (str, dict, dict). Human readable, context, raw response
+         CommandResults
     """
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
     machine_ids = argToList(args.get('machine_id'))
@@ -2827,8 +2827,7 @@ def sc_create_update_indicator_command(client: MsClient, args: Dict[str, str]) -
 
     indicator = client.create_update_indicator_security_center_api(
         indicator_value=indicator_value, expiration_date_time=expiration_time,
-        description=indicator_description, severity=severity, indicator_type=indicator_type,
-        action=action,
+        description=indicator_description, severity=severity, indicator_type=indicator_type, action=action,
         indicator_title=indicator_title, indicator_application=indicator_application,
         recommended_actions=recommended_actions, rbac_group_names=rbac_group_names
     )
