@@ -102,10 +102,19 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "description",
+                                "height": 44,
+                                "id": "cfd916c0-9871-11ec-a272-434da3f30006",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "internal",
                                 "height": 22,
                                 "id": "299ca380-ac60-11e9-8443-17259235cee7",
-                                "index": 3,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -145,7 +154,7 @@
                                 "fieldId": "geolocation",
                                 "height": 22,
                                 "id": "38b90d10-8a6e-11ec-b66a-f1cce9b9d7c0",
-                                "index": 6,
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -155,7 +164,7 @@
                                 "fieldId": "trafficlightprotocol",
                                 "height": 22,
                                 "id": "b36304a0-b6dd-11ea-842d-c3903a6d3bd1",
-                                "index": 7,
+                                "index": 8,
                                 "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -166,7 +175,7 @@
                                 "fieldId": "tags",
                                 "height": 22,
                                 "id": "1cf1e850-4e74-11ea-8bf6-67db400d7da5",
-                                "index": 7,
+                                "index": 9,
                                 "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -182,7 +191,7 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "a3ae49b0-a751-11eb-8813-85174f038837",
-                                "index": 8,
+                                "index": 10,
                                 "listId": "main-7f057390-7924-11ec-b67f-eb261672616f",
                                 "name": "Add tags",
                                 "scriptId": "Builtin|||appendIndicatorField",
@@ -200,7 +209,7 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "a1fd3e50-a751-11eb-8813-85174f038837",
-                                "index": 8,
+                                "index": 10,
                                 "listId": "main-7f057390-7924-11ec-b67f-eb261672616f",
                                 "name": "Remove tags",
                                 "scriptId": "Builtin|||removeIndicatorField",
@@ -394,21 +403,10 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 6,
-                                "fieldId": "description",
-                                "height": 44,
-                                "id": "234808f0-76be-11ec-ad89-f112118947c2",
-                                "index": 0,
-                                "listId": "i0yw3qwiqc-11c94670-76be-11ec-ad89-f112118947c2",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 6,
                                 "fieldId": "communitynotes",
                                 "height": 106,
                                 "id": "1af59a50-76be-11ec-ad89-f112118947c2",
-                                "index": 2,
+                                "index": 0,
                                 "listId": "i0yw3qwiqc-11c94670-76be-11ec-ad89-f112118947c2",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -418,7 +416,7 @@
                                 "fieldId": "publications",
                                 "height": 106,
                                 "id": "50ade440-76be-11ec-ad89-f112118947c2",
-                                "index": 3,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -426,7 +424,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "New Section",
+                        "name": "Additional Details",
                         "static": false,
                         "w": 3,
                         "x": 0,

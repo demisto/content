@@ -14,7 +14,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "main-CVE Indicator_copy-main-CVE Indicator_copy-main-cveRep-main-9fa550a0-a2e6-11e9-a74b-a79deb2f5d2a",
+                        "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-9fa550a0-a2e6-11e9-a74b-a79deb2f5d2a",
                         "isVisible": true,
                         "items": [
                             {
@@ -121,14 +121,13 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 2,
-                        "maxH": null
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "main-CVE Indicator_copy-main-CVE Indicator_copy-main-cveRep-main-374a4120-ac5d-11e9-82f1-b168a5ac3417",
+                        "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-374a4120-ac5d-11e9-82f1-b168a5ac3417",
                         "isVisible": true,
                         "items": null,
                         "maxW": 3,
@@ -178,8 +177,7 @@
                                 "key": "owner",
                                 "width": 160
                             }
-                        ],
-                        "maxH": null
+                        ]
                     },
                     {
                         "columns": [
@@ -203,7 +201,7 @@
                             }
                         ],
                         "h": 3,
-                        "i": "main-CVE Indicator_copy-main-CVE Indicator_copy-main-cveRep-main-7f557450-3d56-11ea-9dff-c57e8949d2f9",
+                        "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-7f557450-3d56-11ea-9dff-c57e8949d2f9",
                         "items": null,
                         "maxW": 3,
                         "minH": 1,
@@ -213,12 +211,11 @@
                         "type": "indicatorTimeline",
                         "w": 1,
                         "x": 2,
-                        "y": 1,
-                        "maxH": null
+                        "y": 1
                     },
                     {
                         "h": 5,
-                        "i": "main-CVE Indicator_copy-main-CVE Indicator_copy-main-cveRep-main-174e7bd0-3d57-11ea-9dff-c57e8949d2f9",
+                        "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-174e7bd0-3d57-11ea-9dff-c57e8949d2f9",
                         "items": null,
                         "maxW": 3,
                         "minH": 1,
@@ -228,13 +225,12 @@
                         "type": "comments",
                         "w": 1,
                         "x": 2,
-                        "y": 4,
-                        "maxH": null
+                        "y": 4
                     },
                     {
                         "h": 1,
                         "hideName": false,
-                        "i": "main-CVE Indicator_copy-main-CVE Indicator_copy-main-cveRep-main-fafa73b0-a9af-11ea-a4b1-a5bbd1788c5a",
+                        "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-fafa73b0-a9af-11ea-a4b1-a5bbd1788c5a",
                         "items": [
                             {
                                 "args": {},
@@ -271,12 +267,11 @@
                         "w": 1,
                         "x": 2,
                         "y": 0,
-                        "displayType": "ROW",
-                        "maxH": null
+                        "displayType": "ROW"
                     },
                     {
                         "h": 3,
-                        "i": "main-CVE Indicator_copy-main-CVE Indicator_copy-main-cveRep-main-cba17b40-7d0c-11ec-abe4-4fa9d22d9889",
+                        "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-cba17b40-7d0c-11ec-abe4-4fa9d22d9889",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -286,13 +281,12 @@
                         "type": "relationshipsTable",
                         "w": 2,
                         "x": 0,
-                        "y": 4,
-                        "maxH": null
+                        "y": 4
                     },
                     {
                         "h": 2,
                         "hideName": false,
-                        "i": "main-CVE Indicator_copy-main-CVE Indicator_copy-main-8c4ad450-8a4a-11ec-a1ef-6369524b39c7",
+                        "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-8c4ad450-8a4a-11ec-a1ef-6369524b39c7",
                         "items": [
                             {
                                 "endCol": 2,
@@ -313,12 +307,11 @@
                         "x": 0,
                         "y": 0,
                         "displayType": "ROW",
-                        "hideItemTitleOnlyOne": true,
-                        "maxH": null
+                        "hideItemTitleOnlyOne": true
                     },
                     {
                         "h": 4,
-                        "i": "main-CVE Indicator_copy-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
+                        "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -327,7 +320,7 @@
                                 "height": 22,
                                 "id": "26bc3a40-8e3a-11ec-9c49-5f11296515d9",
                                 "index": 0,
-                                "listId": "main-CVE Indicator_copy-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
+                                "listId": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -338,7 +331,7 @@
                                 "height": 22,
                                 "id": "d1d092b0-8e39-11ec-9c49-5f11296515d9",
                                 "index": 1,
-                                "listId": "main-CVE Indicator_copy-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
+                                "listId": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -370,8 +363,7 @@
                         "x": 1,
                         "y": 0,
                         "displayType": "ROW",
-                        "hideName": false,
-                        "maxH": null
+                        "hideName": false
                     }
                 ],
                 "type": "custom"
@@ -383,22 +375,7 @@
                 "sections": [
                     {
                         "displayType": "ROW",
-                        "h": 9,
-                        "i": "kopixekjqw-24f18460-beb4-11ea-b519-21bdfb6f5a43",
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Extended Details",
-                        "static": false,
-                        "type": "extendedDetails",
-                        "w": 2,
-                        "x": 0,
-                        "y": 0
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 9,
+                        "h": 4,
                         "i": "kopixekjqw-27fffce0-beb4-11ea-b519-21bdfb6f5a43",
                         "items": null,
                         "maxW": 3,
@@ -407,9 +384,43 @@
                         "name": "Custom Details",
                         "static": false,
                         "type": "customDetails",
-                        "w": 1,
-                        "x": 2,
-                        "y": 0
+                        "w": 3,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "i": "kopixekjqw-89359390-9878-11ec-8a36-89f2ae31e8cd",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "communitynotes",
+                                "height": 106,
+                                "id": "9835c180-9878-11ec-8a36-89f2ae31e8cd",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "publications",
+                                "height": 106,
+                                "id": "96266980-9878-11ec-8a36-89f2ae31e8cd",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Additional Details",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0,
+                        "hideName": false
                     }
                 ],
                 "type": "custom"

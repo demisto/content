@@ -357,36 +357,53 @@
                 "name": "Additional Details",
                 "sections": [
                     {
-                        "displayType": "ROW",
-                        "h": 9,
-                        "i": "xvk17miids-b038b490-bc60-11ea-a5c9-f34e96a12550",
-                        "items": null,
+                        "displayType": "CARD",
+                        "h": 4,
+                        "i": "xvk17miids-b7e7b250-9575-11ec-917a-d77ed7e18db0",
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Extended Details",
-                        "static": false,
-                        "type": "extendedDetails",
-                        "w": 2,
-                        "x": 0,
-                        "y": 0
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 9,
-                        "i": "xvk17miids-b3283360-bc60-11ea-a5c9-f34e96a12550",
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Custom Details",
                         "static": false,
                         "type": "customDetails",
-                        "w": 1,
-                        "x": 2,
-                        "y": 0
+                        "w": 3,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "i": "xvk17miids-bdb8cd40-9575-11ec-917a-d77ed7e18db0",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "communitynotes",
+                                "height": 106,
+                                "id": "dc886000-9575-11ec-917a-d77ed7e18db0",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "publications",
+                                "height": 106,
+                                "id": "2702dfc0-9878-11ec-8a36-89f2ae31e8cd",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Additional Details",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0,
+                        "hideName": false
                     }
                 ],
                 "type": "custom"
