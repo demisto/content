@@ -61,6 +61,7 @@ NetwitnessQuery
 Deprecated
 SQS
 ACM
+SQL
 unicode
 CloudWatchLogs
 GuardDuty
