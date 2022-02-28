@@ -332,11 +332,8 @@ class Client:
         :param id: id of a submitted malware samples.
         :return: http response
         """
-        url_suffix = f"/falconx/entities/reports/v1?ids={id}"
-        params = {
-            "ids": id
-        }
-        return self._http_request("Get", url_suffix, params=params)
+        url_suffix = f"/falconx/entities/reports/v1"
+        return self._http_request("Get", url_suffix, params={"ids": id})
 
     def get_report_summary(
             self,
@@ -346,11 +343,8 @@ class Client:
         :param id: id of a submitted malware samples.
         :return: http response
         """
-        url_suffix = f"/falconx/entities/report-summaries/v1?ids={id}"
-        params = {
-            "ids": id
-        }
-        return self._http_request("Get", url_suffix, params=params)
+        url_suffix = f"/falconx/entities/report-summaries/v1"
+        return self._http_request("Get", url_suffix, params={"ids": id})
 
     def get_analysis_status(
             self,
@@ -360,11 +354,8 @@ class Client:
         :param ids: ids of a submitted malware samples.
         :return: http response
         """
-        url_suffix = f"/falconx/entities/submissions/v1?ids={ids}"
-        params = {
-            "ids": ids
-        }
-        return self._http_request("Get", url_suffix, params=params)
+        url_suffix = f"/falconx/entities/submissions/v1"
+        return self._http_request("Get", url_suffix, params={"ids": ids})
 
     def download_ioc(
             self,
@@ -378,7 +369,7 @@ class Client:
         :param accept_encoding: format used to compress your downloaded file
         :return: http response
         """
-        url_suffix = f"/falconx/entities/artifacts/v1?id={id}&name={name}&Accept-Encoding={accept_encoding}"
+        url_suffix = f"/falconx/entities/artifacts/v1"
         params = {
             "ids": id,
             "name": name,
@@ -439,7 +430,7 @@ class Client:
         :param sort: sort order: asc or desc
         :return: http response
         """
-        url_suffix = f"/falconx/queries/submissions/v1?filter={filter}&offset={offset}&limit{limit}=&sort={sort}"
+        url_suffix = f"/falconx/queries/submissions/v1"
 
         params = {
             "filter": filter,
@@ -452,9 +443,7 @@ class Client:
     def file(self, file_hashes: list[str]) -> list[CommandResults]:
         demisto.debug('file called')
         params = {'filter': ",".join(f'sandbox.sha256:"{sha256}"' for sha256 in file_hashes)}
-        demisto.debug(f'{params=}')
         response = self._http_request('get', url_suffix='/falconx/queries/reports/v1', params=params)
-        demisto.debug(f'{response=}')
         report_ids = response.get('resources', [])
         demisto.debug(f'{report_ids=}')
         command_results, _ = get_full_report_command(self, ids=report_ids, extended_data='FILE')
@@ -567,7 +556,7 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
                                          file_version=info.get('FileVersion', ''),
                                          internal_name=info.get('InternalName', ''),
                                          original_name=info.get('OriginalFilename', ''))
-        if not any(signature.to_context().values()): # if all values are empty
+        if not any(signature.to_context().values()):  # if all values are empty
             signature = None
 
         return Common.File(dbot_score=dbot,

@@ -504,19 +504,32 @@ def test_parse_indicator():
 )
                          )
 def test_file_command(requests_mock, mocker, file: str, mocked_address: str, mocked_response: dict):
+    """
+    Given
+            files to check
+    When
+            Calling the !file command
+    Then
+            Make sure the api calls are made correctly
+    """
     mocker.patch.object(Client, '_generate_token', return_value='token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, reliability=DBotScoreReliability.B)
+    file_ids = mocked_response['resources']
 
     from CrowdStrikeFalconX import file_command
     args = {'file': file}
-    requests_mock.get(mocked_address, json=mocked_response)
+    id_query_mock = requests_mock.get(mocked_address, json=mocked_response)
+    search_query_mocks = [
+        requests_mock.get(f'https://api.crowdstrike.com/falconx/entities/reports/v1?ids={file_id}', json={})
+        for file_id in file_ids
+    ]
 
-    destination_url_postfix = "&".join(f"ids={id_}" for id_ in mocked_response['resources'])
-    mocker.patch.object(client, 'get_full_report', return_value={})  # simulating empty report
-    requests_mock.get(f'https://api.crowdstrike.com/falconx/entities/reports/v1?{destination_url_postfix}')
     command_results = file_command(client, **args)
-    assert isinstance(command_results, list) and len(command_results) == len(mocked_response['resources'])
+
+    assert id_query_mock.call_count == 1
+    assert all(mocked_search.call_count == 1 for mocked_search in search_query_mocks)
+    assert isinstance(command_results, list) and len(command_results) == len(file_ids)
 
     for result in command_results:
         assert result.to_context() == \
