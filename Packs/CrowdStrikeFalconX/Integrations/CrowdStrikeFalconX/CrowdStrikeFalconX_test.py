@@ -146,7 +146,7 @@ def test_cs_falconx_commands(command, args, http_response, context, mocker):
     if isinstance(context, dict) and len(outputs) == 1:
         outputs = outputs[0]
 
-    assert outputs == context, ddiff(outputs, context)  # todo remove ddiff
+    assert outputs == context
 
 
 @pytest.mark.parametrize('command, args, http_response, context', [
@@ -185,7 +185,7 @@ def test_cs_falcon_x_polling_related_commands(command, args, http_response, cont
     else:
         command_res = [command_res]
 
-    assert command_res[0].outputs == context, ddiff(command_res[0].outputs, context)  # todo remove ddiff
+    assert command_res[0].outputs == context
 
 
 @pytest.mark.parametrize('http_response, output', [
@@ -209,24 +209,6 @@ def test_handle_errors(http_response, output, mocker):
         _, output, _ = check_quota_status_command(client)
     except Exception as e:
         assert (str(e) == str(output))
-
-
-def ddiff(dict1: dict, dict2: dict):  # todo remove
-    if not dict1:
-        print('dict1 is empty/None')
-        return
-    if not dict2:
-        print('dict1 is empty/None')
-        return
-
-    for k in set(dict1.keys()).intersection(dict2.keys()):
-        if dict1[k] != dict2[k]:
-            print(f'{k} in dict1\n', dict1[k])
-            print(f'{k} in dict2\n', dict2[k])
-    for k in set(dict1.keys()).difference(dict2.keys()):
-        print(f'key {k} missing from dict2')
-    for k in set(dict2.keys()).difference(dict1.keys()):
-        print(f'key {k} missing from dict1')
 
 
 def test_running_polling_command_success_for_url(mocker):
@@ -254,7 +236,6 @@ def test_running_polling_command_success_for_url(mocker):
                                           get_full_report_command, 'URL')
     assert isinstance(command_results, list) and len(command_results) == 1
 
-    print(ddiff(command_results[0].outputs, expected_outputs))  # todo remove
     assert command_results[0].outputs == expected_outputs
     assert command_results[0].scheduled_command is None
 
@@ -284,7 +265,6 @@ def test_running_polling_command_success_for_file(mocker):
                                           send_uploaded_file_to_sandbox_analysis_command,
                                           get_full_report_command, 'FILE')
     assert isinstance(command_results, list) and len(command_results) == 1
-    print(ddiff(command_results[0].outputs, expected_outputs))  # todo remove
     assert command_results[0].outputs == expected_outputs
     assert command_results[0].scheduled_command is None
 
@@ -492,7 +472,7 @@ def test_parse_indicator():
         }
     }
 
-    assert indicator.to_context() == expected_context, ddiff(indicator.to_context(), expected_context)
+    assert indicator.to_context() == expected_context
 
 
 @pytest.mark.parametrize('file,mocked_address,mocked_response', (('file',
