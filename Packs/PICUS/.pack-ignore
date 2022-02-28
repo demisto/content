@@ -1,2 +1,5 @@
 [file:PICUS.yml]
 ignore=IN145
+
+[file:PICUS_image.png]
+ignore=IM111
