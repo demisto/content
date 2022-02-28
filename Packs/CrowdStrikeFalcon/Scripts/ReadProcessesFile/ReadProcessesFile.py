@@ -14,7 +14,7 @@ def get_file_name_from_context() -> str:
                 # we want to get the last file name
                 file_name = ps_files[len(ps_files) - 1].get('Filename')
             elif isinstance(ps_files, dict):
-                file_name = ps_files.get('Filename')
+                file_name = ps_files.get('Filename')  # type:ignore
     return file_name
 
 

@@ -566,7 +566,7 @@ def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, opt
         'command_string': full_command
     }
     if optional_hosts:
-        default_body['optional_hosts'] = optional_hosts
+        default_body['optional_hosts'] = optional_hosts  # type:ignore
 
     body = json.dumps(default_body)
     response = http_request('POST', endpoint_url, data=body)
@@ -596,7 +596,7 @@ def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, tim
         'command_string': full_command
     }
     if optional_hosts:
-        default_body['optional_hosts'] = optional_hosts
+        default_body['optional_hosts'] = optional_hosts  # type:ignore
 
     body = json.dumps(default_body)
     response = http_request('POST', endpoint_url, data=body, params=params)
@@ -1270,9 +1270,7 @@ def update_custom_ioc(
     Update an IOC
     """
     payload = {
-        'indicators': [{
-                           'id': ioc_id,
-                       } | assign_params(
+        'indicators': [{'id': ioc_id, } | assign_params(
             action=action,
             platforms=platforms,
             severity=severity,
@@ -3209,7 +3207,8 @@ def rtr_general_command_on_hosts(host_ids: list, command: str, full_command: str
                                  write_to_context=True) -> \
         list[CommandResults, dict]:
     batch_id = init_rtr_batch_session(host_ids)
-    response = get_session_function(batch_id, command_type=command, full_command=full_command, host_ids=host_ids)
+    response = get_session_function(batch_id, command_type=command, full_command=full_command,
+                                    host_ids=host_ids)  # type:ignore
     output, file, not_found_hosts = parse_stdout_response(host_ids, response, command)
     human_readable = tableToMarkdown(
         f'{INTEGRATION_NAME} {command} command on host {host_ids[0]}:', output, headers="Stdout")
@@ -3318,7 +3317,7 @@ def rtr_polling_retrieve_file_command(args: dict):
         if args.get('SHA256'):
             # the status is ready, we can get the extracted files
             args.pop('SHA256')
-            return rtr_get_extracted_file(get_status_response, args.get('fileName'))
+            return rtr_get_extracted_file(get_status_response, args.get('fileName'))  # type:ignore
 
         else:
             # we should call the polling on status, cause the status is not ready
@@ -3494,7 +3493,7 @@ def main():
             return_results(rtr_read_registry_keys_command(args))
 
         elif command == 'cs-falcon-rtr-list-scheduled-tasks':
-            full_command = f'runscript -Raw=```schtasks /query /fo LIST /v```'
+            full_command = f'runscript -Raw=```schtasks /query /fo LIST /v```'  # noqa: F541
             host_ids = argToList(args.get('host_ids'))
             return_results(rtr_general_command_on_hosts(host_ids, "runscript", full_command,
                                                         execute_run_batch_admin_cmd_with_timer))
