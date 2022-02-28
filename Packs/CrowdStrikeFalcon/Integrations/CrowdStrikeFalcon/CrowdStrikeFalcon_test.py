@@ -3629,3 +3629,25 @@ def test_add_error_message_raise_error(failed_devices, all_requested_devices):
     with raises(DemistoException,
                 match=f'CrowdStrike Falcon The command was failed with the errors: {failed_devices}'):
         add_error_message(failed_devices, all_requested_devices)
+
+
+def test_rtr_kill_process_command(mocker):
+    from CrowdStrikeFalcon import rtr_kill_process_command
+    mocker.patch('CrowdStrikeFalcon.init_rtr_batch_session', return_value="1")
+    response_data = load_json('test_data/rtr_kill_process_response.json')
+    args = {'host_id': "1", 'process_ids': "2,3"}
+    mocker.patch('CrowdStrikeFalcon.execute_run_batch_write_cmd_with_timer', return_value=response_data)
+    parsed_result = rtr_kill_process_command(args).outputs
+    for res in parsed_result:
+        assert res.get('Error') == "Success"
+
+
+@pytest.mark.parametrize('os, expected_result', [
+    ("Windows", 'rm test.txt --force'),
+    ("Linux", 'rm test.txt -r -d'),
+    ("Mac", 'rm test.txt -r -d'),
+    ("bla", None),
+])
+def test_match_remove_command_for_os(os, expected_result):
+    from CrowdStrikeFalcon import match_remove_command_for_os
+    assert match_remove_command_for_os(os, "test.txt") == expected_result
