@@ -491,3 +491,39 @@ def test_parse_indicator():
     }
 
     assert indicator.to_context() == expected_context, ddiff(indicator.to_context(), expected_context)
+
+
+@pytest.mark.parametrize('file,mocked_address,mocked_response', (
+        ('file',
+         'https://api.crowdstrike.com/falconx/queries/reports/v1?filter=sandbox.sha256%3A%22file%22',
+         {'resources': ['id_1']}),
+        ('file1, file2',
+         'https://api.crowdstrike.com/falconx/queries/reports/v1?filter=sandbox.sha256%3A%22file1%22'
+         '%2Csandbox.sha256%3A%22file2%22',
+         {'resources': ['id_1', 'id_2']})
+)
+                         )
+def test_file_command(requests_mock, mocker, file: str, mocked_address: str, mocked_response: dict):
+    mocker.patch.object(Client, '_generate_token', return_value='token')
+    client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False, reliability=DBotScoreReliability.B)
+
+    from CrowdStrikeFalconX import file_command
+    args = {'file': file}
+    requests_mock.get(mocked_address, json=mocked_response)
+
+    destination_url_postfix = "&".join(f"ids={id_}" for id_ in mocked_response['resources'])
+    mocker.patch.object(client, 'get_full_report', return_value={})  # simulating empty report
+    requests_mock.get(f'https://api.crowdstrike.com/falconx/entities/reports/v1?{destination_url_postfix}')
+    command_results = file_command(client, **args)
+    assert isinstance(command_results, list) and len(command_results) == len(mocked_response['resources'])
+
+    for result in command_results:
+        assert result.to_context() == \
+               {'Type': 1, 'ContentsFormat': 'json', 'Contents': None, 'HumanReadable': (
+                   'There are no results yet for this sample, its analysis might not have been completed. '
+                   'Please wait to download the report.\nYou can use cs-fx-get-analysis-status to check '
+                   'the status of a sandbox analysis.',),
+                'EntryContext': {'csfalconx.resource(val.id && val.id == obj.id)': {}},
+                'IndicatorTimeline': [], 'IgnoreAutoExtract': False, 'Note': False,
+                'Relationships': []}

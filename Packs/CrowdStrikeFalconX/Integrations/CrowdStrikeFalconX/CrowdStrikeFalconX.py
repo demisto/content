@@ -561,6 +561,15 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
         else:
             relationships = None
 
+        signature = Common.FileSignature(authentihash='',  # N/A in data
+                                         copyright=info.get('LegalCopyright', ''),
+                                         description=info.get('FileDescription', ''),
+                                         file_version=info.get('FileVersion', ''),
+                                         internal_name=info.get('InternalName', ''),
+                                         original_name=info.get('OriginalFilename', ''))
+        if not any(signature.to_context().values()): # if all values are empty
+            signature = None
+
         return Common.File(dbot_score=dbot,
                            name=submit_name,
                            sha256=sha256,
@@ -568,12 +577,7 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
                            file_type=sandbox.get('file_type'),
                            company=info.get('CompanyName'),
                            product_name=info.get('ProductName'),
-                           signature=Common.FileSignature(authentihash='',  # N/A in data
-                                                          copyright=info.get('LegalCopyright', ''),
-                                                          description=info.get('FileDescription', ''),
-                                                          file_version=info.get('FileVersion', ''),
-                                                          internal_name=info.get('InternalName', ''),
-                                                          original_name=info.get('OriginalFilename', '')),
+                           signature=signature,
                            relationships=relationships or None)
 
 
