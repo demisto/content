@@ -3014,7 +3014,6 @@ script:
     - contextPath: CrowdStrike.IOC.Platforms
       description: The platforms of the IOC.
       type: Unknown
-  dockerimage: demisto/python3:3.10.1.26972
   - arguments:
     - default: false
       description: The host ID in which you would like to kill the given process.
@@ -3038,7 +3037,7 @@ script:
       type: String
     - contextPath: CrowdStrike.Command.kill.Error
       description: The error message raised if the command was failed.
-      type: string
+      type: String
     - contextPath: CrowdStrike.Command.kill.HostID
       description: The host ID.
       type: String
@@ -3069,7 +3068,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Batch executes a RTR active-responder remove file across the hosts
+    description: Batch executes an RTR active-responder remove file across the hosts
       mapped to the given batch ID.
     execution: false
     name: cs-falcon-rtr-remove-file
@@ -3079,7 +3078,7 @@ script:
       type: String
     - contextPath: CrowdStrike.Command.rm.Error
       description: The error message raised if the command was failed.
-      type: string
+      type: String
   - arguments:
     - default: false
       description: The host ID in which you would like to get the processes list from.
@@ -3088,7 +3087,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Executes a RTR active-responder ps command to get a list of active processes across the given host.
+    description: Executes an RTR active-responder ps command to get a list of active processes across the given host.
     execution: false
     name: cs-falcon-rtr-list-processes
     outputs:
@@ -3103,7 +3102,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Executes a RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
+    description: Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
     execution: false
     name: cs-falcon-rtr-list-network-stats
     outputs:
@@ -3124,7 +3123,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Executes a RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
+    description: Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
     execution: false
     name: cs-falcon-rtr-read-registry
   - arguments:
@@ -3135,7 +3134,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Executes a RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
+    description: Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
     execution: false
     name: cs-falcon-rtr-list-scheduled-tasks
   - arguments:
@@ -3188,8 +3187,8 @@ script:
       type: String
     - contextPath: CrowdStrike.File.HostID
       description: The hosd ID.
-      type: string
-   - contextPath: File.Size
+      type: String
+    - contextPath: File.Size
       description: The size of the file.
       type: Number
     - contextPath: File.SHA1
@@ -3222,7 +3221,7 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.1.26972
   feed: false
   isfetch: true
   longRunning: false

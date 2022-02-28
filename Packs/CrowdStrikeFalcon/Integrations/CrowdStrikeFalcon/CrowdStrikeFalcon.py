@@ -658,7 +658,6 @@ def run_single_read_cmd(host_id: str, command_type: str, full_command: str) -> D
         'command_string': full_command,
         'session_id': session_id
     })
-    print(body)
     response = http_request('POST', endpoint_url, data=body)
     return response
 
