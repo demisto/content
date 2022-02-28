@@ -19,7 +19,7 @@
     "associatedTypes": ["Rubrik Radar"],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,

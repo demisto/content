@@ -447,7 +447,11 @@ def convert_bytes(bytes_val: int):
 
     :return: Converted value
     """
-    if bytes_val:
+    if bytes_val is None:
+        return None
+    elif bytes_val == 0:
+        return 0
+    elif bytes_val > 0:
         def count_digit(val):
             count = 0
             while val != 0:
@@ -465,10 +469,6 @@ def convert_bytes(bytes_val: int):
             return f"{bytes_val / (10 ** 3)} KB"
         else:
             return f"{bytes_val} B"
-    elif bytes_val == 0:
-        return 0
-    else:
-        return None
 
 
 def prepare_context_hr_sonar_ondemand_scan_status(nodes: list, crawl_id: str):
