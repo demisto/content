@@ -3,20 +3,31 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import urllib3
-from typing import Dict, Any, Union, Tuple
+from typing import Dict, Any, Tuple
+from enum import Enum
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 MAX_ATTEMPTS = 3
 BASE_URL = 'https://api.dlp.paloaltonetworks.com/v1/'
-STAGING_BASE_URL = 'https://a0465badc5a394af5adcffff1ce5ffa8-2117313141.us-west-2.elb.amazonaws.com/v1/'
+STAGING_BASE_URL = 'https://a150282198bb445f195ce6aacffc7510-963475564.us-west-2.elb.amazonaws.com/v1/'
 REPORT_URL = 'public/report/{}'
 INCIDENTS_URL = 'public/incidents?timestamp_unit=past_30_days'
 REFRESH_TOKEN_URL = 'public/oauth/refreshToken'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DEFAULT_FIRST_FETCH = '60 minutes'
 DEFAULT_FETCH_LIMIT = '50'
+UPDATE_INCIDENT_URL = 'public/incident-feedback'
+
+
+class FeedbackStatus(Enum):
+    PENDING_RESPONSE = 'PENDING_RESPONSE'
+    CONFIRMED_SENSITIVE = 'CONFIRMED_SENSITIVE'
+    CONFIRMED_FALSE_POSITIVE = 'CONFIRMED_FALSE_POSITIVE'
+    EXCEPTION_REQUESTED = 'EXCEPTION_REQUESTED'
+    OPERATIONAL_ERROR = 'OPERATIONAL_ERROR'
 
 
 class Client(BaseClient):
@@ -86,18 +97,21 @@ class Client(BaseClient):
         result_json = {} if res.status_code == 204 else res.json()
         return result_json, res.status_code
 
-    def _post_dlp_api_call(self, url_suffix: str):
+    def _post_dlp_api_call(self, url_suffix: str, payload: Dict = None):
         """
         Makes a HTTPS POSt call on the DLP API
         Args:
             url_suffix: URL suffix for dlp api call
+            payload: Optional JSON payload
         """
         count = 0
+
         while count < MAX_ATTEMPTS:
             res = self._http_request(
                 method='POST',
                 headers={'Authorization': "Bearer " + self.access_token},
                 url_suffix=url_suffix,
+                json_data=payload,
                 ok_codes=[200, 201, 204],
                 error_handler=self._handle_403_errors,
                 resp_type='',
@@ -110,7 +124,13 @@ class Client(BaseClient):
         if res.status_code < 200 or res.status_code >= 300:
             raise DemistoException("Request to {} failed with status code {}".format(url_suffix, res.status_code))
 
-        result_json = {} if res.status_code == 204 else res.json()
+        result_json = {}
+        if res.status_code != 204:
+            try:
+                result_json = res.json()
+            except json.decoder.JSONDecodeError:
+                result_json = {}
+
         return result_json, res.status_code
 
     def get_dlp_report(self, report_id: str, fetch_snippets=False):
@@ -128,66 +148,7 @@ class Client(BaseClient):
 
         return self._get_dlp_api_call(url)
 
-    def get_dlp_incidents(self, last_run: Dict[str, Any], args: Dict[str, Any], call_from_test=False) -> Tuple[dict, list]:
-        # Get the last fetch time and id, if exists
-        last_fetch = last_run.get('last_fetch')
-        id = last_run.get('id', '')
-
-        first_fetch = args.get('first_fetch')
-        # Set first fetch time as default if user leave empty
-        first_fetch = DEFAULT_FIRST_FETCH if not first_fetch else first_fetch
-
-        fetch_limit = args.get('max_fetch', DEFAULT_FETCH_LIMIT)
-
-        # Handle first time fetch
-        if last_fetch is None:
-            latest_created_time = dateparser.parse(first_fetch)
-        else:
-            latest_created_time = dateparser.parse(last_fetch)
-        latest_created_time = latest_created_time.strftime(DATE_FORMAT)
-
-        url = INCIDENTS_URL
-        resp, status_code = self._post_dlp_api_call(url)
-        events = resp['content']
-
-        incidents = []
-        for event in events:
-            incident_creation_time = dateparser.parse(events[-1]['createdAt'])
-            incident = {
-                'name': f'Palo Alto Networks DLP incident {event["incidentId"]}',  # name is required field, must be set
-                'occurred': incident_creation_time.isoformat(),  # must be string of a format ISO8601
-                'rawJSON': json.dumps(event)
-                # the original event, this will allow mapping of the event in the mapping stage. Don't forget to `json.dumps`
-            }
-            incidents.append(incident)
-
-        latest_created_time = dateparser.parse(events[-1]['createdAt'])
-        latest_created_time = latest_created_time.strftime(DATE_FORMAT)
-        next_run = {'last_fetch': latest_created_time, 'id': events[-1]['incidentId']}
-        if call_from_test:
-            # Returning None
-            return {}, []
-        return next_run, incidents
-
-    def get_dlp_incident(self, report_id: str, file_name: str, scan_time: str):
-        """
-        Fetches DLP incident, matching by report_id, file_name and scan_time
-        Args:
-            report_id: Report ID to fetch from DLP service
-            file_name: Name of the file that triggered the incident
-            scan_time: The timestamp when the file was scanned
-
-        Returns: DLP Incident json
-        """
-        incident = {
-            'id': '1',
-            'file_name': 'test_file.doc',
-            'report_id': '1',
-            'data_profile_name': 'Private Policy'
-        }
-        return incident, 200
-
-    def update_dlp_incident(self, incident_id: str, feedback: str):
+    def update_dlp_incident(self, incident_id: str, feedback: FeedbackStatus, user_id: str, region: str):
         """
                 Update Incident with user provided feedback
                 Args:
@@ -196,11 +157,11 @@ class Client(BaseClient):
 
                 Returns: DLP Incident json
                 """
-        incident = {
-
+        payload = {
+            'user_id': user_id
         }
-        return incident, 200
-
+        url = f'{UPDATE_INCIDENT_URL}/{incident_id}?feedback_type={feedback.value}&region={region}'
+        return  self._post_dlp_api_call(url, payload)
 
 def parse_data_pattern_rule(report_json, verdict_field, results_field):
     """
@@ -301,23 +262,6 @@ def parse_dlp_report(report_json):
     return_results(results)
 
 
-def parse_dlp_incident(incident_json):
-    """
-       Parses DLP Incident for display
-       Args:
-           incident_json: DLP Incident json
-
-       Returns: DLP Incident results
-       """
-
-    results = CommandResults(
-        outputs_prefix='DLP.Incident',
-        outputs_key_field='id',
-        outputs=incident_json,
-        raw_response=incident_json
-    )
-    return_results(results)
-
 
 def test(client):
     """ Test Function to test validity of access and refresh tokens"""
@@ -344,41 +288,33 @@ def main():
             fetch_snippets = argToBoolean(args.get('fetch_snippets'))
             report_json, status_code = client.get_dlp_report(report_id, fetch_snippets)
             parse_dlp_report(report_json)
-        elif demisto.command() == 'fetch-incidents':
-            next_run, incidents = client.get_dlp_incidents(
-                demisto.getLastRun(),
-                demisto.params())
-
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
-        elif demisto.command() == 'pan-dlp-get-incident':
-            args = demisto.args()
-            report_id = args.get('report_id')
-            file_name = args.get('file_name')
-            scan_time = args.get('scan_time')
-            incident_json, status_code = client.get_dlp_incident(report_id, file_name, scan_time)
-            parse_dlp_incident(incident_json)
         elif demisto.command() == 'pan-dlp-update-incident':
             args = demisto.args()
             incident_id = args.get('incident_id')
             feedback = args.get('feedback')
-            incident_json, status_code = client.update_dlp_incident(incident_id, feedback)
-            result = {'success': True}
+            user_id = args.get('user_id')
+            region = args.get('region')
+            feedback_enum = FeedbackStatus[feedback.upper()]
+            result_json, status = client.update_dlp_incident(incident_id, feedback_enum, user_id, region)
+            result = {
+                'success': status == 200,
+                'feedback': feedback_enum.value
+            }
             results = CommandResults(
                 outputs_prefix='DLP.IncidentUpdate',
-                outputs_key_field='success',
-                outputs=result,
-                raw_response=result
+                outputs_key_field='feedback',
+                outputs=result
             )
             demisto.results(results.to_context())
-
-        if demisto.command() == "test-module":
+        elif demisto.command() == "test-module":
             test(client)
 
     except Exception as e:
-        demisto.debug('Unknown Command')
-        error_message = str(e)
-        return_error(error_message)
+        LOG(e)
+        return_error(str(e))
+    finally:
+        demisto.info(
+            f'{demisto.command()} completed.')
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:

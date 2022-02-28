@@ -7,8 +7,9 @@ import dateparser
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
-FILE_INFO = Template("Your upload *$file_name* was blocked due to company policy.")
-POLICY_INFO = Template("Policy *$policy_name*")
+FILE_INFO = Template("Your upload of *$file_name* was blocked due to company policy.")
+POLICY_INFO = Template("According to Data Security Policy *$policy_name*, this file contains "
+                       "sensitive information that shouldn't be shared.")
 OPTIONS = [
     {
         'text': 'A',
@@ -42,30 +43,6 @@ def create_blocks(fileName: str, policyName: str, entitlement: str, options: lis
                 'type': 'mrkdwn',
                 'text': POLICY_INFO.substitute(policy_name=policyName)
         }
-    }, {
-        "type": "section",
-        "text": {
-                "type": "mrkdwn",
-                "text": "*Provide justification for your action*"
-        }
-    }, {
-        "type": "section",
-        "text": {
-                "type": "mrkdwn",
-                "text": "*A.* This file does not contain sensitive information"
-        }
-    }, {
-        "type": "section",
-        "text": {
-                "type": "mrkdwn",
-                "text": "*B.* This file contains sensitive information, but I am authorized to send it for business purposes"
-        }
-    }, {
-        "type": "section",
-        "text": {
-                "type": "mrkdwn",
-                "text": "*C.* The file contains sensitive information and I am not authorized to send it"
-        }
     }
     ]
 
@@ -88,6 +65,13 @@ def create_blocks(fileName: str, policyName: str, entitlement: str, options: lis
             'type': 'actions',
             'elements': elements
         }
+        blocks.append({
+            "type": "section",
+            "text": {
+                    "type": "mrkdwn",
+                    "text": "*Please provide a feedback for this incident*"
+            }
+        })
         blocks.append(actions)
 
     return blocks
@@ -113,15 +97,30 @@ def main():
     if demisto.get(demisto.args(), 'task'):
         entitlement_string += '|' + demisto.get(demisto.args(), 'task')
 
+    args = demisto.args()
+    file_name = args.get('file_name')
+    policy_name = args.get('policy_name')
+    feedback_options = demisto.get(demisto.args(), 'feedback_options')
+
+    options = []
+    if feedback_options:
+        for feedback in feedback_options.split(','):
+            options.append({
+                'text': feedback,
+                'style': 'primary'
+            })
+
     args = {
         'ignoreAddURL': 'true',
-        'using-brand': 'SlackV2'
+        'using-brand': 'SlackV3'
     }
 
-    blocks = json.dumps(create_blocks('dummy_file.doc', 'dummy policy', entitlement_string, OPTIONS, None))
+    reply = "Thank you for your response."
+    blocks = json.dumps(create_blocks(file_name, policy_name, entitlement_string, options, reply))
     args['blocks'] = json.dumps({
         'blocks': blocks,
         'entitlement': entitlement_string,
+        'reply': reply,
         'expiry': expiry,
         'default_response': 'NoResponse'
     })
