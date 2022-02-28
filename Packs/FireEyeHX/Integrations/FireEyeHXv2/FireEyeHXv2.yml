@@ -48,37 +48,37 @@ configuration:
   required: false
   type: 19
 description: "FireEye Endpoint Security is an integrated solution that detects what\
-  \ others miss and protects endpoint against known and unknown threats. This  integration\
+  \ others miss and protects endpoints against known and unknown threats. This integration\
   \ provides access to information about endpoints, acquisitions, alerts, indicators,\
-  \ and containment. Customers can extract critical data and effectively operate security\
-  \ operations automated playbook"
+  \ and containment. You can extract critical data and effectively operate the security\
+  \ operations automated playbook."
 display: FireEye Endpoint Security (HX) v2
 name: FireEyeHX v2
 script:
   commands:
   - arguments:
-    - description: The agent ID. If the agent ID is not specified, the host Name must
+    - description: The agent ID. If the agent ID is not specified, the hostName must
         be specified.
       name: agentId
       required: false
-    - description: The host name. If the host name is not specified, the agent ID
+    - description: The host name. If the hostName is not specified, the agent ID
         must be specified.
       name: hostName
       required: false
-    description: Get information on a host associated with an agent.
+    description: Returns information on a host associated with an agent.
     name: fireeye-hx-get-host-information
     outputs:
     - contextPath: FireEyeHX.Hosts._id
       description: FireEye HX Agent ID.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.agent_version
-      description: The agent version.
+      description: The version of the agent.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.excluded_from_containment
       description: Determines whether the host is excluded from containment.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.containment_missing_software
-      description: Boolean value to indicate for containment missing software.
+      description: Whether there is containment missing software.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.containment_queued
       description: Determines whether the host is queued for containment.
@@ -90,7 +90,7 @@ script:
       description: The number of conditions that have alerted for the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.stats.alerts
-      description: Total number of alerts, including exploit-detection alerts.
+      description: The total number of alerts, including exploit-detection alerts.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.stats.exploit_blocks
       description: The number of blocked exploits on the host.
@@ -99,64 +99,64 @@ script:
       description: The number of malware alerts associated with the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.hostname
-      description: The host name.
+      description: The name of the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.domain
-      description: Domain name.
+      description: The name of the domain.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.timezone
-      description: Host time zone.
+      description: The time zone of the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.primary_ip_address
-      description: The host IP address.
+      description: The IP address of the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.last_poll_timestamp
       description: The timestamp of the last system poll preformed on the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.initial_agent_checkin
-      description: Timestamp of the initial agent check-in.
+      description: The timestamp of the initial agent check-in.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.last_alert_timestamp
       description: The time stamp of the last alert for the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
-      description: Time when the last exploit was blocked on the host. The value is
+      description: The time when the last exploit was blocked on the host. The value is
         null if no exploits have been blocked.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.os.product_name
-      description: Specific operating system
+      description: The operating system of the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.os.bitness
-      description: OS Bitness.
+      description: The bitness of the operating system.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.os.platform
-      description: Family of operating systems. Valid values are win, osx, and linux.
+      description: The family of operating systems. Valid values are win, osx, and linux.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.primary_mac
-      description: The host MAC address.
+      description: The MAC address of the host.
       type: Unknown
   - arguments:
-    - description: Specifies which record to start with in the response, The default
+    - description: Specifies which record to start with in the response. Default
         is 0.
       name: offset
       required: false
-    - description: Limit the number of results
+    - description: Limits the number of results.
       name: limit
       required: false
-    description: Get information on all hosts.
+    description: Returns information on all hosts.
     name: fireeye-hx-get-all-hosts-information
     outputs:
     - contextPath: FireEyeHX.Hosts._id
       description: FireEye HX Agent ID.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.agent_version
-      description: The agent version.
+      description: The version of the agent.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.excluded_from_containment
       description: Determines whether the host is excluded from containment.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.containment_missing_software
-      description: Boolean value to indicate for containment missing software.
+      description: Whether there is containment missing software.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.containment_queued
       description: Determines whether the host is queued for containment.
@@ -165,7 +165,7 @@ script:
       description: The containment state of the host. Possible values normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu
       type: Unknown
     - contextPath: FireEyeHX.Hosts.stats.alerting_conditions
-      description: The number of conditions that have alerted for the host.
+      description: The number of conditions that have been alerted for the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.stats.alerts
       description: Total number of alerts, including exploit-detection alerts.
@@ -177,38 +177,38 @@ script:
       description: The number of malware alerts associated with the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.hostname
-      description: The host name.
+      description: The name of the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.domain
-      description: Domain name.
+      description: The name of the domain.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.timezone
-      description: Host time zone.
+      description: The time zone of the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.primary_ip_address
-      description: The host IP address.
+      description: The IP address of the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.last_poll_timestamp
       description: The timestamp of the last system poll preformed on the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.initial_agent_checkin
-      description: Timestamp of the initial agent check-in.
+      description: The timestamp of the initial agent check-in.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.last_alert_timestamp
       description: The time stamp of the last alert for the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
-      description: Time when the last exploit was blocked on the host. The value is
+      description: The time when the last exploit was blocked on the host. The value is
         null if no exploits have been blocked.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.os.product_name
-      description: Specific operating system
+      description: The operating system of the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.os.bitness
-      description: OS Bitness.
+      description: The bitness of the operating system.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.os.platform
-      description: Family of operating systems. Valid values are win, osx, and linux.
+      description: The family of operating systems. Valid values are win, osx, and linux.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.primary_mac
       description: The host MAC address.
@@ -221,22 +221,22 @@ script:
         is not specified, the hostName must be specified.
       name: agentId
     description: Apply containment for a specific host, so that it no longer has access
-      to other systems, If the user does not have the necessary permissions, the command
-      will not approve the request, The permissions necessary to approve the request
-      are api_admin role.
+      to other systems. If the user does not have the necessary permissions, the command
+      will not approve the request. The permission required to approve the request
+      is api_admin role.
     name: fireeye-hx-host-containment
     outputs:
     - contextPath: FireEyeHX.Hosts._id
-      description: FireEye HX Agent ID.
+      description: The ID of the FireEye HX Agent.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.agent_version
-      description: The agent version.
+      description: The version of the agent.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.excluded_from_containment
       description: Determines whether the host is excluded from containment.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.containment_missing_software
-      description: Boolean value to indicate for containment missing software.
+      description: Whether there is containment missing software.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.containment_queued
       description: Determines whether the host is queued for containment.
@@ -245,7 +245,7 @@ script:
       description: The containment state of the host. Possible values normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu
       type: Unknown
     - contextPath: FireEyeHX.Hosts.stats.alerting_conditions
-      description: The number of conditions that have alerted for the host.
+      description: The number of conditions that have been alerted for the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.stats.alerts
       description: Total number of alerts, including exploit-detection alerts.
@@ -257,38 +257,38 @@ script:
       description: The number of malware alerts associated with the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.hostname
-      description: The host name.
+      description: The name of the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.domain
-      description: Domain name.
+      description: The name of the domain.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.timezone
-      description: Host time zone.
+      description: The time zone of the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.primary_ip_address
-      description: The host IP address.
+      description: The IP address of the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.last_poll_timestamp
       description: The timestamp of the last system poll preformed on the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.initial_agent_checkin
-      description: Timestamp of the initial agent check-in.
+      description: The timestamp of the initial agent check-in.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.last_alert_timestamp
       description: The time stamp of the last alert for the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
-      description: Time when the last exploit was blocked on the host. The value is
+      description: The time when the last exploit was blocked on the host. The value is
         null if no exploits have been blocked.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.os.product_name
-      description: Specific operating system
+      description: The operating system of the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.os.bitness
-      description: OS Bitness.
+      description: The bitness of the operating system.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.os.platform
-      description: Family of operating systems. Valid values are win, osx, and linux.
+      description: The family of operating systems. Valid values are win, osx, and linux.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.primary_mac
       description: The host MAC address.
@@ -297,63 +297,63 @@ script:
     - description: The host name to be contained. If the hostName is not specified,
         the agentId must be specified.
       name: hostName
-    - description: The agent id running on the host to be contained. If the agentId
+    - description: The agent ID running on the host to be contained. If the agentId
         is not specified, the hostName must be specified.
       name: agentId
     description: Release a specific host from containment.
     name: fireeye-hx-cancel-containment
   - arguments:
-    - description: Acquisition script in JSON format.
+    - description: The acquisition script in JSON format.
       name: script
     - description: The script name. If the Acquisition script is specified, the script
         name must be specified as well.
       name: scriptName
     - auto: PREDEFINED
-      description: Use default script. Select the host system.
+      description: Select the host system to use the default system script.
       name: defaultSystemScript
       predefined:
       - osx
       - win
       - linux
-    - description: The agent ID. If the host name is not specified, the agent ID must
+    - description: The agent ID. If the hostName is not specified, the agent ID must
         be specified.
       name: agentId
-    - description: The host name. If the agent ID is not specified, the host name
+    - description: The host name. If the agent ID is not specified, the hostName
         must be specified.
       name: hostName
-    description: Initiate a data acquisition process to gather artifacts from the
+    description: Initiate a data acquisition process to collect artifacts from the
       system disk and memory.
     name: fireeye-hx-initiate-data-acquisition
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Data._id
-      description: The acquisition unique ID.
+      description: The unique ID of the acquisition.
       type: string
     - contextPath: FireEyeHX.Acquisitions.Data.state
-      description: The acquisition state
+      description: The state of the acquisition.
       type: string
     - contextPath: FireEyeHX.Acquisitions.Data.md5
-      description: File md5
+      description: The MD5 of the file.
       type: string
     - contextPath: FireEyeHX.Acquisitions.Data.host._id
-      description: Agent ID
+      description: The ID of the agent.
       type: string
     - contextPath: FireEyeHX.Acquisitions.Data.host.hostname
-      description: Hostname
+      description: The name of the host.
       type: string
     - contextPath: FireEyeHX.Acquisitions.Data.instance
-      description: FIreEye HX instance
+      description: The FireEye HX instance.
       type: string
     - contextPath: FireEyeHX.Acquisitions.Data.finish_time
-      description: Time when the acquisition finished
+      description: The time when the acquisition finished.
       type: date
   - arguments:
-    - description: ID of a specific host set to get
+    - description: The ID of a specific host set to return.
       name: hostSetID
     - description: Specifies which record to start with in the response. The offset
-        value must be an unsigned 32-bit integer. The default is 0.
+        value must be an unsigned 32-bit integer. Default is 0.
       name: offset
     - description: Specifies how many records are returned. The limit value must be
-        an unsigned 32-bit integer. The default is 50.
+        an unsigned 32-bit integer. Default is 50.
       name: limit
     - description: Searches the names of all host sets connected to the specified
         HX appliance.
@@ -362,47 +362,47 @@ script:
         order. The default is sorting by name in ascending order. Sortable fields
         are _id (host set ID) and name (host set name).
       name: sort
-    - description: Specifies the name of host set to look for
+    - description: Specifies the name of the host set for which to search.
       name: name
-    - description: Specifies the type of host sets to search for
+    - description: Specifies the type of host set for which to search.
       name: type
       auto: PREDEFINED
       predefined:
       - venn
       - static
-    description: Get a list of all host sets known to your HX Series appliance.
+    description: Returns a list of all host sets known to your HX Series appliance.
     name: fireeye-hx-get-host-set-information
     outputs:
     - contextPath: FireEyeHX.HostSets._id
       description: host set id
       type: number
     - contextPath: FireEyeHX.HostSets._revision
-      description: Revision number
+      description: The number of the host set revision.
       type: string
     - contextPath: FireEyeHX.HostSets.name
-      description: Host set name
+      description: The name of the host set.
       type: string
     - contextPath: FireEyeHX.HostSets.type
-      description: Host set type (static/dynamic/hidden)
+      description: The type of the host set (static/dynamic/hidden).
       type: string
     - contextPath: FireEyeHX.HostSets.url
-      description: Host set FireEye url
+      description: The FireEye url of the host set.
       type: string
   - arguments:
-    - description: Specifies which record to start with in the response, The default
+    - description: Specifies which record to start with in the response. Default
         is 0.
       name: offset
       required: false
-    - description: Limit the number of results
+    - description: Limits the number of results.
       name: limit
       required: false
-    - description: The name of the policy
+    - description: The name of the policy.
       name: policyName
       required: false
-    - description: Unique policy ID
+    - description: The unique policy ID.
       name: policyId
       required: false
-    - description: The policy is enabled ("true") or disabled ("false").
+    - description: Whether the policy is enabled ("true") or disabled ("false").
       name: enabled
       auto: PREDEFINED
       default: false
@@ -412,83 +412,83 @@ script:
       - "false"
       required: false
       secret: false
-    description: Get a list of all policy.
+    description: Returns a list of all policies.
     name: fireeye-hx-list-policy
     outputs:
     - contextPath: FireEyeHX.Policy._id
-      description: Unique policy ID
+      description: The ID of the unique policy.
       type: Unknown
     - contextPath: FireEyeHX.Policy.name
-      description: The name of the policy
+      description: The name of the policy.
       type: Unknown
     - contextPath: FireEyeHX.Policy.description
-      description: Description of the policy
+      description: The description of the policy.
       type: Unknown
     - contextPath: FireEyeHX.Policy.policy_type_id
-      description: Unique policy type ID.
+      description: The ID of the unique policy type.
       type: Unknown
     - contextPath: FireEyeHX.Policy.priority
-      description: The priority order of the policy
+      description: The priority order of the policy.
       type: Unknown
     - contextPath: FireEyeHX.Policy.enabled
-      description: The policy is enabled ("true") or disabled ("false")
+      description: Whether the policy is enabled ("true") or disabled ("false").
       type: Unknown
     - contextPath: FireEyeHX.Policy.default
-      description: True if it is the default policy. There can only be one policy marked as default
+      description: Whether it is the default policy (true). There can only be one policy marked as default.
       type: Unknown
     - contextPath: FireEyeHX.Policy.migrated
-      description: True if it is a migrated policy
+      description: Whether it is a migrated policy (true).
       type: Unknown
     - contextPath: FireEyeHX.Policy.created_by
-      description: The user who created the policy
+      description: The user who created the policy.
       type: Unknown
     - contextPath: FireEyeHX.Policy.created_at
-      description: Time the policy was first created
+      description: The time the policy was first created.
       type: Unknown
     - contextPath: FireEyeHX.Policy.updated_at
-      description: Time the policy was last updated
+      description: The time the policy was last updated.
       type: Unknown
     - contextPath: FireEyeHX.Policy.categories
-      description: Collection of categories the policy is associated with
+      description: The collection of categories the policy is associated with.
       type: Unknown
     - contextPath: FireEyeHX.Policy.display_created_at
-      description: Time since the display was first created
+      description: The time since the display was first created.
       type: Unknown
     - contextPath: FireEyeHX.Policy.display_updated_at
-      description: Time since the display was last updated
+      description: The time since the display was last updated.
       type: Unknown
   - arguments:
-    - description: Specifies which record to start with in the response, The default
+    - description: Specifies which record to start with in the response. Default
         is 0.
       name: offset
       required: false
-    - description: Limit the number of results
+    - description: Limits the number of results.
       name: limit
       required: false
-    - description: The host set ID
+    - description: The host set ID.
       name: hostSetId
       required: false
-    - description: Unique policy ID
+    - description: The unique policy ID.
       name: policyId
       required: false
-    description: Get a list of all policies for all host sets.
+    description: Returns a list of all policies for all host sets.
     name: fireeye-hx-list-host-set-policy
     outputs:
     - contextPath: FireEyeHX.HostSets.Policy.policy_id
-      description: Unique policy ID
+      description: The ID of the unique policy.
       type: Unknown
     - contextPath: FireEyeHX.HostSets.Policy.persist_id
-      description: The host set ID
+      description: The ID of the host set.
       type: Unknown
   - arguments:
-    - description: Specifies which record to start with in the response, The default
+    - description: Specifies which record to start with in the response. Default
         is 0.
       name: offset
       required: false
-    - description: Limit the number of results
+    - description: Limits the number of results.
       name: limit
       required: false
-    - description: "must be from type of -> String: date-time"
+    - description: "Must be from type of -> String: date-time"
       name: state_update_time
       required: false
     name: fireeye-hx-list-containment
@@ -534,22 +534,22 @@ script:
       description: " "
       type: Unknown
   - arguments:
-    - description: "Specifies which record to start with in the response, The default\
-        \ is 0"
+    - description: "Specifies which record to start with in the response. Default\
+        \ is 0."
       name: offset
       required: false
-    - description: "Specifies how many records are returned, The default is 50"
+    - description: "Specifies how many records are returned. Default is 50."
       name: limit
       required: false
-    - description: "Filter by search state, you can choose between STOPPED or RUNNING"
+    - description: "Filter by search state. Select either STOPPED or RUNNING"
       name: state
       required: false
       auto: PREDEFINED
       predefined:
       - RUNNING
       - STOPPED
-    - description: "Sorts the results by the specified field, The default is sorting\
-        \ by _id"
+    - description: "Sorts the results by the specified field. Default is sorting\
+        \ by _id."
       name: sort
       required: false
       auto: PREDEFINED
@@ -566,8 +566,8 @@ script:
     - description: "Filter searches by host set ID - <Integer>"
       name: hostSetId
       required: false
-    - description: "Gets a single enterprise search record, If you enter this argument\
-        \ there is no need another arguments"
+    - description: "Returns a single enterprise search record. If you enter this argument\
+        \ there is no need for other arguments."
       name: searchId
       isArray: true
       required: false
@@ -578,58 +578,58 @@ script:
     name: fireeye-hx-search-list
     outputs:
     - contextPath: FireEyeHX.Search._id
-      description: Unique search ID
-      type: Unknown
+      description: The ID of the unique search.
+    - type: Unknown
     - contextPath: FireEyeHX.Search.state
-      description: The state of the search whether it stopped or running
+      description: The state of the search whether it stopped or running.
       type: Unknown
     - contextPath: FireEyeHX.Search.scripts
-      description: A list of reference objects for the scripts utilized in this search
+      description: A list of reference objects for the scripts utilized in this search.
       type: Unknown
     - contextPath: FireEyeHX.Search.update_time
-      description: Time the search was updated last
+      description: The time the search was updated last.
       type: Unknown
     - contextPath: FireEyeHX.Search.create_time
-      description: Time the search was created
+      description: The time the search was created.
       type: Unknown
     - contextPath: FireEyeHX.Search.scripts.platform
-      description: Platform this script is used for
+      description: The platform this script is used for.
       type: Unknown
     - contextPath: FireEyeHX.Search.update_actor
-      description: Actor who last updated the search
+      description: The actor who last updated the search.
       type: Unknown
     - contextPath: FireEyeHX.Search.create_actor
-      description: Actor who created the search
+      description: The actor who created the search.
       type: Unknown
     - contextPath: FireEyeHX.Search.error
-      description: Collection of errors per agents for the search
+      description: Collection of errors per agents for the search.
       type: Unknown
     - contextPath: FireEyeHX.Search._revision
-      description: ETag that can be used for concurrency checking
+      description: The ETag that can be used for concurrency checking.
       type: Unknown
     - contextPath: FireEyeHX.Search.input_type
-      description: The input method that was used to start the search
+      description: The input method that was used to start the search.
       type: Unknown
     - contextPath: FireEyeHX.Search.url
-      description: URI to retrieve data for this record
+      description: The URI to retrieve data for this record.
       type: Unknown
     - contextPath: FireEyeHX.Search.host_set
-      description: Host Set infomaition
+      description: The Host Set information.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats
       description: ""
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.hosts
-      description: Number of hosts running this operation
+      description: The number of hosts running this operation.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.skipped_hosts
-      description: Number of hosts that were skipped
+      description: The number of hosts that were skipped.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.search_state
-      description: Number of search in different states
+      description: The number of search in different states.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.search_issues
-      description: Issues encountered for searches
+      description: The issues encountered for searches.
       type: Unknown
     - contextPath: FireEyeHX.Search.settings.query_terms.terms
       description: ""
@@ -641,13 +641,13 @@ script:
       description: The type of search.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.settings.exhaustive
-      description: Whether a search is exhaustive or not
+      description: Whether a search is exhaustive.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.settings.mode
-      description: Whether a search is HOST type or GRID type
+      description: Whether a search is a HOST type or GRID type.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.settings.displayname
-      description: Name of the search
+      description: The name of the search.
       type: Unknown
   - arguments:
     - description: "Unique search ID - Required"
@@ -658,40 +658,40 @@ script:
     name: fireeye-hx-search-stop
     outputs:
     - contextPath: FireEyeHX.Search._id
-      description: Unique search ID
+      description: The ID of the unique search.
       type: Unknown
     - contextPath: FireEyeHX.Search.state
-      description: The state of the search whether it stopped or running
+      description: The state of the search whether it stopped or ran.
       type: Unknown
     - contextPath: FireEyeHX.Search.scripts
-      description: A list of reference objects for the scripts utilized in this search
+      description: A list of reference objects for the scripts utilized in this search.
       type: Unknown
     - contextPath: FireEyeHX.Search.update_time
-      description: Time the search was updated last
+      description: The time the search was updated last.
       type: Unknown
     - contextPath: FireEyeHX.Search.create_time
-      description: Time the search was created
+      description: The time the search was created.
       type: Unknown
     - contextPath: FireEyeHX.Search.scripts.platform
-      description: Platform this script is used for
+      description: The platform for which this script is used.
       type: Unknown
     - contextPath: FireEyeHX.Search.update_actor
-      description: Actor who last updated the search
+      description: The actor who last updated the search.
       type: Unknown
     - contextPath: FireEyeHX.Search.create_actor
-      description: Actor who created the search
+      description: The actor who created the search.
       type: Unknown
     - contextPath: FireEyeHX.Search.error
-      description: Collection of errors per agents for the search
+      description: The collection of errors per agents for the search.
       type: Unknown
     - contextPath: FireEyeHX.Search._revision
-      description: ETag that can be used for concurrency checking
+      description: ETag that can be used for concurrency checking.
       type: Unknown
     - contextPath: FireEyeHX.Search.input_type
-      description: The input method that was used to start the search
+      description: The input method that was used to start the search.
       type: Unknown
     - contextPath: FireEyeHX.Search.url
-      description: URI to retrieve data for this record
+      description: The URI to retrieve data for this record.
       type: Unknown
     - contextPath: FireEyeHX.Search.host_set
       description: ""
@@ -700,16 +700,16 @@ script:
       description: ""
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.hosts
-      description: Number of hosts running this operation
+      description: The number of hosts running this operation.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.skipped_hosts
-      description: Number of hosts that were skipped
+      description: The number of hosts that were skipped.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.search_state
-      description: Number of search in different states
+      description: The number of search in different states.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.search_issues
-      description: Issues encountered for searches
+      description: The issues encountered for searches.
       type: Unknown
     - contextPath: FireEyeHX.Search.settings.query_terms.terms
       description: ""
@@ -721,67 +721,67 @@ script:
       description: The type of search.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.settings.exhaustive
-      description: Whether a search is exhaustive or not
+      description: Whether a search is exhaustive.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.settings.mode
-      description: Whether a search is HOST type or GRID type
+      description: Whether a search is a HOST type or GRID type.
       type: Unknown
     - contextPath: FireEyeHX.Search.stats.settings.displayname
-      description: Name of the search
+      description: The name of the search.
       type: Unknown
   - arguments:
-    - description: Unique search ID
+    - description: The Unique search ID.
       name: searchId
       required: true
     description: Fetches the result for a specific enterprise search.
     name: fireeye-hx-search-result-get
     outputs:
     - contextPath: FireEyeHX.Search.host._id
-      description: Unique agent ID
+      description: The ID of the unique agent.
       type: Unknown
     - contextPath: FireEyeHX.Search.host.url
-      description: URI to retrieve data for this record
+      description: The URI to retrieve data for this record.
       type: Unknown
     - contextPath: FireEyeHX.Search.host.hostname
-      description: Name of the host
+      description: The name of the host.
       type: Unknown
     - contextPath: FireEyeHX.Search.results._id
-      description: Unique ID
+      description: The unique ID.
       type: Unknown
     - contextPath: FireEyeHX.Search.results.type
-      description: Type of the search result data
+      description: The type of the search result data.
       type: Unknown
     - contextPath: FireEyeHX.Search.results.data
-      description: Object containing data relating to the search result for the host
+      description: The object containing data relating to the search result for the host.
       type: Unknown
   - arguments:
     - description: searchId
       name: searchId
       deprecated: true
-    - description: IDs of agents to be searched
+    - description: The IDs of the gents to be searched.
       name: agentsIds
       isArray: true
-    - description: Names of hosts to be searched
+    - description: The names of hosts to be searched.
       name: hostsNames
       isArray: true
-    - description: Id of host set to be searched
+    - description: The ID of host set to be searched.
       name: hostSet
-    - description: Name of host set to be searched
+    - description: The name of host set to be searched.
       name: hostSetName
-    - description: Limit results count (once limit is reached, the search is stopped)
+    - description: Limit the results count (once the limit is reached, the search is stopped).
       name: limit
     - auto: PREDEFINED
       defaultValue: yes
-      description: Should search be exhaustive or quick
+      description: Whether a search is exhaustive or quick.
       name: exhaustive
       predefined:
       - "yes"
       - "no"
-    - description: A valid IPv4 address to search for
+    - description: A valid IPv4 address for which to search.
       name: ipAddress
       isArray: true
     - auto: PREDEFINED
-      description: Which operator to apply to the given IP address
+      description: Which operator to apply to the given IP address.
       name: ipAddressOperator
       predefined:
       - equals
@@ -789,7 +789,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Whether to use Cortex XSOAR's built-in polling to retrieve the
-        result when it's ready.
+        result when ready.
       isArray: false
       name: polling
       predefined:
@@ -799,36 +799,36 @@ script:
       secret: false
     - default: false
       defaultValue: '60'
-      description: Interval in seconds between each poll.
+      description: The interval in seconds between each poll.
       isArray: false
       name: interval_in_seconds
       required: false
       secret: false
-    - description: A 32-character MD5 hash value to search for
+    - description: A 32-character MD5 hash value for which to search.
       name: fileMD5Hash
       isArray: true
     - auto: PREDEFINED
-      description: Which operator to apply to the given MD5 hash
+      description: Which operator to apply to the given MD5 hash.
       name: fileMD5HashOperator
       predefined:
       - equals
       - not equals
-    - description: Full path of file to search
+    - description: The full path of file to search.
       name: fileFullPath
       isArray: true
     - auto: PREDEFINED
-      description: Which operator to apply to the given file path
+      description: Which operator to apply to the given file path.
       name: fileFullPathOperator
       predefined:
       - equals
       - not equals
       - contains
       - not contains
-    - description: DNS value to search for
+    - description: The DNS value for which to search.
       name: dnsHostname
       isArray: true
     - auto: PREDEFINED
-      description: Which operator to apply to the given DNS
+      description: Which operator to apply to the given DNS.
       name: dnsHostnameOperator
       predefined:
       - equals
@@ -836,14 +836,14 @@ script:
       - contains
       - not contains
     - auto: PREDEFINED
-      description: Method in which search should be stopped after finding <limit>
-        number of results
+      description: The method in which search should be stopped after finding <limit>
+        number of results.
       name: stopSearch
       predefined:
       - stopAndDelete
       - stop
-    - description: searchable fields - if this argument selected, the 'fieldSearchOperator'
-        and 'fieldSearchValue'  arguments are required
+    - description: Searchable fields - If this argument selected, the 'fieldSearchOperator'
+        and 'fieldSearchValue'  arguments are required.
       name: fieldSearchName
       auto: PREDEFINED
       predefined:
@@ -904,7 +904,7 @@ script:
       - Syslog Event ID
       - Syslog Event Message
       - Syslog Facility
-    - description: Which operator to apply to the given search field
+    - description: Which operator to apply to the given search field.
       name: fieldSearchOperator
       auto: PREDEFINED
       predefined:
@@ -914,7 +914,7 @@ script:
       - not contains
       - less than
       - greater than
-    - description: One or more values that match the selected search type
+    - description: One or more values that match the selected search type.
       name: fieldSearchValue
       isArray: true
     description: Search endpoints to check all hosts or a subset of hosts for a specific
@@ -923,94 +923,94 @@ script:
     polling: true
     outputs:
     - contextPath: FireEyeHX.Search.results.Timestamp - Modified
-      description: Time when the entry was last modified
+      description: Time when the entry was last modified.
       type: string
     - contextPath: FireEyeHX.Search.results.File Text Written
-      description: The file text content
+      description: The file text content.
       type: string
     - contextPath: FireEyeHX.Search.results.File Name
-      description: Name of the file
+      description: The name of the file.
       type: string
     - contextPath: FireEyeHX.Search.results.File Full Path
-      description: The full path of the file
+      description: The full path of the file.
       type: string
     - contextPath: FireEyeHX.Search.results.File Bytes Written
-      description: Number of bytes written to the file
+      description: The number of bytes written to the file.
       type: string
     - contextPath: FireEyeHX.Search.results.Size in bytes
-      description: Size of the file in bytes
+      description: The size of the file in bytes.
       type: string
     - contextPath: FireEyeHX.Search.results.Browser Version
-      description: Version of the browser
+      description: The version of the browser.
       type: string
     - contextPath: FireEyeHX.Search.results.Browser Name
-      description: Name of the browser
+      description: The name of the browser.
       type: string
     - contextPath: FireEyeHX.Search.results.Cookie Name
-      description: Name of the cookie
+      description: The name of the cookie.
       type: string
     - contextPath: FireEyeHX.Search.results.DNS Hostname
-      description: Name of the DNS host
+      description: The name of the DNS host.
       type: string
     - contextPath: FireEyeHX.Search.results.URL
-      description: The event URL
+      description: The event URL.
       type: string
     - contextPath: FireEyeHX.Search.results.Username
-      description: The event username
+      description: The event username.
       type: string
     - contextPath: FireEyeHX.Search.results.File MD5 Hash
-      description: MD5 hash of the file
+      description: The MD5 hash of the file.
       type: string
     - contextPath: FireEyeHX.Search.host._id
-      description: ID of the host
+      description: The ID of the host.
       type: string
     - contextPath: FireEyeHX.Search.host.hostname
-      description: Name of host
+      description: The name of host.
       type: string
     - contextPath: FireEyeHX.Search.host.url
-      description: Inner FireEye host url
+      description: The Inner FireEye host url.
       type: string
     - contextPath: FireEyeHX.Search.results.data
-      description: ID of performed search
+      description: The ID of the performed search.
       type: string
     - contextPath: FireEyeHX.Search.results.Timestamp - Accessed
-      description: Last accessed time
+      description: The last accessed time.
       type: string
     - contextPath: FireEyeHX.Search.results.Port
-      description: Port
+      description: The Port.
       type: number
     - contextPath: FireEyeHX.Search.results.Process ID
-      description: ID of the process
+      description: The ID of the process.
       type: string
     - contextPath: FireEyeHX.Search.results.Local IP Address
-      description: Local IP Address
+      description: The local IP Address.
       type: string
     - contextPath: FireEyeHX.Search.results.Local IP Address
-      description: Local IP Address
+      description: The local IP Address.
       type: string
     - contextPath: FireEyeHX.Search.results.Local Port
-      description: Local Port
+      description: The local Port.
       type: number
     - contextPath: FireEyeHX.Search.results.Username
-      description: Username
+      description: The username.
       type: string
     - contextPath: FireEyeHX.Search.results.Remote Port
-      description: Remote Port
+      description: The remote port.
       type: number
     - contextPath: FireEyeHX.Search.results.IP Address
-      description: IP Address
+      description: The IP address.
       type: string
     - contextPath: FireEyeHX.Search.results.Process Name
-      description: Process Name
+      description: The process name.
       type: string
     - contextPath: FireEyeHX.Search.results.Timestamp - Event
-      description: Timestamp - Event
+      description: The timestamp of the event.
       type: string
     - contextPath: FireEyeHX.Search.results.type
-      description: The type of the event
+      description: The type of the event.
       type: string
     - contextPath: FireEyeHX.Search.results.id
-      description: ID of the result
+      description: The ID of the result.
       type: string
   - arguments:
     - description: The alert ID.
@@ -1020,63 +1020,63 @@ script:
     name: fireeye-hx-get-alert
     outputs:
     - contextPath: FireEyeHX.Alerts._id
-      description: FireEye alert ID.
+      description: The ID of the FireEye alert.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.agent._id
-      description: FireEye agent ID.
+      description: The ID of the FireEye agent.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.agent.containment_state
-      description: Host containment state.
+      description: The containment state of the agent.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.condition._id
-      description: The condition unique ID.
+      description: The unique ID of the condition.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.event_at
-      description: Time when the event occoured.
+      description: The time when the event occurred.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.matched_at
-      description: Time when the event was matched.
+      description: The time when the event was matched.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.reported_at
-      description: Time when the event was reported.
+      description: The time when the event was reported.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.source
-      description: Source of alert.
+      description: The source of the alert.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.matched_source_alerts._id
-      description: Source alert ID.
+      description: The ID of the source alert.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.matched_source_alerts.appliance_id
-      description: Appliance ID
+      description: The ID of the Appliance.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.matched_source_alerts.meta
-      description: Source alert meta.
+      description: The source alert meta.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.matched_source_alerts.indicator_id
-      description: Indicator ID.
+      description: The ID of the indicator.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.resolution
-      description: Alert resulotion.
+      description: The Alert resolution.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.event_type
-      description: Event type.
+      description: The type of the event.
       type: Unknown
   - arguments:
-    - description: The alert id. The alert id is listed in the output of 'get-alerts'
+    - description: The alert ID. The alert ID is listed in the output of 'get-alerts'.
         command.
       name: alertId
       required: true
-    description: Suppress alert by ID.
+    description: Suppresses an alert by ID.
     name: fireeye-hx-suppress-alert
   - arguments:
-    - description: The indicator category
+    - description: The category of the indicator.
       name: category
     - description: The searchTerm can be any name, category, signature, source, or
         condition value.
       name: searchTerm
     - auto: PREDEFINED
-      description: Determines who can see the indicator. You must belong to the correct
-        authorization group .
+      description: Determines who can see the indicator. They must belong to the correct
+        authorization group.
       name: shareMode
       predefined:
       - any
@@ -1084,22 +1084,22 @@ script:
       - unrestricted
       - visible
     - auto: PREDEFINED
-      description: Sorts the results by the specified field in ascending  order
+      description: Sorts the results by the specified field in ascending order.
       name: sort
       predefined:
       - category
       - activeSince
       - createdBy
       - alerted
-    - description: Person who created the indicator
+    - description: The person who created the indicator.
       name: createdBy
     - auto: PREDEFINED
-      description: Whether the indicator resulted in alerts
+      description: Whether the indicator resulted in alerts.
       name: alerted
       predefined:
       - "yes"
       - "no"
-    - description: Limit the number of results
+    - description: Limit the number of results.
       name: limit
     description: Get a list of indicators.
     name: fireeye-hx-get-indicators
@@ -1111,40 +1111,40 @@ script:
       description: The indicator name as displayed in the UI.
       type: Unknown
     - contextPath: FireEyeHX.Indicators.description
-      description: Indicator description.
+      description: The description of the indicator.
       type: Unknown
     - contextPath: FireEyeHX.Indicators.category.name
-      description: Catagory name.
+      description: The Category name.
       type: Unknown
     - contextPath: FireEyeHX.Indicators.created_by
-      description: The "Created By" field as displayed in UI
+      description: The "Created By" field as displayed in UI.
       type: Unknown
     - contextPath: FireEyeHX.Indicators.active_since
-      description: Date indicator became active.
+      description: The date the indicator became active.
       type: Unknown
     - contextPath: FireEyeHX.Indicators.stats.source_alerts
-      description: Total number of source alerts associated with this indicator.
+      description: The total number of source alerts associated with this indicator.
       type: Unknown
     - contextPath: FireEyeHX.Indicators.stats.alerted_agents
-      description: Total number of agents with HX alerts associated with this indicator.
+      description: The total number of agents with HX alerts associated with this indicator.
       type: Unknown
     - contextPath: FireEyeHX.Indicators.platforms
-      description: List of families of operating systems.
+      description: The list of families of operating systems.
       type: Unknown
     - contextPath: FireEyeHX.Indicators.uri_name
-      description: URI formatted name of the indicator.
+      description: The URI formatted name of the indicator.
       type: String
     - contextPath: FireEyeHX.Indicators.category.uri_name
-      description: URI name of the category.
+      description: The URI name of the category.
       type: String
   - arguments:
-    - description: Indicator category. Please use the `uri_category` value.
+    - description: The category of the indicator. Use the `uri_category` value.
       name: category
       required: true
-    - description: Indicator name. Please use the `uri_name` value.
+    - description: The name of the indicator. Use the `uri_name` value.
       name: name
       required: true
-    description: Get a specific indicator details.
+    description: Get details of a specific indicator.
     name: fireeye-hx-get-indicator
     outputs:
     - contextPath: FireEyeHX.Indicators._id
@@ -1157,41 +1157,41 @@ script:
       description: Indicator description.
       type: Unknown
     - contextPath: FireEyeHX.Indicators.category.name
-      description: Catagory name.
+      description: The name of the category.
       type: Unknown
     - contextPath: FireEyeHX.Indicators.created_by
-      description: The "Created By" field as displayed in UI
+      description: The "Created By" field as displayed in UI.
       type: Unknown
     - contextPath: FireEyeHX.Indicators.active_since
-      description: Date indicator became active.
+      description: The date the indicator became active.
       type: Unknown
     - contextPath: FireEyeHX.Indicators.stats.source_alerts
-      description: Total number of source alerts associated with this indicator.
+      description: The total number of source alerts associated with this indicator.
       type: Unknown
     - contextPath: FireEyeHX.Indicators.stats.alerted_agents
-      description: Total number of agents with HX alerts associated with this indicator.
+      description: The total number of agents with HX alerts associated with this indicator.
       type: Unknown
     - contextPath: FireEyeHX.Indicators.platforms
-      description: List of families of operating systems.
+      description: The list of families of operating systems.
       type: Unknown
     - contextPath: FireEyeHX.Conditions._id
-      description: FireEye unique condition ID.
+      description: The ID of the FireEye unique condition.
       type: Unknown
     - contextPath: FireEyeHX.Conditions.event_type
-      description: Event type.
+      description: The type of the event.
       type: Unknown
     - contextPath: FireEyeHX.Conditions.enabled
       description: Indicates whether the condition is enabled.
       type: Unknown
   - arguments:
-    - description: The indicator category. Please use the `uri_category` value.
+    - description: The indicator category. Use the `uri_category` value.
       name: category
       required: true
-    - description: The name of the indicator. Please use the `uri_name` value.
+    - description: The name of the indicator. Use the `uri_name` value.
       name: name
       required: true
     - description: 'A list of conditions to add. The list can include a list of IPv4
-        addresses, MD5 files, and domain names. For example: example.netexample.orgexample.lol'
+        addresses, MD5 files, and domain names. For example, example.netexample.orgexample.lol'
       name: condition
       required: true
     description: Add conditions to an indicator. Conditions can be MD5, hash values,
@@ -1202,23 +1202,23 @@ script:
       name: searchId
       required: true
       isArray: true
-    description: Delete the search, by ID.
+    description: Delete the search by ID.
     name: fireeye-hx-search-delete
   - arguments:
     - description: The acquisition ID.
       name: acquisitionId
       required: true
-    description: Delete the file acquisition, by ID.
+    description: Delete the file acquisition by ID.
     name: fireeye-hx-delete-file-acquisition
   - arguments:
-    - description: The Agent ID - this argument is required
+    - description: The Agent ID - this argument is required.
       name: agentId
       required: true
     description: Approve pending containment requests made by other components or
-      users, The permissions necessary are api_admin role.
+      users. The required permission is api_admin role.
     name: fireeye-hx-approve-containment
   - arguments:
-    - description: The Host Set ID - this argument is required
+    - description: The Host Set ID - this argument is required.
       name: hostSetId
       required: true
     - description: The Policy ID - this argument is required
@@ -1227,42 +1227,42 @@ script:
     description: Insert a new host set policy on your Endpoint Security server.
     name: fireeye-hx-assign-host-set-policy
   - arguments:
-    - description: The acquisition unique ID
+    - description: The acquisition unique ID.
       name: acquisitionId
       required: true
-    description: Gather artifacts from the system disk and memory for the given acquisition
-      id. (The data is fetched as mans file)
+    description: Collect artifacts from the system disk and memory for the given acquisition
+      ID (the data is fetched as mans file).
     name: fireeye-hx-get-data-acquisition
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Data._id
-      description: The acquisition unique ID.
+      description: The unique ID of the acquisition.
       type: string
     - contextPath: FireEyeHX.Acquisitions.Data.state
-      description: The acquisition state.
+      description: The state of the acquisition.
       type: string
     - contextPath: FireEyeHX.Acquisitions.Data.md5
-      description: File md5.
+      description: The MD5 of the file.
       type: string
     - contextPath: FireEyeHX.Acquisitions.Data.host._id
-      description: Agent ID
+      description: The ID of the agent.
       type: string
     - contextPath: FireEyeHX.Acquisitions.Data.finish_time
-      description: Time when the acquisition finished
+      description: The time when the acquisition finished.
       type: string
     - contextPath: FireEyeHX.Acquisitions.Data.host.hostname
-      description: Hostname
+      description: The hostname.
       type: string
     - contextPath: FireEyeHX.Acquisitions.Data.instance
-      description: FIreEye HX instance
+      description: The FireEye HX instance.
       type: date
   - arguments:
-    - description: Acquisition script in JSON format.
+    - description: The acquisition script in JSON format.
       name: script
     - description: The script name. If the Acquisition script is specified, the script
         name must be specified as well.
       name: scriptName
     - auto: PREDEFINED
-      description: Use default script. Select the host system.
+      description: Select the host system, which uses the default script. 
       name: defaultSystemScript
       predefined:
       - osx
@@ -1274,13 +1274,13 @@ script:
     - description: The host name. If the agent ID is not specified, the host name
         must be specified.
       name: hostName
-    - description: "This argument is deprecated"
+    - description: This argument is deprecated.
       name: acquisition_id
       deprecated: true
     - auto: PREDEFINED
       default: false
       description: Whether to use Cortex XSOAR's built-in polling to retrieve the
-        result when it's ready.
+        result when ready.
       isArray: false
       name: polling
       predefined:
@@ -1290,30 +1290,30 @@ script:
       secret: false
     - default: false
       defaultValue: '60'
-      description: Interval in seconds between each poll.
+      description: The interval in seconds between each poll.
       isArray: false
       name: interval_in_seconds
       required: false
       secret: false
     description: Start a data acquisition process to gather artifacts from the system
-      disk and memory. (The data is fetched as mans file)
+      disk and memory (the data is fetched as mans file).
     name: fireeye-hx-data-acquisition
     polling: true
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Data._id
-      description: The acquisition unique ID.
+      description: The unique ID of the acquisition.
       type: Unknown
     - contextPath: FireEyeHX.Acquisitions.Data.state
-      description: The acquisition state.
+      description: The state of the acquisition.
       type: Unknown
     - contextPath: FireEyeHX.Acquisitions.Data.md5
-      description: File md5.
+      description: The MD5 of the file.
       type: Unknown
     - contextPath: FireEyeHX.Acquisitions.Data.finish_time
-      description: Time when the acquisition was finished.
+      description: The time when the acquisition finished.
       type: Unknown
     - contextPath: FireEyeHX.Acquisitions.Data.host._id
-      description: Agent ID
+      description: The ID of the agent.
   - arguments:
     - auto: PREDEFINED
       description: Identifies which alerts result from indicators with the specified
@@ -1337,31 +1337,31 @@ script:
       name: conditionId
     - description: Filter event occurred time. ISO-8601 timestamp..
       name: eventAt
-    - description: Filter by alert ID.
+    - description: Filter by the alert ID.
       name: alertId
     - description: Filter by match detection time. ISO-8601 timestamp.
       name: matchedAt
-    - description: Filter that returns only records with an AlertId field value great
+    - description: Filter that returns only records with an AlertId field value greater
         than the minId value.
       name: minId
     - description: Filter by reported time. ISO-8601 timestamp.
       name: reportedAt
     - auto: PREDEFINED
-      description: Source of alert- indicator of compromise
+      description: Source of alert-indicator of compromise.
       name: IOCsource
       predefined:
       - "yes"
     - auto: PREDEFINED
-      description: Source of alert - exploit detection
+      description: Source of alert - exploit detection.
       name: EXDsource
       predefined:
       - "yes"
     - auto: PREDEFINED
-      description: Source of alert - malware alert
+      description: Source of alert - malware alert.
       name: MALsource
       predefined:
       - "yes"
-    - description: Limit the results returned
+    - description: Limit the results returned.
       name: limit
     - auto: PREDEFINED
       description: Sorts the results by the specified field in ascending order.
@@ -1380,54 +1380,54 @@ script:
       predefined:
       - ascending
       - descending
-    description: Get a list of alerts, use the different arguments to filter the results
+    description: Returns a list of alerts. Use the different arguments to filter the results
       returned.
     name: fireeye-hx-get-alerts
     outputs:
     - contextPath: FireEyeHX.Alerts._id
-      description: FireEye alert ID.
+      description: The ID of the FireEye alert.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.agent._id
-      description: FireEye agent ID.
+      description: The ID of the FireEye agent.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.agent.containment_state
-      description: Host containment state.
+      description: The state of the agent containment.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.condition._id
-      description: The condition unique ID.
+      description: The unique ID of the alert.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.event_at
-      description: Time when the event occoured.
+      description: The time when the event occurred.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.matched_at
-      description: Time when the event was matched.
+      description: The time when the event was matched.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.reported_at
-      description: Time when the event was reported.
+      description: The time when the event was reported.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.source
-      description: Source of alert.
+      description: The source of the alert.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.matched_source_alerts._id
-      description: Source alert ID.
+      description: The ID of the source alert.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.matched_source_alerts.appliance_id
-      description: Appliance ID
+      description: The ID of the appliance.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.matched_source_alerts.meta
-      description: Source alert meta.
+      description: The source alert meta.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.matched_source_alerts.indicator_id
-      description: Indicator ID.
+      description: The ID of the indicator.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.resolution
-      description: Alert resulotion.
+      description: The alert resolution.
       type: Unknown
     - contextPath: FireEyeHX.Alerts.event_type
-      description: Event type.
+      description: The type of the event.
       type: Unknown
   - arguments:
-    - description: acquisition ID, This argument is deprecated.
+    - description: The acquisition ID. This argument is deprecated.
       name: acquisition_id
       deprecated: true
     - description: The file name.
@@ -1437,14 +1437,14 @@ script:
       name: filePath
       required: true
     - auto: PREDEFINED
-      description: Whether to aqcuire the file using the API or RAW. By default, raw
-        file will be acquired. Use API option when file is encrypted.
+      description: Whether to acquire the file using the API or RAW. By default, raw
+        file will be acquired. Use the API option when file is encrypted.
       name: acquireUsing
       predefined:
       - API
       - RAW
     - description: The agent ID associated with the host that holds the file. If the
-        hostName is not specified, the agentId must be specified.
+        host name is not specified, the agentId must be specified.
       name: agentId
     - description: The host that holds the file. If the agentId is not specified,
         hostName must be specified.
@@ -1452,7 +1452,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Whether to use Cortex XSOAR's built-in polling to retrieve the
-        result when it's ready.
+        result when ready.
       isArray: false
       name: polling
       predefined:
@@ -1462,12 +1462,12 @@ script:
       secret: false
     - default: false
       defaultValue: '60'
-      description: Interval in seconds between each poll.
+      description: The interval in seconds between each poll.
       isArray: false
       name: interval_in_seconds
       required: false
       secret: false
-    description: Aquire a specific file as a password protected zip file. The password
+    description: Acquire a specific file as a password protected zip file. The password
       for unlocking the zip file is 'unzip-me'.
     name: fireeye-hx-file-acquisition
     polling: true
@@ -1479,32 +1479,32 @@ script:
       description: The acquisition state.
       type: Unknown
     - contextPath: FireEyeHX.Acquisitions.Files.md5
-      description: File md5.
+      description: The MD5 of the file.
       type: Unknown
     - contextPath: FireEyeHX.Acquisitions.Files.req_filename
-      description: The file name.
+      description: The name of the file.
       type: Unknown
     - contextPath: FireEyeHX.Acquisitions.Files.req_path
-      description: The file path.
+      description: The path of the file.
       type: Unknown
     - contextPath: FireEyeHX.Acquisitions.Files.host._id
-      description: FireEye HX agent ID.
+      description: The ID of the FireEye HX agent.
       type: Unknown
   - arguments:
-    - description: The indicator category
+    - description: The indicator category.
       name: category
       required: true
-    description: Create new indicator
+    description: Create a new indicator.
     name: fireeye-hx-create-indicator
     outputs:
     - contextPath: FireEyeHX.Indicators.active_since
-      description: Date indicator became active.
+      description: The date the indicator became active.
       type: date
     - contextPath: FireEyeHX.Indicators.meta
-      description: Meta data for new indicator
+      description: The meta data for new indicator.
       type: string
     - contextPath: FireEyeHX.Indicators.display_name
-      description: The indicator display name
+      description: The display name of the indicator.
       type: string
     - contextPath: FireEyeHX.Indicators.name
       description: The indicator name as displayed in the UI.
@@ -1513,64 +1513,64 @@ script:
       description: The "Created By" field as displayed in UI
       type: string
     - contextPath: FireEyeHX.Indicators.url
-      description: The data URL
+      description: The data URL.
       type: string
     - contextPath: FireEyeHX.Indicators.create_text
-      description: The indicator create text
+      description: The indicator created text.
       type: Unknown
     - contextPath: FireEyeHX.Indicators.platforms
-      description: List of families of operating systems.
+      description: The list of families of operating systems.
       type: string
     - contextPath: FireEyeHX.Indicators.create_actor._id
-      description: The ID of the actor
+      description: The ID of the actor.
       type: number
     - contextPath: FireEyeHX.Indicators.create_actor.username
-      description: Actor user name
+      description: The user name of the actor.
       type: string
     - contextPath: FireEyeHX.Indicators.signature
-      description: 'Signature of indicator '
+      description: ' The Signature of the indicator. '
       type: string
     - contextPath: FireEyeHX.Indicators._revision
-      description: Indicator revision
+      description: The indicator revision.
       type: string
     - contextPath: FireEyeHX.Indicators._id
-      description: FireEye unique indicator ID.
+      description: The ID of the FireEye unique indicator.
       type: string
     - contextPath: FireEyeHX.Indicator.description
-      description: Indicator description
+      description: The description of the indicator.
       type: string
     - contextPath: FireEyeHX.Indicators.category._id
-      description: Category ID
+      description: The ID of the category.
       type: number
     - contextPath: FireEyeHX.Indicators.category.name
-      description: Category name
+      description: The name of the category.
       type: string
     - contextPath: FireEyeHX.Indicators.category.share_mode
-      description: Category share mode
+      description: The share mode of the category.
       type: string
     - contextPath: FireEyeHX.Indicators.category.uri_name
-      description: Category uri name
+      description: The URI name of the category.
       type: string
     - contextPath: FireEyeHX.Indicators.category.url
-      description: Category URL
+      description: The URL of the category.
       type: string
     - contextPath: FireEyeHX.Indicators.uri_name
-      description: The indicator uri name
+      description: The URI name of the indicator.
       type: string
     - contextPath: FireEyeHX.Indicators.stats.active_conditions
-      description: Indicator active conditions
+      description: The active conditions of the indicator.
       type: number
     - contextPath: FireEyeHX.Indicators.stats.alerted_agents
-      description: Total number of agents with HX alerts associated with this indicator.
+      description: The total number of agents with HX alerts associated with this indicator.
       type: number
     - contextPath: FireEyeHX.Indicators.stats.source_alerts
-      description: Total number of source alerts associated with this indicator.
+      description: The total number of source alerts associated with this indicator.
       type: number
     - contextPath: FireEyeHX.Indicators.update_actor._id
-      description: Update actor ID
+      description: The ID of the updated actor.
       type: number
     - contextPath: FireEyeHX.Indicators.update_actor.username
-      description: Update actor name
+      description: The updated name of the actor.
       type: string
   - arguments:
     - description: The Host Set Id.
@@ -1581,7 +1581,7 @@ script:
       name: policyId
       required: true
       isArray: false
-    description: Delete a Host Set Policy.
+    description: Delete a Host Set policy.
     name: fireeye-hx-delete-host-set-policy
   - arguments:
     - description: The acquisition ID.
