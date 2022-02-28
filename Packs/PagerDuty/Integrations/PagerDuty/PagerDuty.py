@@ -510,7 +510,7 @@ def extract_responder_request(responder_request_response):
         output["ResponderType"] = responder_user.get("type")
         output["ResponderName"] = responder_user.get("summary")
         output["Message"] = responder_request.get("message")
-        output["IncidentID"] = responder_request.get("incident", {}).get("id")
+        output["IncidentID"] = (responder_request.get("incident") or {}).get("id")
         output["RequesterID"] = responder_request.get("requester", {}).get("id")
         output["IncidentSummary"] = responder_request.get("incident", {}).get("summary")
         outputs.append(output)
