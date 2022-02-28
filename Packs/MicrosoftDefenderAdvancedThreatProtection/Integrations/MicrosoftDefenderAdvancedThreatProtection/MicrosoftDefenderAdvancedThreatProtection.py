@@ -120,11 +120,13 @@ class HuntingQueryBuilder:
     @staticmethod
     def build_generic_query(
             query_prefix: str,
+            query_suffix: str,
             query_dict: dict,
             query_operation: str,
-            operator: str = 'has_any',
-            query_suffix: Optional[str] = None,
+            operator: str = 'has_any'
     ):
+        if not query_dict:
+            return query_prefix + query_suffix
         query = query_prefix + ' ('
         for key, val in query_dict.items():
             if isinstance(val, tuple):
@@ -165,6 +167,7 @@ class HuntingQueryBuilder:
                      ):
             if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
                 raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
+
             self._limit = limit
             self._query_operation = query_operation
             self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
@@ -187,7 +190,8 @@ class HuntingQueryBuilder:
                 query_prefix=self.NETWORK_CONNECTIONS_QUERY_PREFIX,
                 query_suffix=self.NETWORK_CONNECTIONS_QUERY_SUFFIX.format(self._limit),
                 query_dict=query_dict,
-                query_operation=self._query_operation)
+                query_operation=self._query_operation,
+            )
 
             return query
 
@@ -198,13 +202,14 @@ class HuntingQueryBuilder:
                 InitiatingProcessSHA256=self._sha256,
                 InitiatingProcessMD5=self._md5,
                 DeviceName=self._device_name,
-                DeviceId=self._device_id
+                DeviceId=self._device_id,
             )
             query = HuntingQueryBuilder.build_generic_query(
                 query_prefix=self.SMB_CONNECTIONS_QUERY_PREFIX,
                 query_suffix=self.SMB_CONNECTIONS_QUERY_SUFFIX.format(self._limit),
                 query_dict=query_dict,
-                query_operation=self._query_operation)
+                query_operation=self._query_operation,
+            )
 
             return query
 
@@ -215,13 +220,14 @@ class HuntingQueryBuilder:
                 SHA256=self._sha256,
                 MD5=self._md5,
                 DeviceName=self._device_name,
-                DeviceId=self._device_id
+                DeviceId=self._device_id,
             )
             query = HuntingQueryBuilder.build_generic_query(
                 query_prefix=self.CREDENTIAL_DUMPING_QUERY_PREFIX,
                 query_suffix=self.CREDENTIAL_DUMPING_QUERY_SUFFIX.format(self._limit),
                 query_dict=query_dict,
-                query_operation=self._query_operation)
+                query_operation=self._query_operation,
+            )
 
             return query
 
@@ -232,13 +238,14 @@ class HuntingQueryBuilder:
                 InitiatingProcessSHA256=self._sha256,
                 InitiatingProcessMD5=self._md5,
                 DeviceName=self._device_name,
-                DeviceId=self._device_id
+                DeviceId=self._device_id,
             )
             query = HuntingQueryBuilder.build_generic_query(
                 query_prefix=self.NETWORK_ENUMERATION_QUERY_PREFIX,
                 query_suffix=self.NETWORK_ENUMERATION_QUERY_SUFFIX.format(self._limit),
                 query_dict=query_dict,
-                query_operation=self._query_operation)
+                query_operation=self._query_operation,
+            )
 
             return query
 
@@ -249,13 +256,14 @@ class HuntingQueryBuilder:
                 InitiatingProcessSHA256=self._sha256,
                 InitiatingProcessMD5=self._md5,
                 DeviceName=self._device_name,
-                DeviceId=self._device_id
+                DeviceId=self._device_id,
             )
             query = HuntingQueryBuilder.build_generic_query(
                 query_prefix=self.RDP_ATTEMPTS_QUERY_PREFIX,
                 query_suffix=self.RDP_ATTEMPTS_QUERY_SUFFIX.format(self._limit),
                 query_dict=query_dict,
-                query_operation=self._query_operation)
+                query_operation=self._query_operation,
+            )
 
             return query
 
@@ -302,6 +310,7 @@ class HuntingQueryBuilder:
                 raise DemistoException('Cannot initiate "registry_entry" query without "process_cmd" argument.')
             elif not (device_name or file_name or sha1 or sha256 or md5 or device_id):
                 raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
+
             self._limit = limit
             self._query_operation = query_operation
             self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
@@ -525,6 +534,7 @@ class HuntingQueryBuilder:
                 raise DemistoException(
                     'Please provide at least one of the query args: "device_name", "file_name", "sha1, '
                     '"sha256", "md5" or "device_id".')
+
             self._limit = limit
             self._query_operation = query_operation
             self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
@@ -554,12 +564,16 @@ class HuntingQueryBuilder:
     class ProcessDetails:
         """QUERY PREFIX"""
         GENERIC_PROCESS_DETAILS_QUERY_PREFIX = 'DeviceProcessEvents | where'
+        BECAONING_QUERY_PREFIX = 'DeviceNetworkEvents | where'
+        POWERSHELL_EXECUTION_PROCESS_KNOWN_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in~ ("powershell.exe", "powershell_ise.exe",".ps") and'  # noqa: E501
+        POWERSHELL_EXECUTION_PROCESS_UNKNOWN_QUERY = 'DeviceProcessEvents | where FileName in~ ("powershell.exe", "powershell_ise.exe",".ps") and ( InitiatingProcessFileName != "SenerIR.exe" and InitiatingProcessParentFileName != "MsSense.exe" and InitiatingProcessSignatureStatus == "Valid" ) and (InitiatingProcessFileName != "CompatTelRunner.exe" and InitiatingProcessParentFileName != "CompatTelRunner.exe" and InitiatingProcessSignatureStatus == "Valid") | summarize by InitiatingProcessFolderPath,InitiatingProcessFileName,InitiatingProcessParentFileName,InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessVersionInfoProductName,InitiatingProcessCommandLine,InitiatingProcessSignerType,InitiatingProcessSignatureStatus'  # noqa: E501
 
         """QUERY SUFFIX"""
         PARENT_PROCESS_QUERY_SUFFIX = '\n| project Timestamp, DeviceId, DeviceName, ActionType, ProcessId, ProcessCommandLine, ProcessCreationTime, AccountSid, AccountName, AccountDomain,InitiatingProcessAccountDomain, InitiatingProcessAccountDomain, InitiatingProcessAccountName, InitiatingProcessAccountSid, InitiatingProcessAccountSid, InitiatingProcessAccountUpn, InitiatingProcessAccountObjectId, InitiatingProcessLogonId, InitiatingProcessIntegrityLevel, InitiatingProcessTokenElevation, InitiatingProcessSHA1, InitiatingProcessSHA256, InitiatingProcessMD5, InitiatingProcessFileName, InitiatingProcessFileSize, InitiatingProcessVersionInfoCompanyName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoProductVersion, InitiatingProcessVersionInfoInternalFileName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessVersionInfoFileDescription, InitiatingProcessId, InitiatingProcessCommandLine, InitiatingProcessCreationTime, InitiatingProcessFolderPath, InitiatingProcessAccountDomain, InitiatingProcessAccountName, InitiatingProcessAccountSid\n| limit {}'  # noqa: E501
         GRANDPARENT_PROCESS_QUERY_SUFFIX = '\n| project Timestamp, DeviceId, DeviceName, ActionType, ProcessId, ProcessCommandLine, ProcessIntegrityLevel, ProcessCreationTime, AccountSid, AccountName, AccountDomain, AccountObjectId, AccountUpn, InitiatingProcessSHA1, InitiatingProcessSHA256, InitiatingProcessMD5, InitiatingProcessFileName, InitiatingProcessId, InitiatingProcessCreationTime, InitiatingProcessFolderPath, InitiatingProcessParentFileName, InitiatingProcessParentId, InitiatingProcessParentCreationTime\n| limit {}'  # noqa: E501
         PROCESS_DETAILS_QUERY_SUFFIX = '\n| summarize by SHA1,FileName,SHA256,MD5 | join DeviceFileCertificateInfo on SHA1 | summarize by FileName,SHA1,SHA256,IsSigned,Signer,SignatureType,Issuer,CertificateExpirationTime,IsTrusted,IsRootSignerMicrosoft\n| limit {}'  # noqa: E501
         BEACONING_EVIDENCE_QUERY_SUFFIX = '\n| project Timestamp, DeviceId, DeviceName, ActionType, RemoteIP, RemotePort, RemoteUrl, LocalIP, LocalPort, Protocol, LocalIPType, RemoteIPType, InitiatingProcessSHA1, InitiatingProcessSHA256, InitiatingProcessMD5, InitiatingProcessFileName\n| limit {}'  # noqa: E501
+        POWERSHELL_EXECUTION_PROCESS_KNOWN_QUERY_SUFFIX = '| project Timestamp, FileName, FolderPath, ProcessVersionInfoProductName, ProcessCommandLine, ProcessCreationTime, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine, InitiatingProcessFolderPath, InitiatingProcessSignerType, InitiatingProcessSignatureStatus\n| limit {}'  # noqa: E501
 
         def __init__(self,
                      limit: str,
@@ -570,9 +584,18 @@ class HuntingQueryBuilder:
                      sha256: Optional[str] = None,
                      md5: Optional[str] = None,
                      device_id: Optional[str] = None,
+                     query_purpose: Optional[str] = None,
                      ):
-            if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
-                raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
+            if query_purpose == 'process_excecution_powershell':
+                if not (file_name or sha1 or sha256 or md5):
+                    raise DemistoException(HuntingQueryBuilder.FILE_ARGS_ERR)
+                if not (device_id or device_name):
+                    raise DemistoException(HuntingQueryBuilder.DEVICES_ARGS_ERR)
+
+            elif query_purpose != 'powershell_execution_unsigned_files':
+                if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
+                    raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
+
             self._limit = limit
             self._query_operation = query_operation
             self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
@@ -643,25 +666,42 @@ class HuntingQueryBuilder:
                 DeviceId=self._device_id
             )
             query = HuntingQueryBuilder.build_generic_query(
-                query_prefix=self.GENERIC_PROCESS_DETAILS_QUERY_PREFIX,
+                query_prefix=self.BECAONING_QUERY_PREFIX,
                 query_suffix=self.BEACONING_EVIDENCE_QUERY_SUFFIX.format(self._limit),
                 query_dict=query_dict,
                 query_operation=self._query_operation)
 
             return query
 
+        def build_process_excecution_powershell_query(self):
+            query_dict = assign_params(
+                FileName=self._file_name,
+                SHA1=self._sha1,
+                SHA256=self._sha256,
+                MD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = HuntingQueryBuilder.build_generic_query(
+                query_prefix=self.POWERSHELL_EXECUTION_PROCESS_KNOWN_QUERY_PREFIX,
+                query_suffix=self.POWERSHELL_EXECUTION_PROCESS_KNOWN_QUERY_SUFFIX.format(self._limit),
+                query_dict=query_dict,
+                query_operation=self._query_operation)
+
+            return query
+
+        def build_powershell_execution_unsigned_files_query(self):
+            return self.POWERSHELL_EXECUTION_PROCESS_UNKNOWN_QUERY
+
     class NetworkConnections:
         """QUERY PREFIX"""
-        EXTERNAL_ADDRESSES_QUERY_PREFIX = 'DeviceNetworkEvents | where RemoteIP !startswith "172.16" or RemoteIP !startswith "192.168" or RemoteIP !startswith "10." and'  # noqa: E501
+        EXTERNAL_ADDRESSES_QUERY_PREFIX = 'DeviceNetworkEvents | where (RemoteIP !startswith "172.16" or RemoteIP !startswith "192.168" or RemoteIP !startswith "10.") and'  # noqa: E501
         DNS_QUERY_PREFIX = 'DeviceNetworkEvents | where RemotePort == 53 and'
-        POWERSHELL_EXECUTION_PROCESS_KNOWN_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in~ ("powershell.exe", "powershell_ise.exe",".ps") and'  # noqa: E501
-        POWERSHELL_EXECUTION_PROCESS_UNKNOWN_QUERY = 'DeviceProcessEvents | where FileName in~ ("powershell.exe", "powershell_ise.exe",".ps") and ( InitiatingProcessFileName != "SenerIR.exe" and InitiatingProcessParentFileName != "MsSense.exe" and InitiatingProcessSignatureStatus == "Valid" ) and (InitiatingProcessFileName != "CompatTelRunner.exe" and InitiatingProcessParentFileName != "CompatTelRunner.exe" and InitiatingProcessSignatureStatus == "Valid") | summarize by InitiatingProcessFolderPath,InitiatingProcessFileName,InitiatingProcessParentFileName,InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessVersionInfoProductName,InitiatingProcessCommandLine,InitiatingProcessSignerType,InitiatingProcessSignatureStatus'  # noqa: E501
         ENCODED_COMMANDS_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in ("powershell.exe","powershell_ise.exe") and ProcessCommandLine contains "-e" and'  # noqa: E501
 
         """QUERY SUFFIX"""
         EXTERNAL_ADDRESSES_QUERY_SUFFIX = '\n| summarize TotalConnections = count() by DeviceName, RemoteIP, RemotePort, InitiatingProcessFileName,InitiatingProcessFolderPath | order by TotalConnections\n| limit {}'  # noqa: E501
         DNS_QUERY_SUFFIX = '| project Timestamp,DeviceName,ActionType,RemoteIP,Packetinfo = url_decode(AdditionalFields)\n| limit {}'  # noqa: E501
-        POWERSHELL_EXECUTION_PROCESS_KNOWN_QUERY_SUFFIX = '| project Timestamp, FileName, FolderPath, ProcessVersionInfoProductName, ProcessCommandLine, ProcessCreationTime, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine, InitiatingProcessFolderPath, InitiatingProcessSignerType, InitiatingProcessSignatureStatus\n| limit {}'  # noqa: E501
         ENCODED_COMMANDS_QUERY_SUFFIX = '\n| limit {}'
 
         def __init__(self,
@@ -675,15 +715,10 @@ class HuntingQueryBuilder:
                      md5: Optional[str] = None,
                      device_id: Optional[str] = None,
                      ):
-            if query_purpose == 'powershell_execution_process_known':
-                if not (file_name or sha1 or sha256 or md5):
-                    raise DemistoException(HuntingQueryBuilder.FILE_ARGS_ERR)
+            if query_purpose == 'encoded_commands':
                 if not (device_id or device_name):
                     raise DemistoException(HuntingQueryBuilder.DEVICES_ARGS_ERR)
-            elif query_purpose == 'encoded_commands':
-                if not (device_id or device_name):
-                    raise DemistoException(HuntingQueryBuilder.DEVICES_ARGS_ERR)
-            elif query_purpose != 'powershell_execution_process_unknown':
+            else:
                 if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
                     raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
             self._limit = limit
@@ -729,26 +764,6 @@ class HuntingQueryBuilder:
 
             return query
 
-        def build_powershell_execution_process_known_query(self):
-            query_dict = assign_params(
-                FileName=self._file_name,
-                SHA1=self._sha1,
-                SHA256=self._sha256,
-                MD5=self._md5,
-                DeviceName=self._device_name,
-                DeviceId=self._device_id
-            )
-            query = HuntingQueryBuilder.build_generic_query(
-                query_prefix=self.POWERSHELL_EXECUTION_PROCESS_KNOWN_QUERY_PREFIX,
-                query_suffix=self.POWERSHELL_EXECUTION_PROCESS_KNOWN_QUERY_SUFFIX.format(self._limit),
-                query_dict=query_dict,
-                query_operation=self._query_operation)
-
-            return query
-
-        def build_powershell_execution_process_unknown_query(self):
-            return self.POWERSHELL_EXECUTION_PROCESS_UNKNOWN_QUERY
-
         def build_encoded_commands_query(self):
             query_dict = assign_params(
                 DeviceName=self._device_name,
@@ -793,7 +808,7 @@ class HuntingQueryBuilder:
             return query
 
     class Tampering:
-        QUERY_PREFIX = 'let includeProc = dynamic(["sc.exe","net1.exe","net.exe", "taskkill.exe", "cmd.exe", "powershell.exe"]); let action = dynamic(["stop","disable", "delete"]); let service1 = dynamic([\'sense\', \'windefend\', \'mssecflt\']); let service2 = dynamic([\'sense\', \'windefend\', \'mssecflt\', \'healthservice\']); let params1 = dynamic(["-DisableRealtimeMonitoring", "-DisableBehaviorMonitoring" ,"-DisableIOAVProtection"]); let params2 = dynamic(["sgrmbroker.exe", "mssense.exe"]); let regparams1 = dynamic([\'reg add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender"\', \'reg add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Advanced Threat Protection"\']); let regparams2 = dynamic([\'ForceDefenderPassiveMode\', \'DisableAntiSpyware\']); let regparams3 = dynamic([\'sense\', \'windefend\']); let regparams4 = dynamic([\'demand\', \'disabled\']); let timeframe = 1d; DeviceProcessEvents| where'  # noqa: E501
+        QUERY_PREFIX = 'let includeProc = dynamic(["sc.exe","net1.exe","net.exe", "taskkill.exe", "cmd.exe", "powershell.exe"]); let action = dynamic(["stop","disable", "delete"]); let service1 = dynamic([\'sense\', \'windefend\', \'mssecflt\']); let service2 = dynamic([\'sense\', \'windefend\', \'mssecflt\', \'healthservice\']); let params1 = dynamic(["-DisableRealtimeMonitoring", "-DisableBehaviorMonitoring" ,"-DisableIOAVProtection"]); let params2 = dynamic(["sgrmbroker.exe", "mssense.exe"]); let regparams1 = dynamic([\'reg add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender"\', \'reg add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Advanced Threat Protection"\']); let regparams2 = dynamic([\'ForceDefenderPassiveMode\', \'DisableAntiSpyware\']); let regparams3 = dynamic([\'sense\', \'windefend\']); let regparams4 = dynamic([\'demand\', \'disabled\']); let timeframe = 1d; DeviceProcessEvents'  # noqa: E501
         QUERY_SUFFIX = '\n| where InitiatingProcessFileName in~ (includeProc) | where (InitiatingProcessCommandLine has_any(action) and InitiatingProcessCommandLine has_any (service2) and InitiatingProcessParentFileName != \'cscript.exe\') or (InitiatingProcessCommandLine has_any (params1) and InitiatingProcessCommandLine has \'Set-MpPreference\' and InitiatingProcessCommandLine has \'$true\') or (InitiatingProcessCommandLine has_any (params2) and InitiatingProcessCommandLine has "/IM") or (InitiatingProcessCommandLine has_any (regparams1) and InitiatingProcessCommandLine has_any (regparams2) and InitiatingProcessCommandLine has \'/d 1\') or (InitiatingProcessCommandLine has_any("start") and InitiatingProcessCommandLine has "config" and InitiatingProcessCommandLine has_any (regparams3) and InitiatingProcessCommandLine has_any (regparams4))| extend Account = iff(isnotempty(InitiatingProcessAccountUpn), InitiatingProcessAccountUpn, InitiatingProcessAccountName), Computer = DeviceName| project Timestamp, Computer, Account, AccountDomain, ProcessName = InitiatingProcessFileName, ProcessNameFullPath = FolderPath, Activity = ActionType, CommandLine = InitiatingProcessCommandLine, InitiatingProcessParentFileName\n| limit {}'  # noqa: E501
 
         def __init__(self,
@@ -802,8 +817,6 @@ class HuntingQueryBuilder:
                      device_name: Optional[str] = None,
                      device_id: Optional[str] = None,
                      ):
-            if not (device_name or device_id):
-                raise DemistoException(HuntingQueryBuilder.DEVICES_ARGS_ERR)
             self._limit = limit
             self._query_operation = query_operation
             self._device_name = HuntingQueryBuilder.get_filter_values(device_name)
@@ -815,7 +828,7 @@ class HuntingQueryBuilder:
                 DeviceId=self._device_id
             )
             query = HuntingQueryBuilder.build_generic_query(
-                query_prefix=self.QUERY_PREFIX,
+                query_prefix=f'{self.QUERY_PREFIX}{"| where" if query_dict else ""}',
                 query_suffix=self.QUERY_SUFFIX.format(self._limit),
                 query_dict=query_dict,
                 query_operation=self._query_operation)
@@ -3808,10 +3821,13 @@ def lateral_movement_evidence_command(client, args):
     # send request + handle result
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
-    readable_output = tableToMarkdown('Hunt results', results, removeNull=True)
+    readable_output = tableToMarkdown(f'Lateral Movement Evidence Hunt ({query_purpose}) Results',
+                                      results,
+                                      removeNull=True
+                                      )
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='MicrosoftATP.HuntPersistenceEvidence.Result',
+        outputs_prefix=f'MicrosoftATP.HuntLateralMovementEvidence.Result.{query_purpose}',
         outputs=results
     )
 
@@ -3842,10 +3858,10 @@ def persistence_evidence_command(client, args):
     # send request + handle result
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
-    readable_output = tableToMarkdown('Hunt results', results, removeNull=True)
+    readable_output = tableToMarkdown(f'Persistence EvidenceHunt Hunt ({query_purpose}) Results', results, removeNull=True)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='MicrosoftATP.HuntLateralMovementEvidence.Result',
+        outputs_prefix=f'MicrosoftATP.HuntPersistenceEvidence.Result.{query_purpose}',
         outputs=results
     )
 
@@ -3854,16 +3870,13 @@ def file_origin_command(client, args):
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
-    query_purpose = args.pop('query_purpose')
-    if query_purpose not in ('dropped_file', 'created_file', 'network_shared', 'execution_chain'):
-        raise DemistoException(f'Unsupported query_purpose: {query_purpose}.')
     query_builder = HuntingQueryBuilder.FileOrigin(**args)
     query = query_builder.build_file_origin_query()
 
     # send request + handle result
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
-    readable_output = tableToMarkdown('Hunt results', results, removeNull=True)
+    readable_output = tableToMarkdown('File Origin Hunt Results', results, removeNull=True)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='MicrosoftATP.HuntFileOrigin.Result',
@@ -3875,13 +3888,15 @@ def process_details_command(client, args):
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
-    query_purpose = args.pop('query_purpose')
+    query_purpose = args.get('query_purpose')
     query_builder = HuntingQueryBuilder.ProcessDetails(**args)
     query_options = {
         'parent_process': query_builder.build_parent_process_query,
         'grandparent_process': query_builder.build_grandparent_process_query,
         'process_details': query_builder.build_process_details_query,
         'beaconing_evidence': query_builder.build_beaconing_evidence_query,
+        'powershell_execution_unsigned_files': query_builder.build_powershell_execution_unsigned_files_query,
+        'process_excecution_powershell': query_builder.build_process_excecution_powershell_query,
     }
     if query_purpose not in query_options:
         raise DemistoException(f'Unsupported query_purpose: {query_purpose}.')
@@ -3890,10 +3905,10 @@ def process_details_command(client, args):
     # send request + handle result
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
-    readable_output = tableToMarkdown('Hunt results', results, removeNull=True)
+    readable_output = tableToMarkdown(f'Process Details Hunt ({query_purpose}) Results', results, removeNull=True)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='MicrosoftATP.HuntProcessDetails.Result',
+        outputs_prefix=f'MicrosoftATP.HuntProcessDetails.Result.{query_purpose}',
         outputs=results
     )
 
@@ -3907,8 +3922,6 @@ def network_connections_command(client, args):
     query_options = {
         'external_addresses': query_builder.build_external_addresses_query,
         'dns_query': query_builder.build_dns_query,
-        'powershell_execution_process_known': query_builder.build_powershell_execution_process_known_query,
-        'powershell_execution_process_unknown': query_builder.build_powershell_execution_process_unknown_query,
         'encoded_commands': query_builder.build_encoded_commands_query
     }
     if query_purpose not in query_options:
@@ -3918,10 +3931,10 @@ def network_connections_command(client, args):
     # send request + handle result
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
-    readable_output = tableToMarkdown('Hunt results', results, removeNull=True)
+    readable_output = tableToMarkdown(f'Network Connections Hunt ({query_purpose}) Results', results, removeNull=True)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='MicrosoftATP.HuntNetworkConnections.Result',
+        outputs_prefix=f'MicrosoftATP.HuntNetworkConnections.Result.{query_purpose}',
         outputs=results
     )
 
@@ -3936,7 +3949,7 @@ def privilege_escalation_command(client, args):
     # send request + handle result
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
-    readable_output = tableToMarkdown('Hunt results', results, removeNull=True)
+    readable_output = tableToMarkdown('Privilege Escalation Hunt Results', results, removeNull=True)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='MicrosoftATP.HuntPrivilegeEscalation.Result',
@@ -3954,7 +3967,7 @@ def tampering_command(client, args):
     # send request + handle result
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
-    readable_output = tableToMarkdown('Hunt results', results, removeNull=True)
+    readable_output = tableToMarkdown('Tampering Hunt Results', results, removeNull=True)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='MicrosoftATP.HuntTampering.Result',
@@ -3983,10 +3996,10 @@ def cover_up_command(client, args):
     # send request + handle result
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
-    readable_output = tableToMarkdown('Hunt results', results, removeNull=True)
+    readable_output = tableToMarkdown(f'Cover Up Hunt ({query_purpose}) Results', results, removeNull=True)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='MicrosoftATP.HuntCoverUp.Result',
+        outputs_prefix=f'MicrosoftATP.HuntCoverUp.Result.{query_purpose}',
         outputs=results
     )
 

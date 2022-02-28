@@ -5476,26 +5476,13 @@ script:
       description: The query results.
       type: String
   - name: microsoft-atp-advanced-hunting-file-origin
-    description: How did the file get on the machine. By selecting a “query_purpose”
-      argument, a designated query template will be used.
+    description: How did the file get on the machine. Possible details are
+      "dropped_file" - Was the file dropped? From where?
+      "created_file" - Created by another File (script, compiled binary).
+      "network_shared" - Shared via network.
+      "execution_chain" - What is the process execution chain.
     deprecated: false
     arguments:
-    - name: query_purpose
-      auto: PREDEFINED
-      description: By selecting a “query_purpose” argument, a designated query template
-        will be used.
-        "dropped_file" - Was the file dropped? From where?
-        "created_file" - Created by another File (script, compiled binary).
-        "network_shared" - Shared via network.
-        "execution_chain" - What is the process execution chain.
-      required: true
-      isArray: false
-      defaultValue: ""
-      predefined:
-      - dropped_file
-      - created_file
-      - network_shared
-      - execution_chain
     - name: device_name
       description: Device name to look for.
       required: false
@@ -5570,6 +5557,9 @@ script:
         "grandparent_process" - Grandparent process.
         "process_details" - Process hash, path, signature details.
         "beaconing_evidence" - Does the process appear to be beaconing?
+        "powershell_execution_unsigned_files" - Has the file executed PowerShell? Query without specifying processes.
+        No additional arguments are required.
+        "process_excecution_powershell" - Has the file executed PowerShell?
       required: true
       isArray: false
       defaultValue: ""
@@ -5578,6 +5568,8 @@ script:
       - grandparent_process
       - process_details
       - beaconing_evidence
+      - powershell_execution_unsigned_files
+      - process_excecution_powershell
     - name: device_name
       description: Device name to look for.
       required: false
@@ -5650,11 +5642,8 @@ script:
         will be used.
         "external_addresses" - Network connections to external addresses.
         "dns_query" - DNS query.
-        "powershell_execution_process_known" - Has the file executed PowerShell?
         Query by providing hash or filename or specific processes. At least one of file arguments
         (file_name, sha1, sha256, md5) is required and one of device arguments (device_name, device_id).
-        "powershell_execution_process_unknown" - Has the file executed PowerShell? Query without specifying processes.
-        No additional arguments are required.
         "encoded_commands" - Are there commands with base 64 encoding? Only device arguments are required
         (device_name, device_id), at least one.
       required: true
@@ -5663,8 +5652,6 @@ script:
       predefined:
       - external_addresses
       - dns_query
-      - powershell_execution_process_known
-      - powershell_execution_process_unknown
       - encoded_commands
     - name: device_name
       description: Device name to look for.
@@ -5773,7 +5760,7 @@ script:
       description: The query results.
       type: String
   - name: microsoft-atp-advanced-hunting-tampering
-    description: Network connections investigation.
+    description: Detect if there was any evidence of MSDE agent/sensor manipulation.
     deprecated: false
     arguments:
     - name: device_name

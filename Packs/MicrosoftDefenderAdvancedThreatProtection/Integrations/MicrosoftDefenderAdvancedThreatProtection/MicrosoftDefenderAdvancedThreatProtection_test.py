@@ -1357,13 +1357,14 @@ class TestHuntingQueryBuilder:
                 d=None,
                 e=('test_op', '"1","2"')
             )
-            actual = HuntingQueryBuilder.build_generic_query('some query', query_params, 'or', 'in')
-            assert len(actual) == 68
+            actual = HuntingQueryBuilder.build_generic_query('some query', ' suffix', query_params, 'or', 'in')
+            assert len(actual) == 75
             assert actual[:12] == 'some query ('
             assert '(a in ("1"))' in actual
             assert '(b in ("1","2"))' in actual
             assert 'or' in actual and 'in' in actual
-            assert 'e test_op "1","2"'
+            assert 'e test_op "1","2"' in actual
+            assert ' suffix' in actual
 
     class TestLateralMovementEvidence:
         def test_build_network_connections_query(self):
@@ -1825,6 +1826,48 @@ class TestHuntingQueryBuilder:
             actual = pd.build_beaconing_evidence_query()
             assert actual == expected
 
+        def test_build_process_excecution_powershell_query(self):
+            """
+            Tests process_excecution_powershell
+
+            Given:
+                - ProcessDetails inited with sha1 and device_id
+            When:
+                - calling build_process_excecution_powershell_query
+            Then:
+                - return a process_excecution_powershell query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['process_excecution_powershell']
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                sha1='1,2',
+                device_id='1',
+                query_purpose='process_excecution_powershell'
+            )
+            actual = pd.build_process_excecution_powershell_query()
+            assert actual == expected
+
+        def test_build_powershell_execution_process_unknown_query(self):
+            """
+            Tests powershell_execution_unsigned_files query
+
+            Given:
+                - NetworkConnections inited with no query arg
+            When:
+                - calling build_powershell_execution_unsigned_files_query
+            Then:
+                - return a powershell_execution_unsigned_files query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['powershell_execution_unsigned_files']
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                query_purpose='powershell_execution_unsigned_files'
+            )
+            actual = pd.build_powershell_execution_unsigned_files_query()
+            assert actual == expected
+
     class TestNetworkConnections:
         def test_build_external_addresses_query(self):
             """
@@ -1866,48 +1909,6 @@ class TestHuntingQueryBuilder:
                 query_purpose='dns_query'
             )
             actual = nc.build_dns_query()
-            assert actual == expected
-
-        def test_build_powershell_execution_process_known_query(self):
-            """
-            Tests powershell_execution_process_known query
-
-            Given:
-                - NetworkConnections inited with sha1 and device_id
-            When:
-                - calling build_powershell_execution_process_known_query
-            Then:
-                - return a powershell_execution_process_known query
-            """
-            expected = EXPECTED_HUNTING_QUERIES['NetworkConnections']['powershell_execution_process_known']
-            nc = HuntingQueryBuilder.NetworkConnections(
-                limit='1',
-                query_operation='and',
-                sha1='1,2',
-                device_id='1',
-                query_purpose='powershell_execution_process_known'
-            )
-            actual = nc.build_powershell_execution_process_known_query()
-            assert actual == expected
-
-        def test_build_powershell_execution_process_unknown_query(self):
-            """
-            Tests powershell_execution_process_unknown query
-
-            Given:
-                - NetworkConnections inited with no query arg
-            When:
-                - calling build_powershell_execution_process_unknown_query
-            Then:
-                - return a powershell_execution_process_unknown query
-            """
-            expected = EXPECTED_HUNTING_QUERIES['NetworkConnections']['powershell_execution_process_unknown']
-            nc = HuntingQueryBuilder.NetworkConnections(
-                limit='1',
-                query_operation='and',
-                query_purpose='powershell_execution_process_unknown'
-            )
-            actual = nc.build_powershell_execution_process_unknown_query()
             assert actual == expected
 
         def test_build_encoded_commands_query(self):
@@ -1965,14 +1966,32 @@ class TestHuntingQueryBuilder:
             Then:
                 - return a Tampering query
             """
-            expected = EXPECTED_HUNTING_QUERIES['Tampering']
+            expected = EXPECTED_HUNTING_QUERIES['Tampering']['with_device']
             t = HuntingQueryBuilder.Tampering(
                 limit='1',
                 query_operation='and',
                 device_id='1'
             )
             actual = t.build_query()
-            EXPECTED_HUNTING_QUERIES['Tampering'] = actual
+            assert actual == expected
+
+        def test_build_external_addresses_query__no_device(self):
+            """
+            Tests external_addresses query
+
+            Given:
+                - Tampering inited without device
+            When:
+                - calling build_query
+            Then:
+                - return a Tampering query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['Tampering']['no_device']
+            t = HuntingQueryBuilder.Tampering(
+                limit='1',
+                query_operation='and',
+            )
+            actual = t.build_query()
             assert actual == expected
 
     class TestCoverUp:
@@ -2002,7 +2021,7 @@ class TestHuntingQueryBuilder:
             Tests event_log query
 
             Given:
-                - CoverUp inited with sha1
+                - CoverUp inited with device_id
             When:
                 - calling build_event_log_cleared_query
             Then:
@@ -2012,8 +2031,8 @@ class TestHuntingQueryBuilder:
             cu = HuntingQueryBuilder.CoverUp(
                 limit='1',
                 query_operation='and',
-                sha1='1,2',
-                query_purpose='event_log'
+                device_id='12',
+                query_purpose='event_log_cleared'
             )
             actual = cu.build_event_log_cleared_query()
             assert actual == expected
