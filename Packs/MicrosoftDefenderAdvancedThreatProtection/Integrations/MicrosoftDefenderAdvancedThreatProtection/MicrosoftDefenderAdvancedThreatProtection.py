@@ -199,11 +199,13 @@ class MsClient:
     """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
-                 alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch):
+                 alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
+                 certificate_thumbprint, private_key):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
             base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
-            scope=Scopes.security_center_apt_service)
+            scope=Scopes.security_center_apt_service, certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key)
         self.alert_severities_to_fetch = alert_severities_to_fetch
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
@@ -3458,6 +3460,8 @@ def main():
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
+    certificate_thumbprint = params.get('certificate_thumbprint')
+    private_key = params.get('private_key')
     alert_severities_to_fetch = params.get('fetch_severity')
     alert_status_to_fetch = params.get('fetch_status')
     alert_time_to_fetch = params.get('first_fetch_timestamp', '3 days')
@@ -3465,8 +3469,8 @@ def main():
     fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
 
-    if not enc_key:
-        raise Exception('Key must be provided.')
+    if not enc_key and not (certificate_thumbprint or private_key):
+        raise Exception('Key or Certificate Thumbprint and PrivateKey must be provided.')
     if not auth_id:
         raise Exception('Authentication ID must be provided.')
     if not tenant_id:
@@ -3480,7 +3484,7 @@ def main():
             base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME, verify=use_ssl,
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
-            max_fetch=max_alert_to_fetch
+            max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key
         )
         if command == 'test-module':
             test_module(client)

@@ -21,6 +21,15 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
+- additionalinfo: Used for certificate Authentication. As appears after registered in the App.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
+  type: 0
+- display: Private Key
+  name: private_key
+  required: false
+  type: 14
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -5279,7 +5288,7 @@ script:
     execution: true
     name: microsoft-atp-live-response-cancel-action
     outputs: []
-  dockerimage: demisto/crypto:1.0.0.24380
+  dockerimage: devtesting/crypto:1.0.0.1645963322
   feed: false
   isfetch: true
   longRunning: false
