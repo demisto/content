@@ -512,7 +512,7 @@ def extract_responder_request(responder_request_response):
         output["Message"] = responder_request.get("message")
         output["IncidentID"] = (responder_request.get("incident") or {}).get("id")
         output["RequesterID"] = responder_request.get("requester", {}).get("id")
-        output["IncidentSummary"] = responder_request.get("incident", {}).get("summary")
+        output["IncidentSummary"] = (responder_request.get("incident") or {}).get("summary")
         outputs.append(output)
     return CommandResults(
         outputs_prefix='PagerDuty.ResponderRequests',
