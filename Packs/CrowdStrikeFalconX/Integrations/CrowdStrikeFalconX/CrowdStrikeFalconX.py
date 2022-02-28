@@ -503,7 +503,7 @@ def parse_outputs(
     :param sandbox_fields: the wanted params that appear in the sandbox section
     :param extra_sandbox_fields: the wanted params that appear in the extra sandbox section
     """
-    output = dict()
+    output: dict[str, Any] = dict()
     indicator: Optional[Common.File] = None
 
     if api_res_meta := response.get("meta", dict()):
@@ -532,11 +532,12 @@ def parse_outputs(
     return CommandResultArguments(response, output, indicator)
 
 
-def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File]:
+def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File]:  # type: ignore[return]
     if sha256 := sandbox.get('sha256'):  # todo does the `if` make sense here?
-        score_field: Common.DBotScore = DBOT_SCORE_DICT.get(sandbox.get('verdict'), Common.DBotScore.NONE)
+        score_field: int = DBOT_SCORE_DICT.get(sandbox.get('verdict', ''), Common.DBotScore.NONE)
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability_str)
-        submit_name = sandbox.get('submit_name')  # todo is ever None? What about name=submit_name? all CR use `id` :|
+        submit_name = sandbox.get('submit_name', '')  # todo is ever None? What about name=submit_name? all CR use `id`
+        # todo 2 mypy insists on using a default `''` value, is it right here?
 
         dbot = Common.DBotScore(indicator=sha256,
                                 indicator_type=DBotScoreType.FILE,
@@ -549,14 +550,13 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
             relationships = parse_indicator_relationships(sandbox, indicator_name=submit_name, reliability=reliability)
         else:
             relationships = None
-
         signature: Optional[Common.FileSignature] = Common.FileSignature(authentihash='',  # N/A in data
-                                                                         copyright=info.get('LegalCopyright', ''),
-                                                                         description=info.get('FileDescription', ''),
-                                                                         file_version=info.get('FileVersion', ''),
-                                                                         internal_name=info.get('InternalName', ''),
-                                                                         original_name=info.get('OriginalFilename', ''))
-        if not any(signature.to_context().values()):  # if all values are empty
+                                         copyright=info.get('LegalCopyright', ''),
+                                         description=info.get('FileDescription', ''),
+                                         file_version=info.get('FileVersion', ''),
+                                         internal_name=info.get('InternalName', ''),
+                                         original_name=info.get('OriginalFilename', ''))
+        if signature and not any(signature.to_context().values()):  # if all values are empty
             signature = None
 
         return Common.File(dbot_score=dbot,
