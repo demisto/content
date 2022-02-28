@@ -45,7 +45,7 @@ def get_incident_init_params():
         'threat_level': demisto.params().get('threat_level', None),
         'threat_type': demisto.params().get('threat_type', None)
     }
-    return {param_k: param_v for param_k, param_v in params_dict.items() if param_v is not None and param_v}
+    return {param_k: param_v for param_k, param_v in params_dict.items() if param_v}
 
 
 def item_to_incident(item_info, sixgill_alerts_client):
@@ -168,7 +168,7 @@ def fetch_incidents():
     incidents = []
     items = sixgill_alerts_client.get_actionable_alerts_bulk(limit=MAX_INCIDENTS, **filter_alerts_kwargs)
 
-    if len(items) >= 0:
+    if len(items) > 0:
         newest_incident_date = datetime.strptime(items[0].get('date'), DATETIME_FORMAT)
         offset = 0
         items_to_add = []
