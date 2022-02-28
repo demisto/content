@@ -435,7 +435,7 @@
                 "sections": [
                     {
                         "h": 2,
-                        "i": "indicator-quick-view-info-relatedIncidents",
+                        "i": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-relatedIncidents",
                         "moved": false,
                         "name": "Related Incidents",
                         "static": false,
@@ -443,11 +443,13 @@
                         "w": 1,
                         "x": 0,
                         "y": 7,
-                        "maxW": 3
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1
                     },
                     {
                         "h": 2,
-                        "i": "indicator-quick-view-info-comments",
+                        "i": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-comments",
                         "moved": false,
                         "name": "Comments",
                         "static": false,
@@ -455,12 +457,14 @@
                         "w": 1,
                         "x": 0,
                         "y": 9,
-                        "maxW": 3
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "indicator-quick-view-info-b92ed1c0-ccbd-11ea-937a-6f8841d9fed1",
+                        "i": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-b92ed1c0-ccbd-11ea-937a-6f8841d9fed1",
                         "items": [
                             {
                                 "endCol": 2,
@@ -525,37 +529,68 @@
                         "w": 1,
                         "x": 0,
                         "y": 2,
-                        "hideName": false
+                        "hideName": false,
+                        "maxH": null
                     },
                     {
                         "h": 3,
-                        "i": "indicator-quick-view-info-c834ecb0-84ed-11ec-a589-e73aadc98c9a",
+                        "i": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-c834ecb0-84ed-11ec-a589-e73aadc98c9a",
                         "moved": false,
-                        "name": "CVSS3",
+                        "name": "CVSS",
                         "static": false,
                         "w": 1,
                         "x": 0,
                         "y": 4,
                         "displayType": "ROW",
-                        "hideItemTitleOnlyOne": true,
+                        "hideItemTitleOnlyOne": false,
                         "hideName": false,
                         "items": [
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "cvss3",
-                                "height": 106,
-                                "id": "c35b5120-84ed-11ec-a589-e73aadc98c9a",
+                                "fieldId": "cvssvector",
+                                "height": 22,
+                                "id": "ab39ddf0-9898-11ec-8810-754d8dd0d227",
                                 "index": 0,
+                                "listId": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-c834ecb0-84ed-11ec-a589-e73aadc98c9a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cvssscore",
+                                "height": 22,
+                                "id": "a8dbc9b0-9898-11ec-8810-754d8dd0d227",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cvssvector",
+                                "height": 22,
+                                "id": "aa548700-9898-11ec-8810-754d8dd0d227",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cvsstable",
+                                "height": 22,
+                                "id": "aed665a0-9898-11ec-8810-754d8dd0d227",
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1
                     },
                     {
                         "h": 2,
-                        "i": "indicator-quick-view-info-a9e35130-8a4b-11ec-a1ef-6369524b39c7",
+                        "i": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-a9e35130-8a4b-11ec-a1ef-6369524b39c7",
                         "moved": false,
                         "name": "Vulnerability Description",
                         "static": false,
@@ -576,6 +611,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1
                     }
