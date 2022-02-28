@@ -332,7 +332,7 @@ class Client:
         :param id: id of a submitted malware samples.
         :return: http response
         """
-        url_suffix = f"/falconx/entities/reports/v1"
+        url_suffix = "/falconx/entities/reports/v1"
         return self._http_request("Get", url_suffix, params={"ids": id})
 
     def get_report_summary(
@@ -343,7 +343,7 @@ class Client:
         :param id: id of a submitted malware samples.
         :return: http response
         """
-        url_suffix = f"/falconx/entities/report-summaries/v1"
+        url_suffix = "/falconx/entities/report-summaries/v1"
         return self._http_request("Get", url_suffix, params={"ids": id})
 
     def get_analysis_status(
@@ -354,7 +354,7 @@ class Client:
         :param ids: ids of a submitted malware samples.
         :return: http response
         """
-        url_suffix = f"/falconx/entities/submissions/v1"
+        url_suffix = "/falconx/entities/submissions/v1"
         return self._http_request("Get", url_suffix, params={"ids": ids})
 
     def download_ioc(
@@ -369,7 +369,7 @@ class Client:
         :param accept_encoding: format used to compress your downloaded file
         :return: http response
         """
-        url_suffix = f"/falconx/entities/artifacts/v1"
+        url_suffix = "/falconx/entities/artifacts/v1"
         params = {
             "ids": id,
             "name": name,
@@ -402,8 +402,7 @@ class Client:
         :return: http response
         """
 
-        # url_suffix = f"/falconx/queries/reports/v1?filter={filter}&offset={offset}&limit{limit}=&sort={sort}" # todo
-        url_suffix = f"/falconx/queries/reports/v1"  # todo test
+        url_suffix = f"/falconx/queries/reports/v1"
         params = {
             "filter": filter,
             "offset": offset,
@@ -414,7 +413,7 @@ class Client:
         if filter:
             params.pop('hash')
 
-        return self._http_request("Get", url_suffix, params=assign_params(**params))
+        return self._http_request("Get", url_suffix, params=params)
 
     def find_submission_id(
             self,
@@ -430,7 +429,7 @@ class Client:
         :param sort: sort order: asc or desc
         :return: http response
         """
-        url_suffix = f"/falconx/queries/submissions/v1"
+        url_suffix = "/falconx/queries/submissions/v1"
 
         params = {
             "filter": filter,
@@ -818,8 +817,8 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
     if not command_results:
         command_results = [CommandResults(
             readable_output=
-            f'There are no results yet for the any of the queried samples ({ids}),'
-            f' analysis might not have been completed. '  # todo add file may not exist? 
+            f'There are no results yet for the any of the queried samples ({ids}), '
+            'analysis might not have been completed. '  # todo add file may not exist? 
             'Please wait to download the report.\n'
             'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.')
         ]
