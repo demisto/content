@@ -765,7 +765,7 @@ def add_responders_to_incident(incident_id, message, user_requests=None, escalat
 
     if not user_requests:
         user_requests = DEFAULT_REQUESTOR
-    if requestor_id is None or requestor_id == "":
+    if not requestor_id:
         requestor_id = DEFAULT_REQUESTOR
     url = SERVER_URL + RESPONDER_REQUESTS_SUFFIX.format(incident_id)
     body = {
