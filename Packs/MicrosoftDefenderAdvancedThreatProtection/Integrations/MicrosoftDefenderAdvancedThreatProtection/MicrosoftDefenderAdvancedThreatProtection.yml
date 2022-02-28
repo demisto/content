@@ -1510,13 +1510,13 @@ script:
   - arguments:
     - default: false
       description: The machine ID.
-      isArray: false
+      isArray: true
       name: machine_id
       required: true
       secret: false
     - default: false
       description: The file SHA1 hash to stop and quarantine on the machine.
-      isArray: false
+      isArray: true
       name: file_hash
       required: true
       secret: false
