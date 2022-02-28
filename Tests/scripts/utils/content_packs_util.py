@@ -81,8 +81,11 @@ def should_test_content_pack(pack_name: str, marketplace_version: str, id_set: d
         return False, 'Pack is not XSOAR supported'
     if is_pack_deprecated(pack_path):
         return False, 'Pack is Deprecated'
-    if marketplace_version not in get_pack_supported_marketplace_version(pack_name, id_set):
+    pack_marketplace_versions = get_pack_supported_marketplace_version(pack_name, id_set)
+    if marketplace_version == 'xsoar' and marketplace_version not in pack_marketplace_versions:
         return False, 'Pack is not supported in this marketplace version'
+    if marketplace_version == 'marketplacev2' and [marketplace_version] != pack_marketplace_versions:
+        return False, 'Pack is not only supported in this marketplace version'
     return True, ''
 
 
@@ -108,6 +111,9 @@ def should_install_content_pack(pack_name: str, marketplace_version: str, id_set
         return False, f'Pack should be ignored as it one of the files to ignore: {IGNORED_FILES}'
     if is_pack_deprecated(pack_path):
         return False, 'Pack is Deprecated'
-    if marketplace_version not in get_pack_supported_marketplace_version(pack_name, id_set):
+    pack_marketplace_versions = get_pack_supported_marketplace_version(pack_name, id_set)
+    if marketplace_version == 'xsoar' and marketplace_version not in pack_marketplace_versions:
         return False, 'Pack is not supported in this marketplace version'
+    if marketplace_version == 'marketplacev2' and [marketplace_version] != pack_marketplace_versions:
+        return False, 'Pack is not only supported in this marketplace version'
     return True, ''

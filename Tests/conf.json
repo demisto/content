@@ -5472,5 +5472,11 @@
                 "memory_threshold": 200
             }
         }
-    }
+    },
+    "test_marketplacev2": [
+        {
+          "packID": "Phishing",
+          "playbookID": "Phishing v2 - Test - Incident Starter"
+        }
+    ]
 }

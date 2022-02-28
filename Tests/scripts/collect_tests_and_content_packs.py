@@ -61,6 +61,17 @@ class TestConf(object):
 
         return test_ids
 
+    def get_marketplacev2_ids(self):
+        marketplacev2_tests = self._conf['test_marketplacev2']
+        test_ids = []
+        pack_ids = []
+
+        for t in marketplacev2_tests:
+            test_ids.append(t['playbookID'])
+            pack_ids.append(t['packID'])
+
+        return pack_ids, test_ids
+
     def get_all_tested_integrations(self):
         all_integrations = []
         conf_tests = self._conf['tests']
@@ -1395,6 +1406,10 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
                                                   deepcopy(ID_SET))
         tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET), is_nightly=True,
                              modified_packs=set(), marketplace_version=marketplace_version)
+        if marketplace_version == 'marketplacev2':
+            marketplacev2_packs, marketplacev2_tests = CONF.get_marketplacev2_ids()
+            packs_to_install.update(marketplacev2_packs)
+            tests.update(marketplacev2_tests)
         logging.info("Nightly - collected all tests that appear in conf.json and all packs from content repo that "
                      "should be tested")
     else:
