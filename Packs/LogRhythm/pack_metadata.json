@@ -1,6 +1,6 @@
 {
     "name": "LogRhythm",
-    "description": "LogRhythm security intelligence",
+    "description": "Deprecated. Use LogRhythmRest pack instead.",
     "support": "xsoar",
     "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
@@ -14,7 +14,6 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "xsoar"
     ]
 }

@@ -4992,8 +4992,10 @@
             ]
         },
         {
-            "integrations": ["GoogleSheets",
-                            "GoogleDrive"],
+            "integrations": [
+                "GoogleSheets",
+                "GoogleDrive"
+            ],
             "playbookID": "GoogleSheets-Test",
             "fromversion": "6.1.0"
         }
@@ -5122,7 +5124,10 @@
         "Cisco Umbrella Test": "Issue 24338",
         "Azure NSG - Test": "Issue 33217",
         "Unit42 Intel Objects Feed - Test": "Issue 44100",
-        "Fetch Indicators Test": "Issue 45490"
+        "Fetch Indicators Test": "Issue 45490",
+        "FormattedDateToEpochTest": "Issue 26724",
+        "CrowdstrikeFalconSandbox2 Test": "Issue 46845",
+        "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)": "Issue 44543"
     },
     "skipped_integrations": {
         
