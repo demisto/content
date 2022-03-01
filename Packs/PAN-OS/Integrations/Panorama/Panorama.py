@@ -8606,7 +8606,6 @@ class PanoramaCommand:
     @staticmethod
     def get_device_groups(topology: Topology, device_filter_str: str = None) -> List[DeviceGroupInformation]:
         """Get all the device groups from Panorama and their associated devices."""
-        device: Panorama
         result = []
         for device in topology.active_top_level_devices(device_filter_str):
             if isinstance(device, Panorama):
@@ -8626,7 +8625,6 @@ class PanoramaCommand:
         TemplateStackInformation]:
         """Get all the template-stacks from Panorama and their associated devices."""
 
-        device: Panorama
         result = []
         for device in topology.active_top_level_devices(device_filter_str):
             if isinstance(device, Panorama):
