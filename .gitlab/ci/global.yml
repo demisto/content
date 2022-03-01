@@ -166,7 +166,7 @@
 .run-unittests-and-lint:
   tags:
     - gce
-    - us-west1
+    - us-central1
   needs: []
   stage: unittests-and-validations
   artifacts:
