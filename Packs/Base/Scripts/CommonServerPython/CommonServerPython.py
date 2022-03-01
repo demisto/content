@@ -5391,20 +5391,6 @@ class Common(object):
             return ret_value
 
 
-class ErrorType(object):
-    """
-    Enum: contains all the available error types
-    :return: None
-    :rtype: ``None``
-    """
-    RATE_LIMITED = 'RateLimited'
-    GENERAL = 'General'
-    AUTHENTICATION = 'Authentication'
-    CLIENT_ERROR = 'ClientError'
-    SERVER_ERROR = 'ServerError'
-    NETWORK_ERROR = 'NetworkError'
-
-
 class ScheduledCommand:
     """
     ScheduledCommand configuration class
