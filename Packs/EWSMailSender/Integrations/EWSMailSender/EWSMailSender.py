@@ -108,7 +108,7 @@ def exchangelib_cleanup():
 
 
 def get_account(account_email):
-    for i in range(3):
+    for i in range(1, 4):
         response = Account(
             primary_smtp_address=account_email, autodiscover=False, config=config, access_type=ACCESS_TYPE,
         )
