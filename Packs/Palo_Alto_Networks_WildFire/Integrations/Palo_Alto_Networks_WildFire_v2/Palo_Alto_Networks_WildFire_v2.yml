@@ -379,7 +379,7 @@ script:
     - contextPath: WildFire.Report.Software
       description: ' '
       type: string
-    - contextPath: WildFire.Report.Service
+    - contextPath: WildFire.Report.ProcessList.Service
       description: ' '
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessCommand
@@ -653,7 +653,7 @@ script:
     - contextPath: WildFire.Report.Software
       description: ' '
       type: string
-    - contextPath: WildFire.Report.Service
+    - contextPath: WildFire.Report.ProcessList.Service
       description: ' '
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessCommand
@@ -913,7 +913,7 @@ script:
     - contextPath: WildFire.Report.Software
       description: ' '
       type: string
-    - contextPath: WildFire.Report.Service
+    - contextPath: WildFire.Report.ProcessList.Service
       description: ' '
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessCommand
@@ -1281,7 +1281,7 @@ script:
     - contextPath: WildFire.Report.Software
       description: ' '
       type: string
-    - contextPath: WildFire.Report.Service
+    - contextPath: WildFire.Report.ProcessList.Service
       description: ' '
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessCommand

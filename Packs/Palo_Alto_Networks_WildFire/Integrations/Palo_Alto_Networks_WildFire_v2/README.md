@@ -168,7 +168,7 @@ Uploads a file to WildFire for analysis.
 | WildFire.Report.verdict | string | The verdict of the report. | 
 | WildFire.Report.Platform | string |   | 
 | WildFire.Report.Software | string |   | 
-| WildFire.Report.Service | string |   | 
+| WildFire.Report.ProcessList.Service | string |   | 
 | WildFire.Report.ProcessList.ProcessCommand | string |   | 
 | WildFire.Report.ProcessList.ProcessName | string |   | 
 | WildFire.Report.ProcessList.ProcessPid | string |   | 
@@ -271,7 +271,7 @@ Uploads the URL of a remote file to WildFire for analysis.
 | WildFire.Report.verdict | string | The verdict of the report. | 
 | WildFire.Report.Platform | string |   | 
 | WildFire.Report.Software | string |   | 
-| WildFire.Report.Service | string |   | 
+| WildFire.Report.ProcessList.Service | string |   | 
 | WildFire.Report.ProcessList.ProcessCommand | string |   | 
 | WildFire.Report.ProcessList.ProcessName | string |   | 
 | WildFire.Report.ProcessList.ProcessPid | string |   | 
@@ -373,7 +373,7 @@ Retrieves results for a file hash using WildFire.
 | WildFire.Report.verdict | string | The verdict of the report. | 
 | WildFire.Report.Platform | string |   | 
 | WildFire.Report.Software | string |   | 
-| WildFire.Report.Service | string |   | 
+| WildFire.Report.ProcessList.Service | string |   | 
 | WildFire.Report.ProcessList.ProcessCommand | string |   | 
 | WildFire.Report.ProcessList.ProcessName | string |   | 
 | WildFire.Report.ProcessList.ProcessPid | string |   | 
@@ -557,7 +557,7 @@ Uploads a URL of a webpage to WildFire for analysis.
 | WildFire.Report.verdict | string | The verdict of the report. | 
 | WildFire.Report.Platform | string |   | 
 | WildFire.Report.Software | string |   | 
-| WildFire.Report.Service | string |   | 
+| WildFire.Report.ProcessList.Service | string |   | 
 | WildFire.Report.ProcessList.ProcessCommand | string |   | 
 | WildFire.Report.ProcessList.ProcessName | string |   | 
 | WildFire.Report.ProcessList.ProcessPid | string |   | 
