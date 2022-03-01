@@ -250,7 +250,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to get additional data such as Device and Behaviors Processed
+      description: Whether to get additional data such as Device and Behaviors Processed.
       isArray: false
       name: extended_data
       required: false
