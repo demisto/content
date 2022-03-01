@@ -996,7 +996,12 @@ def createIndicators(indicators_batch, noUpdate=False):
     Creates indicators from given indicator objects batch
 
     Args:
-      indicators_batch (list): List of indicators objects to create
+      indicators_batch (list): List of indicators objects to create, with the following optional keys:
+            - value (str) - The indicator value.
+            - type (str) - The indicator type.
+            - rawJSON (str) - The raw data of the indicator.
+            - fields (dict) - The indicator fields mapping.
+            - relationships (list) - The indicator relationships.
       noUpdate (bool): No update on fetched feed (no new indicators to fetch), Available from Server version 6.5.0.
 
     Returns:
