@@ -88,6 +88,7 @@ FireEye
 FormatURL
 Gitlab
 GitHub
+Lastline
 VMware
 TAXII
 Syslog
@@ -99,4 +100,5 @@ fieldSearchName
 fieldSearchOperator
 fieldSearchValue
 Classifiers
+SentinelOne
 URLs
