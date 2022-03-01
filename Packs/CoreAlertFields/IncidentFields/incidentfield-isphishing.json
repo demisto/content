@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "isphishing",
+    "closeForm": false,
+    "content": true,
+    "description": "Indicates whether a firewall alert is classified as phishing",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_isphishing",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Is Phishing",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": true,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+	"x2_fields": "fw_is_phishing"
+}

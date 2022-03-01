@@ -1367,6 +1367,7 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 | additionalHeader | A comma-separated list list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
 | raw_message | Raw email message to send. If provided, all other arguments, but to, cc and bcc, will be ignored. | Optional | 
 | from_address | The email address from which to reply. | Optional |
+| replyTo | Email addresses that need to be used to reply to the message. Supports comma-separated values. | Optional |
 
 
 #### Context Output

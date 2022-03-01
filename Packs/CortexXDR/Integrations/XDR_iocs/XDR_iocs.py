@@ -6,10 +6,9 @@ import secrets
 import string
 import tempfile
 from datetime import timezone
-from typing import Dict, Optional, List, Tuple, Union
+from typing import Dict, Optional, List, Tuple, Union, Iterable
 from dateparser import parse
 from urllib3 import disable_warnings
-from math import ceil
 
 
 disable_warnings()
@@ -122,38 +121,27 @@ def prepare_disable_iocs(iocs: str) -> Tuple[str, List]:
 
 
 def create_file_iocs_to_keep(file_path, batch_size: int = 200):
-    with open(file_path, 'a') as _file:
-        total_size: int = get_iocs_size()
-        for i in range(0, ceil(total_size / batch_size)):
-            iocs: List = get_iocs(page=i, size=batch_size)
-            for ios in map(lambda x: x.get('value', ''), iocs):
-                _file.write(ios + '\n')
+    with open(file_path, 'w') as _file:
+        for ios in map(lambda x: x.get('value', ''), get_iocs_generator(size=batch_size)):
+            _file.write(ios + '\n')
 
 
 def create_file_sync(file_path, batch_size: int = 200):
-    with open(file_path, 'a') as _file:
-        total_size: int = get_iocs_size()
-        for i in range(0, ceil(total_size / batch_size)):
-            iocs: List = get_iocs(page=i, size=batch_size)
-            for ioc in map(lambda x: demisto_ioc_to_xdr(x), iocs):
-                if ioc:
-                    _file.write(json.dumps(ioc) + '\n')
+    with open(file_path, 'w') as _file:
+        for ioc in map(lambda x: demisto_ioc_to_xdr(x), get_iocs_generator(size=batch_size)):
+            if ioc:
+                _file.write(json.dumps(ioc) + '\n')
 
 
-def get_iocs_size(query=None) -> int:
-    search_indicators = IndicatorsSearcher()
+def get_iocs_generator(size=200, query=None) -> Iterable:
     query = query if query else Client.query
     query = f'expirationStatus:active AND ({query})'
-    return search_indicators.search_indicators_by_version(query=query, size=1)\
-        .get('total', 0)
-
-
-def get_iocs(page=0, size=200, query=None) -> List:
-    search_indicators = IndicatorsSearcher(page=page)
-    query = query if query else Client.query
-    query = f'expirationStatus:active AND ({query})'
-    return search_indicators.search_indicators_by_version(query=query, size=size)\
-        .get('iocs', [])
+    try:
+        for iocs in map(lambda x: x.get('iocs', []), IndicatorsSearcher(size=size, query=query)):
+            for ioc in iocs:
+                yield ioc
+    except StopIteration:
+        pass
 
 
 def demisto_expiration_to_xdr(expiration) -> int:
@@ -271,10 +259,7 @@ def get_last_iocs(batch_size=200) -> List:
     current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
     last_run: Dict = get_integration_context()
     query = create_last_iocs_query(from_date=last_run['time'], to_date=current_run)
-    total_size = get_iocs_size(query)
-    iocs: List = []
-    for i in range(0, ceil(total_size / batch_size)):
-        iocs.extend(get_iocs(query=query, page=i, size=batch_size))
+    iocs: List = list(get_iocs_generator(query=query, size=batch_size))
     last_run['time'] = current_run
     set_integration_context(last_run)
     return iocs
@@ -465,7 +450,7 @@ def get_sync_file():
         os.remove(temp_file_path)
 
 
-def main():
+def main():   # pragma: no cover
     # """
     # Executes an integration command
     # """

@@ -39,4 +39,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![QRadarFullSearch](https://raw.githubusercontent.com/demisto/content/master/Packs/QRadar/doc_files/QRadarFullSearch.png)
+![QRadarFullSearch](../doc_files/QRadarFullSearch.png)

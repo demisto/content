@@ -1,0 +1,5 @@
+[file:pack_metadata.json]
+ignore=PA129
+
+[file:incidentfield-Category.json]
+ignore=IF106

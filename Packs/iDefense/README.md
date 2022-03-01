@@ -1,4 +1,6 @@
 This pack will be entering maintenance mode from **February 1st, 2022** and will reach end of life on **August 1st, 2022**
+- Current **Accenture CTI** integration is now available as **ACTI Indicator Query** under **Accenture CTI v2** pack : https://xsoar.pan.dev/marketplace/details/AccentureCTI 
+- Current **ACTI Feed** integration is now available as **ACTI Indicator Feed** under **Accenture CTI Feed** pack : https://xsoar.pan.dev/marketplace/details/AccentureCTI_Feed
 # **Accenture CTI** \*
 
 This pack is integrated with our IntelGraph Intelligence Portal to provide threat intelligence. 

@@ -2,13 +2,15 @@
     "name": "FireEye Common Fields",
     "description": "FireEye common fields concentrates all of the mutual content entities for the FireEye integrations.",
     "support": "xsoar",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [],
     "tags": [],
-    "itemPrefix": ["FireEye"],
+    "itemPrefix": [
+        "FireEye"
+    ],
     "useCases": [],
     "keywords": [],
     "dependencies": {

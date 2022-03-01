@@ -235,8 +235,72 @@ def test_indian_tld():
     assert result == "in.whois-servers.net"
 
 
+def test_ph_tld():
+    """
+    Given:
+        - A domain that its extension (tld) is '.ph'
+
+    When:
+        - running the get_root_server function
+
+    Then:
+        - Verify the function returns the correct Whois server
+    """
+    from Whois import get_root_server
+    host = get_root_server("test.com.ph")
+    assert host == "whois.iana.org"
+
+
 def test_parse_raw_whois():
     with open('test_data/EU domains.text', 'r') as f:
         raw_data = f.read()
     result = Whois.parse_raw_whois([raw_data], [], never_query_handles=False, handle_server='whois.eu')
     assert result['registrar'] == ['IONOS SE']
+
+
+def test_get_raw_response_with_a_refer_server_that_fails(mocker):
+    """
+    Background:
+    get_whois_raw(domain, server) is a recursive function in the Whois integration which in charge of getting the raw
+    response from the whois server for the query domain. In some cases the response from the whois server includes
+    a name of another whois server, i.e a refer server, that is also used for querying the domain. If the raw response
+    include a refer server, the get_whois_raw() function is recursively called this time with the refer server as the
+    server argument, and the responses of the recursive calls are concatenating.
+
+    This test simulates a case in which the call to get_whois_raw(domain, server) returns a response that includes a
+    refer whois server but the call to the refer server fails with an exception. The purpose of the test is to verify
+    that the final response of the get_whois_raw() includes the response of the first server which was queried although
+    that the recursive call to the refer server failed.
+
+    Given:
+        - A Whois server, a domain to query and a mock response which simulates a Whois server response that includes
+          a name of a refer server.
+    When:
+        - running the Whois.get_whois_raw(domain, server) function
+
+    Then:
+        - Verify that the final response of the get_whois_raw() includes the response of the first server which was
+          queried although that the recursive call to the refer server failed.
+    """
+    import socket
+    from Whois import get_whois_raw
+
+    def connect_mocker(curr_server):
+        """
+        This function is a mocker for the function socket.connect() that simulates a case in which the first server of
+        the test enables a socket connection, while the second server fails and raises an exception.
+        """
+        if curr_server[0] == "test_server":
+            return None
+        else:
+            raise Exception
+
+    mock_response = "Domain Name: test.plus\n WHOIS Server: whois.test.com/\n"
+
+    mocker.patch.object(socket.socket, 'connect', side_effect=connect_mocker)
+    mocker.patch('Whois.whois_request_get_response', return_value=mock_response)
+
+    server = "test_server"
+    domain = "test.plus"
+    response = get_whois_raw(domain=domain, server=server)
+    assert response == [mock_response]

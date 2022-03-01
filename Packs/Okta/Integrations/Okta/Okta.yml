@@ -1,0 +1,1229 @@
+commonfields:
+  id: okta
+  version: -1
+deprecated: true
+name: okta
+display: okta (Deprecated)
+category: Authentication
+description: Deprecated. Use the Okta v2 integration instead.
+configuration:
+- display: Okta URL (https://<domain>.okta.com)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Token (see Detailed Instructions)
+  name: apitoken
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: okta-unlock-user
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: Unlocks a specified user.
+    description: Unlock user
+    execution: true
+    deprecated: true
+  - name: okta-deactivate-user
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: Deactivates a specified user.
+    description: Deactivate user
+    execution: true
+    deprecated: true
+  - name: okta-activate-user
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: Username in Okta to activate
+    description: Activates a specific user.
+    execution: true
+    deprecated: true
+  - name: okta-suspend-user
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: Username in Okta to suspend
+    description: Suspends a user.  This operation can only be performed on users with
+      an ACTIVE status. The user has a status of SUSPENDED when the process is complete.
+    execution: true
+    deprecated: true
+  - name: okta-unsuspend-user
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: Okta username you want to change to ACTIVE status.
+    description: Returns a user to ACTIVE status.  This operation can only be performed
+      on users that have a SUSPENDED status.
+    execution: true
+    deprecated: true
+  - name: okta-get-user-factors
+    arguments:
+    - name: userId
+      description: User ID of the user in which to get enrolled factors.
+    - name: username
+      description: The user name
+    outputs:
+    - contextPath: Account.ID
+      description: Okta account ID.
+      type: string
+    - contextPath: Account.Factor.ID
+      description: Okta account factor ID.
+      type: string
+    - contextPath: Account.Factor.FactorType
+      description: Okta account factor type.
+      type: string
+    - contextPath: Account.Factor.Provider
+      description: Okta account factor provider.
+      type: string
+    - contextPath: Account.Factor.Status
+      description: Okta account factor status.
+      type: string
+    - contextPath: Account.Factor.Profile
+      description: Okta account factor profile.
+      type: string
+    description: Returns all the enrolled factors for the specified user.
+    deprecated: true
+  - name: okta-verify-push-factor
+    arguments:
+    - name: userId
+      required: true
+      description: The id of the user to verify.
+    - name: factorId
+      required: true
+      description: The push factor ID.
+    outputs:
+    - contextPath: Account.ID
+      description: Okta user ID.
+      type: string
+    - contextPath: Account.VerifyPushResult
+      description: Okta user push factor result.
+      type: string
+    description: Enrolls and verifies a push factor for a specified user.
+    execution: true
+    deprecated: true
+  - name: okta-reset-factor
+    arguments:
+    - name: userId
+      description: The user ID.
+    - name: username
+      description: The user name.
+    - name: factorId
+      required: true
+      description: The ID of the factor to reset.
+    description: Unenrolls an existing factor for the specified user, which enables
+      the user to enroll a new factor.
+    execution: true
+    deprecated: true
+  - name: okta-get-groups
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: Username in Okta in whih to get groups.
+    outputs:
+    - contextPath: Account.Group
+      description: Okta groups in which the account is associated.
+    - contextPath: Account.ID
+      description: Okta account ID.
+      type: string
+    - contextPath: Account.Type
+      description: Account type - Okta.
+      type: string
+    - contextPath: Account.Group.ID
+      description: Unique key for the group.
+      type: string
+    - contextPath: Account.Group.Created
+      description: Timestamp when the group was created.
+      type: date
+    - contextPath: Account.Group.ObjectClass
+      description: Determines the group’s profile.
+      type: string
+    - contextPath: Account.Group.LastUpdated
+      description: Timestamp when the group’s profile was last updated.
+      type: date
+    - contextPath: Account.Group.LastMembershipUpdated
+      description: Timestamp when the group’s memberships were last updated.
+      type: date
+    - contextPath: Account.Group.Type
+      description: Determines how a group’s profile and memberships are managed.
+      type: string
+    - contextPath: Account.Group.Name
+      description: Name of the group.
+      type: string
+    - contextPath: Account.Group.Description
+      description: Description of the group.
+      type: string
+    description: Returns all user groups associated with a specified user.
+    deprecated: true
+  - name: okta-set-password
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: Okta username in which to set the password.
+    - name: password
+      required: true
+      description: The new password to set for the user.
+    description: Creates a user without a recovery question and answer requirement.
+      The new user can log in after activation with the assigned password.
+    execution: true
+    deprecated: true
+  - name: okta-search
+    arguments:
+    - name: term
+      required: true
+      default: true
+      description: Term in which to search. This term can be a first name, last name,
+        or email.
+    - name: limit
+      description: Max number of results to return (defaults to 200).
+    - name: verbose
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Returns details of users that match the found term.
+    outputs:
+    - contextPath: Account.ID
+      description: Okta account IDs returned by search.
+      type: string
+    - contextPath: Account.Username
+      description: Okta account usernames returned by search.
+      type: string
+    - contextPath: Account.Email
+      description: Okta account emails returned by search.
+      type: string
+    - contextPath: Account.DisplayName
+      description: Okta account display names returned by search.
+      type: string
+    - contextPath: Account.Type
+      description: Account type returned by search - Okta.
+      type: string
+    description: Search for Okta users
+    deprecated: true
+  - name: okta-get-user
+    arguments:
+    - name: username
+      description: Returns information for a specified user. You cannot use usernames
+        that contains a '/' character.
+    - name: userid
+      description: User ID of requested user.
+    - name: verbose
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Returns all details of the user.
+    outputs:
+    - contextPath: Account.ID
+      description: Okta account ID.
+      type: string
+    - contextPath: Account.Email
+      description: Okta account email.
+      type: string
+    - contextPath: Account.Username
+      description: Okta account username.
+      type: string
+    - contextPath: Account.DisplayName
+      description: Okta account display name.
+      type: string
+    - contextPath: Account.Type
+      description: Account type - Okta.
+      type: string
+    - contextPath: Account.Status
+      description: Okta account status.
+      type: string
+    description: Fetches information for a specific user. You must enter one or more
+      parameters for the command to run.
+    deprecated: true
+  - name: okta-create-user
+    arguments:
+    - name: firstName
+      required: true
+      description: First name of the user (givenName).
+    - name: lastName
+      required: true
+      description: Family name of the user (familyName).
+    - name: email
+      required: true
+      description: primary Email address of the user.
+    - name: login
+      required: true
+      description: Unique identifier for the user (username).
+    - name: secondEmail
+      description: Secondary email address of user. Usually for account recovery.
+    - name: middleName
+      description: Middle name(s) of the user.
+    - name: honorificPrefix
+      description: Honorific prefix(es) of the user, or title in most Western languages.
+        Supports multiple input.
+    - name: honorificSuffix
+      description: honorific suffix(es) of the user. Supports multuiple input.
+    - name: title
+      description: User’s title. For example, Vice President.
+    - name: displayName
+      description: Name of the user, suitable for display to end users.
+    - name: nickName
+      description: Casual way to address the user.
+    - name: profileUrl
+      description: Url of user online profile. For example, a web page.
+    - name: primaryPhone
+      description: Primary phone number of user.
+    - name: mobilePhone
+      description: Mobile phone number of user.
+    - name: streetAddress
+      description: Full street address component of user’s address.
+    - name: city
+      description: City or locality component of user’s address (locality).
+    - name: state
+      description: State or region component of user’s address (region).
+    - name: zipCode
+      description: Zipcode or postal code component of user’s address (postalCode).
+    - name: countryCode
+      description: Country name component of user’s address (country).
+    - name: postalAddress
+      description: Mailing address component of user’s address.
+    - name: preferredLanguage
+      description: User’s preferred written or spoken languages.
+    - name: locale
+      description: User’s default location for purposes of localizing items such as
+        currency, date time format, numerical representations, etc.
+    - name: timezone
+      description: User time zone.
+    - name: userType
+      description: Used to identify the organization to user relationship such as
+        “Employee” or “Contractor”.
+    - name: employeeNumber
+      description: Organization or company assigned unique identifier for the user.
+    - name: costCenter
+      description: name of a cost center assigned to.
+    - name: organization
+      description: Name of user’s organization.
+    - name: division
+      description: Name of user’s division.
+    - name: department
+      description: Name of user’s department.
+    - name: managerId
+      description: ID of a user’s manager.
+    - name: manager
+      description: DisplayName of the user’s manager.
+    - name: password
+      description: Password for new user.
+    - name: passwordQuestion
+      description: Password question for new user.
+    - name: passwordAnswer
+      description: Password answer for question supplied.
+    - name: providerType
+      auto: PREDEFINED
+      predefined:
+      - OKTA
+      - ACTIVE_DIRECTORY
+      - LDAP
+      - FEDERATION
+      - SOCIAL
+      description: OKTA, ACTIVE_DIRECTORY,LDAP, FEDERATION, or SOCIAL
+    - name: providerName
+      description: Name of provider.
+    - name: groupIds
+      description: Ids of groups that user will be immediately added to at time of
+        creation (Do not include default group).
+    - name: activate
+      description: Activates lifecycle operation when creating the user.
+    outputs:
+    - contextPath: Account.ID
+      description: Created okta account ID.
+      type: string
+    - contextPath: Account.Email
+      description: Created okta account email.
+      type: string
+    - contextPath: Account.Username
+      description: Created okta account username.
+      type: string
+    - contextPath: Account.DisplayName
+      description: Created okta account display name.
+      type: string
+    - contextPath: Account.Type
+      description: Type of create account - Okta.
+      type: string
+    description: Creates a new user with an option of setting password, recovery question
+      and answer. The new user will immediately be able to login after activation
+      with the assigned password. This flow is common when developing a custom user
+      registration experience.
+    deprecated: true
+    execution: true
+  - name: okta-update-user
+    arguments:
+    - name: firstName
+      description: First name of the user (givenName).
+    - name: lastName
+      description: Family name of the user (familyName).
+    - name: email
+      description: Primary Email address of user.
+    - name: username
+      required: true
+      description: Unique identifier for the user (login).
+    - name: secondEmail
+      description: Secondary email address of user typically used for account recovery.
+    - name: middleName
+      description: Middle name(s) of the user.
+    - name: honorificPrefix
+      description: Honorific prefix(es) of the user, or title in most Western languages
+    - name: honorificSuffix
+      description: honorific suffix(es) of the user
+    - name: title
+      description: User’s title. For example, Vice President.
+    - name: displayName
+      description: Name of the user, suitable for display to end-users
+    - name: nickName
+      description: Casual way to address the user in real life
+    - name: profileUrl
+      description: Url of user’s online profile (e.g. a web page)
+    - name: primaryPhone
+      description: Primary phone number of user.
+    - name: mobilePhone
+      description: Mobile phone number of user.
+    - name: streetAddress
+      description: Full street address component of user’s address.
+    - name: city
+      description: City or locality component of user’s address (locality)
+    - name: state
+      description: State or region component of user’s address (region)
+    - name: zipCode
+      description: Zipcode or postal code component of user’s address (postalCode)
+    - name: countryCode
+      description: Country name component of user’s address (country)
+    - name: postalAddress
+      description: Mailing address component of user’s address
+    - name: "preferredLanguage\t"
+      description: User’s preferred written or spoken languages.
+    - name: locale
+      description: User’s default location for purposes of localizing items such as
+        currency, date time format, numerical representations, etc.
+    - name: "timezone\t"
+      description: User time zone.
+    - name: userType
+      description: Used to identify the organization to user relationship such as
+        “Employee” or “Contractor”
+    - name: employeeNumber
+      description: Organization or company assigned unique identifier for the user.
+    - name: costCenter
+      description: Name of a cost center assigned to.
+    - name: organization
+      description: Name of user’s organization.
+    - name: division
+      description: Name of user’s division.
+    - name: department
+      description: Name of user’s department.
+    - name: managerId
+      description: ID of a user’s manager.
+    - name: manager
+      description: DisplayName of the user’s manager.
+    - name: password
+      description: Password for new user.
+    - name: passwordQuestion
+      description: Password question for new user.
+    - name: passwordAnswer
+      description: Password answer for question supplied.
+    - name: providerType
+      auto: PREDEFINED
+      predefined:
+      - OKTA
+      - ACTIVE_DIRECTORY
+      - LDAP
+      - FEDERATION
+      - SOCIAL
+      description: OKTA, ACTIVE_DIRECTORY,LDAP, FEDERATION, or SOCIAL
+    - name: providerName
+      description: Name of provider.
+    description: Update user with a given login, all fields are optional, fields which
+      are not set will not be overriden
+    execution: true
+    deprecated: true
+  - name: okta-get-failed-logins
+    arguments:
+    - name: since
+      description: 'Filters the lower time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: until
+      description: 'Filters the upper time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: sortOrder
+      auto: PREDEFINED
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      description: The order of the returned events, default is ASCENDING
+    - name: limit
+      description: Sets the number of results returned in the response. Default is
+        100.
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternative ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.id
+      description: ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of the user agent, formatted according
+        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
+        OS fields can be derived from this field.
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The Operating System on which the client runs. For example, Microsoft
+        Windows 10.
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: Identifies the browser type, if relevant. For example, Chrome.
+      type: string
+    - contextPath: Okta.Logs.Events.client.device
+      description: Type of device that client operated from (e.g. Computer).
+      type: string
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests, the ID of the OAuth client making the request.
+        For SSWS token requests, the ID of the agent making the request.
+      type: string
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: IP address in which the client made its request.
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event
+      type: string
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result, for example INVALID_CREDENTIALS
+      type: string
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when event was published
+      type: string
+    - contextPath: Okta.Logs.Events.severity
+      description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system
+        that the event request was sourced to
+      type: number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event
+        request was sourced to
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to sent the event’s request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event
+        request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event’s request is from a known proxy
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP address
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source
+      type: string
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative ID of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target
+      type: string
+    description: Returns event details for when a user is added to a group.
+    deprecated: true
+  - name: okta-get-group-assignments
+    arguments:
+    - name: since
+      description: 'Filters the lower time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: until
+      description: 'Filters the upper time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: sortOrder
+      auto: PREDEFINED
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      description: The order of the returned events, default is ASCENDING
+    - name: limit
+      description: Sets the number of results returned in the response. Default is
+        100.
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternative ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.id
+      description: ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of the user agent, formatted according
+        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
+        OS fields can be derived from this field.
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The Operating System on which the client runs. For example, Microsoft
+        Windows 10.
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: The type of web browser, if relevant. For example, Chrome.
+      type: string
+    - contextPath: Okta.Logs.Events.client.device
+      description: Type of device that the client operated from (e.g. Computer).
+      type: string
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests, the ID of the OAuth client making the request.
+        For SSWS token requests, the ID of the agent making the request.
+      type: string
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: IP address that the client made its request from.
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event.
+      type: string
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published.
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result, for example INVALID_CREDENTIALS
+      type: string
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when event was published
+      type: string
+    - contextPath: Okta.Logs.Events.severity
+      description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system
+        that the event request was sourced to
+      type: number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event
+        request was sourced to
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to sent the event’s request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event
+        request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event’s request is from a known proxy
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP address
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source
+      type: string
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative id of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target
+      type: string
+    description: Get events for when a user was added to a group.
+    deprecated: true
+  - name: okta-get-application-assignments
+    arguments:
+    - name: since
+      description: 'Filters the lower time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: until
+      description: 'Filters the upper time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: sortOrder
+      auto: PREDEFINED
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      description: The order of the returned events, default is ASCENDING
+    - name: limit
+      description: Sets the number of results returned in the response. Default is
+        100.
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternative ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.id
+      description: ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of the user agent, formatted according
+        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
+        OS fields can be derived from this field.
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The Operating System on which the client runs. For example, Microsoft
+        Windows 10.
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: Identifies the type of web browser, if relevant. For example, Chrome.
+      type: string
+    - contextPath: Okta.Logs.Events.client.device
+      description: Type of device that the client operated from (e.g. Computer)
+      type: string
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests this is the id of the OAuth client making the
+        request. For SSWS token requests, this is the id of the agent making the request.
+      type: string
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: Ip address that the client made its request from
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event
+      type: string
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result, for example INVALID_CREDENTIALS
+      type: string
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when event was published
+      type: string
+    - contextPath: Okta.Logs.Events.severity
+      description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system
+        that the event request was sourced to
+      type: number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event
+        request was sourced to
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to sent the event’s request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event
+        request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event’s request is from a known proxy
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP address
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source
+      type: string
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative id of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target
+      type: string
+    description: Returns events for when a user was assigned to an application.
+    deprecated: true
+  - name: okta-get-application-authentication
+    arguments:
+    - name: since
+      description: 'Filters the lower time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: until
+      description: 'Filters the upper time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: sortOrder
+      auto: PREDEFINED
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      description: The order of the returned events, default is ASCENDING
+    - name: limit
+      description: Sets the number of results returned in the response. Default is
+        100.
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternative ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.id
+      description: ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of the user agent, formatted according
+        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
+        OS fields can be derived from this field.
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The Operating System on which the client runs. For example, Microsoft
+        Windows 10.
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: Identifies the type of the web browser. For example, Chrome.
+      type: string
+    - contextPath: Okta.Logs.Events.client.device
+      description: Type of device that the client operated from (e.g. Computer)
+      type: string
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests, the id of the OAuth client making the request.
+        For SSWS token requests, the id of the agent making the request.
+      type: string
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: Ip address that the client made its request from
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event
+      type: string
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result, for example INVALID_CREDENTIALS
+      type: string
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when event was published
+      type: string
+    - contextPath: Okta.Logs.Events.severity
+      description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system
+        that the event request was sourced to
+      type: number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event
+        request was sourced to
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to sent the event’s request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event
+        request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event’s request is from a known proxy
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP address
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source
+      type: string
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative id of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target
+      type: string
+    description: Returns logs using specified filters.
+    deprecated: true
+  - name: okta-get-logs
+    arguments:
+    - name: filter
+      description: "Useful for performing structured queries where constraints on\
+        \ LogEvent attribute values can be explicitly targeted.  The following expressions\
+        \ are supported for events with the filter query parameter: eventType eq \"\
+        :eventType\" -\tEvents that have a specific action; eventType target.id eq\
+        \ \":id\" - Events published with a specific target id; actor.id eq \":id\"\
+        \ - Events published with a specific actor id. For more information about\
+        \ filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+    - name: query
+      description: 'The query parameter can be used to perform keyword matching against
+        a LogEvents object’s attribute values. In order to satisfy the constraint,
+        all supplied keywords must be matched exactly. Note that matching is case-insensitive.  The
+        following are some examples of common keyword filtering: Events that mention
+        a specific city: query=San Francisco; Events that mention a specific url:
+        query=interestingURI.com; Events that mention a specific person: query=firstName
+        lastName.'
+    - name: since
+      description: 'Filters the lower time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: until
+      description: 'Filters the upper time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - name: sortOrder
+      auto: PREDEFINED
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      description: The order of the returned events, default is ASCENDING
+    - name: limit
+      description: Sets the number of results returned in the response. Default is
+        100.
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternative ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of actor
+      type: string
+    - contextPath: Okta.Logs.Events.actor.id
+      description: ID of actor
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of the user agent, formatted according
+        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
+        OS fields can be derived from this field.
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The Operating System on which the client runs. For example, Microsoft
+        Windows 10.
+      type: string
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: Identifies the type of web browser, if relevant. For example, Chrome.
+      type: string
+    - contextPath: Okta.Logs.Events.client.device
+      description: Type of device that the client operated from (e.g. Computer)
+      type: string
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests, the ID of the OAuth client making the request.
+        For SSWS token requests, the ID of the agent making the request.
+      type: string
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: IP address that the client made its request from.
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event
+      type: string
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
+      type: string
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result, for example INVALID_CREDENTIALS
+      type: string
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when event was published
+      type: string
+    - contextPath: Okta.Logs.Events.severity
+      description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system
+        that the event request was sourced to
+      type: number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event
+        request was sourced to
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to sent the event’s request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event
+        request
+      type: string
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event’s request is from a known proxy
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP address
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates (e.g. Montana, Incheon)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g. France, Uganda)
+      type: string
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source
+      type: string
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative id of a target
+      type: string
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target
+      type: string
+    description: Get logs by providing optional filters
+    deprecated: true
+  - name: okta-add-to-group
+    arguments:
+    - name: userId
+      description: ID of the user to add
+    - name: groupId
+      description: ID of the group to add the user to
+    - name: username
+      description: Name of the user to add
+    - name: groupName
+      description: Name of the group to add the user to
+    description: Adds a user to a group with OKTA_GROUP type.
+    execution: true
+    deprecated: true
+  - name: okta-remove-from-group
+    arguments:
+    - name: userId
+      description: ID of the user to remove
+    - name: groupId
+      description: ID of the group to remove the user from
+    - name: username
+      description: Name of the user to remove
+    - name: groupName
+      description: Name of the group to remove the user from
+    description: Removes a user from a group with OKTA_GROUP type.
+    execution: true
+    deprecated: true
+  - name: okta-list-groups
+    arguments:
+    - name: query
+      description: Searches the name property of groups for matching value
+    - name: filter
+      description: 'Useful for performing structured queries where constraints on
+        group attribute values can be explicitly targeted. The following expressions
+        are supported(among others) for groups with the filter query parameter: type
+        eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP; lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ"
+        - Groups with profile last updated before a specific timestamp; lastMembershipUpdated
+        eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with memberships last updated at
+        a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK" - Group with a specified
+        id. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering'
+    - name: limit
+      description: Sets the number of results returned in the response.
+      defaultValue: "200"
+    outputs:
+    - contextPath: Okta.Group.ID
+      description: Unique key for the group
+      type: string
+    - contextPath: Okta.Group.Created
+      description: Timestamp for when the group was created
+      type: date
+    - contextPath: Okta.Group.ObjectClass
+      description: The group’s profile
+      type: unknown
+    - contextPath: Okta.Group.LastUpdated
+      description: Timestamp for when the group’s profile was last updated
+      type: date
+    - contextPath: Okta.Group.LastMembershipUpdated
+      description: Timestamp for when the group’s memberships were last updated
+      type: date
+    - contextPath: Okta.Group.Type
+      description: Determines how a group’s profile and memberships are managed -
+        OKTA_GROUP, APP_GROUP and BUILT_IN
+      type: string
+    - contextPath: Okta.Group.Name
+      description: Name of the group
+      type: string
+    - contextPath: Okta.Group.Description
+      description: Description of the group
+      type: string
+    description: Lists groups in your organization. A subset of groups can be returned
+      that match a supported filter expression or query.
+    deprecated: true
+  - name: okta-get-group-members
+    arguments:
+    - name: groupId
+      description: Id of the group
+    - name: limit
+      description: Specifies the number of user results
+    - name: verbose
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Print all details of user
+    - name: groupName
+      description: Name of the group
+    outputs:
+    - contextPath: Account.ID
+      description: Okta account ID
+      type: string
+    - contextPath: Account.Email
+      description: Okta account email
+      type: string
+    - contextPath: Account.Username
+      description: Okta account username
+      type: string
+    - contextPath: Account.DisplayName
+      description: Okta account display name
+      type: string
+    - contextPath: Account.Type
+      description: Account type - Okta
+      type: string
+    description: Enumerates all users that are members of a group
+    deprecated: true
+  runonce: false
+fromversion: 5.0.0

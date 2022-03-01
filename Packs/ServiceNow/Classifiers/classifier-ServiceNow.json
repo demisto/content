@@ -3,15 +3,12 @@
     "description": "Classifies ServiceNow tickets.",
     "feed": false,
     "id": "ServiceNow",
-    "incidentSamples": null,
-    "indicatorSamples": null,
     "keyTypeMap": {
-        "incident": "ServiceNow Ticket"
+        "incident": "ServiceNow Ticket",
+        "sn_si_incident": "ServiceNow SIR Incident"
     },
     "name": "ServiceNow Classifier",
-    "sortValues": null,
     "transformer": {
-        "complex": null,
         "simple": "sys_class_name"
     },
     "type": "classification",

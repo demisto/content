@@ -436,6 +436,7 @@ There is no context output for this command.
 ### 7. cs-falcon-run-command
 ---
 Sends commands to hosts.
+
 #### Base Command
 
 `cs-falcon-run-command`
@@ -446,7 +447,7 @@ Sends commands to hosts.
 | host_ids | A comma-separated list of host agent IDs for which to run commands. (Can be retrieved by running the 'cs-falcon-search-device' command.) | Required | 
 | command_type | The type of command to run. | Required | 
 | full_command | The full command to run. | Required | 
-| scope | The scope for which to run the command. Possible values are: "read", "write", and "admin". Default is "read". | Optional | 
+| scope | The scope for which to run the command. Possible values are: "read", "write", and "admin". Default is "read". (NOTE: In order to run the CrowdStrike RTR `put` command, it is necessary to pass `scope=admin`.) | Optional | 
 | target | The target for which to run the command. Possible values are: "single" and "batch". Default is "batch". | Optional | 
 
 
@@ -3097,23 +3098,46 @@ Returns a list of your uploaded IOCs that match the search criteria.
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
 
 
-#### Command Example
-```!cs-falcon-search-custom-iocs types="domain"```
-
+#### Command example
+```!cs-falcon-search-custom-iocs limit=2```
 #### Context Example
 ```json
 {
     "CrowdStrike": {
         "IOC": [
             {
-                "CreatedTime": "2020-09-30T10:59:37Z",
-                "Expiration": "2020-10-30T00:00:00Z",
-                "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
-                "ModifiedTime": "2020-09-30T10:59:37Z",
-                "Severity": "high",
-                "Action": "prevent",
-                "Type": "domain",
-                "Value": "value"
+                "Action": "no_action",
+                "CreatedBy": "2bf188d347e44e08946f2e61ef590c24",
+                "CreatedTime": "2022-02-16T17:17:25.992164453Z",
+                "Description": "test",
+                "Expiration": "2022-02-17T13:47:57Z",
+                "ID": "04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4ec1",
+                "ModifiedBy": "2bf188d347e44e08946f2e61ef590c24",
+                "ModifiedTime": "2022-02-16T17:17:25.992164453Z",
+                "Platforms": [
+                    "mac"
+                ],
+                "Severity": "informational",
+                "Source": "Cortex XSOAR",
+                "Type": "ipv4",
+                "Value": "1.1.8.9"
+            },
+            {
+                "Action": "no_action",
+                "CreatedBy": "2bf188d347e44e08946f2e61ef590c24",
+                "CreatedTime": "2022-02-16T17:16:44.514398876Z",
+                "Description": "test",
+                "Expiration": "2022-02-17T13:47:57Z",
+                "ID": "54f12e3a1ef5af0612714f6acea8f34f18c5dc6be117ade949974633f949f412",
+                "ModifiedBy": "2bf188d347e44e08946f2e61ef590c24",
+                "ModifiedTime": "2022-02-16T17:16:44.514398876Z",
+                "Platforms": [
+                    "mac"
+                ],
+                "Severity": "informational",
+                "Source": "Cortex XSOAR",
+                "Type": "ipv4",
+                "Value": "4.1.8.9"
             }
         ]
     }
@@ -3123,9 +3147,10 @@ Returns a list of your uploaded IOCs that match the search criteria.
 #### Human Readable Output
 
 >### Indicators of Compromise
->|CreatedTime|Expiration|ID|ModifiedTime|Severity|Action|Type|Value|
->|---|---|---|---|---|---|---|---|
->| 2020-09-30T10:59:37Z | 2020-10-30T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-09-30T10:59:37Z | high | prevent | domain | value |
+>|ID|Action|Severity|Type|Value|Expiration|CreatedBy|CreatedTime|Description|ModifiedBy|ModifiedTime|Platforms|Policy|ShareLevel|Source|Tags|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4ec1 | no_action | informational | ipv4 | 1.1.8.9 | 2022-02-17T13:47:57Z | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | test | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | mac |  |  | Cortex XSOAR |  |
+>| 54f12e3a1ef5af0612714f6acea8f34f18c5dc6be117ade949974633f949f412 | no_action | informational | ipv4 | 4.1.8.9 | 2022-02-17T13:47:57Z | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:16:44.514398876Z | test | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:16:44.514398876Z | mac |  |  | Cortex XSOAR |  |
 
 ### cs-falcon-get-custom-ioc
 ***
@@ -3162,26 +3187,32 @@ Gets the full definition of one or more indicators that you are watching.
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
 
 
-#### Command Example
-```!cs-falcon-get-custom-ioc type="domain" value="test.domain.com"```
-
+#### Command example
+```!cs-falcon-get-custom-ioc type=ipv4 value=7.5.9.8```
 #### Context Example
 ```json
 {
     "CrowdStrike": {
-        "IOC": [
-            {
-                "CreatedTime": "2020-09-30T10:59:37Z",
-                "Expiration": "2020-10-30T00:00:00Z",
-                "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
-                "ModifiedTime": "2020-09-30T10:59:37Z",
-                "Severity": "high",
-                "Action": "prevent",
-                "Source": "Demisto playbook",
-                "Type": "domain",
-                "Value": "test.domain.com"
-            }
-        ]
+        "IOC": {
+            "Action": "no_action",
+            "CreatedBy": "2bf188d347e44e08946f2e61ef590c24",
+            "CreatedTime": "2022-02-16T14:25:22.968603813Z",
+            "Expiration": "2022-02-17T17:55:09Z",
+            "ID": "04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4e12",
+            "ModifiedBy": "2bf188d347e44e08946f2e61ef590c24",
+            "ModifiedTime": "2022-02-16T14:25:22.968603813Z",
+            "Platforms": [
+                "linux"
+            ],
+            "Severity": "informational",
+            "Source": "cortex xsoar",
+            "Tags": [
+                "test",
+                "test1"
+            ],
+            "Type": "ipv4",
+            "Value": "7.5.9.8"
+        }
     }
 }
 ```
@@ -3189,9 +3220,9 @@ Gets the full definition of one or more indicators that you are watching.
 #### Human Readable Output
 
 >### Indicator of Compromise
->|CreatedTime|Description|Expiration|ID|ModifiedTime|Severity|Action|Source|Type|Value|
->|---|---|---|---|---|---|---|---|---|---|
->| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | high | prevent | Demisto playbook | domain | test.domain.com |
+>|ID|Action|Severity|Type|Value|Expiration|CreatedBy|CreatedTime|Description|ModifiedBy|ModifiedTime|Platforms|Policy|ShareLevel|Source|Tags|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4e12 | no_action | informational | ipv4 | 7.5.9.8 | 2022-02-17T17:55:09Z | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T14:25:22.968603813Z |  | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T14:25:22.968603813Z | linux |  |  | cortex xsoar | test,<br/>test1 |
 
 ### cs-falcon-upload-custom-ioc
 ***
@@ -3206,14 +3237,16 @@ Uploads an indicator for CrowdStrike to monitor.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ioc_type | The type of the indicator. Possible values are: "sha256", "md5", "domain", "ipv4", and "ipv6". | Required | 
-| value | The string representation of the indicator. | Required | 
+| value | A comma separated list of indicators. More than one value can be supplied in order to upload multiple IOCs of the same type but with different values. Note that the uploaded IOCs will have the same properties (as supplied in other arguments). | Required | 
 | action | Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity. | Required | 
 | platforms | The platforms that the indicator applies to. You can enter multiple platform names, separated by commas. Possible values are: mac, windows and linux. | Required | 
 | severity | The severity level to apply to this indicator. Possible values are: informational, low, medium, high and critical. | Required for the prevent and detect actions. Optional for no_action. | 
 | expiration | The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ssZ). | Optional | 
 | source | The source where this indicator originated. This can be used for tracking where this indicator was defined. Limited to 200 characters. | Optional | 
 | description | A meaningful description of the indicator. Limited to 200 characters. | Optional | 
-
+| applied_globally | Whether the indicator is applied globally. Either applied_globally or host_groups must be provided. Possible values are: true, false. | Optional | 
+| host_groups | List of host group IDs that the indicator applies to. Can be retrieved by running the cs-falcon-list-host-groups command. Either applied_globally or host_groups must be provided. | Optional | 
+| tags | List of tags to apply to the indicator. | Optional | 
 
 #### Context Output
 
@@ -3231,7 +3264,8 @@ Uploads an indicator for CrowdStrike to monitor.
 | CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. | 
 | CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. | 
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
-
+| CrowdStrike.IOC.Tags | Unknown | The tags of the IOC. | 
+| CrowdStrike.IOC.Platforms | Unknown | The platforms of the IOC. | 
 
 #### Command Example
 ```!cs-falcon-upload-custom-ioc ioc_type="domain" value="test.domain.com" action="prevent" severity="high" source="Demisto playbook" description="Test ioc" platforms="mac"```
@@ -3250,7 +3284,8 @@ Uploads an indicator for CrowdStrike to monitor.
             "Severity": "high",
             "Source": "Demisto playbook",
             "Type": "domain",
-            "Value": "test.domain.com"
+            "Value": "test.domain.com",
+            "Platforms": ["mac"]
         }
     }
 }
@@ -3359,3 +3394,72 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Custom IOC 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r was successfully deleted.
+
+### cs-falcon-batch-upload-custom-ioc
+***
+Uploads a batch of indicators.
+
+
+#### Base Command
+
+`cs-falcon-batch-upload-custom-ioc`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| multiple_indicators_json | A JSON object with list of CS Falcon indicators to upload. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IOC.Type | string | The type of the IOC. | 
+| CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
+| CrowdStrike.IOC.ID | string | The full ID of the indicator. | 
+| CrowdStrike.IOC.Severity | string | The severity level to apply to this indicator. | 
+| CrowdStrike.IOC.Source | string | The source of the IOC. | 
+| CrowdStrike.IOC.Action | string | Action to take when a host observes the custom IOC. | 
+| CrowdStrike.IOC.Expiration | string | The datetime when the indicator will expire. | 
+| CrowdStrike.IOC.Description | string | The description of the IOC. | 
+| CrowdStrike.IOC.CreatedTime | date | The datetime the IOC was created. | 
+| CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. | 
+| CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. | 
+| CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
+| CrowdStrike.IOC.Tags | Unknown | The tags of the IOC. | 
+| CrowdStrike.IOC.Platforms | Unknown | The platforms of the IOC. | 
+
+#### Command example
+```!cs-falcon-batch-upload-custom-ioc multiple_indicators_json=`[{"description": "test", "expiration": "2022-02-17T13:47:57Z", "type": "ipv4", "severity": "Informational", "value": "1.1.8.9", "action": "no_action", "platforms": ["mac"], "source": "Cortex XSOAR", "applied_globally": true}]````
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "IOC": {
+            "Action": "no_action",
+            "CreatedBy": "2bf188d347e44e08946f2e61ef590c24",
+            "CreatedTime": "2022-02-16T17:17:25.992164453Z",
+            "Description": "test",
+            "Expiration": "2022-02-17T13:47:57Z",
+            "ID": "04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4e12",
+            "ModifiedBy": "2bf188d347e44e08946f2e61ef590c24",
+            "ModifiedTime": "2022-02-16T17:17:25.992164453Z",
+            "Platforms": [
+                "mac"
+            ],
+            "Severity": "informational",
+            "Source": "Cortex XSOAR",
+            "Type": "ipv4",
+            "Value": "1.1.8.9"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Custom IOC 1.1.8.9 was created successfully
+>|Action|CreatedBy|CreatedTime|Description|Expiration|ID|ModifiedBy|ModifiedTime|Platforms|Severity|Source|Type|Value|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| no_action | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | test | 2022-02-17T13:47:57Z | "04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4e12 | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | mac | informational | Cortex XSOAR | ipv4 | 1.1.8.9 |
+

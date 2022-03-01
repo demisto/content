@@ -1,5 +1,5 @@
 Accenture CTI provides intelligence regarding security threats and vulnerabilities.
-This integration was integrated and tested with version v2.88.0 of ACTI
+This integration was integrated and tested with version v2.89.0 of ACTI
 ## Configure ACTI Indicator Query on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
