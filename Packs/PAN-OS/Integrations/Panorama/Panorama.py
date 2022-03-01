@@ -8669,12 +8669,12 @@ class PanoramaCommand:
                     style="device group",
                     name=dg_name
                 )
-                result_job_id = device.commit(cmd=device_group_commit)  # type: ignore
+                result_job_id = device.commit(cmd=device_group_commit)
                 result.append(PushStatus(
                     hostid=resolve_host_id(device),
                     commit_type="devicegroup",
                     name=dg_name,
-                    job_id=result_job_id,  # type: ignore
+                    job_id=result_job_id,
                     commit_all_status="Initiated",
                     device_status="",
                     device=""
@@ -8685,12 +8685,12 @@ class PanoramaCommand:
                     style="template stack",
                     name=template_name
                 )
-                result_job_id = device.commit(cmd=template_stack_commit)  # type: ignore
+                result_job_id = device.commit(cmd=template_stack_commit)
                 result.append(PushStatus(
                     hostid=resolve_host_id(device),
                     commit_type="template-stack",
                     name=template_name,
-                    job_id=result_job_id,  # type: ignore
+                    job_id=result_job_id,
                     commit_all_status="Initiated",
                     device_status="",
                     device=""
