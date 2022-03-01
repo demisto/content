@@ -68,19 +68,27 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: f1b510a6-c786-4390-88f2-b169baaff6c8
+    taskid: fc37672b-4a27-4f58-8111-f1b1dd494d62
     type: regular
     task:
-      id: f1b510a6-c786-4390-88f2-b169baaff6c8
+      id: fc37672b-4a27-4f58-8111-f1b1dd494d62
       version: -1
       name: fortisiem-cmdb-devices-list
       script: FortiSIEMV2|||fortisiem-cmdb-devices-list
       type: regular
       iscommand: true
-      brand: ""
+      brand: FortiSIEMV2
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      exclude_ip: {}
+      exclude_ip_rage: {}
+      include_ip: {}
+      include_ip_range: {}
+      limit:
+        simple: "1"
+      page: {}
     separatecontext: false
     view: |-
       {
@@ -156,28 +164,28 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: efac87e4-c29d-4134-8012-9ffec3e49ab5
+    taskid: 1d3cba59-224c-4d6a-8505-763f9202dee0
     type: regular
     task:
-      id: efac87e4-c29d-4134-8012-9ffec3e49ab5
+      id: 1d3cba59-224c-4d6a-8505-763f9202dee0
       version: -1
       name: fortisiem-cmdb-device-get
       script: FortiSIEMV2|||fortisiem-cmdb-device-get
       type: regular
       iscommand: true
-      brand: ""
+      brand: FortiSIEMV2
     nexttasks:
       '#none#':
       - "5"
     scriptarguments:
-      ip_address:
-        simple: ${FortiSIEM.Device.accessIp}
+      ips:
+        simple: ' ${FortiSIEM.Device.accessIp}'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 800
+          "y": 790
         }
       }
     note: false
@@ -541,21 +549,22 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 4c2300a1-0d3e-4ee2-8bc1-ef4fd367035c
+    taskid: a08c04b6-e467-4cbd-8188-fcbd67a6393b
     type: regular
     task:
-      id: 4c2300a1-0d3e-4ee2-8bc1-ef4fd367035c
+      id: a08c04b6-e467-4cbd-8188-fcbd67a6393b
       version: -1
       name: fortisiem-watchlist-get
       script: FortiSIEMV2|||fortisiem-watchlist-get
       type: regular
       iscommand: true
-      brand: ""
+      brand: FortiSIEMV2
     nexttasks:
       '#none#':
       - "26"
     scriptarguments:
-      watchlist_id:
+      entry_id: {}
+      watchlist_ids:
         simple: ${FortiSIEM.Watchlist.id}
     separatecontext: false
     view: |-
@@ -572,21 +581,21 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 521bbc61-83ab-4f30-8faf-7de91bee4b49
+    taskid: 802501a6-642e-43f0-8a54-398bb56de621
     type: regular
     task:
-      id: 521bbc61-83ab-4f30-8faf-7de91bee4b49
+      id: 802501a6-642e-43f0-8a54-398bb56de621
       version: -1
       name: fortisiem-watchlist-entry-get
       script: FortiSIEMV2|||fortisiem-watchlist-entry-get
       type: regular
       iscommand: true
-      brand: ""
+      brand: FortiSIEMV2
     nexttasks:
       '#none#':
       - "16"
     scriptarguments:
-      entry_id:
+      entry_ids:
         simple: ${FortiSIEM.Watchlist.entries.id}
     separatecontext: false
     view: |-
@@ -693,21 +702,23 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 57eb2813-d2a0-41b8-8622-591ec8243ac7
+    taskid: 86426110-1c2e-4dbc-841d-6d1337ff32fd
     type: regular
     task:
-      id: 57eb2813-d2a0-41b8-8622-591ec8243ac7
+      id: 86426110-1c2e-4dbc-841d-6d1337ff32fd
       version: -1
       name: fortisiem-watchlist-entry-delete
       script: FortiSIEMV2|||fortisiem-watchlist-entry-delete
       type: regular
       iscommand: true
-      brand: ""
+      brand: FortiSIEMV2
     nexttasks:
       '#none#':
       - "20"
     scriptarguments:
       entry_id:
+        simple: ${FortiSIEM.WatchlistEntry.id}
+      entry_ids:
         simple: ${FortiSIEM.WatchlistEntry.id}
     separatecontext: false
     view: |-
@@ -1028,10 +1039,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 42a5d23d-0627-4c0e-8acf-9b035e84b87e
+    taskid: 98ddc4aa-81ca-430c-8efd-c8fe9b0877d9
     type: regular
     task:
-      id: 42a5d23d-0627-4c0e-8acf-9b035e84b87e
+      id: 98ddc4aa-81ca-430c-8efd-c8fe9b0877d9
       version: -1
       name: fortisiem-event-list-by-incident
       description: List events by the specified incident ID.
@@ -1141,4 +1152,3 @@ view: |-
   }
 inputs: []
 outputs: []
-description: Test Playbook for FortiSIEMV2 integration.
