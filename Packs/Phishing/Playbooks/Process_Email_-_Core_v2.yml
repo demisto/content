@@ -137,7 +137,7 @@ tasks:
         and not modified - only the "Label/x" context items that originated from the
         labels, and the best practice is to rely on these for the remainder of the
         playbook.
-      scriptName: ParseEmailFiles_dev
+      scriptName: ParseEmailFiles
       type: regular
       iscommand: false
       brand: ""
