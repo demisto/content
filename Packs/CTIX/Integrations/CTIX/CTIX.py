@@ -572,7 +572,7 @@ def main() -> None:
             return_results(url_details_command(client, demisto.args()))
         elif demisto.command() == 'file':
             return_results(file_details_command(client, demisto.args()))
-        elif demisto.command() == 'create-intel':
+        elif demisto.command() == 'ctix-create-intel':
             return_results(create_intel_command(client, demisto.args()))
 
     except Exception as e:

@@ -821,38 +821,38 @@ Return File Details.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| false | 0 | 3 | 0.0 | true | 1588854933 | 1586262933 | MD5 | false | false | {'id': '23ccc391-6968-4734-b93e-d4985e23dcfd', 'name': 'anomalous-activity', 'colour_code': None, 'created_by': 'system@default.tld', 'created': 1605030281, 'modified_by': 'system@default.tld', 'modified': 1605030281}| 1605791028 | 4ebb2b00a11f9361cf3757e96f14ad4b | indicator | package-d54892d8-b495-4331-b361-17ffbeacdaed,<br/>package-09be25b9-5d6b-4320-b512-4dc0e088f434,<br/>bundle--87151b50-31a4-4f0a-9f5f-282b0f1d1285 | adsa,<br/>newtestcollection1 - edited | 1557df73-68b4-485b-9821-e3036e5fb7a4,<br/>a1eb2b29-fed4-4635-8e5c-a74f4339b8ab | attack_pattern: <br/>campaign: <br/>intrusion_set: <br/>malware: <br/>threat_actor: <br/>tool: <br/>indicator: <br/>ttp: <br/>kill_chain_phases: <br/>course_of_action:  | false | 0 | 5 | 50.0 | Import | {'name': 'Import', 'id': 'd1d3b628-346f-43c3-a369-235661ac6277'} | indicator--2e35588f-cde1-4492-a720-ab0aee7fafaa | 0a834138-cc59-4107-aa69-46e6080f06af | Indicator | false | 0 | 4ebb2b00a11f9361cf3757e96f14ad4b |
 
-### create_intel
+### ctix-create-intel
 ***
-Creates Intel in CTIX platform
+Creates Intel in CTIX platform.
 
 
 #### Base Command
 
-`create_intel`
+`ctix-create-intel`
 #### Input
 
-| **Argument Name** | **Type** | **Description** | **Required** |
+| **Argument Name** | **Description** | **Required** |
 | --- | --- | --- | --- |
-| title | String | Title of ioc | Optional |
-| description | String | Description of ioc| Optional |
-| tlp | String | Tlp of ioc | Optional |
-| confidence | String | Confidence of ioc | Optional |
-| ips | List | List of IPs | Optional | 
-| urls | List | List of URLs | Optional |
-| domains | List | List of domains | Optional |
-| files | List | List of files | Optional |
-| emails | List | List of emails | Optional |
-| malwares | List | List of malwares | Optional |
-| threat_actors | List | List of threat actors | Optional |
-| attack_patterns | List |List of attack patterns | Optional |
+| title | Title of ioc | Optional |
+| description | Description of ioc| Optional |
+| tlp | Tlp of ioc | Optional |
+| confidence | Confidence of ioc | Optional |
+| ips | List of IPs | Optional | 
+| urls | List of URLs | Optional |
+| domains | List of domains | Optional |
+| files | List of files | Optional |
+| emails | List of emails | Optional |
+| malwares | List of malwares | Optional |
+| threat_actors | List of threat actors | Optional |
+| attack_patterns | List of attack patterns | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CTIX.Intel.data.details | String | Tells response of an api | 
-| CTIX.Intel.data.status | Number | Status code returned from api | 
+| CTIX.Intel.response | String | The response of the api | 
+| CTIX.Intel.status | Number | Status code returned from the api | 
 
 
 #### Command Example
@@ -863,7 +863,7 @@ Creates Intel in CTIX platform
 {
     "CTIX": {
         "Intel": {
-            "details": "Package is pushed in CTIX for publishing",
+            "response": "Package is pushed in CTIX for publishing",
             "status": 201
         }
     }
