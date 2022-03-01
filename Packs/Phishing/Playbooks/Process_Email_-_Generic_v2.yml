@@ -2288,5 +2288,5 @@ outputs:
   description: The file object.
   type: string
 tests:
-- playbook-checkEmailAuthenticity-test
-fromversion: 6.1.0
+- Process Email - Generic - Test - Incident Starter
+fromversion: 6.0.0
