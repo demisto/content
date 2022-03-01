@@ -5,7 +5,7 @@ import uuid
 from dateutil import parser
 
 PREFIXES_TO_REMOVE = ['incident.']
-PAGE_SIZE = int(demisto.args().get('pageSize', 500))
+PAGE_SIZE = int(demisto.args().get('pageSize', 100))
 PYTHON_MAGIC = "$$##"
 
 
