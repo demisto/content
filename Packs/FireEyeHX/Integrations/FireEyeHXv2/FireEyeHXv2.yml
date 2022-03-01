@@ -1585,7 +1585,7 @@ script:
     name: fireeye-hx-delete-host-set-policy
   - arguments:
     - description: The acquisition ID.
-      name: acquisitionId
+      name: acquisitionId 
       required: true
     description: Delete data acquisition.
     name: fireeye-hx-delete-data-acquisition
