@@ -12,7 +12,9 @@ if [ "$#" -lt "1" ]; then
   [-p, --packs]               CSV list of pack IDs. Mandatory when the --force flag is on.
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
   [-g, --gitlab]              Flag indicating to trigger the flow in GitLab.
-  [-sbp, --storage-base-path] A path to copy from in this current upload, and to be used as a target destination. This path should look like base path should look like upload-flow/builds/branch_name/build_number/content.
+  [-sbp, --storage-base-path] A path to copy from in this current upload, and to be used as a target destination. This path should look like upload-flow/builds/branch_name/build_number/content.
+  [-dz, --create_dependencies_zip] Upload packs with dependencies zip
+  [-o, --override_all_packs]  Whether to override all packs, and not just modified packs.
   "
   exit 1
 fi
@@ -75,7 +77,9 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -g|--gitlab) _gitlab=true
-    shift
+    shift;;
+
+  -dz|--create_dependencies_zip) _create_dependencies_zip=true
     shift;;
 
   *)    # unknown option.
@@ -98,15 +102,17 @@ if [ -n "$_force" ] && [ -n "$_storage_base_path"]; then
     echo "Can not force upload while using a storage base path."
     exit 1
 fi
-if [[ -n "$_storage_base_path" ]] && [ "$_storage_base_path" != *content ]; then
-  echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content."
-  exit 1
-fi
-
-if [[ -n "$_storage_base_path" ]] && [ "$_storage_base_path" != upload-flow* ]; then
-  echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content."
-  exit 1
-fi
+#if [[ -n "$_storage_base_path" ]] && [ "$_storage_base_path" != *content ]; then
+#  echo "$_storage_base_path"
+#  echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content."
+#  exit 1
+#fi
+#
+#if [[ -n "$_storage_base_path" ]] && [ "$_storage_base_path" != upload-flow* ]; then
+#  echo $_storage_base_path
+#  echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content."
+#  exit 1
+#fi
 
 if [ -n "$_gitlab" ]; then
 
@@ -119,6 +125,9 @@ if [ -n "$_gitlab" ]; then
     _override_all_packs=false
   else
     _override_all_packs=true
+  fi
+  if [ -z "$_create_dependencies_zip" ]; then
+    _create_dependencies_zip=false
   fi
 
   source Utils/gitlab_triggers/trigger_build_url.sh
@@ -134,6 +143,7 @@ if [ -n "$_gitlab" ]; then
     --form "variables[IFRA_ENV_TYPE]=Bucket-Upload" \
     --form "variables[STORAGE_BASE_PATH]=${_storage_base_path}" \
     --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
+    --form "variables[CREATE_DEPENDENCIES_ZIP]=${_create_dependencies_zip}" \
     "$BUILD_TRIGGER_URL"
 
 else

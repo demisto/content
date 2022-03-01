@@ -1,0 +1,9 @@
+!cado-create-project project_name="Project Name" description="Project Description"
+!cado-list-project limit=100
+!cado-list-project project_id=1
+!cado-get-pipeline project_id=1 pipeline_id=1
+!cado-get-pipeline project_id=1 limit=100
+!cado-list-ec2 project_id=1 region="us-east-1" limit=100
+!cado-list-s3 project_id=1 limit=100
+!cado-trigger-ec2 project_id=1 instance_id="i-0e03f893198b23633" region="us-east-1" bucket="cado-test-josh" compress=true include_disks=true include_hash=true include_logs=true include_screenshot=true
+!cado-trigger-s3 project_id=1 bucket="cado-test-josh" file_name="image.qcow2"

@@ -133,9 +133,9 @@ Gets alerts.
 >### Existing Alerts:
 >|Id|Name|State|New State Date|Panel Id|Dashboard Id|Dashboard Uid|Dashboard Name|Url|
 >|---|---|---|---|---|---|---|---|---|
->| 2 | Adi's Alert | no_data | 2021-09-30T15:43:20Z | 5 | 2 | yzDQUOR7z | streaming2 | [https:<span>//</span>base_url/d/yzDQUOR7z/streaming2](https:<span>//</span>base_url/d/yzDQUOR7z/streaming2) |
->| 1 | Arseny's Alert | no_data | 2021-06-09T15:20:01Z | 4 | 1 | TXSTREZ | streaming | [https:<span>//</span>base_url/d/TXSTREZ/streaming](https:<span>//</span>base_url/d/TXSTREZ/streaming) |
->| 3 | TryAlert | alerting | 2021-08-11T13:30:40Z | 6 | 2 | yzDQUOR7z | streaming2 | [https:<span>//</span>base_url/d/yzDQUOR7z/streaming2](https:<span>//</span>base_url/d/yzDQUOR7z/streaming2) |
+>| 2 | Adi's Alert | no_data | 2021-09-30T15:43:20Z | 5 | 2 | yzDQUOR7z | streaming2 | [https://base_url/d/yzDQUOR7z/streaming2](https://base_url/d/yzDQUOR7z/streaming2) |
+>| 1 | Arseny's Alert | no_data | 2021-06-09T15:20:01Z | 4 | 1 | TXSTREZ | streaming | [https://base_url/d/TXSTREZ/streaming](https://base_url/d/TXSTREZ/streaming) |
+>| 3 | TryAlert | alerting | 2021-08-11T13:30:40Z | 6 | 2 | yzDQUOR7z | streaming2 | [https://base_url/d/yzDQUOR7z/streaming2](https://base_url/d/yzDQUOR7z/streaming2) |
 
 
 ### grafana-alert-pause
@@ -307,9 +307,9 @@ Gets users.
 >### Existing Users:
 >|Id|Email|Name|Login|Is Admin|Is Disabled|Avatar Url|Last Seen At|Last Seen At Age|
 >|---|---|---|---|---|---|---|---|---|
->| 1 | User@mail | admin | admin | true | false | [https:<span>//</span>base_url/avatar/5d9c68c6c50ed3d02a2fcf54f63993b](https:<span>//</span>base_url/avatar/5d9c68c6c50ed3d02a2fcf54f63993b) | 2021-10-04T15:25:40Z | 4m |
->| 2 | xadmin | xadmin | xadmin | false | false | [https:<span>//</span>base_url/avatar/04501192ea3453723d1336c6520ce2c](https:<span>//</span>base_url/avatar/04501192ea3453723d1336c6520ce2c) | 2021-09-29T12:47:23Z | 5d |
->| 3 | test@test | User3 | User | false | false | [https:<span>//</span>base_url/avatar/46d229b033af06a191ff2267bca9ae5](https:<span>//</span>base_url/avatar/46d229b033af06a191ff2267bca9ae5) | 2011-07-27T15:10:37Z | 10y |
+>| 1 | User@mail | admin | admin | true | false | [https://base_url/avatar/5d9c68c6c50ed3d02a2fcf54f63993b](https://base_url/avatar/5d9c68c6c50ed3d02a2fcf54f63993b) | 2021-10-04T15:25:40Z | 4m |
+>| 2 | xadmin | xadmin | xadmin | false | false | [https://base_url/avatar/04501192ea3453723d1336c6520ce2c](https://base_url/avatar/04501192ea3453723d1336c6520ce2c) | 2021-09-29T12:47:23Z | 5d |
+>| 3 | test@test | User3 | User | false | false | [https://base_url/avatar/46d229b033af06a191ff2267bca9ae5](https://base_url/avatar/46d229b033af06a191ff2267bca9ae5) | 2011-07-27T15:10:37Z | 10y |
 
 
 ### grafana-user-teams-get
@@ -380,8 +380,8 @@ Gets the user's teams by user ID.
 >### Teams For User 1:
 >|Id|Org Id|Name|Email|Avatar Url|Member Count|Permission|
 >|---|---|---|---|---|---|---|
->| 15 | 1 | Test Team | team@test.com | [https:<span>//</span>base_url/avatar/f1f97cfa3c828a7352da671a](https:<span>//</span>base_url/avatar/f1f97cfa3c828a7352da671a) | 1 | 0 |
->| 16 | 1 | TestTeam2 | test2@test.com | [https:<span>//</span>base_url/avatar/1d3226029e424011bffde2f](https:<span>//</span>base_url/avatar/1d3226029e424011bffde2f) | 2 | 0 |
+>| 15 | 1 | Test Team | team@test.com | [https://base_url/avatar/f1f97cfa3c828a7352da671a](https://base_url/avatar/f1f97cfa3c828a7352da671a) | 1 | 0 |
+>| 16 | 1 | TestTeam2 | test2@test.com | [https://base_url/avatar/1d3226029e424011bffde2f](https://base_url/avatar/1d3226029e424011bffde2f) | 2 | 0 |
 
 
 ### grafana-user-orgs-get
@@ -604,9 +604,9 @@ Gets teams.
 >### Teams Search Results:
 >|Id|Org Id|Name|Email|Avatar Url|Member Count|Permission|
 >|---|---|---|---|---|---|---|
->| 15 | 1 | Test Team | team@test.com | [https:<span>//</span>base_url/avatar/f1f97cfa3c828a7352da671a](https:<span>//</span>base_url/avatar/f1f97cfa3c828a7352da671a) | 1 | 0 |
->| 16 | 1 | TestTeam2 | test2@test.com | [https:<span>//</span>base_url/avatar/1d3226029e424011bffde2f](https:<span>//</span>base_url/avatar/1d3226029e424011bffde2f) | 2 | 0 |
->| 144 | 1 | Elia | email@test.com | [https:<span>//</span>base_url/avatar/71cc610bc4841e3444235f09d9c](https:<span>//</span>base_url/avatar/71cc610bc4841e3444235f09d9c) | 0 | 0 |
+>| 15 | 1 | Test Team | team@test.com | [https://base_url/avatar/f1f97cfa3c828a7352da671a](https://base_url/avatar/f1f97cfa3c828a7352da671a) | 1 | 0 |
+>| 16 | 1 | TestTeam2 | test2@test.com | [https://base_url/avatar/1d3226029e424011bffde2f](https://base_url/avatar/1d3226029e424011bffde2f) | 2 | 0 |
+>| 144 | 1 | Elia | email@test.com | [https://base_url/avatar/71cc610bc4841e3444235f09d9c](https://base_url/avatar/71cc610bc4841e3444235f09d9c) | 0 | 0 |
 
 
 ### grafana-team-members-list
@@ -674,7 +674,7 @@ Gets a list of all team members by team ID.
 >### Team 15 Members:
 >|Org Id|Team Id|User Id|Email|Name|Login|Avatar Url|Permission|
 >|---|---|---|---|---|---|---|---|
->| 1 | 15 | 1 | User@mail | admin | admin | [https:<span>//</span>base_url/avatar/5d9c68c6c50ed3d02a2fcf54f63993b](https:<span>//</span>base_url/avatar/5d9c68c6c50ed3d02a2fcf54f63993b) | 0 |
+>| 1 | 15 | 1 | User@mail | admin | admin | [https://base_url/avatar/5d9c68c6c50ed3d02a2fcf54f63993b](https://base_url/avatar/5d9c68c6c50ed3d02a2fcf54f63993b) | 0 |
 
 
 ### grafana-user-add-to-team
@@ -940,8 +940,8 @@ Searches dashboards.
 >### Existing Dashboards:
 >|Id|Uid|Title|Is Starred|Tags|Uri|Url|Type|Sort Meta|
 >|---|---|---|---|---|---|---|---|---|
->| 1 | TXSTREZ | Streaming | true |  | db/streaming | [https:<span>//</span>base_url/d/TXSTREZ/streaming](https:<span>//</span>base_url/d/TXSTREZ/streaming) | dash-db | 0 |
->| 2 | yzDQUOR7z | Streaming Simple | false | tag1 | db/streaming2 | [https:<span>//</span>base_url/d/yzDQUOR7z/streaming2](https:<span>//</span>base_url/d/yzDQUOR7z/streaming2) | dash-db | 0 |
+>| 1 | TXSTREZ | Streaming | true |  | db/streaming | [https://base_url/d/TXSTREZ/streaming](https://base_url/d/TXSTREZ/streaming) | dash-db | 0 |
+>| 2 | yzDQUOR7z | Streaming Simple | false | tag1 | db/streaming2 | [https://base_url/d/yzDQUOR7z/streaming2](https://base_url/d/yzDQUOR7z/streaming2) | dash-db | 0 |
 
 
 ### grafana-user-get-by-id
@@ -1009,7 +1009,7 @@ Gets a user by ID.
 >### User 1 Results:
 >|Id|Email|Name|Login|Theme|Org Id|Is Grafana Admin|Is D Is abled|Is External|Updated At|Created At|Avatar Url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 1 | User@mail | admin | admin | light | 1 | true | false | false | 2021-09-30T14:46:22Z | 2021-06-08T10:57:39Z | [https:<span>//</span>base_url/avatar/46d229b033af06a191ff2267bca9ae5](https:<span>//</span>base_url/avatar/46d229b033af06a191ff2267bca9ae5) |
+>| 1 | User@mail | admin | admin | light | 1 | true | false | false | 2021-09-30T14:46:22Z | 2021-06-08T10:57:39Z | [https://base_url/avatar/46d229b033af06a191ff2267bca9ae5](https://base_url/avatar/46d229b033af06a191ff2267bca9ae5) |
 
 
 ### grafana-team-get-by-id
@@ -1065,7 +1065,7 @@ Gets a team by ID.
 >### Team 15 Results:
 >|Id|Org Id|Name|Email|Avatar Url|Member Count|Permission|
 >|---|---|---|---|---|---|---|
->| 15 | 1 | Test Team | team@test.com | [https:<span>//</span>base_url/avatar/f1f97cfa3c828a7352da671a](https:<span>//</span>base_url/avatar/f1f97cfa3c828a7352da671a) | 1 | 0 |
+>| 15 | 1 | Test Team | team@test.com | [https://base_url/avatar/f1f97cfa3c828a7352da671a](https://base_url/avatar/f1f97cfa3c828a7352da671a) | 1 | 0 |
 
 
 ### grafana-alert-get-by-id
