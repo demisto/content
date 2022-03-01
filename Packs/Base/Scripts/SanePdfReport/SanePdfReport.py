@@ -22,8 +22,8 @@ MD_IMAGE_PATH = '/markdown/image'
 MD_HTTP_PORT = 10888
 SERVER_OBJECT = None
 MD_IMAGE_SUPPORT_MIN_VER = '6.5'
-
 TABLE_TEXT_MAX_LENGTH_SUPPORT_MIN_VER = '7.0'
+
 
 def random_string(size=10):
     return ''.join(
