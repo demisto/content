@@ -4,7 +4,7 @@ Processes an evidence file and exports the items responsive to a filter.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Sub-playbooks
-* AccessDataJobPolling
+* GenericPolling
 
 ## Integrations
 * AccessdataV2
