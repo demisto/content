@@ -1,8 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-register_module_line('Okta v2', 'start', __line__())
-
 
 # IMPORTS
 # Disable insecure warnings
@@ -1211,5 +1209,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-register_module_line('Okta v2', 'end', __line__())
