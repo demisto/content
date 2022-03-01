@@ -293,7 +293,7 @@ Retrieve full information of the specified Devices.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_address | Comma separated list of devices IP addresses. | Required | 
+| ips | Comma separated list of devices IP addresses. | Required | 
 
 
 #### Context Output
@@ -313,7 +313,7 @@ Retrieve full information of the specified Devices.
 
 
 #### Command Example
-```!fortisiem-cmdb-device-get ip_address=192.168.30.254```
+```!fortisiem-cmdb-device-get ips=192.168.30.254```
 
 #### Context Example
 ```json
@@ -616,7 +616,7 @@ Get watchlist by the specified watchlist or entry ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| watchlist_id | Comma separated list of watchlist group ID. | Optional | 
+| watchlist_ids | Comma separated list of watchlist group ID. | Optional | 
 | entry_id | Comma separated list of entry ID that resides in the watchlist. | Optional | 
 
 
@@ -639,7 +639,7 @@ Get watchlist by the specified watchlist or entry ID.
 
 
 #### Command Example
-```!fortisiem-watchlist-get watchlist_id=500504```
+```!fortisiem-watchlist-get watchlist_ids=500504```
 
 #### Context Example
 ```json
@@ -960,7 +960,7 @@ Delete entry of watchlist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | Comma separated list of Entries ID to delete. | Required | 
+| entry_ids | Comma separated list of Entries ID to delete. | Required | 
 
 
 #### Context Output
@@ -968,7 +968,7 @@ Delete entry of watchlist.
 There is no context output for this command.
 
 #### Command Example
-```!fortisiem-watchlist-entry-delete entry_id=1488255```
+```!fortisiem-watchlist-entry-delete entry_ids=1488255```
 
 #### Human Readable Output
 
@@ -1012,7 +1012,7 @@ Get entry by the specified entry ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | Comma separated list of entry ID. | Required | 
+| entry_ids | Comma separated list of entry ID. | Required | 
 
 
 #### Context Output
@@ -1034,7 +1034,7 @@ Get entry by the specified entry ID.
 
 
 #### Command Example
-```!fortisiem-watchlist-entry-get entry_id=1576423```
+```!fortisiem-watchlist-entry-get entry_ids=1576423```
 
 #### Context Example
 ```json
