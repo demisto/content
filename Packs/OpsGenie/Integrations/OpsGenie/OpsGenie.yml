@@ -1,0 +1,63 @@
+commonfields:
+  id: OpsGenie
+  version: -1
+name: OpsGenie
+display: OpsGenie (Deprecated)
+deprecated: true
+category: Messaging
+description: Deprecated. Use the OpsGenie v3 integration instead
+configuration:
+- display: Base URL
+  name: baseURL
+  defaultvalue: https://api.opsgenie.com/v2
+  type: 0
+  required: true
+- display: API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: opsgenie-get-on-call
+    arguments:
+    - name: schedule
+      required: true
+      description: Schedule Name
+    - name: date
+      description: Date to check the on-call schedule
+    outputs:
+    - contextPath: OpsGenie.Schedule
+      description: Schedule name
+    - contextPath: OpsGenie.OnCall.email
+      description: Email of current on-call user
+    - contextPath: OpsGenie.OnCall.name
+      description: Name of current on-call user
+    description: Get current on-call users for a given Schedule
+  - name: opsgenie-get-user
+    arguments:
+    - name: userID
+      required: true
+      default: true
+      description: User identifier (i.e. email)
+    description: Get user information
+  - name: opsgenie-get-schedules
+    arguments: []
+    description: Get all schedules
+  - name: opsgenie-get-schedule-timeline
+    arguments:
+    - name: schedule
+      required: true
+      default: true
+      description: Schedule name
+    description: Get schedule timeline information
+tests:
+- no test
+fromversion: 5.0.0
