@@ -467,7 +467,7 @@ def test_parse_indicator():
         },
         'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
         'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
-            'Indicator': 'sha256', 'Type': 'file', 'Vendor': '', 'Score': 2,
+            'Indicator': 'sha256', 'Type': 'file', 'Vendor': '', 'Score': 2,  # Vendor is auto-populated on XSOAR
             'Reliability': 'A+ - 3rd party enrichment'
         }
     }
