@@ -2156,8 +2156,11 @@ def search_detections_command():
 
     hr = tableToMarkdown('Detections Found:', entries, headers=headers, removeNull=True, headerTransform=pascalToSpace)
 
-    return CommandResults(readable_output=hr, outputs=entries, outputs_key_field='detection_id',
-                          outputs_prefix='CrowdStrike.Detection', raw_response=raw_res)
+    return CommandResults(readable_output=hr,
+                          outputs=entries,
+                          outputs_key_field='detection_id',
+                          outputs_prefix='CrowdStrike.Detection',
+                          raw_response=raw_res)
 
 
 def resolve_detection_command():
