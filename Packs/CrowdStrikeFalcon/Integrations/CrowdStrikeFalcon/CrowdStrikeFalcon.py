@@ -3160,7 +3160,6 @@ def execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command,
         response = run_batch_write_cmd(batch_id, command_type=command_type, full_command=full_command,
                                        optional_hosts=host_ids)
     finally:
-
         timer.cancel()
     return response
 
