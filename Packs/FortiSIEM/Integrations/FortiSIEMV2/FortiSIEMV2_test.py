@@ -95,7 +95,7 @@ def test_cmdb_device_get(requests_mock):
     mock_response = load_xml_mock_response("get_device.xml")
     requests_mock.get(f'{client._base_url}cmdbDeviceInfo/device', text=mock_response)
     results = cmdb_device_get_command(client, {
-        'ip_address': IP_ADDRESS_1
+        'ips': IP_ADDRESS_1
     })
     outputs = results[0].outputs
     assert outputs[0]['name'] == 'DEVICE_1'
@@ -211,7 +211,7 @@ def test_list_watchlist(command_arguments, response_file, suffix_url, watchlist_
 
 
 @pytest.mark.parametrize("command_arguments,response_file,suffix_url,watchlist_id,watchlist_display_name",
-                         [({"watchlist_id": "111"},
+                         [({"watchlist_ids": "111"},
                            'get_watchlist.json', 'watchlist/111', 111, "Accounts Locked"),
                           ({"entry_id": "55555"},
                            'list_watchlist2.json', 'watchlist/byEntry/55555', 112, "Port Scanners")])
@@ -364,7 +364,7 @@ def test_delete_entry(requests_mock):
     mock_response = load_json_mock_response('delete_entry.json')
     requests_mock.post(f'{client._base_url}watchlist/entry/delete', json=mock_response)
     results = watchlist_entry_delete_command(client, {
-        "entry_id": 11111
+        "entry_ids": 11111
     })
     readable_output = results[0].readable_output
     assert readable_output == 'The entry 11111 were deleted successfully.'
@@ -389,7 +389,7 @@ def test_get_entry(requests_mock):
     entry_id = 55555
     requests_mock.get(f'{client._base_url}watchlist/entry/{entry_id}', json=mock_response)
     results = watchlist_entry_get_command(client, {
-        "entry_id": entry_id
+        "entry_ids": entry_id
     })
     outputs = results[0].outputs
     assert results[0].outputs_prefix == 'FortiSIEM.WatchlistEntry'
