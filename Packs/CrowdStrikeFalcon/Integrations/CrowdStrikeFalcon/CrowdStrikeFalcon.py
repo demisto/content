@@ -2153,9 +2153,9 @@ def search_detections_command():
                 detection_entry['BehaviorsProcessed'] = demisto.get(detection, 'behaviors_processed')
 
             entries.append(detection_entry)
+
     hr = tableToMarkdown('Detections Found:', entries, headers=headers, removeNull=True, headerTransform=pascalToSpace)
-    # ec = {'CrowdStrike.Detection(val.ID === obj.ID)': entries}
-    # return create_entry_object(contents=raw_res, ec=ec, hr=hr)
+
     return CommandResults(readable_output=hr, outputs=entries, outputs_key_field='detection_id',
                           outputs_prefix='CrowdStrike.Detection', raw_response=raw_res)
 
@@ -3073,7 +3073,6 @@ def main():
         elif command == 'fetch-incidents':
             demisto.incidents(fetch_incidents())
 
-
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
             return_results(get_indicator_device_id())
         elif demisto.command() == 'cs-falcon-search-device':
@@ -3184,7 +3183,6 @@ def main():
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
     except Exception as e:
-        print(e)
         return_error(str(e))
 
 
