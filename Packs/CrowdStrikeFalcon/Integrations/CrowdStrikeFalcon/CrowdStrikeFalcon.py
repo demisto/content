@@ -2607,7 +2607,7 @@ def status_get_command(args, is_polling=False):
     files_output = []
     file_standard_context = []
 
-    sha256 = ""  # uses for the polling, if not empty indicates that the status is ready
+    sha256 = ""  # Used for the polling. When this isn't empty it indicates that the status is "ready".
     for request_id in request_ids:
         response = status_get_cmd(request_id, timeout, timeout_duration)
         responses.append(response)
@@ -2637,7 +2637,7 @@ def status_get_command(args, is_polling=False):
                 'Size': resource.get('size'),
             })
             sha256 = resource.get('sha256', '')
-            request_ids_for_polling[host_id] = {'SHA256': sha256, 'RequestID': request_id}
+            request_ids_for_polling[host_id] = {'SHA256': sha256}
 
     if is_polling:
         args['SHA256'] = sha256
@@ -3099,9 +3099,9 @@ def parse_rtr_command_response(response, host_ids, process_id=None) -> list:
 
     for host_id, host_data in resources.items():
         current_error = ""
-        errors = host_data.get('errors')
-        stderr = host_data.get('stderr')
-        command_failed_with_error = errors or stderr
+        errors = host_data.get('errors')  # API errors
+        stderr = host_data.get('stderr')  # host command error (as path does not exist and more)
+        command_failed_with_error = errors or stderr  # API errors are "stronger" that host stderr
         if command_failed_with_error:
             if errors:
                 current_error = errors[0].get('message', '')
@@ -3130,7 +3130,7 @@ def match_remove_command_for_os(operating_system, file_path):
     elif operating_system == 'Linux' or operating_system == 'Mac':
         return f'rm {file_path} -r -d'
     else:
-        return None
+        return ""
 
 
 def rtr_remove_file_command(args: dict) -> CommandResults:

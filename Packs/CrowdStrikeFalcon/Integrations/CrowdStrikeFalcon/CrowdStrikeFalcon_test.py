@@ -3646,7 +3646,7 @@ def test_rtr_kill_process_command(mocker):
     ("Windows", 'rm test.txt --force'),
     ("Linux", 'rm test.txt -r -d'),
     ("Mac", 'rm test.txt -r -d'),
-    ("bla", None),
+    ("bla", ""),
 ])
 def test_match_remove_command_for_os(operating_system, expected_result):
     from CrowdStrikeFalcon import match_remove_command_for_os
