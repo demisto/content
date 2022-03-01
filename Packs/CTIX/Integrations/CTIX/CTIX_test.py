@@ -276,5 +276,5 @@ def test_create_intel(requests_mock):
     }
     response = create_intel_command(client, post_data)
 
-    assert "data", "status" in response.keys()
-    assert response["status"] == 200
+    assert 'data', 'status' in response['CTIX']['Intel']['response']
+    assert response['CTIX']['Intel']['response']['status'] == 201
