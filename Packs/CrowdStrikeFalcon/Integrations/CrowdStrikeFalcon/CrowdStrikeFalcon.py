@@ -2159,6 +2159,7 @@ def search_detections_command():
     return CommandResults(readable_output=hr, outputs=entries, outputs_key_field='detection_id',
                           outputs_prefix='CrowdStrike.Detection', raw_response=raw_res)
 
+
 def resolve_detection_command():
     """
         Resolves single or multiple detections
