@@ -23,6 +23,7 @@ MD_HTTP_PORT = 10888
 SERVER_OBJECT = None
 MD_IMAGE_SUPPORT_MIN_VER = '6.5'
 
+TABLE_TEXT_MAX_LENGTH_SUPPORT_MIN_VER = '7.0'
 
 def random_string(size=10):
     return ''.join(
@@ -124,6 +125,7 @@ def main():
         headerRightImage = demisto.args().get('demistoLogo', '')
         pageSize = demisto.args().get('paperSize', 'letter')
         disableHeaders = demisto.args().get('disableHeaders', '')
+        tableTextMaxLength = demisto.args().get('tableTextMaxLength', '300')
 
         # Note: After headerRightImage the empty one is for legacy argv in server.js
         extra_cmd = f"{orientation} {resourceTimeout} {reportType} " + \
@@ -147,6 +149,11 @@ def main():
             # add md server address
             mdServerAddress = f'http://localhost:{MD_HTTP_PORT}'
             extra_cmd += f' "" "" "{mdServerAddress}"'
+
+            isTableTextMaxLengthSupported = is_demisto_version_ge(TABLE_TEXT_MAX_LENGTH_SUPPORT_MIN_VER)
+
+            if isTableTextMaxLengthSupported:
+                extra_cmd += f' {tableTextMaxLength}'
 
         # Generate a random input file so we won't override on concurrent usage
         input_id = random_string()
