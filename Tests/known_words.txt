@@ -94,3 +94,4 @@ Syslog
 DomainTools
 replyTo
 URLs
+CrowdStrike
