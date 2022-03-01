@@ -128,8 +128,7 @@ tasks:
       id: 1a9803be-d5d9-487d-8849-f838bcb8ef15
       version: -1
       name: Were similar incidents found?
-      description: Checks whether the email was found to be part of a bigger phishing
-        campaign.
+      description: Checks whether the email was found to be part of a bigger phishing campaign.
       type: condition
       iscommand: false
       brand: ""
@@ -169,8 +168,7 @@ tasks:
       id: 1640dfa4-a4b1-4199-894e-560c6486f2ce
       version: -1
       name: Search for an existing campaign incident in XSOAR
-      description: Get the incident campaign's ID for the campaign that is linked
-        to at least one of the given incidents.
+      description: Get the incident campaign's ID for the campaign that is linked to at least one of the given incidents.
       scriptName: IsIncidentPartOfCampaign
       type: regular
       iscommand: false
@@ -290,8 +288,7 @@ tasks:
       id: c3405aa2-e455-41fc-80fb-c393a4f4a149
       version: -1
       name: Is there an existing campaign incident?
-      description: Checks whether any of the similar phishing incidents are currently
-        linked to an existing phishing campaign.
+      description: Checks whether any of the similar phishing incidents are currently linked to an existing phishing campaign.
       type: condition
       iscommand: false
       brand: ""
@@ -409,8 +406,7 @@ tasks:
       id: 2a6a9377-03c3-4fbf-8f0e-9022c90a7890
       version: -1
       name: Investigate new campaign incident
-      description: Start investigation of the campaign incident so that the data can
-        be changed.
+      description: Start investigation of the campaign incident so that the data can be changed.
       script: Builtin|||investigate
       type: regular
       iscommand: true
@@ -446,8 +442,7 @@ tasks:
       id: e824c80a-1df8-4bb2-8314-aba3961a9e27
       version: -1
       name: Link the phishing incidents to the campaign incident
-      description: Links the phishing incidents that were found in the campaign, to
-        the phishing campaign incident.
+      description: Links the phishing incidents that were found in the campaign, to the phishing campaign incident.
       script: Builtin|||linkIncidents
       type: regular
       iscommand: true
@@ -504,9 +499,7 @@ tasks:
       id: bf08e4d5-db2c-4f32-88c4-b2bff0bd09db
       version: -1
       name: Can the found incidents be linked to the campaign?
-      description: Checks whether the detected Phishing incidents can be linked to
-        the Phishing Campaign incident by checking if the AutomaticallyLinkIncidents
-        playbook input is set to True.
+      description: Checks whether the detected Phishing incidents can be linked to the Phishing Campaign incident by checking if the AutomaticallyLinkIncidents playbook input is set to True.
       type: condition
       iscommand: false
       brand: ""
@@ -551,8 +544,7 @@ tasks:
       id: 54a5ca08-5659-4aa4-85cb-dd5bff80d59f
       version: -1
       name: Resume Campaign Detections
-      description: Releases the phishing campaign lock to allow other phishing incidents
-        to detect and find campaigns.
+      description: Releases the phishing campaign lock to allow other phishing incidents to detect and find campaigns.
       type: title
       iscommand: false
       brand: ""
@@ -614,8 +606,7 @@ tasks:
       id: 77e030e4-b3ab-4a48-81d7-2f9344916111
       version: -1
       name: Update additional campaign layout sections
-      description: Updates the EmailCampaignSummary, EmailCampaignMutualIndicators
-        and EmailCampaignCanvas fields in the Phishing Campaign incident.
+      description: Updates the EmailCampaignSummary, EmailCampaignMutualIndicators and EmailCampaignCanvas fields in the Phishing Campaign incident.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -674,8 +665,7 @@ tasks:
       id: cb766233-14f3-499d-8f81-ad484901bd6c
       version: -1
       name: Update additional campaign layout sections
-      description: Updates the EmailCampaignSummary, EmailCampaignMutualIndicators
-        and EmailCampaignCanvas fields in the Phishing Campaign incident.
+      description: Updates the EmailCampaignSummary, EmailCampaignMutualIndicators and EmailCampaignCanvas fields in the Phishing Campaign incident.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -728,9 +718,7 @@ tasks:
       id: dd0e0421-a858-44ad-8af1-c10f8050e6ad
       version: -1
       name: Can the found incidents be closed?
-      description: Checks whether the Phishing incidents that were detected can be
-        automatically closed. If the IncludeSelf parameter is set to True, the current
-        incident will also be closed.
+      description: Checks whether the Phishing incidents that were detected can be automatically closed. If the IncludeSelf parameter is set to True, the current incident will also be closed.
       type: condition
       iscommand: false
       brand: ""
@@ -775,8 +763,7 @@ tasks:
       id: 937adf0c-aafe-4b00-80b5-5e82086c1ada
       version: -1
       name: Close all found phishing incidents
-      description: Closes all the phishing incidents that were found to be part of
-        the campaign.
+      description: Closes all the phishing incidents that were found to be part of the campaign.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -874,8 +861,7 @@ tasks:
       id: a4f2e248-ec23-490c-84a2-d73d14fd4b9b
       version: -1
       name: Is the Demsito Lock integration enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -913,9 +899,7 @@ tasks:
       id: 5b05490e-96f4-4032-84ff-b2a1bc739610
       version: -1
       name: Lock campaign detection
-      description: Locks phishing incidents before searching campaigns to prevent
-        them from all being unable to find an existing campaign at the same time,
-        and creating multiple new campaign incidents.
+      description: Locks phishing incidents before searching campaigns to prevent them from all being unable to find an existing campaign at the same time, and creating multiple new campaign incidents.
       script: '|||demisto-lock-get'
       type: regular
       iscommand: true
@@ -927,9 +911,7 @@ tasks:
       execution-timeout:
         simple: "9000"
       info:
-        simple: Locks phishing incidents before searching campaigns to prevent them
-          from all being unable to find an existing campaign at the same time, and
-          creating multiple new campaign incidents.
+        simple: Locks phishing incidents before searching campaigns to prevent them from all being unable to find an existing campaign at the same time, and creating multiple new campaign incidents.
       name:
         simple: Phishing - Campaign Detection
       timeout:
@@ -992,8 +974,7 @@ tasks:
       id: 009dbbe0-1090-4d46-84c9-a2596df628f7
       version: -1
       name: Is the Demsito Lock integration enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1105,53 +1086,42 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Whether to automatically link the incidents that make up the campaign,
-    to the phishing campaign incident. Can be True (default) or False. It is recommended
-    not to change the default.
+  description: Whether to automatically link the incidents that make up the campaign, to the phishing campaign incident. Can be True (default) or False. It is recommended not to change the default.
   playbookInputQuery:
 - key: incidentTypeFieldName
   value:
     simple: type
   required: false
-  description: The name of the incident field in which the incident type is stored.
-    Default is "type". Change this argument only if you're using a custom field for
-    specifying the incident type.
+  description: The name of the incident field in which the incident type is stored. Default is "type". Change this argument only if you're using a custom field for specifying the incident type.
   playbookInputQuery:
 - key: incidentTypes
   value:
     simple: Phishing
   required: false
-  description: A comma-separated list of incident types by which to filter. Specify
-    "None" to search through all incident types By default, the value is "Phishing"
-    because the Phishing incident type is used out of the box.
+  description: A comma-separated list of incident types by which to filter. Specify "None" to search through all incident types By default, the value is "Phishing" because the Phishing incident type is used out of the box.
   playbookInputQuery:
 - key: existingIncidentsLookback
   value:
     simple: 7 days ago
   required: false
-  description: 'The date from which to search for similar incidents. Date format is
-    the same as in the incidents query page. For example: "3 days ago", "2019-01-01T00:00:00
-    +0200".'
+  description: 'The date from which to search for similar incidents. Date format is the same as in the incidents query page. For example: "3 days ago", "2019-01-01T00:00:00 +0200".'
   playbookInputQuery:
 - key: query
   value: {}
   required: false
-  description: Additional text by which to query incidents to find similar Phishing
-    incidents. Uses the same language to query incidents in the UI.
+  description: Additional text by which to query incidents to find similar Phishing incidents. Uses the same language to query incidents in the UI.
   playbookInputQuery:
 - key: limit
   value:
     simple: "1000"
   required: false
-  description: The maximum number of incidents to fetch. Determines how many incidents
-    can be checked for similarity at the time of execution.
+  description: The maximum number of incidents to fetch. Determines how many incidents can be checked for similarity at the time of execution.
   playbookInputQuery:
 - key: emailSubject
   value:
     simple: emailsubject
   required: false
-  description: The name of the incident field that contains the email subject. By
-    default this is `emailsubject` (because the email subject is stored under `${incident.emailsubject}`.
+  description: The name of the incident field that contains the email subject. By default this is `emailsubject` (because the email subject is stored under `${incident.emailsubject}`.
   playbookInputQuery:
 - key: emailBody
   value:
@@ -1163,8 +1133,7 @@ inputs:
   value:
     simple: emailbodyhtml
   required: false
-  description: The name of the incident field that contains the HTML version of the
-    email body.
+  description: The name of the incident field that contains the HTML version of the email body.
   playbookInputQuery:
 - key: emailFrom
   value:
@@ -1176,40 +1145,31 @@ inputs:
   value:
     simple: All
   required: false
-  description: Whether to compare the new incident to closed incidents, non closed
-    incidents, or all incidents. Can be "All", "ClosedOnly", or "NonClosedOnly". Default
-    is "All".
+  description: Whether to compare the new incident to closed incidents, non closed incidents, or all incidents. Can be "All", "ClosedOnly", or "NonClosedOnly". Default is "All".
   playbookInputQuery:
 - key: threshold
   value:
     simple: "0.8"
   required: false
-  description: The threshold to consider an incident as similar. The range of values
-    is 0-1. If needed, make small adjustments and continue to evaluate the required
-    value. It is recommended not to change the default value of `0.8`.|
+  description: The threshold to consider an incident as similar. The range of values is 0-1. If needed, make small adjustments and continue to evaluate the required value. It is recommended not to change the default value of `0.8`.|
   playbookInputQuery:
 - key: maxIncidentsToReturn
   value:
     simple: "200"
   required: false
-  description: The maximum number of incidents to display as part of a campaign. If
-    a campaign includes a higher number of incidents, the results will contain only
-    these amounts of incidents.
+  description: The maximum number of incidents to display as part of a campaign. If a campaign includes a higher number of incidents, the results will contain only these amounts of incidents.
   playbookInputQuery:
 - key: minIncidentsForCampaign
   value:
     simple: "3"
   required: false
-  description: The minimum number of incidents to consider as a campaign. For example,
-    if you specify `10`, but only `9` similar incidents are found, the script will
-    not find them as part of a campaign.|
+  description: The minimum number of incidents to consider as a campaign. For example, if you specify `10`, but only `9` similar incidents are found, the script will not find them as part of a campaign.|
   playbookInputQuery:
 - key: minUniqueRecipients
   value:
     simple: "2"
   required: false
-  description: The minimum number of unique recipients of similar email incidents
-    to consider as a campaign. as a campaign.
+  description: The minimum number of unique recipients of similar email incidents to consider as a campaign. as a campaign.
   playbookInputQuery:
 - key: fieldsToDisplay
   value:
@@ -1223,8 +1183,7 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Whether to automatically close the incidents that make up the campaign.
-    Can be True or False.
+  description: Whether to automatically close the incidents that make up the campaign. Can be True or False.
   playbookInputQuery:
 outputs: []
 tests:

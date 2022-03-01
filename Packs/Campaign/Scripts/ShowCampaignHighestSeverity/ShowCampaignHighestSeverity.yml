@@ -6,8 +6,7 @@ script: ''
 type: python
 tags:
 - dynamic-section
-comment: Displays the highest severity among the incidents that make up the phishing
-  campaign.
+comment: Displays the highest severity among the incidents that make up the phishing campaign.
 enabled: true
 scripttarget: 0
 subtype: python3

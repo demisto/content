@@ -24,9 +24,10 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.5.0"
+    "fromVersion": "5.5.0",
+    "fieldCalcScript_x2": "GetCampaignIndicatorsByIncidentId_x2"
 }

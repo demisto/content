@@ -3,6 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Panorama Query Logs
+name_x2: Panorama Query Logs_x2
 description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering and
   wildfire.'
 starttaskid: "0"

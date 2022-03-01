@@ -430,6 +430,13 @@
                                 "startCol": 0
                             },
                             {
+                                "endCol": 3,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "c73ab690-bcad-11eb-98fe-53f79cf41cac",
+                                "index": 4,
+                                "sectionItemType": "button",
+                                "startCol": 1,
                                 "args": {
                                     "body": {
                                         "complex": {
@@ -457,16 +464,9 @@
                                     }
                                 },
                                 "dropEffect": "move",
-                                "endCol": 3,
-                                "fieldId": "",
-                                "height": 44,
-                                "id": "c73ab690-bcad-11eb-98fe-53f79cf41cac",
-                                "index": 4,
                                 "listId": "pfjeh5flj3-5bc36bf0-bcad-11eb-98fe-53f79cf41cac",
                                 "name": "Send Email",
-                                "scriptId": "EWS Mail Sender|||send-mail",
-                                "sectionItemType": "button",
-                                "startCol": 1
+                                "scriptId": "EWS Mail Sender|||send-mail"
                             }
                         ],
                         "maxW": 3,

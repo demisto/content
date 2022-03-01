@@ -216,9 +216,7 @@ tasks:
       id: 3b9af3e0-4fe9-4452-8f84-3e67ff7defd8
       version: -1
       name: 'Search for Codecov security notice email '
-      description: Searches for items in the specified mailbox. Specific permissions
-        are needed for this operation to search in a target mailbox other than the
-        default.
+      description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
       script: '|||ews-search-mailbox'
       type: regular
       iscommand: true
@@ -334,14 +332,7 @@ tasks:
       id: bc58af28-06c5-45a7-8b85-234f5c4ceea4
       version: -1
       name: Palo Alto Networks - Hunting And Threat Detection
-      description: "This is a multipurpose playbook used for hunting and threat detection.\
-        \ The playbook receives inputs based on hashes, IP addresses, or domain names\
-        \ provided manually or from outputs by other playbooks. \nWith the received\
-        \ indicators, the playbook leverages data received by PANW products including,\
-        \ Cortex Data Lake, Autofocus and Pan-OS to search for IP addresses, host\
-        \ names and users related to the provided indicators.\nThe output provided\
-        \ by the playbook facilitates pivoting searches for possibly affected IP addresses\
-        \ or users."
+      description: "This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. \nWith the received indicators, the playbook leverages data received by PANW products including, Cortex Data Lake, Autofocus and Pan-OS to search for IP addresses, host names and users related to the provided indicators.\nThe output provided by the playbook facilitates pivoting searches for possibly affected IP addresses or users."
       playbookName: Palo Alto Networks - Hunting And Threat Detection
       type: playbook
       iscommand: false
@@ -399,8 +390,7 @@ tasks:
       id: 974252c0-5c9b-4be0-8467-dfd39c59e3d1
       version: -1
       name: QRadar Indicator Hunting V2
-      description: 'The Playbook queries QRadar SIEM for indicators such as file hashes,
-        IP addresses, domains, or urls. '
+      description: 'The Playbook queries QRadar SIEM for indicators such as file hashes, IP addresses, domains, or urls. '
       playbookName: QRadar Indicator Hunting V2
       type: playbook
       iscommand: false
@@ -468,9 +458,7 @@ tasks:
       id: e2c50a93-9dcd-4b92-8fe6-0e19a0ebeeba
       version: -1
       name: Splunk Indicator Hunting
-      description: This playbook queries Splunk for indicators such as file hashes,
-        IP addresses, domains, or urls. It outputs detected users, ip addresses, and
-        hostnames related to the indicators.
+      description: This playbook queries Splunk for indicators such as file hashes, IP addresses, domains, or urls. It outputs detected users, ip addresses, and hostnames related to the indicators.
       playbookName: Splunk Indicator Hunting
       type: playbook
       iscommand: false
@@ -675,9 +663,7 @@ tasks:
       id: 87535b78-126e-4499-89fe-d271f0684c75
       version: -1
       name: 'Re-roll affected users '
-      description: Re-roll all of credentials for affected users, tokens, or keys
-        located in the environment variables in their CI processes that used one of
-        Codecov’s Bash Uploaders.
+      description: Re-roll all of credentials for affected users, tokens, or keys located in the environment variables in their CI processes that used one of Codecov’s Bash Uploaders.
       type: regular
       iscommand: false
       brand: ""
@@ -705,10 +691,7 @@ tasks:
       id: 200cb34a-de6d-4276-8ab3-d2e86f790163
       version: -1
       name: Check env command in your CI pipeline
-      description: 'You can determine the keys and tokens that are surfaced to your
-        CI environment by running the env command in your CI pipeline. If anything
-        returned from that command is considered private or sensitive, invalidating
-        the credential and generating a new one. '
+      description: 'You can determine the keys and tokens that are surfaced to your CI environment by running the env command in your CI pipeline. If anything returned from that command is considered private or sensitive, invalidating the credential and generating a new one. '
       type: regular
       iscommand: false
       brand: ""
@@ -822,10 +805,10 @@ tasks:
     task:
       id: a037cfcc-aa5a-417c-81c7-dd569be7b783
       version: -1
-      name: Panorama search thread-ids in threat logs
-      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
-        and wildfire.'
+      name: Panorama Query Logs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering and wildfire.'
       playbookName: Panorama Query Logs
+      playbookName_x2: Panorama Query Logs_x2
       type: playbook
       iscommand: false
       brand: ""
@@ -1019,8 +1002,7 @@ inputs:
   playbookInputQuery:
 - key: EWSSearchQuery
   value:
-    simple: From:security@codecov.io AND Subject:Bash Uploader Security Notice AND
-      Received:three months
+    simple: From:security@codecov.io AND Subject:Bash Uploader Security Notice AND Received:three months
   required: false
   description: The EWS query to find the Codecov security notice email
   playbookInputQuery:

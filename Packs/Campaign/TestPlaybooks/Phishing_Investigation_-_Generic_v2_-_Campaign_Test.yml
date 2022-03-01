@@ -99,8 +99,7 @@ tasks:
       emailfrom:
         simple: paypalsupport@paypaI.com
       emailhtml:
-        simple: <p>We've detected suspicious activity from your PayPal account. Please
-          take action and verify your account:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p>
+        simple: <p>We've detected suspicious activity from your PayPal account. Please take action and verify your account:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p>
       emailsubject:
         simple: Verify your PayPal account
       emailto:
@@ -236,8 +235,7 @@ tasks:
       emailfrom:
         simple: paypalsupport@paypaI.com
       emailhtml:
-        simple: <p>We've detected suspicious activity from your PayPal account. Please
-          take action and verify your account:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p>
+        simple: <p>We've detected suspicious activity from your PayPal account. Please take action and verify your account:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p>
       emailsubject:
         simple: Verify your PayPal account
       emailto:
@@ -300,10 +298,7 @@ tasks:
       emailfrom:
         simple: paypalsupport@paypaI.com
       emailhtml:
-        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account
-          immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious
-          activity originating from your PayPal account. Please take action and verify
-          your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
+        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
       emailsubject:
         simple: Verify your PayPal account now!
       emailto:
@@ -363,10 +358,7 @@ tasks:
       emailfrom:
         simple: paypalsupport@paypaI.com
       emailhtml:
-        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account
-          immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious
-          activity originating from your PayPal account. Please take action and verify
-          your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
+        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
       emailsubject:
         simple: Verify your PayPal account now!
       emailto:
@@ -426,10 +418,7 @@ tasks:
       emailfrom:
         simple: paypal-support@paypaI.com
       emailhtml:
-        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account
-          immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious
-          activity originating from your PayPal account. Please take action and verify
-          your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
+        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
       emailsubject:
         simple: Verify your PayPal account now!
       emailto:
@@ -489,10 +478,7 @@ tasks:
       emailfrom:
         simple: support@paypaI.com
       emailhtml:
-        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account
-          immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious
-          activity originating from your PayPal account. Please take action and verify
-          your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
+        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
       emailsubject:
         simple: Verify your PayPal account now!
       emailto:
@@ -552,10 +538,7 @@ tasks:
       emailfrom:
         simple: paypalsupport@paypaI.com
       emailhtml:
-        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account
-          immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious
-          activity originating from your PayPal account. Please take action and verify
-          your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
+        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
       emailsubject:
         simple: Verify your PayPal account now!
       emailto:
@@ -615,10 +598,7 @@ tasks:
       emailfrom:
         simple: paypalsupport@paypaI.com
       emailhtml:
-        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account
-          immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious
-          activity originating from your PayPal account. Please take action and verify
-          your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
+        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
       emailsubject:
         simple: Verify your PayPal account now!
       emailto:
@@ -788,9 +768,7 @@ tasks:
       emailfrom:
         simple: paypalsupport@paypaI.com
       emailhtml:
-        simple: <div></div><div><p> Dear user,<br>We've detected suspicious activity
-          originating from your PayPal account. Please take action and verify your
-          account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>
+        simple: <div></div><div><p> Dear user,<br>We've detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>
       emailsubject:
         simple: Verify your PayPal account now!
       emailto:
@@ -849,10 +827,7 @@ tasks:
       emailfrom:
         simple: paypalsupport@paypaI.com
       emailhtml:
-        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account
-          immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious
-          activity originating from your PayPal account. Please take action and verify
-          your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
+        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
       emailsubject:
         simple: Verify your PayPal account now!
       emailto:
