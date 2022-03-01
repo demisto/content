@@ -1,10 +1,15 @@
 id: Process Email - Core v2
-version: -1
+version: 7
 contentitemexportablefields:
-  contentitemfields: {}
+  contentitemfields:
+    packID: Phishing
+    itemVersion: 3.1.1
+    fromServerVersion: 6.0.0
+    toServerVersion: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Process Email - Core v2
-description: This playbook adds email details to the relevant context entities and handles the case
-  where original emails are attached.
+description: This playbook adds email details to the relevant context entities and
+  handles the case where original emails are attached.
 starttaskid: "0"
 tasks:
   "0":
@@ -17,7 +22,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -125,16 +129,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: aad80f9a-e552-43ae-88fc-81ab3ef53c11
+    taskid: 9a2df146-3c00-4078-8754-a0e120b35266
     type: regular
     task:
-      id: aad80f9a-e552-43ae-88fc-81ab3ef53c11
+      id: 9a2df146-3c00-4078-8754-a0e120b35266
       version: -1
       name: Extract and save email details
-      description: Parses an email from an EML or MSG file and populates all relevant
-        context data to investigate the email. Also extracts indicators from the email
-        messages.
-      scriptName: ParseEmailFiles
+      description: Parse an email from an eml or msg file and populate all relevant
+        context data to investigate the email. Also extracts inner attachments and
+        returns them to the war room. The incident labels themselves are preserved
+        and not modified - only the "Label/x" context items that originated from the
+        labels, and the best practice is to rely on these for the remainder of the
+        playbook.
+      scriptName: ParseEmailFiles_dev
       type: regular
       iscommand: false
       brand: ""
@@ -176,7 +183,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -194,13 +200,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 553f9128-f60b-488d-8650-ad9648501964
+    taskid: 687360e6-7e9e-48bb-80df-7b01a6be74f5
     type: regular
     task:
-      id: 553f9128-f60b-488d-8650-ad9648501964
+      id: 687360e6-7e9e-48bb-80df-7b01a6be74f5
       version: -1
-      name: Set incident with the email object data
-      description: Updates Cortex XSOAR incident fields using data from the email object.
+      name: Display email information in layout
+      description: Updates Demisto incident fields using data from the email object.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -398,6 +404,12 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
+      reportedemailmessageid:
+        complex:
+          root: Email.HeadersMap
+          accessor: Message-ID
+          transformers:
+          - operator: uniq
       reportedemailorigin:
         complex:
           root: ReportedEmailOrigin
@@ -535,7 +547,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -647,7 +658,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "26"
@@ -839,7 +849,7 @@ tasks:
       id: c8b63a5f-604d-43c0-8e76-150e8af17d2f
       version: -1
       name: Save attachment sizes
-      description: Saves the size in bytes of the email attachments.
+      description: Saves the sizes in bytes of the email attachments.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -949,7 +959,7 @@ tasks:
       id: 68afd2e1-4539-4aff-8aaf-a4ca1811b88d
       version: -1
       name: Save attachment types
-      description: Saves the types of the email attachments.
+      description: Saves the names of the email attachments.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1004,7 +1014,8 @@ tasks:
       id: e5c43ca9-cacd-4b3d-847d-2fb32a3cd1b4
       version: -1
       name: Set reported email origin (attached)
-      description: Sets the value of "ReportedEmailOrigin" to "Attached". This value is set later in the "reportedemailorigin" incident field.
+      description: Sets the value of "ReportedEmailOrigin" to "Attached". This value
+        is set later in the "reportedemailorigin" incident field.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1057,7 +1068,7 @@ inputs:
       root: File
   required: false
   description: An EML or MSG file.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Email
   value:
     complex:
@@ -1065,7 +1076,7 @@ inputs:
       accessor: emailto
   required: false
   description: The receiving email address.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: EmailCC
   value:
     complex:
@@ -1073,7 +1084,7 @@ inputs:
       accessor: emailcc
   required: false
   description: CC addresses
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: EmailFrom
   value:
     complex:
@@ -1081,7 +1092,7 @@ inputs:
       accessor: emailfrom
   required: false
   description: The originator of the email.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: EmailSubject
   value:
     complex:
@@ -1089,7 +1100,7 @@ inputs:
       accessor: emailsubject
   required: false
   description: The email subject.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: EmailText
   value:
     complex:
@@ -1097,7 +1108,7 @@ inputs:
       accessor: emailbody
   required: false
   description: The email text.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: EmailHtml
   value:
     complex:
@@ -1105,7 +1116,7 @@ inputs:
       accessor: emailhtml
   required: false
   description: The HTML version of the email.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: EmailHeaders
   value:
     complex:
@@ -1113,7 +1124,7 @@ inputs:
       accessor: emailheaders
   required: false
   description: The email headers.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: EmailFormat
   value:
     complex:
@@ -1121,7 +1132,7 @@ inputs:
       accessor: emailformat
   required: false
   description: The email format.
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: Email.HTML
   description: Email HTML body, if it exists.
@@ -1156,6 +1167,3 @@ outputs:
 - contextPath: File
   description: The file object.
   type: unknown
-tests:
-- Phishing - Core - Test - Incident Starter
-fromversion: 6.0.0
