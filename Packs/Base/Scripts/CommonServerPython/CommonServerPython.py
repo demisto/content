@@ -6318,7 +6318,7 @@ class ErrorType:
     Connection = 'Connection'
 
 
-def return_error(message, error='', outputs=None, error_type=None):
+def return_error(message, error='', outputs=None):
     """
         Returns error entry with given message and exits the script
 
@@ -6357,15 +6357,13 @@ def return_error(message, error='', outputs=None, error_type=None):
     if is_server_handled:
         raise Exception(message)
     else:
-        error_result = {
+        # TODO Do we want to add error types here?
+        demisto.results({
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
             'Contents': message,
             'EntryContext': outputs
-        }
-        if error_type and isinstance(error_type, ErrorType):
-            error_result.update({'ErrorType': error_type})
-        demisto.results(error_result)
+        })
         sys.exit(0)
 
 
