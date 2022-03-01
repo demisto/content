@@ -132,10 +132,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 9deb8e26-de76-4399-8d06-307024bdbcba
+    taskid: 5802b254-fac3-4c94-8b2d-89038b4239e5
     type: regular
     task:
-      id: 9deb8e26-de76-4399-8d06-307024bdbcba
+      id: 5802b254-fac3-4c94-8b2d-89038b4239e5
       version: -1
       name: Extract email artifacts and attachments
       description: Parse an email from an eml or msg file and populate all relevant
@@ -154,6 +154,9 @@ tasks:
     scriptarguments:
       entryid:
         simple: ${reportedemailentryid}
+      nesting_level_to_return:
+        complex:
+          root: inputs.EmailFileToExtract
     reputationcalc: 2
     results:
     - AttachmentName
@@ -2252,6 +2255,23 @@ inputs:
     - MicrosoftGraphMail
     - EmailSecurityGateway
     Choosing the EmailSecurityGateway executes the following if enabled: - FireEye EX (Email Security) - Proofpoint TAP - Mimecast.
+  playbookInputQuery:
+- key: EmailFileToExtract
+  value:
+    simple: Inner file
+  required: false
+  description: |-
+    Reported emails and emails retrieved during playbook execution may sometimes contain multiple nested email files. For instance, an EML inside another EML file.
+    If multiple-level files are detected, this field determines which file would represent the phishing email.
+
+    An example would be:
+    User receives an email from Attacker. User attaches the email as an EML file and sends the email over to User2.
+    User2 then attached that email as a file too, and reports it as phishing. In that case, the phishing email would be the "inner file" (as opposed to "outer file).
+
+    Possible values are: Inner file, Outer file, All files.
+    Inner file: the file at the deepest level would be parsed (if there is only 1 file, that file would be parsed normally).
+    Outer file: the file at the first level would be parsed.
+    All files: all files would be parsed. This option should not be used in the phishing playbook, as there should only be one phishing email per playbook execution.
   playbookInputQuery:
 outputs:
 - contextPath: Email.HTML
