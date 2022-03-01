@@ -2927,7 +2927,7 @@ inputs:
   playbookInputQuery:
 - key: SearchAndDelete
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: |-
     Enables the Search and Delete capability.
@@ -2956,7 +2956,7 @@ inputs:
   playbookInputQuery:
 - key: SearchAndDeleteIntegration
   value:
-    simple: O365
+    simple: EWS
   required: false
   description: |-
     Determines which product and playbook is used to search and delete the phishing email from user inboxes.
