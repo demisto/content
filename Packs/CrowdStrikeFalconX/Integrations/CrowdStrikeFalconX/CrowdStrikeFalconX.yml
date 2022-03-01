@@ -245,7 +245,7 @@ script:
       description: The sandbox dns requests registrar organization.
       type: String
     - contextPath: csfalconx.resource.sandbox.contacted_hosts.address
-      description: The sandbox contacted hosts naddress.
+      description: The sandbox contacted hosts address.
       type: String
     - contextPath: csfalconx.resource.sandbox.contacted_hosts.country
       description: The sandbox contacted hosts country.
@@ -568,7 +568,7 @@ script:
       description: The sandbox dns requests registrar organization.
       type: String
     - contextPath: csfalconx.resource.sandbox.contacted_hosts.address
-      description: The sandbox contacted hosts naddress.
+      description: The sandbox contacted hosts address.
       type: String
     - contextPath: csfalconx.resource.sandbox.contacted_hosts.country
       description: The sandbox contacted hosts country.
@@ -800,7 +800,7 @@ script:
       description: The sandbox dns requests registrar organization.
       type: String
     - contextPath: csfalconx.resource.sandbox.contacted_hosts.address
-      description: The sandbox contacted hosts naddress.
+      description: The sandbox contacted hosts address.
       type: String
     - contextPath: csfalconx.resource.sandbox.contacted_hosts.country
       description: The sandbox contacted hosts country.
@@ -1430,7 +1430,7 @@ script:
       description: The sandbox dns requests registrar organization.
       type: String
     - contextPath: csfalconx.resource.sandbox.contacted_hosts.address
-      description: The sandbox contacted hosts naddress.
+      description: The sandbox contacted hosts address.
       type: String
     - contextPath: csfalconx.resource.sandbox.contacted_hosts.country
       description: The sandbox contacted hosts country.

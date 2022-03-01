@@ -97,7 +97,7 @@ Notice that the file identifier (SHA) can be changed as shown in the example bel
 | csfalconx.resource.sandbox.dns_requests.registrar_creation_timestamp | String | The sandbox dns requests registrar creation timestamp. | 
 | csfalconx.resource.sandbox.dns_requests.registrar_name | String | The sandbox dns requests registrar name. | 
 | csfalconx.resource.sandbox.dns_requests.registrar_organization | String | The sandbox dns requests registrar organization. | 
-| csfalconx.resource.sandbox.contacted_hosts.address | String | The sandbox contacted hosts naddress. | 
+| csfalconx.resource.sandbox.contacted_hosts.address | String | The sandbox contacted hosts address. | 
 | csfalconx.resource.sandbox.contacted_hosts.country | String | The sandbox contacted hosts country. | 
 | csfalconx.resource.sandbox.contacted_hosts.port | Number | The sandbox contacted hosts port. | 
 | csfalconx.resource.sandbox.contacted_hosts.protocol | String | The sandbox contacted hosts protocol. | 
@@ -225,7 +225,7 @@ Notice that the file identifiers, SHA and ID are not the same.
 | csfalconx.resource.sandbox.dns_requests.registrar_creation_timestamp | String | The sandbox dns requests registrar creation timestamp. | 
 | csfalconx.resource.sandbox.dns_requests.registrar_name | String | The sandbox dns requests registrar name. | 
 | csfalconx.resource.sandbox.dns_requests.registrar_organization | String | The sandbox dns requests registrar organization. | 
-| csfalconx.resource.sandbox.contacted_hosts.address | String | The sandbox contacted hosts naddress. | 
+| csfalconx.resource.sandbox.contacted_hosts.address | String | The sandbox contacted hosts address. | 
 | csfalconx.resource.sandbox.contacted_hosts.country | String | The sandbox contacted hosts country. | 
 | csfalconx.resource.sandbox.contacted_hosts.port | Number | The sandbox contacted hosts port. | 
 | csfalconx.resource.sandbox.contacted_hosts.protocol | String | The sandbox contacted hosts protocol. | 
@@ -359,7 +359,7 @@ Gets a full version of a sandbox report.
 | csfalconx.resource.sandbox.dns_requests.registrar_creation_timestamp | String | The sandbox dns requests registrar creation timestamp. | 
 | csfalconx.resource.sandbox.dns_requests.registrar_name | String | The sandbox dns requests registrar name. | 
 | csfalconx.resource.sandbox.dns_requests.registrar_organization | String | The sandbox dns requests registrar organization. | 
-| csfalconx.resource.sandbox.contacted_hosts.address | String | The sandbox contacted hosts naddress. | 
+| csfalconx.resource.sandbox.contacted_hosts.address | String | The sandbox contacted hosts address. | 
 | csfalconx.resource.sandbox.contacted_hosts.country | String | The sandbox contacted hosts country. | 
 | csfalconx.resource.sandbox.contacted_hosts.port | Number | The sandbox contacted hosts port. | 
 | csfalconx.resource.sandbox.contacted_hosts.protocol | String | The sandbox contacted hosts protocol. | 
@@ -799,7 +799,7 @@ Submits a URL or FTP for sandbox analysis.
 | csfalconx.resource.sandbox.dns_requests.registrar_creation_timestamp | String | The sandbox dns requests registrar creation timestamp. | 
 | csfalconx.resource.sandbox.dns_requests.registrar_name | String | The sandbox dns requests registrar name. | 
 | csfalconx.resource.sandbox.dns_requests.registrar_organization | String | The sandbox dns requests registrar organization. | 
-| csfalconx.resource.sandbox.contacted_hosts.address | String | The sandbox contacted hosts naddress. | 
+| csfalconx.resource.sandbox.contacted_hosts.address | String | The sandbox contacted hosts address. | 
 | csfalconx.resource.sandbox.contacted_hosts.country | String | The sandbox contacted hosts country. | 
 | csfalconx.resource.sandbox.contacted_hosts.port | Number | The sandbox contacted hosts port. | 
 | csfalconx.resource.sandbox.contacted_hosts.protocol | String | The sandbox contacted hosts protocol. | 

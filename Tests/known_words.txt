@@ -116,3 +116,4 @@ FTP
 PCAP
 GZIP
 ioc
+XSOAR's
