@@ -389,7 +389,7 @@ N/A
 
 
 #### Youtube Video Demo (Click Image, Will redirect to youtube)
-[![Devo-Demisto Plugin Demo](https://img.youtube.com/vi/jyUqEcWOXfU/0.jpg)](https://www.youtube.com/watch?v=jyUqEcWOXfU "Devo Demisto Demo")
+[![Devo-Demisto Plugin Demo](https://img.youtube.com/vi/jyUqEcWOXfU/0.jpg)](https://www.youtube.com/watch?v=jyUqEcWOXfU)
 
 ## Known Limitations
 ---
