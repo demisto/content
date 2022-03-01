@@ -1,12 +1,7 @@
 id: Process Email - Core v2
-version: 7
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: Phishing
-    itemVersion: 3.1.1
-    fromServerVersion: 6.0.0
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Process Email - Core v2
 description: This playbook adds email details to the relevant context entities and
   handles the case where original emails are attached.
@@ -22,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -183,6 +179,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -404,12 +401,6 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
-      reportedemailmessageid:
-        complex:
-          root: Email.HeadersMap
-          accessor: Message-ID
-          transformers:
-          - operator: uniq
       reportedemailorigin:
         complex:
           root: ReportedEmailOrigin
@@ -431,6 +422,12 @@ tasks:
               separator:
                 value:
                   simple: ','
+      reportedemailmessageid:
+        complex:
+          root: Email.HeadersMap
+          accessor: Message-ID
+          transformers:
+          - operator: uniq
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -547,6 +544,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -658,6 +656,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "26"
@@ -1068,7 +1067,7 @@ inputs:
       root: File
   required: false
   description: An EML or MSG file.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Email
   value:
     complex:
@@ -1076,7 +1075,7 @@ inputs:
       accessor: emailto
   required: false
   description: The receiving email address.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EmailCC
   value:
     complex:
@@ -1084,7 +1083,7 @@ inputs:
       accessor: emailcc
   required: false
   description: CC addresses
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EmailFrom
   value:
     complex:
@@ -1092,7 +1091,7 @@ inputs:
       accessor: emailfrom
   required: false
   description: The originator of the email.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EmailSubject
   value:
     complex:
@@ -1100,7 +1099,7 @@ inputs:
       accessor: emailsubject
   required: false
   description: The email subject.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EmailText
   value:
     complex:
@@ -1108,7 +1107,7 @@ inputs:
       accessor: emailbody
   required: false
   description: The email text.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EmailHtml
   value:
     complex:
@@ -1116,7 +1115,7 @@ inputs:
       accessor: emailhtml
   required: false
   description: The HTML version of the email.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EmailHeaders
   value:
     complex:
@@ -1124,7 +1123,7 @@ inputs:
       accessor: emailheaders
   required: false
   description: The email headers.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EmailFormat
   value:
     complex:
@@ -1132,7 +1131,7 @@ inputs:
       accessor: emailformat
   required: false
   description: The email format.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Email.HTML
   description: Email HTML body, if it exists.
@@ -1167,3 +1166,6 @@ outputs:
 - contextPath: File
   description: The file object.
   type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.1.0

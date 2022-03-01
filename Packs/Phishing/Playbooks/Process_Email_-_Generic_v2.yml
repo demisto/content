@@ -1,12 +1,7 @@
 id: Process Email - Generic v2
-version: 18
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: Phishing
-    itemVersion: 3.1.2
-    fromServerVersion: 6.0.0
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Process Email - Generic v2
 description: |
   This playbook adds email details to the relevant context entities and handles original email attachments.
@@ -34,6 +29,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -299,6 +295,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -325,6 +322,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -655,12 +653,6 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
-      reportedemailmessageid:
-        complex:
-          root: Email.HeadersMap
-          accessor: Message-ID
-          transformers:
-          - operator: uniq
       reportedemailorigin:
         complex:
           root: ReportedEmailOrigin
@@ -682,6 +674,12 @@ tasks:
               separator:
                 value:
                   simple: ','
+      reportedemailmessageid:
+        complex:
+          root: Email.HeadersMap
+          accessor: Message-ID
+          transformers:
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -807,6 +805,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "21"
@@ -1767,14 +1766,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Several email files were found, please pick the relevant one
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -2021,6 +2020,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -2050,6 +2050,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -2079,6 +2080,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "45"
@@ -2123,7 +2125,7 @@ inputs:
       root: File
   required: false
   description: An EML or MSG file.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Email
   value:
     complex:
@@ -2131,7 +2133,7 @@ inputs:
       accessor: emailto
   required: false
   description: The receiver email address.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EmailCC
   value:
     complex:
@@ -2139,7 +2141,7 @@ inputs:
       accessor: emailcc
   required: false
   description: The email CC addresses.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EmailFrom
   value:
     complex:
@@ -2147,7 +2149,7 @@ inputs:
       accessor: emailfrom
   required: false
   description: The sender email address.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EmailSubject
   value:
     complex:
@@ -2155,7 +2157,7 @@ inputs:
       accessor: emailsubject
   required: false
   description: The email subject.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EmailText
   value:
     complex:
@@ -2163,7 +2165,7 @@ inputs:
       accessor: emailbody
   required: false
   description: The email text.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EmailHtml
   value:
     complex:
@@ -2171,7 +2173,7 @@ inputs:
       accessor: emailhtml
   required: false
   description: The email HTML.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EmailHeaders
   value:
     complex:
@@ -2179,7 +2181,7 @@ inputs:
       accessor: phishingreporteremailheaders
   required: false
   description: The email headers.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EmailFormat
   value:
     complex:
@@ -2187,7 +2189,7 @@ inputs:
       accessor: emailformat
   required: false
   description: The email format.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: GetOriginalEmail
   value:
     simple: "False"
@@ -2200,7 +2202,7 @@ inputs:
     - For EWS: eDiscovery
     - For Gmail: Google Apps Domain-Wide Delegation of Authority
     - For MSGraph: As described in the [message-get API](https://docs.microsoft.com/en-us/graph/api/message-get) and the [user-list-messages API](https://docs.microsoft.com/en-us/graph/api/user-list-messages)
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: MessageID
   value:
     complex:
@@ -2210,7 +2212,7 @@ inputs:
   description: The original email message ID to retrieve. Holds the value of the "Message-ID"
     header of the original email. This value is passed as an input to the "Get Original
     Email - Generic v2" playbook.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: UserID
   value:
     complex:
@@ -2228,7 +2230,7 @@ inputs:
   required: false
   description: The user's email address to retrieve the original email. This value
     is passed as an input to the "Get Original Email - Generic v2" playbook.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Thread-Topic
   value:
     complex:
@@ -2238,7 +2240,7 @@ inputs:
   description: The value of the "Thread-Topic" header which holds the original email
     subject, needed for forwarded email scenarios. It is passed as an input to the
     "Get Original Email - Generic v2" playbook to use in the relevant sub-playbooks.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EmailBrand
   value: {}
   required: false
@@ -2250,7 +2252,7 @@ inputs:
     - MicrosoftGraphMail
     - EmailSecurityGateway
     Choosing the EmailSecurityGateway executes the following if enabled: - FireEye EX (Email Security) - Proofpoint TAP - Mimecast.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Email.HTML
   description: The email HTML body if it exists.
@@ -2285,3 +2287,6 @@ outputs:
 - contextPath: File
   description: The file object.
   type: string
+tests:
+- playbook-checkEmailAuthenticity-test
+fromversion: 6.1.0
