@@ -9032,15 +9032,12 @@ def get_fetch_run_time_with_look_back(last_run, first_fetch, look_back=0, timezo
     return last_run_time.strftime(date_format), now.strftime(date_format)
 
 
-def look_for_incidents_in_last_run(last_run, fetch_limit):
+def look_for_incidents_in_last_run(last_run):
     """
     Looks for incident in the LastRun object
 
     :type last_run: ``dict``
     :param last_run: The LastRun object
-
-    :type fetch_limit: ``int``
-    :param fetch_limit: The fetch limit
 
     :return: The Incidents from LastRun
     :rtype: ``list``
@@ -9048,7 +9045,6 @@ def look_for_incidents_in_last_run(last_run, fetch_limit):
     incidents = []
     if 'incidents' in last_run and len(last_run['incidents']) > 0:
         incidents = last_run['incidents']
-        # last_run['incidents'] = last_run['incidents'][fetch_limit:] if len(incidents) == fetch_limit else []
 
     return incidents
 
@@ -9079,7 +9075,7 @@ def get_incidents_from_response(incidents_res, last_run, id_field='id'):
     return incidents
 
 
-def get_latest_incident_time(incidents, created_time_field, date_format='%Y-%m-%dT%H:%M:%S'):
+def get_latest_incident_time(incidents, created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
     """
     Gets the latest incident occurred time
 
@@ -9092,6 +9088,9 @@ def get_latest_incident_time(incidents, created_time_field, date_format='%Y-%m-%
     :type date_format: ``str``
     :param date_format: The date format
 
+    :type increase_last_run_time: ``bool``
+    :param increase_last_run_time: Whether to increase the last run time with one millisecond
+
     :return: The latest incident time
     :rtype: ``str``
     """
@@ -9101,6 +9100,9 @@ def get_latest_incident_time(incidents, created_time_field, date_format='%Y-%m-%
         incident_time = datetime.strptime(incident[created_time_field], date_format)
         if incident_time > latest_incident_time:
             latest_incident_time = incident_time
+
+    if increase_last_run_time:
+        latest_incident_time = latest_incident_time + timedelta(milliseconds=1)
 
     return latest_incident_time.strftime(date_format)
 
@@ -9134,7 +9136,8 @@ def remove_old_incident_ids(found_incidents_ids, current_time, look_back):
 
 
 def set_next_fetch_run(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
-                       created_time_field, id_field='id', date_format='%Y-%m-%dT%H:%M:%S'):
+                       created_time_field, id_field='id', date_format='%Y-%m-%dT%H:%M:%S', split_by_limit=True,
+                       increase_last_run_time=False):
     """
     Sets the next run
 
@@ -9165,27 +9168,36 @@ def set_next_fetch_run(last_run, incidents, fetch_limit, start_fetch_time, end_f
     :type date_format: ``str``
     :param date_format: The date format
 
+    :type split_by_limit: ``bool``
+    :param split_by_limit: Whether to return incidents with limit
+
+    :type increase_last_run_time: ``bool``
+    :param increase_last_run_time: Whether to increase the last run time with one millisecond
+
     :return: The new last run object and list of incidents
     :rtype: ``Tuple``
     """
     found_incidents = last_run.get('found_incident_ids', {})
     current_time = int(time.time())
 
-    incidents_with_limit = incidents[:fetch_limit]
+    incidents_from_limit = []
+    if split_by_limit:
+        incidents_from_limit = incidents[fetch_limit:]
+        incidents = incidents[:fetch_limit]
 
-    for incident in incidents_with_limit:
+    for incident in incidents:
         found_incidents[incident[id_field]] = current_time
 
     found_incidents = remove_old_incident_ids(found_incidents, current_time, look_back)
 
-    if len(incidents_with_limit) == 0:
+    if len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
             'incidents': [],
             'found_incident_ids': found_incidents
         }
-    elif len(incidents_with_limit) < fetch_limit:
-        latest_incident_fetched_time = get_latest_incident_time(incidents_with_limit, created_time_field, date_format)
+    elif len(incidents) < fetch_limit or not split_by_limit:
+        latest_incident_fetched_time = get_latest_incident_time(incidents, created_time_field, date_format, increase_last_run_time)
         new_last_run = {
             'time': latest_incident_fetched_time,
             'incidents': [],
@@ -9194,11 +9206,11 @@ def set_next_fetch_run(last_run, incidents, fetch_limit, start_fetch_time, end_f
     else:
         new_last_run = {
             'time': start_fetch_time,
-            'incidents': incidents[fetch_limit:],
+            'incidents': incidents_from_limit,
             'found_incident_ids': found_incidents
         }
 
-    return new_last_run, incidents_with_limit
+    return new_last_run, incidents
 
 
 ###########################################
