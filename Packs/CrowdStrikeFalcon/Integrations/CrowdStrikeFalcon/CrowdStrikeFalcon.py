@@ -2144,6 +2144,7 @@ def search_detections_command():
             for path, new_key in DETECTIONS_BASE_KEY_MAP.items():
                 detection_entry[new_key] = demisto.get(detection, path)
             behaviors = []
+
             for behavior in demisto.get(detection, 'behaviors'):
                 behaviors.append(behavior_to_entry_context(behavior))
             detection_entry['Behavior'] = behaviors
