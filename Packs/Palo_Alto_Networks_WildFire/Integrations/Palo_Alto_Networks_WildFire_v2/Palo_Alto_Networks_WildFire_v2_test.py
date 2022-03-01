@@ -6,8 +6,7 @@ import demistomock as demisto
 from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
     create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
     file_args_handler, wildfire_get_sample_command, wildfire_get_report_command, run_polling_command, \
-    wildfire_upload_url_command, prettify_url_verdict, create_dbot_score_from_url_verdict, parse_file_report, \
-    update_verdict_command
+    wildfire_upload_url_command, prettify_url_verdict, create_dbot_score_from_url_verdict, parse_file_report
 
 
 def test_will_return_ok():
@@ -305,22 +304,6 @@ def test_running_polling_command_new_search(mocker):
     assert command_results[0].scheduled_command is not None
 
 
-def test_update_verdict_command(mocker):
-
-    args = {'hash': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12'
-            ',c85f1ee5b83d3d1caa8d12ea4b2486cb3b9b60348a475c350a3ddeab9353ad3e',
-            'comment': 'test comment', 'verdict': 'benign'}
-    mocker_results = ['test', Exception('502')]
-    mocker.patch("Palo_Alto_Networks_WildFire_v2.URL", "https://wildfire.paloaltonetworks.com/publicapi")
-    mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', side_effect=mocker_results)
-    results = update_verdict_command(args)
-    expected_results = '\nVerdict Hash File -> "f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12" is changed' \
-                       '\nVerdict Hash File -> "c85f1ee5b83d3d1caa8d12ea4b2486cb3b9b60348a475c350a3ddeab9353ad3e"' \
-                       ' is not changed - 502'
-
-    assert results.readable_output == expected_results
-
-
 def test_parse_file_report_network():
     """
     Given:
@@ -420,17 +403,21 @@ def test_parse_file_report_network():
                 'entry': 'test'
             }}
     }
-    expected_outputs_network = {'TCP': {'IP': ['1.1.1.1', '1.0.1.0'],
-                                        'Port': ['443', '80'],
-                                        'Country': ['US', 'US'],
-                                        'JA3': ['test', 'test'],
-                                        'JA3S': ['test']},
-                                'UDP': {'IP': ['1.1.1.1'], 'Port': ['55'], 'Country': ['US'], 'JA3': ['test'], 'JA3S': ['test']},
-                                'DNS': {'Query': ['test.com'], 'Response': ['1.1.1.1.'], 'Type': ['A']},
-                                'URL': {'Host': 'test1.com',
-                                        'Method': 'GET',
-                                        'URI': '/test/72t0jjhmv7takwvisfnz_eejvf_h6v2ix/',
-                                        'UserAgent': 'test'}}
+    expected_outputs_network_info = {'TCP': [{'IP': '1.1.1.1',
+                                              'Port': '443',
+                                              'Country': 'US',
+                                              'JA3': 'test',
+                                              'JA3S': 'test'},
+                                             {'IP': '1.0.1.0',
+                                              'Port': '80',
+                                              'Country': 'US',
+                                              'JA3': 'test'}],
+                                     'UDP': [{'IP': '1.1.1.1', 'Port': '55', 'Country': 'US', 'JA3': 'test', 'JA3S': 'test'}],
+                                     'DNS': [{'Query': 'test.com', 'Response': '1.1.1.1.', 'Type': 'A'}],
+                                     'URL': [{'Host': 'test1.com',
+                                              'Method': 'GET',
+                                              'URI': '/test/72t0jjhmv7takwvisfnz_eejvf_h6v2ix/',
+                                              'UserAgent': 'test'}]}
     expected_outputs_ProcessTree = [{'ProcessName': 'WINWORD.EXE',
                                      'ProcessPid': '952',
                                      'ProcessText': 'C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE',
@@ -454,7 +441,8 @@ def test_parse_file_report_network():
                                                                                   reports=report,
                                                                                   file_info={},
                                                                                   extended_data=True)
-    assert expected_outputs_network == outputs.get('Network')
+    # assert expected_outputs_network == outputs.get('Network')
+    assert expected_outputs_network_info == outputs.get('NetworkInfo')
     assert expected_outputs_ProcessTree == outputs.get('ProcessTree')
     assert expected_outputs_ProcessList == outputs.get('ProcessList')
     assert expected_outputs_Summary == outputs.get('Summary')

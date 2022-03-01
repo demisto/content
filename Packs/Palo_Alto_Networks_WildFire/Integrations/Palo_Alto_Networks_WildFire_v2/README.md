@@ -28,7 +28,8 @@ Use the Palo Alto Networks Wildfire integration to automatically identify unknow
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Return warning entry for unsupported file types |  | False |
-
+    | Create relationships | Create relationships between indicators as part of Enrichment. | False |
+    
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -139,23 +140,23 @@ Uploads a file to WildFire for analysis.
 | InfoFile.Info | string | Details of the report file. | 
 | InfoFile.Size | number | The size of the report file. | 
 | InfoFile.Type | string | The report file type. | 
-| WildFire.Report.Network.URL.Host | string |   | 
-| WildFire.Report.Network.URL.Method | string |   | 
-| WildFire.Report.Network.URL.URI | string |   | 
-| WildFire.Report.Network.URL.UserAgent | string |   | 
-| WildFire.Report.Network.UDP.IP | string | Submission related IPs, in UDP protocol. | 
-| WildFire.Report.Network.UDP.Port | string | Submission related ports, in UDP protocol. | 
-| WildFire.Report.Network.UDP.JA3 | string | Submission related JA3s, in UDP protocol. | 
-| WildFire.Report.Network.UDP.JA3S | string | Submission related JA3Ss, in UDP protocol. | 
-| WildFire.Report.Network.UDP.Country | string | Submission related Countries, in UDP protocol. |
-| WildFire.Report.Network.TCP.IP | string | Submission related IPs, in TCP protocol. | 
-| WildFire.Report.Network.TCP.JA3 | string | Submission related JA3s, in TCP protocol. | 
-| WildFire.Report.Network.TCP.JA3S | string | Submission related JA3Ss, in TCP protocol. | 
-| WildFire.Report.Network.TCP.Country | string | Submission related Countries, in TCP protocol. | 
-| WildFire.Report.Network.TCP.Port | string | Submission related ports, in TCP protocol. | 
-| WildFire.Report.Network.DNS.Query | string | Submission DNS queries. | 
-| WildFire.Report.Network.DNS.Response | string | Submission DNS responses. | 
-| WildFire.Report.Network.DNS.Type | string | Submission DNS Types. | 
+| WildFire.Report.NetworkInfo.URL.Host | string |   | 
+| WildFire.Report.NetworkInfo.URL.Method | string |   | 
+| WildFire.Report.NetworkInfo.URL.URI | string |   | 
+| WildFire.Report.NetworkInfo.URL.UserAgent | string |   | 
+| WildFire.Report.NetworkInfo.UDP.IP | string | Submission related IPs, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.UDP.Port | string | Submission related ports, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.UDP.JA3 | string | Submission related JA3s, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.UDP.JA3S | string | Submission related JA3Ss, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.UDP.Country | string | Submission related Countries, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.IP | string | Submission related IPs, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.JA3 | string | Submission related JA3s, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.JA3S | string | Submission related JA3Ss, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.Country | string | Submission related Countries, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.Port | string | Submission related ports, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.DNS.Query | string | Submission DNS queries. | 
+| WildFire.Report.NetworkInfo.DNS.Response | string | Submission DNS responses. | 
+| WildFire.Report.NetworkInfo.DNS.Type | string | Submission DNS Types. | 
 | WildFire.Report.Evidence.md5 | string | Submission evidence MD5 hash. | 
 | WildFire.Report.Evidence.Text | string | Submission evidence text. | 
 | WildFire.Report.detection_reasons.description | string | Reason for the detection verdict. | 
@@ -242,23 +243,23 @@ Uploads the URL of a remote file to WildFire for analysis.
 | InfoFile.Info | string | Details of the report file. | 
 | InfoFile.Size | number | The size of the report file. | 
 | InfoFile.Type | string | The report file type. | 
-| WildFire.Report.Network.URL.Host | string |   | 
-| WildFire.Report.Network.URL.Method | string |   | 
-| WildFire.Report.Network.URL.URI | string |   | 
-| WildFire.Report.Network.URL.UserAgent | string |   | 
-| WildFire.Report.Network.UDP.IP | string | Submission related IPs, in UDP protocol. | 
-| WildFire.Report.Network.UDP.Port | string | Submission related ports, in UDP protocol. | 
-| WildFire.Report.Network.UDP.JA3 | string | Submission related JA3s, in UDP protocol. | 
-| WildFire.Report.Network.UDP.JA3S | string | Submission related JA3Ss, in UDP protocol. | 
-| WildFire.Report.Network.UDP.Country | string | Submission related Countries, in UDP protocol. |
-| WildFire.Report.Network.TCP.IP | string | Submission related IPs, in TCP protocol. | 
-| WildFire.Report.Network.TCP.JA3 | string | Submission related JA3s, in TCP protocol. | 
-| WildFire.Report.Network.TCP.JA3S | string | Submission related JA3Ss, in TCP protocol. | 
-| WildFire.Report.Network.TCP.Country | string | Submission related Countries, in TCP protocol. | 
-| WildFire.Report.Network.TCP.Port | string | Submission related ports, in TCP protocol. | 
-| WildFire.Report.Network.DNS.Query | string | Submission DNS queries. | 
-| WildFire.Report.Network.DNS.Response | string | Submission DNS responses. | 
-| WildFire.Report.Network.DNS.Type | string | Submission DNS Types. | 
+| WildFire.Report.NetworkInfo.URL.Host | string |   | 
+| WildFire.Report.NetworkInfo.URL.Method | string |   | 
+| WildFire.Report.NetworkInfo.URL.URI | string |   | 
+| WildFire.Report.NetworkInfo.URL.UserAgent | string |   | 
+| WildFire.Report.NetworkInfo.UDP.IP | string | Submission related IPs, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.UDP.Port | string | Submission related ports, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.UDP.JA3 | string | Submission related JA3s, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.UDP.JA3S | string | Submission related JA3Ss, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.UDP.Country | string | Submission related Countries, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.IP | string | Submission related IPs, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.JA3 | string | Submission related JA3s, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.JA3S | string | Submission related JA3Ss, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.Country | string | Submission related Countries, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.Port | string | Submission related ports, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.DNS.Query | string | Submission DNS queries. | 
+| WildFire.Report.NetworkInfo.DNS.Response | string | Submission DNS responses. | 
+| WildFire.Report.NetworkInfo.DNS.Type | string | Submission DNS Types. | 
 | WildFire.Report.Evidence.md5 | string | Submission evidence MD5 hash. | 
 | WildFire.Report.Evidence.Text | string | Submission evidence text. | 
 | WildFire.Report.detection_reasons.description | string | Reason for the detection verdict. | 
@@ -344,23 +345,23 @@ Retrieves results for a file hash using WildFire.
 | InfoFile.Info | string | Details of the report file. | 
 | InfoFile.Size | number | The size of the report file. | 
 | InfoFile.Type | string | The report file type. | 
-| WildFire.Report.Network.URL.Host | string |   | 
-| WildFire.Report.Network.URL.Method | string |   | 
-| WildFire.Report.Network.URL.URI | string |   | 
-| WildFire.Report.Network.URL.UserAgent | string |   | 
-| WildFire.Report.Network.UDP.IP | string | Submission related IPs, in UDP protocol. | 
-| WildFire.Report.Network.UDP.Port | string | Submission related ports, in UDP protocol. | 
-| WildFire.Report.Network.UDP.JA3 | string | Submission related JA3s, in UDP protocol. | 
-| WildFire.Report.Network.UDP.JA3S | string | Submission related JA3Ss, in UDP protocol. | 
-| WildFire.Report.Network.UDP.Country | string | Submission related Countries, in UDP protocol. |
-| WildFire.Report.Network.TCP.IP | string | Submission related IPs, in TCP protocol. | 
-| WildFire.Report.Network.TCP.JA3 | string | Submission related JA3s, in TCP protocol. | 
-| WildFire.Report.Network.TCP.JA3S | string | Submission related JA3Ss, in TCP protocol. | 
-| WildFire.Report.Network.TCP.Country | string | Submission related Countries, in TCP protocol. | 
-| WildFire.Report.Network.TCP.Port | string | Submission related ports, in TCP protocol. | 
-| WildFire.Report.Network.DNS.Query | string | Submission DNS queries. | 
-| WildFire.Report.Network.DNS.Response | string | Submission DNS responses. | 
-| WildFire.Report.Network.DNS.Type | string | Submission DNS Types. | 
+| WildFire.Report.NetworkInfo.URL.Host | string |   | 
+| WildFire.Report.NetworkInfo.URL.Method | string |   | 
+| WildFire.Report.NetworkInfo.URL.URI | string |   | 
+| WildFire.Report.NetworkInfo.URL.UserAgent | string |   | 
+| WildFire.Report.NetworkInfo.UDP.IP | string | Submission related IPs, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.UDP.Port | string | Submission related ports, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.UDP.JA3 | string | Submission related JA3s, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.UDP.JA3S | string | Submission related JA3Ss, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.UDP.Country | string | Submission related Countries, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.IP | string | Submission related IPs, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.JA3 | string | Submission related JA3s, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.JA3S | string | Submission related JA3Ss, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.Country | string | Submission related Countries, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.Port | string | Submission related ports, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.DNS.Query | string | Submission DNS queries. | 
+| WildFire.Report.NetworkInfo.DNS.Response | string | Submission DNS responses. | 
+| WildFire.Report.NetworkInfo.DNS.Type | string | Submission DNS Types. | 
 | WildFire.Report.Evidence.md5 | string | Submission evidence MD5 hash. | 
 | WildFire.Report.Evidence.Text | string | Submission evidence text. | 
 | WildFire.Report.detection_reasons.description | string | Reason for the detection verdict. | 
@@ -528,23 +529,23 @@ Uploads a URL of a webpage to WildFire for analysis.
 | InfoFile.Info | string | Details of the report file. | 
 | InfoFile.Size | number | The size of the report file. | 
 | InfoFile.Type | string | The report file type. | 
-| WildFire.Report.Network.URL.Host | string |   | 
-| WildFire.Report.Network.URL.Method | string |   | 
-| WildFire.Report.Network.URL.URI | string |   | 
-| WildFire.Report.Network.URL.UserAgent | string |   | 
-| WildFire.Report.Network.UDP.IP | string | Submission related IPs, in UDP protocol. | 
-| WildFire.Report.Network.UDP.Port | string | Submission related ports, in UDP protocol. | 
-| WildFire.Report.Network.UDP.JA3 | string | Submission related JA3s, in UDP protocol. | 
-| WildFire.Report.Network.UDP.JA3S | string | Submission related JA3Ss, in UDP protocol. | 
-| WildFire.Report.Network.UDP.Country | string | Submission related Countries, in UDP protocol. |
-| WildFire.Report.Network.TCP.IP | string | Submission related IPs, in TCP protocol. | 
-| WildFire.Report.Network.TCP.JA3 | string | Submission related JA3s, in TCP protocol. | 
-| WildFire.Report.Network.TCP.JA3S | string | Submission related JA3Ss, in TCP protocol. | 
-| WildFire.Report.Network.TCP.Country | string | Submission related Countries, in TCP protocol. | 
-| WildFire.Report.Network.TCP.Port | string | Submission related ports, in TCP protocol. | 
-| WildFire.Report.Network.DNS.Query | string | Submission DNS queries. | 
-| WildFire.Report.Network.DNS.Response | string | Submission DNS responses. | 
-| WildFire.Report.Network.DNS.Type | string | Submission DNS Types. | 
+| WildFire.Report.NetworkInfo.URL.Host | string |   | 
+| WildFire.Report.NetworkInfo.URL.Method | string |   | 
+| WildFire.Report.NetworkInfo.URL.URI | string |   | 
+| WildFire.Report.NetworkInfo.URL.UserAgent | string |   | 
+| WildFire.Report.NetworkInfo.UDP.IP | string | Submission related IPs, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.UDP.Port | string | Submission related ports, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.UDP.JA3 | string | Submission related JA3s, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.UDP.JA3S | string | Submission related JA3Ss, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.UDP.Country | string | Submission related Countries, in UDP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.IP | string | Submission related IPs, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.JA3 | string | Submission related JA3s, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.JA3S | string | Submission related JA3Ss, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.Country | string | Submission related Countries, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.TCP.Port | string | Submission related ports, in TCP protocol. | 
+| WildFire.Report.NetworkInfo.DNS.Query | string | Submission DNS queries. | 
+| WildFire.Report.NetworkInfo.DNS.Response | string | Submission DNS responses. | 
+| WildFire.Report.NetworkInfo.DNS.Type | string | Submission DNS Types. | 
 | WildFire.Report.Evidence.md5 | string | Submission evidence MD5 hash. | 
 | WildFire.Report.Evidence.Text | string | Submission evidence text. | 
 | WildFire.Report.detection_reasons.description | string | Reason for the detection verdict. | 
@@ -649,25 +650,3 @@ Get web artifacts for a URL webpage. An empty tgz will be returned, no matter wh
 #### Human Readable Output
 
 There is no human-readable output for this command.
-
-
-### wildfire-update-verdict
-***
-Changes the WildFire verdict applied to a sample. Verdict changes apply only to those samples submitted to the WildFire appliance, and the verdict for the same sample remains unchanged in the WildFire global cloud. If a user inserts multiple hashes, the same comment and verdict will apply to all - mention in the command description!
-
-
-#### Base Command
-
-`wildfire-update-verdict`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| hash | hash values of the samples, supports only sha256. | Required | 
-| comment | A description of the change request in quotes, If you send multiple hashes, this comment will apply to each hash. (Maximum length 2,048 characters). | Required | 
-| verdict | The new verdict to be applied to the sample, If you send multiple hashes, this verdict will apply to each hash. Possible values are: benign, malware, grayware, phishing. | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.

@@ -27,6 +27,7 @@ if not TOKEN and current_platform == 'x2':
 USE_SSL = not PARAMS.get('insecure', False)
 FILE_TYPE_SUPPRESS_ERROR = PARAMS.get('suppress_file_type_error')
 RELIABILITY = PARAMS.get('integrationReliability', DBotScoreReliability.B) or DBotScoreReliability.B
+CREATE_RELATIONSHIPS = argToBoolean(PARAMS.get('create_relationships'))
 DEFAULT_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
 MULTIPART_HEADERS = {'Content-Type': "multipart/form-data; boundary=upload_boundry"}
 WILDFIRE_REPORT_DT_FILE = "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5 ||" \
@@ -350,18 +351,21 @@ def hash_list_to_file(hash_list):
     return [file_path]
 
 
-def create_relationship(name: str, entities: Tuple, types: Tuple) -> EntityRelationship:
+def create_relationship(name: str, entities: Tuple, types: Tuple) -> Union[EntityRelationship, None]:
 
-    return EntityRelationship(
-        name=name,
-        entity_a=entities[0],
-        entity_a_type=RELATIONSHIPS_TYPE[types[0]],
-        entity_b=entities[1],
-        entity_b_type=RELATIONSHIPS_TYPE[types[1]],
-        reverse_name=name,
-        source_reliability=RELIABILITY,
-        brand='WildFire-v2'
-    )
+    if CREATE_RELATIONSHIPS:
+        return EntityRelationship(
+            name=name,
+            entity_a=entities[0],
+            entity_a_type=RELATIONSHIPS_TYPE[types[0]],
+            entity_b=entities[1],
+            entity_b_type=RELATIONSHIPS_TYPE[types[1]],
+            reverse_name=name,
+            source_reliability=RELIABILITY,
+            brand='WildFire-v2'
+        )
+    else:
+        return None
 
 
 ''' COMMANDS '''
@@ -602,40 +606,6 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
     return command_results_list
 
 
-def update_verdict_command(args: Dict[str, Any]) -> CommandResults:
-
-    hashes = argToList(args.get('hash'))
-    comment = args.get('comment')
-    verdict = VERDICTS_TO_CHANGE_DICT[args.get('verdict', '')]
-
-    update_verdict_url = URL + URL_DICT['change_verdict']
-    params = {
-        'comment': comment,
-        'verdict': verdict,
-        'apikey': TOKEN
-    }
-
-    human_readable = ''
-    for hash in hashes:
-        if not sha256Regex.match(hash):
-            human_readable += f'\nHash File -> "{hash}" invalid'
-            continue
-        try:
-            params['hash'] = hash
-            http_request(
-                url=update_verdict_url,
-                method='POST',
-                headers=DEFAULT_HEADERS,
-                params=params,
-                return_raw=True
-            )
-            human_readable += f'\nVerdict Hash File -> "{hash}" is changed'
-        except Exception as e:
-            human_readable += f'\nVerdict Hash File -> "{hash}" is not changed - {str(e)}'
-
-    return CommandResults(readable_output=human_readable)
-
-
 @logger
 def wildfire_get_verdict(file_hash: Optional[str] = None, url: Optional[str] = None) -> Tuple[dict, dict]:
     get_verdict_uri = URL + URL_DICT["verdict"]
@@ -795,17 +765,13 @@ def wildfire_get_url_webartifacts_command():
 def parse_file_report(file_hash, reports, file_info, extended_data: bool):
     udp_ip = []
     udp_port = []
-    udp_country = []
-    udp_ja3 = []
-    udp_ja3s = []
+    network_udp = []
     tcp_ip = []
     tcp_port = []
-    tcp_country = []
-    tcp_ja3 = []
-    tcp_ja3s = []
+    network_tcp = []
     dns_query = []
     dns_response = []
-    dns_type = []
+    network_dns = []
     evidence_md5 = []
     evidence_text = []
     process_list_outputs = []
@@ -818,7 +784,7 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
     software_report = []
     behavior = []
     relationships = []
-    network_url = {}
+    network_url = []
 
     # When only one report is in response, it's returned as a single json object and not a list.
     if not isinstance(reports, list):
@@ -831,64 +797,115 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                 if not isinstance(udp_objects, list):
                     udp_objects = [udp_objects]
                 for udp_obj in udp_objects:
+                    network_udp_ip = network_udp_port = network_udp_country = network_udp_ja3 = network_udp_ja3s = None
                     if '@ip' in udp_obj and udp_obj['@ip']:
                         udp_ip.append(udp_obj["@ip"])
+                        if extended_data:
+                            network_udp_ip = udp_obj["@ip"]
                         feed_related_indicators.append({'value': udp_obj["@ip"], 'type': 'IP'})
                         relationships.append(create_relationship('related-to', (file_hash, udp_obj["@ip"]), ('file', 'ip')))
                     if '@port' in udp_obj:
                         udp_port.append(udp_obj["@port"])
+                        if extended_data:
+                            network_udp_port = udp_obj['@port']
                     if extended_data:
                         if '@country' in udp_obj and udp_obj['@country']:
-                            udp_country.append(udp_obj['@country'])
+                            network_udp_country = udp_obj['@country']
                         if '@ja3' in udp_obj and udp_obj['@ja3']:
-                            udp_ja3.append(udp_obj['@ja3'])
+                            network_udp_ja3 = udp_obj['@ja3']
                         if '@ja3s' in udp_obj and udp_obj['@ja3s']:
-                            udp_ja3s.append(udp_obj['@ja3s'])
+                            network_udp_ja3s = udp_obj['@ja3s']
+                    network_udp_dict = assign_params(
+                        IP=network_udp_ip,
+                        Port=network_udp_port,
+                        Country=network_udp_country,
+                        JA3=network_udp_ja3,
+                        JA3S=network_udp_ja3s
+                    )
+                    if network_udp_dict:
+                        network_udp.append(network_udp_dict)
+
             if 'TCP' in report["network"]:
                 tcp_objects = report["network"]["TCP"]
                 if not isinstance(tcp_objects, list):
                     tcp_objects = [tcp_objects]
                 for tcp_obj in tcp_objects:
+                    network_tcp_ip = network_tcp_port = network_tcp_country = network_tcp_ja3 = network_tcp_ja3s = None
                     if '@ip' in tcp_obj and tcp_obj['@ip']:
                         tcp_ip.append(tcp_obj["@ip"])
+                        if extended_data:
+                            network_tcp_ip = tcp_obj["@ip"]
                         feed_related_indicators.append({'value': tcp_obj["@ip"], 'type': 'IP'})
                         relationships.append(create_relationship('related-to', (file_hash, tcp_obj["@ip"]), ('file', 'ip')))
                     if '@port' in tcp_obj:
                         tcp_port.append(tcp_obj['@port'])
+                        if extended_data:
+                            network_tcp_port = tcp_obj['@port']
                     if extended_data:
                         if '@country' in tcp_obj and tcp_obj['@country']:
-                            tcp_country.append(tcp_obj['@country'])
+                            network_tcp_country = tcp_obj['@country']
                         if '@ja3' in tcp_obj and tcp_obj['@ja3']:
-                            tcp_ja3.append(tcp_obj['@ja3'])
+                            network_tcp_ja3 = tcp_obj['@ja3']
                         if '@ja3s' in tcp_obj and tcp_obj['@ja3s']:
-                            tcp_ja3s.append(tcp_obj['@ja3s'])
+                            network_tcp_ja3s = tcp_obj['@ja3s']
+                    network_tcp_dect = assign_params(IP=network_tcp_ip,
+                                                     Port=network_tcp_port,
+                                                     Country=network_tcp_country,
+                                                     JA3=network_tcp_ja3,
+                                                     JA3S=network_tcp_ja3s)
+                    if network_tcp_dect:
+                        network_tcp.append(network_tcp_dect)
+
             if 'dns' in report["network"]:
                 dns_objects = report["network"]["dns"]
                 if not isinstance(dns_objects, list):
                     dns_objects = [dns_objects]
                 for dns_obj in dns_objects:
+                    network_dns_query = network_dns_response = network_dns_type = None
                     if '@query' in dns_obj and dns_obj['@query']:
                         dns_query.append(dns_obj['@query'])
+                        if extended_data:
+                            network_dns_query = dns_obj['@query']
                     if '@response' in dns_obj and dns_obj['@response']:
                         dns_response.append(dns_obj['@response'])
+                        if extended_data:
+                            network_dns_response = dns_obj['@response']
                     if extended_data:
                         if '@type' in dns_obj and dns_obj['@type']:
-                            dns_type.append(dns_obj['@type'])
+                            network_dns_type = dns_obj['@type']
+                    network_dns_dict = assign_params(Query=network_dns_query,
+                                                     Response=network_dns_response,
+                                                     Type=network_dns_type)
+                    if network_dns_dict:
+                        network_dns.append(network_dns_dict)
+
             if 'url' in report["network"]:
+                network_url_host = network_url_uri = network_url_method = network_url_useragent = None
                 url = ''
                 if '@host' in report["network"]["url"]:
                     url = report["network"]["url"]["@host"]
-                    network_url['Host'] = report["network"]["url"]["@host"]
+                    if extended_data:
+                        network_url_host = report["network"]["url"]["@host"]
                 if '@uri' in report["network"]["url"]:
                     url += report["network"]["url"]["@uri"]
-                    network_url['URI'] = report["network"]["url"]["@uri"]
+                    if extended_data:
+                        network_url_uri = report["network"]["url"]["@uri"]
                 if url:
                     feed_related_indicators.append({'value': url, 'type': 'URL'})
                     relationships.append(create_relationship('related-to', (file_hash, url), ('file', 'url')))
-                if '@method' in report['network']['url']:
-                    network_url['Method'] = report["network"]["url"]["@method"]
-                if '@user_agent' in report['network']['url']:
-                    network_url['UserAgent'] = report["network"]["url"]["@user_agent"]
+                if extended_data:
+                    if '@method' in report['network']['url']:
+                        network_url_method = report["network"]["url"]["@method"]
+                    if '@user_agent' in report['network']['url']:
+                        network_url_useragent = report["network"]["url"]["@user_agent"]
+                network_url_dict = assign_params(
+                    Host=network_url_host,
+                    URI=network_url_uri,
+                    Method=network_url_method,
+                    UserAgent=network_url_useragent
+                )
+                if network_url_dict:
+                    network_url.append(network_url_dict)
 
         if 'evidence' in report and report["evidence"]:
             if 'file' in report["evidence"]:
@@ -1059,43 +1076,37 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
 
         outputs["Network"] = {}
 
-        if len(udp_ip) > 0 or len(udp_port) > 0 or udp_country or udp_ja3 or udp_ja3s:
+        if len(udp_ip) > 0 or len(udp_port) > 0:
             outputs["Network"]["UDP"] = {}
             if len(udp_ip) > 0:
                 outputs["Network"]["UDP"]["IP"] = udp_ip
             if len(udp_port) > 0:
                 outputs["Network"]["UDP"]["Port"] = udp_port
-            if len(udp_country) > 0:
-                outputs['Network']['UDP']['Country'] = udp_country
-            if len(udp_ja3) > 0:
-                outputs['Network']['UDP']['JA3'] = udp_ja3
-            if len(udp_ja3s) > 0:
-                outputs['Network']['UDP']['JA3S'] = udp_ja3s
 
-        if len(tcp_ip) > 0 or len(tcp_port) > 0 or tcp_country or tcp_ja3 or tcp_ja3s:
+        if len(tcp_ip) > 0 or len(tcp_port) > 0:
             outputs["Network"]["TCP"] = {}
             if len(tcp_ip) > 0:
                 outputs["Network"]["TCP"]["IP"] = tcp_ip
             if len(tcp_port) > 0:
                 outputs["Network"]["TCP"]["Port"] = tcp_port
-            if len(tcp_country) > 0:
-                outputs['Network']['TCP']['Country'] = tcp_country
-            if len(tcp_ja3) > 0:
-                outputs['Network']['TCP']['JA3'] = tcp_ja3
-            if len(tcp_ja3s) > 0:
-                outputs['Network']['TCP']['JA3S'] = tcp_ja3s
 
-        if len(dns_query) > 0 or len(dns_response) > 0 or dns_type:
+        if len(dns_query) > 0 or len(dns_response) > 0:
             outputs["Network"]["DNS"] = {}
             if len(dns_query) > 0:
                 outputs["Network"]["DNS"]["Query"] = dns_query
             if len(dns_response) > 0:
                 outputs["Network"]["DNS"]["Response"] = dns_response
-            if len(dns_type) > 0:
-                outputs["Network"]["DNS"]["Type"] = dns_type
 
-        if extended_data and network_url:
-            outputs['Network']['URL'] = network_url
+    if network_udp or network_tcp or network_dns or network_url:
+        outputs['NetworkInfo'] = {}
+        if network_udp:
+            outputs['NetworkInfo']['UDP'] = network_udp
+        if network_tcp:
+            outputs['NetworkInfo']['TCP'] = network_tcp
+        if network_dns:
+            outputs['NetworkInfo']['DNS'] = network_dns
+        if network_url:
+            outputs['NetworkInfo']['URL'] = network_url
 
     if platform_report:
         outputs['Platform'] = platform_report
@@ -1128,6 +1139,7 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
 
     feed_related_indicators = create_feed_related_indicators_object(feed_related_indicators)
     behavior = create_behaviors_object(behavior)
+    relationships = relationships if CREATE_RELATIONSHIPS else None
     return outputs, feed_related_indicators, behavior, relationships
 
 
@@ -1451,9 +1463,6 @@ def main():
 
         elif command == 'wildfire-get-url-webartifacts':
             wildfire_get_url_webartifacts_command()
-
-        elif command == 'wildfire-update-verdict':
-            return_results(update_verdict_command(args))
 
     except Exception as err:
         return_error(str(err))
