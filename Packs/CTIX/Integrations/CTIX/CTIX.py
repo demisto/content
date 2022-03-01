@@ -534,13 +534,20 @@ def create_intel_command(client: Client, args: Dict[str, Any]) -> Dict:
         "malwares": args.get("malwares", []),
         "threat_actors": args.get("threat_actors", []),
         "attack_patterns": args.get("attack_patterns", []),
-        "title": args.get("title", None),
+        "title": args.get("title"),
         "description": args.get("description"),
         "confidence": args.get("confidence"),
         "tlp": args.get("tlp"),
     }
     create_intel_response = client.create_intel(data)
-    return create_intel_response
+    return {
+        "CTIX": {
+            "Intel": {
+                "response": create_intel_response.get("data"),
+                "code": create_intel_response.get("status")
+            }
+        }
+    }
 
 
 def main() -> None:

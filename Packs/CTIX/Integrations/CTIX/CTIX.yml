@@ -779,41 +779,41 @@ script:
       isArray: false
     - name: ips
       required: false
-      description: comma-seperated list of IPs.
+      description: comma-separated list of IPs.
       isArray: true
     - name: urls
       required: false
-      description: comma-seperated list of URLs.
+      description: comma-separated list of URLs.
       isArray: true
     - name: domains
       required: false
-      description: comma-seperated list of domains.
+      description: comma-separated list of domains.
       isArray: true
     - name: files
       required: false
-      description: comma-seperated list of files.
+      description: comma-separated list of files.
       isArray: true
     - name: emails
       required: false
-      description: comma-seperated list of emails.
+      description: comma-separated list of emails.
       isArray: true
     - name: malwares
       required: false
-      description: comma-seperated list of malwares.
+      description: comma-separated list of malwares.
       isArray: true
     - name: threat_actors
       required: false
-      description: comma-seperated list of threat_actors.
+      description: comma-separated list of threat_actors.
       isArray: true
     - name: attack_patterns
       required: false
-      description: comma-seperated list of attack_patterns.
+      description: comma-separated list of attack_patterns.
       isArray: true
     outputs:
       - contextPath: CTIX.Intel.response
         description: The response of the api.
         type: String
-      - contextPath: CTIX.Intel.code
+      - contextPath: CTIX.Intel.status
         description: Status code returned from the api.
         type: String
   dockerimage: demisto/python3:3.10.1.26972

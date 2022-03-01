@@ -837,14 +837,14 @@ Creates Intel in CTIX platform.
 | description | Description of ioc| Optional |
 | tlp | Tlp of ioc | Optional |
 | confidence | Confidence of ioc | Optional |
-| ips | List of IPs | Optional | 
-| urls | List of URLs | Optional |
-| domains | List of domains | Optional |
-| files | List of files | Optional |
-| emails | List of emails | Optional |
-| malwares | List of malwares | Optional |
-| threat_actors | List of threat actors | Optional |
-| attack_patterns | List of attack patterns | Optional |
+| ips | comma-separated list of IPs | Optional | 
+| urls | comma-separated list of URLs | Optional |
+| domains | comma-separated list of domains | Optional |
+| files | comma-separated list of files | Optional |
+| emails | comma-separated list of emails | Optional |
+| malwares | comma-separated list of malwares | Optional |
+| threat_actors | comma-separated list of threat actors | Optional |
+| attack_patterns | comma-separated list of attack patterns | Optional |
 
 
 #### Context Output
