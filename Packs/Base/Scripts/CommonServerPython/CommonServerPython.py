@@ -1953,22 +1953,36 @@ class JsonTransformer:
             return self.func(json_input)
         if isinstance(json_input, STRING_TYPES):
             return json_input
-        if not isinstance(json_input, dict):
-            return flattenCell(json_input, is_pretty)
         if self.flatten:
+            if not isinstance(json_input, dict):
+                return flattenCell(json_input, is_pretty)
             return '\n'.join(
                 [u'{key}: {val}'.format(key=k, val=flattenCell(v, is_pretty)) for k, v in json_input.items()])  # for BC
 
         str_lst = []
-        prev_path = None
+        prev_path = []  # type: ignore
         for path, key, val in self.json_to_path_generator(json_input):
+            str_path = ''
+            full_tabs = '\t' * len(path)
             if path != prev_path:  # need to construct tha `path` string only of it changed from the last one
-                str_path = '\n'.join(["{tabs}**{p}**:".format(p=p, tabs=i * '\t') for i, p in enumerate(path)])
-                str_lst.append(str_path)
+                common_prefix_index = len(os.path.commonprefix((prev_path, path)))  # type: ignore
+                path_suffix = path[common_prefix_index:]
+
+                str_path_lst = []
+                for i, p in enumerate(path_suffix):
+                    is_list = isinstance(p, int)
+                    tabs = (common_prefix_index + i) * '\t'
+                    path_value = p if not is_list else '-'
+                    delim = ':\n' if not is_list else ''
+                    str_path_lst.append('{tabs}**{path_value}**{delim}'.format(tabs=tabs, path_value=path_value, delim=delim))
+                str_path = ''.join(str_path_lst)
                 prev_path = path
+                if path and isinstance(path[-1], int):
+                    # if it is a beginning of a list, there is only one tab left
+                    full_tabs = '\t'
 
             str_lst.append(
-                '{tabs}***{key}***: {val}'.format(tabs=len(path) * '\t', key=key, val=flattenCell(val, is_pretty)))
+                '{path}{tabs}***{key}***: {val}'.format(path=str_path, tabs=full_tabs, key=key, val=flattenCell(val, is_pretty)))
 
         return '\n'.join(str_lst)
 
@@ -1976,11 +1990,10 @@ class JsonTransformer:
         """
         :type json_input: ``list`` or ``dict``
         :param json_input: The json input to transform
- fca
-        :type path: ``List[str]``
+        :type path: ``List[str + int]``
         :param path: The path of the key, value pair inside the json
 
-        :rtype ``Tuple[List[str], str, str]``
+        :rtype ``Tuple[List[str + int], str, str]``
         :return:  A tuple. the second and third elements are key, values, and the first is their path in the json
         """
         if path is None:
@@ -1988,21 +2001,27 @@ class JsonTransformer:
         is_in_path = not self.keys or any(p for p in path if p in self.keys)
         if isinstance(json_input, dict):
             for k, v in json_input.items():
-
-                if is_in_path or k in self.keys:
-                    if isinstance(v, dict):
+                if is_in_path or k in self.keys:  # found data to return
+                    # recurse until finding a primitive value
+                    if not isinstance(v, dict) and not isinstance(v, list):
+                        yield path, k, v
+                    else:
                         for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
                             yield res
-                    else:
-                        yield path, k, v
 
-                if self.is_nested:
+                elif self.is_nested:
+                    # recurse all the json_input to find the relevant data
                     for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
                         yield res
+
         if isinstance(json_input, list):
-            for item in json_input:
-                for res in self.json_to_path_generator(item, path):  # this is yield from for python2 BC
-                    yield res
+            if not json_input or (not isinstance(json_input[0], list) and not isinstance(json_input[0], dict)):
+                # if the items of the lists are primitive, put the values in one line
+                yield path, 'values', ', '.join(json_input)
+            else:
+                for i, item in enumerate(json_input):
+                    for res in self.json_to_path_generator(item, path + [i]):  # this is yield from for python2 BC
+                        yield res
 
 
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
