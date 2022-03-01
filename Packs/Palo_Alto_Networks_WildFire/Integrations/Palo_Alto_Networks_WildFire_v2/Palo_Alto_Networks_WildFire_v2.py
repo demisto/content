@@ -27,7 +27,7 @@ if not TOKEN and current_platform == 'x2':
 USE_SSL = not PARAMS.get('insecure', False)
 FILE_TYPE_SUPPRESS_ERROR = PARAMS.get('suppress_file_type_error')
 RELIABILITY = PARAMS.get('integrationReliability', DBotScoreReliability.B) or DBotScoreReliability.B
-CREATE_RELATIONSHIPS = argToBoolean(PARAMS.get('create_relationships'))
+CREATE_RELATIONSHIPS = argToBoolean(PARAMS.get('create_relationships', 'true'))
 DEFAULT_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
 MULTIPART_HEADERS = {'Content-Type': "multipart/form-data; boundary=upload_boundry"}
 WILDFIRE_REPORT_DT_FILE = "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5 ||" \
