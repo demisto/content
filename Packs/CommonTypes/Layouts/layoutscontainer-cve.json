@@ -548,9 +548,9 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "cvssvector",
+                                "fieldId": "cvssversion",
                                 "height": 22,
-                                "id": "ab39ddf0-9898-11ec-8810-754d8dd0d227",
+                                "id": "03bdb440-9945-11ec-97f5-a1136dc35e61",
                                 "index": 0,
                                 "listId": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-c834ecb0-84ed-11ec-a589-e73aadc98c9a",
                                 "sectionItemType": "field",
