@@ -261,7 +261,7 @@ def test_create_intel(requests_mock):
     from CTIX import Client, create_intel_command
 
     mock_response = util_load_json('test_data/create_intel.json')
-    requests_mock.post(f'http://test.com/create-intel/', json=mock_response)
+    requests_mock.post('http://test.com/create-intel/', json=mock_response)
 
     client = Client(
         base_url=BASE_URL,

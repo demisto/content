@@ -84,7 +84,7 @@ class Client(BaseClient):
         try:
             resp.raise_for_status()  # Raising an exception for non-200 status code
         except requests.exceptions.HTTPError as e:
-            err_msg = f"Error in API call [resp.status_code]"
+            err_msg = f"Error in API call {[resp.status_code]}"
             raise DemistoException(err_msg, e)
         json_data = resp.json()
         response = {"data": json_data, "status": status_code}
@@ -572,7 +572,7 @@ def main() -> None:
             return_results(url_details_command(client, demisto.args()))
         elif demisto.command() == 'file':
             return_results(file_details_command(client, demisto.args()))
-        elif demisto.command() == 'create_intel':
+        elif demisto.command() == 'create-intel':
             return_results(create_intel_command(client, demisto.args()))
 
     except Exception as e:

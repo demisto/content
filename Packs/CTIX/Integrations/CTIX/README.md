@@ -851,19 +851,21 @@ Creates Intel in CTIX platform
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| data.details | String | Tells response of an api | 
-| data.status | Number | Status code returned from api | 
+| CTIX.Intel.data.details | String | Tells response of an api | 
+| CTIX.Intel.data.status | Number | Status code returned from api | 
 
 
 #### Command Example
-```!create_intel ips=1.2.3.4,3.45.56.78 urls=https://ioc_test.com,https://test_ioc.com files=8e7fad44308af9d1d60aac4fafcecdf2f66aa0315eb5f092fafa5bb03a5c2e3e emails=ioc@gmail.com,malicious@gmail.com malwares=dridex,spambot threat_actors=everest,grief attack_patterns=phishing,ddos title=title_xsoar_intel_creation description=xsoar_description tlp=green confidence=70```
+```ctix-create-intel ips=1.2.3.4,3.45.56.78 urls=https://ioc_test.com,https://test_ioc.com files=8e7fad44308af9d1d60aac4fafcecdf2f66aa0315eb5f092fafa5bb03a5c2e3e emails=ioc@gmail.com,malicious@gmail.com malwares=dridex,spambot threat_actors=everest,grief attack_patterns=phishing,ddos title=title_xsoar_intel_creation description=xsoar_description tlp=green confidence=70```
 
 #### Context Example
 ```json
 {
-    "data": {
-        "details": "Package is pushed in ctix for publishing"
-    },
-    "status": 201
+    "CTIX": {
+        "Intel": {
+            "details": "Package is pushed in CTIX for publishing",
+            "status": 201
+        }
+    }
 }
 ```
