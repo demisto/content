@@ -808,22 +808,10 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
     dns_type = []
     evidence_md5 = []
     evidence_text = []
-    process_list_command = []
-    process_list_name = []
-    process_list_pid = []
-    process_list_file = []
-    process_list_service = []
-    process_tree_text = []
-    process_tree_name = []
-    process_tree_pid = []
-    child_name = []
-    child_text = []
-    child_pid = []
-    entry_text = []
-    entry_details = []
-    entry_behavior = []
-    extract_urls_url = []
-    extract_urls_verdict = []
+    process_list_outputs = []
+    process_tree_outputs = []
+    entry_summary = []
+    extract_urls_outputs = []
     elf_shell_commands = []
     feed_related_indicators = []
     platform_report = []
@@ -959,51 +947,85 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                 if not isinstance(process_list, list):
                     process_list = [process_list]
                 for process in process_list:
+                    process_list_command = process_list_name = process_list_file = process_list_pid = process_list_service = None
                     if '@command' in process and process['@command']:
-                        process_list_command.append(process['@command'])
+                        process_list_command = process['@command']
                     if '@name' in process and process['@name']:
-                        process_list_name.append(process['@name'])
+                        process_list_name = process['@name']
                     if '@pid' in process and process['@pid']:
-                        process_list_pid.append(process['@pid'])
+                        process_list_pid = process['@pid']
                     if 'file' in process and process['file']:
-                        process_list_file.append(process['file'])
+                        process_list_file = process['file']
                     if 'service' in process and process['service']:
-                        process_list_service.append(process['service'])
+                        process_list_service = process['service']
+                    if process_list_command or process_list_name or process_list_file or process_list_pid or process_list_service:
+                        process_list_outputs.append({
+                            "ProcessCommand": process_list_command if process_list_command else None,
+                            "ProcessName": process_list_name if process_list_name else None,
+                            "ProcessPid": process_list_pid if process_list_pid else None,
+                            "ProcessFile": process_list_file if process_list_file else None,
+                            "Service": process_list_service if process_list_service else None
+                        })
 
             if 'process_tree' in report and 'process' in report['process_tree'] and report['process_tree']['process']:
                 process_tree = report['process_tree']['process']
                 if not isinstance(process_tree, list):
                     process_tree = [process_tree]
                 for process in process_tree:
+                    process_tree_text = process_tree_name = process_tree_pid = None
                     if '@text' in process:
-                        process_tree_text.append(process['@text'])
+                        process_tree_text = process['@text']
                     if '@name' in process:
-                        process_tree_name.append(process['@name'])
+                        process_tree_name = process['@name']
                     if '@pid' in process:
-                        process_tree_pid.append(process['@pid'])
+                        process_tree_pid = process['@pid']
+
+                    tree_outputs = {}
+                    if process_tree_text or process_tree_name or process_tree_pid:
+                        tree_outputs = {
+                            "ProcessName": process_tree_name if process_tree_name else None,
+                            "ProcessPid": process_tree_pid if process_tree_pid else None,
+                            "ProcessText": process_tree_text if process_tree_text else None,
+                        }
+
                     if 'child' in process and 'process' in process['child'] and process['child']['process']:
                         child_process = process['child']['process']
                         if not isinstance(child_process, list):
                             child_process = [child_process]
                         for child in child_process:
+                            child_name = child_pid = child_text = None
                             if '@name' in child:
-                                child_name.append(child['@name'])
+                                child_name = child['@name']
                             if '@pid' in child:
-                                child_pid.append(child['@pid'])
+                                child_pid = child['@pid']
                             if '@text' in child:
-                                child_text.append(child['@text'])
+                                child_text = child['@text']
+                            if child_name or child_pid or child_text:
+                                tree_outputs['Process'] = {
+                                    "ChildName": child_name if child_name else None,
+                                    "ChildPid": child_pid if child_pid else None,
+                                    "ChildText": child_text if child_text else None
+                                }
+                    process_tree_outputs.append(tree_outputs)
 
             if 'summary' in report and 'entry' in report['summary'] and report['summary']['entry']:
                 entries = report['summary']['entry']
                 if not isinstance(entries, list):
                     entries = [entries]
                 for entry in entries:
+                    entry_text = entry_details = entry_behavior = None
                     if '#text' in entry:
-                        entry_text.append(entry['#text'])
+                        entry_text = entry['#text']
                     if '@details' in entry:
-                        entry_details.append(entry['@details'])
+                        entry_details = entry['@details']
                     if '@behavior' in entry:
-                        entry_behavior.append(entry['@behavior'])
+                        entry_behavior = entry['@behavior']
+
+                    entry_summary.append({
+                        "Text": entry_text if entry_text else None,
+                        "Details": entry_details if entry_details else None,
+                        "Behavior": entry_behavior if entry_behavior else None
+                    })
 
             if 'extracted_urls' in report and report['extracted_urls'] and 'entry' in report['extracted_urls'] \
                     and report['extracted_urls']['entry']:
@@ -1011,10 +1033,16 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                 if not isinstance(extract_urls, list):
                     extract_urls = [extract_urls]
                 for urls in extract_urls:
+                    extract_urls_url = extract_urls_verdict = None
                     if '@url' in urls and urls['@url']:
-                        extract_urls_url.append(urls['@url'])
+                        extract_urls_url = urls['@url']
                     if '@verdict' in urls and urls['@verdict']:
-                        extract_urls_verdict.append(urls['@verdict'])
+                        extract_urls_verdict = urls['@verdict']
+
+                    extract_urls_outputs.append({
+                        "URL": extract_urls_url if extract_urls_url else None,
+                        "Verdict": extract_urls_verdict if extract_urls_verdict else None
+                    })
 
             if 'platform' in report:
                 platform_report.append(report['platform'])
@@ -1075,52 +1103,17 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
     if software_report:
         outputs['Software'] = software_report
 
-    if process_list_command or process_list_file or process_list_name or process_list_pid:
-        outputs['ProcessList'] = {}
-        if process_list_command:
-            outputs['ProcessList']['ProcessCommand'] = process_list_command
-        if process_list_name:
-            outputs['ProcessList']['ProcessName'] = process_list_name
-        if process_list_pid:
-            outputs['ProcessList']['ProcessPid'] = process_list_pid
-        if process_list_file:
-            outputs['ProcessList']['ProcessFile'] = process_list_file
-        if process_list_service:
-            outputs['ProcessList']['Service'] = process_list_service
+    if process_list_outputs:
+        outputs['ProcessList'] = process_list_outputs
 
-    if process_tree_name or process_tree_pid or process_tree_text:
-        outputs['ProcessTree'] = {}
-        if process_tree_name:
-            outputs['ProcessTree']['ProcessName'] = process_tree_name
-        if process_tree_pid:
-            outputs['ProcessTree']['ProcessPid'] = process_tree_pid
-        if process_tree_text:
-            outputs['ProcessTree']['ProcessText'] = process_tree_text
+    if process_tree_outputs:
+        outputs['ProcessTree'] = process_tree_outputs
 
-        if child_name or child_pid or child_text:
-            outputs['ProcessTree']['Process'] = {}
-            if child_name:
-                outputs['ProcessTree']['Process']['ChildName'] = child_name
-            if child_pid:
-                outputs['ProcessTree']['Process']['ChildPid'] = child_pid
-            if child_text:
-                outputs['ProcessTree']['Process']['ChildText'] = child_text
+    if entry_summary:
+        outputs['Summary'] = entry_summary
 
-    if entry_text or entry_details or entry_behavior:
-        outputs['Summary'] = {}
-        if entry_text:
-            outputs['Summary']['Text'] = entry_text
-        if entry_details:
-            outputs['Summary']['Details'] = entry_details
-        if entry_behavior:
-            outputs['Summary']['Behavior'] = entry_behavior
-
-    if extract_urls_url or extract_urls_verdict:
-        outputs['ExtractedURL'] = {}
-        if extract_urls_url:
-            outputs['ExtractedURL']['URL'] = extract_urls_url
-        if extract_urls_verdict:
-            outputs['ExtractedURL']['Verdict'] = extract_urls_verdict
+    if extract_urls_outputs:
+        outputs['ExtractedURL'] = extract_urls_outputs
 
     if elf_shell_commands:
         outputs['ELF'] = {}

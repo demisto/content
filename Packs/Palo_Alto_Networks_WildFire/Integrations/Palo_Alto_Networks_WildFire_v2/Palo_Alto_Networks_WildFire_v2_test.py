@@ -431,24 +431,24 @@ def test_parse_file_report_network():
                                         'Method': 'GET',
                                         'URI': '/test/72t0jjhmv7takwvisfnz_eejvf_h6v2ix/',
                                         'UserAgent': 'test'}}
-    expected_outputs_ProcessTree = {'ProcessName': ['WINWORD.EXE'],
-                                    'ProcessPid': ['952'],
-                                    'ProcessText': ['C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE'],
-                                    'Process': {
-                                        'ChildName': ['test'],
-                                        'ChildPid': ['test'],
-                                        'ChildText': ['test']}}
-    expected_outputs_ProcessList = {'ProcessCommand': ['C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE'],
-                                    'ProcessName': ['WINWORD.EXE'],
-                                    'ProcessPid': ['952'],
-                                    'ProcessFile': ['test'],
-                                    'Service': ['test'],
-                                    }
-    expected_outputs_Summary = {
-        'Text': ['test'],
-        'Details': ['test'],
-        'Behavior': ['test']
-    }
+    expected_outputs_ProcessTree = [{'ProcessName': 'WINWORD.EXE',
+                                     'ProcessPid': '952',
+                                     'ProcessText': 'C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE',
+                                     'Process': {
+                                         'ChildName': 'test',
+                                         'ChildPid': 'test',
+                                         'ChildText': 'test'
+                                     }}]
+    expected_outputs_ProcessList = [{'ProcessCommand': 'C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE',
+                                     'ProcessName': 'WINWORD.EXE',
+                                     'ProcessPid': '952',
+                                     'ProcessFile': 'test',
+                                     'Service': 'test'}]
+    expected_outputs_Summary = [{
+        'Text': 'test',
+        'Details': 'test',
+        'Behavior': 'test'
+    }]
     expected_outputs_elf = {'ShellCommands': ['test']}
     outputs, feed_related_indicators, behavior, relationships = parse_file_report(file_hash='test',
                                                                                   reports=report,
