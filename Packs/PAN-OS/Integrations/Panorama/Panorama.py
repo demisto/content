@@ -25,7 +25,7 @@ import requests
 from urllib.parse import urlparse
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # type: ignore
+requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS '''
 URL = ''
@@ -7314,7 +7314,7 @@ class CustomVersionedPanObject(VersionedPanObject):
 
 
 class AntiSpywareProfileBotnetDomainList(CustomVersionedPanObject):
-    ROOT = Root.VSYS  # pylint: disable=E1101
+    ROOT = Root.VSYS
     SUFFIX = ENTRY
 
     def _setup(self):
