@@ -9030,7 +9030,7 @@ def look_for_incidents_in_last_run(last_run, fetch_limit):
     if 'incidents' in last_run and len(last_run['incidents']) > 0:
         incidents = last_run['incidents']
         # last_run['incidents'] = last_run['incidents'][fetch_limit:] if len(incidents) == fetch_limit else []
-    
+
     return incidents
 
 
@@ -9040,7 +9040,7 @@ def get_incidents_from_response(incidents_res, last_run, id_field='id'):
 
     :type incidents_res: ``list``
     :param incidents_res: The incidents from response
-    
+
     :type last_run: ``dict``
     :param last_run: The LastRun object
 
@@ -9066,7 +9066,7 @@ def get_latest_incident_time(incidents, created_time_field, date_format='%Y-%m-%
 
     :type incidents: ``list``
     :param incidents: List of incidents
-    
+
     :type created_time_field: ``str``
     :param created_time_field: The incident created time field
 
@@ -9083,7 +9083,7 @@ def get_latest_incident_time(incidents, created_time_field, date_format='%Y-%m-%
         if incident_time > latest_incident_time:
             latest_incident_time = incident_time
 
-    return latest_incident_time.strftime()
+    return latest_incident_time.strftime(date_format)
 
 
 def remove_old_incident_ids(found_incidents_ids, current_time, look_back):
@@ -9092,7 +9092,7 @@ def remove_old_incident_ids(found_incidents_ids, current_time, look_back):
 
     :type found_incidents_ids: ``dict``
     :param found_incidents_ids: Dict of incidents ids
-    
+
     :type current_time: ``int``
     :param current_time: The current epoch time
 
@@ -9107,14 +9107,15 @@ def remove_old_incident_ids(found_incidents_ids, current_time, look_back):
 
     new_found_incidents_ids = {}
     for inc_id, addition_time in found_incidents_ids.items():
-        
+
         if current_time - addition_time < deletion_threshold_in_seconds:
             new_found_incidents_ids[inc_id] = addition_time
 
     return new_found_incidents_ids
 
 
-def set_next_fetch_run(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back, created_time_field, id_field='id', date_format='%Y-%m-%dT%H:%M:%S'):
+def set_next_fetch_run(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
+                       created_time_field, id_field='id', date_format='%Y-%m-%dT%H:%M:%S'):
     """
     Sets the next run
 
