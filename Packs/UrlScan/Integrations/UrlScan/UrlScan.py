@@ -1,3 +1,5 @@
+import sys
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -54,6 +56,20 @@ class Client:
 '''HELPER FUNCTIONS'''
 
 
+def handle_rate_limit_command(response: dict):
+    """
+    If ScheduledCommands are supported by the server version, then we return a ScheduledCommand entry. To close the
+    command, we use sys.exit() since an entry has already been returned, and we don't want the command to continue.
+    Args:
+        response: dict - If sys.exit() is to be called, the dictionary will always contain RateLimited as True.
+
+    Returns:
+        None
+    """
+    if response.get('RateLimited') and response.get('RateLimited') is True:
+        sys.exit(0)
+
+
 def detect_ip_type(indicator):
     """
     Helper function which detects wheather an IP is a IP or IPv6 by string
@@ -89,13 +105,25 @@ def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
                                                                 r.headers.get("X-Rate-Limit-Reset")))
     if r.status_code != 200:
         if r.status_code == 429:
-            if retries <= 0:
-                # Error in API call to URLScan.io [429] - Too Many Requests
-                return_error('API rate limit reached [%d] - %s.\nUse the retries and wait arguments when submitting '
-                             'multiple URls' % (r.status_code, r.reason))
-            else:
-                time.sleep(wait)  # pylint: disable=sleep-exists
-                return http_request(method, url_suffix, json, wait, retries - 1)
+            try:
+                ScheduledCommand.raise_error_if_not_supported()
+                scheduled_command = ScheduledCommand(
+                    command=demisto.command(),
+                    next_run_in_seconds=5,
+                    args=demisto.args(),
+                    timeout_in_seconds=600
+                )
+                results = CommandResults(scheduled_command=scheduled_command, error_type=ErrorType.RATE_LIMITED)
+                return_results(results=results)
+                return {'RateLimited': True}
+            except DemistoException:
+                if retries <= 0:
+                    # Error in API call to URLScan.io [429] - Too Many Requests
+                    return_error('API rate limit reached [%d] - %s.\nUse the retries and wait arguments when submitting'
+                                 ' multiple URls' % (r.status_code, r.reason))
+                else:
+                    time.sleep(wait)  # pylint: disable=sleep-exists
+                    return http_request(method, url_suffix, json, wait, retries - 1)
 
         response_json = r.json()
         error_description = response_json.get('description')
@@ -112,7 +140,7 @@ def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
     return r.json()
 
 
-# Allows nested keys to be accesible
+# Allows nested keys to be accessible
 def makehash():
     return collections.defaultdict(makehash)
 
@@ -207,6 +235,7 @@ def urlscan_submit_url(client):
     wait = int(demisto.args().get('wait', 5))
     retries = int(demisto.args().get('retries', 0))
     r = http_request(client, 'POST', 'scan/', sub_json, wait, retries)
+    handle_rate_limit_command(response=r)
     return r
 
 
@@ -498,6 +527,7 @@ def urlscan_submit_command(client):
     for url in urls:
         demisto.args()['url'] = url
         response = urlscan_submit_url(client)
+        handle_rate_limit_command(response=response)
         if response.get('url_is_blacklisted'):
             pass
         uuid = response.get('uuid')
@@ -506,6 +536,7 @@ def urlscan_submit_command(client):
 
 def urlscan_search(client, search_type, query):
     r = http_request(client, 'GET', 'search/?q=' + search_type + ':"' + query + '"')
+    handle_rate_limit_command(response=r)
     return r
 
 
@@ -660,6 +691,7 @@ def format_http_transaction_list(client):
     scan_lists = {}  # type: dict
     while not scan_lists:
         response = urlscan_submit_request(client, uuid)
+        handle_rate_limit_command(response=response)
         scan_lists = response.get('lists', {})
 
     limit = int(demisto.args().get('limit'))
