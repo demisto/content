@@ -203,7 +203,7 @@ tasks:
       id: 687360e6-7e9e-48bb-80df-7b01a6be74f5
       version: -1
       name: Display email information in layout
-      description: Updates Demisto incident fields using data from the email object.
+      description: Updates Cortex XSOAR incident fields using data from the email object.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -958,7 +958,7 @@ tasks:
       id: 68afd2e1-4539-4aff-8aaf-a4ca1811b88d
       version: -1
       name: Save attachment types
-      description: Saves the names of the email attachments.
+      description: Saves the types of the email attachments.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
