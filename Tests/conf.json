@@ -3327,7 +3327,7 @@
             "integrations": "RSA Archer v2",
             "playbookID": "Archer v2 - Test",
             "fromversion": "5.0.0",
-            "timeout": 1000
+            "timeout": 1500
         },
         {
             "integrations": "WootCloud",
@@ -4555,7 +4555,7 @@
         },
         {
             "integrations": "CrowdStrike Falcon Sandbox V2",
-            "playbookID": "CrowdstrikeFalconSandboxV2 Test",
+            "playbookID": "CrowdstrikeFalconSandbox2 Test",
             "timeout": 500,
             "nightly": true
         },
@@ -4990,6 +4990,14 @@
             "scripts": [
                 "HttpV2"
             ]
+        },
+        {
+            "integrations": [
+                "GoogleSheets",
+                "GoogleDrive"
+            ],
+            "playbookID": "GoogleSheets-Test",
+            "fromversion": "6.1.0"
         }
     ],
     "skipped_tests": {
@@ -5078,7 +5086,6 @@
         "AutoFocusTagsFeed-test": "shares API quota with the other test",
         "Carbon Black Edr - Test": "Jira ticket XDR-43185",
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
-        "Kaspersky Security Center - Test": "Issue 36487",
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
         "RemoteAccessTest": "Issue 44245",
         "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",
@@ -5116,7 +5123,11 @@
         "Phishing Investigation - Generic v2 - Campaign Test": "Issue 44740",
         "Cisco Umbrella Test": "Issue 24338",
         "Azure NSG - Test": "Issue 33217",
-        "Unit42 Intel Objects Feed - Test": "Issue 44100"
+        "Unit42 Intel Objects Feed - Test": "Issue 44100",
+        "Fetch Indicators Test": "Issue 45490",
+        "FormattedDateToEpochTest": "Issue 26724",
+        "CrowdstrikeFalconSandbox2 Test": "Issue 46845",
+        "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)": "Issue 44543"
     },
     "skipped_integrations": {
         
@@ -5456,6 +5467,9 @@
             },
             "demisto/py3-tools": {
                 "memory_threshold": 105
+            },
+            "demisto/googleapi-python3": {
+                "memory_threshold": 200
             }
         }
     }
