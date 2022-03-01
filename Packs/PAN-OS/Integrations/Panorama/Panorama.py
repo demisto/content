@@ -9230,7 +9230,6 @@ def dataclasses_to_command_results(result: Any, empty_result_message: str = "No 
         readable_output=readable_output,
         **extra_args
     )
-    return_results(command_result)
     return command_result
 
 
@@ -9604,28 +9603,28 @@ def main():
 
         elif demisto.command() == 'pan-os-platform-get-arp-tables':
             topology = get_topology()
-            result = get_arp_tables(topology, **demisto.args())
-            dataclasses_to_command_results(result, empty_result_message="No ARP entries.")
+            command_result = get_arp_tables(topology, **demisto.args())
+            return_results(dataclasses_to_command_results(command_result, empty_result_message="No ARP entries."))
         elif demisto.command() == 'pan-os-platform-get-route-summary':
             topology = get_topology()
-            result = get_route_summaries(topology, **demisto.args())
-            dataclasses_to_command_results(result, empty_result_message="Empty route summary result.")
+            command_result  = get_route_summaries(topology, **demisto.args())
+            return_results(dataclasses_to_command_results(command_result , empty_result_message="Empty route summary result."))
         elif demisto.command() == 'pan-os-platform-get-routes':
             topology = get_topology()
-            result = get_routes(topology, **demisto.args())
-            dataclasses_to_command_results(result, empty_result_message="Empty route summary result.")
+            command_result = get_routes(topology, **demisto.args())
+            return_results(dataclasses_to_command_results(command_result, empty_result_message="Empty route summary result."))
         elif demisto.command() == 'pan-os-platform-get-system-info':
             topology = get_topology()
-            result = get_system_info(topology, **demisto.args())
-            dataclasses_to_command_results(result)
+            command_result = get_system_info(topology, **demisto.args())
+            return_results(dataclasses_to_command_results(command_result))
         elif demisto.command() == 'pan-os-platform-get-device-groups':
             topology = get_topology()
-            result = get_device_groups(topology, **demisto.args())
-            dataclasses_to_command_results(result, empty_result_message="No device groups found.")
+            command_result = get_device_groups(topology, **demisto.args())
+            return_results(dataclasses_to_command_results(command_result, empty_result_message="No device groups found."))
         elif demisto.command() == 'pan-os-platform-get-template-stacks':
             topology = get_topology()
-            result = get_template_stacks(topology, **demisto.args())
-            dataclasses_to_command_results(result, empty_result_message="No template stacks found.")
+            command_result = get_template_stacks(topology, **demisto.args())
+            return_results(dataclasses_to_command_results(command_result, empty_result_message="No template stacks found."))
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
     except Exception as err:
