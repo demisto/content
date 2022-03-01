@@ -7,8 +7,6 @@ import dateparser
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-register_module_line('ServiceNow v2', 'start', __line__())
-
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -2887,5 +2885,3 @@ register_module_line('ServiceNowApiModule', 'end', __line__(), wrapper=1)
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-register_module_line('ServiceNow v2', 'end', __line__())
