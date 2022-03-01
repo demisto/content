@@ -90,6 +90,7 @@ script:
     description: Search for an indicator that is related to former urlscan.io scans.
     execution: false
     name: urlscan-search
+    polling: true
     outputs:
     - contextPath: URLScan.URL
       description: The URL.
@@ -183,6 +184,7 @@ script:
     description: Deprecated. Use the url command instead.
     execution: false
     name: urlscan-submit
+    polling: true
     outputs:
     - contextPath: URL.Data
       description: The URL submitted for scanning.
@@ -329,6 +331,7 @@ script:
     description: Submits a URL to scan.
     execution: false
     name: url
+    polling: true
     outputs:
     - contextPath: URL.Data
       description: The URL submitted for scanning.
@@ -470,6 +473,7 @@ script:
       this command in conjunction with the urlscan-get-http-transactions script.
     execution: false
     name: urlscan-get-http-transaction-list
+    polling: true
     outputs:
     - contextPath: URLScan.URL
       description: The URL address that was scanned.
@@ -489,6 +493,7 @@ script:
     description: Submits a URL to retrieve its UUID.
     execution: false
     name: urlscan-submit-url-command
+    polling: true
   - arguments:
     - default: false
       description: The URI for which to get the results.

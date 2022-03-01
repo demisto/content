@@ -56,7 +56,7 @@ class Client:
 '''HELPER FUNCTIONS'''
 
 
-def handle_rate_limit_command(response: dict):
+def handle_rate_limit_command(response):
     """
     If ScheduledCommands are supported by the server version, then we return a ScheduledCommand entry. To close the
     command, we use sys.exit() since an entry has already been returned, and we don't want the command to continue.
@@ -109,12 +109,12 @@ def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
                 ScheduledCommand.raise_error_if_not_supported()
                 scheduled_command = ScheduledCommand(
                     command=demisto.command(),
-                    next_run_in_seconds=5,
+                    next_run_in_seconds=60,
                     args=demisto.args(),
                     timeout_in_seconds=600
                 )
-                results = CommandResults(scheduled_command=scheduled_command, error_type=ErrorType.RATE_LIMITED)
-                return_results(results=results)
+                results = CommandResults(scheduled_command=scheduled_command, error_type=ErrorTypes.RATE_LIMITED)
+                demisto.results(results.to_context())
                 return {'RateLimited': True}
             except DemistoException:
                 if retries <= 0:
@@ -528,6 +528,7 @@ def urlscan_submit_command(client):
         demisto.args()['url'] = url
         response = urlscan_submit_url(client)
         handle_rate_limit_command(response=response)
+        demisto.info("Results are {}".format(response))
         if response.get('url_is_blacklisted'):
             pass
         uuid = response.get('uuid')

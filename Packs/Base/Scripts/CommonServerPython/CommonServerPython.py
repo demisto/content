@@ -466,6 +466,20 @@ INDICATOR_TYPE_TO_CONTEXT_KEY = {
 }
 
 
+class ErrorTypes(object):
+    """
+    Enum: contains all the available error types
+    :return: None
+    :rtype: ``None``
+    """
+    RATE_LIMITED = 'RateLimited'
+    GENERAL = 'General'
+    AUTHENTICATION = 'Authentication'
+    CLIENT_ERROR = 'ClientError'
+    SERVER_ERROR = 'ServerError'
+    NETWORK_ERROR = 'NetworkError'
+
+
 class FeedIndicatorType(object):
     """Type of Indicator (Reputations), used in TIP integrations"""
     Account = "Account"
