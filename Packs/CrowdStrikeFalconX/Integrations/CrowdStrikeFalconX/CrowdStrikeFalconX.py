@@ -533,11 +533,9 @@ def parse_outputs(
 
 
 def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File]:  # type: ignore[return]
-    if sha256 := sandbox.get('sha256'):  # todo does the `if` make sense here?
+    if sha256 := sandbox.get('sha256'):
         score_field: int = DBOT_SCORE_DICT.get(sandbox.get('verdict', ''), Common.DBotScore.NONE)
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability_str)
-        submit_name = sandbox.get('submit_name', '')  # todo is ever None? What about name=submit_name? all CR use `id`
-        # todo check submit_name
         dbot = Common.DBotScore(indicator=sha256,
                                 indicator_type=DBotScoreType.FILE,
                                 score=score_field,
@@ -546,7 +544,7 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
         info = {item['id']: item['value'] for item in sandbox.get('version_info', [])}
 
         if sandbox.get('submission_type', '') in ('file_url', 'file'):
-            relationships = parse_indicator_relationships(sandbox, indicator_name=submit_name, reliability=reliability)
+            relationships = parse_indicator_relationships(sandbox, indicator_value=sha256, reliability=reliability)
         else:
             relationships = None
         signature: Optional[Common.FileSignature] = Common.FileSignature(authentihash='',  # N/A in data
@@ -559,7 +557,7 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
             signature = None
 
         return Common.File(dbot_score=dbot,
-                           name=submit_name,
+                           name=sandbox.get('submit_name'),
                            sha256=sha256,
                            size=sandbox.get('file_size'),
                            file_type=sandbox.get('file_type'),
@@ -569,12 +567,12 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
                            relationships=relationships or None)
 
 
-def parse_indicator_relationships(sandbox: dict, indicator_name: str, reliability: str) -> list[EntityRelationship]:
+def parse_indicator_relationships(sandbox: dict, indicator_value: str, reliability: str) -> list[EntityRelationship]:
     relationships = []
 
     def _create_relationship(relationship_name: str, entity_b: str, entity_b_type: str) -> EntityRelationship:
         return EntityRelationship(name=relationship_name,
-                                  entity_a=indicator_name,  # todo use indicator value
+                                  entity_a=indicator_value,
                                   entity_a_type=FeedIndicatorType.File,
                                   entity_b=entity_b,
                                   entity_b_type=entity_b_type,
@@ -823,7 +821,7 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
                                            'Please wait to download the report.\n'
                                            'You can use cs-fx-get-analysis-status to check the status '
                                            'of a sandbox analysis.')
-        ]  # todo add file may not exist?
+        ]
     return command_results, is_command_finished
 
 
@@ -1094,8 +1092,7 @@ def run_polling_command(client, args: dict, cmd: str, upload_function: Callable,
 
 
 def upload_file_with_polling_command(client, args):
-    return run_polling_command(client, args, 'cs-fx-upload-file', upload_file_command, get_full_report_command,
-                               'FILE')
+    return run_polling_command(client, args, 'cs-fx-upload-file', upload_file_command, get_full_report_command, 'FILE')
 
 
 def submit_uploaded_file_polling_command(client, args):

@@ -456,13 +456,13 @@ def test_parse_indicator():
             'Signature': {'Authentihash': '', 'Copyright': 'LegalCopyright', 'Description': 'FileDescription',
                           'FileVersion': 'FileVersion', 'InternalName': 'InternalName',
                           'OriginalName': 'OriginalFilename'},
-            'Relationships': [{'Relationship': 'communicates-with', 'EntityA': 'submit_name', 'EntityAType': 'File',
+            'Relationships': [{'Relationship': 'communicates-with', 'EntityA': 'sha256', 'EntityAType': 'File',
                                'EntityB': 'example0.com/foo', 'EntityBType': 'IP'},
-                              {'Relationship': 'communicates-with', 'EntityA': 'submit_name', 'EntityAType': 'File',
+                              {'Relationship': 'communicates-with', 'EntityA': 'sha256', 'EntityAType': 'File',
                                'EntityB': 'example0.com', 'EntityBType': 'Domain'},
-                              {'Relationship': 'communicates-with', 'EntityA': 'submit_name', 'EntityAType': 'File',
+                              {'Relationship': 'communicates-with', 'EntityA': 'sha256', 'EntityAType': 'File',
                                'EntityB': 'example1.com', 'EntityBType': 'IP'},
-                              {'Relationship': 'communicates-with', 'EntityA': 'submit_name', 'EntityAType': 'File',
+                              {'Relationship': 'communicates-with', 'EntityA': 'sha256', 'EntityAType': 'File',
                                'EntityB': 'example2.com', 'EntityBType': 'IP'}]
         },
         'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
