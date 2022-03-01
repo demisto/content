@@ -211,7 +211,7 @@ ARGS_ONLY_PASSWORD = {'password': 'aa'}
 ARGS_ONLY_NONSENSITIVE_PASSWORD = {'nonsensitive_password': 'aa'}
 
 
-@pytest.mark.parametrize('args',[ARGS_BOTH_PASSWORDS_IDENTICAL, ARGS_ONLY_NONSENSITIVE_PASSWORD, ARGS_ONLY_PASSWORD])
+@pytest.mark.parametrize('args', [ARGS_BOTH_PASSWORDS_IDENTICAL, ARGS_ONLY_NONSENSITIVE_PASSWORD, ARGS_ONLY_PASSWORD])
 def test_get_password_valid(args):
     """
     Given
