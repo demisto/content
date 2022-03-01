@@ -7660,7 +7660,7 @@ class Topology:
             for value in self.firewall_devices():
                 yield value
 
-    def active_devices(self, filter_str: str = None) -> Iterator[Union[Firewall, Panorama]]:
+    def active_devices(self, filter_str: Optional[str] = None) -> Iterator[Union[Firewall, Panorama]]:
         """
         Yields active devices in the topology - Active refers to the HA state of the device. If the device
         is not in a HA pair, it is active by default.
@@ -7676,7 +7676,7 @@ class Topology:
                 if status == "active" or not status:
                     yield device
 
-    def active_top_level_devices(self, device_filter_string: str = None):
+    def active_top_level_devices(self, device_filter_string: Optional[str] = None):
         """
         Same as `active_devices`, but only returns top level devices as opposed to all active devices.
         """
@@ -7704,7 +7704,7 @@ class Topology:
                     serial: device
                 }
 
-    def firewalls(self, filter_string: str = None) -> Iterator[Firewall]:
+    def firewalls(self, filter_string: Optional[str] = None) -> Iterator[Firewall]:
         """Returns an iterable of firewalls in the topology"""
         firewall_objects = Topology.filter_devices(self.firewall_objects, filter_string)
         if not firewall_objects:
@@ -7713,7 +7713,7 @@ class Topology:
         for firewall in firewall_objects.values():
             yield firewall
 
-    def all(self, filter_string: str = None) -> Iterator[Union[Firewall, Panorama]]:
+    def all(self, filter_string: Optional[str] = None) -> Iterator[Union[Firewall, Panorama]]:
         """Returns an iterable for all devices in the topology"""
         all_devices = {**self.firewall_objects, **self.panorama_objects}
         all_devices = Topology.filter_devices(all_devices, filter_string)
@@ -7724,12 +7724,12 @@ class Topology:
         for device in all_devices.values():
             yield device
 
-    def get_by_filter_str(self, filter_string: str = None) -> dict:
+    def get_by_filter_str(self, filter_string: Optional[str] = None) -> dict:
         """Filters all devices and returns a dictionary of matching."""
         return Topology.filter_devices({**self.firewall_objects, **self.panorama_objects}, filter_string)
 
     @classmethod
-    def build_from_string(cls, hostnames: str, username: str, password: str, api_key: str = None):
+    def build_from_string(cls, hostnames: str, username: str, password: str, api_key: Optional[str] = None):
         """
         Splits a csv list of hostnames and builds the topology based on it. This allows you to pass a series of PanOS hostnames
         into the topology instead of building it from each device.
@@ -7740,7 +7740,7 @@ class Topology:
         for hostname in hostnames.split(","):
             try:
                 if api_key:
-                    device: PanDevice = PanDevice.create_from_device(
+                    device = PanDevice.create_from_device(
                         hostname=hostname,
                         api_key=api_key
                     )
@@ -7802,9 +7802,9 @@ class Topology:
 
     def get_all_object_containers(
             self,
-            device_filter_string: str = None,
-            container_name: str = None,
-            top_level_devices_only: bool = False,
+            device_filter_string: Optional[str] = None,
+            container_name: Optional[str] = None,
+            top_level_devices_only: Optional[bool] = False,
     ) -> \
             List[tuple[PanDevice, Union[Panorama, Firewall, DeviceGroup, Template, Vsys]]]:
         """
@@ -8701,7 +8701,7 @@ class PanoramaCommand:
         return result
 
     @staticmethod
-    def get_push_status(topology: Topology, match_job_ids: List[str] = None) -> List[PushStatus]:
+    def get_push_status(topology: Topology, match_job_ids: Optional[List[str]] = None) -> List[PushStatus]:
         """Retrieves the status of a Panorama Push, using the given job ids."""
         result: List[PushStatus] = []
         for device in topology.active_top_level_devices():
@@ -8778,7 +8778,7 @@ class UniversalCommand:
 
     @staticmethod
     def download_software(topology: Topology, version: str,
-                          sync: bool = False, device_filter_str=None) -> DownloadSoftwareCommandResult:
+                          sync: bool = False, device_filter_str: Optional[str] = None) -> DownloadSoftwareCommandResult:
         """Download the given software version to the device. This is an async command, and returns
         immediately."""
         result = []
@@ -8795,7 +8795,7 @@ class UniversalCommand:
 
     @staticmethod
     def install_software(topology: Topology, version: str,
-                         sync: bool = False, device_filter_str=None) -> InstallSoftwareCommandResult:
+                         sync: bool = False, device_filter_str: Optional[str] =None) -> InstallSoftwareCommandResult:
 
         result = []
         for device in topology.all(filter_string=device_filter_str):
@@ -8825,13 +8825,13 @@ class UniversalCommand:
         )
 
     @staticmethod
-    def commit(topology: Topology, device_filter_string: str = None) -> List[CommitStatus]:
+    def commit(topology: Topology, device_filter_string: Optional[str] = None) -> List[CommitStatus]:
 
         result = []
         for device in topology.active_devices(device_filter_string):
             job_type = "Commit"
             job_id = device.commit()
-            if type(device) is Panorama:
+            if isinstance(device, Panorama):
                 device_type = "Panorama"
             else:
                 device_type = "Firewall"
@@ -8847,7 +8847,7 @@ class UniversalCommand:
         return result
 
     @staticmethod
-    def get_commit_job_status(topology: Topology, match_job_ids: List[str] = None) -> List[CommitStatus]:
+    def get_commit_job_status(topology: Topology, match_job_ids: Optional[List[str]] = None) -> List[CommitStatus]:
         result: List[CommitStatus] = []
         for device in topology.active_devices():
             response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
@@ -8870,7 +8870,7 @@ class UniversalCommand:
                     ))
 
         if match_job_ids:
-            return [x for x in result if x.job_id in match_job_ids]
+            return [job for job in result if job.job_id in match_job_ids]
 
         return result
 
@@ -8898,8 +8898,8 @@ class UniversalCommand:
         )
 
     @staticmethod
-    def show_jobs(topology: Topology, device_filter_str: str = None, job_type: str = None,
-                  status=None, id: int = None) -> List[ShowJobsAllResultData]:
+    def show_jobs(topology: Topology, device_filter_str: Optional[str] = None, job_type: Optional[str] = None,
+                  status=None, id: Optional[int] = None) -> List[ShowJobsAllResultData]:
         result_data = []
         for device in topology.all(filter_string=device_filter_str):
             response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
@@ -8949,7 +8949,7 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_counter_global(topology: Topology, device_filter_str: str = None) -> ShowCounterGlobalCommmandResult:
+    def get_counter_global(topology: Topology, device_filter_str: Optional[str] = None) -> ShowCounterGlobalCommmandResult:
         result_data: List[ShowCounterGlobalResultData] = []
         summary_data: List[ShowCounterGlobalSummaryData] = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
@@ -8964,7 +8964,7 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_routing_summary(topology: Topology, device_filter_str: str = None) -> ShowRouteSummaryCommandResult:
+    def get_routing_summary(topology: Topology, device_filter_str: Optional[str] = None) -> ShowRouteSummaryCommandResult:
         summary_data = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
             response = run_op_command(firewall, FirewallCommand.ROUTING_SUMMARY_COMMAND)
@@ -8977,7 +8977,7 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_bgp_peers(topology: Topology, device_filter_str: str = None) -> ShowRoutingProtocolBGPCommandResult:
+    def get_bgp_peers(topology: Topology, device_filter_str: Optional[str] = None) -> ShowRoutingProtocolBGPCommandResult:
         summary_data = []
         result_data = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
@@ -9001,7 +9001,7 @@ class FirewallCommand:
             return direct_firewall_connection.xapi.export_result.get("content")
 
     @staticmethod
-    def get_ha_status(topology: Topology, device_filter_str: str = None) -> List[ShowHAState]:
+    def get_ha_status(topology: Topology, device_filter_str: Optional[str] = None) -> List[ShowHAState]:
 
         result: List[ShowHAState] = []
         for firewall in topology.all(filter_string=device_filter_str):
@@ -9048,7 +9048,7 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_routes(topology: Topology, device_filter_str: str = None) -> ShowRoutingRouteCommandResult:
+    def get_routes(topology: Topology, device_filter_str: Optional[str] = None) -> ShowRoutingRouteCommandResult:
         summary_data = []
         result_data = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
@@ -9093,7 +9093,7 @@ def test_topology_connectivity(topology: Topology):
     return "ok"
 
 
-def get_arp_tables(topology: Topology, device_filter_string: str = None) -> ShowArpCommandResult:
+def get_arp_tables(topology: Topology, device_filter_string: Optional[str] = None) -> ShowArpCommandResult:
     """
     Gets all arp tables from all firewalls in the topology.
     :param topology: `Topology` instance !no-auto-argument
@@ -9104,7 +9104,7 @@ def get_arp_tables(topology: Topology, device_filter_string: str = None) -> Show
 
 
 def get_route_summaries(topology: Topology,
-                        device_filter_string: str = None) -> ShowRouteSummaryCommandResult:
+                        device_filter_string: Optional[str] = None) -> ShowRouteSummaryCommandResult:
     """
     Pulls all route summary information from the topology
     :param topology: `Topology` instance !no-auto-argument
@@ -9115,7 +9115,7 @@ def get_route_summaries(topology: Topology,
 
 
 def get_routes(topology: Topology,
-               device_filter_string: str = None) -> ShowRoutingRouteCommandResult:
+               device_filter_string: Optional[str] = None) -> ShowRoutingRouteCommandResult:
     """
     Pulls all route summary information from the topology
     :param topology: `Topology` instance !no-auto-argument
@@ -9126,7 +9126,7 @@ def get_routes(topology: Topology,
 
 
 def get_system_info(topology: Topology,
-                    device_filter_string: str = None) -> ShowSystemInfoCommandResult:
+                    device_filter_string: Optional[str] = None) -> ShowSystemInfoCommandResult:
     """
     Gets information from all PAN-OS systems in the topology.
     :param topology: `Topology` instance !no-auto-argument
@@ -9136,7 +9136,7 @@ def get_system_info(topology: Topology,
     return result
 
 
-def get_device_groups(topology: Topology, device_filter_string: str = None) -> List[DeviceGroupInformation]:
+def get_device_groups(topology: Topology, device_filter_string: Optional[str] = None) -> List[DeviceGroupInformation]:
     """
     Gets the operational information of the device groups in the topology.
     :param topology: `Topology` instance !no-auto-argument
@@ -9146,7 +9146,7 @@ def get_device_groups(topology: Topology, device_filter_string: str = None) -> L
     return result
 
 
-def get_template_stacks(topology: Topology, device_filter_string: str = None) -> List[
+def get_template_stacks(topology: Topology, device_filter_string: Optional[str] = None) -> List[
     TemplateStackInformation]:
     """
     Gets the operational information of the template-stacks in the topology.
@@ -9164,13 +9164,12 @@ def get_topology() -> Topology:
     server_url = demisto.params().get('server')
     parsed_url = urlparse(server_url)
     hostname = parsed_url.hostname
-    topology = Topology.build_from_string(
+    return Topology.build_from_string(
         hostname,
         username="",
         password="",
         api_key=demisto.params().get('key')
     )
-    return topology
 
 
 def dataclasses_to_command_results(result: Any, empty_result_message: str = "No results."):
