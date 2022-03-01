@@ -6360,6 +6360,78 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
     if exit:
         sys.exit(0)
 
+class CommandWrapper:
+    def __init__(self, brand, command=None, args=None, func=None):
+        self.brand = brand
+        self.command = command
+        self.args = args
+        self.func = func
+
+class ResultWrapper:
+    def __init__(self, brand, instance, result):
+        self.brand = brand
+        self.instance = instance
+        self.result = result
+
+    def __repr__(self):
+        return '{}, {}, {}'.format(self.brand, self.instance, self.result)
+
+def execute_commands_multiple_results(command, args, extract_contents=True):
+    results, errors = [], []
+    if not isinstance(args, list):
+        args = [args]
+    execute_command_results = []
+    for arg in args:
+         execute_command_results.extend(demisto.executeCommand(command, arg))
+    for res in execute_command_results:
+        module_name = res.get('ModuleName', 'Unknown')
+        brand_name = res.get('Brand', 'Unknown')
+        if is_error(res):
+            errors.append(ResultWrapper(brand_name, module_name, get_error(res)))
+        else:
+            if extract_contents:
+                res = res.get('Contents', {})
+            if res is None:
+                res = {}
+            results.append(ResultWrapper(brand_name, module_name, res))
+    return results, errors
+
+def create_results_summary(results, errors):
+    results_summary_table = []
+    headers = ['Instance', 'Result', 'Comment']
+    for res in results:
+        results_summary_table.append({'Instance': f'***{res.brand}***: {res.instance}', 'Result': 'Success', 'Comment': None})
+
+    for err in errors:
+        results_summary_table.append({'Instance': f'***{err.brand}***: {err.instance}', 'Result': 'Error', 'Comment': err.result})
+    summary_md = tableToMarkdown('Results Summary', results_summary_table, headers=headers)
+    return summary_md
+
+def create_generic_wrapper(all_brands, commands_wrapper, *args):
+    full_results, full_errors = [], []
+    valid, instances_results = execute_command('GetInstances', {'brand': ','.join(all_brands)}, fail_on_error=False)
+    if not valid:
+        raise DemistoException(f'Cant get instances because of {str(instances_results)}')
+    active_brands = {instance.get('brand') for instance in instances_results}
+    for command_wrapper in commands_wrapper:
+        if command_wrapper.brand not in active_brands:
+            continue
+
+        if command_wrapper.func:
+            results, errors = command_wrapper.func(*args)
+        else:
+            results, errors = execute_commands_multiple_results(command_wrapper.command, command_wrapper.args, extract_contents=False)
+        full_results.extend(results)
+        full_errors.extend(errors)
+
+    summary_md = create_results_summary(full_results, full_errors)
+    full_results = [res.result for res in full_results]
+    full_results.append(CommandResults(readable_output=summary_md))
+    if not full_results and full_errors:  # no results were given but there are errors
+        errors = ["{instance}: {msg}".format(instance=err.instance, msg=err.result) for err in full_errors]
+        error_msg = '\n'.join(['Script failed. The following errros were encountered: '] + errors)
+        raise DemistoException(error_msg)
+    return full_results
 
 def execute_command(command, args, extract_contents=True, fail_on_error=True):
     """
