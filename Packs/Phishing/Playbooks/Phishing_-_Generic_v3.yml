@@ -2121,6 +2121,7 @@ tasks:
       id: 374e403a-75c8-456c-8ebf-e76f33c3d501
       version: -1
       name: Check Microsoft's Headers?
+      description: "Whether to check Microsoft's proprietary email headers."
       type: condition
       iscommand: false
       brand: ""
@@ -2288,6 +2289,7 @@ tasks:
       id: 80e1c4c2-b760-493f-8038-a5e7f9201cb2
       version: -1
       name: Detonate URL?
+      description: "Whether to detonate URLs in supported sandboxes."
       type: condition
       iscommand: false
       brand: ""
