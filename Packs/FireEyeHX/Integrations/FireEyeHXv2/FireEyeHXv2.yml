@@ -579,7 +579,7 @@ script:
     outputs:
     - contextPath: FireEyeHX.Search._id
       description: The ID of the unique search.
-    - type: Unknown
+      type: Unknown
     - contextPath: FireEyeHX.Search.state
       description: The state of the search whether it stopped or running.
       type: Unknown
