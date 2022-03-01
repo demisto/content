@@ -587,6 +587,18 @@ script:
     - contextPath: File.Name
       description: The full file name.
       type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
@@ -746,7 +758,7 @@ script:
       description: Additional enhanced data about the Threat Data Object fetched by
         the CTIX application
     description: Return File Details.
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   runonce: false
   subtype: python3
 tests:
