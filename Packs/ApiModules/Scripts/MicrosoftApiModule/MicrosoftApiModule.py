@@ -120,7 +120,6 @@ class MicrosoftClient(BaseClient):
             if certificate_thumbprint and private_key:
                 try:
                     import msal
-                    # TODO: Extract implementation ?
                     self.jwt = msal.oauth2cli.assertion.JwtAssertionCreator(
                         private_key,
                         'RS256',
