@@ -6396,7 +6396,7 @@ def execute_commands_multiple_results(command, args, extract_contents=True):
             results.append(ResultWrapper(brand_name, module_name, res))
     return results, errors
 
-def create_results_summary(results, errors):
+def get_wrapper_results_summary(results, errors):
     results_summary_table = []
     headers = ['Instance', 'Result', 'Comment']
     for res in results:
@@ -6407,7 +6407,7 @@ def create_results_summary(results, errors):
     summary_md = tableToMarkdown('Results Summary', results_summary_table, headers=headers)
     return summary_md
 
-def create_generic_wrapper(all_brands, commands_wrapper, *args):
+def get_wrapper_results(all_brands, commands_wrapper, args):
     full_results, full_errors = [], []
     valid, instances_results = execute_command('GetInstances', {'brand': ','.join(all_brands)}, fail_on_error=False)
     if not valid:
@@ -6418,13 +6418,13 @@ def create_generic_wrapper(all_brands, commands_wrapper, *args):
             continue
 
         if command_wrapper.func:
-            results, errors = command_wrapper.func(*args)
+            results, errors = command_wrapper.func(args)
         else:
             results, errors = execute_commands_multiple_results(command_wrapper.command, command_wrapper.args, extract_contents=False)
         full_results.extend(results)
         full_errors.extend(errors)
 
-    summary_md = create_results_summary(full_results, full_errors)
+    summary_md = get_wrapper_results_summary(full_results, full_errors)
     full_results = [res.result for res in full_results]
     full_results.append(CommandResults(readable_output=summary_md))
     if not full_results and full_errors:  # no results were given but there are errors
