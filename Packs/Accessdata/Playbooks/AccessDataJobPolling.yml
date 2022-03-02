@@ -1,7 +1,7 @@
 id: AccessDataJobPolling
 version: -1
 fromversion: 6.0.0
-name: 'AccessData: Job Polling'
+name: AccessDataJobPolling
 description: |-
   Use this playbook as a sub-playbook to block execution of the master playbook until a job task is complete.
   This playbook awaits job completion by continuously running get-job-status until the operation finishes.
