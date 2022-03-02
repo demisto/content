@@ -55,7 +55,7 @@ def main():
     try:
 
         campaign_senders = get_campaign_senders()
-        return_results(CommandResults(readable_output=campaign_senders))
+        return_results(CommandResults(readable_output=campaign_senders, raw_response=campaign_senders))
 
     except Exception as err:
         return_error(str(err))
