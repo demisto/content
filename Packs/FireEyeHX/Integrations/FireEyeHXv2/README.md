@@ -12,7 +12,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL (e.g. https://192.168.0.1:3000) | True |
+    | Server URL (e.g. https://xx.xx.xx.xx:3000) | True |
     | User Name | True |
     | Password | True |
     | Trust any certificate (not secure) | False |
@@ -77,7 +77,7 @@ Get information on a host associated with an agent.
 {
     "FireEyeHX": {
         "Hosts": {
-            "_id": "YYYns3oui1fpzgYYY",
+            "_id": "YYYXXXYYY",
             "agent_version": "31.28.17",
             "containment_missing_software": false,
             "containment_queued": false,
@@ -95,7 +95,7 @@ Get information on a host associated with an agent.
             "last_audit_timestamp": "2022-02-23T07:28:33.969Z",
             "last_exploit_block": null,
             "last_exploit_block_timestamp": null,
-            "last_poll_ip": "192.168.1.163",
+            "last_poll_ip": "xx.xx.xx.xx",
             "last_poll_timestamp": "2022-02-23T09:08:31.000Z",
             "os": {
                 "bitness": "64-bit",
@@ -104,8 +104,8 @@ Get information on a host associated with an agent.
                 "platform": "win",
                 "product_name": "Windows 10 Pro"
             },
-            "primary_ip_address": "192.168.1.163",
-            "primary_mac": "00-50-56-89-1c-5b",
+            "primary_ip_address": "xx.xx.xx.xx",
+            "primary_mac": "xx-xx-xx-xx-xx-xx",
             "reported_clone": false,
             "stats": {
                 "acqs": 15,
@@ -122,10 +122,10 @@ Get information on a host associated with an agent.
                 "malware_quarantined_count": 0
             },
             "sysinfo": {
-                "url": "/hx/api/v3/hosts/YYYns3oui1fpzgYYY/sysinfo"
+                "url": "/hx/api/v3/hosts/YYYXXXYYY/sysinfo"
             },
             "timezone": "Pacific Standard Time",
-            "url": "/hx/api/v3/hosts/YYYns3oui1fpzgYYY"
+            "url": "/hx/api/v3/hosts/YYYXXXYYY"
         }
     }
 }
@@ -136,7 +136,7 @@ Get information on a host associated with an agent.
 >### FireEye HX Get Host Information
 >|Host Name|Host IP|Agent ID|Agent Version|OS|Last Poll|Containment State|Domain|Last Alert|
 >|---|---|---|---|---|---|---|---|---|
->| XXX | 192.168.1.163 | YYYns3oui1fpzgYYY | 31.28.17 | win | 2022-02-23T09:08:31.000Z | normal | WORKGROUP | _id: 365<br/>url: /hx/api/v3/alerts/365 |
+>| XXX | xx.xx.xx.xx | YYYXXXYYY | 31.28.17 | win | 2022-02-23T09:08:31.000Z | normal | WORKGROUP | _id: 365<br/>url: /hx/api/v3/alerts/365 |
 
 
 ### fireeye-hx-get-all-hosts-information
@@ -189,11 +189,11 @@ Get information on all hosts.
 {
     "FireEyeHX": {
         "Hosts": {
-            "Agent ID": "YYYns3oui1fpzgYYY",
+            "Agent ID": "YYYXXXYYY",
             "Agent Version": "31.28.17",
             "Containment State": "normal",
             "Domain": "WORKGROUP",
-            "Host IP": "192.168.1.163",
+            "Host IP": "xx.xx.xx.xx",
             "Host Name": "XXX",
             "Last Alert": {
                 "_id": 365,
@@ -211,7 +211,7 @@ Get information on all hosts.
 >### FireEye HX Get Hosts Information
 >|Host Name|Host IP|Agent ID|Agent Version|OS|Last Poll|Containment State|Domain|Last Alert|
 >|---|---|---|---|---|---|---|---|---|
->| XXX | 192.168.1.163 | YYYns3oui1fpzgYYY | 31.28.17 | win | 2022-02-23T09:08:31.000Z | normal | WORKGROUP | _id: 365<br/>url: /hx/api/v3/alerts/365 |
+>| XXX | xx.xx.xx.xx | YYYXXXYYY | 31.28.17 | win | 2022-02-23T09:08:31.000Z | normal | WORKGROUP | _id: 365<br/>url: /hx/api/v3/alerts/365 |
 
 
 ### fireeye-hx-host-containment
@@ -265,15 +265,15 @@ Apply containment for a specific host, so that it no longer has access to other 
     "Endpoint": {
         "Domain": "WORKGROUP",
         "Hostname": "XXX",
-        "ID": "YYYns3oui1fpzgYYY",
-        "IPAddress": "192.168.1.163",
-        "MACAddress": "00-50-56-89-1c-5b",
+        "ID": "YYYXXXYYY",
+        "IPAddress": "xx.xx.xx.xx",
+        "MACAddress": "xx-xx-xx-xx-xx-xx",
         "OS": "win",
         "OSVersion": "Windows 10 Pro"
     },
     "FireEyeHX": {
         "Hosts": {
-            "_id": "YYYns3oui1fpzgYYY",
+            "_id": "YYYXXXYYY",
             "agent_version": "31.28.17",
             "containment_missing_software": false,
             "containment_queued": true,
@@ -291,7 +291,7 @@ Apply containment for a specific host, so that it no longer has access to other 
             "last_audit_timestamp": "2022-02-23T07:28:33.969Z",
             "last_exploit_block": null,
             "last_exploit_block_timestamp": null,
-            "last_poll_ip": "192.168.1.163",
+            "last_poll_ip": "xx.xx.xx.xx",
             "last_poll_timestamp": "2022-02-23T09:08:31.000Z",
             "os": {
                 "bitness": "64-bit",
@@ -300,8 +300,8 @@ Apply containment for a specific host, so that it no longer has access to other 
                 "platform": "win",
                 "product_name": "Windows 10 Pro"
             },
-            "primary_ip_address": "192.168.1.163",
-            "primary_mac": "00-50-56-89-1c-5b",
+            "primary_ip_address": "xx.xx.xx.xx",
+            "primary_mac": "xx-xx-xx-xx-xx-xx",
             "reported_clone": false,
             "stats": {
                 "acqs": 15,
@@ -318,10 +318,10 @@ Apply containment for a specific host, so that it no longer has access to other 
                 "malware_quarantined_count": 0
             },
             "sysinfo": {
-                "url": "/hx/api/v3/hosts/YYYns3oui1fpzgYYY/sysinfo"
+                "url": "/hx/api/v3/hosts/YYYXXXYYY/sysinfo"
             },
             "timezone": "Pacific Standard Time",
-            "url": "/hx/api/v3/hosts/YYYns3oui1fpzgYYY"
+            "url": "/hx/api/v3/hosts/YYYXXXYYY"
         }
     }
 }
@@ -332,7 +332,7 @@ Apply containment for a specific host, so that it no longer has access to other 
 >### Results
 >|Domain|Hostname|ID|IPAddress|MACAddress|OS|OSVersion|
 >|---|---|---|---|---|---|---|
->| WORKGROUP | XXX | YYYns3oui1fpzgYYY | 192.168.1.163 | 00-50-56-89-1c-5b | win | Windows 10 Pro |
+>| WORKGROUP | XXX | YYYXXXYYY | xx.xx.xx.xx | xx-xx-xx-xx-xx-xx | win | Windows 10 Pro |
 
 
 ### fireeye-hx-cancel-containment
@@ -431,7 +431,7 @@ Get a list of all host sets known to your HX Series appliance.
         "HostSets": {
             "_id": 1001,
             "_revision": "20210308150955358783164361",
-            "name": "Demisto",
+            "name": "Test",
             "type": "venn",
             "url": "/hx/api/v3/host_sets/1001"
         }
@@ -444,7 +444,7 @@ Get a list of all host sets known to your HX Series appliance.
 >### FireEye HX Get Host Sets Information
 >|Name|ID|Type|
 >|---|---|---|
->| Demisto | 1001 | venn |
+>| Test | 1001 | venn |
 
 
 ### fireeye-hx-list-policy
@@ -486,7 +486,7 @@ Get a list of all policy.
 | FireEyeHX.Policy.display_updated_at | Unknown | Time since the display was last updated | 
 
 #### Command example
-```!fireeye-hx-list-policy limit=2 policyName=Demisto```
+```!fireeye-hx-list-policy limit=2 policyName=Test```
 #### Context Example
 ```json
 {
@@ -498,7 +498,7 @@ Get a list of all policy.
                 "offset": 0,
                 "query": {
                     "limit": "2",
-                    "name": "Demisto",
+                    "name": "Test",
                     "offset": "0"
                 },
                 "sort": {},
@@ -553,19 +553,19 @@ Get a list of all policies for all host sets.
             "Policy": [
                 {
                     "persist_id": 1001,
-                    "policy_id": "YYYYY-d452-4685-a8b5-afbeYYYY"
+                    "policy_id": "YYYXXXYYY"
                 },
                 {
                     "persist_id": 1002,
-                    "policy_id": "YYYYY-d452-4685-a8b5-afbeYYYY"
+                    "policy_id": "YYYXXXYYY"
                 },
                 {
                     "persist_id": 1005,
-                    "policy_id": "YYYYY-5471-4ae1-918d-YYYYY"
+                    "policy_id": "YYYXXXYYY"
                 },
                 {
                     "persist_id": 1005,
-                    "policy_id": "YYYYY-d452-4685-a8b5-afbeYYYY"
+                    "policy_id": "YYYXXXYYY"
                 }
             ]
         }
@@ -578,10 +578,10 @@ Get a list of all policies for all host sets.
 >### FireEye HX Host Set Policies
 >|Policy Id|Host Set Id|
 >|---|---|
->| YYYYY-d452-4685-a8b5-afbeYYYY | 1001 |
->| YYYYY-d452-4685-a8b5-afbeYYYY | 1002 |
->| YYYYY-5471-4ae1-918d-YYYYY | 1005 |
->| YYYYY-d452-4685-a8b5-afbeYYYY | 1005 |
+>| YYYXXXYYY | 1001 |
+>| YYYXXXYYY | 1002 |
+>| YYYXXXYYY | 1005 |
+>| YYYXXXYYY | 1005 |
 
 
 ### fireeye-hx-list-containment
@@ -627,7 +627,7 @@ Fetches all containment states across known hosts.
     "FireEyeHX": {
         "Hosts": [
             {
-                "_id": "YYYns3oui1fpzgYYY",
+                "_id": "YYYXXXYYY",
                 "contained_by_actor": null,
                 "contained_on": null,
                 "excluded": false,
@@ -639,10 +639,10 @@ Fetches all containment states across known hosts.
                 "requested_on": null,
                 "state": "normal",
                 "state_update_time": "2022-02-22T14:00:31.056Z",
-                "url": "/hx/api/v3/hosts/YYYns3oui1fpzgYYY"
+                "url": "/hx/api/v3/hosts/YYYXXXYYY"
             },
             {
-                "_id": "YYYY4zpidezwYYYY",
+                "_id": "YYYXXXYYY",
                 "contained_by_actor": null,
                 "contained_on": null,
                 "excluded": false,
@@ -654,7 +654,7 @@ Fetches all containment states across known hosts.
                 "requested_on": null,
                 "state": "normal",
                 "state_update_time": "2021-03-17T12:54:56.481Z",
-                "url": "/hx/api/v3/hosts/YYYY4zpidezwYYYY"
+                "url": "/hx/api/v3/hosts/YYYXXXYYY"
             }
         ]
     }
@@ -666,8 +666,8 @@ Fetches all containment states across known hosts.
 >### List Containment
 >|Id|State|Request Origin|Request Date|Containment Origin|Containment Date|Last System information date|
 >|---|---|---|---|---|---|---|
->| YYYns3oui1fpzgYYY | normal |  |  |  |  | 2022-02-23T07:28:33.969Z |
->| YYYY4zpidezwYYYY | normal |  |  |  |  | 2022-02-23T08:23:25.592Z |
+>| YYYXXXYYY | normal |  |  |  |  | 2022-02-23T07:28:33.969Z |
+>| YYYXXXYYY | normal |  |  |  |  | 2022-02-23T08:23:25.592Z |
 
 
 ### fireeye-hx-search-list
@@ -731,7 +731,7 @@ Fetches all enterprise searches.
             "_revision": "20220223091811214662597541",
             "create_actor": {
                 "_id": 1001,
-                "username": "test-admin"
+                "username": "test"
             },
             "create_time": "2022-02-23T09:18:11.214Z",
             "error": null,
@@ -739,16 +739,16 @@ Fetches all enterprise searches.
             "input_type": "api",
             "scripts": [
                 {
-                    "_id": "0864f1d46dd470c9934de71584dd95f6d91a714e",
-                    "download": "/hx/api/v3/scripts/0864f1d46dd470c9934de71584dd95f6d91a714e.json",
+                    "_id": "YYYXXXYYY",
+                    "download": "/hx/api/v3/scripts/YYYXXXYYY.json",
                     "platform": "win",
-                    "url": "/hx/api/v3/scripts/0864f1d46dd470c9934de71584dd95f6d91a714e"
+                    "url": "/hx/api/v3/scripts/YYYXXXYYY"
                 },
                 {
-                    "_id": "0864f1d46dd470c9934de71584dd95f6d91a714e",
-                    "download": "/hx/api/v3/scripts/0864f1d46dd470c9934de71584dd95f6d91a714e.json",
+                    "_id": "YYYXXXYYY",
+                    "download": "/hx/api/v3/scripts/YYYXXXYYY.json",
                     "platform": "osx",
-                    "url": "/hx/api/v3/scripts/0864f1d46dd470c9934de71584dd95f6d91a714e"
+                    "url": "/hx/api/v3/scripts/YYYXXXYYY"
                 }
             ],
             "settings": {
@@ -761,7 +761,7 @@ Fetches all enterprise searches.
                         {
                             "field": "IP Address",
                             "operator": "equals",
-                            "value": "8.8.8.8"
+                            "value": "xx.xx.xx.xx"
                         }
                     ]
                 },
@@ -791,7 +791,7 @@ Fetches all enterprise searches.
             },
             "update_actor": {
                 "_id": 1001,
-                "username": "test-admin"
+                "username": "test"
             },
             "update_time": "2022-02-23T09:18:11.214Z",
             "url": "/hx/api/v3/searches/143"
@@ -804,7 +804,7 @@ Fetches all enterprise searches.
 
 >|Id|State|Host Set|Created By|Created At|Updated By|Updated At|
 >|---|---|---|---|---|---|---|
->| 143 | RUNNING |  | _id: 1001<br/>username: test-admin | 2022-02-23T09:18:11.214Z | _id: 1001<br/>username: test-admin | 2022-02-23T09:18:11.214Z |
+>| 143 | RUNNING |  | _id: 1001<br/>username: test | 2022-02-23T09:18:11.214Z | _id: 1001<br/>username: test | 2022-02-23T09:18:11.214Z |
 
 
 ### fireeye-hx-search-stop
@@ -862,7 +862,7 @@ Stops a specific running search.
             "_revision": "20220223091838188310597550",
             "create_actor": {
                 "_id": 1001,
-                "username": "test-admin"
+                "username": "test"
             },
             "create_time": "2022-02-23T09:05:54.645Z",
             "error": null,
@@ -870,16 +870,16 @@ Stops a specific running search.
             "input_type": "api",
             "scripts": [
                 {
-                    "_id": "0864f1d46dd470c9934de71584dd95f6d91a714e",
-                    "download": "/hx/api/v3/scripts/0864f1d46dd470c9934de71584dd95f6d91a714e.json",
+                    "_id": "YYYXXXYYY",
+                    "download": "/hx/api/v3/scripts/YYYXXXYYY.json",
                     "platform": "win",
-                    "url": "/hx/api/v3/scripts/0864f1d46dd470c9934de71584dd95f6d91a714e"
+                    "url": "/hx/api/v3/scripts/YYYXXXYYY"
                 },
                 {
-                    "_id": "0864f1d46dd470c9934de71584dd95f6d91a714e",
-                    "download": "/hx/api/v3/scripts/0864f1d46dd470c9934de71584dd95f6d91a714e.json",
+                    "_id": "YYYXXXYYY",
+                    "download": "/hx/api/v3/scripts/YYYXXXYYY.json",
                     "platform": "osx",
-                    "url": "/hx/api/v3/scripts/0864f1d46dd470c9934de71584dd95f6d91a714e"
+                    "url": "/hx/api/v3/scripts/YYYXXXYYY"
                 }
             ],
             "settings": {
@@ -892,7 +892,7 @@ Stops a specific running search.
                         {
                             "field": "IP Address",
                             "operator": "equals",
-                            "value": "8.8.8.8"
+                            "value": "xx.xx.xx.xx"
                         }
                     ]
                 },
@@ -922,7 +922,7 @@ Stops a specific running search.
             },
             "update_actor": {
                 "_id": 1001,
-                "username": "test-admin"
+                "username": "test"
             },
             "update_time": "2022-02-23T09:18:38.188Z",
             "url": "/hx/api/v3/searches/141"
@@ -970,20 +970,20 @@ Fetches the result for a specific enterprise search.
     "FireEyeHX": {
         "Search": {
             "host": {
-                "_id": "YYYns3oui1fpzgYYY",
+                "_id": "YYYXXXYYY",
                 "hostname": "XXX",
-                "url": "/hx/api/v3/hosts/YYYns3oui1fpzgYYY"
+                "url": "/hx/api/v3/hosts/YYYXXXYYY"
             },
             "results": [
                 {
                     "data": {
-                        "IP Address": "8.8.8.8",
-                        "Local IP Address": "192.168.1.163",
+                        "IP Address": "xx.xx.xx.xx",
+                        "Local IP Address": "xx.xx.xx.xx",
                         "Local Port": "64924",
                         "Port": "443",
                         "Process ID": "8696",
                         "Process Name": "chrome.exe",
-                        "Remote IP Address": "8.8.8.8",
+                        "Remote IP Address": "xx.xx.xx.xx",
                         "Remote Port": "443",
                         "Timestamp - Accessed": "2022-01-20T09:41:51.470Z",
                         "Timestamp - Event": "2022-01-20T09:41:51.470Z",
@@ -994,13 +994,13 @@ Fetches the result for a specific enterprise search.
                 },
                 {
                     "data": {
-                        "IP Address": "8.8.8.8",
-                        "Local IP Address": "192.168.1.163",
+                        "IP Address": "xx.xx.xx.xx",
+                        "Local IP Address": "xx.xx.xx.xx",
                         "Local Port": "64925",
                         "Port": "443",
                         "Process ID": "8696",
                         "Process Name": "chrome.exe",
-                        "Remote IP Address": "8.8.8.8",
+                        "Remote IP Address": "xx.xx.xx.xx",
                         "Remote Port": "443",
                         "Timestamp - Accessed": "2022-01-20T09:41:51.470Z",
                         "Timestamp - Event": "2022-01-20T09:41:51.470Z",
@@ -1011,13 +1011,13 @@ Fetches the result for a specific enterprise search.
                 },
                 {
                     "data": {
-                        "IP Address": "8.8.8.8",
-                        "Local IP Address": "192.168.1.163",
+                        "IP Address": "xx.xx.xx.xx",
+                        "Local IP Address": "xx.xx.xx.xx",
                         "Local Port": "64926",
                         "Port": "443",
                         "Process ID": "8696",
                         "Process Name": "chrome.exe",
-                        "Remote IP Address": "8.8.8.8",
+                        "Remote IP Address": "xx.xx.xx.xx",
                         "Remote Port": "443",
                         "Timestamp - Accessed": "2022-01-20T09:41:51.470Z",
                         "Timestamp - Event": "2022-01-20T09:41:51.470Z",
@@ -1028,13 +1028,13 @@ Fetches the result for a specific enterprise search.
                 },
                 {
                     "data": {
-                        "IP Address": "8.8.8.8",
-                        "Local IP Address": "192.168.1.163",
+                        "IP Address": "xx.xx.xx.xx",
+                        "Local IP Address": "xx.xx.xx.xx",
                         "Local Port": "56687",
                         "Port": "443",
                         "Process ID": "8696",
                         "Process Name": "chrome.exe",
-                        "Remote IP Address": "8.8.8.8",
+                        "Remote IP Address": "xx.xx.xx.xx",
                         "Remote Port": "443",
                         "Timestamp - Accessed": "2022-01-31T06:56:37.591Z",
                         "Timestamp - Event": "2022-01-31T06:56:37.591Z",
@@ -1045,13 +1045,13 @@ Fetches the result for a specific enterprise search.
                 },
                 {
                     "data": {
-                        "IP Address": "8.8.8.8",
-                        "Local IP Address": "192.168.1.163",
+                        "IP Address": "xx.xx.xx.xx",
+                        "Local IP Address": "xx.xx.xx.xx",
                         "Local Port": "58763",
                         "Port": "443",
                         "Process ID": "8696",
                         "Process Name": "chrome.exe",
-                        "Remote IP Address": "8.8.8.8",
+                        "Remote IP Address": "xx.xx.xx.xx",
                         "Remote Port": "443",
                         "Timestamp - Accessed": "2022-02-01T07:51:38.928Z",
                         "Timestamp - Event": "2022-02-01T07:51:38.928Z",
@@ -1062,13 +1062,13 @@ Fetches the result for a specific enterprise search.
                 },
                 {
                     "data": {
-                        "IP Address": "8.8.8.8",
-                        "Local IP Address": "192.168.1.163",
+                        "IP Address": "xx.xx.xx.xx",
+                        "Local IP Address": "xx.xx.xx.xx",
                         "Local Port": "58766",
                         "Port": "443",
                         "Process ID": "8696",
                         "Process Name": "chrome.exe",
-                        "Remote IP Address": "8.8.8.8",
+                        "Remote IP Address": "xx.xx.xx.xx",
                         "Remote Port": "443",
                         "Timestamp - Accessed": "2022-02-01T07:53:03.630Z",
                         "Timestamp - Event": "2022-02-01T07:53:03.630Z",
@@ -1079,13 +1079,13 @@ Fetches the result for a specific enterprise search.
                 },
                 {
                     "data": {
-                        "IP Address": "8.8.8.8",
-                        "Local IP Address": "192.168.1.163",
+                        "IP Address": "xx.xx.xx.xx",
+                        "Local IP Address": "xx.xx.xx.xx",
                         "Local Port": "59099",
                         "Port": "443",
                         "Process ID": "8696",
                         "Process Name": "chrome.exe",
-                        "Remote IP Address": "8.8.8.8",
+                        "Remote IP Address": "xx.xx.xx.xx",
                         "Remote Port": "443",
                         "Timestamp - Accessed": "2022-02-01T12:04:14.969Z",
                         "Timestamp - Event": "2022-02-01T12:04:14.969Z",
@@ -1096,13 +1096,13 @@ Fetches the result for a specific enterprise search.
                 },
                 {
                     "data": {
-                        "IP Address": "8.8.8.8",
-                        "Local IP Address": "192.168.1.163",
+                        "IP Address": "xx.xx.xx.xx",
+                        "Local IP Address": "xx.xx.xx.xx",
                         "Local Port": "55107",
                         "Port": "443",
                         "Process ID": "8696",
                         "Process Name": "chrome.exe",
-                        "Remote IP Address": "8.8.8.8",
+                        "Remote IP Address": "xx.xx.xx.xx",
                         "Remote Port": "443",
                         "Timestamp - Accessed": "2022-02-07T10:51:46.951Z",
                         "Timestamp - Event": "2022-02-07T10:51:46.951Z",
@@ -1113,13 +1113,13 @@ Fetches the result for a specific enterprise search.
                 },
                 {
                     "data": {
-                        "IP Address": "8.8.8.8",
-                        "Local IP Address": "192.168.1.163",
+                        "IP Address": "xx.xx.xx.xx",
+                        "Local IP Address": "xx.xx.xx.xx",
                         "Local Port": "55107",
                         "Port": "443",
                         "Process ID": "8696",
                         "Process Name": "chrome.exe",
-                        "Remote IP Address": "8.8.8.8",
+                        "Remote IP Address": "xx.xx.xx.xx",
                         "Remote Port": "443",
                         "Timestamp - Accessed": "2022-02-07T10:53:17.233Z",
                         "Timestamp - Event": "2022-02-07T10:53:17.233Z",
@@ -1136,19 +1136,19 @@ Fetches the result for a specific enterprise search.
 
 #### Human Readable Output
 
->### Host Id YYYns3oui1fpzgYYY
+>### Host Id YYYXXXYYY
 >Host Name XXX
 >|Item Type|Summary|
 >|---|---|
->| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** 192.168.1.163,<br/>**Remote IP Address:** 8.8.8.8,<br/>**IP Address:** 8.8.8.8,<br/>**Port:** 443,<br/>**Local Port:** 64924,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-01-20T09:41:51.470Z,<br/>**Timestamp - Accessed:** 2022-01-20T09:41:51.470Z |
->| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** 192.168.1.163,<br/>**Remote IP Address:** 8.8.8.8,<br/>**IP Address:** 8.8.8.8,<br/>**Port:** 443,<br/>**Local Port:** 64925,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-01-20T09:41:51.470Z,<br/>**Timestamp - Accessed:** 2022-01-20T09:41:51.470Z |
->| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** 192.168.1.163,<br/>**Remote IP Address:** 8.8.8.8,<br/>**IP Address:** 8.8.8.8,<br/>**Port:** 443,<br/>**Local Port:** 64926,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-01-20T09:41:51.470Z,<br/>**Timestamp - Accessed:** 2022-01-20T09:41:51.470Z |
->| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** 192.168.1.163,<br/>**Remote IP Address:** 8.8.8.8,<br/>**IP Address:** 8.8.8.8,<br/>**Port:** 443,<br/>**Local Port:** 56687,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-01-31T06:56:37.591Z,<br/>**Timestamp - Accessed:** 2022-01-31T06:56:37.591Z |
->| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** 192.168.1.163,<br/>**Remote IP Address:** 8.8.8.8,<br/>**IP Address:** 8.8.8.8,<br/>**Port:** 443,<br/>**Local Port:** 58763,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-02-01T07:51:38.928Z,<br/>**Timestamp - Accessed:** 2022-02-01T07:51:38.928Z |
->| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** 192.168.1.163,<br/>**Remote IP Address:** 8.8.8.8,<br/>**IP Address:** 8.8.8.8,<br/>**Port:** 443,<br/>**Local Port:** 58766,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-02-01T07:53:03.630Z,<br/>**Timestamp - Accessed:** 2022-02-01T07:53:03.630Z |
->| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** 192.168.1.163,<br/>**Remote IP Address:** 8.8.8.8,<br/>**IP Address:** 8.8.8.8,<br/>**Port:** 443,<br/>**Local Port:** 59099,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-02-01T12:04:14.969Z,<br/>**Timestamp - Accessed:** 2022-02-01T12:04:14.969Z |
->| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** 192.168.1.163,<br/>**Remote IP Address:** 8.8.8.8,<br/>**IP Address:** 8.8.8.8,<br/>**Port:** 443,<br/>**Local Port:** 55107,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-02-07T10:51:46.951Z,<br/>**Timestamp - Accessed:** 2022-02-07T10:51:46.951Z |
->| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** 192.168.1.163,<br/>**Remote IP Address:** 8.8.8.8,<br/>**IP Address:** 8.8.8.8,<br/>**Port:** 443,<br/>**Local Port:** 55107,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-02-07T10:53:17.233Z,<br/>**Timestamp - Accessed:** 2022-02-07T10:53:17.233Z |
+>| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** xx.xx.xx.xx,<br/>**Remote IP Address:** xx.xx.xx.xx,<br/>**IP Address:** xx.xx.xx.xx,<br/>**Port:** 443,<br/>**Local Port:** 64924,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-01-20T09:41:51.470Z,<br/>**Timestamp - Accessed:** 2022-01-20T09:41:51.470Z |
+>| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** xx.xx.xx.xx,<br/>**Remote IP Address:** xx.xx.xx.xx,<br/>**IP Address:** xx.xx.xx.xx,<br/>**Port:** 443,<br/>**Local Port:** 64925,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-01-20T09:41:51.470Z,<br/>**Timestamp - Accessed:** 2022-01-20T09:41:51.470Z |
+>| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** xx.xx.xx.xx,<br/>**Remote IP Address:** xx.xx.xx.xx,<br/>**IP Address:** xx.xx.xx.xx,<br/>**Port:** 443,<br/>**Local Port:** 64926,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-01-20T09:41:51.470Z,<br/>**Timestamp - Accessed:** 2022-01-20T09:41:51.470Z |
+>| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** xx.xx.xx.xx,<br/>**Remote IP Address:** xx.xx.xx.xx,<br/>**IP Address:** xx.xx.xx.xx,<br/>**Port:** 443,<br/>**Local Port:** 56687,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-01-31T06:56:37.591Z,<br/>**Timestamp - Accessed:** 2022-01-31T06:56:37.591Z |
+>| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** xx.xx.xx.xx,<br/>**Remote IP Address:** xx.xx.xx.xx,<br/>**IP Address:** xx.xx.xx.xx,<br/>**Port:** 443,<br/>**Local Port:** 58763,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-02-01T07:51:38.928Z,<br/>**Timestamp - Accessed:** 2022-02-01T07:51:38.928Z |
+>| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** xx.xx.xx.xx,<br/>**Remote IP Address:** xx.xx.xx.xx,<br/>**IP Address:** xx.xx.xx.xx,<br/>**Port:** 443,<br/>**Local Port:** 58766,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-02-01T07:53:03.630Z,<br/>**Timestamp - Accessed:** 2022-02-01T07:53:03.630Z |
+>| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** xx.xx.xx.xx,<br/>**Remote IP Address:** xx.xx.xx.xx,<br/>**IP Address:** xx.xx.xx.xx,<br/>**Port:** 443,<br/>**Local Port:** 59099,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-02-01T12:04:14.969Z,<br/>**Timestamp - Accessed:** 2022-02-01T12:04:14.969Z |
+>| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** xx.xx.xx.xx,<br/>**Remote IP Address:** xx.xx.xx.xx,<br/>**IP Address:** xx.xx.xx.xx,<br/>**Port:** 443,<br/>**Local Port:** 55107,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-02-07T10:51:46.951Z,<br/>**Timestamp - Accessed:** 2022-02-07T10:51:46.951Z |
+>| IPv4 Network Event | **Process Name:** chrome.exe,<br/>**Process ID:** 8696,<br/>**Username:** XXX\User,<br/>**Local IP Address:** xx.xx.xx.xx,<br/>**Remote IP Address:** xx.xx.xx.xx,<br/>**IP Address:** xx.xx.xx.xx,<br/>**Port:** 443,<br/>**Local Port:** 55107,<br/>**Remote Port:** 443,<br/>**Timestamp - Event:** 2022-02-07T10:53:17.233Z,<br/>**Timestamp - Accessed:** 2022-02-07T10:53:17.233Z |
 
 
 ### fireeye-hx-search
@@ -1222,7 +1222,7 @@ Search endpoints to check all hosts or a subset of hosts for a specific file or 
 | FireEyeHX.Search.results.id | string | ID of the result | 
 
 #### Command example
-```!fireeye-hx-search hostsNames=XXX ipAddress=8.8.8.8 ipAddressOperator=equals polling=false```
+```!fireeye-hx-search hostsNames=XXX ipAddress=xx.xx.xx.xx ipAddressOperator=equals polling=false```
 #### Human Readable Output
 
 >Search started,
@@ -1282,16 +1282,16 @@ Get details of a specific alert.
         "Alerts": {
             "_id": 8,
             "agent": {
-                "_id": "YYYns3oui1fpzgYYY",
+                "_id": "YYYXXXYYY",
                 "containment_state": "normal",
-                "url": "/hx/api/v3/hosts/YYYns3oui1fpzgYYY"
+                "url": "/hx/api/v3/hosts/YYYXXXYYY"
             },
             "appliance": {
-                "_id": "86285DC29A17"
+                "_id": "YYYXXXYYY"
             },
             "condition": {
-                "_id": "07p68ZtTsFCDx6Vv7s6FDg==",
-                "url": "/hx/api/v3/conditions/07p68ZtTsFCDx6Vv7s6FDg=="
+                "_id": "YYYXXXYYY",
+                "url": "/hx/api/v3/conditions/YYYXXXYYY"
             },
             "decorator_statuses": [],
             "decorators": [],
@@ -1420,7 +1420,7 @@ Get a list of indicators.
     "FireEyeHX": {
         "Indicators": [
             {
-                "_id": "37a97ac2-35e9-40ad-a108-6802d5d82890",
+                "_id": "YYYXXXYYY",
                 "_revision": "20220223091809012244597537",
                 "active_since": "2022-02-23T09:18:09.012Z",
                 "category": {
@@ -1432,14 +1432,14 @@ Get a list of indicators.
                 },
                 "create_actor": {
                     "_id": 1001,
-                    "username": "test-admin"
+                    "username": "test"
                 },
                 "create_text": null,
-                "created_by": "test-admin",
+                "created_by": "test",
                 "description": null,
                 "display_name": null,
                 "meta": null,
-                "name": "37a97ac2-35e9-40ad-a108-6802d5d82890",
+                "name": "YYYXXXYYY",
                 "platforms": [
                     "win",
                     "osx",
@@ -1453,13 +1453,13 @@ Get a list of indicators.
                 },
                 "update_actor": {
                     "_id": 1001,
-                    "username": "test-admin"
+                    "username": "test"
                 },
-                "uri_name": "37a97ac2-35e9-40ad-a108-6802d5d82890",
+                "uri_name": "YYYXXXYYY",
                 "url": "/hx/api/v3/indicators/custom/37a97ac2_35e9_40ad_a108_6802d5d82890"
             },
             {
-                "_id": "5d5cea45-2856-4338-8de8-7ef2b16f9511",
+                "_id": "YYYXXXYYY",
                 "_revision": "20220223075746635023596874",
                 "active_since": "2022-02-23T07:57:46.635Z",
                 "category": {
@@ -1471,14 +1471,14 @@ Get a list of indicators.
                 },
                 "create_actor": {
                     "_id": 1001,
-                    "username": "test-admin"
+                    "username": "test"
                 },
                 "create_text": null,
-                "created_by": "test-admin",
+                "created_by": "test",
                 "description": null,
                 "display_name": null,
                 "meta": null,
-                "name": "5d5cea45-2856-4338-8de8-7ef2b16f9511",
+                "name": "YYYXXXYYY",
                 "platforms": [
                     "win",
                     "osx",
@@ -1492,9 +1492,9 @@ Get a list of indicators.
                 },
                 "update_actor": {
                     "_id": 1001,
-                    "username": "test-admin"
+                    "username": "test"
                 },
-                "uri_name": "5d5cea45-2856-4338-8de8-7ef2b16f9511",
+                "uri_name": "YYYXXXYYY",
                 "url": "/hx/api/v3/indicators/custom/5d5cea45_2856_4338_8de8_7ef2b16f9511"
             }
         ]
@@ -1507,8 +1507,8 @@ Get a list of indicators.
 >### FireEye HX Get Indicator- None
 >|OS|Name|Created By|Active Since|Category|Signature|Active Condition|Hosts With Alerts|Source Alerts|
 >|---|---|---|---|---|---|---|---|---|
->| win, osx, linux | 37a97ac2-35e9-40ad-a108-6802d5d82890 | test-admin | 2022-02-23T09:18:09.012Z | Custom |  | 0 | 0 | 0 |
->| win, osx, linux | 5d5cea45-2856-4338-8de8-7ef2b16f9511 | test-admin | 2022-02-23T07:57:46.635Z | Custom |  | 0 | 0 | 0 |
+>| win, osx, linux | YYYXXXYYY | test | 2022-02-23T09:18:09.012Z | Custom |  | 0 | 0 | 0 |
+>| win, osx, linux | YYYXXXYYY | test | 2022-02-23T07:57:46.635Z | Custom |  | 0 | 0 | 0 |
 
 
 ### fireeye-hx-get-indicator
@@ -1545,13 +1545,13 @@ Get a specific indicator details.
 | FireEyeHX.Conditions.enabled | Unknown | Indicates whether the condition is enabled. | 
 
 #### Command example
-```!fireeye-hx-get-indicator category=Custom name=5d5cea45-2856-4338-8de8-7ef2b16f9511```
+```!fireeye-hx-get-indicator category=Custom name=YYYXXXYYY```
 #### Context Example
 ```json
 {
     "FireEyeHX": {
         "Indicators": {
-            "_id": "5d5cea45-2856-4338-8de8-7ef2b16f9511",
+            "_id": "YYYXXXYYY",
             "_revision": "20220223075746635023596874",
             "active_since": "2022-02-23T07:57:46.635Z",
             "category": {
@@ -1563,14 +1563,14 @@ Get a specific indicator details.
             },
             "create_actor": {
                 "_id": 1001,
-                "username": "test-admin"
+                "username": "test"
             },
             "create_text": null,
-            "created_by": "test-admin",
+            "created_by": "test",
             "description": null,
             "display_name": null,
             "meta": null,
-            "name": "5d5cea45-2856-4338-8de8-7ef2b16f9511",
+            "name": "YYYXXXYYY",
             "platforms": [
                 "win",
                 "osx",
@@ -1584,9 +1584,9 @@ Get a specific indicator details.
             },
             "update_actor": {
                 "_id": 1001,
-                "username": "test-admin"
+                "username": "test"
             },
-            "uri_name": "5d5cea45-2856-4338-8de8-7ef2b16f9511",
+            "uri_name": "YYYXXXYYY",
             "url": "/hx/api/v3/indicators/custom/5d5cea45_2856_4338_8de8_7ef2b16f9511"
         }
     }
@@ -1595,7 +1595,7 @@ Get a specific indicator details.
 
 #### Human Readable Output
 
->### Indicator '5d5cea45-2856-4338-8de8-7ef2b16f9511' Alerts on
+>### Indicator 'YYYXXXYYY' Alerts on
 >**No entries.**
 
 
@@ -1620,7 +1620,7 @@ Add conditions to an indicator. Conditions can be MD5, hash values, domain names
 
 There is no context output for this command.
 #### Command example
-```!fireeye-hx-append-conditions category=Custom name=5d5cea45-2856-4338-8de8-7ef2b16f9511 condition=exsmple.com```
+```!fireeye-hx-append-conditions category=Custom name=YYYXXXYYY condition=exsmple.com```
 #### Context Example
 ```json
 {
@@ -1639,7 +1639,7 @@ There is no context output for this command.
 >### The conditions were added successfully
 >|Category|Conditions|Name|
 >|---|---|---|
->| Custom | exsmple.com | 5d5cea45-2856-4338-8de8-7ef2b16f9511 |
+>| Custom | exsmple.com | YYYXXXYYY |
 
 
 ### fireeye-hx-search-delete
@@ -1723,7 +1723,7 @@ Insert a new host set policy on your Endpoint Security server.
 
 There is no context output for this command.
 #### Command example
-```!fireeye-hx-assign-host-set-policy hostSetId=1005 policyId=YYYYY-5471-4ae1-918d-YYYYY```
+```!fireeye-hx-assign-host-set-policy hostSetId=1005 policyId=YYYXXXYYY```
 #### Human Readable Output
 
 >This hostset may already be included in this policy
@@ -1765,7 +1765,7 @@ Gather artifacts from the system disk and memory for the given acquisition id. (
         "Extension": "mans",
         "Info": "mans",
         "MD5": "fedf0fbaf4811afd9602c22b29ebed4a",
-        "Name": "102_agent_YYYns3oui1fpzgYYY_data.mans",
+        "Name": "102_agent_YYYXXXYYY_data.mans",
         "SHA1": "c83819759775fe7cb1fcfaf41a8d452f69caefc7",
         "SHA256": "e92aaabe1e6dab564f421e3785dc46bacfe096b154acd042386e9f606a9e0b7e",
         "SHA512": "9b4be59a5fb8dcb1832ef5eb6a4c587ac7da117b660f451b0b0414e0cf01d9a6208f605703f982486185be538e3869e821b0d8546bbbb264ac5268302a11fbd4",
@@ -1784,16 +1784,16 @@ Gather artifacts from the system disk and memory for the given acquisition id. (
                 "external_id": null,
                 "finish_time": "2022-02-23T08:48:21.572Z",
                 "host": {
-                    "_id": "YYYns3oui1fpzgYYY",
+                    "_id": "YYYXXXYYY",
                     "hostname": "XXX",
-                    "url": "/hx/api/v3/hosts/YYYns3oui1fpzgYYY"
+                    "url": "/hx/api/v3/hosts/YYYXXXYYY"
                 },
                 "instance": "FireEyeHX v2_instance_1",
                 "md5": null,
                 "name": "osxDefaultScript",
                 "request_actor": {
                     "_id": 1001,
-                    "username": "test-admin"
+                    "username": "test"
                 },
                 "request_time": "2022-02-23T08:42:46.000Z",
                 "script": {
@@ -1927,16 +1927,16 @@ Get a list of alerts, use the different arguments to filter the results returned
             {
                 "_id": 7,
                 "agent": {
-                    "_id": "YYYns3oui1fpzgYYY",
+                    "_id": "YYYXXXYYY",
                     "containment_state": "normal",
-                    "url": "/hx/api/v3/hosts/YYYns3oui1fpzgYYY"
+                    "url": "/hx/api/v3/hosts/YYYXXXYYY"
                 },
                 "appliance": {
                     "_id": "86285DC29A17"
                 },
                 "condition": {
-                    "_id": "07p68ZtTsFCDx6Vv7s6FDg==",
-                    "url": "/hx/api/v3/conditions/07p68ZtTsFCDx6Vv7s6FDg=="
+                    "_id": "YYYXXXYYY",
+                    "url": "/hx/api/v3/conditions/YYYXXXYYY"
                 },
                 "decorator_statuses": [],
                 "decorators": [],
@@ -1990,16 +1990,16 @@ Get a list of alerts, use the different arguments to filter the results returned
             {
                 "_id": 8,
                 "agent": {
-                    "_id": "YYYns3oui1fpzgYYY",
+                    "_id": "YYYXXXYYY",
                     "containment_state": "normal",
-                    "url": "/hx/api/v3/hosts/YYYns3oui1fpzgYYY"
+                    "url": "/hx/api/v3/hosts/YYYXXXYYY"
                 },
                 "appliance": {
                     "_id": "86285DC29A17"
                 },
                 "condition": {
-                    "_id": "07p68ZtTsFCDx6Vv7s6FDg==",
-                    "url": "/hx/api/v3/conditions/07p68ZtTsFCDx6Vv7s6FDg=="
+                    "_id": "YYYXXXYYY",
+                    "url": "/hx/api/v3/conditions/YYYXXXYYY"
                 },
                 "decorator_statuses": [],
                 "decorators": [],
@@ -2057,8 +2057,8 @@ Get a list of alerts, use the different arguments to filter the results returned
 >### FireEye HX Get Alerts
 >|Alert ID|Reported|Event Type|Agent ID|
 >|---|---|---|---|
->| 7 | 2022-01-24T10:37:51.306Z | fileWriteEvent | YYYns3oui1fpzgYYY |
->| 8 | 2022-01-25T10:25:44.011Z | fileWriteEvent | YYYns3oui1fpzgYYY |
+>| 7 | 2022-01-24T10:37:51.306Z | fileWriteEvent | YYYXXXYYY |
+>| 8 | 2022-01-25T10:25:44.011Z | fileWriteEvent | YYYXXXYYY |
 
 
 ### fireeye-hx-file-acquisition
@@ -2146,7 +2146,7 @@ Create new indicator
 {
     "FireEyeHX": {
         "Indicators": {
-            "_id": "37a97ac2-35e9-40ad-a108-6802d5d82890",
+            "_id": "YYYXXXYYY",
             "_revision": "20220223091809012244597537",
             "active_since": "2022-02-23T09:18:09.012Z",
             "category": {
@@ -2158,14 +2158,14 @@ Create new indicator
             },
             "create_actor": {
                 "_id": 1001,
-                "username": "test-admin"
+                "username": "test"
             },
             "create_text": null,
-            "created_by": "test-admin",
+            "created_by": "test",
             "description": null,
             "display_name": null,
             "meta": null,
-            "name": "37a97ac2-35e9-40ad-a108-6802d5d82890",
+            "name": "YYYXXXYYY",
             "platforms": [
                 "win",
                 "osx",
@@ -2179,9 +2179,9 @@ Create new indicator
             },
             "update_actor": {
                 "_id": 1001,
-                "username": "test-admin"
+                "username": "test"
             },
-            "uri_name": "37a97ac2-35e9-40ad-a108-6802d5d82890",
+            "uri_name": "YYYXXXYYY",
             "url": "/hx/api/v3/indicators/custom/37a97ac2_35e9_40ad_a108_6802d5d82890"
         }
     }
@@ -2193,7 +2193,7 @@ Create new indicator
 >### FireEye HX New Indicator created successfully
 >|ID|
 >|---|
->| 37a97ac2-35e9-40ad-a108-6802d5d82890 |
+>| YYYXXXYYY |
 
 
 ### fireeye-hx-delete-host-set-policy
@@ -2216,7 +2216,7 @@ Delete a Host Set Policy.
 
 There is no context output for this command.
 #### Command example
-```!fireeye-hx-delete-host-set-policy hostSetId=1005 policyId=YYYYY-5471-4ae1-918d-YYYYY```
+```!fireeye-hx-delete-host-set-policy hostSetId=1005 policyId=YYYXXXYYY```
 #### Human Readable Output
 
 >Success
