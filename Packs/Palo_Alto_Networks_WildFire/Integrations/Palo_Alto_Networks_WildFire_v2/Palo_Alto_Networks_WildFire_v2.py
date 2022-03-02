@@ -859,7 +859,7 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                     url += report["network"]["url"]["@uri"]
                 if url:
                     feed_related_indicators.append({'value': url, 'type': 'URL'})
-                    relationships.append(create_relationship('related-to', (file_hash, url), ('file', 'url')))
+                    relationships.append(create_relationship('related-to', (file_hash, url.rstrip('/')), ('file', 'url')))
                 if extended_data:
                     if network_url_dict := parse(report=report["network"]['url'],
                                                  keys=[('@host', 'Host'), ('@uri', 'URI'),
