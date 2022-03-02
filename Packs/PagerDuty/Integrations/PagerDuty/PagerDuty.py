@@ -84,7 +84,7 @@ CONTACT_METHODS_HEADERS = ['ID', 'Type', 'Details']
 SERVICES_HEADERS = ['ID', 'Name', 'Status', 'Created At', 'Integration']
 NOTIFICATION_RULES_HEADERS = ['ID', 'Type', 'Urgency', 'Notification timeout(minutes)']
 SCHEDULES_HEADERS = ['ID', 'Name', 'Today', 'Time Zone', 'Escalation Policy', 'Escalation Policy ID']
-USERS_ON_CALL_NOW_HEADERS = ['ID', 'Email', 'Name', 'Role', 'User Url', 'Time Zone']
+USERS_ON_CALL_NOW_HEADERS = ['ID', 'Schedule ID', 'Email', 'Name', 'Role', 'User Url', 'Time Zone']
 INCIDENTS_HEADERS = ['ID', 'Title', 'Description', 'Status', 'Created On', 'Urgency', 'Html Url', 'Incident key',
                      'Assigned To User', 'Service ID', 'Service Name', 'Escalation Policy', 'Last Status Change On',
                      'Last Status Change By', 'Number Of Escalations', 'Resolved By User', 'Resolve Reason']
@@ -142,13 +142,16 @@ def test_module():
     demisto.results('ok')
 
 
-def extract_on_call_user_data(users):
+def extract_on_call_user_data(users, schedule_id=None):
     """Extact data about user from a given schedule."""
     outputs = []
     contexts = []
     for user in users:
         output = {}
         context = {}
+        if schedule_id:
+            output['Schedule ID'] = schedule_id
+            context['ScheduleID'] = output['Schedule ID']
 
         output['ID'] = user.get('id')
         output['Name'] = user.get('name')
@@ -191,12 +194,16 @@ def extract_on_call_now_user_data(users_on_call_now):
 
         data = oncalls[i]
         user = data.get('user')
-
+        schedule_id = data.get('schedule').get('id')
+        if schedule_id:
+            output['Schedule ID'] = schedule_id
+            context['ScheduleID'] = output['Schedule ID']
         output['ID'] = user.get('id')
         output['Name'] = user.get('name')
         output['Role'] = user.get('role')
         output['Email'] = user.get('email')
         output['User Url'] = user.get('html_url')
+        output['Time Zone'] = user.get('time_zone')
         output['Time Zone'] = user.get('time_zone')
 
         context['ID'] = output['ID']
@@ -618,7 +625,7 @@ def get_on_call_users_command(scheduleID, since=None, until=None):
 
     url = SERVER_URL + ON_CALL_BY_SCHEDULE_SUFFIX.format(scheduleID)
     users_on_call = http_request('GET', url, param_dict)
-    return extract_on_call_user_data(users_on_call.get('users', []))
+    return extract_on_call_user_data(users_on_call.get('users', []), scheduleID)
 
 
 def get_on_call_now_users_command(limit=None, escalation_policy_ids=None, schedule_ids=None):
