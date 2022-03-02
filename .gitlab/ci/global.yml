@@ -166,7 +166,7 @@
 .run-unittests-and-lint:
   tags:
     - gce
-    - us-west1
+    - us-central1
   needs: []
   stage: unittests-and-validations
   artifacts:
@@ -240,6 +240,8 @@
   extends:
     - .default-job-settings
   needs: []
+  variables:
+    KUBERNETES_CPU_REQUEST: 1000m
   artifacts:
     expire_in: 30 days
     paths:
