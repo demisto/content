@@ -3,7 +3,7 @@ from typing import Callable, Tuple
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
+from typing import Optional
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -762,6 +762,28 @@ def wildfire_get_url_webartifacts_command():
             return_results('Webartifacts were not found. For more info contact your WildFire representative.')
 
 
+def parse(report: dict, keys: tuple) -> Union[dict, None]:
+    outputs = {}
+    for key in keys:
+        if key[0] in report and report[key[0]]:
+            item_value = report[key[0]]
+            outputs[key[1]] = item_value
+    return outputs if outputs else None
+
+
+MAP_KEYS = {
+    "process_list": '',
+    "process_tree": [
+        ('@text', "ProcessText"),
+        ('@name', "ProcessName"),
+        ('@pid', "ProcessPid")],
+    "process_tree_child": [
+        ('@text', "ChildText"),
+        ('@name', "ChildName"),
+        ('@pid', "ChildPid")]
+}
+
+
 def parse_file_report(file_hash, reports, file_info, extended_data: bool):
     udp_ip = []
     udp_port = []
@@ -964,7 +986,14 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                 if not isinstance(process_list, list):
                     process_list = [process_list]
                 for process in process_list:
-                    process_list_command = process_list_name = process_list_file = process_list_pid = process_list_service = None
+                    if process_list_dict:=parse(report=process,
+                                                keys=[("@command", "ProcessCommand"),
+                                                      ("@name", "ProcessName"),
+                                                      ("@pid", "ProcessPid"),
+                                                      ("file", "ProcessFile"),
+                                                      ("service", "Service")]):
+                        process_list_outputs.append(process_list_dict) 
+                    '''process_list_command = process_list_name = process_list_file = process_list_pid = process_list_service = None
                     if '@command' in process and process['@command']:
                         process_list_command = process['@command']
                     if '@name' in process and process['@name']:
@@ -982,14 +1011,17 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                             "ProcessPid": process_list_pid if process_list_pid else None,
                             "ProcessFile": process_list_file if process_list_file else None,
                             "Service": process_list_service if process_list_service else None
-                        })
+                        })'''
 
             if 'process_tree' in report and 'process' in report['process_tree'] and report['process_tree']['process']:
                 process_tree = report['process_tree']['process']
                 if not isinstance(process_tree, list):
                     process_tree = [process_tree]
                 for process in process_tree:
-                    process_tree_text = process_tree_name = process_tree_pid = None
+                    if process_tree_dict := parse(report=process,
+                                                  keys=MAP_KEYS['process_tree']):
+                        tree_outputs = process_tree_dict
+                    '''process_tree_text = process_tree_name = process_tree_pid = None
                     if '@text' in process:
                         process_tree_text = process['@text']
                     if '@name' in process:
@@ -1003,7 +1035,7 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                             "ProcessName": process_tree_name if process_tree_name else None,
                             "ProcessPid": process_tree_pid if process_tree_pid else None,
                             "ProcessText": process_tree_text if process_tree_text else None,
-                        }
+                        }'''
 
                     if 'child' in process and 'process' in process['child'] and process['child']['process']:
                         child_process = process['child']['process']
