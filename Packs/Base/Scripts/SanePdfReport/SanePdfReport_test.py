@@ -53,7 +53,6 @@ def test_markdown_image_server(mocker, capfd):
         fileName = '1234-5678-9012-3456.png'
         path = f'./TestData/{fileName}'
         mocker.patch.object(demisto, 'getFilePath', return_value={'path': path, 'name': fileName})
-        mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
 
         serverThread = threading.Thread(target=startServer)
         serverThread.daemon = True
