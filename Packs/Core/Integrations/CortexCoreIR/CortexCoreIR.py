@@ -2995,6 +2995,37 @@ def get_original_alerts_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
+def get_dynamic_analysis_command(client: Client, args: Dict) -> CommandResults:
+    alert_id_list = argToList(args.get('alert_ids', []))
+    raw_response = client.get_original_alerts(alert_id_list)
+    reply = copy.deepcopy(raw_response)
+    alerts = reply.get('alerts', [])
+    filtered_alerts = []
+    for i, alert in enumerate(alerts):
+        # decode raw_response
+        try:
+            alert['original_alert_json'] = safe_load_json(alert.get('original_alert_json', ''))
+            # some of the returned JSON fields are double encoded, so it needs to be double-decoded.
+            # example: {"x": "someValue", "y": "{\"z\":\"anotherValue\"}"}
+            decode_dict_values(alert)
+        except Exception:
+            continue
+        # remove original_alert_json field and add its content to alert.
+        alert.update(alert.pop('original_alert_json', None))
+        if demisto.get(alert, 'messageData.dynamicAnalysis'):
+            filtered_alerts.append(demisto.get(alert, 'messageData.dynamicAnalysis'))
+    if not filtered_alerts:
+        return CommandResults(
+            readable_output="There is no dynamicAnalysis for these alert ids.",
+            raw_response=raw_response
+        )
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.DynamicAnalysis',
+        outputs=filtered_alerts,
+        raw_response=raw_response,
+    )
+
+
 def run_polling_command(client: Client,
                         args: dict,
                         cmd: str,
@@ -3367,6 +3398,9 @@ def main():
 
         elif command == 'core-get-cloud-original-alerts':
             return_results(get_original_alerts_command(client, args))
+
+        elif command == 'core-get-dynamic-analysis':
+            return_results(get_dynamic_analysis_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
