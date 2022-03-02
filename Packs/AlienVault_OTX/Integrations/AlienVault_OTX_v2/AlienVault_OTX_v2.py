@@ -33,7 +33,7 @@ class Client(BaseClient):
         self.reliability = reliability
         self.create_relationships = create_relationships
         self.default_threshold = default_threshold
-        self.max_indicator_relationships = max_indicator_relationships
+        self.max_indicator_relationships = 0 if not max_indicator_relationships else max_indicator_relationships
 
     def test_module(self) -> Dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
