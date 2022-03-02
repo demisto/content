@@ -133,6 +133,7 @@
     - section_end "Creating new clean logs folder"
     - *install_node_modules
     - *install_venv
+    - python3 -c "import requests; requests.get('https://www.youtube.com/watch?v=J6DcD5y5B_U', verify=False).raise_for_status()"
     - *get_contribution_pack
     - *install_ssh_keys
     - section_start "Build Parameters"
