@@ -729,6 +729,7 @@ def test_update_zone_command(mocker, args):
     readable, outputs, _ = update_zone_command(client, args)
     assert 'NewZoneName' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '')
 
+
 @pytest.mark.parametrize(
     "args",
     [
@@ -740,6 +741,7 @@ def test_create_zone_command(mocker, args):
     mocker.patch.object(client, 'create_zone', return_value=okta_zone)
     readable, outputs, _ = create_zone_command(client, args)
     assert 'NewZoneName' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '')
+
 
 EXPEXTED_LOGS_RESULT = \
     [
