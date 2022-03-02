@@ -9197,7 +9197,8 @@ def set_next_fetch_run(last_run, incidents, fetch_limit, start_fetch_time, end_f
             'found_incident_ids': found_incidents
         }
     elif len(incidents) < fetch_limit or not split_by_limit:
-        latest_incident_fetched_time = get_latest_incident_time(incidents, created_time_field, date_format, increase_last_run_time)
+        latest_incident_fetched_time = get_latest_incident_time(incidents, created_time_field, date_format,
+                                                                increase_last_run_time)
         new_last_run = {
             'time': latest_incident_fetched_time,
             'incidents': [],
