@@ -12,7 +12,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL (e.g. https://xx.xx.xx.xx:3000) | True |
+    | Server URL (e.g. https://192.168.0.1:3000) | True |
     | User Name | True |
     | Password | True |
     | Trust any certificate (not secure) | False |
