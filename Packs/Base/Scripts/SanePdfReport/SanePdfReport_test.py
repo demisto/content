@@ -3,7 +3,6 @@ from SanePdfReport import *
 import subprocess
 import os
 import http.client
-import CommonServerPython
 
 
 def test_find_zombie_processes(mocker):

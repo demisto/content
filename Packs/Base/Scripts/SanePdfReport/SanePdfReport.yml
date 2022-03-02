@@ -52,6 +52,13 @@ args:
   name: disableHeaders
   required: false
   secret: false
+- default: false
+  defaultValue: '300'
+  description: table text max length
+  isArray: false
+  name: tableTextMaxLength
+  required: false
+  secret: false
 comment: Parse Sane-json-reports and export them as pdf files (used internally).
 commonfields:
   id: SanePdfReports
