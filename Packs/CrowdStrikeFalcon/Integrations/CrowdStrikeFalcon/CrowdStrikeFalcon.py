@@ -3058,11 +3058,6 @@ def test_module():
     return 'ok'
 
 
-def remove_duplicates_from_list_arg(args: dict, field: str):
-    convert_to_list = argToList(args.get(field))
-    return list(set(convert_to_list))
-
-
 def rtr_kill_process_command(args: dict) -> CommandResults:
     host_id = args.get('host_id')
     process_ids = remove_duplicates_from_list_arg(args, 'process_ids')
