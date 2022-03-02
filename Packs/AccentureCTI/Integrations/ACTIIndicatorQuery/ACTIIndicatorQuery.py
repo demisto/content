@@ -36,9 +36,7 @@ def _validate_args(indicator_type: str, values: list) -> None:
     Args:
         indicator_type: IP or URL
         values: list of values
-
     Returns: Raise error if value do not match to his corresponding regex
-
     """
     for value in values:
         if indicator_type == 'IP':
@@ -59,7 +57,6 @@ def _calculate_dbot_score(severity: int) -> int:
      3           | 5,6,7
     Args:
         severity: value from 1 to 5, determined by iDefense threat indicator
-
     Returns:
         Calculated score
     """
@@ -83,7 +80,6 @@ def _extract_analysis_info(res: dict, dbot_score_type: str, reliability: DBotSco
         res: response from http request
         indicator_value: value of indicator given as calling the command
         dbot_score_type: DBotScoreType
-
     Returns:
         analysis_info: dictionary contains the indicator details returned
         dbot: DBotScore regarding the specific indicator
@@ -124,9 +120,7 @@ def _check_returned_results(res: dict) -> List[str]:
     Checks which indicator value founded on iDefense database.
     Args:
         res: api response
-
     Returns: list of indicator values that returned from api request
-
     """
     returned_values = []
     if res.get('total_size'):
@@ -139,13 +133,10 @@ def _check_returned_results(res: dict) -> List[str]:
 
 def _check_no_match_values(all_inputs: list, res: list) -> List[str]:
     """
-
     Args:
         all_inputs: all indicator values received from the user
         res: list of all indicator values that returned from api request
-
     Returns: Which indicator has no match on iDefense database
-
     """
     complete_values = []
 
@@ -161,10 +152,8 @@ def test_module(client: Client) -> str:
     Perform basic request to check if the connection to service was successful
     Args:
         client: iDefense client
-
     Returns:
         'ok' if the response is ok, else will raise an error
-
     """
 
     try:
@@ -176,14 +165,11 @@ def test_module(client: Client) -> str:
 
 def ip_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client) -> List[CommandResults]:
     """
-
     Args:
         client: iDefense client
         args: arguments obtained with the command representing the indicator value to search
         reliability: reliability of the source
-
     Returns: CommandResults containing the indicator, the response and a readable output
-
     """
     ips: list = argToList(args.get('ip'))
     _validate_args("IP", ips)
@@ -195,17 +181,13 @@ def ip_command(client: Client, args: dict, reliability: DBotScoreReliability, do
 
     for analysis_result in analysis_results:
         analysis_info: dict = analysis_result.get('analysis_info', {})
-        analysis_info, iair = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
+        analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
         dbot = analysis_result.get('dbot')
 
         readable_output = tableToMarkdown('Results', analysis_info)
         indicator = Common.IP(analysis_info.get('Name', ''), dbot)
-        output_context_iair = {
-            'IAIR_links_playbookauto':iair if len(iair)>0 else 'NA'
-        }
         command_results.append(CommandResults(indicator=indicator,
                                               raw_response=res,
-                                              outputs=output_context_iair,
                                               readable_output=readable_output))
 
     for val in no_match_values:
@@ -230,17 +212,14 @@ def url_command(client: Client, args: dict, reliability: DBotScoreReliability, d
 
     for analysis_result in analysis_results:
         analysis_info: dict = analysis_result.get('analysis_info', {})
-        analysis_info, iair = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
+        analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
         dbot = analysis_result.get('dbot')
 
         readable_output = tableToMarkdown('Results', analysis_info)
         indicator = Common.URL(analysis_info.get('Name', ''), dbot)
-        output_context_iair = {
-            'IAIR_links_playbookauto':iair if len(iair)>0 else 'NA'
-        }
+
         command_results.append(CommandResults(indicator=indicator,
                                               raw_response=res,
-                                              outputs=output_context_iair,
                                               readable_output=readable_output))
 
     for val in no_match_values:
@@ -265,17 +244,14 @@ def domain_command(client: Client, args: dict, reliability: DBotScoreReliability
 
     for analysis_result in analysis_results:
         analysis_info: dict = analysis_result.get('analysis_info', {})
-        analysis_info, iair = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
+        analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
         dbot = analysis_result.get('dbot')
 
         readable_output = tableToMarkdown('Results', analysis_info)
         indicator = Common.Domain(analysis_info.get('Name', ''), dbot)
-        output_context_iair = {
-            'IAIR_links_playbookauto':iair if len(iair)>0 else 'NA'
-        }
+
         command_results.append(CommandResults(indicator=indicator,
                                               raw_response=res,
-                                              outputs=output_context_iair,
                                               readable_output=readable_output))
 
     for val in no_match_values:
@@ -294,7 +270,6 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, 
     Args:
         client: iDefense client
         args: arguments obtained with the command representing the value to search
-
     Returns:
         CommandResults containing the indicator, the response and a readable output
     """
@@ -343,35 +318,27 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, 
             'LastPublished': str(last_published_format),
             'LastSeen': str(last_seen_format)
         }
-        analysis_info, iair = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
-        output_context_iair = {
-            'IAIR_links_playbookauto':iair if len(iair)>0 else 'NA'
-        }
+        analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
+
     return CommandResults(indicator=indicator,
                           raw_response=res,
-                          outputs=output_context_iair,
                           readable_output=tableToMarkdown('Results', analysis_info))
 
 
 def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, indicatorTypeHash: bool = False):
     """
-
     Adds Intelligence reports and Intelligence alerts information to analysis result for the indicator using given doc search client                                        # noqa: E501
-
     Args:
         analysis_result obtained from _extract_analysis_info function call
         client: ACTI Document search contoller client
-
     Returns:
         analysis_result enriched with intelligence alert and intelligence report information if available for the indicator
-        ia and ir as list for getting IA/IR into context processed by _get_ia_for_indicator function
-
     """
 
     indicator = analysis_info['MD5'] if indicatorTypeHash else analysis_info['Name']
     demisto.debug(f"getting ia for indicator {indicator}")
 
-    alerts, reports, iair = _get_ia_for_indicator(indicator, doc_search_client)
+    alerts, reports = _get_ia_for_indicator(indicator, doc_search_client)
 
     if alerts is not None:
         analysis_info['Intelligence Alerts'] = alerts if len(
@@ -380,24 +347,20 @@ def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, 
         analysis_info['Intelligence Reports'] = reports if len(
             reports) > 0 else 'No Intelligence Report has been linked to this indicator'
 
-    return analysis_info, iair
+    return analysis_info
 
 
 def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
     """
     Perform document controller api call with given doc search client to get
     Intelligence Alerts and Intelligence Reports for given indicator
-
     Args:
         client: ACTI Document search contoller client
-
     Returns:
         intelligence alert and intelligence report dictionaries if api has response else None
-        ia and ir as list for getting IA/IR into context
-
     """
 
-    res = {}; iair=[]
+    res = {}
     intelligence_alerts, intelligence_reports = None, None
 
     try:
@@ -410,11 +373,6 @@ def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
         intelligence_reports = {title: IDEFENSE_URL_TEMPLATE.format(
             'intelligence_report', uuid) for title, uuid in reports.items()}
 
-        for ia in alerts.values():
-            iair.append(ia)
-        for ir in reports.values():
-            iair.append(ir)
-        
     except Exception as e:
         if 'Error in API call [403]' in e.args[0]:
             return_results(f"Intelligence Alert & Intelligence Report enrichment (if present) is not possible! As your API token is not eligible to access Document API.\n Error: {str(e)}")                                               # noqa: E501
@@ -422,7 +380,7 @@ def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
         else:
             raise e
 
-    return intelligence_alerts, intelligence_reports, iair
+    return intelligence_alerts, intelligence_reports
 
 
 def main():
