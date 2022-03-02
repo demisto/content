@@ -3661,7 +3661,7 @@ keeping_empty_delta = ({}, {}, [], {})
 no_nested_fields = ({'incident_type': 'incident'}, response_incident, ['state', 'status', 'tags'],
                     {'incident_type': 'incident', 'state': 'closed', 'status': 20, 'tags': ['Objective/Keep Access']})
 
-fields_not_existing = ({}, response_incident, ['tactics', 'techniques', 'objectives'], {})
+fields_not_existing = ({}, response_incident, ['tactics.', 'techniques', 'objectives'], {})
 
 field_nested_dict_in_list = ({'incident_type': 'incident'}, response_incident, ['state', 'hosts.hostname'],
                              {'incident_type': 'incident', 'state': 'closed', 'hosts.hostname': 'SFO-M-Y81WHJ'})

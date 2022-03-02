@@ -1687,9 +1687,10 @@ def get_remote_data_command(args: Dict[str, Any]):
 
 def set_delta(delta: Dict[str, Any], mirrored_data, mirroring_fields):
     """
-    Sets the delta for the incident or detection we want to mirror in, from the mirrored data, according to the mirroring fields.
-    In the mirrored data, the mirroring fields might be nested in a dict or in a dict inside a list (if so, their name will have
-    a dot in it).
+    Sets the delta (in place) for the incident or detection we want to mirror in, from the mirrored data, according to the
+    mirroring fields. In the mirrored data, the mirroring fields might be nested in a dict or in a dict inside a list (if so,
+    their name will have a dot in it).
+    Note that the fields that we mirror right now may have only one dot in them, so we only deal with this case.
 
     :param delta: The dictionary to set its values, so it will hold the fields we want to mirror in, with their values.
     :param mirrored_data: The data of the incident or detection we want to mirror in.
@@ -1700,17 +1701,22 @@ def set_delta(delta: Dict[str, Any], mirrored_data, mirroring_fields):
         if mirrored_data.get(field):
             delta[field] = mirrored_data.get(field)
 
+        # if the field is not in mirrored_data, it might be a nested field - that has a . in its name
         elif '.' in field:
-            field_split = field.split('.')
-            if isinstance(mirrored_data.get(field_split[0]), list):
-                for nested_field in mirrored_data.get(field_split[0]):
-                    if nested_field.get(field_split[1]):
-                        delta[field] = nested_field.get(field_split[1])
+            field_name_parts = field.split('.')
+            nested_mirrored_data = mirrored_data.get(field_name_parts[0])
+
+            if isinstance(nested_mirrored_data, list):
+                # if it is a list, it should hold a dictionary in it because it is a json structure
+                for nested_field in nested_mirrored_data:
+                    if nested_field.get(field_name_parts[1]):
+                        delta[field] = nested_field.get(field_name_parts[1])
+                        # finding the field in the first time it is satisfying
                         break
 
-            elif isinstance(mirrored_data.get(field_split[0]), dict):
-                if mirrored_data.get(field_split[0]).get(field_split[1]):
-                    delta[field] = mirrored_data.get(field_split[0]).get(field_split[1])
+            elif isinstance(nested_mirrored_data, dict):
+                if nested_mirrored_data.get(field_name_parts[1]):
+                    delta[field] = nested_mirrored_data.get(field_name_parts[1])
 
 
 def get_modified_remote_data_command(args: Dict[str, Any]):
