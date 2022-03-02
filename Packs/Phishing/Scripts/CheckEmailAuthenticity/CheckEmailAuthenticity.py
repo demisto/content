@@ -109,7 +109,7 @@ def auth_check(spf_data, dkim_data, dmarc_data, override_dict):
     return 'Pass'
 
 
-def get_authentication_header(headers, original_authentication_header):
+def get_authentication_value(headers, original_authentication_header):
     """
     Handel the case where the authentication header is given under a different header.
     This header is represented by the 'original_authentication_header' argument.  This can happen when there is an
@@ -127,11 +127,11 @@ def get_authentication_header(headers, original_authentication_header):
     headers = [header for header in headers if isinstance(header, dict)]
     header_dict = {str(header.get('name')).lower(): header.get('value') for header in headers}
     if original_authentication_header and original_authentication_header in header_dict:
-        authentication_header = header_dict[original_authentication_header]
+        authentication_value = header_dict[original_authentication_header]
     else:
-        authentication_header = header_dict.get('authentication-results')
+        authentication_value = header_dict.get('authentication-results')
 
-    return authentication_header
+    return authentication_value
 
 
 '''MAIN FUNCTION'''
@@ -141,8 +141,8 @@ def main():
     try:
         args = demisto.args()
         headers = argToList(demisto.args().get('headers'))
-        original_authentication_header = args.get('original_authentication_header').lower()
-        auth = get_authentication_header(headers, original_authentication_header)
+        original_authentication_header = args.get('original_authentication_header', '').lower()
+        auth = get_authentication_value(headers, original_authentication_header)
         spf = None
         message_id = ''
 
