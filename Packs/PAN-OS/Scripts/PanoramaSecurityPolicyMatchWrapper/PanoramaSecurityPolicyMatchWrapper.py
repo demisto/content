@@ -8,6 +8,15 @@ import traceback
 ''' STANDALONE FUNCTION '''
 
 
+def fix_nested_dicts(rules):
+    for key, value in rules.items():
+        if isinstance(value, dict):
+            if members := value.get('member'):
+                if isinstance(members, list):
+                    new_members = ','.join(members)
+                    rules[key] = new_members
+
+
 def create_script_output(result):
     human_readable_arr = set()
     context = []
@@ -32,7 +41,7 @@ def create_script_output(result):
 
 def panorama_security_policy_match(args):
     res = []
-    result = demisto.executeCommand('panorama-security-policy-match', args=args)
+    result = demisto.executeCommand('pan-os-security-policy-match', args=args)
     if 'The query did not match a Security policy' in result[0].get('Contents'):
         res = [f'The query for source: {args.get("source")}, destination: '
                f'{args.get("destination")} did not match a Security policy.']
@@ -41,9 +50,10 @@ def panorama_security_policy_match(args):
             'Panorama.SecurityPolicyMatch(val.Query == obj.Query && val.Device == obj.Device)')
         for entry in policy_match:
             if rules := entry.get('Rules'):
+                fix_nested_dicts(rules)
                 res.append(rules)
     elif is_error(result):
-        res = [f'For the following arguments: {args}, panorama-security-policy-match command failed to run: '
+        res = [f'For the following arguments: {args}, pan-os-security-policy-match command failed to run: '
                f'Error: {get_error(result)}']
     else:
         res = result[0].get("Contents")
@@ -81,7 +91,7 @@ def wrapper_command(args: Dict[str, Any]):
     from_ = args.get('from')
     category = args.get('category')
     application = args.get('application')
-    limit = arg_to_number(args.get('limit', 500))
+    limit = arg_to_number(args.get('limit')) or 500
 
     vsys_num = len(argToList(vsys)) if vsys else 1
     target_num = len(argToList(target)) if target else 1

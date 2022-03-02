@@ -5,6 +5,7 @@ from urllib.parse import urlparse, parse_qs, ParseResult, unquote
 from CommonServerPython import *
 
 ATP_REGEX = re.compile(r'(https://\w*|\w*)\.safelinks\.protection\.outlook\.com/.*\?url=')
+FIREEYE_REGEX = re.compile(r'(https:\/\/\w*|\w*)\.fireeye\.com\/.*\/url\?k=')
 PROOF_POINT_URL_REG = re.compile(r'https://urldefense(?:\.proofpoint)?\.(com|us)/(v[0-9])/')
 HTTP = 'http'
 PREFIX_TO_NORMALIZE = {
@@ -126,7 +127,9 @@ def search_for_redirect_url_in_first_query_parameter(parse_results: ParseResult)
         first_query_parameter: List[str] = query_parameters[0].split('=')
         # Validation of unexpected split behaviour
         if not len(first_query_parameter) == 2:
-            demisto.error(f'Unexpected parse of query parameter: {query_parameters[0]}: Parse: {first_query_parameter}')
+            demisto.debug(
+                f"Unable to parse to following URL path: {parse_results.path} with query: {parse_results.query}"
+            )
             return None
         first_query_parameter_value: str = first_query_parameter[1]
         # Redirect URL according to the given assumption
@@ -146,10 +149,16 @@ def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
     """
 
     def format_single_url(non_formatted_url: str) -> List[str]:
+        demisto.debug(f"Starting to format URL {non_formatted_url}")
         parse_results: ParseResult = urlparse(non_formatted_url)
         additional_redirect_url: Optional[str] = None
         if re.match(ATP_REGEX, non_formatted_url):
             non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'url')
+        elif re.match(FIREEYE_REGEX, non_formatted_url):
+            if '&amp;' in non_formatted_url:
+                non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'amp;u')
+            else:
+                non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'u')
         elif match := PROOF_POINT_URL_REG.search(non_formatted_url):
             proof_point_ver: str = match.group(2)
             if proof_point_ver == 'v3':
@@ -179,7 +188,7 @@ def main():
         formatted_urls_groups: List[Dict] = format_urls(argToList(demisto.args().get('input')))
         for formatted_urls_group in formatted_urls_groups:
             demisto.results(formatted_urls_group)
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute FormatURL. Error: {str(e)}')
 

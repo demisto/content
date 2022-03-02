@@ -104,14 +104,16 @@ To setup the mirroring follow these instructions:
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Cortex XDR - IR and select your integration instance.
 3. Enable **Fetches incidents**.
-4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+4. Under **Mapper (incoming)**, select `XDR - Incoming Mapper`.
+5. Under **Mapper (outgoing)**, select `Cortex XDR - Outgoing Mapper`.
+6. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
   * Incoming - Any changes in XDR incidents will be reflected in XSOAR incidents.
   * Outgoing - Any changes in XSOAR incidents will be reflected in XDR incidents.
   * Both - Changes in XSOAR and XDR incidents will be reflected in both directions.
   * None - Choose this to turn off incident mirroring.
-5. Optional: Check the *Sync Incident Owners* integration parameter to sync the incident owners in both XDR and XSOAR.
+7. Optional: Check the *Sync Incident Owners* integration parameter to sync the incident owners in both XDR and XSOAR.
   * Note: This feature will only work if the same users are registered in both Cortex XSOAR and Cortex XDR.
-6. Newly fetched incidents will be mirrored in the chosen direction.
+8. Newly fetched incidents will be mirrored in the chosen direction.
   * Note: This will not effect existing incidents.
 
 ### XDR Mirroring Notes, limitations and Troubleshooting

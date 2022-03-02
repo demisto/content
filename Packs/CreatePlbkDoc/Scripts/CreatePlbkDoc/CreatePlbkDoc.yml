@@ -28,7 +28,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: "6.0.0"
-dockerimage: demisto/sane-doc-reports:1.0.0.24118
+dockerimage: demisto/sane-doc-reports:1.0.0.26116
 enabled: true
 name: CreatePlbkDoc
 runas: DBotWeakRole
