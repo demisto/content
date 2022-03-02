@@ -308,8 +308,8 @@ var fetchIncidents = function(type, query, limit, first_fetch_time) {
     }
 
     // set the time period to the max allowed - a week
-    startTimeWeekAhed = new Date(Date.parse(startTime) + 7*DAY_IN_MILLIS)
-    endTimeDate = new Date(endTime)
+    var startTimeWeekAhed = new Date(Date.parse(startTime) + 7*DAY_IN_MILLIS)
+    var endTimeDate = new Date(endTime)
     endTime = new Date(Math.min(now, endTimeDate, startTimeWeekAhed)).toISOString();
 
     var p = {verb: 'query'};
