@@ -306,6 +306,12 @@ var fetchIncidents = function(type, query, limit, first_fetch_time) {
         n.setTime(now.getTime() - 1 * DAY_IN_MILLIS);
         startTime = n.toISOString();
     }
+
+    // set the time period to the max allowed - a week
+    startTimeWeekAhed = new Date(Date.parse(startTime) + 7*DAY_IN_MILLIS)
+    endTimeDate = new Date(endTime)
+    endTime = new Date(Math.min(now, endTimeDate, startTimeWeekAhed)).toISOString();
+
     var p = {verb: 'query'};
     add(p, 'where', query);
     addTime(p, 'start_time', startTime);
@@ -333,7 +339,7 @@ var fetchIncidents = function(type, query, limit, first_fetch_time) {
     if (next) {
         setLastRun({ time: startTime, next: next, end_time: endTime });
     } else {
-        setLastRun({ time: currentFetch ? currentFetch : startTime});
+        setLastRun({ time: currentFetch ? currentFetch : endTime});
     }
     return JSON.stringify(incidents);
 };
