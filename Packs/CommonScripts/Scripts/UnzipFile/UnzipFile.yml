@@ -14,7 +14,7 @@ args:
 - default: false
   description: Password to protect the ZIP file, inserted as a non sensative argument.
   isArray: false
-  name: non_sensetive_password
+  name: nonsensitive_password
   required: false
   secret: false
 - default: false
