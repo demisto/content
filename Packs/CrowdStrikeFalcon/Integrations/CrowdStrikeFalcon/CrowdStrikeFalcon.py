@@ -1563,6 +1563,13 @@ def update_incident_request(ids: List[str], value: str, action_name: str):
                         json=data)
 
 
+def update_detection_request(ids: List[str], status: str) -> Dict:
+    if status not in DETECTION_STATUS:
+        raise DemistoException(f'CrowdStrike Falcon Error: '
+                               f'Status given is {status} and it is not in {DETECTION_STATUS}')
+    return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None)
+
+
 def list_host_groups(filter: Optional[str], limit: Optional[str], offset: Optional[str]) -> Dict:
     params = {'filter': filter,
               'offset': offset,
@@ -1772,28 +1779,21 @@ def get_modified_remote_data_command(args: Dict[str, Any]):
     remote_args = GetModifiedRemoteDataArgs(args)
 
     last_update_utc = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
-    last_update_utc = last_update_utc.strftime('%Y-%m-%dT%H:%M:%SZ')
-    demisto.debug(f'Remote arguments last_update in UTC is {last_update_utc}')
+    last_update_timestamp = last_update_utc.strftime('%Y-%m-%dT%H:%M:%SZ')
+    demisto.debug(f'Remote arguments last_update in UTC is {last_update_timestamp}')
 
     modified_ids_to_mirror = list()
 
-    raw_incidents = get_incidents_ids(last_updated_timestamp=last_update_utc, has_limit=False).get('resources', [])
+    raw_incidents = get_incidents_ids(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
     for incident_id in raw_incidents:
         modified_ids_to_mirror.append(str(incident_id))
 
-    raw_detections = get_fetch_detections(last_updated_timestamp=last_update_utc, has_limit=False).get('resources', [])
+    raw_detections = get_fetch_detections(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
     for detection_id in raw_detections:
         modified_ids_to_mirror.append(str(detection_id))
 
     demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
     return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
-
-
-def update_detection_request(ids: List[str], status: str) -> Dict:
-    if status not in DETECTION_STATUS:
-        raise DemistoException(f'CrowdStrike Falcon Error: '
-                               f'Status given is {status} and it is not in {DETECTION_STATUS}')
-    return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None)
 
 
 def update_remote_system_command(args: Dict[str, Any]) -> str:
@@ -1807,63 +1807,21 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
         The remote incident id that was modified. This is important when the incident is newly created remotely.
     """
     parsed_args = UpdateRemoteSystemArgs(args)
-    data = parsed_args.data
     delta = parsed_args.delta
-    demisto.debug(f'Got the following data {data}, and delta {delta}.')
+    incident_id = parsed_args.remote_incident_id
+    demisto.debug(f'Got the following data {parsed_args.data}, and delta {delta}.')
     if delta:
         demisto.debug(f'Got the following delta keys {list(delta.keys())}.')
 
-    incident_id = parsed_args.remote_incident_id
     try:
         if parsed_args.incident_changed:
-            # updating remote incident
-            if incident_id[0:3] == 'inc':
-                result = ''
-
-                if 'tag' in delta:
-                    current_tags = set(delta.get('tag'))
-                    prev_tags = get_previous_tags(incident_id)
-                    demisto.debug(f'Current tags in XSOAR are {current_tags}, and in remote system {prev_tags}.')
-
-                    # if tag added
-                    for tag in current_tags - prev_tags:
-                        demisto.debug(f'Tag "{tag}" will be added to incident with remote ID {incident_id}'
-                                      f' in remote system.')
-                        result += str(update_incident_request([incident_id], tag, 'add_tag'))
-
-                    # if tag deleted
-                    for tag in prev_tags - current_tags:
-                        demisto.debug(f'Tag "{tag}" will be removed from incident with remote ID {incident_id}'
-                                      f' in remote system.')
-                        result += str(update_incident_request([incident_id], tag, 'delete_tag'))
-
-                if parsed_args.inc_status == IncidentStatus.DONE and CLOSE_IN_CS_FALCON:
-                    demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
-                    result += str(resolve_incident([incident_id], 'Closed'))
-
-                # status field in CS Falcon is mapped to Source Status field in XSOAR. Don't confuse with state field
-                elif 'status' in delta:
-                    demisto.debug(f'Incident with remote ID {incident_id} status will change to '
-                                  f'"{data.get("status")}" in remote system.')
-                    result += str(resolve_incident([incident_id], data.get('status')))
-
+            if find_incident_type(incident_id) == IncidentType.INCIDENT:
+                result = update_remote_incident(delta, incident_id, parsed_args.inc_status)
                 if result:
                     demisto.debug(f'Incident updated successfully. Result: {result}')
 
-            # updating remote detection
-            elif incident_id[0:3] == 'ldt':
-                result = ''
-
-                if parsed_args.inc_status == IncidentStatus.DONE and CLOSE_IN_CS_FALCON:
-                    demisto.debug(f'Closing detection with remote ID {incident_id} in remote system.')
-                    result += str(update_detection_request([incident_id], 'closed'))
-
-                # status field in CS Falcon is mapped to State field in XSOAR
-                elif 'status' in delta:
-                    demisto.debug(f'Detection with remote ID {incident_id} status will change to '
-                                  f'"{data.get("status")}" in remote system.')
-                    result += str(update_detection_request([incident_id], data.get('status')))
-
+            elif find_incident_type(incident_id) == IncidentType.DETECTION:
+                result = update_remote_detection(delta, incident_id, parsed_args.inc_status)
                 if result:
                     demisto.debug(f'Detection updated successfully. Result: {result}')
 
@@ -1880,9 +1838,61 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
     return incident_id
 
 
+def update_remote_detection(delta, incident_id, inc_status):
+    result = ''
+    if inc_status == IncidentStatus.DONE and CLOSE_IN_CS_FALCON:
+        demisto.debug(f'Closing detection with remote ID {incident_id} in remote system.')
+        result += str(update_detection_request([incident_id], 'closed'))
+
+    # status field in CS Falcon is mapped to State field in XSOAR
+    elif 'status' in delta:
+        demisto.debug(f'Detection with remote ID {incident_id} status will change to "{delta.get("status")}" in remote system.')
+        result += str(update_detection_request([incident_id], delta.get('status')))
+    return result
+
+
+def update_remote_incident(delta, incident_id, inc_status):
+    result = ''
+    result += update_remote_incident_tags(delta, incident_id)
+    result += update_remote_incident_status(delta, inc_status, incident_id)
+    return result
+
+
+def update_remote_incident_status(delta, inc_status, incident_id) -> str:
+    if inc_status == IncidentStatus.DONE and CLOSE_IN_CS_FALCON:
+        demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
+        return str(resolve_incident([incident_id], 'Closed'))
+
+    # status field in CS Falcon is mapped to Source Status field in XSOAR. Don't confuse with state field
+    elif 'status' in delta:
+        demisto.debug(f'Incident with remote ID {incident_id} status will change to "{delta.get("status")}" in remote system.')
+        return str(resolve_incident([incident_id], delta.get('status')))
+
+
+def update_remote_incident_tags(delta, incident_id) -> str:
+    result = ''
+    if 'tag' in delta:
+        current_tags = set(delta.get('tag'))
+        prev_tags = get_previous_tags(incident_id)
+        demisto.debug(f'Current tags in XSOAR are {current_tags}, and in remote system {prev_tags}.')
+
+        result += remote_incident_handle_tags(current_tags - prev_tags, 'add_tag', incident_id)
+        result += remote_incident_handle_tags(prev_tags - current_tags, 'delete_tag', incident_id)
+
+    return result
+
+
 def get_previous_tags(remote_incident_id):
     incidents_entities = get_incidents_entities([remote_incident_id]).get('resources', [])
     return set(incidents_entities[0].get('tags', ''))
+
+
+def remote_incident_handle_tags(tags, request, incident_id) -> str:
+    result = ''
+    for tag in tags:
+        demisto.debug(f'{request} "{tag}" will be requested to incident with remote ID {incident_id} in remote system.')
+        result += str(update_incident_request([incident_id], tag, request))
+    return result
 
 
 def get_mapping_fields_command() -> GetMappingFieldsResponse:
