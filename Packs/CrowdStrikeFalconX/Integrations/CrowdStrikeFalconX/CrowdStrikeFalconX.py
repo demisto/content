@@ -440,11 +440,12 @@ class Client:
         return self._http_request("Get", url_suffix, params=params)
 
     def file(self, file_hashes: list[str]) -> list[CommandResults]:
-        demisto.debug('file called')
         params = {'filter': ",".join(f'sandbox.sha256:"{sha256}"' for sha256 in file_hashes)}
+
         response = self._http_request('get', url_suffix='/falconx/queries/reports/v1', params=params)
         report_ids = response.get('resources', [])
         demisto.debug(f'{report_ids=}')
+
         command_results, _ = get_full_report_command(self, ids=report_ids, extended_data='FILE')
         return command_results
 
@@ -571,12 +572,14 @@ def parse_indicator_relationships(sandbox: dict, indicator_value: str, reliabili
     relationships = []
 
     def _create_relationship(relationship_name: str, entity_b: str, entity_b_type: str) -> EntityRelationship:
-        return EntityRelationship(name=relationship_name,
-                                  entity_a=indicator_value,
-                                  entity_a_type=FeedIndicatorType.File,
-                                  entity_b=entity_b,
-                                  entity_b_type=entity_b_type,
-                                  source_reliability=reliability)
+        return EntityRelationship(
+            name=relationship_name,
+            entity_a=indicator_value,
+            entity_a_type=FeedIndicatorType.File,
+            entity_b=entity_b,
+            entity_b_type=entity_b_type,
+            source_reliability=reliability
+        )
 
     for request in sandbox.get('dns_requests', []):
         if request_address := request.get('address'):
@@ -603,7 +606,7 @@ def parse_indicator_relationships(sandbox: dict, indicator_value: str, reliabili
     return relationships
 
 
-def test_module(client: Client) -> tuple[str, dict, list]:
+def test_module(client: Client) -> str:
     """
     If a client was made then an accesses token was successfully reached,
     therefore the username and password are valid and a connection was made
@@ -613,21 +616,18 @@ def test_module(client: Client) -> tuple[str, dict, list]:
     """
     output = client.check_quota_status()
 
-    error = output.get("errors")
-    if error:
+    if error := output.get("errors"):
         return error[0]
 
-    meta = output.get("meta")
-    if meta is not None:
-        quota = meta.get("quota")
-        if quota is not None:
-            total = quota.get("total")
-            used = quota.get("used")
-            if total <= used:
-                raise Exception(f"Quota limitation has been reached: {used}")
+    if meta := output.get('meta'):
+        if quota := meta.get("quota"):
+            quota_amount = quota.get("total")
+            used_amount = quota.get("used")
+            if used_amount >= quota_amount:
+                raise DemistoException(f"Quota limit has been reached: {used_amount}")
             else:
-                return 'ok', {}, []
-    raise Exception("Quota limitation is unreachable")
+                return 'ok'
+    raise DemistoException("Quota limit is unknown")
 
 
 def upload_file_command(  # type: ignore[return]
@@ -1169,7 +1169,7 @@ def main():
             'cs-fx-check-quota': check_quota_status_command,
             'cs-fx-find-reports': find_sandbox_reports_command,
             'cs-fx-find-submission-id': find_submission_id_command,
-            'file': file_command
+            'file': file_command,
         }
         if command in polling_commands:
             validate_command_args(command, args)
@@ -1182,7 +1182,7 @@ def main():
             command_results, _ = get_full_report_command(client, **args)
             return_results(command_results)
         elif command in commands:
-            return_results(*commands[command](client, **args))
+            return_results(commands[command](client, **args))
         else:
             raise NotImplementedError(f'{command} is not an existing CrowdStrike Falcon X command')
     except Exception as err:
