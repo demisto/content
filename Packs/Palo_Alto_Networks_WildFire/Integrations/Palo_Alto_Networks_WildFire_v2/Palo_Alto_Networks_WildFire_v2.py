@@ -1,9 +1,8 @@
 import shutil
-from typing import Callable, Tuple
+from typing import Callable, Tuple, Optional
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Optional
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -762,26 +761,13 @@ def wildfire_get_url_webartifacts_command():
             return_results('Webartifacts were not found. For more info contact your WildFire representative.')
 
 
-def parse(report: dict, keys: tuple) -> Union[dict, None]:
+def parse(report: dict, keys: list) -> Union[dict, None]:
     outputs = {}
     for key in keys:
         if key[0] in report and report[key[0]]:
             item_value = report[key[0]]
             outputs[key[1]] = item_value
     return outputs if outputs else None
-
-
-MAP_KEYS = {
-    "process_list": '',
-    "process_tree": [
-        ('@text', "ProcessText"),
-        ('@name', "ProcessName"),
-        ('@pid', "ProcessPid")],
-    "process_tree_child": [
-        ('@text', "ChildText"),
-        ('@name', "ChildName"),
-        ('@pid', "ChildPid")]
-}
 
 
 def parse_file_report(file_hash, reports, file_info, extended_data: bool):
@@ -819,115 +805,66 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                 if not isinstance(udp_objects, list):
                     udp_objects = [udp_objects]
                 for udp_obj in udp_objects:
-                    network_udp_ip = network_udp_port = network_udp_country = network_udp_ja3 = network_udp_ja3s = None
                     if '@ip' in udp_obj and udp_obj['@ip']:
                         udp_ip.append(udp_obj["@ip"])
-                        if extended_data:
-                            network_udp_ip = udp_obj["@ip"]
                         feed_related_indicators.append({'value': udp_obj["@ip"], 'type': 'IP'})
                         relationships.append(create_relationship('related-to', (file_hash, udp_obj["@ip"]), ('file', 'ip')))
                     if '@port' in udp_obj:
                         udp_port.append(udp_obj["@port"])
-                        if extended_data:
-                            network_udp_port = udp_obj['@port']
                     if extended_data:
-                        if '@country' in udp_obj and udp_obj['@country']:
-                            network_udp_country = udp_obj['@country']
-                        if '@ja3' in udp_obj and udp_obj['@ja3']:
-                            network_udp_ja3 = udp_obj['@ja3']
-                        if '@ja3s' in udp_obj and udp_obj['@ja3s']:
-                            network_udp_ja3s = udp_obj['@ja3s']
-                    network_udp_dict = assign_params(
-                        IP=network_udp_ip,
-                        Port=network_udp_port,
-                        Country=network_udp_country,
-                        JA3=network_udp_ja3,
-                        JA3S=network_udp_ja3s
-                    )
-                    if network_udp_dict:
-                        network_udp.append(network_udp_dict)
+                        if network_udp_dict := parse(report=udp_obj,
+                                                     keys=[('@ip', 'IP'), ('@port', 'Port'),
+                                                           ('@country', 'Country'), ('@ja3', 'JA3'),
+                                                           ('@ja3s', 'JA3S')]):
+                            network_udp.append(network_udp_dict)
 
             if 'TCP' in report["network"]:
                 tcp_objects = report["network"]["TCP"]
                 if not isinstance(tcp_objects, list):
                     tcp_objects = [tcp_objects]
                 for tcp_obj in tcp_objects:
-                    network_tcp_ip = network_tcp_port = network_tcp_country = network_tcp_ja3 = network_tcp_ja3s = None
                     if '@ip' in tcp_obj and tcp_obj['@ip']:
                         tcp_ip.append(tcp_obj["@ip"])
-                        if extended_data:
-                            network_tcp_ip = tcp_obj["@ip"]
                         feed_related_indicators.append({'value': tcp_obj["@ip"], 'type': 'IP'})
                         relationships.append(create_relationship('related-to', (file_hash, tcp_obj["@ip"]), ('file', 'ip')))
                     if '@port' in tcp_obj:
                         tcp_port.append(tcp_obj['@port'])
-                        if extended_data:
-                            network_tcp_port = tcp_obj['@port']
                     if extended_data:
-                        if '@country' in tcp_obj and tcp_obj['@country']:
-                            network_tcp_country = tcp_obj['@country']
-                        if '@ja3' in tcp_obj and tcp_obj['@ja3']:
-                            network_tcp_ja3 = tcp_obj['@ja3']
-                        if '@ja3s' in tcp_obj and tcp_obj['@ja3s']:
-                            network_tcp_ja3s = tcp_obj['@ja3s']
-                    network_tcp_dect = assign_params(IP=network_tcp_ip,
-                                                     Port=network_tcp_port,
-                                                     Country=network_tcp_country,
-                                                     JA3=network_tcp_ja3,
-                                                     JA3S=network_tcp_ja3s)
-                    if network_tcp_dect:
-                        network_tcp.append(network_tcp_dect)
+                        if network_tcp_dict := parse(report=tcp_obj,
+                                                     keys=[('@ip', 'IP'), ('@port', 'Port'),
+                                                           ('@country', 'Country'), ('@ja3', 'JA3'),
+                                                           ('@ja3s', 'JA3S')]):
+                            network_tcp.append(network_tcp_dict)
 
             if 'dns' in report["network"]:
                 dns_objects = report["network"]["dns"]
                 if not isinstance(dns_objects, list):
                     dns_objects = [dns_objects]
                 for dns_obj in dns_objects:
-                    network_dns_query = network_dns_response = network_dns_type = None
                     if '@query' in dns_obj and dns_obj['@query']:
                         dns_query.append(dns_obj['@query'])
-                        if extended_data:
-                            network_dns_query = dns_obj['@query']
                     if '@response' in dns_obj and dns_obj['@response']:
                         dns_response.append(dns_obj['@response'])
-                        if extended_data:
-                            network_dns_response = dns_obj['@response']
                     if extended_data:
-                        if '@type' in dns_obj and dns_obj['@type']:
-                            network_dns_type = dns_obj['@type']
-                    network_dns_dict = assign_params(Query=network_dns_query,
-                                                     Response=network_dns_response,
-                                                     Type=network_dns_type)
-                    if network_dns_dict:
-                        network_dns.append(network_dns_dict)
+                        if network_dns_dict := parse(report=dns_obj,
+                                                     keys=[('@query', 'Query'), ('@response', 'Response'),
+                                                           ('@type', 'Type')]):
+                            network_dns.append(network_dns_dict)
 
             if 'url' in report["network"]:
-                network_url_host = network_url_uri = network_url_method = network_url_useragent = None
                 url = ''
                 if '@host' in report["network"]["url"]:
                     url = report["network"]["url"]["@host"]
-                    if extended_data:
-                        network_url_host = report["network"]["url"]["@host"]
                 if '@uri' in report["network"]["url"]:
                     url += report["network"]["url"]["@uri"]
-                    if extended_data:
-                        network_url_uri = report["network"]["url"]["@uri"]
                 if url:
                     feed_related_indicators.append({'value': url, 'type': 'URL'})
                     relationships.append(create_relationship('related-to', (file_hash, url), ('file', 'url')))
                 if extended_data:
-                    if '@method' in report['network']['url']:
-                        network_url_method = report["network"]["url"]["@method"]
-                    if '@user_agent' in report['network']['url']:
-                        network_url_useragent = report["network"]["url"]["@user_agent"]
-                network_url_dict = assign_params(
-                    Host=network_url_host,
-                    URI=network_url_uri,
-                    Method=network_url_method,
-                    UserAgent=network_url_useragent
-                )
-                if network_url_dict:
-                    network_url.append(network_url_dict)
+                    if network_url_dict := parse(report=report["network"]['url'],
+                                                 keys=[('@host', 'Host'), ('@uri', 'URI'),
+                                                       ('@method', 'Method'), ('@user_agent', 'UserAgent')]):
+                        network_url.append(network_url_dict)
 
         if 'evidence' in report and report["evidence"]:
             if 'file' in report["evidence"]:
@@ -986,95 +923,49 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                 if not isinstance(process_list, list):
                     process_list = [process_list]
                 for process in process_list:
-                    if process_list_dict:=parse(report=process,
-                                                keys=[("@command", "ProcessCommand"),
-                                                      ("@name", "ProcessName"),
-                                                      ("@pid", "ProcessPid"),
-                                                      ("file", "ProcessFile"),
-                                                      ("service", "Service")]):
-                        process_list_outputs.append(process_list_dict) 
-                    '''process_list_command = process_list_name = process_list_file = process_list_pid = process_list_service = None
-                    if '@command' in process and process['@command']:
-                        process_list_command = process['@command']
-                    if '@name' in process and process['@name']:
-                        process_list_name = process['@name']
-                    if '@pid' in process and process['@pid']:
-                        process_list_pid = process['@pid']
-                    if 'file' in process and process['file']:
-                        process_list_file = process['file']
-                    if 'service' in process and process['service']:
-                        process_list_service = process['service']
-                    if process_list_command or process_list_name or process_list_file or process_list_pid or process_list_service:
-                        process_list_outputs.append({
-                            "ProcessCommand": process_list_command if process_list_command else None,
-                            "ProcessName": process_list_name if process_list_name else None,
-                            "ProcessPid": process_list_pid if process_list_pid else None,
-                            "ProcessFile": process_list_file if process_list_file else None,
-                            "Service": process_list_service if process_list_service else None
-                        })'''
+                    if process_list_dict := parse(report=process,
+                                                  keys=[("@command", "ProcessCommand"),
+                                                        ("@name", "ProcessName"),
+                                                        ("@pid", "ProcessPid"),
+                                                        ("file", "ProcessFile"),
+                                                        ("service", "Service")]):
+                        process_list_outputs.append(process_list_dict)
 
             if 'process_tree' in report and 'process' in report['process_tree'] and report['process_tree']['process']:
                 process_tree = report['process_tree']['process']
                 if not isinstance(process_tree, list):
                     process_tree = [process_tree]
                 for process in process_tree:
-                    if process_tree_dict := parse(report=process,
-                                                  keys=MAP_KEYS['process_tree']):
-                        tree_outputs = process_tree_dict
-                    '''process_tree_text = process_tree_name = process_tree_pid = None
-                    if '@text' in process:
-                        process_tree_text = process['@text']
-                    if '@name' in process:
-                        process_tree_name = process['@name']
-                    if '@pid' in process:
-                        process_tree_pid = process['@pid']
-
                     tree_outputs = {}
-                    if process_tree_text or process_tree_name or process_tree_pid:
-                        tree_outputs = {
-                            "ProcessName": process_tree_name if process_tree_name else None,
-                            "ProcessPid": process_tree_pid if process_tree_pid else None,
-                            "ProcessText": process_tree_text if process_tree_text else None,
-                        }'''
+                    if process_tree_dict := parse(report=process,
+                                                  keys=[('@text', "ProcessText"),
+                                                        ('@name', "ProcessName"),
+                                                        ('@pid', "ProcessPid")]):
+                        tree_outputs = process_tree_dict
 
                     if 'child' in process and 'process' in process['child'] and process['child']['process']:
                         child_process = process['child']['process']
                         if not isinstance(child_process, list):
                             child_process = [child_process]
                         for child in child_process:
-                            child_name = child_pid = child_text = None
-                            if '@name' in child:
-                                child_name = child['@name']
-                            if '@pid' in child:
-                                child_pid = child['@pid']
-                            if '@text' in child:
-                                child_text = child['@text']
-                            if child_name or child_pid or child_text:
-                                tree_outputs['Process'] = {
-                                    "ChildName": child_name if child_name else None,
-                                    "ChildPid": child_pid if child_pid else None,
-                                    "ChildText": child_text if child_text else None
-                                }
-                    process_tree_outputs.append(tree_outputs)
+                            if process_tree_child_dict := parse(report=child,
+                                                                keys=[('@text', "ChildText"),
+                                                                      ('@name', "ChildName"),
+                                                                      ('@pid', "ChildPid")]):
+                                tree_outputs['Process'] = process_tree_child_dict
+                    if tree_outputs:
+                        process_tree_outputs.append(tree_outputs)
 
             if 'summary' in report and 'entry' in report['summary'] and report['summary']['entry']:
                 entries = report['summary']['entry']
                 if not isinstance(entries, list):
                     entries = [entries]
                 for entry in entries:
-                    entry_text = entry_details = entry_behavior = None
-                    if '#text' in entry:
-                        entry_text = entry['#text']
-                    if '@details' in entry:
-                        entry_details = entry['@details']
-                    if '@behavior' in entry:
-                        entry_behavior = entry['@behavior']
-
-                    entry_summary.append({
-                        "Text": entry_text if entry_text else None,
-                        "Details": entry_details if entry_details else None,
-                        "Behavior": entry_behavior if entry_behavior else None
-                    })
+                    if entry_summary_dict := parse(report=entry,
+                                                   keys=[('#text', "Text"),
+                                                         ('@details', "Details"),
+                                                         ('@behavior', "Behavior")]):
+                        entry_summary.append(entry_summary_dict)
 
             if 'extracted_urls' in report and report['extracted_urls'] and 'entry' in report['extracted_urls'] \
                     and report['extracted_urls']['entry']:
@@ -1082,16 +973,10 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                 if not isinstance(extract_urls, list):
                     extract_urls = [extract_urls]
                 for urls in extract_urls:
-                    extract_urls_url = extract_urls_verdict = None
-                    if '@url' in urls and urls['@url']:
-                        extract_urls_url = urls['@url']
-                    if '@verdict' in urls and urls['@verdict']:
-                        extract_urls_verdict = urls['@verdict']
-
-                    extract_urls_outputs.append({
-                        "URL": extract_urls_url if extract_urls_url else None,
-                        "Verdict": extract_urls_verdict if extract_urls_verdict else None
-                    })
+                    if extract_urls_dict := parse(report=urls,
+                                                  keys=[('@url', "URL"),
+                                                        ('@verdict', "Verdict")]):
+                        extract_urls_outputs.append(extract_urls_dict)
 
             if 'platform' in report:
                 platform_report.append(report['platform'])

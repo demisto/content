@@ -6,7 +6,8 @@ import demistomock as demisto
 from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
     create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
     file_args_handler, wildfire_get_sample_command, wildfire_get_report_command, run_polling_command, \
-    wildfire_upload_url_command, prettify_url_verdict, create_dbot_score_from_url_verdict, parse_file_report
+    wildfire_upload_url_command, prettify_url_verdict, create_dbot_score_from_url_verdict, parse_file_report, \
+    parse
 
 
 def test_will_return_ok():
@@ -302,6 +303,26 @@ def test_running_polling_command_new_search(mocker):
                         'Status': 'Pending', 'URL': 'https://www.demisto.com'}
     assert command_results[0].outputs == expected_outputs
     assert command_results[0].scheduled_command is not None
+
+
+def test_parse():
+
+    report = {"process_list": {
+              "process": {"@command": "C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE",
+                          "@name": "WINWORD.EXE",
+                          "@pid": "952",
+                          "file": "test",
+                          "java_api": "test",
+                          "service": None}}}
+    expected_results = {'ProcessCommand': 'C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE',
+                        'ProcessName': 'WINWORD.EXE',
+                        'ProcessPid': '952',
+                        'ProcessFile': 'test'}
+    keys = [("@command", "ProcessCommand"), ("@name", "ProcessName"),
+            ("@pid", "ProcessPid"), ("file", "ProcessFile"), ("service", "Service")]
+    results = parse(report=report['process_list']['process'], keys=keys)
+
+    assert results == expected_results
 
 
 def test_parse_file_report_network():
