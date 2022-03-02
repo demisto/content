@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 import requests
 import traceback
 from typing import List
+import re
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -75,6 +76,11 @@ def _calculate_dbot_score(severity: int) -> int:
         dbot_score = Common.DBotScore.GOOD
 
     return dbot_score
+
+
+def fix_headerts(string):
+    updated_str=re.sub(r'(?<=#)(?=[^#\s])', ' ', string)
+    return updated_str
 
 
 def getThreatReport_command(client: Client, args: dict , reliability: DBotScoreReliability):

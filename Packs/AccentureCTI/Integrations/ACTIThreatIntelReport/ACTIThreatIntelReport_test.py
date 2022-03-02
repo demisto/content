@@ -12,7 +12,7 @@ you are implementing with your integration
 
 import json
 import io
-from ACTIThreatIntelReport import Client, _calculate_dbot_score, getThreatReport_command
+from ACTIThreatIntelReport import Client, _calculate_dbot_score, getThreatReport_command, fix_headerts
 from test_data.response_constants import *
 import requests_mock
 from CommonServerPython import DBotScoreReliability
@@ -47,6 +47,14 @@ def test_calculate_dbot_score():
     assert _calculate_dbot_score(5) == 3
     assert _calculate_dbot_score(6) == 3
     assert _calculate_dbot_score(7) == 3
+
+
+def test_fix_headerts():
+    text_to_update = "##Bluebird Overlaps. Pivoting from the sample's import hash"
+    expected_output = "## Bluebird Overlaps. Pivoting from the sample's import hash"
+    output = fix_headerts(text_to_update)
+    print(output)
+    assert expected_output == output
 
 
 
