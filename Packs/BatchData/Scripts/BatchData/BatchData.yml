@@ -1,0 +1,39 @@
+args:
+- description: number of items that will be returned in each dictionary items (must
+    be of type int)
+  name: batch_size
+  required: true
+- description: comma separated list of items
+  name: data
+  required: true
+- description: This nest the path under BatchedData in context. If you are running
+    this script multiple times/simultaneously in a playbook, your  data will be over
+    written.
+  name: context_path
+  required: true
+comment: 'This Automation takes in a string of comma separated items and returns a
+  dictionary of with the defined chunk size. '
+commonfields:
+  id: 29077d9b-fe3c-4366-8cf9-f117f987621d
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: f707aae3-25f5-4694-8911-872087659bca
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.1.26972
+enabled: true
+engineinfo: {}
+name: BatchData
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
