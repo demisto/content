@@ -385,6 +385,7 @@ def check_purge_compliance_search(search_name):
 
 def test_module():
     try:
+        demisto.debug('--- \n started test module')
         ps_path = create_ps_file('testcon_' + str(uuid.uuid4()).replace('-', '') + '.ps1', TESTCON)
         output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'",
                                    "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)],
@@ -394,6 +395,7 @@ def test_module():
         delete_ps_file(ps_path)
 
     stdout = stdout[len(PASSWORD):]
+    demisto.debug(f'--- \n after stdout{stdout}')
 
     if stdout == "successful connection":
         demisto.results('ok')
@@ -403,6 +405,7 @@ def test_module():
 
 args = prepare_args(demisto.args())
 try:
+    demisto.debug('--- \n started try')
     if demisto.command() == 'exchange2016-start-compliance-search':
         encode_and_submit_results(start_compliance_search(**args))
     elif demisto.command() == 'exchange2016-get-compliance-search':
@@ -416,6 +419,7 @@ try:
     elif demisto.command() == 'test-module':
         test_module()
 except Exception as e:
+    demisto.debug(f' --- \n in exception {e}')
     if isinstance(e, OSError):  # pylint: disable=undefined-variable
         return_error("Could not open powershell on the target engine.")
     else:
