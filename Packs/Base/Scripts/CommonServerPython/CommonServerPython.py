@@ -18,9 +18,10 @@ import time
 import traceback
 import types
 import urllib
+from collections.abc import Mapping
 from random import randint
 import xml.etree.cElementTree as ET
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 from datetime import datetime, timedelta
 from abc import abstractmethod
 from distutils.version import LooseVersion
@@ -6361,40 +6362,79 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
         sys.exit(0)
 
 class CommandWrapper:
-    def __init__(self, brand, command=None, args=None, func=None):
+    def __init__(self, brand, commands=None, args_lst=None):
         self.brand = brand
-        self.command = command
-        self.args = args
-        self.func = func
+        self.commands = commands
+        self.args_lst = args_lst
 
-class ResultWrapper:
-    def __init__(self, brand, instance, result):
-        self.brand = brand
-        self.instance = instance
-        self.result = result
+ResultWrapper = namedtuple('ResultWrapper', ['brand', 'instance', 'result'])
 
-    def __repr__(self):
-        return '{}, {}, {}'.format(self.brand, self.instance, self.result)
+def execute_commands_multiple_results(commands, args_lst, extract_contents=True):
+    """
+    Runs the `demisto.executeCommand()` and check for all the results returned from the command.
 
-def execute_commands_multiple_results(command, args, extract_contents=True):
+    :type commands: ``List[str] + str``
+    :param commands: The commands to run. (required)
+
+    :type args_lst: ``List[dict] + dict``
+    :param args_lst: The commands arguments. (required)
+
+    :type extract_contents: ``bool``
+    :param extract_contents: Whether to extract Contents part of the results. Default is True.
+
+    :return: A tuple of two lists: the command results list and command errors list.
+    :rtype: ``Tuple[List[ResultWrapper], List[ResultWrapper]]``
+    """
+    if isinstance(commands, str) and isinstance(args_lst, dict):
+        commands = [commands]
+        args_lst = [args_lst]
+    if not isinstance(commands, list) or not isinstance(args_lst, list) or len(commands) != len(args_lst):
+        raise DemistoException('commands and arg_lst arguments given are not valid')
     results, errors = [], []
-    if not isinstance(args, list):
-        args = [args]
-    execute_command_results = []
-    for arg in args:
-         execute_command_results.extend(demisto.executeCommand(command, arg))
-    for res in execute_command_results:
-        module_name = res.get('ModuleName', 'Unknown')
-        brand_name = res.get('Brand', 'Unknown')
-        if is_error(res):
-            errors.append(ResultWrapper(brand_name, module_name, get_error(res)))
-        else:
-            if extract_contents:
-                res = res.get('Contents', {})
-            if res is None:
-                res = {}
-            results.append(ResultWrapper(brand_name, module_name, res))
+    for command, args in zip(commands, args_lst):
+        execute_command_results = demisto.executeCommand(command, args)
+        for res in execute_command_results:
+            brand_name = res.get('Brand', 'Unknown') if isinstance(res, dict) else 'Unknown'
+            module_name = res.get('ModuleName', 'Unknown') if isinstance(res, dict) else 'Unknown'
+            if is_error(res):
+                errors.append(ResultWrapper(brand_name, module_name, get_error(res)))
+            else:
+                if extract_contents:
+                    res = res.get('Contents', {})
+                if res is None:
+                    res = {}
+                results.append(ResultWrapper(brand_name, module_name, res))
     return results, errors
+
+def get_wrapper_results(command_wrappers):
+    """
+    Given a list of command_wrappers, return a list of results (to pass to return_results).
+
+    :param command_wrappers: A list of
+    :type command_wrappers: ``List[CommandWrapper]``
+    :return: list of results
+    """
+    full_results, full_errors = [], []
+    all_brands = [command_wrapper.brand for command_wrapper in command_wrappers]
+    valid, instances_results = execute_command('GetInstances', {'brand': ','.join(all_brands)}, fail_on_error=False)
+    if not valid:
+        raise DemistoException(f'Cant get instances because of {str(instances_results)}')
+    active_brands = {instance.get('brand') for instance in instances_results}
+    for command_wrapper in command_wrappers:
+        if command_wrapper.brand not in active_brands:
+            continue
+        results, errors = execute_commands_multiple_results(command_wrapper.commands, command_wrapper.args_lst, extract_contents=False)
+        full_results.extend(results)
+        full_errors.extend(errors)
+
+    summary_md = get_wrapper_results_summary(full_results, full_errors)
+    full_results = [res.result for res in full_results]
+    full_results.append(CommandResults(readable_output=summary_md))
+    if not full_results and full_errors:  # no results were given but there are errors
+        errors = ["{instance}: {msg}".format(instance=err.instance, msg=err.result) for err in full_errors]
+        error_msg = '\n'.join(['Script failed. The following errros were encountered: '] + errors)
+        raise DemistoException(error_msg)
+    return full_results
 
 def get_wrapper_results_summary(results, errors):
     results_summary_table = []
@@ -6407,31 +6447,6 @@ def get_wrapper_results_summary(results, errors):
     summary_md = tableToMarkdown('Results Summary', results_summary_table, headers=headers)
     return summary_md
 
-def get_wrapper_results(all_brands, commands_wrapper, args):
-    full_results, full_errors = [], []
-    valid, instances_results = execute_command('GetInstances', {'brand': ','.join(all_brands)}, fail_on_error=False)
-    if not valid:
-        raise DemistoException(f'Cant get instances because of {str(instances_results)}')
-    active_brands = {instance.get('brand') for instance in instances_results}
-    for command_wrapper in commands_wrapper:
-        if command_wrapper.brand not in active_brands:
-            continue
-
-        if command_wrapper.func:
-            results, errors = command_wrapper.func(args)
-        else:
-            results, errors = execute_commands_multiple_results(command_wrapper.command, command_wrapper.args, extract_contents=False)
-        full_results.extend(results)
-        full_errors.extend(errors)
-
-    summary_md = get_wrapper_results_summary(full_results, full_errors)
-    full_results = [res.result for res in full_results]
-    full_results.append(CommandResults(readable_output=summary_md))
-    if not full_results and full_errors:  # no results were given but there are errors
-        errors = ["{instance}: {msg}".format(instance=err.instance, msg=err.result) for err in full_errors]
-        error_msg = '\n'.join(['Script failed. The following errros were encountered: '] + errors)
-        raise DemistoException(error_msg)
-    return full_results
 
 def execute_command(command, args, extract_contents=True, fail_on_error=True):
     """

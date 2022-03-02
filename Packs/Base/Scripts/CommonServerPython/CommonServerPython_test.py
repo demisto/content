@@ -4298,6 +4298,161 @@ class TestExecuteCommand:
         assert 'not an error' not in error_text
 
 
+class TestExecuteCommandsMultipleResults:
+
+    @staticmethod
+    def test_sanity(mocker):
+        from CommonServerPython import execute_commands_multiple_results, EntryType
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=[{'Type': EntryType.NOTE,
+                                                                  'ModuleName': 'module',
+                                                                  'Brand': 'brand',
+                                                                  'Contents': {'hello': 'world'}}])
+        results, errors = execute_commands_multiple_results('command', {'arg1': 'value'})
+        execute_command_args = demisto_execute_mock.call_args_list[0][0]
+        assert demisto_execute_mock.call_count == 1
+        assert execute_command_args[0] == 'command'
+        assert execute_command_args[1] == {'arg1': 'value'}
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert len(results) == 1
+        assert results[0].brand == 'brand'
+        assert results[0].instance == 'module'
+        assert results[0].result == {'hello': 'world'}
+        assert not errors
+
+    @staticmethod
+    def test_multiple_results(mocker):
+        """
+        Given:
+            - A successful command with several entries as output.
+        When:
+            - Calling execute_commands_multiple_results.
+        Then:
+            - Assert that the "Contents" values of all entries are returned.
+        """
+        from CommonServerPython import execute_commands_multiple_results, EntryType
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            {'Type': EntryType.NOTE, 'Contents': {'entry': '2'}},
+            {'Type': EntryType.NOTE, 'Context': 'Content is `None`', 'Contents': None}
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        results, errors = execute_commands_multiple_results('command', {'arg1': 'value'})
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert not errors
+        assert len(results) == 4
+        assert results[0].result == {'hello': 'world'}
+        assert results[1].result == {}
+        assert results[2].result == {'entry': '2'}
+        assert results[3].result == {}
+
+    @staticmethod
+    def test_raw_results(mocker):
+        """
+        Given:
+            - A successful command with several entries as output.
+        When:
+            - Calling execute_commands_multiple_results.
+        Then:
+            - Assert that the entire entries are returned.
+        """
+        from CommonServerPython import execute_commands_multiple_results, EntryType
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            'text',
+            1337,
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        results, errors = execute_commands_multiple_results('command', {'arg1': 'value'}, extract_contents=False)
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert not errors
+        assert len(results) == 4
+        assert results[0].result == {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}}
+        assert results[1].result == {'Type': EntryType.NOTE, 'Context': 'no contents here'}
+        assert results[2].result == 'text'
+        assert results[3].result == 1337
+        assert results[2].brand == results[2].instance == results[3].brand == results[3].instance == 'Unknown'
+
+    @staticmethod
+    def test_with_errors(mocker):
+        """
+        Given:
+            - A command that sometimes fails and sometimes not.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the results list and the errors list returned as should've been
+        """
+        from CommonServerPython import execute_commands_multiple_results, EntryType
+        entries = [
+            {'Type': EntryType.ERROR, 'Contents': 'error number 1'},
+            {'Type': EntryType.NOTE, 'Contents': 'not an error'},
+            {'Type': EntryType.ERROR, 'Contents': 'error number 2'},
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+
+        results, errors = execute_commands_multiple_results('bad', {'arg1': 'value'})
+
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert len(results) == 1
+        assert len(errors) == 2
+        assert errors[0].result == 'error number 1'
+        assert errors[1].result == 'error number 2'
+        assert results[0].result == 'not an error'
+
+    @staticmethod
+    def get_result_for_multiple_commands(command, args):
+        from CommonServerPython import EntryType
+        return [{'Type': EntryType.NOTE,
+                 'ModuleName': list(args.keys())[0],
+                 'Brand': command,
+                 'Contents': {'hello': list(args.values())[0]}},
+                ]
+
+    @staticmethod
+    def test_multiple_commands(mocker):
+        from CommonServerPython import execute_commands_multiple_results
+        demisto_execute_mock = mocker.patch.object(demisto,
+                                                   'executeCommand',
+                                                   side_effect=TestExecuteCommandsMultipleResults.get_result_for_multiple_commands)
+        results, errors = execute_commands_multiple_results(['command1', 'command2'],
+                                                            [{'arg1': 'value1'},
+                                                             {'arg2': 'value2'}])
+        assert demisto_execute_mock.call_count == 2
+        assert isinstance(results, list)
+        assert isinstance(errors, list)
+        assert len(results) == 2
+        assert results[0].brand == 'command1'
+        assert results[0].instance == 'arg1'
+        assert results[0].result == {'hello': 'value1'}
+        assert results[1].brand == 'command2'
+        assert results[1].instance == 'arg2'
+        assert results[1].result == {'hello': 'value2'}
+        assert not errors
+
+    @staticmethod
+    def test_invalid_args():
+        from CommonServerPython import execute_commands_multiple_results
+        with pytest.raises(DemistoException):
+            execute_commands_multiple_results(['command'], [{'arg': 'val'}, {'arg': 'val'}])
+        with pytest.raises(DemistoException):
+            execute_commands_multiple_results(['command', 'command1'], [{'arg': 'val'}])
+
+
+
+
 def test_arg_to_int__valid_numbers():
     """
     Given
