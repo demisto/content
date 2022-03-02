@@ -13,6 +13,13 @@
     policy: pull
 
 
+.setup-network-certs: &setup-network-certs
+  - source .gitlab/helper_functions.sh
+  - chmod 700 $NETWORK_SETUP
+  - source $NETWORK_SETUP
+  - section_end "Setup network certs"
+
+
 ### Global Script Snippets ###
 
 .create-id-set: &create-id-set
@@ -25,6 +32,8 @@
   - section_start "Create ID Set" --collapsed
   - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "marketplacev2" >> $ARTIFACTS_FOLDER/logs/create_id_set.log
   - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+  - if [ -f ./all_removed_items_from_id_set.json ]; then cp ./all_removed_items_from_id_set.json $ARTIFACTS_FOLDER/logs; fi
+  - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json $ARTIFACTS_FOLDER/logs; fi
   - section_end "Create ID Set"
 
 .download-demisto-conf:
@@ -116,6 +125,7 @@
 
 .default-before-script:
   before_script:
+    - *setup-network-certs
     - *clone_and_export_variables
     - section_start "Creating new clean logs folder" --collapsed
     - rm -rf $ARTIFACTS_FOLDER/logs
@@ -156,6 +166,7 @@
 .run-unittests-and-lint:
   tags:
     - gce
+    - us-central1
   needs: []
   stage: unittests-and-validations
   artifacts:
@@ -167,7 +178,7 @@
       - /builds/xsoar/content/artifacts/*
     when: always
   services:
-    - name: docker.artifactory.pan.local/build-tools--image-dind:19.03.12-dind
+    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
       alias: docker
   variables:
     DOCKER_HOST: tcp://docker:2375
@@ -229,6 +240,8 @@
   extends:
     - .default-job-settings
   needs: []
+  variables:
+    KUBERNETES_CPU_REQUEST: 1000m
   artifacts:
     expire_in: 30 days
     paths:

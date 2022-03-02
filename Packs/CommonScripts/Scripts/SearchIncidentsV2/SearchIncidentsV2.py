@@ -64,9 +64,19 @@ def add_incidents_link(data: List):
     return data
 
 
-def search_incidents(args: Dict):
+def search_incidents(args: Dict):   # pragma: no cover
     if not is_valid_args(args):
         return
+
+    if fromdate := arg_to_datetime(args.get('fromdate')):
+        from_date = fromdate.isoformat()
+        args['fromdate'] = from_date
+    if todate := arg_to_datetime(args.get('todate')):
+        to_date = todate.isoformat()
+        args['todate'] = to_date
+
+    if args.get('trimevents') == '0':
+        args.pop('trimevents')
 
     res: List = execute_command('getIncidents', args, extract_contents=False)
     incident_found: bool = check_if_found_incident(res)
@@ -84,6 +94,9 @@ def main():  # pragma: no cover
     args: Dict = demisto.args()
     try:
         readable_output, outputs, raw_response = search_incidents(args)
+        if search_results_label := args.get('searchresultslabel'):
+            for output in outputs:
+                output['searchResultsLabel'] = search_results_label
         results = CommandResults(
             outputs_prefix='foundIncidents',
             outputs_key_field='id',
