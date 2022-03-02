@@ -1,8 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-import sys
-
 
 def fetch_email_threads(incident_id):
     """Fetch all Email Threads stored in the current incident context
