@@ -7,6 +7,7 @@ import json
 import requests
 import base64
 import email
+from enum import Enum
 import hashlib
 from typing import List
 from dateutil.parser import parse
@@ -180,6 +181,12 @@ MIRROR_DIRECTION_DICT = {
     'Outgoing': 'Out',
     'Incoming And Outgoing': 'Both'
 }
+
+
+class IncidentType(Enum):
+    INCIDENT = 'inc'
+    DETECTION = 'ldt'
+
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
 MIRROR_INSTANCE = demisto.integrationInstance()
@@ -1600,89 +1607,122 @@ def get_remote_data_command(args: Dict[str, Any]):
         GetRemoteDataResponse object, which contain the incident or detection data to update.
     """
     remote_args = GetRemoteDataArgs(args)
+    remote_incident_id = remote_args.remote_incident_id
 
     mirrored_data = {}
     try:
-        demisto.debug(f'Performing get-remote-data command with incident or detection id: {remote_args.remote_incident_id} '
+        demisto.debug(f'Performing get-remote-data command with incident or detection id: {remote_incident_id} '
                       f'and last_update: {remote_args.last_update}')
 
-        # updating remote incident
-        if remote_args.remote_incident_id[0:3] == 'inc':
-            mirrored_data_list = get_incidents_entities([remote_args.remote_incident_id]).get('resources', [])
-            delta: Dict[str, Any] = {'incident_type': 'incident'}
-            mirrored_data = mirrored_data_list[0]
-            if 'status' in mirrored_data:
-                mirrored_data['status'] = STATUS_NUM_TO_TEXT.get(int(str(mirrored_data.get('status'))))
-            set_delta(delta, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
+        if find_incident_type(remote_incident_id) == IncidentType.INCIDENT:
+            mirrored_data, delta = get_remote_incident_data(remote_incident_id)
 
-        # updating remote detection
-        elif remote_args.remote_incident_id[0:3] == 'ldt':
-            mirrored_data_list = get_detections_entities([remote_args.remote_incident_id]).get('resources', [])
-            delta = {'incident_type': 'detection'}
-            mirrored_data = mirrored_data_list[0]
-            mirrored_data['severity'] = severity_string_to_int(mirrored_data.get('max_severity_displayname'))
-            set_delta(delta, mirrored_data, CS_FALCON_DETECTION_INCOMING_ARGS)
+        elif find_incident_type(remote_incident_id) == IncidentType.DETECTION:
+            mirrored_data, delta = get_remote_detection_data(remote_incident_id)
 
         else:
-            raise Exception(f'Executed get-remote-data command with undefined id: {remote_args.remote_incident_id}')
+            raise Exception(f'Executed get-remote-data command with undefined id: {remote_incident_id}')
 
         entries = []
         if delta:
-            demisto.debug(f'Update incident or detection {remote_args.remote_incident_id} with fields: {delta}')
-
-            # 'state' field indicates whether the incident is closed
-            if delta.get('state') == 'closed' and CLOSE_IN_XSOAR:
-                demisto.debug(f'Incident is closed: {remote_args.remote_incident_id}')
-                entries.append({
-                    'Type': EntryType.NOTE,
-                    'Contents': {
-                        'dbotIncidentClose': True,
-                        'closeReason': 'Incident was closed on CrowdStrike Falcon'
-                    },
-                    'ContentsFormat': EntryFormat.JSON
-                })
-
-            # 'status' field indicates whether the detection is closed
-            elif delta.get('status') == 'closed' and CLOSE_IN_XSOAR:
-                demisto.debug(f'Detection is closed: {remote_args.remote_incident_id}')
-                entries.append({
-                    'Type': EntryType.NOTE,
-                    'Contents': {
-                        'dbotIncidentClose': True,
-                        'closeReason': 'Detection was closed on CrowdStrike Falcon'
-                    },
-                    'ContentsFormat': EntryFormat.JSON
-                })
-
-            # reopened is stated in 'status' field for both incidents (as 'Reopened') and detections (as 'reopened')
-            elif delta.get('status') == 'reopened' or delta.get('status') == 'Reopened':
-                demisto.debug(f'Incident or detection is reopened: {remote_args.remote_incident_id}')
-                entries.append({
-                    'Type': EntryType.NOTE,
-                    'Contents': {
-                        'dbotIncidentReopen': True
-                    },
-                    'ContentsFormat': EntryFormat.JSON
-                })
+            demisto.debug(f'Update incident or detection {remote_incident_id} with fields: {delta}')
+            set_xsoar_entries(delta, entries, remote_incident_id)  # sets in place
 
         else:
-            demisto.debug(f'No delta was found for incident or detection {remote_args.remote_incident_id}.')
+            demisto.debug(f'No delta was found for incident or detection {remote_incident_id}.')
 
         return GetRemoteDataResponse(mirrored_object=delta, entries=entries)
 
     except Exception as e:
-        demisto.debug(f"Error in CrowdStrike Falcon incoming mirror for incident or detection: {remote_args.remote_incident_id}\n"
+        demisto.debug(f"Error in CrowdStrike Falcon incoming mirror for incident or detection: {remote_incident_id}\n"
                       f"Error message: {str(e)}")
 
-        if mirrored_data:
-            mirrored_data['in_mirror_error'] = str(e)
-        else:
-            mirrored_data = {
-                'id': remote_args.remote_incident_id,
-                'in_mirror_error': str(e)
-            }
+        if not mirrored_data:
+            mirrored_data = {'id': remote_incident_id}
+        mirrored_data['in_mirror_error'] = str(e)
 
         return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
+
+
+def find_incident_type(remote_incident_id: str):
+    if remote_incident_id[0:3] == IncidentType.INCIDENT.value:
+        return IncidentType.INCIDENT
+    if remote_incident_id[0:3] == IncidentType.DETECTION.value:
+        return IncidentType.DETECTION
+
+
+def get_remote_incident_data(remote_incident_id: str):
+    mirrored_data_list = get_incidents_entities([remote_incident_id]).get('resources', [])
+    mirrored_data = mirrored_data_list[0]
+
+    if 'status' in mirrored_data:
+        mirrored_data['status'] = STATUS_NUM_TO_TEXT.get(int(str(mirrored_data.get('status'))))
+
+    delta: Dict[str, Any] = {'incident_type': 'incident'}
+    set_delta(delta, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
+
+    return mirrored_data, delta
+
+
+def get_remote_detection_data(remote_incident_id: str):
+    mirrored_data_list = get_detections_entities([remote_incident_id]).get('resources', [])
+    mirrored_data = mirrored_data_list[0]
+
+    mirrored_data['severity'] = severity_string_to_int(mirrored_data.get('max_severity_displayname'))
+
+    delta: Dict[str, Any] = {'incident_type': 'detection'}
+    set_delta(delta, mirrored_data, CS_FALCON_DETECTION_INCOMING_ARGS)
+
+    return mirrored_data, delta
+
+
+def set_xsoar_entries(delta, entries, remote_incident_id):
+    # 'state' field indicates whether the incident is closed
+    if delta.get('state') == 'closed' and CLOSE_IN_XSOAR:
+        close_incident_in_xsoar(entries, remote_incident_id)
+
+    # 'status' field indicates whether the detection is closed
+    elif delta.get('status') == 'closed' and CLOSE_IN_XSOAR:
+        close_detection_in_xsoar(entries, remote_incident_id)
+
+    # reopened is stated in 'status' field for both incidents (as 'Reopened') and detections (as 'reopened')
+    elif delta.get('status') == 'reopened' or delta.get('status') == 'Reopened':
+        reopen_in_xsoar(entries, remote_incident_id)
+
+
+def close_incident_in_xsoar(entries, remote_incident_id):
+    demisto.debug(f'Incident is closed: {remote_incident_id}')
+    entries.append({
+        'Type': EntryType.NOTE,
+        'Contents': {
+            'dbotIncidentClose': True,
+            'closeReason': 'Incident was closed on CrowdStrike Falcon'
+        },
+        'ContentsFormat': EntryFormat.JSON
+    })
+
+
+def close_detection_in_xsoar(entries, remote_incident_id):
+    demisto.debug(f'Detection is closed: {remote_incident_id}')
+    entries.append({
+        'Type': EntryType.NOTE,
+        'Contents': {
+            'dbotIncidentClose': True,
+            'closeReason': 'Detection was closed on CrowdStrike Falcon'
+        },
+        'ContentsFormat': EntryFormat.JSON
+    })
+
+
+def reopen_in_xsoar(entries, remote_incident_id):
+    demisto.debug(f'Incident or detection is reopened: {remote_incident_id}')
+    entries.append({
+        'Type': EntryType.NOTE,
+        'Contents': {
+            'dbotIncidentReopen': True
+        },
+        'ContentsFormat': EntryFormat.JSON
+    })
 
 
 def set_delta(delta: Dict[str, Any], mirrored_data, mirroring_fields):
