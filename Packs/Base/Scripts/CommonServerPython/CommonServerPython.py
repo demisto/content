@@ -1788,6 +1788,25 @@ def argToList(arg, separator=','):
     return [arg]
 
 
+def remove_duplicates_from_list_arg(args, field):
+    """
+        Removes duplicates from a list after calling argToList.
+        For example: args: {'ids': "1,2,1"}, field='ids'
+        The return output will be ["1", "2"]
+
+        :type args: ``dict``
+        :param args: Args to be converted (required)
+
+        :type field: ``str``
+        :param field: Field in args to be converted into list without duplicates (required)
+
+        :return: A python list of args without duplicates
+        :rtype: ``list``
+    """
+    convert_to_list = argToList(args.get(field))
+    return list(set(convert_to_list))
+
+
 def argToBoolean(value):
     """
         Boolean-ish arguments that are passed through demisto.args() could be type bool or type string.

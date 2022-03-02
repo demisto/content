@@ -2819,6 +2819,27 @@ script:
     description: Delete an attribute according to the given attribute ID.
     execution: false
     name: misp-delete-attribute
+  - arguments:
+    - default: false
+      description: Event ID to be published.
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to send an email. The default is to not send a mail.
+      isArray: false
+      name: alert
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Publish an event.
+    execution: false
+    name: misp-publish-event
   dockerimage: demisto/pymisp2:1.0.0.25484
   feed: false
   isfetch: false
