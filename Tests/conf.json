@@ -4405,11 +4405,12 @@
             "timeout": 7000,
             "integrations": [
                 "EWS Mail Sender",
-                "Demisto REST API"
+                "Demisto REST API",
+                "Create Test Incidents"
             ],
             "instance_names": [
                 "ews_mail_sender_srtest02",
-                "Generic Webhook - EWSv2 Phishing Mock"
+                "Create Test Incidents - Phishing Mock"
             ],
             "external_playbook_config": {
                 "playbookID": "Phishing v3 - Generic",
@@ -4436,12 +4437,14 @@
                 "EWSO365",
                 "Rasterize",
                 "SecurityAndCompliance",
-                "VirusTotal (API v3)"
+                "VirusTotal (API v3)",
+                "Create Test Incidents"
                 
             ],
             "instance_names": [
                 "ews_mail_sender_srtest02",
-                "virus_total_v3"
+                "virus_total_v3",
+                "Create Test Incidents - Phishing Mock"
             ],
             "external_playbook_config": 
             {
