@@ -96,3 +96,8 @@ DomainTools
 replyTo
 SentinelOne
 URLs
+GetCampaignLowSimilarityIncidentsInfo
+ShowCampaignSenders
+ShowCampaignRecipients
+GetCampaignIncidentsInfo
+IsIncidentPartOfCampaign
