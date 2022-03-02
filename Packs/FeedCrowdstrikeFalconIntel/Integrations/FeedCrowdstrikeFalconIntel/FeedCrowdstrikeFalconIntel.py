@@ -151,7 +151,11 @@ class Client(BaseClient):
             params = self.get_last_modified_time()
 
         url_suffix_to_filter_by = self.build_url_suffix(params, actors_filter)
-        response = self.http_request('GET', url_suffix_to_filter_by)
+        if limit:
+            response = self.http_request('GET', url_suffix_to_filter_by, params={'limit': limit})
+        else:
+            response = self.http_request('GET', url_suffix_to_filter_by)
+
         parsed_indicators = self.create_indicators_from_response(response, feed_tags,
                                                                  tlp_color)  # list of dict of indicators
 
@@ -282,5 +286,5 @@ def main():
         raise Exception(f'Error in CrowdStrike falcon intel Integration [{e}]')
 
 
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ == '__builtin__' or __name__ == 'builtins' or __name__ == '__main__':
     main()
