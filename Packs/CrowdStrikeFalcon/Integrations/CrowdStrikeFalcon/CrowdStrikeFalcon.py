@@ -2141,6 +2141,7 @@ def search_detections_command():
     if "resources" in raw_res:
         for detection in demisto.get(raw_res, "resources"):
             detection_entry = {}
+
             for path, new_key in DETECTIONS_BASE_KEY_MAP.items():
                 detection_entry[new_key] = demisto.get(detection, path)
             behaviors = []
