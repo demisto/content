@@ -8,3 +8,4 @@ cs-fx-download-ioc id="cd1db2f53e8760792a48a2ec544a29e6f876643204598621783f71017
 cs-fx-check-quota
 cs-fx-find-reports offset=1 limit=5
 cs-fx-find-submission-id offset=1 limit=5
+file using-brand="CrowdStrike Falcon X" file="1c9fe398b2294301aa3080ede8d77356_8511c69fa47f4188bf59e3ab80f0f39f a381a7b679119dee5b95c9c09993885e44ad2fd9cd52fa28bc116f8bdea71679"

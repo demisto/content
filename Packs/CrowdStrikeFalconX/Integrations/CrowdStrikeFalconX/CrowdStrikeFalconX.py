@@ -923,7 +923,7 @@ def download_ioc_command(
 
 def check_quota_status_command(
         client: Client
-) -> CommandResults:
+) -> list[CommandResults]:
     """Search endpoint contains File Hash.
     :param client: the client object with an access token
     :return: Demisto outputs when entry_context and responses are lists
@@ -933,12 +933,12 @@ def check_quota_status_command(
 
     result = parse_outputs(response, client.reliability, quota_fields=quota_fields)
 
-    return CommandResults(outputs_prefix=OUTPUTS_PREFIX,
-                          outputs_key_field='id',
-                          indicator=result.indicator,
-                          readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
-                          raw_response=response,
-                          outputs=result.output)
+    return [CommandResults(outputs_prefix=OUTPUTS_PREFIX,
+                           outputs_key_field='id',
+                           indicator=result.indicator,
+                           readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+                           raw_response=response,
+                           outputs=result.output)]
 
 
 def find_sandbox_reports_command(
