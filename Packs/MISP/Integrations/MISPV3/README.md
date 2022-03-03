@@ -3827,3 +3827,30 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Attribute 3f5917b3-100c-4e21-91c3-48b265337232 has been deleted
+> 
+
+
+### misp-publish-event
+***
+Publish an event.
+
+
+#### Base Command
+
+`misp-publish-event`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event_id | Event ID to be published. | Required | 
+| alert | Whether to send an email. The default is to not send a mail. Possible values are: true, false. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!misp-publish-event event_id=20536```
+#### Human Readable Output
+
+>Event 20536 has been published
