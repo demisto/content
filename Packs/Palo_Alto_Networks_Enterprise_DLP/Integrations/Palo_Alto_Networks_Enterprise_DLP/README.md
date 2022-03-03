@@ -105,3 +105,18 @@ Fetches a DLP report associated with the passed report ID.
 >| Secret Key - AWS Access Key ID | Low: 2<br/>Medium: 0<br/>High: 2 |
 >| Tax Id - US - TIN | Low: 15<br/>Medium: 0<br/>High: 0 |
 
+### pan-dlp-update-incident
+***
+Updates a DLP incident with user feedback
+#### Base Command
+
+`pan-dlp-update-incident`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | DLP Incident ID. | Required | 
+| user_id | The user whose upload triggered the DLP incident | Required |
+| feedback | User's feedback to the incident | Required |
+| region | The region in which the DLP incident was generated | Required | 
+

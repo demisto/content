@@ -1,8 +1,10 @@
 import demistomock as demisto
-import urllib3
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+import urllib3
+from typing import Dict, Any, Tuple
+from enum import Enum
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -10,14 +12,28 @@ urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 MAX_ATTEMPTS = 3
 BASE_URL = 'https://api.dlp.paloaltonetworks.com/v1/'
+STAGING_BASE_URL = 'https://a150282198bb445f195ce6aacffc7510-963475564.us-west-2.elb.amazonaws.com/v1/'
 REPORT_URL = 'public/report/{}'
+INCIDENTS_URL = 'public/incidents?timestamp_unit=past_30_days'
 REFRESH_TOKEN_URL = 'public/oauth/refreshToken'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DEFAULT_FIRST_FETCH = '60 minutes'
+DEFAULT_FETCH_LIMIT = '50'
+UPDATE_INCIDENT_URL = 'public/incident-feedback'
+
+
+class FeedbackStatus(Enum):
+    PENDING_RESPONSE = 'PENDING_RESPONSE'
+    CONFIRMED_SENSITIVE = 'CONFIRMED_SENSITIVE'
+    CONFIRMED_FALSE_POSITIVE = 'CONFIRMED_FALSE_POSITIVE'
+    EXCEPTION_REQUESTED = 'EXCEPTION_REQUESTED'
+    OPERATIONAL_ERROR = 'OPERATIONAL_ERROR'
 
 
 class Client(BaseClient):
 
-    def __init__(self, refresh_token, access_token, insecure, proxy):
-        super().__init__(base_url=BASE_URL, headers=None, verify=not insecure, proxy=proxy)
+    def __init__(self, url, refresh_token, access_token, insecure, proxy):
+        super().__init__(base_url=url, headers=None, verify=not insecure, proxy=proxy)
         self.refresh_token = refresh_token
         self.access_token = access_token
 
@@ -81,6 +97,42 @@ class Client(BaseClient):
         result_json = {} if res.status_code == 204 else res.json()
         return result_json, res.status_code
 
+    def _post_dlp_api_call(self, url_suffix: str, payload: Dict = None):
+        """
+        Makes a HTTPS POSt call on the DLP API
+        Args:
+            url_suffix: URL suffix for dlp api call
+            payload: Optional JSON payload
+        """
+        count = 0
+
+        while count < MAX_ATTEMPTS:
+            res = self._http_request(
+                method='POST',
+                headers={'Authorization': "Bearer " + self.access_token},
+                url_suffix=url_suffix,
+                json_data=payload,
+                ok_codes=[200, 201, 204],
+                error_handler=self._handle_403_errors,
+                resp_type='',
+                return_empty_response=True
+            )
+            if res.status_code != 403:
+                break
+            count += 1
+
+        if res.status_code < 200 or res.status_code >= 300:
+            raise DemistoException("Request to {} failed with status code {}".format(url_suffix, res.status_code))
+
+        result_json = {}
+        if res.status_code != 204:
+            try:
+                result_json = res.json()
+            except json.decoder.JSONDecodeError:
+                result_json = {}
+
+        return result_json, res.status_code
+
     def get_dlp_report(self, report_id: str, fetch_snippets=False):
         """
         Fetches DLP reports
@@ -96,6 +148,20 @@ class Client(BaseClient):
 
         return self._get_dlp_api_call(url)
 
+    def update_dlp_incident(self, incident_id: str, feedback: FeedbackStatus, user_id: str, region: str):
+        """
+                Update Incident with user provided feedback
+                Args:
+                    incident_id: The id of the incident to update
+                    feedback: 'business_justified', 'true_positive' or 'false_positive'
+
+                Returns: DLP Incident json
+                """
+        payload = {
+            'user_id': user_id
+        }
+        url = f'{UPDATE_INCIDENT_URL}/{incident_id}?feedback_type={feedback.value}&region={region}'
+        return  self._post_dlp_api_call(url, payload)
 
 def parse_data_pattern_rule(report_json, verdict_field, results_field):
     """
@@ -196,6 +262,7 @@ def parse_dlp_report(report_json):
     return_results(results)
 
 
+
 def test(client):
     """ Test Function to test validity of access and refresh tokens"""
     report_json, status_code = client.get_dlp_report('1')
@@ -212,8 +279,8 @@ def main():
         params = demisto.params()
         access_token = params.get('access_token')
         refresh_token = params.get('refresh_token')
-
-        client = Client(refresh_token, access_token, params.get('insecure'), params.get('proxy'))
+        url = BASE_URL if params.get('env') == 'prod' else STAGING_BASE_URL
+        client = Client(url, refresh_token, access_token, params.get('insecure'), params.get('proxy'))
 
         if demisto.command() == 'pan-dlp-get-report':
             args = demisto.args()
@@ -221,15 +288,34 @@ def main():
             fetch_snippets = argToBoolean(args.get('fetch_snippets'))
             report_json, status_code = client.get_dlp_report(report_id, fetch_snippets)
             parse_dlp_report(report_json)
-
-        if demisto.command() == "test-module":
+        elif demisto.command() == 'pan-dlp-update-incident':
+            args = demisto.args()
+            incident_id = args.get('incident_id')
+            feedback = args.get('feedback')
+            user_id = args.get('user_id')
+            region = args.get('region')
+            feedback_enum = FeedbackStatus[feedback.upper()]
+            result_json, status = client.update_dlp_incident(incident_id, feedback_enum, user_id, region)
+            result = {
+                'success': status == 200,
+                'feedback': feedback_enum.value
+            }
+            results = CommandResults(
+                outputs_prefix='DLP.IncidentUpdate',
+                outputs_key_field='feedback',
+                outputs=result
+            )
+            demisto.results(results.to_context())
+        elif demisto.command() == "test-module":
             test(client)
 
     except Exception as e:
-        demisto.debug('Unknown Command')
-        error_message = str(e)
-        return_error(error_message)
+        LOG(e)
+        return_error(str(e))
+    finally:
+        demisto.info(
+            f'{demisto.command()} completed.')
 
 
-if __name__ in ["__builtin__", "builtins"]:
+if __name__ in ["__builtin__", "builtins", '__main__']:
     main()
