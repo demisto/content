@@ -237,7 +237,7 @@ class Build:
         pass
 
     def install_nightly_pack(self):
-        # todo: override. XSIAM and XSOAR manages this differenet
+        # todo: override. XSIAM and XSOAR manages this different
         pass
 
     def test_integrations_post_update(self, new_module_instances: list,
@@ -245,6 +245,10 @@ class Build:
         pass
 
     def configure_and_test_integrations_pre_update(self, new_integrations, modified_integrations) -> tuple:
+        pass
+
+    @staticmethod
+    def set_marketplace_url(servers, branch_name, ci_build_number):
         pass
 
     def disable_instances(self):
@@ -506,7 +510,7 @@ class Build:
         """
         installed_content_packs_successfully = True
         if not self.is_nightly:
-            set_marketplace_url(self.servers, self.branch_name, self.ci_build_number)
+            self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number)
             installed_content_packs_successfully = self.install_packs()
         return installed_content_packs_successfully
 
@@ -657,6 +661,17 @@ class XSOARBuild(Build):
                     logging.debug(f'Record mode for integration "{integration_of_instance}" has failed.')
         return success
 
+    @staticmethod
+    def set_marketplace_url(servers, branch_name, ci_build_number):
+        url_suffix = quote_plus(f'{branch_name}/{ci_build_number}/xsoar')
+        config_path = 'marketplace.bootstrap.bypass.url'
+        config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
+        for server in servers:
+            server.add_server_configuration(config, 'failed to configure marketplace custom url ', True)
+        logging.success('Updated marketplace url and restarted servers')
+        logging.info('sleeping for 60 seconds')
+        sleep(60)
+
 
 class XSIAMBuild(Build):
 
@@ -683,6 +698,11 @@ class XSIAMBuild(Build):
 
     def test_integration_with_mock(self, instance: dict, pre_update: bool):
         # TODO: cant be done in xsiam
+        pass
+
+    @staticmethod
+    def set_marketplace_url(servers, branch_name, ci_build_number):
+        # Todo: check how to do it in xsiam
         pass
 
 
@@ -1409,6 +1429,9 @@ def test_pack_metadata():
 
 
 def test_pack_zip(content_path, target):
+    """
+    Iterates over all TestPlaybooks folders and adds all files from there to test_pack.zip' file.
+    """
     with zipfile.ZipFile(f'{target}/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
         for test_path, test in test_files(content_path):
@@ -1427,7 +1450,7 @@ def test_pack_zip(content_path, target):
 
 def get_non_added_packs_ids(build: Build):
     """
-    In this step we want to install only updated packs (not new packs).
+    In this step we want to get only updated packs (not new packs).
     :param build: the build object
     :return: all non added packs i.e. unchanged packs (dependencies) and modified packs
     """
@@ -1443,18 +1466,6 @@ def get_non_added_packs_ids(build: Build):
     added_pack_ids = map(lambda x: x.split('/')[1], added_files)
     # build.pack_ids_to_install contains new packs and modified. added_pack_ids contains new packs only.
     return set(build.pack_ids_to_install) - set(added_pack_ids)
-
-
-# TODO: check how to change it for XSIAM
-def set_marketplace_url(servers, branch_name, ci_build_number):
-    url_suffix = quote_plus(f'{branch_name}/{ci_build_number}/xsoar')
-    config_path = 'marketplace.bootstrap.bypass.url'
-    config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
-    for server in servers:
-        server.add_server_configuration(config, 'failed to configure marketplace custom url ', True)
-    logging.success('Updated marketplace url and restarted servers')
-    logging.info('sleeping for 60 seconds')
-    sleep(60)
 
 
 def main():

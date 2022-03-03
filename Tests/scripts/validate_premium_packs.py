@@ -13,7 +13,7 @@ import sys
 import os
 
 from Tests.scripts.validate_index import log_message_if_statement, get_index_json_data
-from Tests.configure_and_test_integration_instances import Build, Server
+from Tests.configure_and_test_integration_instances import XSOARBuild, XSOARServer
 from Tests.Marketplace.marketplace_services import load_json
 from Tests.Marketplace.marketplace_constants import GCPConfig
 from Tests.scripts.utils.log_util import install_logging
@@ -230,10 +230,10 @@ def main():
     )
 
     # Get the first host by the ami env
-    hosts, _ = Build.get_servers(ami_env=options.ami_env)
+    hosts, _ = XSOARBuild.get_servers(ami_env=options.ami_env)
     internal_ip, tunnel_port = list(hosts.items())[0]
     username, password = extract_credentials_from_secret(options.secret)
-    server = Server(internal_ip=internal_ip, port=tunnel_port, user_name=username, password=password)
+    server = XSOARServer(internal_ip=internal_ip, port=tunnel_port, user_name=username, password=password)
 
     # Verify premium packs in the server
     paid_packs = get_premium_packs(client=server.client)
