@@ -50,7 +50,10 @@ DETECTIONS_BASE_KEY_MAP = {
     'created_timestamp': 'ProcessStartTime',
     'max_severity': 'MaxSeverity',
     'show_in_ui': 'ShowInUi',
-    'status': 'Status'
+    'status': 'Status',
+    'first_behavior': 'FirstBehavior',
+    'last_behavior': 'LastBehavior',
+    'max_confidence': 'MaxConfidence',
 }
 
 DETECTIONS_BEHAVIORS_KEY_MAP = {
@@ -63,6 +66,19 @@ DETECTIONS_BEHAVIORS_KEY_MAP = {
     'cmdline': 'CommandLine',
     'user_name': 'UserName',
     'behavior_id': 'ID',
+    'alleged_filetype': 'AllegedFiletype',
+    'confidence': 'Confidence',
+    'description': 'Description',
+    'display_name': 'DisplayName',
+    'filepath': 'Filepath',
+    'parent_md5': 'ParentMD5',
+    'parent_sha256': 'ParentSHA256',
+    'pattern_disposition': 'PatternDisposition',
+    'pattern_disposition_details': 'PatternDispositionDetails',
+    'tactic': 'Tactic',
+    'tactic_id': 'TacticID',
+    'technique': 'Technique',
+    'technique_id': 'TechniqueId',
 }
 
 IOC_KEY_MAP = {
@@ -2113,6 +2129,7 @@ def search_detections_command():
     """
     d_args = demisto.args()
     detections_ids = argToList(d_args.get('ids'))
+    extended_data = argToBoolean(d_args.get('extended_data', False))
     if not detections_ids:
         filter_arg = d_args.get('filter')
         if not filter_arg:
@@ -2124,16 +2141,28 @@ def search_detections_command():
     if "resources" in raw_res:
         for detection in demisto.get(raw_res, "resources"):
             detection_entry = {}
+
             for path, new_key in DETECTIONS_BASE_KEY_MAP.items():
                 detection_entry[new_key] = demisto.get(detection, path)
             behaviors = []
+
             for behavior in demisto.get(detection, 'behaviors'):
                 behaviors.append(behavior_to_entry_context(behavior))
             detection_entry['Behavior'] = behaviors
+
+            if extended_data:
+                detection_entry['Device'] = demisto.get(detection, 'device')
+                detection_entry['BehaviorsProcessed'] = demisto.get(detection, 'behaviors_processed')
+
             entries.append(detection_entry)
+
     hr = tableToMarkdown('Detections Found:', entries, headers=headers, removeNull=True, headerTransform=pascalToSpace)
-    ec = {'CrowdStrike.Detection(val.ID === obj.ID)': entries}
-    return create_entry_object(contents=raw_res, ec=ec, hr=hr)
+
+    return CommandResults(readable_output=hr,
+                          outputs=entries,
+                          outputs_key_field='ID',
+                          outputs_prefix='CrowdStrike.Detection',
+                          raw_response=raw_res)
 
 
 def resolve_detection_command():
@@ -3057,7 +3086,7 @@ def main():
         elif command == 'cs-falcon-get-behavior':
             demisto.results(get_behavior_command())
         elif command == 'cs-falcon-search-detection':
-            demisto.results(search_detections_command())
+            return_results(search_detections_command())
         elif command == 'cs-falcon-resolve-detection':
             demisto.results(resolve_detection_command())
         elif command == 'cs-falcon-contain-host':
