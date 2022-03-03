@@ -193,7 +193,7 @@ def test_get_users_on_call(requests_mock, mocker):
     )
     from PagerDuty import get_on_call_users_command
     res = get_on_call_users_command(**demisto.args())
-    assert demisto.args().get('scheduleID') == res.outputs[0].get('scheduleID')
+    assert demisto.args().get('scheduleID') == res.outputs[0].get('ScheduleID')
 
 
 def test_get_users_on_call_now(requests_mock, mocker):
