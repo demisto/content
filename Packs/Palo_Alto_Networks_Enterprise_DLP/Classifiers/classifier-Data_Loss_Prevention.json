@@ -1,80 +1,75 @@
 {
-	"name": "Data Loss Prevention",
-	"type": "mapping-incoming",
-	"id": "Data Loss Prevention",
-	"description": "A mapper that maps raw DLP incident fields into Cortex XSOAR incident fields",
-	"defaultIncidentType": "Data Loss Prevention",
-	"keyTypeMap": {},
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"mapping": {
-		"Data Loss Prevention": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"App": {
-					"complex": null,
-					"simple": "channel"
-				},
-				"DLP Data Profile Name": {
-					"complex": null,
-					"simple": "dataProfileName"
-				},
-				"DLP Incident Feedback": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "incidentFeedbackStatus",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"DLP Incident ID": {
-					"complex": null,
-					"simple": "incidentId"
-				},
-				"DLP Incident Region": {
-					"complex": null,
-					"simple": "region"
-				},
-				"DLP Tenant ID": {
-					"complex": null,
-					"simple": "tenantId"
-				},
-				"File Name": {
-					"complex": null,
-					"simple": "filename"
-				},
-				"File SHA256": {
-					"complex": null,
-					"simple": "checksum"
-				},
-				"Source Username": {
-					"complex": null,
-					"simple": "userId"
-				},
-				"app channel name": {
-					"complex": null,
-					"simple": "channel"
-				}
-			}
-		},
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"File Name": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "file_name",
-						"transformers": []
-					},
-					"simple": ""
-				}
-			}
-		}
-	},
-	"version": -1,
-	"fromVersion": "6.0.0"
+    "name": "Data Loss Prevention",
+    "type": "mapping-incoming",
+    "id": "Data Loss Prevention",
+    "description": "A mapper that maps raw DLP incident fields into Cortex XSOAR incident fields",
+    "defaultIncidentType": "Data Loss Prevention",
+    "mapping": {
+        "Data Loss Prevention": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "App": {
+                    "complex": null,
+                    "simple": "channel"
+                },
+                "DLP Data Profile Name": {
+                    "complex": null,
+                    "simple": "dataProfileName"
+                },
+                "DLP Incident Feedback": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "incidentFeedbackStatus",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "DLP Incident ID": {
+                    "complex": null,
+                    "simple": "incidentId"
+                },
+                "DLP Incident Region": {
+                    "complex": null,
+                    "simple": "region"
+                },
+                "DLP Tenant ID": {
+                    "complex": null,
+                    "simple": "tenantId"
+                },
+                "File Name": {
+                    "complex": null,
+                    "simple": "filename"
+                },
+                "File SHA256": {
+                    "complex": null,
+                    "simple": "checksum"
+                },
+                "Source Username": {
+                    "complex": null,
+                    "simple": "userId"
+                },
+                "app channel name": {
+                    "complex": null,
+                    "simple": "channel"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "File Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "file_name",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "version": -1,
+    "fromVersion": "6.0.0"
 }
