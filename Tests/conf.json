@@ -4406,7 +4406,7 @@
             "integrations": [
                 "EWS Mail Sender",
                 "Demisto REST API",
-                "Create Test Incidents"
+                "CreateIncidents"
             ],
             "instance_names": [
                 "ews_mail_sender_srtest02",
