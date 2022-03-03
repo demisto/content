@@ -2,6 +2,7 @@ id: Test - CrowdStrike Falcon
 version: 3
 vcShouldKeepItemLegacyProdMachine: false
 name: Test - CrowdStrike Falcon
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
