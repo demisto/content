@@ -4,7 +4,6 @@ from CommonServerPython import *  # noqa: F401
 batch_size = demisto.args()['batch_size']
 list_of_items = demisto.args()['data']
 context_path = demisto.args()['context_path']
-demisto.results(type(list_of_items))
 
 batch_size = int(batch_size)
 batch_list = list()
