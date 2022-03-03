@@ -488,7 +488,7 @@ def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents
         params = {'$orderby': 'properties/createdTimeUtc asc'}
 
     if not result:
-        params.update({'$top': str(limit), '$filter': filter_expression})
+        params.update({'$top': limit, '$filter': filter_expression})  # type: ignore
         remove_nulls_from_dictionary(params)
         url_suffix = 'incidents'
 
