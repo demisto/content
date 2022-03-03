@@ -12,7 +12,7 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command, \
     query_threat_indicators_command, create_threat_indicator_command, delete_threat_indicator_command, \
     append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
-    list_threat_indicator_command, NEXTLINK_DESCRIPTION
+    list_threat_indicator_command, NEXTLINK_DESCRIPTION, fetch_incidents
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -390,7 +390,7 @@ MOCKED_THREAT_INDICATOR_OUTPUT = {
                 ],
                 "pattern": "[url:value = ‘twitter.com’]",
                 "patternType": "twitter.com",
-                "validFrom": "0001-01-01T00:00:00"
+                "validFrom": "2021-11-17T08:20:15.111Z"
             }
         }]
 }
@@ -527,6 +527,65 @@ ARGS_TO_UPDATE = {
     "value": 'newValue',
     "indicator_type": 'domain'
 }
+
+MOCKED_RAW_INCIDENT_OUTPUT = {
+    'value': [{
+        'ID': 'inc_ID',
+        'Name': 'inc_name',
+        'IncidentNumber': 2,
+        'Title': 'title',
+        'Description': 'desc',
+        'Severity': 'High',
+        'Status': 'New',
+        'Owner': {
+            'AssignedTo': 'bla',
+            'Email': 'bla',
+        },
+        'Labels': [{
+            'Name': 'label_name',
+            'Type': 'label_type'
+        }],
+        'FirstActivityTimeUtc': '2020-02-02T14:05:01.5348545Z',
+        'LastActivityTimeUtc': '2020-02-02T14:05:01.5348545Z',
+        'LastModifiedTimeUtc': '2020-02-02T14:05:01.5348545Z',
+        'CreatedTimeUTC': '2020-02-02T14:05:01.5348545Z',
+        'AdditionalData': {
+            'AlertsCount': 1,
+            'BookmarksCount': 2,
+            'CommentsCount': 3,
+            'AlertProductNames': ['name1', 'name2'],
+            'Tactics': ['tactic']
+        },
+        'FirstActivityTimeGenerated': '2020-02-02T14:05:01.5348545Z',
+        'LastActivityTimeGenerated': '2020-02-02T14:05:01.5348545Z'
+    }]
+}
+
+INCIDENTS = [{
+    'name': 'inc_name1',
+    'properties': {
+        'incidentNumber': 1,
+        'createdTimeUtc': '2020-02-02T14:05:01.5348545Z',
+        'title': 'title',
+        }
+    },
+    {
+        'name': 'inc_name2',
+        'properties': {
+            'incidentNumber': 2,
+            'createdTimeUtc': '2020-02-02T14:00:00.00Z',
+            'title': 'title',
+            }
+    },
+    {
+        'name': 'inc_name3',
+        'properties': {
+            'incidentNumber': 3,
+            'createdTimeUtc': '2020-02-02T14:07:01.5348545Z',
+            'title': 'title',
+            }
+    }
+]
 
 
 class TestHappyPath:
@@ -1208,6 +1267,48 @@ class TestHappyPath:
 
         assert context['Name'] == 'ind_name', 'Incident name in Azure Sentinel API is Incident ID in Cortex XSOAR'
         assert context['DisplayName'] == 'newDisplayName'
+
+    @staticmethod
+    def mock_http_request(method: str, url_suffix: str, params: dict):
+        """ Mock an http request to emulate the API behavior in fetching incidents. """
+        incidents_to_return = []
+        if 'properties/createdTimeUtc ge' in params.get('$filter'):
+            incidents_to_return.append(INCIDENTS[0])
+            incidents_to_return.append(INCIDENTS[2])
+        elif 'properties/incidentNumber gt' in params.get('$filter'):
+            incidents_to_return.append(INCIDENTS[0])
+            incidents_to_return.append(INCIDENTS[1])
+            incidents_to_return.append(INCIDENTS[2])
+
+        return {'value': incidents_to_return}
+
+    def test_fetch_incidents(self, mocker):
+        """
+        Given:
+            - A last_run dict, AzureSentinel client, and a minimum severity.
+
+        When:
+            - Calling the fetch incident command.
+        Then:
+            - Validate the number of incidents that got fetched.
+        """
+        # prepare
+        client = mock_client()
+        response = mocker.patch.object(client, 'http_request', side_effect=self.mock_http_request)
+        min_severity = 0
+        last_run = {
+            'last_fetch_time': '2020-02-02T14:05:00.5348545Z',
+            'last_fetch_ids': [],
+            'last_incident_number': 0
+        }
+        first_fetch_time = ''
+
+        # run
+        next_run, incidents = fetch_incidents(client, last_run, first_fetch_time, min_severity)
+        output = response.call_args[1]
+        # validate
+        assert len(next_run.get('last_fetch_ids')) == len(INCIDENTS)
+        assert 'properties/incidentNumber gt' in output.get('params').get('$filter')
 
 
 class TestEdgeCases:

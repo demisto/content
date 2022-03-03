@@ -44,7 +44,6 @@ DEFAULT_SOURCE = 'Azure Sentinel'
 
 THREAT_INDICATORS_HEADERS = ['Name', 'DisplayName', 'Values', 'Types', 'Source', 'Confidence', 'Tags']
 
-MINIMAL_INCIDENT_NUMBER = 0
 
 class AzureSentinelClient:
     def __init__(self, server_url: str, tenant_id: str, client_id: str,
@@ -53,31 +52,22 @@ class AzureSentinelClient:
                  verify: bool = True, proxy: bool = False):
         """
         AzureSentinelClient class that make use client credentials for authorization with Azure.
-
         :type server_url: ``str``
         :param server_url: The server url.
-
         :type tenant_id: ``str``
         :param tenant_id: The tenant id.
-
         :type client_id: ``str``
         :param client_id: The client id.
-
         :type client_secret: ``str``
         :param client_secret: The client secret from Azure registered application.
-
         :type subscription_id: ``str``
         :param subscription_id: The subscription id.
-
         :type resource_group_name: ``str``
         :param resource_group_name: The resource group name.
-
         :type workspace_name: ``str``
         :param workspace_name: The workspace name.
-
         :type verify: ``bool``
         :param verify: Whether the request should verify the SSL certificate.
-
         :type proxy: ``bool``
         :param proxy: Whether to run the integration using the system proxy.
         """
@@ -169,7 +159,6 @@ def format_date(date):
 def incident_data_to_xsoar_format(inc_data):
     """
     Convert the incident data from the raw to XSOAR format.
-
     :param inc_data: (dict) The incident raw data.
     """
     properties = inc_data.get('properties', {})
@@ -208,7 +197,6 @@ def incident_data_to_xsoar_format(inc_data):
 def watchlist_data_to_xsoar_format(watchlist_data):
     """
     Convert the watchlist data from the raw to XSOAR format.
-
     :param watchlist_data: (dict) The alert raw data.
     """
     properties = watchlist_data.get('properties', {})
@@ -233,7 +221,6 @@ def watchlist_data_to_xsoar_format(watchlist_data):
 def alert_data_to_xsoar_format(alert_data):
     """
     Convert the alert data from the raw to XSOAR format.
-
     :param alert_data: (dict) The alert raw data.
     """
     properties = alert_data.get('properties', {})
@@ -255,7 +242,6 @@ def alert_data_to_xsoar_format(alert_data):
 def watchlist_item_data_to_xsoar_format(item_data):
     """
     Convert the watchlist item from the raw to XSOAR format.
-
     :param item_data: (dict) The item raw data.
     """
     properties = item_data.get('properties', {})
@@ -274,7 +260,6 @@ def watchlist_item_data_to_xsoar_format(item_data):
 def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str, str]):
     """
     Prepare etag and other mandatory incident properties for update_incident command.
-
     :param client: The client.
     :param args: The args for the command.
     """
@@ -330,7 +315,6 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
 def comment_data_to_xsoar_format(comment_data, inc_id):
     """
     Convert the comment data from the raw to XSOAR format.
-
     :param comment_data: (dict) The comment raw data.
     :param inc_id: The id of the incident hold this comment.
     """
@@ -350,7 +334,6 @@ def comment_data_to_xsoar_format(comment_data, inc_id):
 def incident_related_resource_data_to_xsoar_format(resource_data, incident_id):
     """
     Convert the incident relation from the raw to XSOAR format.
-
     :param resource_data: (dict) The related resource raw data.
     :param incident_id: The incident id.
     """
@@ -367,7 +350,6 @@ def incident_related_resource_data_to_xsoar_format(resource_data, incident_id):
 def entity_related_resource_data_to_xsoar_format(resource_data, entity_id):
     """
     Convert the entity relation from the raw to XSOAR format.
-
     :param resource_data: (dict) The related resource raw data.
     :param entity_id: The entity id.
     """
@@ -399,7 +381,6 @@ def severity_to_level(severity):
 def generic_list_incident_items(client, incident_id, items_kind, key_in_raw_result, outputs_prefix, xsoar_transformer):
     """
     Get a list of incident's items
-
     :param client: (AzureSentinelClient) The Azure Sentinel client to work with.
     :param incident_id:  (str) the incident id.
     :param items_kind: (str) the name of the entity e.g. entities, alerts.
@@ -458,45 +439,27 @@ def test_module(client):
     return 'ok'
 
 
-def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents=False, first_fetch=False):
-    """Fetching incidents
-    Args:
-        client: An AzureSentinelClient client.
-        args: Demisto args.
-        is_fetch_incidents: Is it part of a fetch incidents command.
-        first_fetch: Is it a first fetch.
-    Returns:
-        An array of incidents, and a latest created time.
-    """
-    demisto.debug("starting the list incidents command")
+def list_incidents_command(client, args, is_fetch_incidents=False):
     filter_expression = args.get('filter')
     limit = None if is_fetch_incidents else min(200, int(args.get('limit')))
     next_link = args.get('next_link', '')
-    result = None
-    params = {}
-    demisto.debug(f"{is_fetch_incidents=}, {first_fetch=}")
 
     if next_link:
         next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
         result = client.http_request('GET', full_url=next_link)
-
-    elif is_fetch_incidents and not first_fetch:
-        demisto.debug(f"is_fetch_incidents and not first_fetch")
-        params = {'$orderby': 'properties/incidentNumber asc'}
-
-    else:  # it is a first fetch, or not a part of a fetch command
-        demisto.debug(f"not is_fetch_incidents or first_fetch")
-        params = {'$orderby': 'properties/createdTimeUtc asc'}
-
-    if not result:
-        params.update({'$top': limit, '$filter': filter_expression})
-        remove_nulls_from_dictionary(params)
+    else:
         url_suffix = 'incidents'
+        params = {
+            '$top': limit,
+            '$filter': filter_expression,
+            '$orderby': 'properties/createdTimeUtc asc'
+        }
+        remove_nulls_from_dictionary(params)
 
         result = client.http_request('GET', url_suffix, params=params)
 
     incidents = [incident_data_to_xsoar_format(inc) for inc in result.get('value')]
-    demisto.debug(f"number of incidents: {len(incidents)}")
+
     if is_fetch_incidents:
         return CommandResults(outputs=incidents, outputs_prefix='AzureSentinel.Incident')
 
@@ -555,7 +518,6 @@ def delete_watchlist_item_command(client, args):
 
 def create_update_watchlist_command(client, args):
     """ Create or update a watchlist in Azure Sentinel.
-
     :param client: (AzureSentinelClient) The Azure Sentinel client to work with.
     :param args:  (dict) arguments for this command.
     """
@@ -604,7 +566,6 @@ def create_update_watchlist_command(client, args):
 
 def create_update_watchlist_item_command(client, args):
     """ Create or update a watchlist item in Azure Sentinel.
-
     :param client: (AzureSentinelClient) The Azure Sentinel client to work with.
     :param args:  (dict) arguments for this command.
     """
@@ -642,7 +603,6 @@ def create_update_watchlist_item_command(client, args):
 def list_watchlist_items_command(client, args):
     """
     Get specific watchlist item or list of watchlist items.
-
     :param client: (AzureSentinelClient) The Azure Sentinel client to work with.
     :param args:  (dict) arguments for this command.
     """
@@ -790,7 +750,6 @@ def incident_delete_comment_command(client, args):
 def list_incident_entities_command(client, args):
     """
     Get a list of incident's entities.
-
     :param client: (AzureSentinelClient) The Azure Sentinel client to work with.
     :param args:  (dict) arguments for this command.
     """
@@ -813,7 +772,6 @@ def list_incident_entities_command(client, args):
 def list_incident_alerts_command(client, args):
     """
     Get a list of incident's alerts.
-
     :param client: (AzureSentinelClient) The Azure Sentinel client to work with.
     :param args:  (dict) arguments for this command.
     """
@@ -883,101 +841,31 @@ def update_next_link_in_context(result: dict, outputs: dict):
         outputs[f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")'] = next_link_item
 
 
-def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_time: str, min_severity: int):
-    """Fetching incidents
-    Args:
-        first_fetch_time: The first fetch time.
-        client: An AzureSentinelClient client.
-        last_run: An dictionary of the last run.
-        min_severity: A minimum severity of incidents to fetch.
-
-    Returns:
-        An array of incidents, and a latest created time.
-    """
+def fetch_incidents(client, last_run, first_fetch_time, min_severity):
     # Get the last fetch details, if exist
     last_fetch_time = last_run.get('last_fetch_time')
     last_fetch_ids = last_run.get('last_fetch_ids', [])
-    last_incident_number = last_run.get('last_incident_number', MINIMAL_INCIDENT_NUMBER)
-    demisto.debug(f"{last_fetch_time=}, {last_fetch_ids=}, {last_incident_number=}")
 
-    if last_fetch_time is None:  # this is the first fetch, or the First fetch timestamp was reset
-        demisto.debug("handle via timestamp")
-        raw_incidents, latest_created_time = fetch_incidents_via_timestamp(first_fetch_time, client)
+    # Handle first time fetch
+    if last_fetch_time is None:
+        last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
+        last_fetch_time = dateparser.parse(last_fetch_time_str)
     else:
-        demisto.debug("handle via id")
-        raw_incidents, latest_created_time = fetch_incidents_via_incident_number(last_fetch_time, last_incident_number, client)
+        last_fetch_time = dateparser.parse(last_fetch_time)
 
-    next_run, incidents = process_incidents(raw_incidents, last_fetch_ids, min_severity, latest_created_time, last_incident_number)
-    return next_run, incidents
-
-
-def fetch_incidents_via_timestamp(first_fetch_time: str, client: AzureSentinelClient):
-    """Fetching incidents
-    Args:
-        first_fetch_time: The first fetch time.
-        client: an AzureSentinelClient client.
-
-    Returns:
-        An array of incidents, and a latest created time.
-    """
-    last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
-    last_fetch_time = dateparser.parse(last_fetch_time_str)
     latest_created_time = last_fetch_time
     latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
     command_args = {'filter': f'properties/createdTimeUtc ge {latest_created_time_str}'}
-
-    demisto.debug(f"{command_args=}")
-    command_result = list_incidents_command(client, command_args, is_fetch_incidents=True, first_fetch=True)
-
-    return command_result.outputs, latest_created_time
-
-
-def fetch_incidents_via_incident_number(last_fetch_time: str, last_incident_number: int, client: AzureSentinelClient):
-    """Fetching incidents
-    Args:
-        last_fetch_time: The last fetch time.
-        last_incident_number: The last incident number.
-        client: an AzureSentinelClient client.
-
-    Returns:
-        An array of incidents, and a latest created time.
-    """
-    last_fetch_time = dateparser.parse(last_fetch_time)
-    latest_created_time = last_fetch_time
-    command_args = {'filter': f'properties/incidentNumber ge {last_incident_number}'}
-
-    demisto.debug(f"{command_args=}")
-    command_result = list_incidents_command(client, command_args, is_fetch_incidents=True, first_fetch=False)
-
-    return command_result.outputs, latest_created_time
-
-
-def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: int, latest_created_time: datetime, last_incident_number: int):
-    """Processing the raw incidents
-    Args:
-        raw_incidents: The incidents that were fetched from the API.
-        last_fetch_ids: The last fetch ids from the last run.
-        last_incident_number: The last incident number that was fetched.
-        latest_created_time: The latest created time.
-        min_severity: The minimum severity.
-
-    Returns:
-        A next_run dictionary, and an array of incidents.
-    """
-    demisto.debug(f"{latest_created_time=}, {last_incident_number=}")
+    command_result = list_incidents_command(client, command_args, is_fetch_incidents=True)
+    items = command_result.outputs
     incidents = []
     current_fetch_ids = []
-    if not last_incident_number:
-        last_incident_number = 0
 
-    for incident in raw_incidents:
+    for incident in items:
         incident_severity = severity_to_level(incident.get('Severity'))
-        demisto.debug(f"{incident.get('ID')=}, {incident_severity=}, {incident.get('IncidentNumber')=}")
 
         # fetch only incidents that weren't fetched in the last run and their severity is at least min_severity
-        # and their id is larger then the previous incident.
-        if incident.get('ID') not in last_fetch_ids and incident_severity >= min_severity and incident.get('IncidentNumber') > last_incident_number:
-
+        if incident.get('ID') not in last_fetch_ids and incident_severity >= min_severity:
             incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
             xsoar_incident = {
                 'name': '[Azure Sentinel] ' + incident.get('Title'),
@@ -992,15 +880,10 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
             # Update last run to the latest fetch time
             if incident_created_time > latest_created_time:
                 latest_created_time = incident_created_time
-                demisto.debug(f"changing the latest_created_time to:{latest_created_time}")
-            if incident.get('IncidentNumber') > last_incident_number:
-                last_incident_number = incident.get('IncidentNumber')
-                demisto.debug(f"changing the last_incident_number to:{last_incident_number}")
 
     next_run = {
         'last_fetch_time': latest_created_time.strftime(DATE_FORMAT),
-        'last_fetch_ids': current_fetch_ids,
-        'last_incident_number': last_incident_number
+        'last_fetch_ids': current_fetch_ids
     }
     return next_run, incidents
 
@@ -1008,7 +891,6 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
 def threat_indicators_data_to_xsoar_format(ind_data):
     """
     Convert the threat indicators data from the raw to XSOAR format.
-
     :param ind_data: (dict) The incident raw data.
     """
 
@@ -1421,6 +1303,7 @@ def main():
         elif demisto.command() == 'fetch-incidents':
             # How much time before the first fetch to retrieve incidents
             first_fetch_time = params.get('fetch_time', '3 days').strip()
+
             min_severity = severity_to_level(params.get('min_severity', 'Informational'))
 
             # Set and define the fetch incidents command to run after activated via integration settings.
