@@ -366,6 +366,8 @@ def fetch_incidents(client: Client, env: str, args=None):
     demisto.debug(f"Last Run/Incident Time: {last_run}")
     demisto.setLastRun({"start_time": last_run})
 
+    demisto.incidents(incidents)
+
     return incidents
 
 
