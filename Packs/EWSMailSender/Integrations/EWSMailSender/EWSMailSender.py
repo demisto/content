@@ -116,7 +116,7 @@ def get_account(account_email):
             response.root  # Check if you have access to root directory
             return response
         except UnauthorizedError:
-            demisto.debug("Got unauthorized error, This is the: {} attempt".format(i))
+            demisto.debug("Got unauthorized error, This is attempt number {}".format(i))
             continue
     return response
 
