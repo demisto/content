@@ -50,9 +50,10 @@ def test_calculate_dbot_score():
 
 
 def test_fix_markdown():
-    text_to_update = "##Bluebird Overlaps\n\n Pivoting from the sample's import hash"
-    expected_output = "## Bluebird Overlaps\n\n Pivoting from the sample's import hash"
+    text_to_update = "##Key Findings and Judgements\n\n* The sophisticated [cyber espionage operation](/#/node/intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4) was selective; it used supply-chain attack techniques, mainly a malicious update of a widely used product from IT monitoring firm SolarWinds, but its final target list appears to number only in the hundreds. Known targets include public- and private-sector entities, mostly in the US, including IT vendors, US government entities, and think tanks."
+    expected_output = "## Key Findings and Judgements\n\n* The sophisticated [cyber espionage operation](https://intelgraph.idefense.com/node/intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4) was selective; it used supply-chain attack techniques, mainly a malicious update of a widely used product from IT monitoring firm SolarWinds, but its final target list appears to number only in the hundreds. Known targets include public- and private-sector entities, mostly in the US, including IT vendors, US government entities, and think tanks."
     output = fix_markdown(text_to_update)
+    print(output)
     assert expected_output == output
 
 

@@ -128,24 +128,24 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability, ia_ir_url: str)
                 'title' : Res.get('title','NA'),
                 'type' : Res.get('type','NA'),
                 'uuid' : uuid,
-                'analysis' : Res.get('analysis','NA'),
+                'analysis' : fix_markdown(Res.get('analysis','NA')),
                 'sources_external' : Res.get('sources_external','NA')
 
         }
     
     type_of_report = Res.get('type','NA')
     if 'intelligence_report' in type_of_report:
-        context['conclusion'] = Res.get('conclusion','NA')
-        context['summary'] = Res.get('summary','NA')
+        context['conclusion'] = fix_markdown(Res.get('conclusion','NA'))
+        context['summary'] = fix_markdown(Res.get('summary','NA'))
         severity_dbot_score = Common.DBotScore.NONE
         indicatortype = 'ACTI Intelligence Report'
     else:
         severity_dbot_score = Res.get('severity','NA')
         if severity_dbot_score != 'NA':
             severity_dbot_score = _calculate_dbot_score(severity_dbot_score)
-        context['mitigation'] = Res.get('mitigation','NA')
+        context['mitigation'] = fix_markdown(Res.get('mitigation','NA'))
         context['severity'] = Res.get('severity','NA')
-        context['abstract'] = Res.get('abstract','NA')
+        context['abstract'] = fix_markdown(Res.get('abstract','NA'))
         attachment_links = Res.get('attachment_links','')
         fqlink: str = ''
         if attachment_links:
