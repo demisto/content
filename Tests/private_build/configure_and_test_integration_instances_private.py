@@ -24,9 +24,9 @@ def install_private_testing_pack(build: Build, test_pack_zip_path: str):
 
     :param build: Build object containing the build settings.
     :param test_pack_zip_path: Path to test_pack zip.
-    :return: No object is returned. nightly_install_packs will wait for the process to finish.
+    :return: No object is returned. concurrently_run_function_on_servers will wait for the process to finish.
     """
-    build.nightly_install_packs(install_method=upload_zipped_packs,
+    build.concurrently_run_function_on_servers(function=upload_zipped_packs,
                                 pack_path=test_pack_zip_path)
 
 

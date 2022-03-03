@@ -237,6 +237,7 @@ class Build:
         pass
 
     def install_nightly_pack(self):
+        # todo: override. XSIAM and XSOAR manages this differenet
         pass
 
     def test_integrations_post_update(self, new_module_instances: list,
@@ -287,21 +288,21 @@ class Build:
             installed_content_packs_successfully = self.install_packs(pack_ids=pack_ids)
         return installed_content_packs_successfully
 
-    def nightly_install_packs(self, install_method=None, pack_path=None, service_account=None):
+    def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         threads_list = []
 
-        if not install_method:
+        if not function:
             raise Exception('Install method was not provided.')
 
         # For each server url we install pack/ packs
         for server in self.servers:
-            #  TODO: change internal ip
+            #  TODO: xsiam change internal ip
             kwargs = {'client': server.client, 'host': server.internal_ip}
             if service_account:
                 kwargs['service_account'] = service_account
             if pack_path:
                 kwargs['pack_path'] = pack_path
-            threads_list.append(Thread(target=install_method, kwargs=kwargs))
+            threads_list.append(Thread(target=function, kwargs=kwargs))
         run_threads_list(threads_list)
 
     def install_packs(self, pack_ids=None):
@@ -561,14 +562,21 @@ class XSOARBuild(Build):
             sleep(60)
 
     def install_nightly_pack(self):
+        """
+        Installs all existing packs in master
+        Collects all existing test playbooks, saves them to test_pack.zip
+        Uploads test_pack.zip to server
+        Args:
+            self: A build object
+        """
         # Install all existing packs with latest version
-        self.nightly_install_packs(install_method=install_all_content_packs_for_nightly,
-                                   service_account=self.service_account)
+        self.concurrently_run_function_on_servers(function=install_all_content_packs_for_nightly,
+                                                  service_account=self.service_account)
         # creates zip file test_pack.zip witch contains all existing TestPlaybooks
         create_nightly_test_pack()
         # uploads test_pack.zip to all servers
-        self.nightly_install_packs(install_method=upload_zipped_packs,
-                                   pack_path=f'{Build.test_pack_target}/test_pack.zip')
+        self.concurrently_run_function_on_servers(function=upload_zipped_packs,
+                                                  pack_path=f'{Build.test_pack_target}/test_pack.zip')
 
         logging.info('Sleeping for 45 seconds while installing nightly packs')
         sleep(45)
@@ -676,7 +684,6 @@ class XSIAMBuild(Build):
     def test_integration_with_mock(self, instance: dict, pre_update: bool):
         # TODO: cant be done in xsiam
         pass
-
 
 
 def options_handler():
