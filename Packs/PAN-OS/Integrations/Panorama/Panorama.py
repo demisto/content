@@ -411,6 +411,14 @@ def panorama_test():
     if template:
         template_test(template)
 
+    try:
+        # Test the topology functionality
+        topology = get_topology()
+        test_topology_connectivity(topology)
+    except Exception as exception_text:
+        demisto.debug(f"Failed to create topology; topology commands will not work. {exception_text}")
+        pass
+
     return_results('ok')
 
 
@@ -7816,7 +7824,7 @@ class Topology:
         # Changed to only refer to active devices, no passives.
         device_retrieval_func = self.active_devices
         if top_level_devices_only:
-            device_retrieval_func = self.active_top_level_devices  # type: ignore
+            device_retrieval_func = self.active_top_level_devices
 
         for device in device_retrieval_func(device_filter_string):
             device_groups = DeviceGroup.refreshall(device)
@@ -9246,9 +9254,6 @@ def main():
 
         if command == 'test-module':
             panorama_test()
-            # Test the topology is working as well
-            topology = get_topology()
-            test_topology_connectivity(topology)
         elif command == 'panorama' or command == 'pan-os':
             panorama_command(args)
 
