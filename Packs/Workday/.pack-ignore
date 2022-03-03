@@ -3,3 +3,12 @@ ignore=IN126,BA108,BA109
 
 [file:Workday.yml]
 ignore=IN145
+
+[file:Workday_image.png]
+ignore=IM111
+
+[file:WorkdayIAMEventsGenerator_image.png]
+ignore=IM111
+
+[file:Workday_IAM_image.png]
+ignore=IM111
