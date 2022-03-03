@@ -7,7 +7,7 @@ import pytest
 
 import demistomock as demisto
 
-CAMPAIGN_WITH_DURATION_RESULT = f"""
+CAMPAIGN_WITH_DURATION_RESULT = """
                 <div style="display: grid; grid-template-columns: auto auto auto auto auto auto; width: 300px;">
                 <div style="font-size: 25px; ">&#128345;</div>
                 <div style="font-size: 30px; text-align: center;">30</div>
