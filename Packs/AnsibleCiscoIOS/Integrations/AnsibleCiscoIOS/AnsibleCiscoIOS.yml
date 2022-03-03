@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: AnsibleCiscoIOS
+  id: AnsibleCiscoIOSTest
   version: -1
 configuration:
 - additionalinfo: The credentials to associate with the instance. SSH keys can be
@@ -28,9 +28,9 @@ configuration:
   required: true
   type: 0
 description: Cisco IOS Platform management over SSH
-display: Ansible Cisco IOS
+display: Ansible Cisco IOS Test
 fromversion: 6.0.0
-name: AnsibleCiscoIOS
+name: AnsibleCiscoIOSTest
 script:
   commands:
   - arguments:
