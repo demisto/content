@@ -492,7 +492,8 @@ def test_file_command(requests_mock, mocker, file: str, mocked_address: str, moc
     When
             Calling the !file command
     Then
-            Make sure the api calls are made correctly
+            Make sure the api calls are made correctly.
+            Parsing is not tested as it's equivalent in other commands.
     """
     mocker.patch.object(Client, '_generate_token', return_value='token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
@@ -502,24 +503,11 @@ def test_file_command(requests_mock, mocker, file: str, mocked_address: str, moc
     from CrowdStrikeFalconX import file_command
     args = {'file': file}
     id_query_mock = requests_mock.get(mocked_address, json=mocked_response)
-    search_query_mocks = [
-        requests_mock.get(f'https://api.crowdstrike.com/falconx/entities/reports/v1?ids={file_id}', json={})
-        for file_id in file_ids
-    ]
+    search_query_mocks = [requests_mock.get(f'https://api.crowdstrike.com/falconx/entities/reports/v1?ids={file_id}',
+                                            json={}) for file_id in file_ids]
 
     command_results = file_command(client, **args)
 
     assert id_query_mock.call_count == 1
     assert all(mocked_search.call_count == 1 for mocked_search in search_query_mocks)
     assert isinstance(command_results, list) and len(command_results) == len(file_ids)
-
-    for result in command_results:
-        # to avoid testing get_full_report, the context used is of an empty result
-        assert result.to_context() == \
-               {'Type': 1, 'ContentsFormat': 'json', 'Contents': None, 'HumanReadable': (
-                   'There are no results yet for this sample, its analysis might not have been completed. '
-                   'Please wait to download the report.\nYou can use cs-fx-get-analysis-status to check '
-                   'the status of a sandbox analysis.',),
-                'EntryContext': {'csfalconx.resource(val.id && val.id == obj.id)': {}},
-                'IndicatorTimeline': [], 'IgnoreAutoExtract': False, 'Note': False,
-                'Relationships': []}

@@ -439,31 +439,26 @@ class Client:
         }
         return self._http_request("Get", url_suffix, params=params)
 
-    def file(self, file_hashes: list[str]) -> list[CommandResults]:
+    def query_report_ids(self, file_hashes: list[str]) -> list[str]:
         params = {'filter': ",".join(f'sandbox.sha256:"{sha256}"' for sha256 in file_hashes)}
-
         response = self._http_request('get', url_suffix='/falconx/queries/reports/v1', params=params)
-        report_ids = response.get('resources', [])
-        demisto.debug(f'{report_ids=}')
-
-        command_results, _ = get_full_report_command(self, ids=report_ids, extended_data='FILE')
-        return command_results
+        return response.get('resources', [])
 
 
-def filter_dictionary(dictionary: dict, fields_to_keep: Optional[list], sort_by_field_list: bool = False) -> dict:
+def filter_dictionary(dictionary: dict, fields_to_keep: Optional[tuple], sort_by_field_list: bool = False) -> dict:
     """
     Filters a dictionary and keeps only the keys that appears in the given list
     :param dictionary: the origin dict
     :param fields_to_keep: the list which contains the wanted keys
     :param sort_by_field_list: whether to sort the dictionary keys according to the field list
     :return: the dictionary, with only fields that appeared in fields_to_keep.
-    >>> filter_dictionary({1:2,3:4}, [3])
+    >>> filter_dictionary({1:2,3:4}, (3,))
     {3: 4}
-    >>> filter_dictionary({1:2,3:4}, [3,1])
+    >>> filter_dictionary({1:2,3:4}, (3,1))
     {1: 2, 3: 4}
-    >>> filter_dictionary({1:2,3:4}, [3,1], True)
+    >>> filter_dictionary({1:2,3:4}, (3,1), True)
     {3: 4, 1: 2}
-    >>> filter_dictionary({1:2,3:4}, [], True)
+    >>> filter_dictionary({1:2,3:4}, (,), True)
     {}
     >>> filter_dictionary({1:2,3:4}, None)
     {}
@@ -477,19 +472,52 @@ def filter_dictionary(dictionary: dict, fields_to_keep: Optional[list], sort_by_
     return filtered
 
 
-def file_command(client: Client, **args: dict):
-    file_hashes: list[str] = argToList(args.get('file', ''))
-    return client.file(file_hashes)
+def file_command(client: Client, **args: dict) -> list[CommandResults]:
+    resources_fields = ('filetype', 'file_size', 'sha256', 'threat_score', 'verdict')
+
+    file_hashes = argToList(args.get('file', ''))
+    demisto.debug(f'{file_hashes=}')
+    report_ids = client.query_report_ids(file_hashes)
+
+    command_results: list[CommandResults] = []
+
+    for report_id in report_ids:
+        response = client.get_full_report(report_id)
+        result = parse_outputs(response, reliability=client.reliability, resources_fields=resources_fields)
+
+        if result.output:
+            readable_output = tableToMarkdown("CrowdStrike Falcon X response:", result.output)
+        else:
+            readable_output = f'There are no results yet for {report_id=}, ' \
+                              f'its analysis might not have been completed. ' \
+                              'Please wait to download the report.\n' \
+                              'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.',
+
+        command_results.append(CommandResults(outputs_key_field='sha256',
+                                              outputs_prefix=OUTPUTS_PREFIX,
+                                              outputs=result.output,
+                                              readable_output=readable_output,
+                                              raw_response=result.response,
+                                              indicator=result.indicator))
+    if not command_results:
+        command_results = [
+            CommandResults(readable_output=f'There are no results yet for the any of the {file_hashes=}, '
+                                           'analysis might not have been completed. '
+                                           'Please wait to download the report.\n'
+                                           'You can use cs-fx-get-analysis-status to check the status '
+                                           'of a sandbox analysis.')
+        ]
+    return command_results
 
 
 def parse_outputs(
         response: dict,
         reliability: str,
-        meta_fields: Optional[list] = None,
-        quota_fields: Optional[list] = None,
-        resources_fields: Optional[list] = None,
-        sandbox_fields: Optional[list] = None,
-        extra_sandbox_fields: Optional[list] = None,
+        meta_fields: Optional[tuple[str, ...]] = None,
+        quota_fields: Optional[tuple] = None,
+        resources_fields: Optional[tuple] = None,
+        sandbox_fields: Optional[tuple] = None,
+        extra_sandbox_fields: Optional[tuple] = None,
 ) -> CommandResultArguments:
     """Parse group data as received from CrowdStrike FalconX API matching Demisto conventions
     the output from the API is a dict that contains the keys: meta, resources and errors
@@ -647,7 +675,7 @@ def upload_file_command(  # type: ignore[return]
     """
     response = client.upload_file(file, file_name, is_confidential, comment)
 
-    resources_fields = ["file_name", "sha256"]
+    resources_fields = ("file_name", "sha256")
     result = parse_outputs(response, client.reliability, resources_fields=resources_fields)
     if submit_file == 'no':
         return CommandResults(
@@ -691,8 +719,8 @@ def send_uploaded_file_to_sandbox_analysis_command(
                                                              document_password, enable_tor, submit_name, system_date,
                                                              system_time)
 
-    sandbox_fields = ["environment_id", "sha256"]
-    resource_fields = ['id', 'state', 'created_timestamp', 'created_timestamp']
+    sandbox_fields = ("environment_id", "sha256")
+    resource_fields = ('id', 'state', 'created_timestamp', 'created_timestamp')
     result = parse_outputs(response, reliability=client.reliability,
                            sandbox_fields=sandbox_fields, resources_fields=resource_fields)
     if result.output:  # the "if" is here to calm mypy down
@@ -736,8 +764,8 @@ def send_url_to_sandbox_analysis_command(
     response = client.send_url_to_sandbox_analysis(url, environment_id, action_script, command_line, document_password,
                                                    enable_tor, submit_name, system_date, system_time)
 
-    resources_fields = ['id', 'state', 'created_timestamp']
-    sandbox_fields = ["environment_id", "sha256"]
+    resources_fields = ('id', 'state', 'created_timestamp')
+    sandbox_fields = ("environment_id", "sha256")
     result = parse_outputs(response, client.reliability, resources_fields=resources_fields,
                            sandbox_fields=sandbox_fields)
     if result.output:  # the "if" is here to calm mypy down
@@ -763,24 +791,26 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
     results: list[CommandResultArguments] = []
     is_command_finished: bool = False
 
-    resources_fields = ['id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
+    resources_fields = ('id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
                         "ioc_report_broad_csv_artifact_id", "ioc_report_strict_json_artifact_id",
                         "ioc_report_broad_json_artifact_id", "ioc_report_strict_stix_artifact_id",
                         "ioc_report_broad_stix_artifact_id", "ioc_report_strict_maec_artifact_id",
-                        "ioc_report_broad_maec_artifact_id", 'tags', "intel"]
+                        "ioc_report_broad_maec_artifact_id", 'tags', "intel")
 
-    sandbox_fields = [
+    sandbox_fields = (
         "environment_id", "environment_description", "threat_score", "submit_url", "submission_type", "filetype",
         "filesize", "sha256"
-    ]
-    extra_sandbox_fields = [
+    )
+    extra_sandbox_fields = (
         "processes", "architecture", "classification", "classification_tags", "http_requests",
         "extracted_files", "file_metadata", "file_size", "file_type", "file_type_short", "packer", "incidents",
         "submit_name", "screenshots_artifact_ids", "dns_requests", "contacted_hosts", "contacted_hosts"
-    ]
+    )
 
-    hr_fields = ['sha256', 'environment_description', 'environment_id', 'created_timestamp', 'id', 'submission_type',
-                 'threat_score', 'verdict']
+    hr_fields = (
+        'sha256', 'environment_description', 'environment_id', 'created_timestamp', 'id', 'submission_type',
+        'threat_score', 'verdict'
+    )
 
     for id_ in argToList(ids):
         response = client.get_full_report(id_)
@@ -788,7 +818,7 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
             is_command_finished = True  # flag used when commands
 
         if extended_data == 'true':
-            extra_sandbox_fields.extend(["mitre_attacks", "signatures"])
+            extra_sandbox_fields += ("mitre_attacks", "signatures")
 
         result = parse_outputs(response, reliability=client.reliability,
                                resources_fields=resources_fields, sandbox_fields=sandbox_fields,
@@ -835,16 +865,18 @@ def get_report_summary_command(
     """
     results: list[CommandResultArguments] = []
 
-    resources_fields = [
+    resources_fields = (
         'id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
         "ioc_report_broad_csv_artifact_id", "ioc_report_strict_json_artifact_id",
         "ioc_report_broad_json_artifact_id", "ioc_report_strict_stix_artifact_id",
         "ioc_report_broad_stix_artifact_id", "ioc_report_strict_maec_artifact_id",
         "ioc_report_broad_maec_artifact_id"
-    ]
+    )
 
-    sandbox_fields = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
-                      "filetype", "filesize", "sha256"]
+    sandbox_fields = (
+        "environment_id", "environment_description", "threat_score", "submit_url", "submission_type", "filetype",
+        "filesize", "sha256"
+    )
 
     for single_id in argToList(ids):
         response = client.get_report_summary(single_id)
@@ -879,10 +911,10 @@ def get_analysis_status_command(
 
     for single_id in argToList(ids):
         response = client.get_analysis_status(single_id)
-        resources_fields = ['id', 'state', 'created_timestamp']
-        sandbox_fields = ["environment_id", "sha256"]
-        result = parse_outputs(response, reliability=client.reliability,
-                               resources_fields=resources_fields, sandbox_fields=sandbox_fields)
+        resources_fields = ('id', 'state', 'created_timestamp')
+        sandbox_fields = ("environment_id", "sha256")
+        result = parse_outputs(response, reliability=client.reliability, resources_fields=resources_fields,
+                               sandbox_fields=sandbox_fields)
         results.append(result)
 
     return [CommandResults(outputs_key_field='id',
@@ -928,7 +960,7 @@ def check_quota_status_command(
     :return: Demisto outputs when entry_context and responses are lists
     """
     response = client.check_quota_status()
-    quota_fields = ['total', 'used', 'in_progress']
+    quota_fields = ('total', 'used', 'in_progress')
 
     result = parse_outputs(response, client.reliability, quota_fields=quota_fields)
 
@@ -957,10 +989,7 @@ def find_sandbox_reports_command(
     :return: Demisto outputs when entry_context and responses are lists
     """
     response = client.find_sandbox_reports(limit, filter, offset, sort, hash)
-    resources_fields = ['id']
-
-    result = parse_outputs(response, reliability=client.reliability,
-                           resources_fields=resources_fields)  # todo use indicator
+    result = parse_outputs(response, reliability=client.reliability, resources_fields=('id',))
     return CommandResults(outputs_key_field='id',
                           outputs_prefix=OUTPUTS_PREFIX,
                           outputs=result.output,
@@ -985,9 +1014,7 @@ def find_submission_id_command(
     :return: Demisto outputs when entry_context and responses are lists
     """
     response = client.find_submission_id(limit, filter, offset, sort)
-
-    resources_fields = ['id']
-    result = parse_outputs(response, reliability=client.reliability, resources_fields=resources_fields)
+    result = parse_outputs(response, reliability=client.reliability, resources_fields=('id',))
 
     return CommandResults(outputs_key_field='id',
                           outputs_prefix=OUTPUTS_PREFIX,
