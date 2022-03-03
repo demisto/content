@@ -1,5 +1,5 @@
 Accenture CTI provides intelligence regarding security threats and vulnerabilities.
-This integration was integrated and tested with version v2.89.0 of ACTI
+This integration was integrated and tested with version v2.90.0 of ACTI
 ## Configure ACTI ThreatIntel Report on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -37,7 +37,7 @@ Fetches intelligence alerts and reports from ACTI IntelGraph to XSOAR platform.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IAIR.abstract | String | The abstract of the IAIR, for example: The worldwide COVID-19 outbreak... |   
+| IAIR.abstract | String | This field is specific to Intelligence Alert and provides a summarised context, for example: The worldwide COVID-19 outbreak... |   
 | IAIR.last_published | String | The last published date of the IAIR, for example: 2020-06-26T01:14:56.000Z |
 | IAIR.index_timestamp | String | The index timestamp of the IAIR, for example: 2022-02-11T17:24:03.604Z |
 | IAIR.display_text | String | The display text of the IAIR, for example: SITREP: Cybersecurity Risks Related to COVID-19 |
@@ -49,10 +49,12 @@ Fetches intelligence alerts and reports from ACTI IntelGraph to XSOAR platform.
 | IAIR.type | String | The type of the IAIR, for example: intelligence_alert |
 | IAIR.uuid | String | The uuid of the IAIR, for example: 8b8b48f1-92a0-411a-a073-3241f6819f8b |
 | IAIR.analysis | String | The analysis of the IAIR, for example: COVID-19 Introduces Cyberthreat Opportunities |
-| IAIR.attachment_links | String | The attachment links of the IAIR, for example:  https://intelgraph.idefense.com/rest/files/download/....... |
-| IAIR.severity | String | The severity of the IAIR, for example: 4 |
+| IAIR.attachment_links | String | Provides with the document links related to the Intelligence Alert. This field is specific to Intelligence Alert, for example:  https://intelgraph.idefense.com/rest/files/download/....... |
+| IAIR.severity | String | Provides severity rating. This field is specific to Intelligence Alert, for example: 4 |
 | IAIR.key | String | The key of the IAIR, for example: c0ea8f2f-372c-44d1-ad81-efde4971110e |
-| IAIR.mitigation | String | The mitigation of the IAIR, for example: ##Expert, Experienced Advice Will be CriticalTo minimize targeting opportunities.... |
+| IAIR.mitigation | String | Provides info on how to mitigate. This field is specific to Intelligence Alert, for example: ##Expert, Experienced Advice Will be CriticalTo minimize targeting opportunities.... |
+| IAIR.conclusion | String | Provides conclusion of the report. This field is specific to Intelligence Report |
+| IAIR.summary | String | Provides with a summary of the report. This field is specific to Intelligence Alert |
 
 
 
@@ -95,8 +97,7 @@ Fetches intelligence alerts and reports from ACTI IntelGraph to XSOAR platform.
 
 #### Human Readable Output
 
->### Results
 >Report has been fetched!
->UUID: 8b8b48f1-92a0-411a-a073-3241f6819f8b
->URL to view report:https://intelgraph.idefense.com/#/node/intelligence_alert/view/8b8b48f1-92a0-411a-a073-3241f6819f8b
+><br>UUID: 8b8b48f1-92a0-411a-a073-3241f6819f8b
+><br>URL to view report:https://intelgraph.idefense.com/#/node/intelligence_alert/view/8b8b48f1-92a0-411a-a073-3241f6819f8b
 
