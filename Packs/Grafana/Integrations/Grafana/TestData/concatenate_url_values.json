@@ -1,0 +1,150 @@
+{
+  "url_with_nothing_at_the_end": [
+    [
+      {
+        "id": 1,
+        "dashboardId": 1,
+        "dashboardUid": "TXSTREZ",
+        "dashboardSlug": "simple-streaming-example",
+        "panelId": 4,
+        "name": "Arseny's Alert",
+        "state": "no_data",
+        "newStateDate": "2021-06-09T15:20:01Z",
+        "evalDate": "0001-01-01T00:00:00Z",
+        "evalData": {
+          "noData": true
+        },
+        "executionError": "",
+        "url": "/d/TXSTREZ/simple-streaming-example"
+      },
+      {
+        "id": 2,
+        "dashboardId": 2,
+        "dashboardUid": "yzDQUOR7z",
+        "dashboardSlug": "simple-streaming-example-adis-copy",
+        "panelId": 5,
+        "name": "Adi's Alert",
+        "state": "paused",
+        "newStateDate": "2021-06-15T14:27:40.178025099Z",
+        "evalDate": "0001-01-01T00:00:00Z",
+        "evalData": null,
+        "executionError": "",
+        "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+      }
+    ],
+    [
+      {
+        "id": 1,
+        "dashboardId": 1,
+        "dashboardUid": "TXSTREZ",
+        "dashboardSlug": "simple-streaming-example",
+        "panelId": 4,
+        "name": "Arseny's Alert",
+        "state": "no_data",
+        "newStateDate": "2021-06-09T15:20:01Z",
+        "evalDate": "0001-01-01T00:00:00Z",
+        "evalData": {
+          "noData": true
+        },
+        "executionError": "",
+        "url": "https://base_url/d/TXSTREZ/simple-streaming-example"
+      },
+      {
+        "id": 2,
+        "dashboardId": 2,
+        "dashboardUid": "yzDQUOR7z",
+        "dashboardSlug": "simple-streaming-example-adis-copy",
+        "panelId": 5,
+        "name": "Adi's Alert",
+        "state": "paused",
+        "newStateDate": "2021-06-15T14:27:40.178025099Z",
+        "evalDate": "0001-01-01T00:00:00Z",
+        "evalData": null,
+        "executionError": "",
+        "url": "https://base_url/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+      }
+    ]
+  ],
+  "url_with_end_character": [
+    [
+      {
+        "id": 1,
+        "uid": "TXSTREZ",
+        "title": "Simple Streaming Example",
+        "uri": "db/simple-streaming-example",
+        "url": "/d/TXSTREZ/simple-streaming-example",
+        "slug": "",
+        "type": "dash-db",
+        "tags": [],
+        "isStarred": true,
+        "sortMeta": 0
+      },
+      {
+        "id": 2,
+        "uid": "yzDQUOR7z",
+        "title": "Simple Streaming Example - Adi's Copy",
+        "uri": "db/simple-streaming-example-adis-copy",
+        "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy",
+        "slug": "",
+        "type": "dash-db",
+        "tags": [],
+        "isStarred": false,
+        "sortMeta": 0
+      }
+    ],
+    [
+      {
+        "id": 1,
+        "uid": "TXSTREZ",
+        "title": "Simple Streaming Example",
+        "uri": "db/simple-streaming-example",
+        "url": "https://00.000.000.000:0000/d/TXSTREZ/simple-streaming-example",
+        "slug": "",
+        "type": "dash-db",
+        "tags": [],
+        "isStarred": true,
+        "sortMeta": 0
+      },
+      {
+        "id": 2,
+        "uid": "yzDQUOR7z",
+        "title": "Simple Streaming Example - Adi's Copy",
+        "uri": "db/simple-streaming-example-adis-copy",
+        "url": "https://00.000.000.000:0000/d/yzDQUOR7z/simple-streaming-example-adis-copy",
+        "slug": "",
+        "type": "dash-db",
+        "tags": [],
+        "isStarred": false,
+        "sortMeta": 0
+      }
+    ]
+  ],
+  "no_url_field_at_given_list": [
+    [
+      {
+        "id": 1,
+        "dashboardId": 1,
+        "state": "no_data"
+      },
+      {
+        "id": 2,
+        "dashboardId": 2,
+        "panelId": 5,
+        "state": "paused"
+      }
+    ],
+    [
+      {
+        "id": 1,
+        "dashboardId": 1,
+        "state": "no_data"
+      },
+      {
+        "id": 2,
+        "dashboardId": 2,
+        "panelId": 5,
+        "state": "paused"
+      }
+    ]
+  ]
+}

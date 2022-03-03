@@ -1,0 +1,21 @@
+{
+    "name": "ArrayToCSV",
+    "description": "Converts a simple Array into a textual comma separated string",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Omar Salim Ahmed",
+    "url": "",
+    "email": "",
+    "created": "2021-12-25T22:05:53Z",
+    "categories": ["Utilities"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "os-groot"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

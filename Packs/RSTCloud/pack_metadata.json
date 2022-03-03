@@ -53,5 +53,9 @@
         "k1r10n"
     ],
     "dependencies": {},
-    "displayedImages": []
+    "displayedImages": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

@@ -1,0 +1,264 @@
+category: Utilities
+commonfields:
+  id: Camlytics
+  version: -1
+configuration:
+- defaultvalue: http://www.example.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: You can use this integration to automate different Camlytics surveillance
+  analysis actions.
+display: Camlytics
+name: Camlytics
+script:
+  commands:
+  - deprecated: false
+    description: Retrieve video channels
+    execution: false
+    name: camlytics-get-channels
+    outputs:
+    - contextPath: Camlytics.Channels.channel_id
+      description: The channel ID.
+      type: String
+    - contextPath: Camlytics.Channels.name
+      description: The channel name.
+      type: String
+    - contextPath: Camlytics.Channels.type
+      description: The channel type.
+      type: String
+    - contextPath: Camlytics.Channels.stream_uri
+      description: The channel stream_ur.
+      type: String
+    - contextPath: Camlytics.Channels.login
+      description: The channel login.
+      type: String
+    - contextPath: Camlytics.Channels.password
+      description: The channel password.
+      type: String
+    - contextPath: Camlytics.Channels.uri
+      description: The channel uri.
+      type: String
+    - contextPath: Camlytics.Channels.profile_name
+      description: The channel profile.
+      type: String
+    - contextPath: Camlytics.Channels.profile_token
+      description: The channel profile token.
+      type: String
+  - arguments:
+    - default: false
+      description: The channel ID.
+      isArray: false
+      name: channelid
+      required: false
+      secret: false
+    - default: false
+      description: The since time.
+      isArray: false
+      name: sincetime
+      required: false
+      secret: false
+    - default: false
+      description: The until time.
+      isArray: false
+      name: untiltime
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The origin that generated the events. For example, if you want
+        to display only vehicles events and skip pedestrians in your report, choose
+        Vehicle.
+      isArray: false
+      name: origin
+      predefined:
+      - Pedestrians
+      - Vehicle
+      - Uknown
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve video analytics events totals grouped by calibration rules,
+      these rules can be defined using zones and lines to set areas where different
+      camera events will be generated. For example, you can add zone where you want
+      signalize all of all entered objects, line where you want to count people, etc.
+    execution: false
+    name: camlytics-get-events-totals-by-rule
+    outputs:
+    - contextPath: Camlytics.EventsTotalsRule.channel_id
+      description: The channel ID.
+      type: String
+    - contextPath: Camlytics.EventsTotalsRule.rule_count
+      description: The rule count.
+      type: Number
+    - contextPath: Camlytics.EventsTotalsRule.rule_id
+      description: The rule ID.
+      type: String
+    - contextPath: Camlytics.EventsTotalsRule.rule_name
+      description: The rule name.
+      type: String
+  - arguments:
+    - default: false
+      description: The channel ID.
+      isArray: false
+      name: channelid
+      required: false
+      secret: false
+    - default: false
+      description: The since time.
+      isArray: false
+      name: sincetime
+      required: false
+      secret: false
+    - default: false
+      description: The until time.
+      isArray: false
+      name: untiltime
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The origin that generated the events. For example, if you want
+        to display only vehicles events and skip pedestrians in your report, choose
+        Vehicle.
+      isArray: false
+      name: origin
+      predefined:
+      - Pedestrians
+      - Vehicle
+      - Uknown
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Retrieve video analytics events totals grouped by analytics event
+      type. For example: ObjectAppear, Tailgating, Sabotage and TripwireCrossed.'
+    execution: false
+    name: camlytics-get-events-totals-by-type
+    outputs:
+    - contextPath: Camlytics.EventsTotalsType.channel_id
+      description: The channel ID.
+      type: String
+    - contextPath: Camlytics.EventsTotalsType.type
+      description: 'The event type. For example: ObjectAppear, Tailgating, Sabotage
+        and TripwireCrossed.'
+      type: String
+    - contextPath: Camlytics.EventsTotalsType.type_count
+      description: The type count.
+      type: Number
+  - arguments:
+    - default: false
+      description: The channel ID.
+      isArray: false
+      name: channelid
+      required: false
+      secret: false
+    - default: false
+      description: The since ID.
+      isArray: false
+      name: sinceid
+      required: false
+      secret: false
+    - default: false
+      description: The since time.
+      isArray: false
+      name: sincetime
+      required: false
+      secret: false
+    - default: false
+      description: The until ID.
+      isArray: false
+      name: untilid
+      required: false
+      secret: false
+    - default: false
+      description: The until time.
+      isArray: false
+      name: untiltime
+      required: false
+      secret: false
+    - default: false
+      description: The limit.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The order.
+      isArray: false
+      name: order
+      required: false
+      secret: false
+    - default: false
+      description: The timeout.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve video analytics events ordered by event id.
+    execution: false
+    name: camlytics-get-events
+    outputs:
+    - contextPath: Camlytics.Events.event_id
+      description: The event ID.
+      type: String
+    - contextPath: Camlytics.Events.type
+      description: The event type.
+      type: String
+    - contextPath: Camlytics.Events.time
+      description: The event time.
+      type: String
+    - contextPath: Camlytics.Events.timestamp
+      description: The event timestamp.
+      type: String
+    - contextPath: Camlytics.Events.channel_id
+      description: The event channel id.
+      type: String
+    - contextPath: Camlytics.Events.channel_name
+      description: The event channel name.
+      type: String
+    - contextPath: Camlytics.Events.object_id
+      description: The event object id.
+      type: String
+    - contextPath: Camlytics.Events.origin
+      description: The event origin.
+      type: String
+    - contextPath: Camlytics.Events.rule_id
+      description: The event rule id.
+      type: String
+    - contextPath: Camlytics.Events.rule_name
+      description: The event rule name.
+      type: String
+    - contextPath: Camlytics.Events.snapshot_path
+      description: The event snapshot path.
+      type: String
+    - contextPath: Camlytics.Events.recording_path
+      description: The event recording path.
+      type: String
+    - contextPath: Camlytics.Events.video_file_name
+      description: The event video file name.
+      type: String
+    - contextPath: Camlytics.Events.video_file_time
+      description: The event video file time.
+      type: Date
+  dockerimage: demisto/python3:3.10.1.25933
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

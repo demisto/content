@@ -69,6 +69,11 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- additionalinfo: 'The character encoding to apply on the message fetched (e.g. latin-1). Advanced configuration to be used only if instructed by XSOAR Support'
+  display: 'Advanced: Raw message encoding'
+  name: raw_json_encoding
+  required: false
+  type: 0
 - display: Fetch incidents
   name: isFetch
   required: false

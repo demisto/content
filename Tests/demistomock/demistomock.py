@@ -1147,3 +1147,45 @@ def parentEntry():
 
 def getLicenseCustomField(api_key):
     return api_key
+
+
+def getLastMirrorRun():
+    """(Integration only)
+    Retrieves the LastMirrorRun object
+
+    Returns:
+      dict: LastMirrorRun object
+
+    """
+    return {}
+
+
+def setLastMirrorRun(obj):
+    """(Integration only)
+    Stores given object in the LastMirrorRun object
+
+    Args:
+      obj (dict): The object to store
+
+    Returns:
+      None: No data returned
+
+    """
+    return None
+
+
+def _apiCall(name, params=None, data=None):
+    """
+    Special apiCall to internal xdr api. Only available to OOB content.
+
+    Args:
+        name: name of the api (currently only wfReportIncorrectVerdict is supported)
+        params: url query args to pass. Use a dictionary such as: `{"key":"value"}
+        data: POST data as a string. Make sure to json.dumps.
+        Note: if data is empty then a GET request is performed instead of a POST.
+
+    Returns:
+        dict: The response of the api call
+
+    """
+    return {}

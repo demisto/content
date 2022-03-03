@@ -1,6 +1,7 @@
-elasticcommonfields: {}
 id: ExtractDomainAndFQDNFromUrlAndEmail-Test
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: ExtractDomainAndFQDNFromUrlAndEmail-Test
 starttaskid: "0"
 tasks:
@@ -9,12 +10,12 @@ tasks:
     taskid: f1a40ce7-020f-4bd7-88b8-67a30d065b82
     type: start
     task:
-      elasticcommonfields: {}
       id: f1a40ce7-020f-4bd7-88b8-67a30d065b82
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -31,12 +32,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 355b1592-07a7-4001-8430-7fb51ed910cb
     type: regular
     task:
-      elasticcommonfields: {}
       id: 355b1592-07a7-4001-8430-7fb51ed910cb
       version: -1
       name: DeleteContext
@@ -53,10 +55,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -70,13 +68,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: e61905ac-0f8a-414f-8e2c-49d3dd77d513
+    taskid: 63101f67-4de3-4f5e-80e7-868f8c3ab57a
     type: regular
     task:
-      elasticcommonfields: {}
-      id: e61905ac-0f8a-414f-8e2c-49d3dd77d513
+      id: 63101f67-4de3-4f5e-80e7-868f8c3ab57a
       version: -1
       name: ExtractDomainAndFQDNFromUrlAndEmail - test single input
       description: Extract Domain(s) from URL(s) and/or Email(s)
@@ -87,10 +86,9 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
-      - "11"
     scriptarguments:
       input:
-        simple: organization.org@ozzy.qwer.de
+        simple: ozzy.qwer.de
     separatecontext: false
     view: |-
       {
@@ -104,12 +102,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 13c2249e-d0d2-46ef-8488-c4216dd8a2d4
     type: regular
     task:
-      elasticcommonfields: {}
       id: 13c2249e-d0d2-46ef-8488-c4216dd8a2d4
       version: -1
       name: VerifyHumanReadableContains FQDN
@@ -130,8 +129,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 265,
+          "y": 535
         }
       }
     note: false
@@ -139,18 +138,20 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 7a89d5b8-520b-4dd4-8fb3-a993c99c5cde
     type: title
     task:
-      elasticcommonfields: {}
       id: 7a89d5b8-520b-4dd4-8fb3-a993c99c5cde
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -164,13 +165,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 1ea297ff-f9e1-4c3d-8de3-703dad785906
+    taskid: 2fb6836a-61f8-4946-8be9-efaaf61e19c6
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 1ea297ff-f9e1-4c3d-8de3-703dad785906
+      id: 2fb6836a-61f8-4946-8be9-efaaf61e19c6
       version: -1
       name: ExtractDomainAndFQDNFromUrlAndEmail - test multiple input
       description: Extract Domain(s) from URL(s) and/or Email(s)
@@ -180,13 +182,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
       - "6"
       - "13"
-      - "14"
+      - "18"
     scriptarguments:
       input:
-        simple: https://static.attackiq.com, organization.org@ozzy.qwer.de
+        simple: www.static.attackiq.com, ozzy.qwer.de, www.test2.com
     separatecontext: false
     view: |-
       {
@@ -200,15 +201,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 7487a0c6-e721-4067-86f5-73dd65a8c9f9
+    taskid: f284782b-9435-4017-8653-93a7411f31c8
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 7487a0c6-e721-4067-86f5-73dd65a8c9f9
+      id: f284782b-9435-4017-8653-93a7411f31c8
       version: -1
-      name: Verify FQDN "static.attackiq.com" exists
+      name: Verify FQDN "www.static.attackiq.com" exists
       description: Verify given entry contains a string
       scriptName: VerifyHumanReadableContains
       type: regular
@@ -228,7 +230,7 @@ tasks:
                 value:
                   simple: "0"
       substring:
-        simple: static.attackiq.com
+        simple: www.static.attackiq.com
     separatecontext: false
     view: |-
       {
@@ -242,55 +244,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "7":
-    id: "7"
-    taskid: 81db0404-5f9c-48c5-80d0-6eaf657adc59
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 81db0404-5f9c-48c5-80d0-6eaf657adc59
-      version: -1
-      name: Verify domain "qwer.de" exists
-      description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      humanReadableEntryId:
-        complex:
-          root: lastCompletedTaskEntries
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "1"
-      substring:
-        simple: qwer.de
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 84d290a1-c7d0-4dc5-8424-a8f6cea6d610
+    taskid: 8db10fe0-9258-4f38-8936-8b3c16a4fd3d
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 84d290a1-c7d0-4dc5-8424-a8f6cea6d610
+      id: 8db10fe0-9258-4f38-8936-8b3c16a4fd3d
       version: -1
       name: ExtractDomainAndFQDNFromUrlAndEmail - test with URLs that need unescaping
       description: Extract Domain(s) from URL(s) and/or Email(s)
@@ -302,12 +263,11 @@ tasks:
       '#none#':
       - "9"
       - "10"
-      - "15"
-      - "16"
       - "17"
     scriptarguments:
       input:
-        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__go.getpostman.com_y4wULsdG0h0DDMY0Dv00100&d=DwMFaQ&c=ywDJJevdGcjv4rm9P3FcNg&r=s5kA2oIAQRXsacJiBKmTORIWyRN39ZKhobje2GyRgNs&m=vN1dVSiZvEoM9oExtQqEptm9Dbvq9tnjACDZzrBLaWI&s=zroN7KQdBCPBOfhOmv5SP1DDzZKZ1y9I3x4STS5PbHA&e=, hxxps://www[.]demisto[.]com, https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Ftwitter.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d76754d178692b3ac285306e4|0|0|636758874714819880&sdata=dnJiphWFhnAKsk5Ps0bj0p%2FvXVo8TpidtGZcW6t8lDQ%3D&reserved=0%3E%5bcid%5d%3C
+        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__go.getpostman.com_y4wULsdG0h0DDMY0Dv00100&d=DwMFaQ&c=ywDJJevdGcjv4rm9P3FcNg&r=s5kA2oIAQRXsacJiBKmTORIWyRN39ZKhobje2GyRgNs&m=vN1dVSiZvEoM9oExtQqEptm9Dbvq9tnjACDZzrBLaWI&s=zroN7KQdBCPBOfhOmv5SP1DDzZKZ1y9I3x4STS5PbHA&e=,
+          www[.]demisto[.]com, https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Ftwitter.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d76754d178692b3ac285306e4|0|0|636758874714819880&sdata=dnJiphWFhnAKsk5Ps0bj0p%2FvXVo8TpidtGZcW6t8lDQ%3D&reserved=0%3E%5bcid%5d%3C
     separatecontext: false
     view: |-
       {
@@ -321,12 +281,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: eddc1c1f-9c62-49e0-8eb8-abb16f0b0829
     type: regular
     task:
-      elasticcommonfields: {}
       id: eddc1c1f-9c62-49e0-8eb8-abb16f0b0829
       version: -1
       name: Verify FQDN "go.getpostman.com"
@@ -363,12 +324,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: b8304d80-0c69-4fa6-8fe7-900c9df0ade8
     type: regular
     task:
-      elasticcommonfields: {}
       id: b8304d80-0c69-4fa6-8fe7-900c9df0ade8
       version: -1
       name: Verify FQDN "www.demisto.com"
@@ -405,47 +367,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "11":
-    id: "11"
-    taskid: 991d9bbb-8d3d-4512-8b23-a53417eaf554
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 991d9bbb-8d3d-4512-8b23-a53417eaf554
-      version: -1
-      name: VerifyHumanReadableContains domain
-      description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      humanReadableEntryId:
-        simple: ${lastCompletedTaskEntries}
-      substring:
-        simple: qwer.de
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: 7df6c378-781d-43c0-878b-ce7fa3530c13
     type: regular
     task:
-      elasticcommonfields: {}
       id: 7df6c378-781d-43c0-878b-ce7fa3530c13
       version: -1
       name: Verify FQDN "ozzy.qwer.de" exists
@@ -482,141 +410,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "14":
-    id: "14"
-    taskid: 0a394580-75b2-4941-88cf-075b19e94371
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 0a394580-75b2-4941-88cf-075b19e94371
-      version: -1
-      name: Verify domain "attackiq.com" exists
-      description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      humanReadableEntryId:
-        complex:
-          root: lastCompletedTaskEntries
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
-      substring:
-        simple: attackiq.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2200,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "15":
-    id: "15"
-    taskid: e05d21b3-33c0-460d-8a4a-7f6a0aa1a924
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: e05d21b3-33c0-460d-8a4a-7f6a0aa1a924
-      version: -1
-      name: Verify domain "demisto.com"
-      description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      humanReadableEntryId:
-        complex:
-          root: lastCompletedTaskEntries
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "1"
-      substring:
-        simple: demisto.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 3490,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "16":
-    id: "16"
-    taskid: 0120f0bf-f5d0-4b17-8202-a8dff283b8bd
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 0120f0bf-f5d0-4b17-8202-a8dff283b8bd
-      version: -1
-      name: Verify domain "getpostman.com"
-      description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      humanReadableEntryId:
-        complex:
-          root: lastCompletedTaskEntries
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
-      substring:
-        simple: getpostman.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 3920,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: d04c8751-0d69-410e-8aac-af9d09c8fc80
+    taskid: 950c117a-f28a-4971-88e0-2bd484819d3d
     type: regular
     task:
-      elasticcommonfields: {}
-      id: d04c8751-0d69-410e-8aac-af9d09c8fc80
+      id: 950c117a-f28a-4971-88e0-2bd484819d3d
       version: -1
-      name: Verify domain "getpostman.com"
+      name: Verify domain "twitter.com"
       description: Verify given entry contains a string
       scriptName: VerifyHumanReadableContains
       type: regular
@@ -641,7 +444,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4350,
+          "x": 3490,
           "y": 545
         }
       }
@@ -650,14 +453,60 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: fade11f4-ab85-4796-880e-f29ba388879d
+    type: regular
+    task:
+      id: fade11f4-ab85-4796-880e-f29ba388879d
+      version: -1
+      name: Verify FQDN "www.test2.com" exists
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "2"
+      substring:
+        simple: www.test2.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2170,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 735,
-        "width": 4680,
-        "x": 50,
+        "width": 3605,
+        "x": 265,
         "y": 50
       }
     }
@@ -666,3 +515,4 @@ inputs: []
 outputs: []
 sourceplaybookid: ExtractFQDNFromUrlAndEmail-Test
 fromversion: 5.0.0
+description: ''

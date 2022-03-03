@@ -77,10 +77,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 08565df4-61bb-475c-8bef-55f3d24b919c
+    taskid: 8689fd63-ae52-442f-8b4e-606a5d4113cd
     type: regular
     task:
-      id: 08565df4-61bb-475c-8bef-55f3d24b919c
+      id: 8689fd63-ae52-442f-8b4e-606a5d4113cd
       version: -1
       name: Create new low similarity incident victim 6
       description: commands.local.cmd.create.inc
@@ -108,7 +108,7 @@ tasks:
       ignore-outputs:
         simple: "false"
       labels:
-        simple: '[{"Email/from":"testuser1@paloaltonetworks.com"}]'
+        simple: '[{"Email/from":"testusercampaign@test.com"}]'
       name:
         complex:
           root: incident
@@ -128,7 +128,7 @@ tasks:
       {
         "position": {
           "x": 820,
-          "y": 1465
+          "y": 1825
         }
       }
     note: false
@@ -140,26 +140,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: e49a8058-7350-427c-81dc-c8ca9fba1b94
+    taskid: 92f706cb-f213-49e1-8766-b5fb0d315022
     type: regular
     task:
-      id: e49a8058-7350-427c-81dc-c8ca9fba1b94
+      id: 92f706cb-f213-49e1-8766-b5fb0d315022
       version: -1
-      name: Investigate the incidents
-      description: commands.local.investigate
-      script: Builtin|||investigate
+      name: Sleep to let incidents settle down
+      description: Sleep for X seconds
+      scriptName: Sleep
       type: regular
-      iscommand: true
+      iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
-      - "48"
+      - "77"
     scriptarguments:
-      id:
-        complex:
-          root: CreatedIncidentID
-          transformers:
-          - operator: uniq
+      seconds:
+        simple: "5"
     separatecontext: false
     view: |-
       {
@@ -205,7 +202,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 875
+          "y": 1235
         }
       }
     note: false
@@ -217,10 +214,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 94db2eef-f2a8-461c-887c-b68124531176
+    taskid: 081f65b1-9023-46d7-8521-768011ad7eff
     type: regular
     task:
-      id: 94db2eef-f2a8-461c-887c-b68124531176
+      id: 081f65b1-9023-46d7-8521-768011ad7eff
       version: -1
       name: Create new low similarity incident victim 1
       description: commands.local.cmd.create.inc
@@ -268,7 +265,7 @@ tasks:
       {
         "position": {
           "x": 130,
-          "y": 1465
+          "y": 1825
         }
       }
     note: false
@@ -280,10 +277,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: d4173c15-d995-4301-80de-7fc3daefdce6
+    taskid: fabd12b6-092f-41ee-854f-620be5e7da9a
     type: regular
     task:
-      id: d4173c15-d995-4301-80de-7fc3daefdce6
+      id: fabd12b6-092f-41ee-854f-620be5e7da9a
       version: -1
       name: Create new incident victim 7
       description: commands.local.cmd.create.inc
@@ -343,10 +340,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 6a8deb07-95be-46e3-8a0c-c040648e67b7
+    taskid: 62b86c41-9800-40c8-86ec-98e575f39b24
     type: regular
     task:
-      id: 6a8deb07-95be-46e3-8a0c-c040648e67b7
+      id: 62b86c41-9800-40c8-86ec-98e575f39b24
       version: -1
       name: Create new incident victim 5
       description: commands.local.cmd.create.inc
@@ -406,10 +403,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 69c21df8-a658-4415-864f-19a3e3cae037
+    taskid: 0a21dfc8-b7d3-4dad-813a-8c02edfd878a
     type: regular
     task:
-      id: 69c21df8-a658-4415-864f-19a3e3cae037
+      id: 0a21dfc8-b7d3-4dad-813a-8c02edfd878a
       version: -1
       name: Create new incident victim 4 (different sender)
       description: commands.local.cmd.create.inc
@@ -469,10 +466,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: a3a6b154-2d68-46e2-8444-b20d287b089c
+    taskid: fe03b418-9e53-45e8-8023-8bd4f96fe73e
     type: regular
     task:
-      id: a3a6b154-2d68-46e2-8444-b20d287b089c
+      id: fe03b418-9e53-45e8-8023-8bd4f96fe73e
       version: -1
       name: Create new incident victim 3 (different sender)
       description: commands.local.cmd.create.inc
@@ -501,7 +498,7 @@ tasks:
       emailto:
         simple: victim-test3@demistodev.onmicrosoft.com
       labels:
-        simple: '[{"Email/from":"testusercampaign@test.com"}]'
+        simple: '[{"Email/from":"testuser1@paloaltonetworks.com"}]'
       name:
         complex:
           root: incident
@@ -532,10 +529,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: f96ddd0e-4331-44c6-84eb-aef5eac8e0b3
+    taskid: 0a7d3566-c68c-4a09-8e84-be95a0c25aab
     type: regular
     task:
-      id: f96ddd0e-4331-44c6-84eb-aef5eac8e0b3
+      id: 0a7d3566-c68c-4a09-8e84-be95a0c25aab
       version: -1
       name: Create new incident victim 1
       description: commands.local.cmd.create.inc
@@ -595,10 +592,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 7bc493c0-fb10-4879-8061-6ecbc5a580ac
+    taskid: edb2d656-3bba-42a3-8415-e020069963f6
     type: regular
     task:
-      id: 7bc493c0-fb10-4879-8061-6ecbc5a580ac
+      id: edb2d656-3bba-42a3-8415-e020069963f6
       version: -1
       name: Create new incident victim 1
       description: commands.local.cmd.create.inc
@@ -680,7 +677,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1080
+          "y": 1440
         }
       }
     note: false
@@ -720,7 +717,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1830
+          "y": 2190
         }
       }
     note: false
@@ -757,7 +754,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1650
+          "y": 2010
         }
       }
     note: false
@@ -769,10 +766,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: a41d0f02-76bf-4c51-82b7-cb2dd33be7ba
+    taskid: 6a9c8cfc-12e6-4c6a-8555-726bff17b07b
     type: regular
     task:
-      id: a41d0f02-76bf-4c51-82b7-cb2dd33be7ba
+      id: 6a9c8cfc-12e6-4c6a-8555-726bff17b07b
       version: -1
       name: Create new incident victim 9
       description: commands.local.cmd.create.inc
@@ -830,10 +827,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: e796d571-0dd8-4c1d-8c84-f8bfe50325e0
+    taskid: 8425f2b9-3a35-4e64-84ee-d9a8f39845dd
     type: regular
     task:
-      id: e796d571-0dd8-4c1d-8c84-f8bfe50325e0
+      id: 8425f2b9-3a35-4e64-84ee-d9a8f39845dd
       version: -1
       name: Create new incident victim 10
       description: commands.local.cmd.create.inc
@@ -917,7 +914,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1240
+          "y": 1600
         }
       }
     note: false
@@ -954,7 +951,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2030
+          "y": 2390
         }
       }
     note: false
@@ -966,10 +963,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 438d4360-9ca5-4fbb-80d7-8a29d301fd7c
+    taskid: 3b0d812d-f007-4f2b-8c3c-67313be456df
     type: regular
     task:
-      id: 438d4360-9ca5-4fbb-80d7-8a29d301fd7c
+      id: 3b0d812d-f007-4f2b-8c3c-67313be456df
       version: -1
       name: Search for a campaign incident
       description: Searches Demisto incidents
@@ -981,6 +978,16 @@ tasks:
       '#none#':
       - "71"
     scriptarguments:
+      fromdate:
+        complex:
+          root: incident
+          accessor: occurred
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 1 day ago
       type:
         simple: Phishing Campaign
     separatecontext: false
@@ -988,7 +995,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2230
+          "y": 2590
         }
       }
     note: false
@@ -1013,7 +1020,7 @@ tasks:
       '#default#':
       - "73"
       "yes":
-      - "72"
+      - "74"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1029,7 +1036,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2400
+          "y": 2760
         }
       }
     note: false
@@ -1055,8 +1062,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 2810
+          "x": 470,
+          "y": 3430
         }
       }
     note: false
@@ -1068,12 +1075,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 09eedb51-ab80-4eaf-88ea-15a144ecd2e1
+    taskid: 7950e795-e6f7-44b1-8fe8-06e4460a1286
     type: regular
     task:
-      id: 09eedb51-ab80-4eaf-88ea-15a144ecd2e1
+      id: 7950e795-e6f7-44b1-8fe8-06e4460a1286
       version: -1
-      name: Error - a campaign was note created
+      name: Error - a campaign was not created
       description: Prints an error entry with a given message
       scriptName: PrintErrorEntry
       type: regular
@@ -1084,12 +1091,207 @@ tasks:
         simple: |-
           An incident of type "Phishing Campaign" was not created. This could be, but is not limited to, a problem with the FindEmailCampaign script.
           First check if similar phishing incidents were found, then check if one of the recent ones found a campaign and created a campaign incident.
+          Also - it's possible that the phishing playbook took more than the time we waited until it found and created a campaign. If a Phishing Campaign incident exists on the server now, this can be ignored, and you can consider increasing the sleep time in this test before searching for campaigns.
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 870,
-          "y": 2610
+          "x": 1330,
+          "y": 3260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 73d02da4-a663-492b-8ab1-3e8bfe3d1c8a
+    type: regular
+    task:
+      id: 73d02da4-a663-492b-8ab1-3e8bfe3d1c8a
+      version: -1
+      name: Get campaign context
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      get_key:
+        simple: EmailCampaign
+      incident_id:
+        complex:
+          root: foundIncidents
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: foundIncidents.type
+                iscontext: true
+              right:
+                value:
+                  simple: Phishing Campaign
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 5be130e5-06fe-48d1-8543-206087fe1966
+    type: condition
+    task:
+      id: 5be130e5-06fe-48d1-8543-206087fe1966
+      version: -1
+      name: Does the campaign context contain incident data?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "76"
+      "yes":
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: EmailCampaign
+                accessor: incidents
+                transformers:
+                - operator: count
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 3130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: cf3be334-fd7c-4485-8d4c-24d5abc62438
+    type: regular
+    task:
+      id: cf3be334-fd7c-4485-8d4c-24d5abc62438
+      version: -1
+      name: Campaign lacks data
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The phishing campaign incidents lacks the EmailCampaign context key, or the key is empty. This points to an issue with something in the Detect & Manage Phishing Campaigns playbook.
+          The playbook was able to create a campaign incident, but was not able to set it with context data. This may mean that there is a permission issue, or that something broke in the SetPhishingCampaignDetails script which the playbook should run.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 3300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: f57d684a-a7df-4c41-8b29-4024b09fda50
+    type: regular
+    task:
+      id: f57d684a-a7df-4c41-8b29-4024b09fda50
+      version: -1
+      name: Investigate the incidents
+      description: commands.local.investigate
+      script: Builtin|||investigate
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      id:
+        complex:
+          root: CreatedIncidentID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 64057fa1-2161-4d0f-8f5f-3828001ffeea
+    type: regular
+    task:
+      id: 64057fa1-2161-4d0f-8f5f-3828001ffeea
+      version: -1
+      name: Sleep to let incidents settle down
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1050
         }
       }
     note: false
@@ -1101,12 +1303,10 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "71_72_yes": 0.38
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2825,
+        "height": 3445,
         "width": 3710,
         "x": -1120,
         "y": 50

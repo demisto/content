@@ -1,0 +1,30 @@
+commonfields:
+  id: VerifyContext
+  version: -1
+name: VerifyContext
+script: ''
+type: javascript
+tags:
+- context
+- Utility
+comment: Deprecated. Use playbook filters instead. Verifies path in context - Verifies
+  path existence - If matching object is an array -  verify fields exists in each
+  of the objects in the array - If matching object is not an array -  verify fields
+  exists in matching object - if 'expectedValue' is given -  ensure that the given
+  value is equal to the context path
+enabled: true
+args:
+- name: path
+  required: true
+  default: true
+  description: Context path (e.g. 'Incidents')
+- name: fields
+  description: Comma separated values to verify that are in context (e.g. 'one,two,three')
+- name: expectedValue
+  description: 'Primitive or JSON expected value of the path context (e.g. ''SomeString'',
+    ''{"a": 1, "b": ["hello", "world" ]}'
+scripttarget: 0
+deprecated: true
+tests:
+- No test
+fromversion: 5.0.0
