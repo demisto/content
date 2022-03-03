@@ -32,8 +32,10 @@ script:
   commands:
   - arguments:
     - default: false
-      description: 'The path of json file containing incidents. Can contain one incident
-        or a list of incidents. For example: Packs/somePack/TestPlaybooks/examples.json'
+      description: |-
+        The path of json file containing incidents. Can contain one incident
+        or a list of incidents. For example: Packs/somePack/TestPlaybooks/examples.json'. 
+        Incidents without name will be named Mocked Incident
       isArray: false
       name: incidents_path
       required: true
