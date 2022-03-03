@@ -63,13 +63,14 @@ class MsGraphClient:
     ITEM_ATTACHMENT = '#microsoft.graph.itemAttachment'
     FILE_ATTACHMENT = '#microsoft.graph.fileAttachment'
 
-    def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
-                 ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit, timeout=10,
-                 endpoint='com'):
+    def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, certificate_thumbprint, private_key,
+                 app_name, base_url, use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
+                 emails_fetch_limit, timeout=10, endpoint='com'):
 
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
-                                         proxy=proxy, ok_codes=ok_codes, timeout=timeout, endpoint=endpoint)
+                                         proxy=proxy, ok_codes=ok_codes, timeout=timeout, endpoint=endpoint,
+                                         certificate_thumbprint=certificate_thumbprint, private_key=private_key)
 
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
@@ -1607,9 +1608,13 @@ def main():
     ok_codes: tuple = (200, 201, 202, 204)
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
+    certificate_thumbprint: str = params.get('certificate_thumbprint', '')
+    private_key: str = params.get('private_key', '')
 
-    if not enc_key:
-        raise Exception('Key must be provided.')
+    if not self_deployed and not enc_key:
+        raise DemistoException('Key must be provided')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
     if not auth_and_token_url:
         raise Exception('ID must be provided.')
     if not tenant_id:
@@ -1622,9 +1627,9 @@ def main():
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
     timeout = arg_to_number(params.get('timeout', '10') or '10')
 
-    client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
-                                          use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch,
-                                          first_fetch_interval, emails_fetch_limit, timeout, endpoint)
+    client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, certificate_thumbprint,
+                                          private_key, app_name, base_url, use_ssl, proxy, ok_codes, mailbox_to_fetch,
+                                          folder_to_fetch, first_fetch_interval, emails_fetch_limit, timeout, endpoint)
 
     command = demisto.command()
     LOG(f'Command being called is {command}')

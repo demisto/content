@@ -48,8 +48,8 @@ THREAT_INDICATORS_HEADERS = ['Name', 'DisplayName', 'Values', 'Types', 'Source',
 class AzureSentinelClient:
     def __init__(self, server_url: str, tenant_id: str, client_id: str,
                  client_secret: str, subscription_id: str,
-                 resource_group_name: str, workspace_name: str,
-                 verify: bool = True, proxy: bool = False):
+                 resource_group_name: str, workspace_name: str, certificate_thumbprint: Optional[str],
+                 private_key: Optional[str], verify: bool = True, proxy: bool = False):
         """
         AzureSentinelClient class that make use client credentials for authorization with Azure.
 
@@ -74,6 +74,12 @@ class AzureSentinelClient:
         :type workspace_name: ``str``
         :param workspace_name: The workspace name.
 
+        :type certificate_thumbprint: ``str``
+        :param certificate_thumbprint: The certificate thumbprint as appears in the AWS GUI.
+
+        :type private_key: ``str``
+        :param private_key: The certificate private key.
+
         :type verify: ``bool``
         :param verify: Whether the request should verify the SSL certificate.
 
@@ -93,7 +99,9 @@ class AzureSentinelClient:
             scope=Scopes.management_azure,
             ok_codes=(200, 201, 202, 204),
             verify=verify,
-            proxy=proxy
+            proxy=proxy,
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key,
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None):
@@ -1283,11 +1291,17 @@ def main():
     params = demisto.params()
     LOG(f'Command being called is {demisto.command()}')
     try:
+        client_secret = params.get('credentials', {}).get('password')
+        certificate_thumbprint = params.get('certificate_thumbprint')
+        private_key = params.get('private_key')
+        if not client_secret and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+
         client = AzureSentinelClient(
             server_url=params.get('server_url') or DEFAULT_AZURE_SERVER_URL,
             tenant_id=params.get('tenant_id', ''),
             client_id=params.get('credentials', {}).get('identifier'),
-            client_secret=params.get('credentials', {}).get('password'),
+            client_secret=client_secret,
             subscription_id=params.get('subscriptionID', ''),
             resource_group_name=params.get('resourceGroupName', ''),
             workspace_name=params.get('workspaceName', ''),

@@ -33,6 +33,7 @@ For example, if we wish to use the [List applications](https://docs.microsoft.co
 For more information, refer to the following [article](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application). 
 
 The ***Application Secret*** and the ***Tenant ID*** integration parameters are required for this method.
+Alternatively, ***Private Key*** and ***Certificate Thumbprint*** can replace ***Application Secret*** for Certificate Authorization flow.
 
 The integration supports only Application permission type, and does not support Delegated permission type. 
 
@@ -55,6 +56,8 @@ The integration supports only Application permission type, and does not support 
 | app_id | Application ID | True |
 | scope | Scope (Required for using Cortex XSOAR Azure app) | False |
 | app_secret | Application Secret (Required for using self deployed Azure app) | False |
+| Certificate Thumbprint | Used for certificate Authentication. As appears when registering the certificate to the App. | False |
+| Private Key | Used for certificate Authentication. The private key of the registered Certificate. | False |
 | tenant_id | Tenant ID (Required for using self deployed Azure app) | False |
 | azure_ad_endpoint | Azure AD endpoint associated with a national cloud | False |
 | insecure | Trust any certificate \(not secure\) | False |

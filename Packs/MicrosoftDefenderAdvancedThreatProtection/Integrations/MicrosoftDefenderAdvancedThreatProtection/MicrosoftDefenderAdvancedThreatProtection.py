@@ -3469,8 +3469,10 @@ def main():
     fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
 
-    if not enc_key and not (certificate_thumbprint or private_key):
-        raise Exception('Key or Certificate Thumbprint and PrivateKey must be provided.')
+    if not self_deployed and not enc_key:
+        raise DemistoException('Key must be provided')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
     if not auth_id:
         raise Exception('Authentication ID must be provided.')
     if not tenant_id:

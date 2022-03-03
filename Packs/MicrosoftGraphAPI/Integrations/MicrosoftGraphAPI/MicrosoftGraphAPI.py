@@ -16,7 +16,10 @@ class MsGraphClient:
                  tenant_id: str,
                  verify: bool,
                  proxy: bool,
-                 azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
+                 certificate_thumbprint: Optional[str],
+                 private_key: Optional[str],
+                 azure_ad_endpoint: str = 'https://login.microsoftonline.com',
+                 ):
         client_args = {
             'base_url': 'https://graph.microsoft.com',
             'auth_id': app_id,
@@ -28,7 +31,9 @@ class MsGraphClient:
             'self_deployed': True,
             'grant_type': CLIENT_CREDENTIALS,
             'ok_codes': (200, 201, 204),
-            'azure_ad_endpoint': azure_ad_endpoint
+            'azure_ad_endpoint': azure_ad_endpoint,
+            'private_key': private_key,
+            'certificate_thumbprint': certificate_thumbprint,
         }
         if not (app_secret and tenant_id):
             client_args['grant_type'] = DEVICE_CODE
@@ -131,8 +136,10 @@ def main() -> None:  # pragma: no cover
         scope += params.get('scope')
 
     app_secret = params.get('app_secret') or (params.get('credentials') or {}).get('password')
-    if not app_secret:
-        raise Exception('Application Secret must be provided.')
+    certificate_thumbprint = params.get('certificate_thumbprint')
+    private_key = params.get('private_key')
+    if not app_secret and not (certificate_thumbprint and private_key):
+        raise DemistoException('Application Secret or Certificate Thumbprint and Private Key must be provided.')
 
     try:
         client = MsGraphClient(
@@ -143,7 +150,9 @@ def main() -> None:  # pragma: no cover
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
             azure_ad_endpoint=params.get('azure_ad_endpoint',
-                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
+                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key,
         )
 
         if command == 'test-module':

@@ -249,11 +249,12 @@ class MsGraphClient:
       """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed, ok_codes, server,
-                 subscription_id):
+                 subscription_id, certificate_thumbprint, private_key):
 
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
-            proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes, scope=Scopes.management_azure)
+            proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes, scope=Scopes.management_azure,
+            certificate_thumbprint=certificate_thumbprint, private_key=private_key)
         self.server = server
         self.subscription_id = subscription_id
 
@@ -688,10 +689,16 @@ def main():
     tenant = params.get('tenant_id')
     auth_and_token_url = params.get('auth_id')
     enc_key = params.get('enc_key')
+    certificate_thumbprint = params.get('certificate_thumbprint')
+    private_key = params.get('private_key')
     verify = not params.get('unsecure', False)
     subscription_id = demisto.args().get('subscription_id') or demisto.params().get('subscription_id')
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
+    if not self_deployed and not enc_key:
+        raise DemistoException('Key must be provided')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
     ok_codes = (200, 201, 202, 204)
 
     commands = {

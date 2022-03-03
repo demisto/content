@@ -23,6 +23,8 @@ For more details about the authentication used in this integration, see <a href=
 | auth_id | ID \(received from the admin consent - see Detailed Instructions\) | True |
 | tenant_id | Token \(received from the admin consent - see Detailed Instructions\) | False |
 | enc_key | Key \(received from the admin consent - see Detailed Instructions\) | False |
+| Certificate Thumbprint | Used for certificate Authentication. As appears when registering the certificate to the App. | False |
+| Private Key | Used for certificate Authentication. The private key of the registered Certificate. | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | self_deployed | Use a self-deployed Azure Application | False |

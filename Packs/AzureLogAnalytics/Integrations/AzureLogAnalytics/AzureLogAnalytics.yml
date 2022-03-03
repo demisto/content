@@ -20,8 +20,18 @@ configuration:
     configuration process.
   display: Key / Client Secret
   name: enc_key
-  required: true
+  required: false
   type: 4
+- additionalinfo: Used for certificate Authentication. As appears when registering the certificate to the App.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
+  type: 4
+- additionalinfo: Used for certificate Authentication. The private key of the registered Certificate.
+  display: Private Key
+  name: private_key
+  required: false
+  type: 14
 - display: Use a self-deployed Azure application
   name: self_deployed
   required: false

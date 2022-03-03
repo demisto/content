@@ -22,7 +22,8 @@ BASE_URL = "https://api.security.microsoft.com"
 class Client:
     @logger
     def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str = BASE_URL, tenant_id: str = None,
-                 enc_key: str = None, client_credentials: bool = False):
+                 enc_key: str = None, client_credentials: bool = False, certificate_thumbprint: Optional[str] = None,
+                 private_key: Optional[str] = None):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -49,6 +50,8 @@ class Client:
             # used for client credentials flow
             tenant_id=tenant_id,
             enc_key=enc_key,
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key,
         )
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
@@ -536,6 +539,10 @@ def main() -> None:
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
     client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
+    certificate_thumbprint = params.get('certificate_thumbprint')
+    private_key = params.get('private_key')
+    if not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
     first_fetch_time = params.get('first_fetch', '3 days').strip()
     fetch_limit = arg_to_number(params.get('max_fetch', 10))
@@ -557,6 +564,8 @@ def main() -> None:
             tenant_id=tenant_id,
             enc_key=enc_key,
             client_credentials=client_credentials,
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key,
         )
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

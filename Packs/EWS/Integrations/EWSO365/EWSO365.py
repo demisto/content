@@ -161,6 +161,8 @@ class EWSClient:
             self_deployed=True,
             insecure=True,
             proxy=False,
+            certificate_thumbprint=None,
+            private_key=None,
             **kwargs,
     ):
         """
@@ -173,14 +175,18 @@ class EWSClient:
         :param request_timeout: Timeout (in seconds) for HTTP requests to Exchange Server
         :param max_fetch: Max incidents per fetch
         :param insecure: Trust any certificate (not secure)
+        :param private_key: Private key of the certificate
+        :param certificate_thumbprint: HEX thumbprint of the certificate
         """
 
         client_id = kwargs.get('client_id') or kwargs.get('_client_id')
         tenant_id = kwargs.get('tenant_id') or kwargs.get('_tenant_id')
         client_secret = kwargs.get('client_secret') or (kwargs.get('credentials') or {}).get('password')
 
-        if not client_secret:
-            raise Exception('Key / Application Secret must be provided.')
+        if not self_deployed and not client_secret:
+            raise DemistoException('Key must be provided')
+        elif not client_secret and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
         elif not client_id:
             raise Exception('ID / Application ID must be provided.')
         elif not tenant_id:
@@ -198,6 +204,8 @@ class EWSClient:
             proxy=proxy,
             self_deployed=self_deployed,
             scope="https://outlook.office.com/.default",
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key
         )
         self.folder_name = folder
         self.is_public_folder = is_public_folder

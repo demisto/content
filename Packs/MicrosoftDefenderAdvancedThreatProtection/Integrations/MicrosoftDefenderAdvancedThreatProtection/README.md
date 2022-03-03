@@ -49,6 +49,8 @@ For more details about the authentication used in this integration, see [Microso
     | Host URL | The URL to the Microsoft Defender for Endpoint server, including the scheme. | `https://api.securitycenter.windows.com` |
     | ID | The ID used to gain access to the integration. | N/A |
     | Token | A piece of data that servers use to verify for authenticity. | eea810f5-a6f6 |
+    | Certificate Thumbprint | Used for certificate Authentication. As appears when registering the certificate to the App. | A97BF50B7BB6D909CE8CAAF9FA8109A571134C33 |
+    | Private Key | Used for certificate Authentication. The private key of the registered Certificate. | eea810f5-a6f6 |
     | Fetch Incidents | Whether to fetch the incidents. | N/A |
     | Incident Type | The type of incident to select. | Phishing |
     | Status to filter out alerts for fetching as incidents| The property values are, "New", "InProgress" or "Resolved". Comma-separated values supported. | New,Resolved |

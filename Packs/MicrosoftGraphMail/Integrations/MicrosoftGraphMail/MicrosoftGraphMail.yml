@@ -22,6 +22,16 @@ configuration:
   name: credentials
   required: false
   type: 9
+- additionalinfo: Used for certificate Authentication. As appears when registering the certificate to the App.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
+  type: 4
+- additionalinfo: Used for certificate Authentication. The private key of the registered Certificate.
+  display: Private Key
+  name: private_key
+  required: false
+  type: 14
   hiddenusername: true
 - display: Fetch incidents
   name: isFetch

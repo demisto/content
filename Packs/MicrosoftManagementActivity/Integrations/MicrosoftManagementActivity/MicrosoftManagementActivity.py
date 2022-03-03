@@ -68,7 +68,8 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, verify: bool,
                  proxy: bool, self_deployed, refresh_token: str, auth_and_token_url: str,
-                 enc_key: str, auth_code: str, tenant_id: str, redirect_uri: str, timeout: int):
+                 enc_key: Optional[str], auth_code: str, tenant_id: str, redirect_uri: str, timeout: int,
+                 certificate_thumbprint: Optional[str], private_key: Optional[str]):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.tenant_id = tenant_id
         self.suffix_template = '{}/activity/feed/subscriptions/{}'
@@ -94,7 +95,10 @@ class Client(BaseClient):
                                          auth_code=auth_code,
                                          resource='https://manage.office.com',
                                          token_retrieval_url='https://login.windows.net/common/oauth2/token',
-                                         redirect_uri=redirect_uri)
+                                         redirect_uri=redirect_uri,
+                                         certificate_thumbprint=certificate_thumbprint,
+                                         private_key=private_key
+                                         )
 
     def http_request(self, method, url_suffix='', full_url=None, headers=None, params=None, timeout=None, ok_codes=None,
                      return_empty_response=False, **kwargs):
@@ -538,7 +542,13 @@ def main():
         redirect_uri = params.get('redirect_uri', '')
         tenant_id = refresh_token if self_deployed else ''
         auth_id = params['auth_id']
-        enc_key = params['enc_key']
+        enc_key = params.get('enc_key')
+        certificate_thumbprint = params.get('certificate_thumbprint')
+        private_key = params.get('private_key')
+        if not self_deployed and not enc_key:
+            raise DemistoException('Key must be provided')
+        elif not enc_key and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
 
@@ -553,7 +563,9 @@ def main():
             timeout=calculate_timeout_value(params=params, args=args),
             enc_key=enc_key,
             auth_code=params.get('auth_code', ''),
-            redirect_uri=redirect_uri
+            redirect_uri=redirect_uri,
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key
         )
 
         access_token, token_data = client.get_access_token_data()
