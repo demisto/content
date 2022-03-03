@@ -1630,7 +1630,7 @@ def get_remote_data_command(args: Dict[str, Any]):
         else:
             raise Exception(f'Executed get-remote-data command with undefined id: {remote_incident_id}')
 
-        entries = []
+        entries: List = []
         if delta:
             demisto.debug(f'Update incident or detection {remote_incident_id} with fields: {delta}')
             set_xsoar_entries(delta, entries, remote_incident_id)  # sets in place
@@ -1868,6 +1868,8 @@ def update_remote_incident_status(delta, inc_status, incident_id) -> str:
         demisto.debug(f'Incident with remote ID {incident_id} status will change to "{delta.get("status")}" in remote system.')
         return str(resolve_incident([incident_id], delta.get('status')))
 
+    return ''
+
 
 def update_remote_incident_tags(delta, incident_id) -> str:
     result = ''
@@ -1890,7 +1892,7 @@ def get_previous_tags(remote_incident_id):
 def remote_incident_handle_tags(tags, request, incident_id) -> str:
     result = ''
     for tag in tags:
-        demisto.debug(f'{request} "{tag}" will be requested to incident with remote ID {incident_id} in remote system.')
+        demisto.debug(f'{request} will be requested for incident with remote ID {incident_id} and tag "{tag}" in remote system.')
         result += str(update_incident_request([incident_id], tag, request))
     return result
 
