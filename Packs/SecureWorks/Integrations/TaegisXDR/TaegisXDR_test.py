@@ -1,7 +1,10 @@
+import pytest
+
 from TaegisXDR import (
     Client,
     execute_playbook_command,
     fetch_alerts_command,
+    fetch_incidents,
     fetch_investigation_command,
     fetch_investigation_alerts_command,
     fetch_playbook_execution_command,
@@ -9,55 +12,26 @@ from TaegisXDR import (
     update_investigation_command,
 )
 
-TAEGIS_ENVIRONMENT = "us1"
-
-TAEGIS_ALERT = {
-    "id": "c4f33b53-eaba-47ac-8272-199af0f7935b",
-    "description": "Test Alert",
-    "message": "This is a test alert",
-    "severity": 0.5,
-}
-
-TAEGIS_INVESTIGATION = {
-    "description": "Test Investigation",
-    "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
-    "key_findings": "",
-    "priority": 2,
-    "service_desk_id": "",
-    "service_desk_type": "",
-    "status": "Open"
-}
-
-TAEGIS_PLAYBOOK_EXECUTION = {
-    "createdAt": "2022-02-10T13:51:24Z",
-    "executionTime": 1442,
-    "id": "UGxheWJvb2tFeGVjdXRpb246ZjkxNWYzMjMtZDFlNS00MWQ2LTg4NzktYzE4ZTBhMmYzZmNh",
-    "inputs": {
-        "PagerDuty": {
-            "dedup_key": "25f16f6c-dbc1-4efe-85a7-385e73f94efc"
-        },
-        "alert": {
-            "description": "Please, verify the login was authorized.",
-            "message": "Test Alert: Successful Login for User",
-            "severity": 0.9,
-            "uuid": "25f16f6c-dbc1-4efe-85a7-385e73f94efc"
-        },
-        "event": "create"
-    },
-    "instance": {
-        "name": "My Playbook Instance",
-        "playbook": {
-            "name": "My Playbook Name"
-        }
-    },
-    "outputs": "25f16f6c-dbc1-4efe-85a7-385e73f94efc",
-    "state": "Completed",
-    "updatedAt": "2022-02-10T13:51:31Z"
-}
-
-TAEGIS_PLAYBOOK_EXECUTION_ID = "UGxheWJvb2tFeGVjdXRpb246M2NiM2FmYWItYTZiNy00ZWNmLTk1NDUtY2JlNjg1OTdhODY1"
-
-TAEGIS_PLAYBOOK_INSTANCE_ID = "UGxheWJvb2tJbnN0YW5jZTphZDNmNzBlZi1mN2U0LTQ0OWYtODJiMi1hYWQwMjQzZTA2NTg="
+from test_data.data import (
+    TAEGIS_ENVIRONMENT,
+    TAEGIS_ALERT,
+    TAEGIS_INVESTIGATION,
+    TAEGIS_PLAYBOOK_EXECUTION,
+    TAEGIS_PLAYBOOK_EXECUTION_ID,
+    TAEGIS_PLAYBOOK_INSTANCE_ID,
+    EXECUTE_PLAYBOOK_RESPONSE,
+    EXECUTE_PLAYBOOK_BAD_RESPONSE,
+    FETCH_ALERTS_RESPONSE,
+    FETCH_INCIDENTS_RESPONSE,
+    FETCH_INCIDENTS_BAD_RESPONSE,
+    FETCH_INVESTIGATION_RESPONSE,
+    FETCH_INVESTIGATIONS,
+    FETCH_INVESTIGATION_ALERTS_RESPONSE,
+    FETCH_PLAYBOOK_EXECUTION_RESPONSE,
+    FETCH_PLAYBOOK_EXECUTION_BAD_RESPONSE,
+    CREATE_INVESTIGATION_RESPONSE,
+    UPDATE_INVESTIGATION_RESPONSE,
+)
 
 
 ''' UTILITY FUNCTIONS '''
@@ -81,48 +55,62 @@ def mock_client(requests_mock, mock_response):
 def test_execute_playbook(requests_mock):
     """Tests taegis-execute-playbook command function
     """
-
-    mock_response = {
-        "data": {
-            "executePlaybookInstance": {
-                "id": TAEGIS_PLAYBOOK_EXECUTION_ID,
-            }
-        }
-    }
-
-    client = mock_client(requests_mock, mock_response)
-
+    client = mock_client(requests_mock, EXECUTE_PLAYBOOK_RESPONSE)
     args = {
         "id": TAEGIS_PLAYBOOK_INSTANCE_ID,
         "inputs": {
             "MyInput": "MyValue",
         }
     }
-    response = execute_playbook_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
+    response = execute_playbook_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
     assert response.outputs["id"] == TAEGIS_PLAYBOOK_EXECUTION_ID
+
+    with pytest.raises(ValueError, match="Cannot execute playbook, missing playbook_id"):
+        assert execute_playbook_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
+
+    client = mock_client(requests_mock, EXECUTE_PLAYBOOK_BAD_RESPONSE)
+    with pytest.raises(ValueError, match="Failed to execute playbook: must be defined"):
+        assert execute_playbook_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
 
 def test_fetch_alerts(requests_mock):
     """Tests taegis-fetch-alert command function
     """
-
-    mock_response = {
-        "data": {
-            "alerts": [TAEGIS_ALERT]
-        }
-    }
-
-    client = mock_client(requests_mock, mock_response)
-
+    client = mock_client(requests_mock, FETCH_ALERTS_RESPONSE)
     args = {
         "ids": ["c4f33b53-eaba-47ac-8272-199af0f7935b"]
     }
 
+    # Test with IDs set
     response = fetch_alerts_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
-
     assert response.outputs[0] == TAEGIS_ALERT
     assert len(response.outputs) == len([TAEGIS_ALERT])
+
+    # Test with no IDs set
+    response = fetch_alerts_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
+    assert response.outputs[0] == TAEGIS_ALERT
+    assert len(response.outputs) == len([TAEGIS_ALERT])
+
+
+def test_fetch_incidents(requests_mock):
+    """Tests taegis-fetch-incidents command function
+    """
+    client = mock_client(requests_mock, FETCH_INCIDENTS_RESPONSE)
+    args = {
+        "page": 0,
+        "pager_size": 200,
+        "status": ["Open", "Active"],
+        "include_archived": False,
+    }
+
+    response = fetch_incidents(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response[0]['name'] == FETCH_INCIDENTS_RESPONSE["data"]["allInvestigations"][0]['description']
+
+    client = mock_client(requests_mock, FETCH_INCIDENTS_BAD_RESPONSE)
+    error = f"Error when fetching investigations: {FETCH_INCIDENTS_BAD_RESPONSE['errors'][0]['message']}"
+    with pytest.raises(ValueError, match=error):
+        assert fetch_incidents(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
 
 def test_fetch_investigaton(requests_mock):
@@ -130,15 +118,7 @@ def test_fetch_investigaton(requests_mock):
 
     Test fetching of a single incident
     """
-
-    mock_response = {
-        "data": {
-            "investigation": TAEGIS_INVESTIGATION
-        }
-    }
-
-    client = mock_client(requests_mock, mock_response)
-
+    client = mock_client(requests_mock, FETCH_INVESTIGATION_RESPONSE)
     args = {
         "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
         "page": 0,
@@ -146,7 +126,6 @@ def test_fetch_investigaton(requests_mock):
     }
 
     response = fetch_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
-
     assert response.outputs[0] == TAEGIS_INVESTIGATION
 
 
@@ -156,85 +135,57 @@ def test_fetch_investigatons(requests_mock):
     Test fetching of all incidents
     """
 
-    mock_response = {
-        "data": {
-            "allInvestigations": [TAEGIS_INVESTIGATION]
-        }
-    }
-
-    client = mock_client(requests_mock, mock_response)
-
+    client = mock_client(requests_mock, FETCH_INVESTIGATIONS)
     args = {
         "page": 0,
         "page_sie": 1,
     }
 
     response = fetch_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
-
     assert response.outputs == [TAEGIS_INVESTIGATION]
 
 
 def test_fetch_investigation_alerts(requests_mock):
     """Tests taegis-fetch-investigation-alerts command function
     """
-
-    mock_response = {
-        "data": {
-            "investigationAlerts": {
-                "alerts": [TAEGIS_ALERT]
-            }
-        }
-    }
-
-    client = mock_client(requests_mock, mock_response)
-
+    client = mock_client(requests_mock, FETCH_INVESTIGATION_ALERTS_RESPONSE)
     args = {
         "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
     }
 
     response = fetch_investigation_alerts_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
-
     assert response.outputs[0] == TAEGIS_ALERT
     assert len(response.outputs) == len([TAEGIS_ALERT])
+
+    with pytest.raises(ValueError, match="Cannot fetch investigation, missing investigation_id"):
+        assert fetch_investigation_alerts_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
 
 
 def test_fetch_playbook_execution(requests_mock):
     """Tests taegis-fetch-playbook-execution command function
-
-    Test fetching a playbook's execution
     """
-
-    mock_response = {
-        "data": {
-            "playbookExecution": TAEGIS_PLAYBOOK_EXECUTION
-        }
-    }
-
-    client = mock_client(requests_mock, mock_response)
-
+    client = mock_client(requests_mock, FETCH_PLAYBOOK_EXECUTION_RESPONSE)
     args = {
         "id": TAEGIS_PLAYBOOK_EXECUTION_ID,
     }
 
     response = fetch_playbook_execution_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
-
     assert response.outputs == TAEGIS_PLAYBOOK_EXECUTION
+
+    client = mock_client(requests_mock, FETCH_PLAYBOOK_EXECUTION_RESPONSE)
+    with pytest.raises(ValueError, match="Cannot fetch playbook execution, missing execution id"):
+        assert fetch_playbook_execution_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
+
+    client = mock_client(requests_mock, FETCH_PLAYBOOK_EXECUTION_BAD_RESPONSE)
+    response = fetch_playbook_execution_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.readable_output == f"""## Results
+* Could not locate execution '{args['id']}': {FETCH_PLAYBOOK_EXECUTION_BAD_RESPONSE['errors'][0]['message']}"""
 
 
 def test_create_investigation(requests_mock):
     """Tests taegis-create-investigation command function
     """
-
-    mock_response = {
-        "data": {
-            "createInvestigation": {
-                "id": "593fa115-abad-4a52-9fc4-2ec403a8a1e4",
-            }
-        }
-    }
-
-    client = mock_client(requests_mock, mock_response)
-
+    client = mock_client(requests_mock, CREATE_INVESTIGATION_RESPONSE)
     args = {
         "description": "Test Investigation",
         "priority": 3,
@@ -242,29 +193,31 @@ def test_create_investigation(requests_mock):
 
     response = create_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
-    assert response.outputs["id"] == mock_response["data"]["createInvestigation"]["id"]
+    assert response.outputs["id"] == CREATE_INVESTIGATION_RESPONSE["data"]["createInvestigation"]["id"]
 
 
 def test_update_investigation(requests_mock):
     """Tests taegis-update-investigation command function
     """
-
-    mock_response = {
-        "data": {
-            "updateInvestigation": {
-                "id": "593fa115-abad-4a52-9fc4-2ec403a8a1e4",
-            }
-        }
-    }
-
-    client = mock_client(requests_mock, mock_response)
-
+    client = mock_client(requests_mock, UPDATE_INVESTIGATION_RESPONSE)
     args = {
-        "id": mock_response["data"]["updateInvestigation"]["id"],
+        "id": UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigation"]["id"],
         "description": "Test Investigation Updated",
         "priority": 2,
     }
-
     response = update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
     assert response.outputs["id"] == args["id"]
+
+    with pytest.raises(ValueError, match="Cannot fetch investigation without investigation_id defined"):
+        assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
+
+    args["status"] = "BadStatus"
+    bad_status = r"The provided status, BadStatus, is not valid for updating an investigation. Supported Status Values:.*"
+    with pytest.raises(ValueError, match=bad_status):
+        assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    args = {"id": UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigation"]["id"]}
+    invalid_fields = r"No valid investigation fields provided. Supported Update Fields:.*"
+    with pytest.raises(ValueError, match=invalid_fields):
+        assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
