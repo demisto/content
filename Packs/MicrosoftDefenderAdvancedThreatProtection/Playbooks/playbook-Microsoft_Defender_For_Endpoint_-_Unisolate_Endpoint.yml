@@ -1,5 +1,6 @@
 id: Microsoft Defender For Endpoint - Unisolate Endpoint
-version: -1
+version: 15
+vcShouldKeepItemLegacyProdMachine: false
 name: Microsoft Defender For Endpoint - Unisolate Endpoint
 description: This playbook will auto unisolate endpoints through Microsoft Defender
   For Endpoint by using Hostname, IP, or Device ID associated with the asset you wish
@@ -16,7 +17,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -25,7 +25,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -430
+          "y": -400
         }
       }
     note: false
@@ -53,9 +53,7 @@ tasks:
       '#default#':
       - "2"
       "yes":
-      - "3"
-      - "28"
-      - "29"
+      - "36"
     scriptarguments:
       brandname:
         simple: Microsoft Defender Advanced Threat Protection
@@ -66,7 +64,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -285
+          "y": -275
         }
       }
     note: false
@@ -87,95 +85,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
           "y": 1620
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: e09df2a6-5bc1-4e12-8170-2d7cab85a46c
-    type: condition
-    task:
-      id: e09df2a6-5bc1-4e12-8170-2d7cab85a46c
-      version: -1
-      name: Is there Device ID?
-      description: Is there Device ID?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.Device_id
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 330,
-          "y": -100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: 127367c3-f9a4-4184-8198-4d41183e990f
-    type: regular
-    task:
-      id: 127367c3-f9a4-4184-8198-4d41183e990f
-      version: -1
-      name: Get device info
-      description: Get a machine's details by its identity.
-      script: '|||microsoft-atp-get-machine-details'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      machine_id:
-        complex:
-          root: inputs.Device_id
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 330,
-          "y": 100
         }
       }
     note: false
@@ -485,7 +400,7 @@ tasks:
     scriptarguments:
       value:
         simple: |-
-          The following device can't be isolated. Please validate that those device is active in the system
+          The following devices can't be isolated. Please validate that those devices are active in the system
           ${MicrosoftATP.NonUnisolateList}
     separatecontext: false
     view: |-
@@ -563,9 +478,8 @@ tasks:
       - "2"
     scriptarguments:
       value:
-        simple: "Please note that the following IDs are incorrect. No action was taken\
-          \ on the following Device ID: \n${MicrosoftATP.IncorrectIDs}\n${MicrosoftATP.IncorrectIPs}\n\
-          ${MicrosoftATP.IncorrectHostnames}"
+        simple: "Please note that the following IDs are incorrect. No action was taken
+          on the following Device ID: \n${MicrosoftATP.IncorrectIDs}\n${MicrosoftATP.IncorrectIPs}\n${MicrosoftATP.IncorrectHostnames}"
     separatecontext: false
     view: |-
       {
@@ -830,174 +744,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
-    taskid: ba113517-e5f4-4cb7-841e-c607faf23db1
-    type: regular
-    task:
-      id: ba113517-e5f4-4cb7-841e-c607faf23db1
-      version: -1
-      name: Get Device Info
-      description: Retrieves a collection of machines that have communicated with
-        WDATP cloud in the last 30 days.
-      script: '|||microsoft-atp-get-machines'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      ip:
-        complex:
-          root: inputs.Device_IP
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 750,
-          "y": 100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
-    taskid: 7f4502a3-728e-40e4-8463-0ec54a757d46
-    type: condition
-    task:
-      id: 7f4502a3-728e-40e4-8463-0ec54a757d46
-      version: -1
-      name: Is there a Device IP?
-      description: Is there a Device IP?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "27"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.Device_IP
-            iscontext: true
-          right:
-            value: {}
-    view: |-
-      {
-        "position": {
-          "x": 750,
-          "y": -100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: 29362ee0-744d-4e35-8e87-84eb92f5d804
-    type: condition
-    task:
-      id: 29362ee0-744d-4e35-8e87-84eb92f5d804
-      version: -1
-      name: Is there a  Hostname?
-      description: Is there a Device Hostname?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "30"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.Hostname
-            iscontext: true
-          right:
-            value: {}
-    view: |-
-      {
-        "position": {
-          "x": 1170,
-          "y": -100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: 773f97b0-f899-4286-8941-7da337086c7f
-    type: regular
-    task:
-      id: 773f97b0-f899-4286-8941-7da337086c7f
-      version: -1
-      name: Get Device Info
-      description: Retrieves a collection of machines that have communicated with
-        WDATP cloud in the last 30 days.
-      script: '|||microsoft-atp-get-machines'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      hostname:
-        complex:
-          root: inputs.Hostname
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1170,
-          "y": 100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "31":
     id: "31"
     taskid: 7c1ec123-fa09-4829-8ef5-81fc689e2fbb
@@ -1009,7 +755,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -1041,7 +786,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -1067,11 +811,10 @@ tasks:
     task:
       id: 55071917-0ecf-4fc4-8e90-8c76aa7a3bc1
       version: -1
-      name: Active Device
+      name: Active Devices
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -1101,7 +844,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -1131,7 +873,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "26"
@@ -1150,23 +891,108 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 24525b6d-8d9b-47b4-8ca2-e528d8723f11
+    type: condition
+    task:
+      id: 24525b6d-8d9b-47b4-8ca2-e528d8723f11
+      version: -1
+      name: Was any data provided?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Device_id
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Device_IP
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Hostname
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 6ed55b95-b352-47ca-80c3-1897e0b2ab00
+    type: regular
+    task:
+      id: 6ed55b95-b352-47ca-80c3-1897e0b2ab00
+      version: -1
+      name: Enrich Endpoint info
+      description: Returns information about an endpoint.
+      script: '|||endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      hostname:
+        simple: ${inputs.Hostname}
+      id:
+        simple: ${inputs.Device_id}
+      ip:
+        simple: ${inputs.Device_IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "13_12_yes": 0.52,
       "13_2_#default#": 0.18,
       "1_2_#default#": 0.1,
-      "28_2_#default#": 0.13,
-      "3_2_#default#": 0.23,
       "5_2_#default#": 0.1,
       "8_2_#default#": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 2115,
+        "height": 2085,
         "width": 1510,
         "x": 50,
-        "y": -430
+        "y": -400
       }
     }
   }
@@ -1179,17 +1005,17 @@ inputs:
     For more information, you can use the following commands:
     !microsoft-atp-get-machine-details
     !microsoft-atp-get-machines
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Hostname
   value: {}
   required: false
   description: The Device Hostname that you would like to Isolate
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Device_IP
   value: {}
   required: false
   description: The Device IP that you would like to Isolate
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: MicrosoftATP.MachineAction.ID
   description: The machine action ID.
@@ -1209,11 +1035,3 @@ outputs:
 - contextPath: MicrosoftATP.IncorrectIPs
   description: Incorrect Device IPs entered
   type: string
-tests:
-- Microsoft Defender Advanced Threat Protection - Test prod
-- Microsoft Defender Advanced Threat Protection - Test dev
-- Microsoft Defender Advanced Threat Protection - Test
-- Microsoft Defender Advanced Threat Protection - Test self deployed
-- Microsoft Defender - ATP - Indicators SC Test
-- Microsoft Defender - ATP - Indicators Test
-fromversion: 6.0.0
