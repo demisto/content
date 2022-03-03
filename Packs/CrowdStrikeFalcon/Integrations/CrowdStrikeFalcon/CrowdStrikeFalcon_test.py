@@ -3697,3 +3697,27 @@ def test_set_delta(delta, mirrored_data, mirroring_fields, output):
 
     set_delta(delta, mirrored_data, mirroring_fields)
     assert delta == output
+
+def test_get_remote_data_command():
+    from CrowdStrikeFalcon import get_remote_data_command
+    pass
+
+def test_get_modified_remote_data_command():
+    from CrowdStrikeFalcon import get_modified_remote_data_command
+    pass
+
+def test_update_detection_request():
+    from CrowdStrikeFalcon import update_detection_request
+    pass
+
+def test_update_remote_system_command():
+    from CrowdStrikeFalcon import update_remote_system_command
+    pass
+
+def test_get_previous_tags():
+    from CrowdStrikeFalcon import get_previous_tags
+    pass
+
+def test_get_mapping_fields_command():
+    from CrowdStrikeFalcon import get_mapping_fields_command
+    pass
