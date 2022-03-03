@@ -15,15 +15,10 @@ configuration:
   type: 0
   required: true
 - display: API Username
-  name: username
-  defaultvalue: ""
-  type: 0
-  required: true
-- displaypassword: API Key
+  displaypassword: API Key
   name: credentials
   type: 9
   required: false
-  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
@@ -40,6 +35,12 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
+- display: API Username
+  name: username
+  defaultvalue: ""
+  type: 0
+  required: false
+  hidden: true
 script:
   script: ''
   type: javascript

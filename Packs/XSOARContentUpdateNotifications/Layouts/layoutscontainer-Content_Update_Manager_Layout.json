@@ -1,194 +1,214 @@
 {
  "detailsV2": {
-  "tabs": [
-   {
-    "id": "summary",
-    "name": "Legacy Summary",
-    "type": "summary"
-   },
-   {
-    "hidden": false,
-    "id": "6vrqyt4zzr",
-    "name": "New Content Available",
-    "sections": [
-     {
-      "displayType": "CARD",
-      "h": 5,
-      "hideItemTitleOnlyOne": true,
-      "hideName": false,
-      "i": "6vrqyt4zzr-field-changed-6vrqyt4zzr-101cb290-c2fe-11eb-8ab2-07d53e455ed4",
-      "items": [
-       {
-        "dropEffect": "move",
-        "endCol": 6,
-        "fieldId": "contentupdatesavailable",
-        "height": 106,
-        "id": "19764490-51e3-11ec-ba2e-7b97ba20577a",
-        "index": 0,
-        "listId": "6vrqyt4zzr-field-changed-6vrqyt4zzr-101cb290-c2fe-11eb-8ab2-07d53e455ed4",
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxW": 3,
-      "minH": 1,
-      "moved": false,
-      "name": "Content Packs with Updates",
-      "static": false,
-      "w": 3,
-      "x": 0,
-      "y": 2
-     },
-     {
-      "displayType": "CARD",
-      "h": 2,
-      "hideName": false,
-      "i": "6vrqyt4zzr-field-changed-6vrqyt4zzr-3617bce0-c3be-11eb-9dbf-135bfd106205",
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "dbotclosed",
-        "height": 53,
-        "id": "41be5f90-c3be-11eb-9dbf-135bfd106205",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 4,
-        "fieldId": "closereason",
-        "height": 53,
-        "id": "44280c90-c3be-11eb-9dbf-135bfd106205",
-        "index": 0,
-        "listId": "6vrqyt4zzr-field-changed-6vrqyt4zzr-3617bce0-c3be-11eb-9dbf-135bfd106205",
-        "sectionItemType": "field",
-        "startCol": 2
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 6,
-        "fieldId": "closenotes",
-        "height": 106,
-        "id": "459f4340-c3be-11eb-9dbf-135bfd106205",
-        "index": 0,
-        "listId": "6vrqyt4zzr-field-changed-6vrqyt4zzr-3617bce0-c3be-11eb-9dbf-135bfd106205",
-        "sectionItemType": "field",
-        "startCol": 4
-       }
-      ],
-      "maxW": 3,
-      "minH": 1,
-      "moved": false,
-      "name": "Close Data",
-      "static": false,
-      "w": 3,
-      "x": 0,
-      "y": 7
-     },
-     {
-      "displayType": "CARD",
-      "h": 1,
-      "hideName": false,
-      "i": "6vrqyt4zzr-field-changed-6vrqyt4zzr-018109f0-c44a-11eb-854f-b7c4d9f26e5f",
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "contentpackselection",
-        "height": 22,
-        "id": "0d866e70-c44a-11eb-854f-b7c4d9f26e5f",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxW": 3,
-      "minH": 1,
-      "moved": false,
-      "name": "Content Pack Options",
-      "static": false,
-      "w": 2,
-      "x": 0,
-      "y": 1
-     },
-     {
-      "description": "",
-      "displayType": "CARD",
-      "h": 1,
-      "hideItemTitleOnlyOne": true,
-      "hideName": true,
-      "i": "6vrqyt4zzr-ead06070-51e8-11ec-ba2e-7b97ba20577a",
-      "items": [
-       {
-        "dropEffect": "move",
-        "endCol": 6,
-        "fieldId": "usecasedescription",
-        "height": 106,
-        "id": "2a9be310-66f6-11ec-995d-0d67eb3e51ba",
-        "index": 0,
-        "listId": "6vrqyt4zzr-ead06070-51e8-11ec-ba2e-7b97ba20577a",
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxW": 3,
-      "minH": 1,
-      "moved": false,
-      "name": "Description",
-      "static": false,
-      "w": 2,
-      "x": 0,
-      "y": 0
-  },
-  {
-      "h": 2,
-      "i": "6vrqyt4zzr-fadc1130-6700-11ec-95c8-ab9c2e6ba2c6",
-      "items": [],
-      "maxW": 3,
-      "minH": 1,
-      "moved": false,
-      "name": "To-Do Tasks",
-      "query": null,
-      "static": false,
-      "type": "todoTasks",
-      "w": 1,
-      "x": 2,
-      "y": 0
-     }
-    ],
-    "type": "custom"
-   },
-   {
-    "id": "warRoom",
-    "name": "War Room",
-    "type": "warRoom"
-   },
-   {
-    "id": "workPlan",
-    "name": "Work Plan",
-    "type": "workPlan"
-   },
-   {
-    "id": "evidenceBoard",
-    "name": "Evidence Board",
-    "type": "evidenceBoard"
-   },
-   {
-    "id": "relatedIncidents",
-    "name": "Related Incidents",
-    "type": "relatedIncidents"
-   },
-   {
-    "id": "canvas",
-    "name": "Canvas",
-    "type": "canvas"
-   }
-  ]
+   "tabs": [
+      {
+         "id": "summary",
+         "name": "Legacy Summary",
+         "type": "summary"
+      },
+      {
+         "hidden": false,
+         "id": "6vrqyt4zzr",
+         "name": "New Content Available",
+         "sections": [
+            {
+               "displayType": "CARD",
+               "h": 5,
+               "hideItemTitleOnlyOne": true,
+               "hideName": false,
+               "i": "6vrqyt4zzr-field-changed-6vrqyt4zzr-101cb290-c2fe-11eb-8ab2-07d53e455ed4",
+               "items": [
+                  {
+                     "dropEffect": "move",
+                     "endCol": 6,
+                     "fieldId": "contentupdatesavailable",
+                     "height": 106,
+                     "id": "19764490-51e3-11ec-ba2e-7b97ba20577a",
+                     "index": 0,
+                     "listId": "6vrqyt4zzr-field-changed-6vrqyt4zzr-101cb290-c2fe-11eb-8ab2-07d53e455ed4",
+                     "sectionItemType": "field",
+                     "startCol": 0
+                  }
+               ],
+               "maxW": 3,
+               "minH": 1,
+               "moved": false,
+               "name": "Content Packs with Updates",
+               "static": false,
+               "w": 3,
+               "x": 0,
+               "y": 3
+            },
+            {
+               "displayType": "CARD",
+               "h": 2,
+               "hideName": false,
+               "i": "6vrqyt4zzr-field-changed-6vrqyt4zzr-3617bce0-c3be-11eb-9dbf-135bfd106205",
+               "items": [
+                  {
+                     "endCol": 2,
+                     "fieldId": "dbotclosed",
+                     "height": 53,
+                     "id": "41be5f90-c3be-11eb-9dbf-135bfd106205",
+                     "index": 0,
+                     "sectionItemType": "field",
+                     "startCol": 0
+                  },
+                  {
+                     "dropEffect": "move",
+                     "endCol": 4,
+                     "fieldId": "closereason",
+                     "height": 53,
+                     "id": "44280c90-c3be-11eb-9dbf-135bfd106205",
+                     "index": 0,
+                     "listId": "6vrqyt4zzr-field-changed-6vrqyt4zzr-3617bce0-c3be-11eb-9dbf-135bfd106205",
+                     "sectionItemType": "field",
+                     "startCol": 2
+                  },
+                  {
+                     "dropEffect": "move",
+                     "endCol": 6,
+                     "fieldId": "closenotes",
+                     "height": 106,
+                     "id": "459f4340-c3be-11eb-9dbf-135bfd106205",
+                     "index": 0,
+                     "listId": "6vrqyt4zzr-field-changed-6vrqyt4zzr-3617bce0-c3be-11eb-9dbf-135bfd106205",
+                     "sectionItemType": "field",
+                     "startCol": 4
+                  }
+               ],
+               "maxW": 3,
+               "minH": 1,
+               "moved": false,
+               "name": "Close Data",
+               "static": false,
+               "w": 3,
+               "x": 0,
+               "y": 8
+            },
+            {
+               "displayType": "CARD",
+               "h": 2,
+               "hideName": false,
+               "i": "6vrqyt4zzr-field-changed-6vrqyt4zzr-018109f0-c44a-11eb-854f-b7c4d9f26e5f",
+               "items": [
+                  {
+                     "endCol": 2,
+                     "fieldId": "contentpackselection",
+                     "height": 106,
+                     "id": "0d866e70-c44a-11eb-854f-b7c4d9f26e5f",
+                     "index": 0,
+                     "sectionItemType": "field",
+                     "startCol": 0
+                  },
+                  {
+                     "endCol": 3,
+                     "fieldId": "contentupdatesautoinstall",
+                     "height": 53,
+                     "id": "49f52a40-82b8-11ec-ba29-61b715d67f87",
+                     "index": 0,
+                     "sectionItemType": "field",
+                     "startCol": 2
+                  },
+                  {
+                     "dropEffect": "move",
+                     "endCol": 4,
+                     "fieldId": "demistorestapiname",
+                     "height": 53,
+                     "id": "905da6a0-82b9-11ec-a8f4-0956996192a8",
+                     "index": 1,
+                     "listId": "6vrqyt4zzr-field-changed-6vrqyt4zzr-018109f0-c44a-11eb-854f-b7c4d9f26e5f",
+                     "sectionItemType": "field",
+                     "startCol": 3
+                  }
+               ],
+               "maxW": 3,
+               "minH": 1,
+               "moved": false,
+               "name": "Content Pack Options",
+               "static": false,
+               "w": 2,
+               "x": 0,
+               "y": 1
+            },
+            {
+               "description": "",
+               "displayType": "CARD",
+               "h": 1,
+               "hideItemTitleOnlyOne": true,
+               "hideName": true,
+               "i": "6vrqyt4zzr-ead06070-51e8-11ec-ba2e-7b97ba20577a",
+               "items": [
+                  {
+                     "dropEffect": "move",
+                     "endCol": 6,
+                     "fieldId": "usecasedescription",
+                     "height": 106,
+                     "id": "2a9be310-66f6-11ec-995d-0d67eb3e51ba",
+                     "index": 0,
+                     "listId": "6vrqyt4zzr-ead06070-51e8-11ec-ba2e-7b97ba20577a",
+                     "sectionItemType": "field",
+                     "startCol": 0
+                  }
+               ],
+               "maxW": 3,
+               "minH": 1,
+               "moved": false,
+               "name": "Description",
+               "static": false,
+               "w": 2,
+               "x": 0,
+               "y": 0
+            },
+            {
+               "h": 3,
+               "i": "6vrqyt4zzr-fadc1130-6700-11ec-95c8-ab9c2e6ba2c6",
+               "items": [],
+               "maxW": 3,
+               "minH": 1,
+               "moved": false,
+               "name": "To-Do Tasks",
+               "query": null,
+               "static": false,
+               "type": "todoTasks",
+               "w": 1,
+               "x": 2,
+               "y": 0
+            }
+         ],
+         "type": "custom"
+      },
+      {
+         "id": "warRoom",
+         "name": "War Room",
+         "type": "warRoom"
+      },
+      {
+         "id": "workPlan",
+         "name": "Work Plan",
+         "type": "workPlan"
+      },
+      {
+         "id": "evidenceBoard",
+         "name": "Evidence Board",
+         "type": "evidenceBoard"
+      },
+      {
+         "id": "relatedIncidents",
+         "name": "Related Incidents",
+         "type": "relatedIncidents"
+      },
+      {
+         "id": "canvas",
+         "name": "Canvas",
+         "type": "canvas"
+      }
+   ]
  },
  "edit": {
   "sections": [
    {
-    "description": "",
+    "description": "Please ensure to provide an instance name for which to use to check updates against.",
     "fields": [
      {
       "fieldId": "incident_name",
@@ -197,6 +217,14 @@
      {
       "fieldId": "incident_contentpackselection",
       "isVisible": true
+     },
+     {
+        "fieldId": "incident_demistorestapiname",
+        "isVisible": true
+     },
+     {
+        "fieldId": "incident_contentupdatesautoinstall",
+        "isVisible": true
      }
     ],
     "isVisible": true,
