@@ -3,7 +3,7 @@ import os
 import json
 
 import demistomock as demisto
-from CommonServerPython import outputPaths, entryTypes, DemistoException
+from CommonServerPython import outputPaths, entryTypes, DemistoException, IncidentStatus
 
 RETURN_ERROR_TARGET = 'CrowdStrikeFalcon.return_error'
 SERVER_URL = 'https://4.4.4.4'
@@ -3654,6 +3654,35 @@ def test_list_incident_summaries_command_with_given_ids(requests_mock, mocker):
     assert get_incidents_ids_func.call_count == 0
 
 
+remote_incident_id = 'inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd'
+remote_detection_id = 'ldt:15dbb9d8f06b89fe9f61eb46e829d986:528715079668'
+
+
+def test_get_remote_data_command():
+    from CrowdStrikeFalcon import get_remote_data_command
+    pass
+
+
+def test_find_incident_type():
+    from CrowdStrikeFalcon import find_incident_type, IncidentType
+    pass
+
+
+def test_get_remote_incident_data():
+    from CrowdStrikeFalcon import get_remote_incident_data
+    pass
+
+
+def test_get_remote_detection_data():
+    from CrowdStrikeFalcon import get_remote_detection_data
+    pass
+
+
+def test_set_xsoar_entries():
+    from CrowdStrikeFalcon import set_xsoar_entries
+    pass
+
+
 keeping_delta = ({'incident_type': 'incident'}, {}, [], {'incident_type': 'incident'})
 
 keeping_empty_delta = ({}, {}, [], {})
@@ -3698,25 +3727,106 @@ def test_set_delta(delta, mirrored_data, mirroring_fields, output):
     set_delta(delta, mirrored_data, mirroring_fields)
     assert delta == output
 
-def test_get_remote_data_command():
-    from CrowdStrikeFalcon import get_remote_data_command
-    pass
 
 def test_get_modified_remote_data_command():
     from CrowdStrikeFalcon import get_modified_remote_data_command
     pass
 
+
 def test_update_detection_request():
     from CrowdStrikeFalcon import update_detection_request
     pass
+
 
 def test_update_remote_system_command():
     from CrowdStrikeFalcon import update_remote_system_command
     pass
 
-def test_get_previous_tags():
+
+detection_closed_in_xsoar = ({}, IncidentStatus.DONE, True, 'closed')
+detection_status_closed = ({'status': 'closed'}, IncidentStatus.ACTIVE, False, 'closed')
+detection_update_status_true_close_remote = ({'status': 'new'}, IncidentStatus.ACTIVE, True, 'new')
+detection_update_status_false_close_remote = ({'status': 'in_progress'}, IncidentStatus.ACTIVE, False, 'in_progress')
+detection_update_by_status_dont_close = ({'status': 'false_positive'}, IncidentStatus.DONE, False, 'false_positive')
+detection_didnt_change = ({}, IncidentStatus.ACTIVE, False, '')
+
+
+@pytest.mark.parametrize('delta, inc_status, close_in_cs_falcon, detection_request_status',
+                         [detection_closed_in_xsoar, detection_status_closed, detection_update_status_true_close_remote,
+                          detection_update_status_false_close_remote, detection_update_by_status_dont_close,
+                          detection_didnt_change])
+def test_update_remote_detection(mocker, delta, inc_status, close_in_cs_falcon, detection_request_status):
+    from CrowdStrikeFalcon import update_remote_detection
+    mocker.patch.object(demisto, 'params', return_value={'close_in_cs_falcon': close_in_cs_falcon})
+    mock_update_detection_request = mocker.patch('CrowdStrikeFalcon.update_detection_request')
+    update_remote_detection(delta, inc_status, remote_detection_id)
+    if detection_request_status:
+        assert mock_update_detection_request.call_args[0][1] == detection_request_status
+    else:
+        assert mock_update_detection_request.call_count == 0
+
+
+incident_closed_in_xsoar = ({}, IncidentStatus.DONE, True, 'Closed')
+incident_status_closed = ({'status': 'Closed'}, IncidentStatus.ACTIVE, False, 'Closed')
+incident_update_status_true_close_remote = ({'status': 'New'}, IncidentStatus.ACTIVE, True, 'New')
+incident_update_status_false_close_remote = ({'status': 'In Progress'}, IncidentStatus.ACTIVE, False, 'In Progress')
+incident_update_by_status_dont_close = ({'status': 'New'}, IncidentStatus.DONE, False, 'New')
+incident_didnt_change = ({}, IncidentStatus.ACTIVE, False, '')
+
+
+@pytest.mark.parametrize('delta, inc_status, close_in_cs_falcon, resolve_incident_status',
+                         [incident_closed_in_xsoar, incident_status_closed, incident_update_status_true_close_remote,
+                          incident_update_status_false_close_remote, incident_update_by_status_dont_close, incident_didnt_change])
+def test_update_remote_incident_status(mocker, delta, inc_status, close_in_cs_falcon, resolve_incident_status):
+    from CrowdStrikeFalcon import update_remote_incident_status
+    mocker.patch.object(demisto, 'params', return_value={'close_in_cs_falcon': close_in_cs_falcon})
+    mock_resolve_incident = mocker.patch('CrowdStrikeFalcon.resolve_incident')
+    update_remote_incident_status(delta, inc_status, remote_incident_id)
+    if resolve_incident_status:
+        assert mock_resolve_incident.call_args[0][1] == resolve_incident_status
+    else:
+        assert mock_resolve_incident.call_count == 0
+
+
+def test_update_remote_incident_tags(mocker):
+    from CrowdStrikeFalcon import update_remote_incident_tags
+    mocker.patch('CrowdStrikeFalcon.get_previous_tags', return_value={'tag_stays', 'old_tag'})
+    mock_remote_incident_handle_tags = mocker.patch('CrowdStrikeFalcon.remote_incident_handle_tags')
+    update_remote_incident_tags({'tag': ['new_tag', 'tag_stays']}, remote_incident_id)
+    assert mock_remote_incident_handle_tags.call_args_list[0].args[0] == {'new_tag'}
+    assert mock_remote_incident_handle_tags.call_args_list[0].args[1] == 'add_tag'
+    assert mock_remote_incident_handle_tags.call_args_list[1].args[0] == {'old_tag'}
+    assert mock_remote_incident_handle_tags.call_args_list[1].args[1] == 'delete_tag'
+
+
+def test_get_previous_tags(mocker):
     from CrowdStrikeFalcon import get_previous_tags
-    pass
+    incident_response = {'meta': {'query_time': 0.013811475, 'powered_by': 'incident-api',
+                                  'trace_id': '7fce39d4-d695-4aac-bdcf-2d9138bea57c'},
+                         'resources': [response_incident],
+                         'errors': []}
+    mock_get_incidents_entities = mocker.patch('CrowdStrikeFalcon.get_incidents_entities', return_value=incident_response)
+    assert get_previous_tags(remote_incident_id) == set(response_incident["tags"])
+    assert mock_get_incidents_entities.call_args[0][0] == [remote_incident_id]
+
+
+no_tags = (set(), 'add_tag')
+one_tag_add = ({'tag1'}, 'add_tag')
+one_tag_delete = ({'Tag2'}, 'delete_tag')
+add_tags = ({'Objective/Keep Access', 'Detected', 'ignored'}, 'add_tag')
+delete_tags = ({'Objective/Keep Access', 'detected', 'Ignored'}, 'delete_tag')
+
+
+@pytest.mark.parametrize('tags, action_name',
+                         [no_tags, one_tag_add, one_tag_delete, add_tags, delete_tags])
+def test_remote_incident_handle_tags(mocker, tags, action_name):
+    from CrowdStrikeFalcon import remote_incident_handle_tags
+    mock_update_incident_request = mocker.patch('CrowdStrikeFalcon.update_incident_request')
+    remote_incident_handle_tags(tags, action_name, remote_incident_id)
+    assert mock_update_incident_request.call_count == len(tags)
+    if len(tags):
+        assert mock_update_incident_request.call_args[0][2] == action_name
+
 
 def test_get_mapping_fields_command():
     from CrowdStrikeFalcon import get_mapping_fields_command

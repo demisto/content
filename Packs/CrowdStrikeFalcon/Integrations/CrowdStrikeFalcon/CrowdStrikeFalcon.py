@@ -190,8 +190,6 @@ class IncidentType(Enum):
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
 MIRROR_INSTANCE = demisto.integrationInstance()
-CLOSE_IN_XSOAR = demisto.params().get('close_incident')
-CLOSE_IN_CS_FALCON = demisto.params().get('close_in_cs_falcon')
 
 ''' HELPER FUNCTIONS '''
 
@@ -1684,12 +1682,14 @@ def get_remote_detection_data(remote_incident_id: str):
 
 
 def set_xsoar_entries(delta, entries, remote_incident_id):
+    close_in_xsoar = demisto.params().get('close_incident')
+
     # 'state' field indicates whether the incident is closed
-    if delta.get('state') == 'closed' and CLOSE_IN_XSOAR:
+    if delta.get('state') == 'closed' and close_in_xsoar:
         close_incident_in_xsoar(entries, remote_incident_id)
 
     # 'status' field indicates whether the detection is closed
-    elif delta.get('status') == 'closed' and CLOSE_IN_XSOAR:
+    elif delta.get('status') == 'closed' and close_in_xsoar:
         close_detection_in_xsoar(entries, remote_incident_id)
 
     # reopened is stated in 'status' field for both incidents (as 'Reopened') and detections (as 'reopened')
@@ -1816,12 +1816,12 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
     try:
         if parsed_args.incident_changed:
             if find_incident_type(incident_id) == IncidentType.INCIDENT:
-                result = update_remote_incident(delta, incident_id, parsed_args.inc_status)
+                result = update_remote_incident(delta, parsed_args.inc_status, incident_id)
                 if result:
                     demisto.debug(f'Incident updated successfully. Result: {result}')
 
             elif find_incident_type(incident_id) == IncidentType.DETECTION:
-                result = update_remote_detection(delta, incident_id, parsed_args.inc_status)
+                result = update_remote_detection(delta, parsed_args.inc_status, incident_id)
                 if result:
                     demisto.debug(f'Detection updated successfully. Result: {result}')
 
@@ -1838,9 +1838,9 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
     return incident_id
 
 
-def update_remote_detection(delta, incident_id, inc_status):
+def update_remote_detection(delta, inc_status, incident_id):
     result = ''
-    if inc_status == IncidentStatus.DONE and CLOSE_IN_CS_FALCON:
+    if inc_status == IncidentStatus.DONE and demisto.params().get('close_in_cs_falcon'):
         demisto.debug(f'Closing detection with remote ID {incident_id} in remote system.')
         result += str(update_detection_request([incident_id], 'closed'))
 
@@ -1851,7 +1851,7 @@ def update_remote_detection(delta, incident_id, inc_status):
     return result
 
 
-def update_remote_incident(delta, incident_id, inc_status):
+def update_remote_incident(delta, inc_status, incident_id):
     result = ''
     result += update_remote_incident_tags(delta, incident_id)
     result += update_remote_incident_status(delta, inc_status, incident_id)
@@ -1859,7 +1859,7 @@ def update_remote_incident(delta, incident_id, inc_status):
 
 
 def update_remote_incident_status(delta, inc_status, incident_id) -> str:
-    if inc_status == IncidentStatus.DONE and CLOSE_IN_CS_FALCON:
+    if inc_status == IncidentStatus.DONE and demisto.params().get('close_in_cs_falcon'):
         demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
         return str(resolve_incident([incident_id], 'Closed'))
 
