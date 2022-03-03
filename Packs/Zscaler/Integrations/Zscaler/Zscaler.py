@@ -1,11 +1,15 @@
-import demistomock as demisto
-from CommonServerPython import *
-
-''' IMPORTS '''
-import requests
-import time
 import json
 import random
+import time
+
+import demistomock as demisto  # noqa: F401
+import requests
+from CommonServerPython import *  # noqa: F401
+
+register_module_line('Zscaler', 'start', __line__())
+
+
+''' IMPORTS '''
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -100,9 +104,11 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
                                 ' For more info about your quota usage, run the command zscaler-url-quota.')
             else:
                 if res.status_code in ERROR_CODES_DICT:
-                    raise Exception('Your request failed with the following error: {}'.format(ERROR_CODES_DICT[res.status_code]))
+                    raise Exception('Your request failed with the following error: {}.\nMessage: {}'.format(
+                        ERROR_CODES_DICT[res.status_code], res.content))
                 else:
-                    raise Exception('Your request failed with the following error: {}'.format(res.status_code))
+                    raise Exception('Your request failed with the following error: {}.\nMessage: {}'.format(
+                        res.status_code, res.content))
     except Exception as e:
         LOG('Zscaler request failed with url={url}\tdata={data}'.format(url=url, data=data))
         LOG(e)
@@ -915,6 +921,109 @@ def get_category_by_id(category_id):
     return None
 
 
+# Get the list of users from Zscaler, added by BG:
+def get_users_command():
+    name = demisto.args().get("name", None)
+    pageSize = demisto.args().get("pageSize")
+    pageNo = demisto.args().get("page", 1)
+    if(name is not None):
+        cmd_url = '/users?page={}&pageSize={}&name={}'.format(pageNo, pageSize, name)
+    else:
+        cmd_url = '/users?page={}&pageSize={}'.format(pageNo, pageSize)
+    response = http_request('GET', cmd_url).json()
+
+    if(len(response) < 10):
+        human_readable = tableToMarkdown("Users ({})".format(len(response)), response)
+    else:
+        human_readable = "Retrieved {} users".format(len(response))
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {'Zscaler.Users': response},
+    }
+    return entry
+
+
+# Get the list of user departments from Zscaler, added by BG:
+def get_departments_command():
+    name = demisto.args().get("name", None)
+    pageSize = demisto.args().get("pageSize")
+    pageNo = demisto.args().get("page", 1)
+    if(name is not None):
+        cmd_url = '/departments?page={}&pageSize={}&search={}&limitSearch=true'.format(pageNo, pageSize, name)
+    else:
+        cmd_url = '/departments?page={}&pageSize={}'.format(pageNo, pageSize)
+    response = http_request('GET', cmd_url).json()
+
+    if(len(response) < 10):
+        human_readable = tableToMarkdown("Departments ({})".format(len(response)), response)
+    else:
+        human_readable = "Retrieved {} departments".format(len(response))
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {'Zscaler.Departments': response},
+    }
+    return entry
+
+
+# Get the list of user groups from Zscaler, added by BG:
+def get_usergroups_command():
+    name = demisto.args().get("name", None)
+    pageSize = demisto.args().get("pageSize")
+    pageNo = demisto.args().get("page", 1)
+    if(name is not None):
+        cmd_url = '/groups?page={}&pageSize={}&search={}'.format(pageNo, pageSize, name)
+    else:
+        cmd_url = '/groups?page={}&pageSize={}'.format(pageNo, pageSize)
+    response = http_request('GET', cmd_url).json()
+
+    if(len(response) < 10):
+        human_readable = tableToMarkdown("User groups ({})".format(len(response)), response)
+    else:
+        human_readable = "Retrieved {} user groups".format(len(response))
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {'Zscaler.UserGroups': response},
+    }
+    return entry
+
+
+# Update user info in Zscaler, added by BG:
+def set_user_command():
+    userId = demisto.args().get("id")
+    params = json.loads(demisto.args().get("user"))
+    cmd_url = '/users/{}'.format(userId)
+
+    response = http_request('PUT', cmd_url, json.dumps(params), DEFAULT_HEADERS)
+    responseJson = response.json()
+    if(response.status_code == 200):
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': responseJson,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': "Successfully updated the user (id: {} name: {})".format(responseJson["id"], responseJson["name"]),
+            'EntryContext': {'Zscaler.Users': responseJson},
+        }
+        return entry
+    else:
+        return responseJson
+
+
 ''' EXECUTION CODE '''
 
 
@@ -972,6 +1081,14 @@ def main():
                 return_results(activate_command())
             elif command == 'zscaler-url-quota':
                 return_results(url_quota_command())
+            elif command == 'zscaler-get-users':
+                return_results(get_users_command())
+            elif command == 'zscaler-update-user':
+                return_results(set_user_command())
+            elif command == 'zscaler-get-departments':
+                return_results(get_departments_command())
+            elif command == 'zscaler-get-usergroups':
+                return_results(get_usergroups_command())
         except Exception as e:
             LOG(str(e))
             LOG.print_log()
@@ -990,3 +1107,5 @@ def main():
 # python2 uses __builtin__ python3 uses builtins
 if __name__ in ("__builtin__", "builtins", "__main__"):
     main()
+
+register_module_line('Zscaler', 'end', __line__())
