@@ -276,19 +276,15 @@ class Build:
         """
         Install packs on server according to server version
         Args:
-            build: A build object
+            self: A build object
 
         Returns:
             A boolean that indicates whether the installation was successful or not
         """
         installed_content_packs_successfully = False
-        if self.is_nightly:
-            self.install_nightly_pack()
-            installed_content_packs_successfully = True
-        else:
-            if not self.is_private:
-                pack_ids = get_non_added_packs_ids(self)
-                installed_content_packs_successfully = self.install_packs(pack_ids=pack_ids)
+        if not self.is_private:
+            pack_ids = get_non_added_packs_ids(self)
+            installed_content_packs_successfully = self.install_packs(pack_ids=pack_ids)
         return installed_content_packs_successfully
 
     def nightly_install_packs(self, install_method=None, pack_path=None, service_account=None):
@@ -1459,32 +1455,36 @@ def main():
     build = XSOARBuild(options_handler())
     logging.info(f"Build Number: {build.ci_build_number}")
 
-    build.configure_servers_and_restart()  # add server config and restart servers
+    # add server config and restart servers
+    build.configure_servers_and_restart()  # TODO: only xsoar
     build.disable_instances()  # disable all enabled integrations (Todo in xsiam too)
-    build.install_packs_pre_update()  # install packs in two ways:
-    # Nightly: install all packs and upload all test playbooks that currently in master.
-    # Else branch and not private build: install only modified packs.
 
-    # compares master to commit_sha and return all changes
-    new_integrations, modified_integrations = build.get_changed_integrations()
+    if build.is_nightly:
+        # Nightly: install all packs and upload all test playbooks that currently in master.
+        build.install_nightly_pack()
+    else:
+        # branch and not private build: install only modified packs.
+        build.install_packs_pre_update()
 
-    # Configures integration instances that currently in master (+ press test button)
-    pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations,
-                                                                                        modified_integrations)
+        # compares master to commit_sha and return all changes
+        new_integrations, modified_integrations = build.get_changed_integrations()
 
-    modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
-    # changes marketplace bucket to new one. Installs all content from current branch.
-    installed_content_packs_successfully = build.update_content_on_servers()
+        # Configures integration instances that currently in master (+ press test button)
+        pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations,
+                                                                                            modified_integrations)
 
-    # After updating packs from branch, press test-module button to check that it was not broken
-    successful_tests_post, failed_tests_post = build.test_integrations_post_update(build,
-                                                                                   new_module_instances,
-                                                                                   modified_module_instances)
-    # prints results
-    success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
-                                  new_integrations, build)
-    if not success or not installed_content_packs_successfully:
-        sys.exit(2)
+        modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
+        # changes marketplace bucket to new one. Installs all content from current branch.
+        installed_content_packs_successfully = build.update_content_on_servers()
+
+        # After updating packs from branch, press test-module button to check that it was not broken
+        successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
+                                                                                       modified_module_instances)
+        # prints results
+        success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
+                                      new_integrations, build)
+        if not success or not installed_content_packs_successfully:
+            sys.exit(2)
 
 
 if __name__ == '__main__':
