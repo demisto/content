@@ -7456,6 +7456,7 @@ class Topology:
         self.ha_active_devices: dict = {}
         self.username: str = ""
         self.password: str = ""
+        self.api_key: str = ""
 
     def get_peer(self, serial: str):
         """Given a serial, get it's peer, if part of a HA pair."""
@@ -7636,6 +7637,7 @@ class Topology:
 
         topology.username = username
         topology.password = password
+        topology.api_key = api_key
 
         return topology
 
@@ -7694,7 +7696,8 @@ class Topology:
         return PanDevice.create_from_device(
             hostname=ip_address,
             api_username=self.username,
-            api_password=self.password
+            api_password=self.password,
+            api_key=self.api_key
         )
 
     def get_all_object_containers(
