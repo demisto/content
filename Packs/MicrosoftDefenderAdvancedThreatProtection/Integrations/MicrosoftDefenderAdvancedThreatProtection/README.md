@@ -1813,11 +1813,11 @@ Machine.StopAndQuarantine
 `microsoft-atp-stop-and-quarantine-file`
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| machine_id | The ID  of the machine. | Required | 
-| file_hash | The file SHA1 hash to stop and quarantine on the machine. | Required | 
-| comment | The comment to associate with the action. | Required | 
+| **Argument Name** | **Description**                                                                                                                          | **Required** |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| machine_id | The ID of the machine. When providing multiple values, each will be checked for the same hash.                                           | Required | 
+| file_hash | The file SHA1 hash to stop and quarantine on the machine. When providing multiple values, each will be checked for the same machine_id.  | Required | 
+| comment | The comment to associate with the action.                                                                                                | Required | 
 
 
 ##### Context Output
