@@ -277,20 +277,15 @@ class Build:
             logging.debug(f'Updated Integrations Since Last Release:\n{modified_integrations_names}')
         return new_integrations_names, modified_integrations_names
 
-    def install_packs_pre_update(self) -> bool:
+    def install_packs_pre_update(self):
         """
         Install packs on server according to server version
         Args:
             self: A build object
-
-        Returns:
-            A boolean that indicates whether the installation was successful or not
         """
-        installed_content_packs_successfully = False
         if not self.is_private:
             pack_ids = get_non_added_packs_ids(self)
-            installed_content_packs_successfully = self.install_packs(pack_ids=pack_ids)
-        return installed_content_packs_successfully
+            self.install_packs(pack_ids=pack_ids)
 
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         threads_list = []
@@ -1478,10 +1473,10 @@ def main():
     build.disable_instances()  # disable all enabled integrations (Todo in xsiam too)
 
     if build.is_nightly:
-        # Nightly: install all packs and upload all test playbooks that currently in master.
+        # XSOAR Nightly: install all packs and upload all test playbooks that currently in master.
         build.install_nightly_pack()
     else:
-        # branch and not private build: install only modified packs.
+        # install only modified packs.
         build.install_packs_pre_update()
 
         # compares master to commit_sha and return all changes
