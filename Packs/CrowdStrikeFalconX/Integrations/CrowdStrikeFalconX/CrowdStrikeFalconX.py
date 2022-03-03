@@ -619,15 +619,14 @@ def test_module(client: Client) -> str:
     if error := output.get("errors"):
         return error[0]
 
-    if meta := output.get('meta'):
-        if quota := meta.get("quota"):
-            quota_amount = quota.get("total")
-            used_amount = quota.get("used")
-            if used_amount >= quota_amount:
-                raise DemistoException(f"Quota limit has been reached: {used_amount}")
-            else:
-                return 'ok'
-    raise DemistoException("Quota limit is unknown")
+    if quota := output.get('meta', {}).get('quota'):
+        quota_amount = quota.get('total')
+        used_amount = quota.get('used')
+        if used_amount < quota_amount:
+            return 'ok'
+        else:
+            raise DemistoException(f'Quota limit has been reached: {used_amount}')
+    raise DemistoException('Quota limit is unknown')
 
 
 def upload_file_command(  # type: ignore[return]
