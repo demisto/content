@@ -1,10 +1,7 @@
 id: Microsoft Defender For Endpoint - Unisolate Endpoint
-version: 15
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Microsoft Defender For Endpoint - Unisolate Endpoint
-description: This playbook will auto unisolate endpoints through Microsoft Defender
-  For Endpoint by using Hostname, IP, or Device ID associated with the asset you wish
-  to block.
+description: This playbook will auto unisolate endpoints through Microsoft Defender For Endpoint by using Hostname, IP, or Device ID associated with the asset you wish to block.
 starttaskid: "0"
 tasks:
   "0":
@@ -17,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -43,8 +41,7 @@ tasks:
       id: 5716f9b9-d904-4ffd-8d95-bfc68b484f07
       version: -1
       name: Is Microsoft Defender For Endpoint Integration Enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise
-        returns 'no'.
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -85,6 +82,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -188,9 +186,7 @@ tasks:
       id: 97b52579-d382-4054-8efb-50c10002f9dd
       version: -1
       name: Check if the Unisolate command succeeded
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -478,8 +474,7 @@ tasks:
       - "2"
     scriptarguments:
       value:
-        simple: "Please note that the following IDs are incorrect. No action was taken
-          on the following Device ID: \n${MicrosoftATP.IncorrectIDs}\n${MicrosoftATP.IncorrectIPs}\n${MicrosoftATP.IncorrectHostnames}"
+        simple: "Please note that the following IDs are incorrect. No action was taken on the following Device ID: \n${MicrosoftATP.IncorrectIDs}\n${MicrosoftATP.IncorrectIPs}\n${MicrosoftATP.IncorrectHostnames}"
     separatecontext: false
     view: |-
       {
@@ -755,6 +750,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -786,6 +782,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -815,6 +812,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -844,6 +842,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -873,6 +872,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "26"
@@ -901,6 +901,7 @@ tasks:
       name: Was any data provided?
       type: condition
       iscommand: false
+      description: 'Validate/Enrich inputs through !endpoint'
       brand: ""
     nexttasks:
       '#default#':
@@ -1005,17 +1006,17 @@ inputs:
     For more information, you can use the following commands:
     !microsoft-atp-get-machine-details
     !microsoft-atp-get-machines
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Hostname
   value: {}
   required: false
   description: The Device Hostname that you would like to Isolate
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Device_IP
   value: {}
   required: false
   description: The Device IP that you would like to Isolate
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: MicrosoftATP.MachineAction.ID
   description: The machine action ID.
@@ -1035,3 +1036,6 @@ outputs:
 - contextPath: MicrosoftATP.IncorrectIPs
   description: Incorrect Device IPs entered
   type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
