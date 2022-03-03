@@ -78,9 +78,15 @@ def _calculate_dbot_score(severity: int) -> int:
     return dbot_score
 
 
-def fix_headerts(string):
-    updated_str=re.sub(r'(?<=#)(?=[^#\s])', ' ', string)
-    return updated_str
+def fix_markdown(text):
+    regex_header = r"([#]+)([^\/|\s]\w)"
+    subst_header = "\\1 \\2"
+    result = re.sub(regex_header, subst_header, text, 0)
+
+    regex_url = r"\/#\/"
+    subst_url = "https://intelgraph.idefense.com/"
+    output = re.sub(regex_url, subst_url, result, 0)
+    return output
 
 
 def getThreatReport_command(client: Client, args: dict , reliability: DBotScoreReliability):
