@@ -1462,8 +1462,8 @@ def main():
     build.configure_servers_and_restart()  # add server config and restart servers
     build.disable_instances()  # disable all enabled integrations (Todo in xsiam too)
     build.install_packs_pre_update()  # install packs in two ways:
-    # Nightly: install all packs and upload all test playbooks.
-    # that currently in master. Else branch and not private build: install only modified packs.
+    # Nightly: install all packs and upload all test playbooks that currently in master.
+    # Else branch and not private build: install only modified packs.
 
     # compares master to commit_sha and return all changes
     new_integrations, modified_integrations = build.get_changed_integrations()
