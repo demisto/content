@@ -1,0 +1,57 @@
+category: Utilities
+commonfields:
+  id: AnomaliThreatstreamAshlesha
+  version: -1
+configuration:
+- defaultvalue: https://www.example.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate
+  name: insecure
+  required: false
+  type: 8
+- display: ""
+  name: username
+  required: false
+  type: 0
+- display: ""
+  name: apikey
+  required: false
+  type: 4
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: d3ab7736-3fea-4cc1-8efd-bd42854d3cc0
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Generated description - REPLACE THIS
+display: AnomaliThreatstreamAshlesha
+name: AnomaliThreatstreamAshlesha
+script:
+  commands:
+  - arguments:
+    - name: username
+    - name: api_key
+    - name: count
+    - name: reported_ts
+    - name: org_id
+    - name: attacker_address
+    name: AT-anomalithreatstream1
+  - arguments:
+    - name: username
+    - name: api_key
+    name: AT-anomalithreatstream2
+  dockerimage: demisto/python3:3.10.1.26972
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
