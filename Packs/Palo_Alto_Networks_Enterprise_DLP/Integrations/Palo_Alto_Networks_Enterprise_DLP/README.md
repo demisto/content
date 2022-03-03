@@ -120,3 +120,8 @@ Updates a DLP incident with user feedback
 | feedback | User's feedback to the incident | Required |
 | region | The region in which the DLP incident was generated | Required | 
 
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+|  DLP.IncidentUpdate.success | bool | Whether or not the update is successful. | 

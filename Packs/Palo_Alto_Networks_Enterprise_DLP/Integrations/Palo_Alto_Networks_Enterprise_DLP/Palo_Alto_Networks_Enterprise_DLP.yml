@@ -54,6 +54,30 @@ script:
     - contextPath: DLP.Report.DataPatternMatches.LowConfidenceFrequency
       description: Number of occurrences at Medium confidence.
     description: Fetches DLP reports associated with a report ID.
+  - name: pan-dlp-update-incident
+    arguments:
+        - name: incident_id
+          required: true
+          description: The id of the incident to update
+        - name: feedback
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - PENDING_RESPONSE
+            - CONFIRMED_SENSITIVE
+            - CONFIRMED_FALSE_POSITIVE
+            - EXCEPTION_REQUESTED
+          description: The user feedback
+        - name: user_id
+          required: true
+          description: The id of the user from whom the feedback is collected
+        - name: region
+          description: The region where the incident was originated
+    outputs:
+      - contextPath: DLP.IncidentUpdate.success
+        description: Whether or not the update was successful
+        type: boolean
+    description: Update a DLP incident with user feedback
   dockerimage: demisto/python3:3.10.1.26972
   isFetchSamples: true
   longRunning: false

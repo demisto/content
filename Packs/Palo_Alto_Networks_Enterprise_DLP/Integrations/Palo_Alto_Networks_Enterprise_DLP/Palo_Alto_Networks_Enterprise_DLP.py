@@ -3,8 +3,11 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import urllib3
-from typing import Dict, Any, Tuple
+import urllib.parse
+from typing import Dict
 from enum import Enum
+from datetime import datetime
+import math
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -12,14 +15,15 @@ urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 MAX_ATTEMPTS = 3
 BASE_URL = 'https://api.dlp.paloaltonetworks.com/v1/'
-STAGING_BASE_URL = 'https://a150282198bb445f195ce6aacffc7510-963475564.us-west-2.elb.amazonaws.com/v1/'
+STAGING_BASE_URL = 'https://aa420c196330b4eb2bbf89ece2d68461-852397286.us-west-2.elb.amazonaws.com/v1/'
 REPORT_URL = 'public/report/{}'
-INCIDENTS_URL = 'public/incidents?timestamp_unit=past_30_days'
+INCIDENTS_URL = 'public/incident-notifications'
 REFRESH_TOKEN_URL = 'public/oauth/refreshToken'
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-DEFAULT_FIRST_FETCH = '60 minutes'
-DEFAULT_FETCH_LIMIT = '50'
 UPDATE_INCIDENT_URL = 'public/incident-feedback'
+FETCH_SLEEP = 5  # sleep between fetches (in seconds)
+LAST_FETCH_TIME = 'last_fetch_time'
+DEFAULT_FIRST_FETCH = '60 minutes'
+ACCESS_TOKEN = 'access_token'
 
 
 class FeedbackStatus(Enum):
@@ -66,6 +70,7 @@ class Client(BaseClient):
         if res.status_code != 403:
             return
         try:
+            print_debug_msg("Got 403, attempting to refresh access token")
             self._refresh_token()
         except Exception:
             pass
@@ -99,7 +104,7 @@ class Client(BaseClient):
 
     def _post_dlp_api_call(self, url_suffix: str, payload: Dict = None):
         """
-        Makes a HTTPS POSt call on the DLP API
+        Makes a POST HTTP(s) call to the DLP API
         Args:
             url_suffix: URL suffix for dlp api call
             payload: Optional JSON payload
@@ -109,12 +114,12 @@ class Client(BaseClient):
         while count < MAX_ATTEMPTS:
             res = self._http_request(
                 method='POST',
-                headers={'Authorization': "Bearer " + self.access_token},
+                headers={'Authorization': f"Bearer {self.access_token}"},
                 url_suffix=url_suffix,
                 json_data=payload,
                 ok_codes=[200, 201, 204],
                 error_handler=self._handle_403_errors,
-                resp_type='',
+                resp_type='response',
                 return_empty_response=True
             )
             if res.status_code != 403:
@@ -122,7 +127,8 @@ class Client(BaseClient):
             count += 1
 
         if res.status_code < 200 or res.status_code >= 300:
-            raise DemistoException("Request to {} failed with status code {}".format(url_suffix, res.status_code))
+            print_debug_msg(f"Request to {url_suffix} failed with status code {res.status_code}")
+            raise DemistoException(f"Request to {url_suffix} failed with status code {res.status_code}")
 
         result_json = {}
         if res.status_code != 204:
@@ -147,6 +153,38 @@ class Client(BaseClient):
             url = url + "?fetchSnippets=true"
 
         return self._get_dlp_api_call(url)
+
+    def get_dlp_incidents(self, start_time: int, end_time: int, regions: str) -> dict:
+        url = INCIDENTS_URL
+        params = {}
+        if regions:
+            params['regions'] = regions;
+        if start_time:
+            params['start_timestamp'] = start_time
+        if end_time:
+            params['end_timestamp'] = end_time
+        query_string = urllib.parse.urlencode(params)
+        url = f"{url}?{query_string}"
+        resp, status_code = self._get_dlp_api_call(url)
+        return resp
+        # incidents = []
+        # for event in events:
+        #     incident_creation_time = dateparser.parse(events[-1]['createdAt'])
+        #     incident = {
+        #         'name': f'Palo Alto Networks DLP incident {event["incidentId"]}',  # name is required field, must be set
+        #         'occurred': incident_creation_time.isoformat(),  # must be string of a format ISO8601
+        #         'rawJSON': json.dumps(event)
+        #         # the original event, this will allow mapping of the event in the mapping stage. Don't forget to `json.dumps`
+        #     }
+        #     incidents.append(incident)
+        #
+        # latest_created_time = dateparser.parse(events[-1]['createdAt'])
+        # latest_created_time = latest_created_time.strftime(DATE_FORMAT)
+        # next_run = {'last_fetch': latest_created_time, 'id': events[-1]['incidentId']}
+        # if call_from_test:
+        #     # Returning None
+        #     return {}, []
+        # return next_run, incidents
 
     def update_dlp_incident(self, incident_id: str, feedback: FeedbackStatus, user_id: str, region: str):
         """
@@ -262,7 +300,6 @@ def parse_dlp_report(report_json):
     return_results(results)
 
 
-
 def test(client):
     """ Test Function to test validity of access and refresh tokens"""
     report_json, status_code = client.get_dlp_report('1')
@@ -271,6 +308,93 @@ def test(client):
     else:
         raise DemistoException("Integration test failed: Unexpected status ({})".format(status_code))
 
+
+def print_debug_msg(msg: str):
+    """
+    Prints a message to debug with QRadarMsg prefix.
+    Args:
+        msg (str): Message to be logged.
+
+    """
+    demisto.debug(f'PAN-DLP-Msg - {msg}')
+
+
+def update_incident(client: Client, incident_id: str, feedback: str, user_id: str, region: str):
+    feedback_enum = FeedbackStatus[feedback.upper()]
+    result_json, status = client.update_dlp_incident(incident_id, feedback_enum, user_id, region)
+    result = {
+        'success': status == 200,
+        'feedback': feedback_enum.value
+    }
+    results = CommandResults(
+        outputs_prefix='DLP.IncidentUpdate',
+        outputs_key_field='feedback',
+        outputs=result
+    )
+    demisto.results(results.to_context())
+
+
+def fetch_incidents(client: Client, start_time: int, end_time: int, regions: str):
+    print_debug_msg(f'Start fetching incidents between {start_time} and {end_time}.')
+
+    incident_map = client.get_dlp_incidents(start_time, end_time, regions)
+    incidents = []
+    for region in incident_map:
+        raw_incidents = incident_map[region]
+        for raw_incident in raw_incidents:
+            raw_incident['region'] = region
+            incident_creation_time = dateparser.parse(raw_incident['createdAt'])
+            event_dump  = json.dumps(raw_incident)
+            incident = {
+              'name': f'Palo Alto Networks DLP Incident {raw_incident["incidentId"]}',  # name is required field, must be set
+              'type': 'Data Loss Prevention',
+              'occurred': incident_creation_time.isoformat(),  # must be string of a format ISO8601
+              'rawJSON': event_dump,
+              'details': event_dump
+            }
+            incidents.append(incident)
+    return incidents
+
+
+def long_running_execution_command(params: Dict):
+    """
+    Long running execution of fetching incidents from Palo Alto Networks Enterprise DLP.
+    Will continue to fetch in an infinite loop.
+    Args:
+        params (Dict): Demisto params.
+
+    """
+    regions = params.get('dlp_regions')
+    refresh_token = params.get('refresh_token')
+    url = BASE_URL if params.get('env') == 'prod' else STAGING_BASE_URL
+    while True:
+        try:
+            integration_context = demisto.getIntegrationContext()
+            last_fetch_time = integration_context.get(LAST_FETCH_TIME)
+            now = math.floor(datetime.now().timestamp())
+            last_fetch_time = now - 30 if not last_fetch_time else last_fetch_time
+            end_time = now
+            access_token = integration_context.get(ACCESS_TOKEN)
+            access_token = params.get('access_token') if not access_token else access_token
+            client = Client(url, refresh_token, access_token, params.get('insecure'), params.get('proxy'))
+            incidents = fetch_incidents(
+                client=client,
+                start_time=last_fetch_time,
+                end_time=end_time,
+                regions=regions
+            )
+            print_debug_msg(f"Received {len(incidents)} incidents")
+            # new_end_time = math.floor(datetime.now().timestamp()) if not end_time else end_time
+            demisto.setIntegrationContext({LAST_FETCH_TIME: end_time, ACCESS_TOKEN: client.access_token})
+            demisto.createIncidents(incidents)
+
+        except Exception:
+            demisto.error('Error occurred during long running loop')
+            demisto.error(traceback.format_exc())
+
+        finally:
+            print_debug_msg('Finished fetch loop')
+            time.sleep(FETCH_SLEEP)
 
 def main():
     """ Main Function"""
@@ -288,24 +412,29 @@ def main():
             fetch_snippets = argToBoolean(args.get('fetch_snippets'))
             report_json, status_code = client.get_dlp_report(report_id, fetch_snippets)
             parse_dlp_report(report_json)
+        elif demisto.command() == 'fetch-incidents':
+            last_run = demisto.getLastRun()
+            last_fetch_time = last_run.get(LAST_FETCH_TIME) if last_run else None
+            now = math.floor(datetime.now().timestamp())
+            last_fetch_time = now - 3600 if not last_fetch_time else last_fetch_time
+            incidents = fetch_incidents(
+                client=client,
+                start_time=last_fetch_time,
+                end_time=now,
+                regions=params.get('dlp_regions')
+            )
+
+            demisto.setLastRun({LAST_FETCH_TIME: now})
+            demisto.incidents(incidents)
+        elif demisto.command() == 'long-running-execution':
+            long_running_execution_command(params)
         elif demisto.command() == 'pan-dlp-update-incident':
             args = demisto.args()
             incident_id = args.get('incident_id')
             feedback = args.get('feedback')
             user_id = args.get('user_id')
             region = args.get('region')
-            feedback_enum = FeedbackStatus[feedback.upper()]
-            result_json, status = client.update_dlp_incident(incident_id, feedback_enum, user_id, region)
-            result = {
-                'success': status == 200,
-                'feedback': feedback_enum.value
-            }
-            results = CommandResults(
-                outputs_prefix='DLP.IncidentUpdate',
-                outputs_key_field='feedback',
-                outputs=result
-            )
-            demisto.results(results.to_context())
+            update_incident(client, incident_id, feedback, user_id, region)
         elif demisto.command() == "test-module":
             test(client)
 
