@@ -286,5 +286,5 @@ def main():
         raise Exception(f'Error in CrowdStrike falcon intel Integration [{e}]')
 
 
-if __name__ == '__builtin__' or __name__ == 'builtins' or __name__ == '__main__':
+if __name__ in {'__builtin__', 'builtins', '__main__'}:
     main()
