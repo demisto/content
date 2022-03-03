@@ -135,6 +135,7 @@ def parse_incidents(incidents: List[dict], attachment_path: List[str] = None) ->
             'occurred': incident.get('created'),
             'rawJSON': json.dumps(incident)
         }
+
         if incident.get('labels'):
             parsed_incident['labels'] = incident.get('labels')
 
