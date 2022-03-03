@@ -1,5 +1,6 @@
 import demistomock as demisto
 
+import dateparser
 import urllib3
 from MicrosoftApiModule import *
 
@@ -16,7 +17,8 @@ REQUIRED_PERMISSIONS = (
     'IdentityRiskEvent.Read.All',
     'IdentityRiskyUser.ReadWrite.All'
 )
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 
 def __reorder_first_headers(headers: List[str], first_headers: List[str]) -> None:
@@ -251,84 +253,108 @@ def azure_ad_identity_protection_risky_users_dismiss_command(client: AADClient, 
     return client.azure_ad_identity_protection_risky_users_dismiss(**kwargs)
 
 
-def create_incidents_from_input(input: List[Dict[str, str]], last_fetch_datetime: datetime) -> \
+def detection_to_incident(detection, detection_date):
+    detection_id: str = detection.get('id', '')
+    detection_type: str = detection.get('riskEventType', '')
+    detection_detail: str = detection.get('riskDetail', '')
+    incident = {
+        'name': f'Azure AD:'
+                f' {detection_id} {detection_type} {detection_detail}',
+        'occurred': f'{detection_date}Z',
+        'rawJSON': json.dumps(detection)
+    }
+    return incident
+
+
+def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetime: datetime) -> \
         Tuple[List[Dict[str, str]], datetime]:
-
+    """
+    Given the detections retrieved from Azure Identity Protection, transforms their data to incidents format.
+    """
     incidents: List[Dict[str, str]] = []
-    last_fetch = last_fetch_datetime.replace(tzinfo=None)
+    latest_incident_time = last_fetch_datetime
 
-    for current_input in input:
+    for detection in detections:
         # 'activityDateTime': '2021-07-15T11:02:54Z' / 'activityDateTime': '2021-07-15T11:02:54.12345Z'
-        activity_date_time_str: str = current_input.get('activityDateTime', '')
-
-        activity_datetime = dateparser.parse(activity_date_time_str).replace(tzinfo=None)
-        # To prevent duplicates, adding incidents with creation_time > last fetched incident
-        if last_fetch:
-            if activity_datetime <= last_fetch:
-                demisto.debug(f'{INTEGRATION_NAME} - alert {str(current_input)} created at {activity_date_time_str}.'
-                              f' Skipping.')
-                continue
-
-        current_id: str = current_input.get('id', '')
-        current_risk_event_type: str = current_input.get('riskEventType', '')
-        current_risk_detail: str = current_input.get('riskDetail', '')
-        incident = {
-            'name': f'Azure AD:'
-                    f' {current_id} {current_risk_event_type} {current_risk_detail}',
-            'occurred': activity_date_time_str,
-            'rawJSON': json.dumps(current_input)
-        }
+        detection_date = date_str_to_azure_format(detection.get('detectedDateTime', ''))
+        incident = detection_to_incident(detection, detection_date)
         incidents.append(incident)
 
-        timestamp = activity_datetime
-        if timestamp > last_fetch:
-            last_fetch = timestamp
+        detection_datetime = datetime.strptime(detection_date, DATE_FORMAT)
+        if detection_datetime > latest_incident_time:
+            latest_incident_time = detection_datetime
 
-    return incidents, last_fetch
+    return incidents, latest_incident_time
+
+
+def get_last_fetch_time(last_run, params):
+    last_fetch = last_run.get('latest_detection_found')
+    if not last_fetch:
+        demisto.debug('[AzureADIdentityProtection] First run')
+        # handle first time fetch
+        first_fetch = f"{params.get('first_fetch') or '1 days'} ago"
+        default_fetch_datetime = dateparser.parse(date_string=first_fetch, date_formats=[DATE_FORMAT])
+        last_fetch = str(default_fetch_datetime.isoformat(timespec='milliseconds'))
+
+    last_fetch = date_str_to_azure_format(last_fetch)
+    last_fetch_datetime: datetime = datetime.strptime(last_fetch, DATE_FORMAT)
+    demisto.debug(f'[AzureADIdentityProtection] last_fetch: {last_fetch}, last_fetch_datetime: {last_fetch_datetime}')
+    return last_fetch, last_fetch_datetime
+
+
+def build_filter(last_fetch, params):
+    start_time_enforcing_filter = f"detectedDateTime gt {last_fetch}Z"
+    user_supplied_filter = params.get('fetch_filter_expression', '')
+    query_filter = f'{user_supplied_filter} and {start_time_enforcing_filter}' if user_supplied_filter \
+        else start_time_enforcing_filter
+    demisto.debug(f'[AzureADIdentityProtection] query_filter: {query_filter}Z')
+    return query_filter
+
+
+def date_str_to_azure_format(date_str):
+    """
+    Given a string representing a date in some general format, modifies the date to Azure format.
+    That means removing the Z at the end and adding nanoseconds if they don't exist.
+    Moreover, sometimes the date has too many digits for
+    """
+    date_str = date_str[:-1] if date_str[-1].lower() == 'z' else date_str
+    if '.' not in date_str:
+        date_str = f'{date_str}.000'
+    else:
+        date_without_ns, ns = date_str.split('.')
+        ns = ns[:6]
+        date_str = f'{date_without_ns}.{ns}'
+
+    return date_str
 
 
 def fetch_incidents(client: AADClient, params: Dict[str, str]):
-
     last_run: Dict[str, str] = demisto.getLastRun()
-    demisto.debug(f'last run: {last_run}')
+    demisto.debug(f'[AzureIdentityProtection] last run: {last_run}')
 
-    last_fetch = last_run.get('last_item_time', '')
-    if not last_fetch:
-        # handle first time fetch
-        first_fetch = params.get('first_fetch', '1 days')
-        default_fetch_datetime, _ = parse_date_range(date_range=first_fetch, utc=True, to_timestamp=False)
-        last_fetch = str(default_fetch_datetime.isoformat(timespec='seconds')) + 'Z'
-
-    last_fetch_datetime: datetime = datetime.strptime(last_fetch, DATE_FORMAT)
-    demisto.debug(f'last_fetch_datetime: {last_fetch_datetime}')
-
-    all_incidents: List = []
-    next_link: str = ''
-    filter_expression = params.get('fetch_filter_expression', f'lastUpdatedDateTime gt {last_fetch}')
+    last_fetch, last_fetch_datetime = get_last_fetch_time(last_run, params)
+    query_filter = build_filter(last_fetch, params)
+    demisto.debug(f'[AzureIdentityProtection] last fetch is: {last_fetch}, filter is: {query_filter}')
 
     risk_detection_list_raw: Dict = client.azure_ad_identity_protection_risk_detection_list_raw(
         limit=int(params.get('max_fetch', '50')),
-        filter_expression=filter_expression,
-        next_link=next_link,
+        filter_expression=query_filter,
         user_id=params.get('fetch_user_id', ''),
         user_principal_name=params.get('fetch_user_principal_name', ''),
-        country='',
     )
 
-    next_link = get_next_link_url(risk_detection_list_raw)
-    values: list = risk_detection_list_raw.get('value', [])
-    if next_link:
-        demisto.debug('More incidents available, stopping after getting the first ' + str(len(values)) + ' incidents')
-    else:
-        demisto.debug('Fetched ' + str(len(values)) + ' incidents')
+    detections: list = risk_detection_list_raw.get('value', [])
 
-    incidents, last_item_time = create_incidents_from_input(values, last_fetch_datetime=last_fetch_datetime)
-    all_incidents.extend(incidents)
+    incidents, latest_detection_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch_datetime)
+    demisto.debug(f'[AzureIdentityProtection] Fetched {len(incidents)} incidents')
 
-    demisto.incidents(all_incidents)
-    demisto.setLastRun({
-        'last_item_time': last_item_time.strftime(DATE_FORMAT)
-    })
+    latest_detection_time = latest_detection_time.strftime(DATE_FORMAT)
+    demisto.debug(f'[AzureIdentityProtection] next run latest_detection_found: {latest_detection_time}')
+    last_run = {
+        'latest_detection_found': latest_detection_time
+    }
+
+    return incidents, last_run
 
 
 def start_auth(client: AADClient) -> CommandResults:
@@ -390,7 +416,9 @@ def main() -> None:
         elif command == 'azure-ad-identity-protection-risky-user-dismiss':
             return_results(azure_ad_identity_protection_risky_users_dismiss_command(client, **args))
         elif command == 'fetch-incidents':
-            return_results(fetch_incidents(client, params))
+            incidents, last_run = fetch_incidents(client, params)
+            demisto.incidents(incidents)
+            demisto.setLastRun(last_run)
 
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')

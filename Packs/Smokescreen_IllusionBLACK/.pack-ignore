@@ -21,3 +21,7 @@ ignore=BA101
 
 [file:classifier-mapper-incoming-Smokescreen_IllusionBLACK.json]
 ignore=BA101
+
+
+[file:Smokescreen_IllusionBLACK_image.png]
+ignore=IM111

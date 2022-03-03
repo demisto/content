@@ -72,5 +72,9 @@
             "mandatory": false,
             "display_name": "CVE-2021-40444 - MSHTML RCE"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

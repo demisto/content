@@ -1,0 +1,49 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "hostfqdn",
+    "closeForm": false,
+    "content": true,
+    "description": "The fully qualified domain name (FQDN) of the Windows endpoint or server on which this alert triggered.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_hostfqdn",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Host FQDN",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "agent_fqdn",
+    "Aliases": [
+        {
+            "cliName": "dnsname",
+            "type": "shortText",
+            "name": "DNS Name"
+        },
+        {
+            "cliName": "prismacloudcomputefqdn",
+            "type": "shortText",
+            "name": "Prisma Cloud Compute FQDN"
+        },
+        {
+            "cliName": "shadowitfqdn",
+            "type": "shortText",
+            "name": "Shadow IT FQDN"
+        }
+    ]
+}

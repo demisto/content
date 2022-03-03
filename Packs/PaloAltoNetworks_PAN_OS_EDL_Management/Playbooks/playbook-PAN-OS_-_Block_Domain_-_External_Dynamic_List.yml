@@ -4,7 +4,7 @@ name: PAN-OS - Block Domain - External Dynamic List
 fromversion: 5.0.0
 description: |-
   This playbook blocks Domains using Palo Alto Networks Panorama or Firewall External Dynamic Lists.
-  It checks if the EDL configuration is in place with the 'PAN-OS EDL Setup' sub-playbook
+  It checks if the EDL configuration is in place with the 'PAN-OS EDL Setup v3' sub-playbook
   (otherwise the list will be configured), and adds the input Domains to the relevant lists.
 starttaskid: "0"
 tasks:
@@ -211,9 +211,9 @@ tasks:
     task:
       id: fcd76346-8f56-4df1-82cd-9bb40e24abda
       version: -1
-      name: PAN-OS EDL Setup
-      description: Sets up an external dynamic list in PAN-OS.\n If the file exists on the web server, it will sync it to Demisto. Lastly, it will create an EDL object and a matching rule.
-      playbookName: PAN-OS EDL Setup
+      name: PAN-OS EDL Setup v3
+      description: Configures an external dynamic list in PAN-OS.\nIn the event that the file exists on the web server, it will sync it to demisto. Then it will create an EDL object and a matching rule.
+      playbookName: PAN-OS EDL Setup v3
       type: playbook
       iscommand: false
       brand: ""

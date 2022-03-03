@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Search And Delete Emails - Generic v2
-description: This playbook searches and delete emails with similar attributes of a
+description: This playbook searches and deletes emails with similar attributes of a
   malicious email using EWS or Office 365.
 starttaskid: "0"
 tasks:
@@ -738,7 +738,7 @@ inputs:
     simple: EWS
   required: true
   description: The integration in which to run the search and delete action. Can be
-    O365, or EWS.
+    O365 or EWS.
   playbookInputQuery:
 - key: O365ExchangeLocation
   value:
@@ -746,7 +746,7 @@ inputs:
       root: incident
       accessor: emailto
   required: false
-  description: Used only in O365. Comma-separated list of mailboxes/distribution groups
+  description: Used only in O365. A comma-separated list of mailboxes/distribution groups
     to include, or use the value "All" to include all.
   playbookInputQuery:
 - key: O365KQL
@@ -766,7 +766,7 @@ inputs:
     simple: "false"
   required: false
   description: Used only in O365. Whether to include mailboxes other than regular
-    user mailboxes in the compliance search. Default is "false".
+    user mailboxes in the compliance search.
   playbookInputQuery:
 - key: O365DeleteType
   value:
@@ -781,12 +781,12 @@ inputs:
     complex:
       root: inputs.O365ExchangeLocationExclusion
   required: false
-  description: Used only when searching and deleting emails in O365. The exchange
+  description: "Used only when searching and deleting emails in O365. The exchange
     location. Determines from where to search and delete emails searched using O365
-    playbooks. Use the value "All" to search all mailboxes, use "SingleMailbox" to
-    search and delete the email only from the recipient's inbox, or specify "Manual"
-    to decide manually for every incident. Note - searching all mailboxes may take
-    a significant amount of time.
+    playbooks. Use the value 'All' to search all mailboxes, use 'SingleMailbox' to
+    search and delete the email only from the recipients inbox, or use 'Manual'
+    to decide manually for every incident. Note: Searching all mailboxes may take
+    a significant amount of time."
   playbookInputQuery:
 - key: To
   value:
@@ -794,7 +794,7 @@ inputs:
       root: incident
       accessor: emailto
   required: false
-  description: The email address to which the email was sent. This is used if the
+  description: The email address the email was sent to. This is used if the
     user decides to search for and delete emails only from the inbox of the recipient
     using O365.
   playbookInputQuery:
@@ -802,3 +802,4 @@ outputs: []
 tests:
 - No test
 fromversion: 5.5.0
+toversion: 5.9.9

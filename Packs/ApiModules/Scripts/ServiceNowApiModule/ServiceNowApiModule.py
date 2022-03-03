@@ -32,6 +32,10 @@ class ServiceNowClient(BaseClient):
             self.password = credentials.get('password')
             self.auth = (self.username, self.password)
 
+        if '@' in client_id:  # for use in OAuth test-playbook
+            self.client_id, refresh_token = client_id.split('@')
+            set_integration_context({'refresh_token': refresh_token})
+
         self.base_url = url
         super().__init__(base_url=self.base_url, verify=verify, proxy=proxy, headers=headers, auth=self.auth)  # type
         # : ignore[misc]

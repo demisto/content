@@ -9,8 +9,16 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": ["Breach", "Dark Web", "Threat Intelligence"],
-    "useCases": ["Breach Notification", "Vulnerability Management", "Phishing"],
+    "tags": [
+        "Breach",
+        "Dark Web",
+        "Threat Intelligence"
+    ],
+    "useCases": [
+        "Breach Notification",
+        "Vulnerability Management",
+        "Phishing"
+    ],
     "keywords": [
         "Darknet",
         "darkweb",
@@ -26,5 +34,9 @@
         "intel",
         "recon"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

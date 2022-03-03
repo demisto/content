@@ -2,7 +2,7 @@
     "name": "Fastly Feed",
     "description": "Indicators feed from Fastly",
     "support": "xsoar",
-    "currentVersion": "1.1.9",
+    "currentVersion": "1.1.10",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,5 +15,9 @@
     "keywords": [
         "Fastly",
         "Feed"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

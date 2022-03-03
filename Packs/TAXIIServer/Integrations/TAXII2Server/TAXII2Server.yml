@@ -1,0 +1,118 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: TAXII2 Server
+  version: -1
+configuration:
+- defaultvalue: 'true'
+  display: Long Running Instance
+  name: longRunning
+  required: false
+  type: 8
+  hidden: true
+- display: TAXII2 Server version
+  hidden: false
+  name: version
+  defaultvalue: "2.1"
+  options:
+  - "2.0"
+  - "2.1"
+  required: true
+  type: 15
+- additionalinfo: Will run the TAXII2 server on this port from within Cortex XSOAR. Requires
+    a unique port for each long-running integration instance. Do not use the same
+    port for multiple instances.
+  display: Listen Port
+  name: longRunningPort
+  required: true
+  type: 0
+- display: Username
+  additionalinfo: Credentials to use for the basic auth.
+  hidden: false
+  name: credentials
+  required: false
+  type: 9
+- additionalinfo: JSON string of indicator query collections. Dictionary of the collection
+    name as the key and the query as the value.
+  defaultvalue: |-
+    {
+       "Collection1": "type:SomeType and sourceBrands:\"Some Feed\"",
+        "Collection2": {"query": "type:SomeType", "description": "IP from Cortex XSOAR Threat Intel" }
+    }
+  display: Collection JSON
+  hidden: false
+  name: collections
+  required: true
+  type: 12
+- additionalinfo: Comma-separated fields to return in the extension. Leave empty for no extension fields, 'All' for all existing fields.
+  display: Cortex XSOAR Extension fields
+  name: fields_filter
+  required: false
+  type: 0
+- additionalinfo: Maximum number of items to return.
+  defaultvalue: '2000'
+  display: Response Size
+  hidden: false
+  name: res_size
+  required: true
+  type: 0
+- display: Certificate (Required for HTTPS)
+  name: certificate
+  required: false
+  type: 12
+- display: Private Key (Required for HTTPS)
+  name: key
+  required: false
+  type: 14
+- display: TAXII2 Service URL Address
+  additionalinfo: Full URL address to set in the TAXII2 service response. If not set,
+    the integration will try to auto-detect the URL.
+  hidden: false
+  name: service_address
+  required: false
+  type: 0
+- additionalinfo: "NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`.
+    For example: `worker_processes 4; timer_resolution 100ms;`.
+    Advanced configuration to be used only if instructed by Cortex XSOAR Support."
+  display: NGINX Global Directives
+  hidden: false
+  name: nginx_global_directives
+  required: false
+  type: 0
+- additionalinfo: "NGINX server configuration. To be used instead of the default NGINX_SERVER_CONF used in the integration code.
+    Advanced configuration to be used only if instructed by Cortex XSOAR Support."
+  display: NGINX Server Conf
+  hidden: false
+  name: nginx_server_conf
+  required: false
+  type: 12
+- display: STIX types for STIX indicator Domain Object
+  name: provide_as_indicator
+  type: 16
+  required: false
+  options:
+  - ipv4-addr
+  - domain-name
+  - ipv6-addr
+  - user-account
+  - email-addr
+  - windows-registry-key
+  - file
+  - url
+  additionalinfo: Choose which STIX Cyber Observable Object provides as STIX Domain
+    Object of 'indicator'
+description: This integration provides TAXII2 Services for system indicators (Outbound feed).
+display: TAXII2 Server
+name: TAXII2 Server
+script:
+  dockerimage: demisto/flask-nginx:1.0.0.23674
+  feed: false
+  isfetch: false
+  longRunning: true
+  longRunningPort: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- TAXII2 Server Performance Test
+fromversion: 6.1.0

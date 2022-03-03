@@ -1507,6 +1507,16 @@ script:
       name: tag
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to add the tag as a local tag.
+      isArray: false
+      name: is_local
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Adds a tag to the given UUID event .
     execution: false
@@ -1626,6 +1636,16 @@ script:
       isArray: false
       name: tag
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to add the tag as a local tag.
+      isArray: false
+      name: is_local
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
       secret: false
     deprecated: false
     description: Adds a tag to the given UUID attribute.
@@ -2788,7 +2808,39 @@ script:
     - contextPath: MISP.Attribute.Comment
       description: Attribute comment.
       type: string
-  dockerimage: demisto/pymisp2:1.0.0.23423
+  - arguments:
+    - default: false
+      description: Attribute ID to delete.
+      isArray: false
+      name: attribute_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an attribute according to the given attribute ID.
+    execution: false
+    name: misp-delete-attribute
+  - arguments:
+    - default: false
+      description: Event ID to be published.
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to send an email. The default is to not send a mail.
+      isArray: false
+      name: alert
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Publish an event.
+    execution: false
+    name: misp-publish-event
+  dockerimage: demisto/pymisp2:1.0.0.25484
   feed: false
   isfetch: false
   longRunning: false

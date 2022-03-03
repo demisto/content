@@ -1,0 +1,313 @@
+commonfields:
+  id: Box
+  version: -1
+name: Box
+deprecated: true
+display: Box (Deprecated)
+category: IT Services
+description: Deprecated. Use the Box v2 integration instead.
+configuration:
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: box_get_current_user
+    arguments:
+    - name: verbose
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Print verbose data on each user
+    description: Retrieves information about the user who is currently logged in i.e.
+      the user for whom this auth token was generated
+  - name: box_get_users
+    arguments:
+    - name: filter_term
+      description: A string used to filter the results to only users starting with
+        the filter_term in either the name or the login
+    - name: limit
+      description: The number of records to return. The default is 100 and the max
+        is 1000
+    - name: offset
+      description: The record at which to start. The default is 0
+    - name: user_type
+      description: The type of user to search for. Valid values are all, external
+        or managed. If nothing is provided, the default behavior will be managed only
+    - name: verbose
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Print verbose data on each user
+    outputs:
+    - contextPath: Account
+      description: Account information of users returned by query, including ID, name
+        and username
+    description: Returns a list of all users for the Enterprise along with their user_id,
+      public_name, and login
+  - name: box_update_user
+    arguments:
+    - name: notify
+      description: Whether the user should receive an email when they are rolled out
+        of an enterprise
+    - name: enterprise
+      description: Setting this to null will roll the user out of the enterprise and
+        make them a free user. When passing a null value, do not pass this value as
+        a string
+    - name: name
+      description: The name of this user
+    - name: role
+      description: string This user’s enterprise role
+    - name: language
+      description: The language of this user
+    - name: is_sync_enabled
+      description: Whether or not this user can use Box Sync
+    - name: job_title
+      description: The user’s job title
+    - name: phone
+      description: The user’s phone number
+    - name: address
+      description: The user’s address
+    - name: space_amount
+      description: The user’s total available space amount in byte. A value of -1
+        grants unlimited storage
+    - name: tracking_codes
+      description: An array of key/value pairs set by the user’s admin
+    - name: can_see_managed_users
+      description: ' boolean Whether this user can see other enterprise users in its
+        contact list'
+    - name: status
+      description: Can be active, inactive, cannot_delete_edit, or cannot_delete_edit_upload
+    - name: timezone
+      description: The timezone of this user
+    - name: is_exempt_from_device_limits
+      description: Whether to exempt this user from Enterprise device limits
+    - name: is_exempt_from_login_verification
+      description: Whether or not this user must use two-factor authentication
+    - name: is_password_reset_required
+      description: Whether or not the user is required to reset password
+    - name: user_id
+      required: true
+      default: true
+      description: The user id to update
+    description: Used to edit the settings and information about a user
+  - name: box_add_user
+    arguments:
+    - name: login
+      required: true
+      default: true
+      description: The email address this user uses to login
+    - name: name
+      required: true
+      description: The name of this user
+    - name: role
+      description: This user’s enterprise role. Can be coadmin or user
+    - name: language
+      description: The language of this user
+    - name: is_sync_enabled
+      description: Whether or not this user can use Box Sync
+    - name: job_title
+      description: The user’s job title
+    - name: phone
+      description: The user’s phone number
+    - name: address
+      description: The user’s address
+    - name: space_amount
+      description: The user’s total available space amount in bytes
+    - name: tracking_codes
+      description: An array of key/value pairs set by the user’s admin
+    - name: can_see_managed_users
+      description: Can be active, inactive, cannot_delete_edit, or cannot_delete_edit_upload
+    - name: timezone
+      description: The timezone of this user
+    - name: is_exempt_from_device_limits
+      description: Whether to exempt this user from Enterprise device limits
+    - name: is_exempt_from_login_verification
+      description: Whether or not this user must use two-factor authentication
+    description: Used to provision a new user in an enterprise
+  - name: box_delete_user
+    arguments:
+    - name: notify
+      description: Determines if the destination user should receive email notification
+        of the transfer
+    - name: force
+      description: Whether or not the user should be deleted even if this user still
+        own files
+    - name: user_id
+      required: true
+      default: true
+      description: The user id to update
+    description: Deletes a user in an enterprise account
+  - name: box_move_folder
+    arguments:
+    - name: from_user_id
+      required: true
+      default: true
+      description: The ID of the user who the folder will be transferred from
+    - name: to_user_id
+      required: true
+      description: The ID of the user who the folder will be transferred to
+    description: Moves all of the owned content from within one user’s folder into
+      a new folder in another user’s account. You can move folders across users as
+      long as the you have administrative permissions and the ‘source’ user owns the
+      folders. To move everything from the root folder, use “0” which always represents
+      the root folder of a Box account (Currently only moving of the root folder (0)
+      is supported)
+  - name: box_files_get
+    arguments:
+    - name: file_id
+      required: true
+      description: File's id
+    outputs:
+    - contextPath: File.Name
+      description: Filename
+      type: string
+    - contextPath: File.Type
+      description: File type
+      type: string
+    - contextPath: File.Size
+      description: File size
+      type: number
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    description: getting a file from private Box storage
+  - name: box_initiate
+    arguments:
+    - name: access_code
+      required: true
+      description: Box's access code (see description)
+    description: Initialising of Box's integration
+  - name: box_files_get_info
+    arguments:
+    - name: file_id
+      required: true
+      description: File's ID
+    outputs:
+    - contextPath: Box.Size
+      description: Size of file (in bits)
+      type: number
+    - contextPath: Box.ContentModifiedAt
+      description: Time of content modification
+      type: date
+    - contextPath: Box.Sha1
+      description: File's SHA1
+      type: string
+    - contextPath: Box.ModifiedAt
+      description: Time of file info
+      type: date
+    - contextPath: Box.Parent.Etag
+      description: Parent's etag
+      type: string
+    - contextPath: Box.Parent.Id
+      description: Parent's ID
+      type: string
+    - contextPath: Box.Parent.Name
+      description: Parent's name
+      type: string
+    - contextPath: Box.SequenceId
+      description: Parent's sequence ID
+      type: string
+    - contextPath: Box.Parent.Type
+      description: Parent's type
+      type: string
+    - contextPath: Box.CreatedAt
+      description: Time of file's upload
+      type: date
+    - contextPath: Box.Name
+      description: File's name
+      type: string
+    - contextPath: Box.ModifiedBy.Id
+      description: ID's of last user modified
+      type: string
+    - contextPath: Box.ModifiedBy.Login
+      description: User's login email
+      type: string
+    - contextPath: Box.ModifiedBy.Name
+      description: User's name of last modified
+      type: string
+    - contextPath: Box.ModifiedBy.User
+      description: User's type
+      type: string
+    - contextPath: Box.ContentCreatedAt
+      description: File's time of creation
+      type: date
+    - contextPath: Box.OwnedBy.Id
+      description: File's owner ID
+      type: string
+    - contextPath: Box.OwnedBy.Login
+      description: File's owner email
+      type: string
+    - contextPath: Box.OwnedBy.Name
+      description: File's owner name
+      type: string
+    - contextPath: Box.OwnedBy.Type
+      description: File's owner type
+      type: string
+    - contextPath: Box.SharedLink
+      description: Shared link
+      type: string
+    - contextPath: Box.Etag
+      description: File's etag
+      type: string
+    - contextPath: Box.FileVersion.Id
+      description: File's version ID
+      type: string
+    - contextPath: Box.FileVersion.Sha1
+      description: File's version SHA1
+      type: string
+    - contextPath: Box.FileVersion.Type
+      description: File's version type
+      type: string
+    - contextPath: Box.PathCollection.Entries.Etag
+      description: Path's collection entries etag
+      type: string
+    - contextPath: Box.PathCollection.Entries.Id
+      description: Path's collection entries ID
+      type: string
+    - contextPath: Box.PathCollection.Entries.Sha1
+      description: Path's collection entries SHA1
+      type: string
+    - contextPath: Box.PathCollection.Entries.Name
+      description: Path's collection entries name
+      type: string
+    - contextPath: Box.PathCollection.Entries.SequenceId
+      description: Path's collection entries sequence_id
+      type: string
+    - contextPath: Box.PathCollection.Entries.Type
+      description: Path's collection entries type
+      type: string
+    - contextPath: Box.PathCollection.TotalCount
+      description: Size of path_collection object
+      type: string
+    - contextPath: Box.PurgedAt
+      description: purged at
+      type: string
+    - contextPath: Box.Type
+      description: File's type
+      type: string
+    - contextPath: Box.Id
+      description: File's ID
+      type: string
+    - contextPath: Box.Description
+      description: File's description
+      type: string
+    - contextPath: Box.ItemStatus
+      description: File's status
+      type: string
+    description: Getting file info of provided ID
+  runonce: false
+tests:
+- No test
+fromversion: 5.0.0

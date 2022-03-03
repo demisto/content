@@ -14,5 +14,9 @@
     "useCases": [
         "IT Services"
     ],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

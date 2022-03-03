@@ -3,6 +3,7 @@ from datetime import datetime
 from Tripwire import Client, fetch_incidents, prepare_fetch, filter_nodes, filter_elements, filter_rules, \
     filter_versions
 from test_data.raw_response import VERSIONS_RAW_RESPONSE
+import demistomock as demisto
 
 
 def test_first_fetch(mocker):
@@ -17,7 +18,7 @@ def test_first_fetch(mocker):
         Then
         - run the fetch incidents command using the Client
         Validate The length of the results.
-        Validate that the first run of fetch incidents runs correctly using the occured time.
+        Validate that the first run of fetch incidents runs correctly using the occurred time.
         """
     mocker.patch.object(Client, 'get_session_token')
     mocker.patch.object(Client, 'get_versions', return_value=VERSIONS_RAW_RESPONSE)
@@ -85,20 +86,21 @@ def test_empty_fetch(mocker):
 
 #   ------------------ helper fucntions -------------------
 
-def test_prepare_fetch():
+def test_prepare_fetch(mocker):
     """Unit test
         Given
-        - fetch params - rule oids , node oids and fetch time
-        - expected returned string.
+            - fetch params - rule oids , node oids and fetch time
+            - expected returned string.
         When
             - the prepare fetch function is activated.
         Then
-        - run the prepare fetch helper function.
-        Validate the response of the function with the expected string.
+            - run the prepare fetch helper function.
+            - Validate the rule_id, node_id and range time to detect is in the filters string.
         """
     params = {'rule_oids': '-1:1', 'node_oids': '-1:2'}
+    mocker.patch.object(demisto, 'getLastRun', return_value={"lastRun": "2018-10-24T14:13:20Z"})
     params, fetch_filter, _ = prepare_fetch(params, '1 day ago')
-    expected_filter = 'ruleId=-1:1&nodeId=-1:2'
+    expected_filter = 'ruleId=-1:1&nodeId=-1:2&timeDetectedRange=2018-10-24T14:13:20Z,'
     assert expected_filter in fetch_filter
 
 

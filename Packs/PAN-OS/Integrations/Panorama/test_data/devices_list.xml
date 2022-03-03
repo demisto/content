@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<response status="success">
+  <result>
+    <devices>
+      <entry name="target1">
+        <serial>target1</serial>
+        <connected>yes</connected>
+        <multi-vsys>yes</multi-vsys>
+        <vsys>
+          <entry name="vsys1"/>
+          <entry name="vsys2"/>
+        </vsys>
+      </entry>
+      <entry name="target2">
+        <serial>target2</serial>
+        <connected>yes</connected>
+        <multi-vsys>no</multi-vsys>
+        <vsys>
+          <entry name="vsys1"/>
+        </vsys>
+      </entry>
+    </devices>
+  </result>
+</response>
