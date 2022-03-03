@@ -275,6 +275,16 @@ script:
       name: filter
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to get additional data such as Device and Behaviors Processed.
+      isArray: false
+      name: extended_data
+      required: false
+      secret: false
+      predefined:
+        - Yes
+        - No
     deprecated: false
     description: Search for details of specific detections, either using a filter
       query, or by providing the IDs of the detections.
