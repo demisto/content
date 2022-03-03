@@ -146,7 +146,7 @@ def create_investigation_command(client: Client, env: str, args=None):
 def execute_playbook_command(client: Client, env: str, args=None):
     playbook_id = args.get("id")
     if not playbook_id:
-        raise ValueError("Cannot execute playbook, missing playbook id")
+        raise ValueError("Cannot execute playbook, missing playbook_id")
 
     query = """
     mutation executePlaybookInstance(
@@ -583,7 +583,7 @@ def update_investigation_command(client: Client, env: str, args=None):
 
         if field == "status" and args.get("status") not in INVESTIGATION_STATUSES:
             raise ValueError((
-                "The provided status, {args['status']}, is not valid for updating an investigation. "
+                f"The provided status, {args['status']}, is not valid for updating an investigation. "
                 f"Supported Status Values: {INVESTIGATION_STATUSES}"))
 
         variables["investigation"][field] = args.get(field)
