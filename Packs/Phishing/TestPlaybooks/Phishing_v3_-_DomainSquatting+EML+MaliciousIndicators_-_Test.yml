@@ -51,7 +51,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "39"
     scriptarguments:
       all:
         simple: "yes"
@@ -71,496 +71,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: a58422c8-8564-43a6-89bd-8700c6cd36c7
-    type: regular
-    task:
-      id: a58422c8-8564-43a6-89bd-8700c6cd36c7
-      version: -1
-      name: Create new phishing incident
-      description: Sends http request. Returns the response as json.
-      scriptName: http
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      body:
-        simple: |-
-          {
-              "ShardID": 0,
-              "account": "",
-              "activated": "0001-01-01T00:00:00Z",
-              "allRead": false,
-              "allReadWrite": false,
-              "attachment": [
-                  {
-                      "description": "",
-                      "name": "For_Domain_SQT (1).eml",
-                      "path": "961_22952672-9b7b-4481-87e4-23e2338fc714",
-                      "showMediaFile": false,
-                      "type": ""
-                  }
-              ],
-              "attachmentcount": 1,
-              "attachmentextension": "eml",
-              "attachmentid": "AAMkAGIxMGY0ZThkLWQyZGItNDU0MC04NjQ0LWI3YmNjMDM1YTlmZQBGAAAAAABH2fzqX5dLT4G6BheRUdJcBwA7Xf6pDi2dQ5jEQH0EI5vGAAAAAAEMAAA7Xf6pDi2dQ5jEQH0EI5vGAAF3UKSCAAABEgAQAA+eytGvzStDvlHUUxhZ37w=",
-              "attachmentname": "For_Domain_SQT (1).eml",
-              "attachmentsize": "8319",
-              "attachmenttype": "FileAttachment",
-              "autime": 1638265395105548800,
-              "canvases": null,
-              "category": "",
-              "closeNotes": "",
-              "closeReason": "",
-              "closed": "0001-01-01T00:00:00Z",
-              "closingUserId": "",
-              "created": "2021-11-30T09:43:15.105548792Z",
-              "criticalassets": [
-                  {}
-              ],
-              "dbotCreatedBy": "",
-              "dbotCurrentDirtyFields": null,
-              "dbotDirtyFields": null,
-              "dbotMirrorDirection": "",
-              "dbotMirrorId": "",
-              "dbotMirrorInstance": "",
-              "dbotMirrorLastSync": "0001-01-01T00:00:00Z",
-              "dbotMirrorTags": null,
-              "details": "Can you please investigate this?\r\n",
-              "detectionsla": {
-                  "accumulatedPause": 0,
-                  "breachTriggered": false,
-                  "dueDate": "0001-01-01T00:00:00Z",
-                  "endDate": "0001-01-01T00:00:00Z",
-                  "lastPauseDate": "0001-01-01T00:00:00Z",
-                  "runStatus": "idle",
-                  "sla": 20,
-                  "slaStatus": -1,
-                  "startDate": "0001-01-01T00:00:00Z",
-                  "totalDuration": 0
-              },
-              "droppedCount": 0,
-              "dueDate": "2021-12-10T09:43:15.105548792Z",
-              "emailbody": "Can you please investigate this?\r\n",
-              "emailcc": "",
-              "emailfrom": "sr-test01@demistodev.onmicrosoft.com",
-              "emailheaders": [],
-              "emailhtml": "\u003chtml\u003e\u003chead\u003e\r\n\u003cmeta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"\u003e\u003cstyle type=\"text/css\" style=\"display:none;\"\u003e P {margin-top:0;margin-bottom:0;} \u003c/style\u003e\u003c/head\u003e\u003cbody dir=\"ltr\"\u003e\u003cdiv style=\"font-family: Calibri, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);\"\u003eCan you please investigate this?\u003c/div\u003e\u003c/body\u003e\u003c/html\u003e",
-              "emailmessageid": "\u003cDB6PR0701MB29994477F1C63A272139C87ECF679@DB6PR0701MB2999.eurprd07.prod.outlook.com\u003e",
-              "emailreceived": "sr-test02@demistodev.onmicrosoft.com",
-              "emailreturnpath": "sr-test01@demistodev.onmicrosoft.com",
-              "emailsize": 64197,
-              "emailsubject": "I received a potential phishing incident",
-              "emailto": "sr-test02@demistodev.onmicrosoft.com",
-              "emailtocount": "1",
-              "endpoint": [
-                  {}
-              ],
-              "feedBased": false,
-              "hasRole": false,
-              "id": "961",
-              "investigationId": "961",
-              "isDebug": false,
-              "isPlayground": false,
-              "labels": {
-                  "Brand": "EWS v2_copy",
-                  "Email": "sr-test02@demistodev.onmicrosoft.com",
-                  "Email/ConversionID": "AAQkAGIxMGY0ZThkLWQyZGItNDU0MC04NjQ0LWI3YmNjMDM1YTlmZQAQAGCUCNDB7ZROvU98lgXUKjM=",
-                  "Email/Header/Accept-Language": "en-US",
-                  "Email/Header/Authentication-Results": "dkim=none (message not signed) header.d=none;dmarc=none action=none header.from=demistodev.onmicrosoft.com;",
-                  "Email/Header/Content-Language": "en-US",
-                  "Email/Header/Content-Transfer-Encoding": "binary",
-                  "Email/Header/Content-Type": "application/ms-tnef",
-                  "Email/Header/Date": "Tue, 30 Nov 2021 09:43:04 +0000",
-                  "Email/Header/MIME-Version": "1.0",
-                  "Email/Header/Message-ID": "\u003cDB6PR0701MB29994477F1C63A272139C87ECF679@DB6PR0701MB2999.eurprd07.prod.outlook.com\u003e",
-                  "Email/Header/Received": [
-                      "from DBAPR07MB6533.eurprd07.prod.outlook.com (2603:10a6:10:181::15) by VI1PR07MB6525.eurprd07.prod.outlook.com with HTTPS; Tue, 30 Nov 2021 09:43:05 +0000",
-                      "from DB6PR0701MB2999.eurprd07.prod.outlook.com (2603:10a6:4:74::13) by DBAPR07MB6533.eurprd07.prod.outlook.com (2603:10a6:10:181::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.9; Tue, 30 Nov 2021 09:43:05 +0000",
-                      "from DB6PR0701MB2999.eurprd07.prod.outlook.com ([fe80::349b:8443:4d2e:9b39]) by DB6PR0701MB2999.eurprd07.prod.outlook.com ([fe80::349b:8443:4d2e:9b39%11]) with mapi id 15.20.4755.011; Tue, 30 Nov 2021 09:43:05 +0000"
-                  ],
-                  "Email/Header/Return-Path": "sr-test01@demistodev.onmicrosoft.com",
-                  "Email/Header/Subject": "I received a potential phishing incident",
-                  "Email/Header/Thread-Index": "AQHX5c6jYJQI0MHtlE69T3yWBdQqMw==",
-                  "Email/Header/Thread-Topic": "I received a potential phishing incident",
-                  "Email/Header/X-Forefront-Antispam-Report": "CIP:255.255.255.255;CTRY:;LANG:en;SCL:-1;SRV:;IPV:NLI;SFV:SKI;H:DB6PR0701MB2999.eurprd07.prod.outlook.com;PTR:;CAT:NONE;SFS:;DIR:INB;",
-                  "Email/Header/X-MS-Exchange-AtpMessageProperties": "SL",
-                  "Email/Header/X-MS-Exchange-CrossTenant-AuthAs": "Internal",
-                  "Email/Header/X-MS-Exchange-CrossTenant-AuthSource": "DB6PR0701MB2999.eurprd07.prod.outlook.com",
-                  "Email/Header/X-MS-Exchange-CrossTenant-FromEntityHeader": "Hosted",
-                  "Email/Header/X-MS-Exchange-CrossTenant-Id": "ebac1a16-81bf-449b-8d43-5732c3c1d999",
-                  "Email/Header/X-MS-Exchange-CrossTenant-MailboxType": "HOSTED",
-                  "Email/Header/X-MS-Exchange-CrossTenant-Network-Message-Id": "4bc7aa7a-ccd2-473e-081c-08d9b3e5cef0",
-                  "Email/Header/X-MS-Exchange-CrossTenant-OriginalArrivalTime": "30 Nov 2021 09:43:04.9056 (UTC)",
-                  "Email/Header/X-MS-Exchange-CrossTenant-UserPrincipalName": "71J04DxUnVNJnI0FL45wo4X5ZRJNWyW28uAJHs8qOA80PpBiTew0ZRwhVlz6uuTR4MTWNGvgW4htZTXdNeNZyxOQcf8D5mraBrM2XR0yhMV31IqQyCO4jfjNf/DKXi9E",
-                  "Email/Header/X-MS-Exchange-Organization-AuthAs": "Internal",
-                  "Email/Header/X-MS-Exchange-Organization-AuthMechanism": "04",
-                  "Email/Header/X-MS-Exchange-Organization-AuthSource": "DB6PR0701MB2999.eurprd07.prod.outlook.com",
-                  "Email/Header/X-MS-Exchange-Organization-ExpirationInterval": "1:00:00:00.0000000",
-                  "Email/Header/X-MS-Exchange-Organization-ExpirationIntervalReason": "OriginalSubmit",
-                  "Email/Header/X-MS-Exchange-Organization-ExpirationStartTime": "30 Nov 2021 09:43:05.0976 (UTC)",
-                  "Email/Header/X-MS-Exchange-Organization-ExpirationStartTimeReason": "OriginalSubmit",
-                  "Email/Header/X-MS-Exchange-Organization-MessageDirectionality": "Originating",
-                  "Email/Header/X-MS-Exchange-Organization-Network-Message-Id": "4bc7aa7a-ccd2-473e-081c-08d9b3e5cef0",
-                  "Email/Header/X-MS-Exchange-Organization-SCL": "-1",
-                  "Email/Header/X-MS-Exchange-Processed-By-BccFoldering": "15.20.4755.012",
-                  "Email/Header/X-MS-Exchange-Transport-CrossTenantHeadersStamped": "DBAPR07MB6533",
-                  "Email/Header/X-MS-Exchange-Transport-EndToEndLatency": "00:00:00.8024250",
-                  "Email/Header/X-MS-Has-Attach": "yes",
-                  "Email/Header/X-MS-Office365-Filtering-Correlation-Id": "4bc7aa7a-ccd2-473e-081c-08d9b3e5cef0",
-                  "Email/Header/X-MS-Oob-TLC-OOBClassifiers": "OLM:1923;",
-                  "Email/Header/X-MS-PublicTrafficType": "Email",
-                  "Email/Header/X-MS-TNEF-Correlator": "\u003cDB6PR0701MB29994477F1C63A272139C87ECF679@DB6PR0701MB2999.eurprd07.prod.outlook.com\u003e",
-                  "Email/Header/X-MS-TrafficTypeDiagnostic": "DBAPR07MB6533:",
-                  "Email/Header/X-Microsoft-Antispam": "BCL:0;",
-                  "Email/Header/X-Microsoft-Antispam-Mailbox-Delivery": "ucf:0;jmr:0;auth:0;dest:I;ENG:(910001)(944506458)(944626604)(920097)(425001)(930097);",
-                  "Email/Header/X-Microsoft-Antispam-Message-Info": "AtNAmkTYAbxqiYEK+o0iC+ZP24JUtqK37iiaeED7ABMev9F4eAAtLJ9dBO1ZZCXc611zeS0MWvT9Ae/YJAmuAfTLt8EZLOsGx4jV14basMsdLglxbWuUboVXXXpZfAQ6tgrzq+yWmvPUDoIAbaJeLwFBc3Ahu/iNFhGF8L4K9eaDWVqIhrIlC6rgI6+wPNUj9ju5lGCgQ1WDIAIsLvL85P1+sPqrmbMRjBc9HTDRnl14+HZ4hi2S2xsgp/+Me3+dftZTSeNR9mm8z1eWpSFfAKZPHoIewDV+fO1//1XCXVPTYeZDovUsy9SrK/PgUktcQujMz9Nc/Oww0xLHd18YVTrTWoWuSwaM0FRV3JJOZ9MFsnmgsyuQFIJSn4etW6pZh/wJ9LLeqKqn9sLyB0AJP/70KtRDNJCh68+Jdq7BTzbf9Mop+VzAlLw9UCL06kOY5458B/RtMJ7O6fIdab12uwq35ojU6YuBEB8Mf0l/v7/mEn5/tQDf0OsR2X9m94oCtOgQSjfVAjbfGtSq+Mf4KiFfWfAbUGuYT5/NQx7Ewa6qY6Wz6RYJnO8H+pmiH/CqliC0kw3PWJ6MMycJn3y+qVodvSYnuujAtE8U57WQvrgcEE0TigARTUKbDuq66PmA4gWQa2LyRFPp1JBSIZl1k64op5Y2Q48DIVjs1K6BKOm5mTkV5UjhINvzrjs7qeP6FccRUtcvVoARoH9ptgb/8XhBZf/fn9yXGRArz5Ufslq4kpg+O3qvXO4n4h9WuTUOkZV1/7j2gmxlparRiAGRog6t4vsXdXWsy2Yg2mDR+WoJpXuEBpQfPF5J7oIpBLnatwqsRaDnT49BmO5RrlBeh0cSOwYBjwVbXQeo9HaBFgqKJCTO/hBsWPuWGbDTqcA+vd+xZfypoqNbZ5Z+HuVmmUgVFuiziXjE1Q8l3vONYGuxgby5fP7/JtAuFw9LoHA8Q2SKeZZ0VF1DksQYH2N27ie+Rx6bHxCcmhZESKoo7nQG4Y5dZ7CX1ZNaM1pkOt6RI4neAaDjS5NWHLOFZ0MTPSEI/xeHhy1JJuoaeUyLhptzQrR8MHO+XKWyBTLDfevX6tHRq9UAmdzJEvf9gWwDq6whz98EvC0JDzwyH1NdBtN9301Emobz13MaV5OEBbgGlhrtpiPOHd9OKcA6etYrV9GOixTsuZZW1xysjrTzliE=",
-                  "Email/Header/suggested_attachment_session_id": "380fe7e7-9714-62f0-ec5c-e306c75e07f5",
-                  "Email/ID": "AAMkAGIxMGY0ZThkLWQyZGItNDU0MC04NjQ0LWI3YmNjMDM1YTlmZQBGAAAAAABH2fzqX5dLT4G6BheRUdJcBwA7Xf6pDi2dQ5jEQH0EI5vGAAAAAAEMAAA7Xf6pDi2dQ5jEQH0EI5vGAAF3UKSCAAA=",
-                  "Email/MessageId": "\u003cDB6PR0701MB29994477F1C63A272139C87ECF679@DB6PR0701MB2999.eurprd07.prod.outlook.com\u003e",
-                  "Email/format": "HTML",
-                  "Email/from": "sr-test01@demistodev.onmicrosoft.com",
-                  "Email/headers": "Received: from DBAPR07MB6533.eurprd07.prod.outlook.com (2603:10a6:10:181::15) by VI1PR07MB6525.eurprd07.prod.outlook.com with HTTPS; Tue, 30 Nov 2021 09:43:05 +0000\r\nReceived: from DB6PR0701MB2999.eurprd07.prod.outlook.com (2603:10a6:4:74::13) by DBAPR07MB6533.eurprd07.prod.outlook.com (2603:10a6:10:181::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.9; Tue, 30 Nov 2021 09:43:05 +0000\r\nReceived: from DB6PR0701MB2999.eurprd07.prod.outlook.com ([fe80::349b:8443:4d2e:9b39]) by DB6PR0701MB2999.eurprd07.prod.outlook.com ([fe80::349b:8443:4d2e:9b39%11]) with mapi id 15.20.4755.011; Tue, 30 Nov 2021 09:43:05 +0000\r\nAuthentication-Results: dkim=none (message not signed) header.d=none;dmarc=none action=none header.from=demistodev.onmicrosoft.com;\r\nContent-Type: application/ms-tnef\r\nContent-Transfer-Encoding: binary\r\nSubject: I received a potential phishing incident\r\nThread-Topic: I received a potential phishing incident\r\nThread-Index: AQHX5c6jYJQI0MHtlE69T3yWBdQqMw==\r\nDate: Tue, 30 Nov 2021 09:43:04 +0000\r\nMessage-ID: \u003cDB6PR0701MB29994477F1C63A272139C87ECF679@DB6PR0701MB2999.eurprd07.prod.outlook.com\u003e\r\nAccept-Language: en-US\r\nContent-Language: en-US\r\nX-MS-Has-Attach: yes\r\nX-MS-Exchange-Organization-SCL: -1\r\nX-MS-TNEF-Correlator: \u003cDB6PR0701MB29994477F1C63A272139C87ECF679@DB6PR0701MB2999.eurprd07.prod.outlook.com\u003e\r\nsuggested_attachment_session_id: 380fe7e7-9714-62f0-ec5c-e306c75e07f5\r\nMIME-Version: 1.0\r\nX-MS-Exchange-Organization-MessageDirectionality: Originating\r\nX-MS-Exchange-Organization-AuthSource: DB6PR0701MB2999.eurprd07.prod.outlook.com\r\nX-MS-Exchange-Organization-AuthAs: Internal\r\nX-MS-Exchange-Organization-AuthMechanism: 04\r\nX-MS-Exchange-Organization-Network-Message-Id: 4bc7aa7a-ccd2-473e-081c-08d9b3e5cef0\r\nX-MS-PublicTrafficType: Email\r\nReturn-Path: sr-test01@demistodev.onmicrosoft.com\r\nX-MS-Exchange-Organization-ExpirationStartTime: 30 Nov 2021 09:43:05.0976 (UTC)\r\nX-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit\r\nX-MS-Exchange-Organization-ExpirationInterval: 1:00:00:00.0000000\r\nX-MS-Exchange-Organization-ExpirationIntervalReason: OriginalSubmit\r\nX-MS-Office365-Filtering-Correlation-Id: 4bc7aa7a-ccd2-473e-081c-08d9b3e5cef0\r\nX-MS-TrafficTypeDiagnostic: DBAPR07MB6533:\r\nX-MS-Exchange-AtpMessageProperties: SL\r\nX-MS-Oob-TLC-OOBClassifiers: OLM:1923;\r\nX-Microsoft-Antispam: BCL:0;\r\nX-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:-1;SRV:;IPV:NLI;SFV:SKI;H:DB6PR0701MB2999.eurprd07.prod.outlook.com;PTR:;CAT:NONE;SFS:;DIR:INB;\r\nX-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2021 09:43:04.9056 (UTC)\r\nX-MS-Exchange-CrossTenant-FromEntityHeader: Hosted\r\nX-MS-Exchange-CrossTenant-Id: ebac1a16-81bf-449b-8d43-5732c3c1d999\r\nX-MS-Exchange-CrossTenant-AuthSource: DB6PR0701MB2999.eurprd07.prod.outlook.com\r\nX-MS-Exchange-CrossTenant-AuthAs: Internal\r\nX-MS-Exchange-CrossTenant-Network-Message-Id: 4bc7aa7a-ccd2-473e-081c-08d9b3e5cef0\r\nX-MS-Exchange-CrossTenant-MailboxType: HOSTED\r\nX-MS-Exchange-CrossTenant-UserPrincipalName: 71J04DxUnVNJnI0FL45wo4X5ZRJNWyW28uAJHs8qOA80PpBiTew0ZRwhVlz6uuTR4MTWNGvgW4htZTXdNeNZyxOQcf8D5mraBrM2XR0yhMV31IqQyCO4jfjNf/DKXi9E\r\nX-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR07MB6533\r\nX-MS-Exchange-Transport-EndToEndLatency: 00:00:00.8024250\r\nX-MS-Exchange-Processed-By-BccFoldering: 15.20.4755.012\r\nX-Microsoft-Antispam-Mailbox-Delivery: ucf:0;jmr:0;auth:0;dest:I;ENG:(910001)(944506458)(944626604)(920097)(425001)(930097);\r\nX-Microsoft-Antispam-Message-Info: AtNAmkTYAbxqiYEK+o0iC+ZP24JUtqK37iiaeED7ABMev9F4eAAtLJ9dBO1ZZCXc611zeS0MWvT9Ae/YJAmuAfTLt8EZLOsGx4jV14basMsdLglxbWuUboVXXXpZfAQ6tgrzq+yWmvPUDoIAbaJeLwFBc3Ahu/iNFhGF8L4K9eaDWVqIhrIlC6rgI6+wPNUj9ju5lGCgQ1WDIAIsLvL85P1+sPqrmbMRjBc9HTDRnl14+HZ4hi2S2xsgp/+Me3+dftZTSeNR9mm8z1eWpSFfAKZPHoIewDV+fO1//1XCXVPTYeZDovUsy9SrK/PgUktcQujMz9Nc/Oww0xLHd18YVTrTWoWuSwaM0FRV3JJOZ9MFsnmgsyuQFIJSn4etW6pZh/wJ9LLeqKqn9sLyB0AJP/70KtRDNJCh68+Jdq7BTzbf9Mop+VzAlLw9UCL06kOY5458B/RtMJ7O6fIdab12uwq35ojU6YuBEB8Mf0l/v7/mEn5/tQDf0OsR2X9m94oCtOgQSjfVAjbfGtSq+Mf4KiFfWfAbUGuYT5/NQx7Ewa6qY6Wz6RYJnO8H+pmiH/CqliC0kw3PWJ6MMycJn3y+qVodvSYnuujAtE8U57WQvrgcEE0TigARTUKbDuq66PmA4gWQa2LyRFPp1JBSIZl1k64op5Y2Q48DIVjs1K6BKOm5mTkV5UjhINvzrjs7qeP6FccRUtcvVoARoH9ptgb/8XhBZf/fn9yXGRArz5Ufslq4kpg+O3qvXO4n4h9WuTUOkZV1/7j2gmxlparRiAGRog6t4vsXdXWsy2Yg2mDR+WoJpXuEBpQfPF5J7oIpBLnatwqsRaDnT49BmO5RrlBeh0cSOwYBjwVbXQeo9HaBFgqKJCTO/hBsWPuWGbDTqcA+vd+xZfypoqNbZ5Z+HuVmmUgVFuiziXjE1Q8l3vONYGuxgby5fP7/JtAuFw9LoHA8Q2SKeZZ0VF1DksQYH2N27ie+Rx6bHxCcmhZESKoo7nQG4Y5dZ7CX1ZNaM1pkOt6RI4neAaDjS5NWHLOFZ0MTPSEI/xeHhy1JJuoaeUyLhptzQrR8MHO+XKWyBTLDfevX6tHRq9UAmdzJEvf9gWwDq6whz98EvC0JDzwyH1NdBtN9301Emobz13MaV5OEBbgGlhrtpiPOHd9OKcA6etYrV9GOixTsuZZW1xysjrTzliE=",
-                  "Email/html": "\u003chtml\u003e\u003chead\u003e\r\n\u003cmeta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"\u003e\u003cstyle type=\"text/css\" style=\"display:none;\"\u003e P {margin-top:0;margin-bottom:0;} \u003c/style\u003e\u003c/head\u003e\u003cbody dir=\"ltr\"\u003e\u003cdiv style=\"font-family: Calibri, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);\"\u003eCan you please investigate this?\u003c/div\u003e\u003c/body\u003e\u003c/html\u003e",
-                  "Email/itemId": "AAMkAGIxMGY0ZThkLWQyZGItNDU0MC04NjQ0LWI3YmNjMDM1YTlmZQBGAAAAAABH2fzqX5dLT4G6BheRUdJcBwA7Xf6pDi2dQ5jEQH0EI5vGAAAAAAEMAAA7Xf6pDi2dQ5jEQH0EI5vGAAF3UKSCAAA=",
-                  "Email/subject": "I received a potential phishing incident",
-                  "Email/text": "Can you please investigate this?\r\n",
-                  "Instance": "EWSv2Generator",
-                  "attachmentId": "AAMkAGIxMGY0ZThkLWQyZGItNDU0MC04NjQ0LWI3YmNjMDM1YTlmZQBGAAAAAABH2fzqX5dLT4G6BheRUdJcBwA7Xf6pDi2dQ5jEQH0EI5vGAAAAAAEMAAA7Xf6pDi2dQ5jEQH0EI5vGAAF3UKSCAAABEgAQAA+eytGvzStDvlHUUxhZ37w=",
-                  "attachments": "For_Domain_SQT (1).eml"
-              },
-              "lastJobRunTime": "0001-01-01T00:00:00Z",
-              "lastOpen": "0001-01-01T00:00:00Z",
-              "linkedCount": 0,
-              "linkedIncidents": null,
-              "modified": "2021-11-30T09:44:54.357593637Z",
-              "name": "I received a potential phishing incident",
-              "notifyTime": "2021-11-30T09:44:54.343823986Z",
-              "occurred": "2021-11-30T09:43:05Z",
-              "openDuration": 0,
-              "owner": "",
-              "parent": "",
-              "phase": "",
-              "phishingreporteremailheaders": [
-                  {
-                      "name": "Received",
-                      "value": "from DBAPR07MB6533.eurprd07.prod.outlook.com (2603:10a6:10:181::15) by VI1PR07MB6525.eurprd07.prod.outlook.com with HTTPS; Tue, 30 Nov 2021 09:43:05 +0000"
-                  },
-                  {
-                      "name": "Received",
-                      "value": "from DB6PR0701MB2999.eurprd07.prod.outlook.com (2603:10a6:4:74::13) by DBAPR07MB6533.eurprd07.prod.outlook.com (2603:10a6:10:181::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.9; Tue, 30 Nov 2021 09:43:05 +0000"
-                  },
-                  {
-                      "name": "Received",
-                      "value": "from DB6PR0701MB2999.eurprd07.prod.outlook.com ([fe80::349b:8443:4d2e:9b39]) by DB6PR0701MB2999.eurprd07.prod.outlook.com ([fe80::349b:8443:4d2e:9b39%11]) with mapi id 15.20.4755.011; Tue, 30 Nov 2021 09:43:05 +0000"
-                  },
-                  {
-                      "name": "Authentication-Results",
-                      "value": "dkim=none (message not signed) header.d=none;dmarc=none action=none header.from=demistodev.onmicrosoft.com;"
-                  },
-                  {
-                      "name": "Content-Type",
-                      "value": "application/ms-tnef"
-                  },
-                  {
-                      "name": "Content-Transfer-Encoding",
-                      "value": "binary"
-                  },
-                  {
-                      "name": "Subject",
-                      "value": "I received a potential phishing incident"
-                  },
-                  {
-                      "name": "Thread-Topic",
-                      "value": "I received a potential phishing incident"
-                  },
-                  {
-                      "name": "Thread-Index",
-                      "value": "AQHX5c6jYJQI0MHtlE69T3yWBdQqMw=="
-                  },
-                  {
-                      "name": "Date",
-                      "value": "Tue, 30 Nov 2021 09:43:04 +0000"
-                  },
-                  {
-                      "name": "Message-ID",
-                      "value": "\u003cDB6PR0701MB29994477F1C63A272139C87ECF679@DB6PR0701MB2999.eurprd07.prod.outlook.com\u003e"
-                  },
-                  {
-                      "name": "Accept-Language",
-                      "value": "en-US"
-                  },
-                  {
-                      "name": "Content-Language",
-                      "value": "en-US"
-                  },
-                  {
-                      "name": "X-MS-Has-Attach",
-                      "value": "yes"
-                  },
-                  {
-                      "name": "X-MS-Exchange-Organization-SCL",
-                      "value": "-1"
-                  },
-                  {
-                      "name": "X-MS-TNEF-Correlator",
-                      "value": "\u003cDB6PR0701MB29994477F1C63A272139C87ECF679@DB6PR0701MB2999.eurprd07.prod.outlook.com\u003e"
-                  },
-                  {
-                      "name": "suggested_attachment_session_id",
-                      "value": "380fe7e7-9714-62f0-ec5c-e306c75e07f5"
-                  },
-                  {
-                      "name": "MIME-Version",
-                      "value": "1.0"
-                  },
-                  {
-                      "name": "X-MS-Exchange-Organization-MessageDirectionality",
-                      "value": "Originating"
-                  },
-                  {
-                      "name": "X-MS-Exchange-Organization-AuthSource",
-                      "value": "DB6PR0701MB2999.eurprd07.prod.outlook.com"
-                  },
-                  {
-                      "name": "X-MS-Exchange-Organization-AuthAs",
-                      "value": "Internal"
-                  },
-                  {
-                      "name": "X-MS-Exchange-Organization-AuthMechanism",
-                      "value": "04"
-                  },
-                  {
-                      "name": "X-MS-Exchange-Organization-Network-Message-Id",
-                      "value": "4bc7aa7a-ccd2-473e-081c-08d9b3e5cef0"
-                  },
-                  {
-                      "name": "X-MS-PublicTrafficType",
-                      "value": "Email"
-                  },
-                  {
-                      "name": "Return-Path",
-                      "value": "sr-test01@demistodev.onmicrosoft.com"
-                  },
-                  {
-                      "name": "X-MS-Exchange-Organization-ExpirationStartTime",
-                      "value": "30 Nov 2021 09:43:05.0976 (UTC)"
-                  },
-                  {
-                      "name": "X-MS-Exchange-Organization-ExpirationStartTimeReason",
-                      "value": "OriginalSubmit"
-                  },
-                  {
-                      "name": "X-MS-Exchange-Organization-ExpirationInterval",
-                      "value": "1:00:00:00.0000000"
-                  },
-                  {
-                      "name": "X-MS-Exchange-Organization-ExpirationIntervalReason",
-                      "value": "OriginalSubmit"
-                  },
-                  {
-                      "name": "X-MS-Office365-Filtering-Correlation-Id",
-                      "value": "4bc7aa7a-ccd2-473e-081c-08d9b3e5cef0"
-                  },
-                  {
-                      "name": "X-MS-TrafficTypeDiagnostic",
-                      "value": "DBAPR07MB6533:"
-                  },
-                  {
-                      "name": "X-MS-Exchange-AtpMessageProperties",
-                      "value": "SL"
-                  },
-                  {
-                      "name": "X-MS-Oob-TLC-OOBClassifiers",
-                      "value": "OLM:1923;"
-                  },
-                  {
-                      "name": "X-Microsoft-Antispam",
-                      "value": "BCL:0;"
-                  },
-                  {
-                      "name": "X-Forefront-Antispam-Report",
-                      "value": "CIP:255.255.255.255;CTRY:;LANG:en;SCL:-1;SRV:;IPV:NLI;SFV:SKI;H:DB6PR0701MB2999.eurprd07.prod.outlook.com;PTR:;CAT:NONE;SFS:;DIR:INB;"
-                  },
-                  {
-                      "name": "X-MS-Exchange-CrossTenant-OriginalArrivalTime",
-                      "value": "30 Nov 2021 09:43:04.9056 (UTC)"
-                  },
-                  {
-                      "name": "X-MS-Exchange-CrossTenant-FromEntityHeader",
-                      "value": "Hosted"
-                  },
-                  {
-                      "name": "X-MS-Exchange-CrossTenant-Id",
-                      "value": "ebac1a16-81bf-449b-8d43-5732c3c1d999"
-                  },
-                  {
-                      "name": "X-MS-Exchange-CrossTenant-AuthSource",
-                      "value": "DB6PR0701MB2999.eurprd07.prod.outlook.com"
-                  },
-                  {
-                      "name": "X-MS-Exchange-CrossTenant-AuthAs",
-                      "value": "Internal"
-                  },
-                  {
-                      "name": "X-MS-Exchange-CrossTenant-Network-Message-Id",
-                      "value": "4bc7aa7a-ccd2-473e-081c-08d9b3e5cef0"
-                  },
-                  {
-                      "name": "X-MS-Exchange-CrossTenant-MailboxType",
-                      "value": "HOSTED"
-                  },
-                  {
-                      "name": "X-MS-Exchange-CrossTenant-UserPrincipalName",
-                      "value": "71J04DxUnVNJnI0FL45wo4X5ZRJNWyW28uAJHs8qOA80PpBiTew0ZRwhVlz6uuTR4MTWNGvgW4htZTXdNeNZyxOQcf8D5mraBrM2XR0yhMV31IqQyCO4jfjNf/DKXi9E"
-                  },
-                  {
-                      "name": "X-MS-Exchange-Transport-CrossTenantHeadersStamped",
-                      "value": "DBAPR07MB6533"
-                  },
-                  {
-                      "name": "X-MS-Exchange-Transport-EndToEndLatency",
-                      "value": "00:00:00.8024250"
-                  },
-                  {
-                      "name": "X-MS-Exchange-Processed-By-BccFoldering",
-                      "value": "15.20.4755.012"
-                  },
-                  {
-                      "name": "X-Microsoft-Antispam-Mailbox-Delivery",
-                      "value": "ucf:0;jmr:0;auth:0;dest:I;ENG:(910001)(944506458)(944626604)(920097)(425001)(930097);"
-                  },
-                  {
-                      "name": "X-Microsoft-Antispam-Message-Info",
-                      "value": "AtNAmkTYAbxqiYEK+o0iC+ZP24JUtqK37iiaeED7ABMev9F4eAAtLJ9dBO1ZZCXc611zeS0MWvT9Ae/YJAmuAfTLt8EZLOsGx4jV14basMsdLglxbWuUboVXXXpZfAQ6tgrzq+yWmvPUDoIAbaJeLwFBc3Ahu/iNFhGF8L4K9eaDWVqIhrIlC6rgI6+wPNUj9ju5lGCgQ1WDIAIsLvL85P1+sPqrmbMRjBc9HTDRnl14+HZ4hi2S2xsgp/+Me3+dftZTSeNR9mm8z1eWpSFfAKZPHoIewDV+fO1//1XCXVPTYeZDovUsy9SrK/PgUktcQujMz9Nc/Oww0xLHd18YVTrTWoWuSwaM0FRV3JJOZ9MFsnmgsyuQFIJSn4etW6pZh/wJ9LLeqKqn9sLyB0AJP/70KtRDNJCh68+Jdq7BTzbf9Mop+VzAlLw9UCL06kOY5458B/RtMJ7O6fIdab12uwq35ojU6YuBEB8Mf0l/v7/mEn5/tQDf0OsR2X9m94oCtOgQSjfVAjbfGtSq+Mf4KiFfWfAbUGuYT5/NQx7Ewa6qY6Wz6RYJnO8H+pmiH/CqliC0kw3PWJ6MMycJn3y+qVodvSYnuujAtE8U57WQvrgcEE0TigARTUKbDuq66PmA4gWQa2LyRFPp1JBSIZl1k64op5Y2Q48DIVjs1K6BKOm5mTkV5UjhINvzrjs7qeP6FccRUtcvVoARoH9ptgb/8XhBZf/fn9yXGRArz5Ufslq4kpg+O3qvXO4n4h9WuTUOkZV1/7j2gmxlparRiAGRog6t4vsXdXWsy2Yg2mDR+WoJpXuEBpQfPF5J7oIpBLnatwqsRaDnT49BmO5RrlBeh0cSOwYBjwVbXQeo9HaBFgqKJCTO/hBsWPuWGbDTqcA+vd+xZfypoqNbZ5Z+HuVmmUgVFuiziXjE1Q8l3vONYGuxgby5fP7/JtAuFw9LoHA8Q2SKeZZ0VF1DksQYH2N27ie+Rx6bHxCcmhZESKoo7nQG4Y5dZ7CX1ZNaM1pkOt6RI4neAaDjS5NWHLOFZ0MTPSEI/xeHhy1JJuoaeUyLhptzQrR8MHO+XKWyBTLDfevX6tHRq9UAmdzJEvf9gWwDq6whz98EvC0JDzwyH1NdBtN9301Emobz13MaV5OEBbgGlhrtpiPOHd9OKcA6etYrV9GOixTsuZZW1xysjrTzliE="
-                  }
-              ],
-              "playbookId": "playbook2",
-              "previousAllRead": false,
-              "previousAllReadWrite": false,
-              "previousRoles": null,
-              "rawCategory": "",
-              "rawCloseReason": "",
-              "rawJSON": "",
-              "rawName": "I received a potential phishing incident",
-              "rawPhase": "",
-              "rawType": "Phishing",
-              "reason": "",
-              "remediationsla": {
-                  "accumulatedPause": 0,
-                  "breachTriggered": false,
-                  "dueDate": "0001-01-01T00:00:00Z",
-                  "endDate": "0001-01-01T00:00:00Z",
-                  "lastPauseDate": "0001-01-01T00:00:00Z",
-                  "runStatus": "idle",
-                  "sla": 7200,
-                  "slaStatus": -1,
-                  "startDate": "0001-01-01T00:00:00Z",
-                  "totalDuration": 0
-              },
-              "reminder": "0001-01-01T00:00:00Z",
-              "roles": null,
-              "runStatus": "waiting",
-              "severity": 0,
-              "severityStr": "Unknown",
-              "similarincidentsdbot": [
-                  {}
-              ],
-              "sla": 0,
-              "sourceBrand": "EWS v2_copy",
-              "sourceInstance": "EWSv2Generator",
-              "status": 1,
-              "timetoassignment": {
-                  "accumulatedPause": 0,
-                  "breachTriggered": false,
-                  "dueDate": "0001-01-01T00:00:00Z",
-                  "endDate": "0001-01-01T00:00:00Z",
-                  "lastPauseDate": "0001-01-01T00:00:00Z",
-                  "runStatus": "idle",
-                  "sla": 0,
-                  "slaStatus": -1,
-                  "startDate": "0001-01-01T00:00:00Z",
-                  "totalDuration": 0
-              },
-              "type": "Phishing",
-              "urlsslverification": [],
-              "version": 7
-          }
-      method:
-        simple: POST
-      url:
-        complex:
-          root: ServerURL
-          accessor: Host
-          transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: https://
-              suffix:
-                value:
-                  simple: /instance/execute/
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.EventGeneratorInstanceName
-                iscontext: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 480
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 0dc303e7-b9c3-4978-8314-d1e6cb7ff875
-    type: regular
-    task:
-      id: 0dc303e7-b9c3-4978-8314-d1e6cb7ff875
-      version: -1
-      name: Get server URL
-      description: Get the Server URL.
-      scriptName: GetServerURL
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: dfa2dd6d-7e13-4c80-89fe-83983e1b3a48
+    taskid: e83cbe50-dc9e-4a57-809b-83898ed5de2a
     type: regular
     task:
-      id: dfa2dd6d-7e13-4c80-89fe-83983e1b3a48
+      id: e83cbe50-dc9e-4a57-809b-83898ed5de2a
       version: -1
       name: Investigate the incident
       description: commands.local.investigate
@@ -573,13 +89,14 @@ tasks:
       - "37"
     scriptarguments:
       id:
-        simple: "234"
+        complex:
+          root: CreatedIncidentID
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 650
+          "y": 980
         }
       }
     note: false
@@ -591,10 +108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: ca609807-a906-4683-8f19-b324fcffaa55
+    taskid: b76d6c27-1504-47d7-8393-ef5bf8c26f94
     type: condition
     task:
-      id: ca609807-a906-4683-8f19-b324fcffaa55
+      id: b76d6c27-1504-47d7-8393-ef5bf8c26f94
       version: -1
       name: Did the domain-squatting check work?
       type: condition
@@ -644,7 +161,7 @@ tasks:
       {
         "position": {
           "x": 1580,
-          "y": 1700
+          "y": 1910
         }
       }
     note: false
@@ -680,7 +197,7 @@ tasks:
       {
         "position": {
           "x": 1930,
-          "y": 1190
+          "y": 1400
         }
       }
     note: false
@@ -692,10 +209,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: ef618fb4-9a03-47c7-8ce1-bc77979c5a40
+    taskid: 7a1a8701-e310-43ee-86d5-00fb28b320b7
     type: regular
     task:
-      id: ef618fb4-9a03-47c7-8ce1-bc77979c5a40
+      id: 7a1a8701-e310-43ee-86d5-00fb28b320b7
       version: -1
       name: Error about domain-squatting
       description: Prints an error entry with a given message
@@ -716,7 +233,7 @@ tasks:
       {
         "position": {
           "x": 1580,
-          "y": 1890
+          "y": 2100
         }
       }
     note: false
@@ -743,7 +260,7 @@ tasks:
       {
         "position": {
           "x": -1010,
-          "y": 2200
+          "y": 2410
         }
       }
     note: false
@@ -787,7 +304,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1700
+          "y": 1910
         }
       }
     note: false
@@ -823,7 +340,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1890
+          "y": 2100
         }
       }
     note: false
@@ -835,10 +352,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 41a1d1eb-d192-4f0c-8adf-6bfb188b962a
+    taskid: ab133692-5569-4090-8962-7359fa9ce8df
     type: condition
     task:
-      id: 41a1d1eb-d192-4f0c-8adf-6bfb188b962a
+      id: ab133692-5569-4090-8962-7359fa9ce8df
       version: -1
       name: Check email subject extraction (not yet JSON comparison)
       type: condition
@@ -867,7 +384,7 @@ tasks:
       {
         "position": {
           "x": 2260,
-          "y": 1700
+          "y": 1910
         }
       }
     note: false
@@ -911,7 +428,7 @@ tasks:
       {
         "position": {
           "x": 30,
-          "y": 1700
+          "y": 1910
         }
       }
     note: false
@@ -947,7 +464,7 @@ tasks:
       {
         "position": {
           "x": 30,
-          "y": 1890
+          "y": 2100
         }
       }
     note: false
@@ -991,7 +508,7 @@ tasks:
       {
         "position": {
           "x": 890,
-          "y": 1700
+          "y": 1910
         }
       }
     note: false
@@ -1023,7 +540,7 @@ tasks:
       {
         "position": {
           "x": 890,
-          "y": 1890
+          "y": 2100
         }
       }
     note: false
@@ -1056,7 +573,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1550
+          "y": 1760
         }
       }
     note: false
@@ -1086,7 +603,7 @@ tasks:
       {
         "position": {
           "x": 1580,
-          "y": 1550
+          "y": 1760
         }
       }
     note: false
@@ -1116,7 +633,7 @@ tasks:
       {
         "position": {
           "x": 2260,
-          "y": 1550
+          "y": 1760
         }
       }
     note: false
@@ -1145,8 +662,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1500,
-          "y": 1550
+          "x": -1680,
+          "y": 1530
         }
       }
     note: false
@@ -1179,7 +696,7 @@ tasks:
       {
         "position": {
           "x": 2270,
-          "y": 1890
+          "y": 2100
         }
       }
     note: false
@@ -1223,7 +740,7 @@ tasks:
       {
         "position": {
           "x": -450,
-          "y": 1700
+          "y": 1910
         }
       }
     note: false
@@ -1259,7 +776,7 @@ tasks:
       {
         "position": {
           "x": -450,
-          "y": 1890
+          "y": 2100
         }
       }
     note: false
@@ -1271,10 +788,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 0d23e2fb-27e0-4c27-88fd-e7a89121fa6c
+    taskid: 02f8ecc6-7838-45fd-837d-4cdfd4d9a826
     type: regular
     task:
-      id: 0d23e2fb-27e0-4c27-88fd-e7a89121fa6c
+      id: 02f8ecc6-7838-45fd-837d-4cdfd4d9a826
       version: -1
       name: Get final incident fields
       description: Searches Demisto incidents
@@ -1287,13 +804,14 @@ tasks:
       - "24"
     scriptarguments:
       id:
-        simple: "234"
+        complex:
+          root: CreatedIncidentID
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 1340
+          "y": 1550
         }
       }
     note: false
@@ -1305,10 +823,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: f01d5d1b-0ae7-4e24-812e-9c304cb0e69a
+    taskid: 0acd76c2-138e-4344-8f0c-2adf068566a9
     type: regular
     task:
-      id: f01d5d1b-0ae7-4e24-812e-9c304cb0e69a
+      id: 0acd76c2-138e-4344-8f0c-2adf068566a9
       version: -1
       name: Get the final Account context
       description: Gets a value from the specified incident's context.
@@ -1324,13 +842,14 @@ tasks:
       get_key:
         simple: Account
       incident_id:
-        simple: "234"
+        complex:
+          root: CreatedIncidentID
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1930,
-          "y": 1340
+          "y": 1550
         }
       }
     note: false
@@ -1356,8 +875,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1500,
-          "y": 1700
+          "x": -1680,
+          "y": 1680
         }
       }
     note: false
@@ -1369,10 +888,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: c58e4ac6-9748-4504-80b8-2e31bd977d01
+    taskid: 29c514d2-9144-4119-83fc-71a48d08afcb
     type: regular
     task:
-      id: c58e4ac6-9748-4504-80b8-2e31bd977d01
+      id: 29c514d2-9144-4119-83fc-71a48d08afcb
       version: -1
       name: Wait and manually remediate
       description: Wait and complete tasks by given status. Used for test playbooks.
@@ -1387,7 +906,8 @@ tasks:
       complete_task:
         simple: "true"
       incident_id:
-        simple: "234"
+        complex:
+          root: CreatedIncidentID
       interval_between_tries:
         simple: "15"
       max_timeout:
@@ -1401,7 +921,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 810
+          "y": 1140
         }
       }
     note: false
@@ -1413,10 +933,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: ddb53ad5-390a-4d3d-86d4-0aa5d55fb52f
+    taskid: 8a88dc9c-389d-4921-8823-007c95668a85
     type: regular
     task:
-      id: ddb53ad5-390a-4d3d-86d4-0aa5d55fb52f
+      id: 8a88dc9c-389d-4921-8823-007c95668a85
       version: -1
       name: Wait for incident to close
       description: Wait and complete tasks by given status. Used for test playbooks.
@@ -1433,7 +953,8 @@ tasks:
       complete_task:
         simple: "false"
       incident_id:
-        simple: "234"
+        complex:
+          root: CreatedIncidentID
       interval_between_tries:
         simple: "10"
       max_timeout:
@@ -1447,7 +968,163 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 990
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: be96971c-a3e8-40ba-835e-7377611fa914
+    type: regular
+    task:
+      id: be96971c-a3e8-40ba-835e-7377611fa914
+      version: -1
+      name: Create phishing incident
+      description: Creates incidents from json files provided, and stores it in the
+        instance context.
+      script: '|||create-test-incident-from-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      attachment_paths:
+        simple: TestData/For_Domain_SQT.eml
+      incidents_path:
+        simple: TestData/Raw_JSON_For_Phishing_DomainSqt.json
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 3a62038d-b089-4bef-8c1f-125553385296
+    type: regular
+    task:
+      id: 3a62038d-b089-4bef-8c1f-125553385296
+      version: -1
+      name: Wait for incident to be fetched
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: fa2bf865-fc74-46bb-88ae-8b4bab75ebef
+    type: regular
+    task:
+      id: fa2bf865-fc74-46bb-88ae-8b4bab75ebef
+      version: -1
+      name: Find the incident
+      description: |-
+        Searches Demisto incidents.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      name:
+        simple: Potential phishing I received
+      notstatus:
+        simple: Closed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 26a620ba-0c07-4268-88ed-cbca9eaa4dd0
+    type: regular
+    task:
+      id: 26a620ba-0c07-4268-88ed-cbca9eaa4dd0
+      version: -1
+      name: Save the incident ID
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: CreatedIncidentID
+      value:
+        complex:
+          root: foundIncidents
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 800
         }
       }
     note: false
@@ -1469,9 +1146,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2215,
-        "width": 4150,
-        "x": -1500,
+        "height": 2425,
+        "width": 4330,
+        "x": -1680,
         "y": 50
       }
     }
@@ -1484,4 +1161,4 @@ inputs:
   description: ""
   playbookInputQuery:
 outputs: []
-fromversion: 6.0.0
+fromversion: 6.1.0

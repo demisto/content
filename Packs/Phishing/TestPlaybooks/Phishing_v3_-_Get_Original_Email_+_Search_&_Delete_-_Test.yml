@@ -75,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 9e8709c8-f159-45f0-886c-058710573b2f
+    taskid: 22060a5f-f79e-40a0-82b7-0b383943d5ea
     type: regular
     task:
-      id: 9e8709c8-f159-45f0-886c-058710573b2f
+      id: 22060a5f-f79e-40a0-82b7-0b383943d5ea
       version: -1
       name: Investigate the incident
       description: commands.local.investigate
@@ -88,19 +88,18 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "23"
+      - "37"
     scriptarguments:
       id:
         complex:
-          root: foundIncidents.id
-          accessor: '[0]'
+          root: FoundID
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 820
+          "y": 990
         }
       }
     note: false
@@ -213,10 +212,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 17bdd331-5814-4eb7-8e23-7451d6099ffd
+    taskid: 91ee6650-04be-4b19-81fd-23ee84145391
     type: regular
     task:
-      id: 17bdd331-5814-4eb7-8e23-7451d6099ffd
+      id: 91ee6650-04be-4b19-81fd-23ee84145391
       version: -1
       name: Get final incident fields
       description: Searches Demisto incidents
@@ -305,8 +304,7 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: Something with the HTML of the retrieved email is wrong. Most likely,
-          the original email was not retrieved.
+        simple: Something with the HTML of the retrieved email is wrong. Most likely, the original email was not retrieved.
     separatecontext: false
     view: |-
       {
@@ -493,8 +491,7 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: The subject of the retrieved email was not set in the Process Email
-          - Generic playbook, or the original email was not retrieved at all.
+        simple: The subject of the retrieved email was not set in the Process Email - Generic playbook, or the original email was not retrieved at all.
     separatecontext: false
     view: |-
       {
@@ -528,25 +525,9 @@ tasks:
       - "21"
     scriptarguments:
       body:
-        simple: 'We''ve detected suspicious activity in your bank account on 05/12/2021.Please
-          take a moment to review your recent activity and report anything suspicious
-          immediately.Make sure to login and follow the instructions on our official
-          website: www.scotiabank.com<https://eur01.safelinks.protection.outlook.com/?url=http%3A%2F%2F157.230.37.22%2Fbanks%2FScotia%2F&data=04%7C01%7Csr-test01%40demistodev.onmicrosoft.com%7Ca068915160cb49db31d508d9b9a33929%7Cebac1a1681bf449b8d435732c3c1d999%7C1%7C0%7C637744932980194392%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&sdata=I7reVHNGh7ifFcOWXFdfQWFXmwK3MVxFLEgiMPiG7Jo%3D&reserved=0>.Should
-          you have any questions, please contact us at SUPPORT@SCOTlABANK.COMScotiabank'
+        simple: 'We''ve detected suspicious activity in your bank account on 05/12/2021.Please take a moment to review your recent activity and report anything suspicious immediately.Make sure to login and follow the instructions on our official website: www.scotiabank.com<https://eur01.safelinks.protection.outlook.com/?url=http%3A%2F%2F157.230.37.22%2Fbanks%2FScotia%2F&data=04%7C01%7Csr-test01%40demistodev.onmicrosoft.com%7Ca068915160cb49db31d508d9b9a33929%7Cebac1a1681bf449b8d435732c3c1d999%7C1%7C0%7C637744932980194392%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&sdata=I7reVHNGh7ifFcOWXFdfQWFXmwK3MVxFLEgiMPiG7Jo%3D&reserved=0>.Should you have any questions, please contact us at SUPPORT@SCOTlABANK.COMScotiabank'
       htmlBody:
-        simple: '<div style="font-family: Calibri, Arial, Helvetica, sans-serif;font-size:
-          12pt;color: rgb(0, 0, 0);"><span style="font-size: 12pt;background-color:
-          rgb(255, 255, 255);">We&#39;ve detected suspicious activity in your bank account
-          on 05/12/2021.</span> <div style="font-size: 12pt;background-color: rgb(255,
-          255, 255);">Please take a moment to review your recent activity and report
-          anything suspicious immediately.</div><div style="font-size: 12pt;background-color:
-          rgb(255, 255, 255);">Make sure to login and follow the instructions on our
-          official website:<span> </span><a href="https://eur01.safelinks.protection.outlook.com/?url=http%3A%2F%2F157.230.37.22%2Fbanks%2FScotia%2F&amp;data=04%7C01%7Csr-test01%40demistodev.onmicrosoft.com%7Ca068915160cb49db31d508d9b9a33929%7Cebac1a1681bf449b8d435732c3c1d999%7C1%7C0%7C637744932980194392%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=I7reVHNGh7ifFcOWXFdfQWFXmwK3MVxFLEgiMPiG7Jo%3D&amp;reserved=0"
-          target="_blank" style="" rel="nofollow noopener">www.scotiabank.com</a>.</div><div
-          style="font-size: 12pt;background-color: rgb(255, 255, 255);"><br></div><div
-          style="font-size: 12pt;background-color: rgb(255, 255, 255);">Should you
-          have any questions, please contact us at SUPPORT@SCOTlABANK.COM</div><span
-          style="font-size: 12pt;background-color: rgb(255, 255, 255);"><span style="">Scotiabank</span></span><br></div>'
+        simple: '<div style="font-family: Calibri, Arial, Helvetica, sans-serif;font-size: 12pt;color: rgb(0, 0, 0);"><span style="font-size: 12pt;background-color: rgb(255, 255, 255);">We&#39;ve detected suspicious activity in your bank account on 05/12/2021.</span> <div style="font-size: 12pt;background-color: rgb(255, 255, 255);">Please take a moment to review your recent activity and report anything suspicious immediately.</div><div style="font-size: 12pt;background-color: rgb(255, 255, 255);">Make sure to login and follow the instructions on our official website:<span> </span><a href="https://eur01.safelinks.protection.outlook.com/?url=http%3A%2F%2F157.230.37.22%2Fbanks%2FScotia%2F&amp;data=04%7C01%7Csr-test01%40demistodev.onmicrosoft.com%7Ca068915160cb49db31d508d9b9a33929%7Cebac1a1681bf449b8d435732c3c1d999%7C1%7C0%7C637744932980194392%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=I7reVHNGh7ifFcOWXFdfQWFXmwK3MVxFLEgiMPiG7Jo%3D&amp;reserved=0" target="_blank" style="" rel="nofollow noopener">www.scotiabank.com</a>.</div><div style="font-size: 12pt;background-color: rgb(255, 255, 255);"><br></div><div style="font-size: 12pt;background-color: rgb(255, 255, 255);">Should you have any questions, please contact us at SUPPORT@SCOTlABANK.COM</div><span style="font-size: 12pt;background-color: rgb(255, 255, 255);"><span style="">Scotiabank</span></span><br></div>'
       subject:
         simple: Suspicious activity in your bank account [ACTION REQUIRED]
       to:
@@ -620,7 +601,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "23"
     scriptarguments:
       name:
         simple: 'FW: Suspicious activity in your bank account [ACTION REQUIRED]'
@@ -656,7 +637,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "37"
+      - "4"
     scriptarguments:
       key:
         simple: FoundID
@@ -670,7 +651,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 980
+          "y": 830
         }
       }
     note: false
@@ -766,10 +747,7 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: Either the Reporter Email Address is empty (problem with the mapper),
-          or the Email From doesn't equal the Reporter Email Address (problem with
-          Process Email - Generic subplaybook). In case of the latter, need to see
-          if the original email was retrieved and parsed correctly using ParseEmailFiles.
+        simple: Either the Reporter Email Address is empty (problem with the mapper), or the Email From doesn't equal the Reporter Email Address (problem with Process Email - Generic subplaybook). In case of the latter, need to see if the original email was retrieved and parsed correctly using ParseEmailFiles.
     separatecontext: false
     view: |-
       {
@@ -966,10 +944,7 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: The URLS were not extracted properly. The legitimate URL and the malicious
-          URL should have been extracted using incident auto-extract settings or field
-          extraction rules (in XSOAR 6.1+). If auto-extract is OK, it could be an
-          issue with the threat intelligence integration.
+        simple: The URLS were not extracted properly. The legitimate URL and the malicious URL should have been extracted using incident auto-extract settings or field extraction rules (in XSOAR 6.1+). If auto-extract is OK, it could be an issue with the threat intelligence integration.
     separatecontext: false
     view: |-
       {
@@ -987,10 +962,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: a858b4aa-77e2-41c9-8381-6f7a9e846450
+    taskid: b897153b-6be3-47cd-8296-26d3023d4409
     type: regular
     task:
-      id: a858b4aa-77e2-41c9-8381-6f7a9e846450
+      id: b897153b-6be3-47cd-8296-26d3023d4409
       version: -1
       name: Get the File context
       description: Gets a value from the specified incident's context.
@@ -1121,10 +1096,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: bb2f1540-2021-475d-861e-5c426952dcc1
+    taskid: c6bfcc8d-4eb8-48af-8ab6-af977b50f785
     type: regular
     task:
-      id: bb2f1540-2021-475d-861e-5c426952dcc1
+      id: c6bfcc8d-4eb8-48af-8ab6-af977b50f785
       version: -1
       name: Wait and manually remediate
       description: Wait and complete tasks by given status. Used for test playbooks.
@@ -1139,7 +1114,8 @@ tasks:
       complete_task:
         simple: "true"
       incident_id:
-        simple: "9"
+        complex:
+          root: FoundID
       interval_between_tries:
         simple: "15"
       max_timeout:
@@ -1165,10 +1141,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: f2e5d811-a798-40d1-82ae-cb05edf6ab9a
+    taskid: 83578413-5770-4971-8440-bb5bbc28c81a
     type: regular
     task:
-      id: f2e5d811-a798-40d1-82ae-cb05edf6ab9a
+      id: 83578413-5770-4971-8440-bb5bbc28c81a
       version: -1
       name: Wait for incident to close
       description: Wait and complete tasks by given status. Used for test playbooks.
@@ -1187,7 +1163,8 @@ tasks:
       complete_task:
         simple: "false"
       incident_id:
-        simple: "9"
+        complex:
+          root: FoundID
       interval_between_tries:
         simple: "10"
       max_timeout:
@@ -1319,4 +1296,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.0.0
+fromversion: 6.1.0
