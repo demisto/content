@@ -1,5 +1,6 @@
 import json
 
+import dateparser
 import pytest
 import requests
 import demistomock as demisto
@@ -12,7 +13,7 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command, \
     query_threat_indicators_command, create_threat_indicator_command, delete_threat_indicator_command, \
     append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
-    list_threat_indicator_command, NEXTLINK_DESCRIPTION, fetch_incidents
+    list_threat_indicator_command, NEXTLINK_DESCRIPTION, fetch_incidents, process_incidents
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -1267,6 +1268,40 @@ class TestHappyPath:
 
         assert context['Name'] == 'ind_name', 'Incident name in Azure Sentinel API is Incident ID in Cortex XSOAR'
         assert context['DisplayName'] == 'newDisplayName'
+
+    @pytest.mark.parametrize('args, client, expected_result', [  # disable-secrets-detection
+        ({'last_fetch_ids': [], 'min_severity': 3, 'last_incident_number': 1}, mock_client(),
+         {'last_fetch_ids': ['inc_ID'], 'last_incident_number': 2}),
+        ({'last_fetch_ids': ['inc_ID'], 'min_severity': 3, 'last_incident_number': 2}, mock_client(),
+         {'last_fetch_ids': [], 'last_incident_number': 2}),
+        ({'last_fetch_ids': [], 'min_severity': 3, 'last_incident_number': 5}, mock_client(),
+         {'last_fetch_ids': [], 'last_incident_number': 5})
+    ])
+    def test_process_incidents(self, args, client, expected_result):
+        """
+        Given: - Raw_incidents, AzureSentinel client, last_fetched_ids array, last_incident_number,
+        latest_created_time,  and a minimum severity.
+
+        When:
+            - Calling the process_incidents command.
+
+        Then:
+            - Validate the return values based on the scenario.
+        """
+        # prepare
+        raw_incidents = MOCKED_RAW_INCIDENT_OUTPUT.get('value')
+        last_fetch_ids = args.get('last_fetch_ids')
+        min_severity = args.get('min_severity')
+        last_incident_number = args.get('last_incident_number')
+        latest_created_time = dateparser.parse('2020-02-02T14:05:01.5348545Z')
+
+        # run
+        next_run, _ = process_incidents(raw_incidents, last_fetch_ids, min_severity, latest_created_time,
+                                        last_incident_number)
+
+        # validate
+        assert next_run.get('last_fetch_ids') == expected_result.get('last_fetch_ids')
+        assert next_run.get('last_incident_number') == expected_result.get('last_incident_number')
 
     @staticmethod
     def mock_http_request(method: str, url_suffix: str, params: dict):
