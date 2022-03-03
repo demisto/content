@@ -544,7 +544,7 @@ def create_intel_command(client: Client, args: Dict[str, Any]) -> Dict:
         "CTIX": {
             "Intel": {
                 "response": create_intel_response.get("data"),
-                "code": create_intel_response.get("status")
+                "status": create_intel_response.get("status")
             }
         }
     }
