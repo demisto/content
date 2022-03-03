@@ -44,7 +44,7 @@ def test_get_account_unauthorized_error(mocker):
 
     EWSMailSender.get_account('test@test.com')
 
-    assert demisto_debug.call_args.args[0] == 'Got unauthorized error, This is the: 3 attempt'
+    assert demisto_debug.call_args.args[0] == 'Got unauthorized error, This is attempt number 3'
 
 
 def test_get_account_not_found_error(mocker):
