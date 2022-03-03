@@ -2109,8 +2109,17 @@ script:
     execution: false
     name: cs-device-ran-on
     outputs:
-    - contextPath: CrowdStrike.DeviceID
+    - contextPath: CrowdStrike.DeviceIOC.DeviceID
       description: Device IDs on which an indicator ran.
+      type: string
+    - contextPath: CrowdStrike.DeviceIOC.ID
+      description: The indicator's ID.
+      type: string
+    - contextPath:CrowdStrike.DeviceIOC.Type
+      description: The indicator's Type.
+      type: string
+    - contextPath: CrowdStrike.DeviceIOC.Value
+      description: The indicator's value.
       type: string
   - arguments:
     - auto: PREDEFINED

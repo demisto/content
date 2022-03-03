@@ -2801,19 +2801,28 @@ def get_indicator_device_id():
     for error in errors:
         if error.get('code') == 404:
             return f'No results found for {ioc_type} - {ioc_value}'
-    context_output = ''
+    devices_response = []
     if validate_response(raw_res):
-        context_output = raw_res.get('resources')
+        devices_response = raw_res.get('resources')
     else:
         error_message = build_error_message(raw_res)
         return_error(error_message)
     ioc_id = f"{ioc_type}:{ioc_value}"
-    readable_output = tableToMarkdown(f"Devices that encountered the IOC {ioc_id}", context_output, headers='Device ID')
+    readable_output = tableToMarkdown(f"Devices that encountered the IOC {ioc_id}", devices_response, headers='Device ID')
+    outputs = {'DeviceID': devices_response,
+               'DeviceIOC' :
+                   {
+                   'Type': ioc_type,
+                   'Value': ioc_value,
+                   'ID': ioc_id,
+                   'DeviceID': devices_response,
+                   }
+               }
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='CrowdStrike.DeviceID',
-        outputs_key_field='DeviceID',
-        outputs=context_output,
+        outputs_prefix='CrowdStrike',
+        outputs_key_field='DeviceIOC.ID',
+        outputs=outputs,
         raw_response=raw_res
     )
 
