@@ -83,7 +83,25 @@ class Server:
 
 
 class XSIAMServer(Server):
-    pass
+
+    def __init__(self):
+        # TODO
+        super().__init__()
+        self.__client = None
+
+    @property
+    def client(self):
+        if self.__client is None:
+            self.__client = self.reconnect_client()
+
+        return self.__client
+
+    def reconnect_client(self):
+        self.__client = demisto_client.configure(f'https://localhost:{self.ssh_tunnel_port}',
+                                                 verify_ssl=False,
+                                                 username=self.user_name,
+                                                 password=self.password)
+        return self.__client
 
 
 class XSOARServer(Server):
@@ -218,9 +236,6 @@ class Build:
         # TODO: override
         pass
 
-    def disable_instances(self):
-        pass
-
     def install_nightly_pack(self):
         pass
 
@@ -230,6 +245,10 @@ class Build:
 
     def configure_and_test_integrations_pre_update(self, new_integrations, modified_integrations) -> tuple:
         pass
+
+    def disable_instances(self):
+        for server in self.servers:
+            disable_all_integrations(server.client)
 
     def get_changed_integrations(self) -> tuple:
         """
@@ -457,6 +476,7 @@ class Build:
             instance_name = instance.get('name', '')
             # If there is a failure, test_integration_instance will print it
             if integration_of_instance not in self.unmockable_integrations and use_mock:
+                # todo: make sure xsiam will not get here
                 success = self.test_integration_with_mock(instance, pre_update)
             else:
                 testing_client = self.servers[0].reconnect_client()
@@ -474,39 +494,6 @@ class Build:
             _, failed_tests = self.instance_testing(failed_instances, pre_update=False, first_call=False)
 
         return successful_tests, failed_tests
-
-    def test_integration_with_mock(self, instance: dict, pre_update: bool):
-        """
-        Runs 'test-module' for given integration with mitmproxy
-        In case the playback mode fails and this is a pre-update run - a record attempt will be executed.
-        Args:
-            build: An object containing the current build info.
-            instance: A dict containing the instance details
-            pre_update: Whether this instance testing is before or after the content update on the server.
-
-        Returns:
-            The result of running the 'test-module' command for the given integration.
-            If a record was executed - will return the result of the 'test--module' with the record mode only.
-        """
-        testing_client = self.servers[0].reconnect_client()
-        integration_of_instance = instance.get('brand', '')
-        logging.debug(f'Integration "{integration_of_instance}" is mockable, running test-module with mitmproxy')
-        has_mock_file = self.proxy.has_mock_file(integration_of_instance)
-        success = False
-        if has_mock_file:
-            with run_with_mock(self.proxy, integration_of_instance) as result_holder:
-                success, _ = test_integration_instance(testing_client, instance)
-                result_holder[RESULT] = success
-                if not success:
-                    logging.warning(f'Running test-module for "{integration_of_instance}" has failed in playback mode')
-        if not success and not pre_update:
-            logging.debug(f'Recording a mock file for integration "{integration_of_instance}".')
-            with run_with_mock(self.proxy, integration_of_instance, record=True) as result_holder:
-                success, _ = test_integration_instance(testing_client, instance)
-                result_holder[RESULT] = success
-                if not success:
-                    logging.debug(f'Record mode for integration "{integration_of_instance}" has failed.')
-        return success
 
     def update_content_on_servers(self) -> bool:
         """
@@ -577,10 +564,6 @@ class XSOARBuild(Build):
             logging.info('Done restarting servers. Sleeping for 1 minute')
             sleep(60)
 
-    def disable_instances(self):
-        for server in self.servers:
-            disable_all_integrations(server.client)
-
     def install_nightly_pack(self):
         # Install all existing packs with latest version
         self.nightly_install_packs(install_method=install_all_content_packs_for_nightly,
@@ -636,6 +619,68 @@ class XSOARBuild(Build):
             modified_integrations)
         successful_tests_pre, failed_tests_pre = self.instance_testing(modified_module_instances, pre_update=True)
         return modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre
+
+    def test_integration_with_mock(self, instance: dict, pre_update: bool):
+        """
+        Runs 'test-module' for given integration with mitmproxy
+        In case the playback mode fails and this is a pre-update run - a record attempt will be executed.
+        Args:
+            build: An object containing the current build info.
+            instance: A dict containing the instance details
+            pre_update: Whether this instance testing is before or after the content update on the server.
+
+        Returns:
+            The result of running the 'test-module' command for the given integration.
+            If a record was executed - will return the result of the 'test--module' with the record mode only.
+        """
+        testing_client = self.servers[0].reconnect_client()
+        integration_of_instance = instance.get('brand', '')
+        logging.debug(f'Integration "{integration_of_instance}" is mockable, running test-module with mitmproxy')
+        has_mock_file = self.proxy.has_mock_file(integration_of_instance)
+        success = False
+        if has_mock_file:
+            with run_with_mock(self.proxy, integration_of_instance) as result_holder:
+                success, _ = test_integration_instance(testing_client, instance)
+                result_holder[RESULT] = success
+                if not success:
+                    logging.warning(f'Running test-module for "{integration_of_instance}" has failed in playback mode')
+        if not success and not pre_update:
+            logging.debug(f'Recording a mock file for integration "{integration_of_instance}".')
+            with run_with_mock(self.proxy, integration_of_instance, record=True) as result_holder:
+                success, _ = test_integration_instance(testing_client, instance)
+                result_holder[RESULT] = success
+                if not success:
+                    logging.debug(f'Record mode for integration "{integration_of_instance}" has failed.')
+        return success
+
+
+class XSIAMBuild(Build):
+
+    def __init__(self, options):
+        super().__init__(options)
+        # TODO
+
+    def configure_servers_and_restart(self):
+        # No need of this step in XSIAM.
+        pass
+
+    def install_nightly_pack(self):
+        # TODO
+        pass
+
+    def test_integrations_post_update(self, new_module_instances: list,
+                                      modified_module_instances: list) -> tuple:
+        # TODO
+        pass
+
+    def configure_and_test_integrations_pre_update(self, new_integrations, modified_integrations) -> tuple:
+        # TODO
+        pass
+
+    def test_integration_with_mock(self, instance: dict, pre_update: bool):
+        # TODO: cant be done in xsiam
+        pass
+
 
 
 def options_handler():
@@ -1424,8 +1469,7 @@ def main():
     new_integrations, modified_integrations = build.get_changed_integrations()
 
     # Configures integration instances that currently in master (+ press test button)
-    pre_update_configuration_results = build.configure_and_test_integrations_pre_update(build,
-                                                                                        new_integrations,
+    pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations,
                                                                                         modified_integrations)
 
     modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results

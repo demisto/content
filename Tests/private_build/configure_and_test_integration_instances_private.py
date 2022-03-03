@@ -126,10 +126,9 @@ def main():
         build.configure_server_instances(tests_for_iteration, new_integrations, modified_integrations)
 
     #  Running the instance tests (pushing the test button)
-    successful_tests_pre, failed_tests_pre = build.instance_testing(
-                                                              all_module_instances,
-                                                              pre_update=True,
-                                                              use_mock=False)
+    successful_tests_pre, failed_tests_pre = build.instance_testing(all_module_instances,
+                                                                    pre_update=True,
+                                                                    use_mock=False)
     #  Adding the new integrations to the instance test list and testing them.
     all_module_instances.extend(brand_new_integrations)
     successful_tests_post, failed_tests_post = build.instance_testing(
