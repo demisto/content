@@ -123,8 +123,7 @@ def get_authentication_value(headers, original_authentication_header):
         The suitable authenticator header.
 
     """
-    headers = [header for header in headers if isinstance(header, dict)]
-    header_dict = {str(header.get('name')).lower(): header.get('value') for header in headers}
+    header_dict = {str(header.get('name')).lower(): header.get('value') for header in headers if isinstance(header, dict)}
     if original_authentication_header and original_authentication_header in header_dict:
         authentication_value = header_dict[original_authentication_header]
     else:
