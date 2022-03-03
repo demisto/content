@@ -4437,14 +4437,11 @@
                 "EWSO365",
                 "Rasterize",
                 "SecurityAndCompliance",
-                "VirusTotal (API v3)",
-                "Create Test Incidents"
-                
+                "VirusTotal (API v3)"
             ],
             "instance_names": [
                 "ews_mail_sender_srtest02",
-                "virus_total_v3",
-                "Create Test Incidents - Phishing Mock"
+                "virus_total_v3"
             ],
             "external_playbook_config": 
             {
