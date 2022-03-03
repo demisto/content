@@ -47,6 +47,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     variables: true
   variables:
     IS_NIGHTLY: "false"
+    KUBERNETES_CPU_REQUEST: 1000m
   script:
     - section_start "Secrets Detection" --collapsed
     - demisto-sdk secrets --post-commit --ignore-entropy
