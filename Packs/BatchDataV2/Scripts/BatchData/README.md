@@ -6,7 +6,7 @@ This Automation takes in a string of comma separated items and returns a diction
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Tags |  |
+| Tags | Utilities |
 
 ## Inputs
 ---
