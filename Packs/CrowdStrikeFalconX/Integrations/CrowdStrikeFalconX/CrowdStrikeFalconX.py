@@ -528,7 +528,7 @@ def parse_outputs(
                     resources_group_outputs['sandbox'] = extra_sandbox_group_outputs
                     output |= extra_sandbox_group_outputs
         else:  # the resources section is a list of strings
-            resources_group_outputs = {"resources": response.get("resources")}
+            resources_group_outputs = {"resources": resources_list}
         output |= resources_group_outputs
     return CommandResultArguments(response, output, indicator)
 
