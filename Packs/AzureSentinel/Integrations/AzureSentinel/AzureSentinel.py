@@ -468,12 +468,12 @@ def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents
     Returns:
         An array of incidents, and a latest created time.
     """
-    demisto.debug("starting the list incidents command")
+
     filter_expression = args.get('filter')
     limit = None if is_fetch_incidents else min(200, int(args.get('limit')))
     next_link = args.get('next_link', '')
     result = None
-    params = {}
+    params: Dict[str, Any] = {}
 
     if next_link:
         next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
@@ -488,14 +488,14 @@ def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents
         params = {'$orderby': 'properties/createdTimeUtc asc'}
 
     if not result:
-        params.update({'$top': limit, '$filter': filter_expression})  # type: ignore
+        params.update({'$top': limit, '$filter': filter_expression})
         remove_nulls_from_dictionary(params)
         url_suffix = 'incidents'
 
         result = client.http_request('GET', url_suffix, params=params)
 
     incidents = [incident_data_to_xsoar_format(inc) for inc in result.get('value')]
-    demisto.debug(f"number of incidents: {len(incidents)}")
+
     if is_fetch_incidents:
         return CommandResults(outputs=incidents, outputs_prefix='AzureSentinel.Incident')
 
@@ -928,7 +928,6 @@ def fetch_incidents_via_timestamp(first_fetch_time: str, client: AzureSentinelCl
     latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
     command_args = {'filter': f'properties/createdTimeUtc ge {latest_created_time_str}'}
 
-    demisto.debug(f"{command_args=}")
     command_result = list_incidents_command(client, command_args, is_fetch_incidents=True, first_fetch=True)
 
     return command_result.outputs, latest_created_time
@@ -948,7 +947,6 @@ def fetch_incidents_via_incident_number(last_fetch_time: str, last_incident_numb
     latest_created_time = last_fetch_time
     command_args = {'filter': f'properties/incidentNumber gt {last_incident_number}'}
 
-    demisto.debug(f"{command_args=}")
     command_result = list_incidents_command(client, command_args, is_fetch_incidents=True, first_fetch=False)
 
     return command_result.outputs, latest_created_time
@@ -967,7 +965,7 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
     Returns:
         A next_run dictionary, and an array of incidents.
     """
-    demisto.debug(f"{latest_created_time=}, {last_incident_number=}")
+
     incidents = []
     current_fetch_ids = []
     if not last_incident_number:
@@ -996,10 +994,8 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
             # Update last run to the latest fetch time
             if incident_created_time > latest_created_time:
                 latest_created_time = incident_created_time
-                demisto.debug(f"changing the latest_created_time to:{latest_created_time}")
             if incident.get('IncidentNumber') > last_incident_number:
                 last_incident_number = incident.get('IncidentNumber')
-                demisto.debug(f"changing the last_incident_number to:{last_incident_number}")
 
     next_run = {
         'last_fetch_time': latest_created_time.strftime(DATE_FORMAT),
