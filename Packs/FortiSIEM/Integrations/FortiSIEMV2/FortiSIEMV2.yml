@@ -12,8 +12,8 @@ configuration:
   name: credentials
   required: true
   type: 9
-- additionalinfo: Default is 50. Maximum is 200.
-  defaultvalue: '50'
+- additionalinfo: Default is 20. Maximum is 200. Note that for values greater than 20, the performance might be harmed.
+  defaultvalue: '20'
   display: Maximum incidents per fetch.
   hidden: false
   name: max_fetch
