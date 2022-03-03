@@ -16,6 +16,7 @@
         "Mobile"
     ],
     "marketplaces": [
+        "xsoar",
         "marketplacev2"
     ]
 }
