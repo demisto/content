@@ -1,0 +1,1402 @@
+category: IT Services
+commonfields:
+  id: AnsibleCiscoIOSTest
+  version: -1
+configuration:
+- additionalinfo: The credentials to associate with the instance. SSH keys can be configured using the credential manager.
+  display: Username
+  name: creds
+  required: true
+  type: 9
+- display: Enable Password
+  name: enable_password
+  required: true
+  type: 4
+- additionalinfo: The default port to use if one is not specified in the commands `host` argument.
+  defaultvalue: 22
+  display: Default SSH Port
+  name: port
+  required: true
+  type: 0
+- additionalinfo: If multiple hosts are specified in a command, how many hosts should be interacted with concurrently.
+  defaultvalue: '4'
+  display: Concurrency Factor
+  name: concurrency
+  required: true
+  type: 0
+description: Cisco IOS Platform management over SSH
+display: Ansible Cisco IOS Test
+fromversion: 6.0.0
+name: AnsibleCiscoIOSTest
+script:
+  commands:
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - auto: PREDEFINED
+      description: Specifies which banner should be configured on the remote device. In Ansible 2.4 and earlier only `login` and `motd` were supported.
+      name: banner
+      predefined:
+      - login
+      - motd
+      - exec
+      - incoming
+      - slip-ppp
+      required: true
+    - description: The banner text that should be present in the remote device running configuration.  This argument accepts a multiline string, with no empty lines. Requires `state=present`.
+      name: text
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Specifies whether or not the configuration is present in the current devices active running configuration.
+      name: state
+      predefined:
+      - present
+      - absent
+    description: "Manage multiline banners on Cisco IOS devices\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_banner_module.html"
+    name: ios-banner
+    outputs:
+    - contextPath: CiscoIOS.IosBanner.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: Specifies the BGP related configuration.
+      name: config
+    - auto: PREDEFINED
+      defaultValue: merge
+      description: 'Specifies the operation to be performed on the BGP process configured on the device. In case of merge, the input configuration will be merged with the existing BGP configuration on the device. In case of replace, if there is a diff between the existing configuration and the input configuration, the existing configuration will be replaced by the input configuration for every option that has the diff. In case of override, all the existing BGP configuration will be removed from the device and replaced with the input configuration. In case of delete the existing BGP configuration will be removed from the device.'
+      name: operation
+      predefined:
+      - merge
+      - replace
+      - override
+      - delete
+    description: "Configure global BGP protocol settings on Cisco IOS.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_bgp_module.html"
+    name: ios-bgp
+    outputs:
+    - contextPath: CiscoIOS.IosBgp.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: List of commands to send to the remote ios device over the configured provider. The resulting output from the command is returned. If the `wait_for` argument is provided, the module is not returned until the condition is satisfied or the number of retries has expired. If a command sent to the device requires answering a prompt, it is possible to pass a dict containing `command`, `answer` and `prompt`. Common answers are 'y' or "\r" (carriage return, must be double quotes). See examples.
+      name: commands
+      required: true
+    - description: List of conditions to evaluate against the output of the command. The task will wait for each condition to be true before moving forward. If the conditional is not true within the configured number of retries, the task fails. See examples.
+      name: wait_for
+    - auto: PREDEFINED
+      defaultValue: all
+      description: The `match` argument is used in conjunction with the `wait_for` argument to specify the match policy.  Valid values are `all` or `any`.  If the value is set to `all` then all conditionals in the wait_for must be satisfied.  If the value is set to `any` then only one of the values must be satisfied.
+      name: match
+      predefined:
+      - any
+      - all
+    - defaultValue: '10'
+      description: Specifies the number of retries a command should by tried before it is considered failed. The command is run on the target device every retry and evaluated against the `wait_for` conditions.
+      name: retries
+    - defaultValue: '1'
+      description: Configures the interval in seconds to wait between retries of the command. If the command does not pass the specified conditions, the interval indicates how long to wait before trying the command again.
+      name: interval
+    description: "Run commands on remote devices running Cisco IOS\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_command_module.html"
+    name: ios-command
+    outputs:
+    - contextPath: CiscoIOS.IosCommand.stdout
+      description: The set of responses from the commands
+      type: unknown
+    - contextPath: CiscoIOS.IosCommand.stdout_lines
+      description: The value of stdout split into a list
+      type: unknown
+    - contextPath: CiscoIOS.IosCommand.failed_conditions
+      description: The list of conditionals that have failed
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: The ordered set of commands that should be configured in the section.  The commands must be the exact same commands as found in the device running-config.  Be sure to note the configuration command syntax as some commands are automatically modified by the device config parser.
+      name: lines
+    - description: The ordered set of parents that uniquely identify the section or hierarchy the commands should be checked against.  If the parents argument is omitted, the commands are checked against the set of top level or global commands.
+      name: parents
+    - description: Specifies the source path to the file that contains the configuration or configuration template to load.  The path to the source file can either be the full path on the Ansible control host or a relative path from the playbook or role root directory.  This argument is mutually exclusive with `lines`, `parents`.
+      name: src
+    - description: The ordered set of commands to push on to the command stack if a change needs to be made.  This allows the playbook designer the opportunity to perform configuration commands prior to pushing any changes without affecting how the set of commands are matched against the system.
+      name: before
+    - description: The ordered set of commands to append to the end of the command stack if a change needs to be made.  Just like with `before` this allows the playbook designer to append a set of commands to be executed after the command set.
+      name: after
+    - auto: PREDEFINED
+      defaultValue: line
+      description: Instructs the module on the way to perform the matching of the set of commands against the current device config.  If match is set to `line`, commands are matched line by line.  If match is set to `strict`, command lines are matched with respect to position.  If match is set to `exact`, command lines must be an equal match.  Finally, if match is set to `none`, the module will not attempt to compare the source configuration with the running configuration on the remote device.
+      name: match
+      predefined:
+      - line
+      - strict
+      - exact
+      - none
+    - auto: PREDEFINED
+      defaultValue: line
+      description: Instructs the module on the way to perform the configuration on the device. If the replace argument is set to `line` then the modified lines are pushed to the device in configuration mode.  If the replace argument is set to `block` then the entire command block is pushed to the device in configuration mode if any line is not correct.
+      name: replace
+      predefined:
+      - line
+      - block
+    - defaultValue: '@'
+      description: This argument is used when pushing a multiline configuration element to the IOS device.  It specifies the character to use as the delimiting character.  This only applies to the configuration action.
+      name: multiline_delimiter
+    - defaultValue: 'no'
+      description: This argument will cause the module to create a full backup of the current `running-config` from the remote device before any changes are made. If the `backup_options` value is not given, the backup file is written to the `backup` folder in the playbook root directory or role root directory, if playbook is part of an ansible role. If the directory does not exist, it is created.
+      name: backup
+    - description: The module, by default, will connect to the remote device and retrieve the current running-config to use as a base for comparing against the contents of source. There are times when it is not desirable to have the task get the current running-config for every task in a playbook.  The `running_config` argument allows the implementer to pass in the configuration to use as the base config for comparison.
+      name: running_config
+    - defaultValue: 'no'
+      description: This argument specifies whether or not to collect all defaults when getting the remote device running config.  When enabled, the module will get the current config by issuing the command `show running-config all`.
+      name: defaults
+    - auto: PREDEFINED
+      defaultValue: never
+      description: When changes are made to the device running-configuration, the changes are not copied to non-volatile storage by default.  Using this argument will change that before.  If the argument is set to `always`, then the running-config will always be copied to the startup-config and the `modified` flag will always be set to True.  If the argument is set to `modified`, then the running-config will only be copied to the startup-config if it has changed since the last save to startup-config.  If the argument is set to `never`, the running-config will never be copied to the startup-config.  If the argument is set to `changed`, then the running-config will only be copied to the startup-config if the task has made a change. `changed` was added in Ansible 2.5.
+      name: save_when
+      predefined:
+      - always
+      - never
+      - modified
+      - changed
+    - auto: PREDEFINED
+      description: 'When using the `ansible-playbook --diff` command line argument the module can generate diffs against different sources. When this option is configure as `startup`, the module will return the diff of the running-config against the startup-config. When this option is configured as `intended`, the module will return the diff of the running-config against the configuration provided in the `intended_config` argument. When this option is configured as `running`, the module will return the before and after diff of the running-config with respect to any changes made to the device configuration.'
+      name: diff_against
+      predefined:
+      - running
+      - startup
+      - intended
+    - description: Use this argument to specify one or more lines that should be ignored during the diff.  This is used for lines in the configuration that are automatically updated by the system.  This argument takes a list of regular expressions or exact line matches.
+      name: diff_ignore_lines
+    - description: The `intended_config` provides the master configuration that the node should conform to and is used to check the final running-config against. This argument will not modify any settings on the remote device and is strictly used to check the compliance of the current device's configuration against.  When specifying this argument, the task should also modify the `diff_against` value and set it to `intended`.
+      name: intended_config
+    - description: This is a dict object containing configurable options related to backup file path. The value of this option is read only when `backup` is set to `yes`, if `backup` is set to `no` this option will be silently ignored.
+      isArray: true
+      name: backup_options
+    description: "Manage Cisco IOS configuration sections\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_config_module.html"
+    name: ios-config
+    outputs:
+    - contextPath: CiscoIOS.IosConfig.updates
+      description: The set of commands that will be pushed to the remote device
+      type: unknown
+    - contextPath: CiscoIOS.IosConfig.commands
+      description: The set of commands that will be pushed to the remote device
+      type: unknown
+    - contextPath: CiscoIOS.IosConfig.backup_path
+      description: The full path to the backup file
+      type: string
+    - contextPath: CiscoIOS.IosConfig.filename
+      description: The name of the backup file
+      type: string
+    - contextPath: CiscoIOS.IosConfig.shortname
+      description: The full path to the backup file excluding the timestamp
+      type: string
+    - contextPath: CiscoIOS.IosConfig.date
+      description: The date extracted from the backup file name
+      type: string
+    - contextPath: CiscoIOS.IosConfig.time
+      description: The time extracted from the backup file name
+      type: string
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - defaultValue: '!config'
+      description: 'When supplied, this argument restricts the facts collected to a given subset. Possible values for this argument include `all`, `min`, `hardware`, `config`, and `interfaces`. Specify a list of values to include a larger subset. Use a value with an initial `!` to collect all facts except that subset.'
+      name: gather_subset
+    - description: When supplied, this argument will restrict the facts collected to a given subset. Possible values for this argument include all and the resources like interfaces, vlans etc. Can specify a list of values to include a larger subset. Values can also be used with an initial `M(!`) to specify that a specific subset should not be collected. Valid subsets are 'all', 'interfaces', 'l2_interfaces', 'vlans', 'lag_interfaces', 'lacp', 'lacp_interfaces', 'lldp_global', 'lldp_interfaces', 'l3_interfaces'.
+      name: gather_network_resources
+    description: "Collect facts from remote devices running Cisco IOS\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_facts_module.html"
+    name: ios-facts
+    outputs:
+    - contextPath: CiscoIOS.IosFacts.net_gather_subset
+      description: The list of fact subsets collected from the device
+      type: unknown
+    - contextPath: CiscoIOS.IosFacts.net_gather_network_resources
+      description: The list of fact for network resource subsets collected from the device
+      type: unknown
+    - contextPath: CiscoIOS.IosFacts.net_model
+      description: The model name returned from the device
+      type: string
+    - contextPath: CiscoIOS.IosFacts.net_serialnum
+      description: The serial number of the remote device
+      type: string
+    - contextPath: CiscoIOS.IosFacts.net_version
+      description: The operating system version running on the remote device
+      type: string
+    - contextPath: CiscoIOS.IosFacts.net_iostype
+      description: The operating system type (IOS or IOS-XE) running on the remote device
+      type: string
+    - contextPath: CiscoIOS.IosFacts.net_hostname
+      description: The configured hostname of the device
+      type: string
+    - contextPath: CiscoIOS.IosFacts.net_image
+      description: The image file the device is running
+      type: string
+    - contextPath: CiscoIOS.IosFacts.net_stacked_models
+      description: The model names of each device in the stack
+      type: unknown
+    - contextPath: CiscoIOS.IosFacts.net_stacked_serialnums
+      description: The serial numbers of each device in the stack
+      type: unknown
+    - contextPath: CiscoIOS.IosFacts.net_api
+      description: The name of the transport
+      type: string
+    - contextPath: CiscoIOS.IosFacts.net_python_version
+      description: The Python version Ansible controller is using
+      type: string
+    - contextPath: CiscoIOS.IosFacts.net_filesystems
+      description: All file system names available on the device
+      type: unknown
+    - contextPath: CiscoIOS.IosFacts.net_filesystems_info
+      description: A hash of all file systems containing info about each file system (e.g. free and total space)
+      type: unknown
+    - contextPath: CiscoIOS.IosFacts.net_memfree_mb
+      description: The available free memory on the remote device in Mb
+      type: number
+    - contextPath: CiscoIOS.IosFacts.net_memtotal_mb
+      description: The total memory on the remote device in Mb
+      type: number
+    - contextPath: CiscoIOS.IosFacts.net_config
+      description: The current active config from the device
+      type: string
+    - contextPath: CiscoIOS.IosFacts.net_all_ipv4_addresses
+      description: All IPv4 addresses configured on the device
+      type: unknown
+    - contextPath: CiscoIOS.IosFacts.net_all_ipv6_addresses
+      description: All IPv6 addresses configured on the device
+      type: unknown
+    - contextPath: CiscoIOS.IosFacts.net_interfaces
+      description: A hash of all interfaces running on the system
+      type: unknown
+    - contextPath: CiscoIOS.IosFacts.net_neighbors
+      description: The list of CDP and LLDP neighbors from the remote device. If both, CDP and LLDP neighbor data is present on one port, CDP is preferred.
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: A dictionary of interface options
+      isArray: true
+      name: config
+    - auto: PREDEFINED
+      defaultValue: merged
+      description: The state of the configuration after module completion
+      name: state
+      predefined:
+      - merged
+      - replaced
+      - overridden
+      - deleted
+    description: "Manages interface attributes of Cisco IOS network devices\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_interfaces_module.html"
+    name: ios-interfaces
+    outputs:
+    - contextPath: CiscoIOS.IosInterfaces.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoIOS.IosInterfaces.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoIOS.IosInterfaces.commands
+      description: The set of commands pushed to the remote device
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: A dictionary of Layer-2 interface options
+      isArray: true
+      name: config
+    - auto: PREDEFINED
+      defaultValue: merged
+      description: The state of the configuration after module completion
+      name: state
+      predefined:
+      - merged
+      - replaced
+      - overridden
+      - deleted
+    description: "Manage Layer-2 interface on Cisco IOS devices.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_l2_interfaces_module.html"
+    name: ios-l2-interfaces
+    outputs:
+    - contextPath: CiscoIOS.IosL2Interfaces.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoIOS.IosL2Interfaces.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoIOS.IosL2Interfaces.commands
+      description: The set of commands pushed to the remote device
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: A dictionary of Layer-3 interface options
+      isArray: true
+      name: config
+    - auto: PREDEFINED
+      defaultValue: merged
+      description: The state of the configuration after module completion
+      name: state
+      predefined:
+      - merged
+      - replaced
+      - overridden
+      - deleted
+    description: "Manage Layer-3 interface on Cisco IOS devices.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_l3_interfaces_module.html"
+    name: ios-l3-interfaces
+    outputs:
+    - contextPath: CiscoIOS.IosL3Interfaces.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoIOS.IosL3Interfaces.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoIOS.IosL3Interfaces.commands
+      description: The set of commands pushed to the remote device
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: The provided configurations.
+      isArray: true
+      name: config
+    - auto: PREDEFINED
+      defaultValue: merged
+      description: The state of the configuration after module completion
+      name: state
+      predefined:
+      - merged
+      - replaced
+      - deleted
+    description: "Manage Global Link Aggregation Control Protocol (LACP) on Cisco IOS devices.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_lacp_module.html"
+    name: ios-lacp
+    outputs:
+    - contextPath: CiscoIOS.IosLacp.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoIOS.IosLacp.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoIOS.IosLacp.commands
+      description: The set of commands pushed to the remote device.
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: A dictionary of LACP lacp_interfaces option
+      isArray: true
+      name: config
+    - auto: PREDEFINED
+      defaultValue: merged
+      description: The state of the configuration after module completion
+      name: state
+      predefined:
+      - merged
+      - replaced
+      - overridden
+      - deleted
+    description: "Manage Link Aggregation Control Protocol (LACP) on Cisco IOS devices interface.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_lacp_interfaces_module.html"
+    name: ios-lacp-interfaces
+    outputs:
+    - contextPath: CiscoIOS.IosLacpInterfaces.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoIOS.IosLacpInterfaces.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoIOS.IosLacpInterfaces.commands
+      description: The set of commands pushed to the remote device.
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: A list of link aggregation group configurations.
+      isArray: true
+      name: config
+    - auto: PREDEFINED
+      defaultValue: merged
+      description: The state of the configuration after module completion
+      name: state
+      predefined:
+      - merged
+      - replaced
+      - overridden
+      - deleted
+    description: "Manage Link Aggregation on Cisco IOS devices.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_lag_interfaces_module.html"
+    name: ios-lag-interfaces
+    outputs:
+    - contextPath: CiscoIOS.IosLagInterfaces.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoIOS.IosLagInterfaces.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoIOS.IosLagInterfaces.commands
+      description: The set of commands pushed to the remote device
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: Channel-group number for the port-channel Link aggregation group. Range 1-255.
+      name: group
+    - auto: PREDEFINED
+      description: Mode of the link aggregation group.
+      name: mode
+      predefined:
+      - active
+      - 'on'
+      - passive
+      - auto
+      - desirable
+    - description: List of members of the link aggregation group.
+      name: members
+    - description: List of link aggregation definitions.
+      name: aggregate
+    - auto: PREDEFINED
+      defaultValue: present
+      description: State of the link aggregation group.
+      name: state
+      predefined:
+      - present
+      - absent
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Purge links not defined in the `aggregate` parameter.
+      name: purge
+      predefined:
+      - 'Yes'
+      - 'No'
+    description: "Manage link aggregation groups on Cisco IOS network devices\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_linkagg_module.html"
+    name: ios-linkagg
+    outputs:
+    - contextPath: CiscoIOS.IosLinkagg.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - auto: PREDEFINED
+      defaultValue: present
+      description: State of the LLDP configuration. If value is `present` lldp will be enabled else if it is `absent` it will be disabled.
+      name: state
+      predefined:
+      - present
+      - absent
+    description: "Manage LLDP configuration on Cisco IOS network devices.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_lldp_module.html"
+    name: ios-lldp
+    outputs:
+    - contextPath: CiscoIOS.IosLldp.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: A dictionary of LLDP options
+      isArray: true
+      name: config
+    - auto: PREDEFINED
+      defaultValue: merged
+      description: The state of the configuration after module completion
+      name: state
+      predefined:
+      - merged
+      - replaced
+      - deleted
+    description: "Configure and manage Link Layer Discovery Protocol(LLDP) attributes on IOS platforms.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_lldp_global_module.html"
+    name: ios-lldp-global
+    outputs:
+    - contextPath: CiscoIOS.IosLldpGlobal.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoIOS.IosLldpGlobal.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoIOS.IosLldpGlobal.commands
+      description: The set of commands pushed to the remote device
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: A dictionary of LLDP options
+      isArray: true
+      name: config
+    - auto: PREDEFINED
+      defaultValue: merged
+      description: The state of the configuration after module completion
+      name: state
+      predefined:
+      - merged
+      - replaced
+      - overridden
+      - deleted
+    description: "Manage link layer discovery protocol (LLDP) attributes of interfaces on Cisco IOS devices.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_lldp_interfaces_module.html"
+    name: ios-lldp-interfaces
+    outputs:
+    - contextPath: CiscoIOS.IosLldpInterfaces.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoIOS.IosLldpInterfaces.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoIOS.IosLldpInterfaces.commands
+      description: The set of commands pushed to the remote device.
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - auto: PREDEFINED
+      description: Destination of the logs.
+      name: dest
+      predefined:
+      - 'on'
+      - host
+      - console
+      - monitor
+      - buffered
+      - trap
+    - description: 'The hostname or IP address of the destination. Required when `dest=host`.'
+      name: name
+    - defaultValue: '4096'
+      description: Size of buffer. The acceptable value is in range from 4096 to 4294967295 bytes.
+      name: size
+    - description: Set logging facility.
+      name: facility
+    - auto: PREDEFINED
+      defaultValue: debugging
+      description: Set logging severity levels.
+      name: level
+      predefined:
+      - emergencies
+      - alerts
+      - critical
+      - errors
+      - warnings
+      - notifications
+      - informational
+      - debugging
+    - description: List of logging definitions.
+      name: aggregate
+    - auto: PREDEFINED
+      defaultValue: present
+      description: State of the logging configuration.
+      name: state
+      predefined:
+      - present
+      - absent
+    description: "Manage logging on network devices\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_logging_module.html"
+    name: ios-logging
+    outputs:
+    - contextPath: CiscoIOS.IosLogging.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: Network address of NTP server.
+      name: server
+    - description: Source interface for NTP packets.
+      name: source_int
+    - description: ACL for peer/server access restricition.
+      name: acl
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Enable NTP logs. Data type boolean.
+      name: logging
+      predefined:
+      - 'Yes'
+      - 'No'
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Enable NTP authentication. Data type boolean.
+      name: auth
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: md5 NTP authentication key of type 7.
+      name: auth_key
+    - description: auth_key id. Data type string
+      name: key_id
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Manage the state of the resource.
+      name: state
+      predefined:
+      - present
+      - absent
+    description: "Manages core NTP configuration.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_ntp_module.html"
+    name: ios-ntp
+    outputs:
+    - contextPath: CiscoIOS.IosNtp.commands
+      description: command sent to the device
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - defaultValue: '5'
+      description: Number of packets to send.
+      name: count
+    - description: The IP Address or hostname (resolvable by switch) of the remote node.
+      name: dest
+      required: true
+    - description: The source IP Address.
+      name: source
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Determines if the expected result is success or fail.
+      name: state
+      predefined:
+      - absent
+      - present
+    - defaultValue: default
+      description: The VRF to use for forwarding.
+      name: vrf
+    description: "Tests reachability using ping from Cisco IOS network devices\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_ping_module.html"
+    name: ios-ping
+    outputs:
+    - contextPath: CiscoIOS.IosPing.commands
+      description: Show the command sent.
+      type: unknown
+    - contextPath: CiscoIOS.IosPing.packet_loss
+      description: Percentage of packets lost.
+      type: string
+    - contextPath: CiscoIOS.IosPing.packets_rx
+      description: Packets successfully received.
+      type: number
+    - contextPath: CiscoIOS.IosPing.packets_tx
+      description: Packets successfully transmitted.
+      type: number
+    - contextPath: CiscoIOS.IosPing.rtt
+      description: Show RTT stats.
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: Network prefix of the static route.
+      name: prefix
+    - description: Network prefix mask of the static route.
+      name: mask
+    - description: Next hop IP of the static route.
+      name: next_hop
+    - description: VRF of the static route.
+      name: vrf
+    - description: Interface of the static route.
+      name: interface
+    - description: Name of the static route
+      name: name
+    - description: Admin distance of the static route.
+      name: admin_distance
+    - description: Set tag of the static route.
+      name: tag
+    - description: Tracked item to depend on for the static route.
+      name: track
+    - description: List of static route definitions.
+      name: aggregate
+    - auto: PREDEFINED
+      defaultValue: present
+      description: State of the static route configuration.
+      name: state
+      predefined:
+      - present
+      - absent
+    description: "Manage static IP routes on Cisco IOS network devices\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_static_route_module.html"
+    name: ios-static-route
+    outputs:
+    - contextPath: CiscoIOS.IosStaticRoute.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: Configure the device hostname parameter. This option takes an ASCII string value.
+      name: hostname
+    - description: Configure the IP domain name on the remote device to the provided value. Value should be in the dotted name form and will be appended to the `hostname` to create a fully-qualified domain name.
+      name: domain_name
+    - description: Provides the list of domain suffixes to append to the hostname for the purpose of doing name resolution. This argument accepts a list of names and will be reconciled with the current active configuration on the running node.
+      name: domain_search
+    - description: Provides one or more source interfaces to use for performing DNS lookups.  The interface provided in `lookup_source` must be a valid interface configured on the device.
+      name: lookup_source
+    - description: Administrative control for enabling or disabling DNS lookups.  When this argument is set to True, lookups are performed and when it is set to False, lookups are not performed.
+      name: lookup_enabled
+    - description: List of DNS name servers by IP address to use to perform name resolution lookups.  This argument accepts either a list of DNS servers See examples.
+      name: name_servers
+    - auto: PREDEFINED
+      defaultValue: present
+      description: State of the configuration values in the device's current active configuration.  When set to `present`, the values should be configured in the device active configuration and when set to `absent` the values should not be in the device active configuration
+      name: state
+      predefined:
+      - present
+      - absent
+    description: "Manage the system attributes on Cisco IOS devices\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_system_module.html"
+    name: ios-system
+    outputs:
+    - contextPath: CiscoIOS.IosSystem.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: The set of username objects to be configured on the remote Cisco IOS device. The list entries can either be the username or a hash of username and properties. This argument is mutually exclusive with the `name` argument.
+      name: aggregate
+    - description: The username to be configured on the Cisco IOS device. This argument accepts a string value and is mutually exclusive with the `aggregate` argument. Please note that this option is not same as `provider username`.
+      name: name
+    - description: The password to be configured on the Cisco IOS device. The password needs to be provided in clear and it will be encrypted on the device. Please note that this option is not same as `provider password`.
+      name: configured_password
+    - auto: PREDEFINED
+      defaultValue: always
+      description: Since passwords are encrypted in the device running config, this argument will instruct the module when to change the password.  When set to `always`, the password will always be updated in the device and when set to `on_create` the password will be updated only if the username is created.
+      name: update_password
+      predefined:
+      - on_create
+      - always
+    - auto: PREDEFINED
+      defaultValue: secret
+      description: This argument determines whether a 'password' or 'secret' will be configured.
+      name: password_type
+      predefined:
+      - secret
+      - password
+    - description: This option allows configuring hashed passwords on Cisco IOS devices.
+      name: hashed_password
+    - description: The `privilege` argument configures the privilege level of the user when logged into the system. This argument accepts integer values in the range of 1 to 15.
+      name: privilege
+    - description: Configures the view for the username in the device running configuration. The argument accepts a string value defining the view name. This argument does not check if the view has been configured on the device.
+      name: view
+    - description: 'Specifies one or more SSH public key(s) to configure for the given username. This argument accepts a valid SSH key value.'
+      name: sshkey
+    - description: Defines the username without assigning a password. This will allow the user to login to the system without being authenticated by a password.
+      name: nopassword
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Instructs the module to consider the resource definition absolute. It will remove any previously configured usernames on the device with the exception of the `admin` user (the current defined set of users).
+      name: purge
+      predefined:
+      - 'Yes'
+      - 'No'
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Configures the state of the username definition as it relates to the device operational configuration. When set to `present`, the username(s) should be configured in the device active configuration and when set to `absent` the username(s) should not be in the device active configuration
+      name: state
+      predefined:
+      - present
+      - absent
+    description: "Manage the aggregate of local users on Cisco IOS device\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_user_module.html"
+    name: ios-user
+    outputs:
+    - contextPath: CiscoIOS.IosUser.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: A dictionary of VLANs options
+      isArray: true
+      name: config
+    - auto: PREDEFINED
+      defaultValue: merged
+      description: The state of the configuration after module completion
+      name: state
+      predefined:
+      - merged
+      - replaced
+      - overridden
+      - deleted
+    description: "Manage VLANs on Cisco IOS devices.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_vlans_module.html"
+    name: ios-vlans
+    outputs:
+    - contextPath: CiscoIOS.IosVlans.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoIOS.IosVlans.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoIOS.IosVlans.commands
+      description: The set of commands pushed to the remote device.
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: The set of VRF definition objects to be configured on the remote IOS device.  Ths list entries can either be the VRF name or a hash of VRF definitions and attributes.  This argument is mutually exclusive with the `name` argument.
+      name: vrfs
+    - description: The name of the VRF definition to be managed on the remote IOS device.  The VRF definition name is an ASCII string name used to uniquely identify the VRF.  This argument is mutually exclusive with the `vrfs` argument
+      name: name
+    - description: Provides a short description of the VRF definition in the current active configuration.  The VRF definition value accepts alphanumeric characters used to provide additional information about the VRF.
+      name: description
+    - description: The router-distinguisher value uniquely identifies the VRF to routing processes on the remote IOS system.  The RD value takes the form of `A:B` where `A` and `B` are both numeric values.
+      name: rd
+    - description: Identifies the set of interfaces that should be configured in the VRF.  Interfaces must be routed interfaces in order to be placed into a VRF.
+      name: interfaces
+    - description: This is a intent option and checks the operational state of the for given vrf `name` for associated interfaces. If the value in the `associated_interfaces` does not match with the operational state of vrf interfaces on device it will result in failure.
+      name: associated_interfaces
+    - defaultValue: '10'
+      description: Time in seconds to wait before checking for the operational state on remote device.
+      name: delay
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Instructs the module to consider the VRF definition absolute.  It will remove any previously configured VRFs on the device.
+      name: purge
+      predefined:
+      - 'Yes'
+      - 'No'
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Configures the state of the VRF definition as it relates to the device operational configuration.  When set to `present`, the VRF should be configured in the device active configuration and when set to `absent` the VRF should not be in the device active configuration
+      name: state
+      predefined:
+      - present
+      - absent
+    - description: Adds an export and import list of extended route target communities to the VRF.
+      name: route_both
+    - description: Adds an export list of extended route target communities to the VRF.
+      name: route_export
+    - description: Adds an import list of extended route target communities to the VRF.
+      name: route_import
+    - description: Adds an export and import list of extended route target communities in address-family configuration submode to the VRF.
+      name: route_both_ipv4
+    - description: Adds an export list of extended route target communities in address-family configuration submode to the VRF.
+      name: route_export_ipv4
+    - description: Adds an import list of extended route target communities in address-family configuration submode to the VRF.
+      name: route_import_ipv4
+    - description: Adds an export and import list of extended route target communities in address-family configuration submode to the VRF.
+      name: route_both_ipv6
+    - description: Adds an export list of extended route target communities in address-family configuration submode to the VRF.
+      name: route_export_ipv6
+    - description: Adds an import list of extended route target communities in address-family configuration submode to the VRF.
+      name: route_import_ipv6
+    description: "Manage the collection of VRF definitions on Cisco IOS devices\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_vrf_module.html"
+    name: ios-vrf
+    outputs:
+    - contextPath: CiscoIOS.IosVrf.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
+    - contextPath: CiscoIOS.IosVrf.start
+      description: The time the job started
+      type: string
+    - contextPath: CiscoIOS.IosVrf.end
+      description: The time the job ended
+      type: string
+    - contextPath: CiscoIOS.IosVrf.delta
+      description: The time elapsed to perform all operations
+      type: string
+  dockerimage: demisto/ansible-runner:1.0.0.24037
+  runonce: false
+  script: >
+    import subprocess
+
+    import traceback
+
+    import ssh_agent_setup
+
+
+
+
+    # Import Generated code
+
+
+    ### GENERATED CODE ###
+
+    # This code was inserted in place of an API module.
+
+
+    import ansible_runner  # pylint: disable=E0401
+
+    import json
+
+    from typing import Dict, cast, List, Union, Any
+
+
+
+    # Dict to Markdown Converter adapted from https://github.com/PolBaladas/torsimany/
+
+
+
+    def dict2md(json_block: Union[Dict[str, Union[dict, list]], List[Union[str, dict, list, float]], float], depth: int = 0):
+        markdown = ""
+
+        if isinstance(json_block, dict):
+            markdown = parse_dict(json_block, depth)
+        if isinstance(json_block, list):
+            markdown += parse_list(json_block, depth)
+        return markdown
+
+
+    def parse_dict(d: Dict[str, Union[dict, list]], depth: int):
+        markdown = ""
+
+        # In the case of a dict of dicts/lists, we want to show the "leaves" of the tree first.
+        # This will improve readability by avoiding the scenario where "leaves" are shown in between
+        # "branches", resulting in their relation to the header to become unclear to the reader.
+
+        for k in d:
+            if not isinstance(d[k], (dict, list)):
+                markdown += build_value_chain(k, d.get(k), depth + 1)
+
+        for k in d:
+            if isinstance(d[k], (dict, list)):
+                markdown += add_header(k, depth + 1)
+                markdown += dict2md(d[k], depth + 1)
+        return markdown
+
+
+    def parse_list(rawlist: List[Union[str, dict, list, float]], depth: int):
+        markdown = ""
+        default_header_value = "list"
+        for value in rawlist:
+            if not isinstance(value, (dict, list)):
+                index = rawlist.index(value)
+                item_depth = depth + 1  # since a header was added previously items should be idented one
+                markdown += build_value_chain(index, value, item_depth)
+            else:
+                # It makes list  more readable to have a header of some sort
+                header_value = find_header_in_dict(value)
+                if header_value is None:
+                    header_value = default_header_value
+                markdown += add_header(header_value, depth)
+                if isinstance(value, dict):
+                    markdown += parse_dict(value, depth)
+                if isinstance(value, list):
+                    markdown += parse_list(value, depth)
+        return markdown
+
+
+    def find_header_in_dict(rawdict: Union[Dict[Any, Any], List[Any]]):
+        header = None
+        # Finds a suitible value to use as a header
+        if not isinstance(rawdict, dict):
+            return header  # Not a dict, nothing to do
+
+        id_search = [val for key, val in rawdict.items() if 'id' in key]
+        name_search = [val for key, val in rawdict.items() if 'name' in key]
+
+        if id_search:
+            header = id_search[0]
+        if name_search:
+            header = name_search[0]
+
+        return header
+
+
+    def build_header_chain(depth: int):
+        list_tag = '* '
+        htag = '#'
+        tab = "  "
+
+        chain = (tab * depth) + list_tag * (bool(depth)) + htag * (depth + 1) + ' value\n'
+        return chain
+
+
+    def build_value_chain(key: Union[int, str], value: Union[str, int, float, Dict[Any, Any], List[Any], None], depth: int):
+        tab = '  '
+        list_tag = '* '
+
+        chain = (tab * depth) + list_tag + str(key) + ": " + str(value) + "\n"
+        return chain
+
+
+    def add_header(value: str, depth: int):
+        chain = build_header_chain(depth)
+        chain = chain.replace('value', value.title())
+        return chain
+
+
+    # Remove ansible branding from results
+
+    def rec_ansible_key_strip(obj: Dict[Any, Any]):
+        if isinstance(obj, dict):
+            return {key.replace('ansible_', ''): rec_ansible_key_strip(val) for key, val in obj.items()}
+        return obj
+
+
+    # Convert to TitleCase, like .title() but only letters/numbers.
+
+    def title_case(st: str):
+        output = ''.join(x for x in st.title() if x.isalnum())
+        return output
+
+
+    def generate_ansible_inventory(args: Dict[str, Any], int_params: Dict[str, Any], host_type: str = "local"):
+        host_types = ['ssh', 'winrm', 'nxos', 'ios', 'local']
+        if host_type not in host_types:
+            raise ValueError("Invalid host type. Expected one of: %s" % host_types)
+
+        sshkey = ""
+
+        inventory: Dict[str, dict] = {}
+        inventory['all'] = {}
+        inventory['all']['hosts'] = {}
+
+        # local
+        if host_type == 'local':
+            inventory['all']['hosts']['localhost'] = {}
+            inventory['all']['hosts']['localhost']['ansible_connection'] = 'local'
+
+        # All other host types are remote
+        elif host_type in ['ssh', 'winrm', 'nxos', 'ios']:
+            hosts = args.get('host')
+            if type(hosts) is str:
+                # host arg could be csv
+                hosts = [host.strip() for host in hosts.split(',')]  # type: ignore[union-attr]
+
+            for host in hosts:  # type: ignore[union-attr]
+                new_host = {}
+                new_host['ansible_host'] = host
+
+                if ":" in host:
+                    address = host.split(':')
+                    new_host['ansible_port'] = address[1]
+                    new_host['ansible_host'] = address[0]
+                else:
+                    new_host['ansible_host'] = host
+                    if int_params.get('port'):
+                        new_host['ansible_port'] = int_params.get('port')
+
+                # Common SSH based auth options
+                if host_type in ['ssh', 'nxos', 'ios']:
+                    # SSH Key saved in credential manager selection
+                    if int_params.get('creds', {}).get('credentials').get('sshkey'):
+                        username = int_params.get('creds', {}).get('credentials').get('user')
+                        sshkey = int_params.get('creds', {}).get('credentials').get('sshkey')
+
+                        new_host['ansible_user'] = username
+
+                    # Password saved in credential manager selection
+                    elif int_params.get('creds', {}).get('credentials').get('password'):
+                        username = int_params.get('creds', {}).get('credentials').get('user')
+                        password = int_params.get('creds', {}).get('credentials').get('password')
+
+                        new_host['ansible_user'] = username
+                        new_host['ansible_password'] = password
+
+                    # username/password individually entered
+                    else:
+                        username = int_params.get('creds', {}).get('identifier')
+                        password = int_params.get('creds', {}).get('password')
+
+                        new_host['ansible_user'] = username
+                        new_host['ansible_password'] = password
+
+                    # ssh specific become options
+                    if host_type == 'ssh':
+                        new_host['ansible_become'] = int_params.get('become')
+                        new_host['ansible_become_method'] = int_params.get('become_method')
+                        if int_params.get('become_user'):
+                            new_host['ansible_become_user'] = int_params.get('become_user')
+                        if int_params.get('become_password'):
+                            new_host['ansible_become_pass'] = int_params.get('become_password')
+
+                    # ios specific
+                    if host_type == 'ios':
+                        new_host['ansible_connection'] = 'network_cli'
+                        new_host['ansible_network_os'] = 'ios'
+                        new_host['ansible_become'] = 'yes'
+                        new_host['ansible_become_method'] = 'enable'
+                        new_host['ansible_become_password'] = int_params.get('enable_password')
+                        inventory['all']['hosts'][host] = new_host
+
+                    # nxos specific
+                    elif host_type == 'nxos':
+                        new_host['ansible_connection'] = 'network_cli'
+                        new_host['ansible_network_os'] = 'nxos'
+                        new_host['ansible_become'] = 'yes'
+                        new_host['ansible_become_method'] = 'enable'
+                        inventory['all']['hosts'][host] = new_host
+
+                # winrm
+                elif host_type == 'winrm':
+                    # Only two credential options
+                    # Password saved in credential manager selection
+                    if int_params.get('creds', {}).get('credentials').get('password'):
+                        username = int_params.get('creds', {}).get('credentials').get('user')
+                        password = int_params.get('creds', {}).get('credentials').get('password')
+
+                        new_host['ansible_user'] = username
+                        new_host['ansible_password'] = password
+
+                    # username/password individually entered
+                    else:
+                        username = int_params.get('creds', {}).get('identifier')
+                        password = int_params.get('creds', {}).get('password')
+
+                        new_host['ansible_user'] = username
+                        new_host['ansible_password'] = password
+
+                    new_host['ansible_connection'] = "winrm"
+                    new_host['ansible_winrm_transport'] = "ntlm"
+                    new_host['ansible_winrm_server_cert_validation'] = "ignore"
+
+                inventory['all']['hosts'][host] = new_host
+
+        return inventory, sshkey
+
+
+    def generic_ansible(integration_name: str, command: str,
+                        args: Dict[str, Any], int_params: Dict[str, Any], host_type: str,
+                        creds_mapping: Dict[str, str] = None) -> CommandResults:
+        """Run a Ansible module and return the results as a CommandResult.
+
+        Keyword arguments:
+        integration_name -- the name of the XSOAR integration. Used for context output structure
+        command -- the ansible module to run
+        args -- the XSOAR command args. Literally the demisto.args(). The args provided need to match the
+                ansible module args, as well as include the arg "host" if the module is one that connects
+                to a host.
+        int_params -- the integration parameters. These will contain args that are integration wide.
+                      They will passed to the the ansible module as args, with exception of credentials,
+                      these will be used to build the ansible inventory.
+        host_type -- the type of host that is being managed. The following host types are supported:
+                     * ssh -- Linux or Unix variant managed over ssh
+                     * winrm -- Windows
+                     * nxos -- Cisco NX-OS based network device
+                     * ios -- Cisco IOS based network device
+                     * local  -- this indicates that the command should be executed locally.
+                                 Mostly used by modules that connect out to cloud services.
+        creds_mapping -- A mapping for the 'creds' param names to expected ansible param names
+        """
+
+        readable_output = ""
+        sshkey = ""
+        fork_count = 1   # default to executing against 1 host at a time
+
+        if args.get('concurrency'):
+            fork_count = cast(int, args.get('concurrency'))
+
+        # generate ansible host inventory
+        inventory, sshkey = generate_ansible_inventory(args=args, host_type=host_type, int_params=int_params)
+
+        module_args = ""
+        # build module args list
+        for arg_key, arg_value in args.items():
+            # skip hardcoded host arg, as it doesn't related to module
+            if arg_key == 'host':
+                continue
+            # special condition for if there is a collision between the host argument used for ansible inventory
+            # and the host argument used by a module
+            if arg_key == 'ansible-module-host':
+                arg_key = 'host'
+
+            module_args += "%s=\"%s\" " % (arg_key, arg_value)
+
+            # If this isn't host based, then all the integration params will be used as command args
+        if host_type == 'local':
+            for arg_key, arg_value in int_params.items():
+
+                # if given creds param and a cred mapping - use the naming mapping to correct the arg names
+                if arg_key == 'creds' and creds_mapping:
+                    if arg_value.get('identifier') and 'identifier' in creds_mapping:
+                        module_args += "%s=\"%s\" " % (creds_mapping.get('identifier'), arg_value.get('identifier'))
+
+                    if arg_value.get('password') and 'password' in creds_mapping:
+                        module_args += "%s=\"%s\" " % (creds_mapping.get('password'), arg_value.get('password'))
+
+                else:
+                    module_args += "%s=\"%s\" " % (arg_key, arg_value)
+
+        r = ansible_runner.run(inventory=inventory, host_pattern='all', module=command, quiet=True,
+                               omit_event_data=True, ssh_key=sshkey, module_args=module_args, forks=fork_count)
+
+        results = []
+        outputs_key_field = ''
+        for each_host_event in r.events:
+            # Troubleshooting
+            # demisto.log("%s: %s\n" % (each_host_event['event'], each_host_event))
+            if each_host_event['event'] in ["runner_on_ok", "runner_on_unreachable", "runner_on_failed"]:
+
+                # parse results
+
+                result = json.loads('{' + each_host_event['stdout'].split('{', 1)[1])
+                host = each_host_event['stdout'].split('|', 1)[0].strip()
+                status = each_host_event['stdout'].replace('=>', '|').split('|', 3)[1]
+
+                # if successful build outputs
+                if each_host_event['event'] == "runner_on_ok":
+                    if 'fact' in command:
+                        result = result['ansible_facts']
+                    else:
+                        if result.get(command) is not None:
+                            result = result[command]
+                        else:
+                            result.pop("ansible_facts", None)
+
+                    result = rec_ansible_key_strip(result)
+
+                    if host != "localhost":
+                        readable_output += "# %s - %s\n" % (host, status)
+                    else:
+                        # This is integration is not host based
+                        readable_output += "# %s\n" % status
+
+                    readable_output += dict2md(result)
+
+                    # add host and status to result if it is a dict. Some ansible modules return a list
+                    if (type(result) == dict) and (host != 'localhost'):
+                        result['host'] = host
+                        outputs_key_field = 'host'  # updates previous outputs that share this key, neat!
+
+                    if (type(result) == dict):
+                        result['status'] = status.strip()
+
+                    results.append(result)
+                if each_host_event['event'] == "runner_on_unreachable":
+                    msg = "Host %s unreachable\nError Details: %s" % (host, result.get('msg'))
+
+                if each_host_event['event'] == "runner_on_failed":
+                    msg = "Host %s failed running command\nError Details: %s" % (host, result.get('msg'))
+
+                if each_host_event['event'] in ["runner_on_failed", "runner_on_unreachable"]:
+                    return_error(msg)
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=integration_name + '.' + title_case(command),
+            outputs_key_field=outputs_key_field,
+            outputs=results
+        )
+
+
+
+    host_type = 'ios'
+
+
+    # MAIN FUNCTION
+
+
+
+    def main() -> None:
+        """main function, parses params and runs command functions
+
+        :return:
+        :rtype:
+        """
+
+        # SSH Key integration requires ssh_agent to be running in the background
+        ssh_agent_setup.setup()
+
+        # Common Inputs
+        command = demisto.command()
+        args = demisto.args()
+        int_params = demisto.params()
+
+        try:
+
+            if command == 'test-module':
+                # This is the call made when pressing the integration Test button.
+                result = generic_ansible('CiscoIOS', 'ios_facts', args, int_params, host_type)
+
+                if result:
+                    return_results('ok')
+                else:
+                    return_results(result)
+
+            elif command == 'ios-banner':
+                return_results(generic_ansible('CiscoIOS', 'ios_banner', args, int_params, host_type))
+            elif command == 'ios-bgp':
+                return_results(generic_ansible('CiscoIOS', 'ios_bgp', args, int_params, host_type))
+            elif command == 'ios-command':
+                return_results(generic_ansible('CiscoIOS', 'ios_command', args, int_params, host_type))
+            elif command == 'ios-config':
+                return_results(generic_ansible('CiscoIOS', 'ios_config', args, int_params, host_type))
+            elif command == 'ios-facts':
+                return_results(generic_ansible('CiscoIOS', 'ios_facts', args, int_params, host_type))
+            elif command == 'ios-interfaces':
+                return_results(generic_ansible('CiscoIOS', 'ios_interfaces', args, int_params, host_type))
+            elif command == 'ios-l2-interfaces':
+                return_results(generic_ansible('CiscoIOS', 'ios_l2_interfaces', args, int_params, host_type))
+            elif command == 'ios-l3-interfaces':
+                return_results(generic_ansible('CiscoIOS', 'ios_l3_interfaces', args, int_params, host_type))
+            elif command == 'ios-lacp':
+                return_results(generic_ansible('CiscoIOS', 'ios_lacp', args, int_params, host_type))
+            elif command == 'ios-lacp-interfaces':
+                return_results(generic_ansible('CiscoIOS', 'ios_lacp_interfaces', args, int_params, host_type))
+            elif command == 'ios-lag-interfaces':
+                return_results(generic_ansible('CiscoIOS', 'ios_lag_interfaces', args, int_params, host_type))
+            elif command == 'ios-linkagg':
+                return_results(generic_ansible('CiscoIOS', 'ios_linkagg', args, int_params, host_type))
+            elif command == 'ios-lldp':
+                return_results(generic_ansible('CiscoIOS', 'ios_lldp', args, int_params, host_type))
+            elif command == 'ios-lldp-global':
+                return_results(generic_ansible('CiscoIOS', 'ios_lldp_global', args, int_params, host_type))
+            elif command == 'ios-lldp-interfaces':
+                return_results(generic_ansible('CiscoIOS', 'ios_lldp_interfaces', args, int_params, host_type))
+            elif command == 'ios-logging':
+                return_results(generic_ansible('CiscoIOS', 'ios_logging', args, int_params, host_type))
+            elif command == 'ios-ntp':
+                return_results(generic_ansible('CiscoIOS', 'ios_ntp', args, int_params, host_type))
+            elif command == 'ios-ping':
+                return_results(generic_ansible('CiscoIOS', 'ios_ping', args, int_params, host_type))
+            elif command == 'ios-static-route':
+                return_results(generic_ansible('CiscoIOS', 'ios_static_route', args, int_params, host_type))
+            elif command == 'ios-system':
+                return_results(generic_ansible('CiscoIOS', 'ios_system', args, int_params, host_type))
+            elif command == 'ios-user':
+                return_results(generic_ansible('CiscoIOS', 'ios_user', args, int_params, host_type))
+            elif command == 'ios-vlans':
+                return_results(generic_ansible('CiscoIOS', 'ios_vlans', args, int_params, host_type))
+            elif command == 'ios-vrf':
+                return_results(generic_ansible('CiscoIOS', 'ios_vrf', args, int_params, host_type))
+        # Log exceptions and return errors
+        except Exception as e:
+            demisto.error(traceback.format_exc())  # print the traceback
+            return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        finally:
+            logging.info('killing previously started ssh-agent')
+            subprocess.run(['ssh-agent', '-k'])
+            del os.environ['SSH_AUTH_SOCK']
+            del os.environ['SSH_AGENT_PID']
+
+
+    # ENTRY POINT
+
+
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+  subtype: python3
+  type: python
+tests:
+- Test-AnsibleCiscoIOS
+image: data:image/png;base64,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
+detaileddescription: "# Ansible Cisco IOS\nManage Cisco IOS Switches and Routers directly from XSOAR using SSH.\n\n## Credentials\n\nThis integration supports a number of methods of authenticating with the network device:\n\n1. Username & Password entered into the integration\n2. Username & Password credential from the XSOAR credential manager\n3. Username and SSH Key from the XSOAR credential manager\n\nIn addition to the SSH credential, a `enable` password must be also provided.\n\n## Permissions\n\nThe user account used for initial SSH login access can be level 1, however the enable password must also be provided.\n\n\n## Testing\n\nThis integration does not support testing from the integration management screen. Instead it is recommended to use the `!IOS-facts` command providing an example `host` as the command argument. This command will connect to the specified network device with the configured credentials in the integration, and if successful output general information about the device.\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/ansible-cisco-ios-test)"
