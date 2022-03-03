@@ -164,3 +164,63 @@ def test_play_response_play(requests_mock, mocker):
     res = run_response_play(**demisto.args())
 
     assert res.raw_response == {"status": "ok"}
+
+
+def test_get_users_on_call(requests_mock, mocker):
+    """
+    Test sending request to get user oncall based on schedule ID without specifying responders
+    """
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'APIKey': 'API_KEY',
+            'ServiceKey': 'SERVICE_KEY',
+            'FetchInterval': 'FETCH_INTERVAL',
+            'DefaultRequestor': 'P09TT3C'
+        }
+    )
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            "scheduleID": "PI7DH85",
+        }
+    )
+    requests_mock.get(
+        'https://api.pagerduty.com/schedules/PI7DH85/users',
+        json=load_mock_response('schedules.json')
+    )
+    from PagerDuty import get_on_call_users_command
+    res = get_on_call_users_command(**demisto.args())
+    assert demisto.args().get('scheduleID') == res.outputs[0].get('scheduleID')
+
+
+def test_get_users_on_call_now(requests_mock, mocker):
+    """
+    Test sending request to get user oncall based on schedule ID without specifying responders
+    """
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'APIKey': 'API_KEY',
+            'ServiceKey': 'SERVICE_KEY',
+            'FetchInterval': 'FETCH_INTERVAL',
+            'DefaultRequestor': 'P09TT3C'
+        }
+    )
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            "schedule_ids": "PI7DH85,PA7DH85",
+        }
+    )
+    requests_mock.get(
+        'https://api.pagerduty.com/oncalls',
+        json=load_mock_response('oncalls.json')
+    )
+    from PagerDuty import get_on_call_now_users_command
+    res = get_on_call_now_users_command(**demisto.args())
+    assert res.outputs[0].get('ScheduleID') in demisto.args().get('schedule_ids')

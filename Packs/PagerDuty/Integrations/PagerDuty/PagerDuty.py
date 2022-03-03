@@ -170,16 +170,13 @@ def extract_on_call_user_data(users, schedule_id=None):
         outputs.append(output)
         contexts.append(context)
 
-    return {
-        'Type': entryTypes['note'],
-        'Contents': users,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(USERS_ON_CALL, outputs, USERS_ON_CALL_NOW_HEADERS),
-        'EntryContext': {
-            'PagerDutyUser(val.ID==obj.ID)': contexts
-        }
-    }
+    return CommandResults(
+        outputs_prefix='PagerDutyUser',
+        outputs_key_field='ID',
+        outputs=contexts,
+        raw_response=outputs,
+        readable_output=tableToMarkdown(USERS_ON_CALL, outputs, USERS_ON_CALL_NOW_HEADERS),
+    )
 
 
 def extract_on_call_now_user_data(users_on_call_now):
@@ -217,16 +214,13 @@ def extract_on_call_now_user_data(users_on_call_now):
         outputs.insert(escal_level - 1, output)
         contexts.insert(escal_level - 1, context)
 
-    return {
-        'Type': entryTypes['note'],
-        'Contents': users_on_call_now,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(USERS_ON_CALL_NOW, outputs, USERS_ON_CALL_NOW_HEADERS),
-        'EntryContext': {
-            'PagerDutyUser(val.ID===obj.ID)': contexts
-        }
-    }
+    return CommandResults(
+        outputs_prefix='PagerDutyUser',
+        outputs_key_field='ID',
+        outputs=contexts,
+        raw_response=outputs,
+        readable_output=tableToMarkdown(USERS_ON_CALL_NOW, outputs, USERS_ON_CALL_NOW_HEADERS),
+    )
 
 
 def parse_incident_data(incidents):
@@ -838,11 +832,11 @@ def main():
         elif demisto.command() == 'PagerDuty-submit-event':
             demisto.results(submit_event_command(**demisto.args()))
         elif demisto.command() == 'PagerDuty-get-users-on-call':
-            demisto.results(get_on_call_users_command(**demisto.args()))
+            return_results(get_on_call_users_command(**demisto.args()))
         elif demisto.command() == 'PagerDuty-get-all-schedules':
             demisto.results(get_all_schedules_command(**demisto.args()))
         elif demisto.command() == 'PagerDuty-get-users-on-call-now':
-            demisto.results(get_on_call_now_users_command(**demisto.args()))
+            return_results(get_on_call_now_users_command(**demisto.args()))
         elif demisto.command() == 'PagerDuty-get-contact-methods':
             demisto.results(get_users_contact_methods_command(**demisto.args()))
         elif demisto.command() == 'PagerDuty-get-users-notification':
