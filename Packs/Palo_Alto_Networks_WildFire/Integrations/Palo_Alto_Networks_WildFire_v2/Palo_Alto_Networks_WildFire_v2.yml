@@ -101,7 +101,7 @@ script:
       description: For malicious files, the vendor that made the decision.
       type: string
     - contextPath: File.DigitalSignature.Publisher
-      description: ' '
+      description: The entity that signed the file for authenticity purposes.
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -263,7 +263,7 @@ script:
       description: For malicious files, the vendor that made the decision.
       type: string
     - contextPath: File.DigitalSignature.Publisher
-      description: ' '
+      description: The entity that signed the file for authenticity purposes.
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -296,16 +296,16 @@ script:
       description: The report file type.
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.Host
-      description: ' '
+      description: Submission related hosts 
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.Method
-      description: ' '
+      description: Submission related method
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.URI
-      description: ' '
+      description: Submission related uri
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.UserAgent
-      description: ' '
+      description: Submission related user agent
       type: string
     - contextPath: WildFire.Report.NetworkInfo.UDP.IP
       description: Submission related IPs, in UDP protocol.
@@ -374,61 +374,61 @@ script:
       description: The verdict of the report.
       type: string
     - contextPath: WildFire.Report.Platform
-      description: ' '
+      description: The Platform of the report
       type: string
     - contextPath: WildFire.Report.Software
-      description: ' '
+      description: The Software of the report
       type: string
     - contextPath: WildFire.Report.ProcessList.Service
-      description: ' '
+      description: The process service
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessCommand
-      description: ' '
+      description: The process command
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessName
-      description: ' '
+      description: The process name
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessPid
-      description: ' '
+      description: The process pid
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessFile
-      description: ' '
+      description: Lists files that started a child processes, the process name, and the action the process performed.
       type: string
     - contextPath: WildFire.Report.ProcessTree.ProcessName
-      description: ' '
+      description: The process name
       type: string
     - contextPath: WildFire.Report.ProcessTree.ProcessPid
-      description: ' '
+      description: The process pid
       type: string
     - contextPath: WildFire.Report.ProcessTree.ProcessText
-      description: ' '
+      description: The action the process performed.
       type: string
     - contextPath: WildFire.Report.ProcessTree.Process.ChildName
-      description: ' '
+      description: The child process name
       type: string
     - contextPath: WildFire.Report.ProcessTree.Process.ChildPid
-      description: ' '
+      description: The child process pid
       type: string
     - contextPath: WildFire.Report.ProcessTree.Process.ChildText
-      description: ' '
+      description: The action the child process performed.
       type: string
     - contextPath: WildFire.Report.ExtractedURL.URL
-      description: ' '
+      description: The extracted url 
       type: string
     - contextPath: WildFire.Report.ExtractedURL.Verdict
-      description: ' '
+      description: The extracted verdict
       type: string
     - contextPath: WildFire.Report.Summary.Text
-      description: ' '
+      description: The summary of the report
       type: string
     - contextPath: WildFire.Report.Summary.Details
-      description: ' '
+      description: The details summary of the report
       type: string
     - contextPath: WildFire.Report.Summary.Behavior
-      description: ' '
+      description: The behavior summary of the report
       type: string
     - contextPath: WildFire.Report.ELF.ShellCommands
-      description: ' '
+      description: The shell commands
       type: string
     polling: true
   - arguments:
@@ -537,7 +537,7 @@ script:
       description: For malicious files, the vendor that made the decision.
       type: string
     - contextPath: File.DigitalSignature.Publisher
-      description: ' '
+      description: The entity that signed the file for authenticity purposes.
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -570,16 +570,16 @@ script:
       description: The report file type.
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.Host
-      description: ' '
+      description: Submission related hosts 
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.Method
-      description: ' '
+      description: Submission related method
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.URI
-      description: ' '
+      description: Submission related uri
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.UserAgent
-      description: ' '
+      description: Submission related user agent
       type: string
     - contextPath: WildFire.Report.NetworkInfo.UDP.IP
       description: Submission related IPs, in UDP protocol.
@@ -648,61 +648,61 @@ script:
       description: The verdict of the report.
       type: string
     - contextPath: WildFire.Report.Platform
-      description: ' '
+      description: The Platform of the report
       type: string
     - contextPath: WildFire.Report.Software
-      description: ' '
+      description: The Software of the report
       type: string
     - contextPath: WildFire.Report.ProcessList.Service
-      description: ' '
+      description: The process service
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessCommand
-      description: ' '
+      description: The process command
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessName
-      description: ' '
+      description: The process name
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessPid
-      description: ' '
+      description: The process pid
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessFile
-      description: ' '
+      description: Lists files that started a child processes, the process name, and the action the process performed.
       type: string
     - contextPath: WildFire.Report.ProcessTree.ProcessName
-      description: ' '
+      description: The process name
       type: string
     - contextPath: WildFire.Report.ProcessTree.ProcessPid
-      description: ' '
+      description: The process pid
       type: string
     - contextPath: WildFire.Report.ProcessTree.ProcessText
-      description: ' '
+      description: The action the process performed.
       type: string
     - contextPath: WildFire.Report.ProcessTree.Process.ChildName
-      description: ' '
+      description: The child process name
       type: string
     - contextPath: WildFire.Report.ProcessTree.Process.ChildPid
-      description: ' '
+      description: The child process pid
       type: string
     - contextPath: WildFire.Report.ProcessTree.Process.ChildText
-      description: ' '
+      description: The action the child process performed.
       type: string
     - contextPath: WildFire.Report.ExtractedURL.URL
-      description: ' '
+      description: The extracted url 
       type: string
     - contextPath: WildFire.Report.ExtractedURL.Verdict
-      description: ' '
+      description: The extracted verdict
       type: string
     - contextPath: WildFire.Report.Summary.Text
-      description: ' '
+      description: The summary of the report
       type: string
     - contextPath: WildFire.Report.Summary.Details
-      description: ' '
+      description: The details summary of the report
       type: string
     - contextPath: WildFire.Report.Summary.Behavior
-      description: ' '
+      description: The behavior summary of the report
       type: string
     - contextPath: WildFire.Report.ELF.ShellCommands
-      description: ' '
+      description: The shell commands
       type: string
     polling: true
   - arguments:
@@ -791,7 +791,7 @@ script:
       description: For malicious files, the vendor that made the decision.
       type: string
     - contextPath: File.DigitalSignature.Publisher
-      description: ' '
+      description: The entity that signed the file for authenticity purposes.
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -830,16 +830,16 @@ script:
       description: The report file type.
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.Host
-      description: ' '
+      description: Submission related hosts 
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.Method
-      description: ' '
+      description: Submission related method
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.URI
-      description: ' '
+      description: Submission related uri
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.UserAgent
-      description: ' '
+      description: Submission related user agent
       type: string
     - contextPath: WildFire.Report.NetworkInfo.UDP.IP
       description: Submission related IPs, in UDP protocol.
@@ -908,61 +908,61 @@ script:
       description: The verdict of the report.
       type: string
     - contextPath: WildFire.Report.Platform
-      description: ' '
+      description: The Platform of the report
       type: string
     - contextPath: WildFire.Report.Software
-      description: ' '
+      description: The Software of the report
       type: string
     - contextPath: WildFire.Report.ProcessList.Service
-      description: ' '
+      description: The process service
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessCommand
-      description: ' '
+      description: The process command
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessName
-      description: ' '
+      description: The process name
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessPid
-      description: ' '
+      description: The process pid
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessFile
-      description: ' '
+      description: Lists files that started a child processes, the process name, and the action the process performed.
       type: string
     - contextPath: WildFire.Report.ProcessTree.ProcessName
-      description: ' '
+      description: The process name
       type: string
     - contextPath: WildFire.Report.ProcessTree.ProcessPid
-      description: ' '
+      description: The process pid
       type: string
     - contextPath: WildFire.Report.ProcessTree.ProcessText
-      description: ' '
+      description: The action the process performed.
       type: string
     - contextPath: WildFire.Report.ProcessTree.Process.ChildName
-      description: ' '
+      description: The child process name
       type: string
     - contextPath: WildFire.Report.ProcessTree.Process.ChildPid
-      description: ' '
+      description: The child process pid
       type: string
     - contextPath: WildFire.Report.ProcessTree.Process.ChildText
-      description: ' '
+      description: The action the child process performed.
       type: string
     - contextPath: WildFire.Report.ExtractedURL.URL
-      description: ' '
+      description: The extracted url 
       type: string
     - contextPath: WildFire.Report.ExtractedURL.Verdict
-      description: ' '
+      description: The extracted verdict
       type: string
     - contextPath: WildFire.Report.Summary.Text
-      description: ' '
+      description: The summary of the report
       type: string
     - contextPath: WildFire.Report.Summary.Details
-      description: ' '
+      description: The details summary of the report
       type: string
     - contextPath: WildFire.Report.Summary.Behavior
-      description: ' '
+      description: The behavior summary of the report
       type: string
     - contextPath: WildFire.Report.ELF.ShellCommands
-      description: ' '
+      description: The shell commands
       type: string
   - arguments:
     - default: false
@@ -1165,7 +1165,7 @@ script:
       description: For malicious files, the vendor that made the decision.
       type: string
     - contextPath: File.DigitalSignature.Publisher
-      description: ' '
+      description: The entity that signed the file for authenticity purposes.
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -1198,16 +1198,16 @@ script:
       description: The report file type.
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.Host
-      description: ' '
+      description: Submission related hosts 
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.Method
-      description: ' '
+      description: Submission related method
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.URI
-      description: ' '
+      description: Submission related uri
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.UserAgent
-      description: ' '
+      description: Submission related user agent
       type: string
     - contextPath: WildFire.Report.NetworkInfo.UDP.IP
       description: Submission related IPs, in UDP protocol.
@@ -1276,61 +1276,61 @@ script:
       description: The verdict of the report.
       type: string
     - contextPath: WildFire.Report.Platform
-      description: ' '
+      description: The Platform of the report
       type: string
     - contextPath: WildFire.Report.Software
-      description: ' '
+      description: The Software of the report
       type: string
     - contextPath: WildFire.Report.ProcessList.Service
-      description: ' '
+      description: The process service
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessCommand
-      description: ' '
+      description: The process command
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessName
-      description: ' '
+      description: The process name
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessPid
-      description: ' '
+      description: The process pid
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessFile
-      description: ' '
+      description: Lists files that started a child processes, the process name, and the action the process performed.
       type: string
     - contextPath: WildFire.Report.ProcessTree.ProcessName
-      description: ' '
+      description: The process name
       type: string
     - contextPath: WildFire.Report.ProcessTree.ProcessPid
-      description: ' '
+      description: The process pid
       type: string
     - contextPath: WildFire.Report.ProcessTree.ProcessText
-      description: ' '
+      description: The action the process performed.
       type: string
     - contextPath: WildFire.Report.ProcessTree.Process.ChildName
-      description: ' '
+      description: The child process name
       type: string
     - contextPath: WildFire.Report.ProcessTree.Process.ChildPid
-      description: ' '
+      description: The child process pid
       type: string
     - contextPath: WildFire.Report.ProcessTree.Process.ChildText
-      description: ' '
+      description: The action the child process performed.
       type: string
     - contextPath: WildFire.Report.ExtractedURL.URL
-      description: ' '
+      description: The extracted url 
       type: string
     - contextPath: WildFire.Report.ExtractedURL.Verdict
-      description: ' '
+      description: The extracted verdict
       type: string
     - contextPath: WildFire.Report.Summary.Text
-      description: ' '
+      description: The summary of the report
       type: string
     - contextPath: WildFire.Report.Summary.Details
-      description: ' '
+      description: The details summary of the report
       type: string
     - contextPath: WildFire.Report.Summary.Behavior
-      description: ' '
+      description: The behavior summary of the report
       type: string
     - contextPath: WildFire.Report.ELF.ShellCommands
-      description: ' '
+      description: The shell commands
       type: string
     polling: true
   - arguments:

@@ -1,5 +1,5 @@
 import shutil
-from typing import Callable, Tuple, Optional
+from typing import Callable, Tuple, Optional, List
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -350,10 +350,10 @@ def hash_list_to_file(hash_list):
     return [file_path]
 
 
-def create_relationship(name: str, entities: Tuple, types: Tuple) -> Union[EntityRelationship, None]:
+def create_relationship(name: str, entities: Tuple, types: Tuple) -> List[Optional[EntityRelationship]]:
 
     if CREATE_RELATIONSHIPS:
-        return EntityRelationship(
+        return [EntityRelationship(
             name=name,
             entity_a=entities[0],
             entity_a_type=RELATIONSHIPS_TYPE[types[0]],
@@ -362,9 +362,9 @@ def create_relationship(name: str, entities: Tuple, types: Tuple) -> Union[Entit
             reverse_name=name,
             source_reliability=RELIABILITY,
             brand='WildFire-v2'
-        )
+        )]
     else:
-        return None
+        return []
 
 
 ''' COMMANDS '''
@@ -761,7 +761,12 @@ def wildfire_get_url_webartifacts_command():
             return_results('Webartifacts were not found. For more info contact your WildFire representative.')
 
 
-def parse(report: dict, keys: list) -> Union[dict, None]:
+def parse_wildfire_object(report: dict, keys: List[tuple]) -> Union[dict, None]:
+    '''
+    This function changes the key names of the json object that came from the API response,
+    for the context path.
+    '''
+
     outputs = {}
     for key in keys:
         if key[0] in report and report[key[0]]:
@@ -791,8 +796,8 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
     platform_report = []
     software_report = []
     behavior = []
-    relationships = []
     network_url = []
+    relationships = []
 
     # When only one report is in response, it's returned as a single json object and not a list.
     if not isinstance(reports, list):
@@ -808,14 +813,14 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                     if '@ip' in udp_obj and udp_obj['@ip']:
                         udp_ip.append(udp_obj["@ip"])
                         feed_related_indicators.append({'value': udp_obj["@ip"], 'type': 'IP'})
-                        relationships.append(create_relationship('related-to', (file_hash, udp_obj["@ip"]), ('file', 'ip')))
+                        relationships.extend(create_relationship('related-to', (file_hash, udp_obj["@ip"]), ('file', 'ip')))
                     if '@port' in udp_obj:
                         udp_port.append(udp_obj["@port"])
                     if extended_data:
-                        if network_udp_dict := parse(report=udp_obj,
-                                                     keys=[('@ip', 'IP'), ('@port', 'Port'),
-                                                           ('@country', 'Country'), ('@ja3', 'JA3'),
-                                                           ('@ja3s', 'JA3S')]):
+                        if network_udp_dict := parse_wildfire_object(report=udp_obj,
+                                                                     keys=[('@ip', 'IP'), ('@port', 'Port'),
+                                                                           ('@country', 'Country'), ('@ja3', 'JA3'),
+                                                                           ('@ja3s', 'JA3S')]):
                             network_udp.append(network_udp_dict)
 
             if 'TCP' in report["network"]:
@@ -826,14 +831,14 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                     if '@ip' in tcp_obj and tcp_obj['@ip']:
                         tcp_ip.append(tcp_obj["@ip"])
                         feed_related_indicators.append({'value': tcp_obj["@ip"], 'type': 'IP'})
-                        relationships.append(create_relationship('related-to', (file_hash, tcp_obj["@ip"]), ('file', 'ip')))
+                        relationships.extend(create_relationship('related-to', (file_hash, tcp_obj["@ip"]), ('file', 'ip')))
                     if '@port' in tcp_obj:
                         tcp_port.append(tcp_obj['@port'])
                     if extended_data:
-                        if network_tcp_dict := parse(report=tcp_obj,
-                                                     keys=[('@ip', 'IP'), ('@port', 'Port'),
-                                                           ('@country', 'Country'), ('@ja3', 'JA3'),
-                                                           ('@ja3s', 'JA3S')]):
+                        if network_tcp_dict := parse_wildfire_object(report=tcp_obj,
+                                                                     keys=[('@ip', 'IP'), ('@port', 'Port'),
+                                                                           ('@country', 'Country'), ('@ja3', 'JA3'),
+                                                                           ('@ja3s', 'JA3S')]):
                             network_tcp.append(network_tcp_dict)
 
             if 'dns' in report["network"]:
@@ -846,9 +851,9 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                     if '@response' in dns_obj and dns_obj['@response']:
                         dns_response.append(dns_obj['@response'])
                     if extended_data:
-                        if network_dns_dict := parse(report=dns_obj,
-                                                     keys=[('@query', 'Query'), ('@response', 'Response'),
-                                                           ('@type', 'Type')]):
+                        if network_dns_dict := parse_wildfire_object(report=dns_obj,
+                                                                     keys=[('@query', 'Query'), ('@response', 'Response'),
+                                                                           ('@type', 'Type')]):
                             network_dns.append(network_dns_dict)
 
             if 'url' in report["network"]:
@@ -859,11 +864,11 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                     url += report["network"]["url"]["@uri"]
                 if url:
                     feed_related_indicators.append({'value': url, 'type': 'URL'})
-                    relationships.append(create_relationship('related-to', (file_hash, url.rstrip('/')), ('file', 'url')))
+                    relationships.extend(create_relationship('related-to', (file_hash, url.rstrip('/')), ('file', 'url')))
                 if extended_data:
-                    if network_url_dict := parse(report=report["network"]['url'],
-                                                 keys=[('@host', 'Host'), ('@uri', 'URI'),
-                                                       ('@method', 'Method'), ('@user_agent', 'UserAgent')]):
+                    if network_url_dict := parse_wildfire_object(report=report["network"]['url'],
+                                                                 keys=[('@host', 'Host'), ('@uri', 'URI'),
+                                                                       ('@method', 'Method'), ('@user_agent', 'UserAgent')]):
                         network_url.append(network_url_dict)
 
         if 'evidence' in report and report["evidence"]:
@@ -883,7 +888,7 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                         entry = [entry]
                     for domain in entry:
                         feed_related_indicators.append({'value': domain, 'type': 'Domain'})
-                        relationships.append(create_relationship('related-to', (file_hash, domain), ('file', 'domain')))
+                        relationships.extend(create_relationship('related-to', (file_hash, domain), ('file', 'domain')))
             if 'IP_Addresses' in report["elf_info"]:
                 if isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in \
                         report["elf_info"]["IP_Addresses"]:
@@ -893,7 +898,7 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                         entry = [entry]
                     for ip in entry:
                         feed_related_indicators.append({'value': ip, 'type': 'IP'})
-                        relationships.append(create_relationship('related-to', (file_hash, ip), ('file', 'ip')))
+                        relationships.extend(create_relationship('related-to', (file_hash, ip), ('file', 'ip')))
             if 'suspicious' in report["elf_info"]:
                 if isinstance(report["elf_info"]["suspicious"], dict) and 'entry' in report["elf_info"]['suspicious']:
                     entry = report["elf_info"]["suspicious"]["entry"]
@@ -911,71 +916,64 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                         entry = [entry]
                     for url in entry:
                         feed_related_indicators.append({'value': url, 'type': 'URL'})
-                        relationships.append(create_relationship('related-to', (file_hash, url), ('file', 'url')))
+                        relationships.extend(create_relationship('related-to', (file_hash, url), ('file', 'url')))
             if extended_data:
-                if 'Shell_Commands' in report['elf_info'] and 'entry' in report['elf_info']['Shell_Commands'] and \
-                        report['elf_info']['Shell_Commands']['entry']:
-                    elf_shell_commands.append(report['elf_info']['Shell_Commands']['entry'])
+                if shell_commands := demisto.get(report, 'elf_info.Shell_Commands.entry'):
+                    elf_shell_commands.append(shell_commands)
 
         if extended_data:
-            if 'process_list' in report and 'process' in report['process_list'] and report['process_list']['process']:
-                process_list = report['process_list']['process']
+            if process_list := demisto.get(report, 'process_list.process'):
                 if not isinstance(process_list, list):
                     process_list = [process_list]
                 for process in process_list:
-                    if process_list_dict := parse(report=process,
-                                                  keys=[("@command", "ProcessCommand"),
-                                                        ("@name", "ProcessName"),
-                                                        ("@pid", "ProcessPid"),
-                                                        ("file", "ProcessFile"),
-                                                        ("service", "Service")]):
+                    if process_list_dict := parse_wildfire_object(report=process,
+                                                                  keys=[("@command", "ProcessCommand"),
+                                                                        ("@name", "ProcessName"),
+                                                                        ("@pid", "ProcessPid"),
+                                                                        ("file", "ProcessFile"),
+                                                                        ("service", "Service")]):
                         process_list_outputs.append(process_list_dict)
 
-            if 'process_tree' in report and 'process' in report['process_tree'] and report['process_tree']['process']:
-                process_tree = report['process_tree']['process']
+            if process_tree := demisto.get(report, 'process_tree.process'):
                 if not isinstance(process_tree, list):
                     process_tree = [process_tree]
                 for process in process_tree:
                     tree_outputs = {}
-                    if process_tree_dict := parse(report=process,
-                                                  keys=[('@text', "ProcessText"),
-                                                        ('@name', "ProcessName"),
-                                                        ('@pid', "ProcessPid")]):
+                    if process_tree_dict := parse_wildfire_object(report=process,
+                                                                  keys=[('@text', "ProcessText"),
+                                                                        ('@name', "ProcessName"),
+                                                                        ('@pid', "ProcessPid")]):
                         tree_outputs = process_tree_dict
 
-                    if 'child' in process and 'process' in process['child'] and process['child']['process']:
-                        child_process = process['child']['process']
+                    if child_process := demisto.get(process, 'child.process'):
                         if not isinstance(child_process, list):
                             child_process = [child_process]
                         for child in child_process:
-                            if process_tree_child_dict := parse(report=child,
-                                                                keys=[('@text', "ChildText"),
-                                                                      ('@name', "ChildName"),
-                                                                      ('@pid', "ChildPid")]):
+                            if process_tree_child_dict := parse_wildfire_object(report=child,
+                                                                                keys=[('@text', "ChildText"),
+                                                                                      ('@name', "ChildName"),
+                                                                                      ('@pid', "ChildPid")]):
                                 tree_outputs['Process'] = process_tree_child_dict
                     if tree_outputs:
                         process_tree_outputs.append(tree_outputs)
 
-            if 'summary' in report and 'entry' in report['summary'] and report['summary']['entry']:
-                entries = report['summary']['entry']
+            if entries := demisto.get(report, 'summary.entry'):
                 if not isinstance(entries, list):
                     entries = [entries]
                 for entry in entries:
-                    if entry_summary_dict := parse(report=entry,
-                                                   keys=[('#text', "Text"),
-                                                         ('@details', "Details"),
-                                                         ('@behavior', "Behavior")]):
+                    if entry_summary_dict := parse_wildfire_object(report=entry,
+                                                                   keys=[('#text', "Text"),
+                                                                         ('@details', "Details"),
+                                                                         ('@behavior', "Behavior")]):
                         entry_summary.append(entry_summary_dict)
 
-            if 'extracted_urls' in report and report['extracted_urls'] and 'entry' in report['extracted_urls'] \
-                    and report['extracted_urls']['entry']:
-                extract_urls = report['extracted_urls']['entry']
+            if extract_urls := demisto.get(report, 'extracted_urls.entry'):
                 if not isinstance(extract_urls, list):
                     extract_urls = [extract_urls]
                 for urls in extract_urls:
-                    if extract_urls_dict := parse(report=urls,
-                                                  keys=[('@url', "URL"),
-                                                        ('@verdict', "Verdict")]):
+                    if extract_urls_dict := parse_wildfire_object(report=urls,
+                                                                  keys=[('@url', "URL"),
+                                                                        ('@verdict', "Verdict")]):
                         extract_urls_outputs.append(extract_urls_dict)
 
             if 'platform' in report:
@@ -1056,7 +1054,6 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
 
     feed_related_indicators = create_feed_related_indicators_object(feed_related_indicators)
     behavior = create_behaviors_object(behavior)
-    relationships = relationships if CREATE_RELATIONSHIPS else None
     return outputs, feed_related_indicators, behavior, relationships
 
 
