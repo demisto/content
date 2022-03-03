@@ -1,0 +1,3 @@
+This pack allows you to schedule reports to be generated from Prisma Cloud Compute for vulnerability and compliance violations.
+You can run this pack as a job in XSOAR or ad-hoc.  Reports are generated in HTML format and data is presented in the incident layout.
+A CVE layout is also provided which allows for quickly search Prisma Cloud Computes vulnerability information and enriching XSOAR CVE indicators.
