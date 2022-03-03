@@ -50,6 +50,63 @@ script:
       description: url for viewing Intelligence Alert/Report (IA/IR) in the ACTI IntelGraph platform. 
       isArray: false
     outputs:
+    - contextPath: IAIR.abstract
+      description:
+      type:
+    - contextPath: IAIR.last_published
+      description:
+      type:
+    - contextPath: IAIR.index_timestamp
+      description:
+      type:
+    - contextPath: IAIR.display_text
+      description:
+      type:
+    - contextPath: IAIR.value
+      description:
+      type:
+    - contextPath: IAIR.last_modified
+      description:
+      type:
+    - contextPath: IAIR.threat_types
+      description:
+      type:
+    - contextPath: IAIR.created_on
+      description:
+      type:
+    - contextPath: IAIR.title
+      description:
+      type:
+    - contextPath: IAIR.type
+      description:
+      type:
+    - contextPath: IAIR.uuid
+      description:
+      type:
+    - contextPath: IAIR.analysis
+      description:
+      type:
+    - contextPath: IAIR.last_modified
+      description:
+      type:
+    - contextPath: IAIR.attachment_links
+      description:
+      type:
+    - contextPath: IAIR.severity
+      description:
+      type:
+    - contextPath: IAIR.key
+      description:
+      type:
+    - contextPath: IAIR.mitigation
+      description:
+      type:
+    - contextPath: IAIR.conclusion
+      description:
+      type:
+    - contextPath: IAIR.summary
+      description:
+      type:
     description: Fetches Intelligence Alerts & Intelligence Reports.
 
   isfetch: false
