@@ -145,7 +145,7 @@ class Client:
         headers = []
         if results:
             # if the table isn't empty
-            headers = results[0].keys()
+            headers = list(results[0].keys())
         return results, headers
 
 
@@ -206,6 +206,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
         bind_variables = generate_bind_vars(bind_variables_names, bind_variables_values)
 
         result, headers = client.sql_query_execute_request(sql_query, bind_variables)
+        print(f"result type {type(result)}, headers type  {type(headers)}")
         # converting an sqlalchemy object to a table
         converted_table = [dict(row) for row in result]
         # converting b'' and datetime objects to readable ones
