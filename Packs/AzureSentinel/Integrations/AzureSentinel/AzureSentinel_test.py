@@ -562,12 +562,13 @@ MOCKED_RAW_INCIDENT_OUTPUT = {
     }]
 }
 
-INCIDENTS = [{
-    'name': 'inc_name1',
-    'properties': {
-        'incidentNumber': 1,
-        'createdTimeUtc': '2020-02-02T14:05:01.5348545Z',
-        'title': 'title',
+INCIDENTS = [
+    {
+        'name': 'inc_name1',
+        'properties': {
+            'incidentNumber': 1,
+            'createdTimeUtc': '2020-02-02T14:05:01.5348545Z',
+            'title': 'title',
         }
     },
     {
@@ -576,7 +577,7 @@ INCIDENTS = [{
             'incidentNumber': 2,
             'createdTimeUtc': '2020-02-02T14:00:00.00Z',
             'title': 'title',
-            }
+        }
     },
     {
         'name': 'inc_name3',
@@ -584,7 +585,7 @@ INCIDENTS = [{
             'incidentNumber': 3,
             'createdTimeUtc': '2020-02-02T14:07:01.5348545Z',
             'title': 'title',
-            }
+        }
     }
 ]
 

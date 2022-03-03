@@ -474,22 +474,21 @@ def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents
     next_link = args.get('next_link', '')
     result = None
     params = {}
-    demisto.debug(f"{is_fetch_incidents=}, {first_fetch=}")
 
     if next_link:
         next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
         result = client.http_request('GET', full_url=next_link)
 
     elif is_fetch_incidents and not first_fetch:
-        demisto.debug(f"is_fetch_incidents and not first_fetch")
+        demisto.debug("is_fetch_incidents and not first_fetch")
         params = {'$orderby': 'properties/incidentNumber asc'}
 
     else:  # it is a first fetch, or not a part of a fetch command
-        demisto.debug(f"not is_fetch_incidents or first_fetch")
+        demisto.debug("not is_fetch_incidents or first_fetch")
         params = {'$orderby': 'properties/createdTimeUtc asc'}
 
     if not result:
-        params.update({'$top': limit, '$filter': filter_expression})
+        params.update({'$top': str(limit), '$filter': filter_expression})
         remove_nulls_from_dictionary(params)
         url_suffix = 'incidents'
 
@@ -592,7 +591,8 @@ def create_update_watchlist_command(client, args):
     readable_output = tableToMarkdown('Create watchlist results', watchlist,
                                       headers=['Name', 'ID', 'Description'],
                                       headerTransform=pascalToSpace,
-                                      removeNull=True)
+                                      removeNull=True
+                                      )
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='AzureSentinel.Watchlist',
@@ -905,9 +905,11 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
         raw_incidents, latest_created_time = fetch_incidents_via_timestamp(first_fetch_time, client)
     else:
         demisto.debug("handle via id")
-        raw_incidents, latest_created_time = fetch_incidents_via_incident_number(last_fetch_time, last_incident_number, client)
+        raw_incidents, latest_created_time = fetch_incidents_via_incident_number(last_fetch_time, last_incident_number,
+                                                                                 client)
 
-    next_run, incidents = process_incidents(raw_incidents, last_fetch_ids, min_severity, latest_created_time, last_incident_number)
+    next_run, incidents = process_incidents(raw_incidents, last_fetch_ids, min_severity, latest_created_time,
+                                            last_incident_number)
     return next_run, incidents
 
 
@@ -952,7 +954,8 @@ def fetch_incidents_via_incident_number(last_fetch_time: str, last_incident_numb
     return command_result.outputs, latest_created_time
 
 
-def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: int, latest_created_time: datetime, last_incident_number: int):
+def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: int, latest_created_time: datetime,
+                      last_incident_number: int):
     """Processing the raw incidents
     Args:
         raw_incidents: The incidents that were fetched from the API.
@@ -976,7 +979,8 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
 
         # fetch only incidents that weren't fetched in the last run and their severity is at least min_severity
         # and their id is larger then the previous incident.
-        if incident.get('ID') not in last_fetch_ids and incident_severity >= min_severity and incident.get('IncidentNumber') > last_incident_number:
+        if incident.get('ID') not in last_fetch_ids and incident_severity >= min_severity \
+                and incident.get('IncidentNumber') > last_incident_number:
 
             incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
             xsoar_incident = {
