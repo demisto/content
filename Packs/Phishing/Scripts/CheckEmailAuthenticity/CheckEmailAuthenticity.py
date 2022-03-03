@@ -111,10 +111,9 @@ def auth_check(spf_data, dkim_data, dmarc_data, override_dict):
 
 def get_authentication_value(headers, original_authentication_header):
     """
-    Handel the case where the authentication header is given under a different header.
-    This header is represented by the 'original_authentication_header' argument.  This can happen when there is an
-     intermediate server which changes the email and holds the original value of the header in a different header.
-     For more info, see issue #46364.
+    Handles the case where the authentication header is given under a different header.
+    This header is represented by the 'original_authentication_header' argument.  This can happen when an intermediate server changes the email and holds the original value of the header in a different header.
+    For more info, see issue #46364.
     Args:
         headers: The headers dict argument given by the user
         original_authentication_header: The name of a header which holds the original value of the
