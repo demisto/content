@@ -1,0 +1,39 @@
+category: Utilities
+commonfields:
+  id: Crowdstrike
+  version: -1
+configuration:
+- defaultvalue: https://www.example.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate
+  name: insecure
+  required: false
+  type: 8
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 3dc0d457-6233-4177-8da2-36c7237d61f1
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Generated description - REPLACE THIS
+display: Crowdstrike
+name: Crowdstrike
+script:
+  commands:
+  - arguments: []
+    name: CS-oauth
+  dockerimage: demisto/python3:3.10.1.26972
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
