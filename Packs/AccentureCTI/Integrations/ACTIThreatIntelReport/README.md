@@ -54,7 +54,7 @@ Fetches intelligence alerts and reports from ACTI IntelGraph to XSOAR platform.
 | IAIR.key | String | The key of the IAIR, for example: c0ea8f2f-372c-44d1-ad81-efde4971110e |
 | IAIR.mitigation | String | Provides info on how to mitigate. This field is specific to Intelligence Alert, for example: ##Expert, Experienced Advice Will be CriticalTo minimize targeting opportunities.... |
 | IAIR.conclusion | String | Provides conclusion of the report. This field is specific to Intelligence Report |
-| IAIR.summary | String | Provides with a summary of the report. This field is specific to Intelligence Alert |
+| IAIR.summary | String | Provides with a summary of the report. This field is specific to Intelligence Report |
 
 
 
