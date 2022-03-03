@@ -157,7 +157,7 @@ tasks:
       version: -1
       name: PAN-OS - Get address group
       description: Get details for the specified address group
-      script: '|||panorama-get-address-group'
+      script: '|||pan-os-get-address-group'
       type: regular
       iscommand: true
       brand: ""
@@ -228,7 +228,7 @@ tasks:
       version: -1
       name: PAN OS - Add IP addresses to address group
       description: Add IP addresses to a static or dynamic address group.
-      script: '|||panorama-edit-address-group'
+      script: '|||pan-os-edit-address-group'
       type: regular
       iscommand: true
       brand: ""
@@ -273,7 +273,7 @@ tasks:
       version: -1
       name: PAN-OS - Create address objects
       description: Creates an address object
-      script: '|||panorama-create-address'
+      script: '|||pan-os-create-address'
       type: regular
       iscommand: true
       brand: ""
@@ -430,7 +430,7 @@ tasks:
       version: -1
       name: PAN OS - Add IP addresses to address group
       description: Add IP addresses to a static or dynamic address group.
-      script: '|||panorama-edit-address-group'
+      script: '|||pan-os-edit-address-group'
       type: regular
       iscommand: true
       brand: ""
