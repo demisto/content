@@ -473,17 +473,19 @@ def filter_dictionary(dictionary: dict, fields_to_keep: Optional[tuple], sort_by
 
 
 def file_command(client: Client, **args: dict) -> list[CommandResults]:
-    resources_fields = ('filetype', 'file_size', 'sha256', 'threat_score', 'verdict')
-
     file_hashes = argToList(args.get('file', ''))
     demisto.debug(f'{file_hashes=}')
     report_ids = client.query_report_ids(file_hashes)
 
     command_results: list[CommandResults] = []
 
+    resources_fields = ('verdict',)  # todo
+    sandbox_fields = ('filetype', 'file_size', 'sha256', 'threat_score')
+
     for report_id in report_ids:
         response = client.get_full_report(report_id)
-        result = parse_outputs(response, reliability=client.reliability, resources_fields=resources_fields)
+        result = parse_outputs(response, reliability=client.reliability, resources_fields=resources_fields,
+                               sandbox_fields=sandbox_fields)
 
         if result.output:
             readable_output = tableToMarkdown("CrowdStrike Falcon X response:", result.output)
