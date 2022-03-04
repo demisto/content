@@ -37,25 +37,27 @@ Fetches intelligence alerts and reports from ACTI IntelGraph to XSOAR platform.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IAIR.abstract | String | This field is specific to Intelligence Alert and provides a summarised context, for example: The worldwide COVID-19 outbreak... |   
-| IAIR.last_published | String | The last published date of the IAIR, for example: 2020-06-26T01:14:56.000Z |
-| IAIR.index_timestamp | String | The index timestamp of the IAIR, for example: 2022-02-11T17:24:03.604Z |
-| IAIR.display_text | String | The display text of the IAIR, for example: SITREP: Cybersecurity Risks Related to COVID-19 |
-| IAIR.value | String | The value of the IAIR, for example: https://intelgraph.idefense.com/#/node/intelligence_alert/view/8b8b48f1-92a0-411a-a073-3241f6819f8b |
-| IAIR.last_modified | String | The last modified date of the IAIR, for example: 2022-02-11T17:21:48.000Z |
-| IAIR.threat_types | String | The threat type of the IAIR, for example: - Hacktivism- Cyber Espionage- Cyber Crime- Vulnerability |
-| IAIR.created_on | String | The created date of the IAIR, for example: 2020-03-12T22:22:25.000Z |
-| IAIR.title | String | The title of the IAIR, for example: SITREP: Cybersecurity Risks Related to COVID-19 |
-| IAIR.type | String | The type of the IAIR, for example: intelligence_alert |
-| IAIR.uuid | String | The uuid of the IAIR, for example: 8b8b48f1-92a0-411a-a073-3241f6819f8b |
-| IAIR.analysis | String | The analysis of the IAIR, for example: COVID-19 Introduces Cyberthreat Opportunities |
-| IAIR.attachment_links | String | Provides with the document links related to the Intelligence Alert. This field is specific to Intelligence Alert, for example:  https://intelgraph.idefense.com/rest/files/download/....... |
-| IAIR.severity | String | Provides severity rating. This field is specific to Intelligence Alert, for example: 4 |
-| IAIR.key | String | The key of the IAIR, for example: c0ea8f2f-372c-44d1-ad81-efde4971110e |
-| IAIR.mitigation | String | Provides info on how to mitigate. This field is specific to Intelligence Alert, for example: ##Expert, Experienced Advice Will be CriticalTo minimize targeting opportunities.... |
-| IAIR.conclusion | String | Provides conclusion of the report. This field is specific to Intelligence Report |
-| IAIR.summary | String | Provides with a summary of the report. This field is specific to Intelligence Report |
-
+| IAIR.abstract | String | This field is specific to Intelligence Alert and provides a summarised context, for example, 'The worldwide COVID-19 outbreak...' |   
+| IAIR.last_published | String | The last published timestamp of the IA/IR, for example, '2020-06-26T01:14:56.000Z' |
+| IAIR.index_timestamp | String | The index timestamp of the IA/IR, for example, '2022-02-11T17:24:03.604Z' |
+| IAIR.display_text | String | The display text of the IA/IR, for example, 'SITREP Cybersecurity Risks Related to COVID-19' |
+| IAIR.value | String | The value of the IA/IR, for example, 'https://intelgraph.idefense.com/#/node/intelligence_alert/view/8b8b48f1-92a0-411a-a073-3241f6819f8b' |
+| IAIR.last_modified | String | The last modified timestamp of the IA/IR, for example, '2022-02-11T17:21:48.000Z' |
+| IAIR.threat_types | String | The threat type of the IA/IR, for example, '- Hacktivism- Cyber Espionage- Cyber Crime- Vulnerability'. It's formatted in such a way that it gets displayed better. |
+| IAIR.created_on | String | The creation timestamp of the IA/IR, for example, '2020-03-12T22:22:25.000Z' |
+| IAIR.title | String | The title of the IA/IR, for example, 'SITREP Cybersecurity Risks Related to COVID-19' |
+| IAIR.type | String | The type of report i.e. an IA/IR , for example, 'intelligence_alert' |
+| IAIR.uuid | String | The uuid of the IA/IR, for example, '8b8b48f1-92a0-411a-a073-3241f6819f8b' |
+| IAIR.analysis | String | The analysis of the IA/IR, for example, 'COVID-19 Introduces Cyberthreat Opportunities...' |
+| IAIR.attachment_links | String | Provides with the document links related to the Intelligence Alert. This field is specific to Intelligence Alert, for example, 'https://intelgraph.idefense.com/rest/files/download/...' |
+| IAIR.severity | String | Provides severity rating. This field is specific to Intelligence Alert, for example, '4' |
+| IAIR.key | String | The key of the IAIR, for example, 'c0ea8f2f-372c-44d1-ad81-efde4971110e' |
+| IAIR.mitigation | String | Provides info on how to mitigate. This field is specific to Intelligence Alert, for example, '## Expert, Experienced Advice Will be CriticalTo minimize targeting opportunities...' |
+| IAIR.conclusion | String | Provides conclusion of the report. This field is specific to Intelligence Report. |
+| IAIR.summary | String | Provides with a summary of the report. This field is specific to Intelligence Report. |
+| IAIR.dynamic_properties | String | Provides with the dynamic properties related to the intelligence alert/report. |
+| IAIR.links | String | Provides details of the linked fields related to the intelligence alert/report. |
+| IAIR.sources_external | String | Provides with external sources related to the intelligence alert/report. |
 
 
 #### Command Example
