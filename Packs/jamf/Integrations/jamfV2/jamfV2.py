@@ -1182,7 +1182,6 @@ def mobile_device_erase_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def endpoint_command(client, args):
-    # todo: check what the behavior is when not passing any filter
     endpoint_id_list = argToList(args.get('id'))
     endpoint_ip_list = argToList(args.get('ip'))
     endpoint_hostname_list = argToList(args.get('hostname'))

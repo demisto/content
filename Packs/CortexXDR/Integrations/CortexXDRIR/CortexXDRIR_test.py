@@ -327,7 +327,7 @@ def test_endpoint_command(requests_mock):
         - Filtering using both id and hostname
     Then:
         - Verify that duplicates are removed (since the mock is called twice the same endpoint is retrieved, but if
-        working properly, only one result should be returned.
+        working properly, only one result should be returned).
     """
     from CortexXDRIR import endpoint_command, Client
 

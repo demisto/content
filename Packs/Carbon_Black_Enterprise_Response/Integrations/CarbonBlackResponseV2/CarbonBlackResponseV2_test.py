@@ -380,13 +380,12 @@ def test_endpoint_command(mocker):
         - Filtering using both id and hostname
     Then:
         - Verify that duplicates are removed (since the mock is called twice the same endpoint is retrieved, but if
-        working properly, only one result should be returned.
+        working properly, only one result should be returned).
     """
     from CarbonBlackResponseV2 import endpoint_command, Client
     from CommonServerPython import Common
 
     endpoints_response = util_load_json('test_data/commands_test_data.json').get('endpoint_response')
-    # requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
     mocker.patch.object(Client, 'get_sensors', return_value=(1, endpoints_response))
     client = Client(base_url='url', apitoken='api_key', use_ssl=True, use_proxy=False)
 
@@ -410,3 +409,4 @@ def test_endpoint_command(mocker):
     for key, val in results.get("EntryContext").items():
         assert results.get("EntryContext")[key] == get_endpoints_response[key]
     assert results.get("EntryContext") == get_endpoints_response
+    assert len(outputs) == 1
