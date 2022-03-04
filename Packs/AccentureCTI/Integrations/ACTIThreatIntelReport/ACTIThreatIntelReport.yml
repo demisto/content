@@ -51,62 +51,68 @@ script:
       isArray: false
     outputs:
     - contextPath: IAIR.abstract
-      description:
-      type:
+      description: This field is specific to Intelligence Alert and provides a summarised context, for example, 'The worldwide COVID-19 outbreak...'
+      type: String
     - contextPath: IAIR.last_published
-      description:
-      type:
+      description: The last published timestamp of the IA/IR, for example, '2020-06-26T01:14:56.000Z'
+      type: String
     - contextPath: IAIR.index_timestamp
-      description:
-      type:
+      description: The index timestamp of the IA/IR, for example, '2022-02-11T17:24:03.604Z'
+      type: String
     - contextPath: IAIR.display_text
-      description:
-      type:
+      description: The display text of the IA/IR, for example, 'SITREP Cybersecurity Risks Related to COVID-19'
+      type: String
     - contextPath: IAIR.value
-      description:
-      type:
+      description: The value of the IA/IR, for example, 'https://intelgraph.idefense.com/#/node/intelligence_alert/view/8b8b48f1-92a0-411a-a073-3241f6819f8b'
+      type: String
     - contextPath: IAIR.last_modified
-      description:
-      type:
+      description: The last modified timestamp of the IA/IR, for example, '2022-02-11T17:21:48.000Z'
+      type: String
     - contextPath: IAIR.threat_types
-      description:
-      type:
+      description: The threat type of the IA/IR, for example, '- Hacktivism- Cyber Espionage- Cyber Crime- Vulnerability'. It's formatted in such a way that it gets displayed better.
+      type: String
     - contextPath: IAIR.created_on
-      description:
-      type:
+      description: The creation timestamp of the IA/IR, for example, '2020-03-12T22:22:25.000Z'
+      type: String
     - contextPath: IAIR.title
-      description:
-      type:
+      description: The title of the IA/IR, for example, 'SITREP Cybersecurity Risks Related to COVID-19'
+      type: String
     - contextPath: IAIR.type
-      description:
-      type:
+      description: The type of report i.e. an IA/IR , for example, 'intelligence_alert'
+      type: String
     - contextPath: IAIR.uuid
-      description:
-      type:
+      description: The uuid of the IA/IR, for example, '8b8b48f1-92a0-411a-a073-3241f6819f8b'
+      type: String
     - contextPath: IAIR.analysis
-      description:
-      type:
-    - contextPath: IAIR.last_modified
-      description:
-      type:
+      description: The analysis of the IA/IR, for example, 'COVID-19 Introduces Cyberthreat Opportunities...'
+      type: String
     - contextPath: IAIR.attachment_links
-      description:
-      type:
+      description: Provides with the document links related to the Intelligence Alert. This field is specific to Intelligence Alert, for example, 'https://intelgraph.idefense.com/rest/files/download/...'
+      type: String
     - contextPath: IAIR.severity
-      description:
-      type:
+      description: Provides severity rating. This field is specific to Intelligence Alert, for example, '4'
+      type: String
     - contextPath: IAIR.key
-      description:
-      type:
+      description: The key of the IAIR, for example, 'c0ea8f2f-372c-44d1-ad81-efde4971110e'
+      type: String
     - contextPath: IAIR.mitigation
-      description:
-      type:
+      description: Provides info on how to mitigate. This field is specific to Intelligence Alert, for example, '## Expert, Experienced Advice Will be CriticalTo minimize targeting opportunities...'
+      type: String
     - contextPath: IAIR.conclusion
-      description:
-      type:
+      description: Provides conclusion of the report. This field is specific to Intelligence Report
+      type: String
     - contextPath: IAIR.summary
-      description:
-      type:
+      description: Provides with a summary of the report. This field is specific to Intelligence Report.
+      type: String
+    - contextPath: IAIR.dynamic_properties
+      description: Provides with the dynamic properties related to the intelligence alert/report.
+      type: String
+    - contextPath: IAIR.links
+      description: Provides details of the linked fields related to the intelligence alert/report.
+      type: String
+    - contextPath: IAIR.sources_external
+      description: Provides with external sources related to the intelligence alert/report.
+      type: String
     description: Fetches Intelligence Alerts & Intelligence Reports.
 
   isfetch: false
