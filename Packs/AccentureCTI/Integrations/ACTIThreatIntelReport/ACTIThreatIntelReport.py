@@ -84,7 +84,7 @@ def fix_markdown(text):
     result = re.sub(regex_header, subst_header, text, 0)
 
     regex_url = r"\/?#\/"
-    subst_url = "https://intelgraph.idefense.com/"
+    subst_url = "https://intelgraph.idefense.com/#/"
     output = re.sub(regex_url, subst_url, result, 0)
     return output
 
