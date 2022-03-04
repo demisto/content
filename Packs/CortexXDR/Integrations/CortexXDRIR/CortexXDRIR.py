@@ -1947,6 +1947,9 @@ def endpoint_command(client, args):
     endpoint_ip_list = argToList(args.get('ip'))
     endpoint_hostname_list = argToList(args.get('hostname'))
 
+    if not endpoint_id_list and not endpoint_ip_list and not endpoint_hostname_list:
+        raise Exception(f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
+
     # The `!endpoint` command should use an OR operator between filters. Since XDR API supports only AND, we handle it
     # by sending multiple requests with a single filter and appending the returned results to previous results.
     endpoints = []
