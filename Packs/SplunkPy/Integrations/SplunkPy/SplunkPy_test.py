@@ -1152,6 +1152,27 @@ def test_build_search_human_readable(mocker):
     assert headers == expected_headers
 
 
+def test_build_search_human_readable_multi_table_in_query(mocker):
+    """
+    Given:
+        multiple table headers in query
+
+    When:
+        building a human readable table as part of splunk-search
+
+    Then:
+        Test headers are calculated correctly:
+            * all expected header exist without duplications
+    """
+    args = {"query": " table header_1, header_2 | stats state_1, state_2 | table header_1, header_2, header_3, header_4"}
+    results = [
+        {'header_1': 'val_1', 'header_2': 'val_2', 'header_3': 'val_3', 'header_4': 'val_4'},
+    ]
+    expected_headers_hr = "|header_1|header_2|header_3|header_4|\n|---|---|---|---|"
+    hr = splunk.build_search_human_readable(args, results)
+    assert expected_headers_hr in hr
+
+
 @pytest.mark.parametrize('polling', [False, True])
 def test_build_search_kwargs(polling):
     """
