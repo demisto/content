@@ -1,0 +1,165 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 25043b93-4265-49a0-8858-04aed0ec4edd
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: a28a5a93-7020-4221-82de-bfc9ec85a86d
+inputs:
+- description: ""
+  key: IP
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: ::ffff:127.0.0.1
+name: CimTrak - Example - Scan Compliance By IP
+outputs: []
+sourceplaybookid: cab75012-c8d7-4563-8df9-5f4a6b39b14d
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 858b1aac-8b0d-441c-870f-1b8152034805
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 858b1aac-8b0d-441c-870f-1b8152034805
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ip:
+        simple: ${inputs.IP}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: CimTrak
+      description: Get agent object from ip address
+      id: 1d91ce46-b750-4223-892e-d35728f241ab
+      iscommand: true
+      name: get-agent-object-by-ip
+      script: CimTrak|||get-agent-object-by-ip
+      type: regular
+      version: -1
+    taskid: 1d91ce46-b750-4223-892e-d35728f241ab
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      objectId:
+        simple: ${CimTrak.Objects.objectId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: CimTrak
+      description: Launch compliance scan for object and return results
+      id: c0c503b3-be5b-45ad-8c19-a1bc09e5334e
+      iscommand: true
+      name: compliance-scan-with-summary
+      script: CimTrak|||compliance-scan-with-summary
+      type: regular
+      version: -1
+    taskid: c0c503b3-be5b-45ad-8c19-a1bc09e5334e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 640
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ObjectSubType:
+        simple: "10"
+      ObjectType:
+        simple: "3"
+      ParentId:
+        simple: ${CimTrak.Object.objectId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: CimTrak
+      description: Retrieves a list of objects.
+      id: d1d3328d-a2e0-419a-8b76-09bf17236d84
+      iscommand: true
+      name: get-objects
+      script: CimTrak|||get-objects
+      type: regular
+      version: -1
+    taskid: d1d3328d-a2e0-419a-8b76-09bf17236d84
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 430
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 685,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
