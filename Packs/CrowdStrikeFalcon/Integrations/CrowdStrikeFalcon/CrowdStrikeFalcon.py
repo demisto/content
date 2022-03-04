@@ -1329,7 +1329,8 @@ def search_device(filter_operator='AND'):
         'local_ip': str(args.get('ip', '')).split(',')
     }
     url_filter = '{}'.format(str(args.get('filter', '')))
-    op = '+' if filter_operator == 'AND' else ','  # In Falcon Query Language, '+' stands for AND and ',' for OR (https://falcon.crowdstrike.com/documentation/45/falcon-query-language-fql)
+    op = ',' if filter_operator == 'OR' else '+'  # In Falcon Query Language, '+' stands for AND and ',' for OR
+                                                  # (https://falcon.crowdstrike.com/documentation/45/falcon-query-language-fql)
     for k, arg in input_arg_dict.items():
         if arg:
             if type(arg) is list:
