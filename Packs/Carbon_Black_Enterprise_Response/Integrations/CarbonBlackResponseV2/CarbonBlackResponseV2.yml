@@ -2014,12 +2014,6 @@ script:
       name: hostname
       required: false
       secret: false
-    - default: true
-      description: ''
-      isArray: true
-      name: endpoint
-      required: true
-      secret: false
     deprecated: false
     description: List the CarbonBlack sensors
     execution: false
