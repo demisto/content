@@ -1,0 +1,20 @@
+{
+  "dashboards_data": [
+    {
+      "name": "a",
+      "description": "b",
+      "layout": {}
+    },
+    {
+      "name": "c",
+      "description": "d",
+      "layout": {}
+    }
+  ],
+  "widgets_data": [
+    {
+      "widg_name": "www",
+      "widg_desc": "s"
+    }
+  ]
+}

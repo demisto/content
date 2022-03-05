@@ -1,0 +1,23 @@
+alert_category: PERSISTENCE
+alert_description: host $agent_id reached $dest_count destinations
+alert_fields:
+- hash,domain
+- local_ip
+crontab: mandatory when execution mode is SCHEDULED. the cron schedule for this query
+dataset: alerts
+description: My descirption
+drilldown_query_timeframe: QUERY
+execution_mode: SCHEDULED
+investigation_query_link: dataset = xdr_data | filter agent_id=$the_agent_id_field_in_the_result
+mapping_strategy: CUSTOM
+mitre_defs: ''
+name: My rule name
+search_window: 1 day
+severity: SEV_010_INFO
+suppression_duration: 4 hours
+suppression_enabled: true
+suppression_fields:
+- MyField1
+- MyField2
+timezone: GMT
+xql_query: dataset = xdr_data | filter agent_id=$the_agent_id_field_in_the_result
