@@ -4494,9 +4494,6 @@ def main() -> None:
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
     verify_certificate = not demisto.params().get("insecure", False)
-    last_id = demisto.params().get("last_id", 0)
-    last_id = 1
-    demisto.params()["last_id"] = last_id
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = arg_to_datetime(
         arg=demisto.params().get("first_fetch", "3 days"),
