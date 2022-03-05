@@ -58,7 +58,7 @@
     ],
     "editForm": true,
     "group": 0,
-    "hidden": false,
+    "hidden": true,
     "id": "incident_outofftheoffice",
     "isReadOnly": false,
     "locked": false,
