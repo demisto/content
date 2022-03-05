@@ -1,3 +1,4 @@
+[MODEL: dataset="okta_saas", model="Network", version=0.7]
 | alter outcome_result = json_extract_scalar(outcome, "$.result")
 | alter XDM_Audit_Main_identity_uuid = json_extract_scalar(actor, "$.id"),
         XDM_Audit_Main_identity_type = json_extract_scalar(actor, "$.type"),
@@ -14,7 +15,7 @@
     XDM_Audit_audited_resource_id = json_extract_scalar(`target`, "$.[0].alternateId"),
 	XDM_Audit_audited_resource_type =  json_extract_scalar(`target`, "$.[0].type");
 
-
+[MODEL: dataset="okta_on", model="Network", version=0.7]
 | alter outcome_result = json_extract_scalar(outcome, "$.result")
 | alter  XDM_Auth_Client_host_device_type = json_extract_scalar(Client, "$.device"),
         XDM_Auth_Client_host_device_id = json_extract_scalar(Client, "$.id"),
