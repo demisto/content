@@ -2261,17 +2261,17 @@ inputs:
     simple: Inner file
   required: false
   description: |-
-    Reported emails and emails retrieved during playbook execution may sometimes contain multiple nested email files. For instance, an EML inside another EML file.
-    If multiple-level files are detected, this field determines which file would represent the phishing email.
-
-    An example would be:
-    User receives an email from Attacker. User attaches the email as an EML file and sends the email over to User2.
-    User2 then attached that email as a file too, and reports it as phishing. In that case, the phishing email would be the "inner file" (as opposed to "outer file).
-
+    Reported emails and emails retrieved during playbook execution can contain multiple nested email files. For example, an EML nested inside another EML file.
+    If multiple level files are detected, this field determines which file represents the phishing email.
+    
+    For example:
+    User1 receives an email from Attacker. User1 attaches the email as an EML file and sends the email to User2.
+    User2 also attaches that email as a file, and reports it as phishing. In this case, the phishing email would be the "inner file" (as opposed to "outer file").
+    
     Possible values are: Inner file, Outer file, All files.
-    Inner file: the file at the deepest level would be parsed (if there is only 1 file, that file would be parsed normally).
-    Outer file: the file at the first level would be parsed.
-    All files: all files would be parsed. This option should not be used in the phishing playbook, as there should only be one phishing email per playbook execution.
+    Inner file: The file at the deepest level is parsed. If there is only one file, that file is parsed.
+    Outer file: The file at the first level is parsed.
+    All files: All files are parsed. Do not use this option in the phishing playbook, as there should only be one phishing email per playbook run.
   playbookInputQuery:
 outputs:
 - contextPath: Email.HTML
