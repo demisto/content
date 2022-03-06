@@ -4413,7 +4413,7 @@
                 "Create Test Incidents - Phishing Mock"
             ],
             "external_playbook_config": {
-                "playbookID": "Phishing v3 - Generic",
+                "playbookID": "Phishing - Generic v3",
                 "input_parameters":{
                     "InternalDomains": {
                         "simple": "demistodev.onmicrosoft.com"
@@ -4445,7 +4445,7 @@
             ],
             "external_playbook_config": 
             {
-                "playbookID": "Phishing v3 - Generic",
+                "playbookID": "Phishing - Generic v3",
                 "input_parameters":
                 {
                     "SearchAndDelete": {"simple": "True"},
