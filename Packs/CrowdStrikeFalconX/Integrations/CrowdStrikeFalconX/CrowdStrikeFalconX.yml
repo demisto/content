@@ -1097,13 +1097,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'SHA256 hash to search for. Overridden by the *filter* argument (if provided)'
-      isArray: false
-      name: hash
+      description: 'SHA256 hashes to search for. Overridden by the *filter* argument (if provided)'
+      isArray: true
+      name: hashes
       required: false
       secret: false
     - default: false
-      description: 'Maximum number of report IDs to return. Maximum is 5000.'
+      description: 'Maximum number of report IDs to return. Maximum is 5000. Default is 50.'
       isArray: false
       name: limit
       required: false

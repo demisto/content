@@ -80,7 +80,7 @@ SEND_URL_TO_SANDBOX_ANALYSIS_ARGS_POLLING = {
 }
 
 GET_FULL_REPORT_ARGS = {
-    "ids": "ids",
+    "ids": ["ids"],
     "extended_data": "false"
 }
 GET_FULL_REPORT_ARGS_EXTENDED = {
@@ -89,11 +89,11 @@ GET_FULL_REPORT_ARGS_EXTENDED = {
 }
 
 GET_REPORT_SUMMARY_ARGS = {
-    "ids": "ids",
+    "ids": ["ids"],
 }
 
 GET_ANALYSIS_STATUS_ARGS = {
-    "ids": "ids",
+    "ids": ["ids"],
 }
 
 FIND_SANDBOX_REPORTS_ARGS = {
