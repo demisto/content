@@ -3979,7 +3979,7 @@ def cover_up_command(client, args):
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
-    query_purpose = args.pop('query_purpose')
+    query_purpose = args.get('query_purpose')
     query_builder = HuntingQueryBuilder.CoverUp(**args)
     query_options = {
         'file_deleted': query_builder.build_file_deleted_query,
