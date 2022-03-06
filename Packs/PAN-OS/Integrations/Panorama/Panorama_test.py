@@ -1022,3 +1022,13 @@ class TestDevices:
             requests_mock.get(Panorama.URL, text=data_file.read())
         Panorama.VSYS = None  # this a Panorama instance
         assert list(Panorama.devices()) == [('target1', 'vsys1'), ('target1', 'vsys2'), ('target2', None)]
+
+
+class MockFirewallPanDevice:
+    """A mock version of a PanDevice Firewall instance"""
+    def op(self, *args, **kwargs):
+        pass
+
+class TestTopology:
+    """Tests the Topology class and all of it's methods"""
+    pass
