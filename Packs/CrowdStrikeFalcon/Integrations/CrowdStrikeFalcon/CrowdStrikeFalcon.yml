@@ -64,14 +64,15 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: When selected, closing the CrowdStrike Falcon incident or detection is mirrored in Cortex XSOAR.
+- additionalinfo: When selected, closing the CrowdStrike Falcon incident or detection is mirrored in Cortex XSOAR incident.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   hidden: false
   name: close_incident
   required: false
   type: 8
-- additionalinfo: When selected, closing the XSOAR incident is mirrored in CrowdStrike Falcon.
+- additionalinfo: When selected, closing the XSOAR incident is mirrored in CrowdStrike Falcon incident or detection,
+  according to the types that were chosen to be fetched and mirrored.
   defaultvalue: 'false'
   display: Close Mirrored CrowdStrike Falcon Incident or Detection
   hidden: false
