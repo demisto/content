@@ -80,7 +80,7 @@ def main():
             readable = "No campaign has found"
 
         return CommandResults(readable_output=readable, outputs={"ExistingCampaignID": campaign_id},
-                              raw_response=campaigns_ids_list)
+                              raw_response=readable)
 
     except Exception as ex:  # pylint: disable=broad-except  pragma: no cover
         demisto.error(traceback.format_exc())  # print the traceback
