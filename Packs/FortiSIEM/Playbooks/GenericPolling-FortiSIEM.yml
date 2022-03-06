@@ -105,6 +105,7 @@ tasks:
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
+        Please note that from XSOAR version 6.2 or later, this is not needed and should just use polling argument in the command:fortisiem-event-search.
       id: 22df050e-c6c7-4e0a-8ada-5e2c7af7bd91
       iscommand: false
       name: GenericPolling
