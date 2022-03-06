@@ -6329,13 +6329,6 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
         return_entry["Contents"] = outputs
     demisto.results(return_entry)
 
-class ErrorType:
-    RateLimit  = 'RateLimited'
-    AuthError  = 'Authentication'
-    General    = 'General'
-    Timeout    = 'Timeout'
-    Connection = 'Connection'
-
 
 def return_error(message, error='', outputs=None):
     """
