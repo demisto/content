@@ -8,7 +8,7 @@ import requests
 import base64
 import email
 import hashlib
-from typing import List
+from typing import List, Callable
 from dateutil.parser import parse
 from typing import Dict, Tuple, Any, Optional, Union
 from threading import Timer
@@ -50,7 +50,10 @@ DETECTIONS_BASE_KEY_MAP = {
     'created_timestamp': 'ProcessStartTime',
     'max_severity': 'MaxSeverity',
     'show_in_ui': 'ShowInUi',
-    'status': 'Status'
+    'status': 'Status',
+    'first_behavior': 'FirstBehavior',
+    'last_behavior': 'LastBehavior',
+    'max_confidence': 'MaxConfidence',
 }
 
 DETECTIONS_BEHAVIORS_KEY_MAP = {
@@ -63,6 +66,19 @@ DETECTIONS_BEHAVIORS_KEY_MAP = {
     'cmdline': 'CommandLine',
     'user_name': 'UserName',
     'behavior_id': 'ID',
+    'alleged_filetype': 'AllegedFiletype',
+    'confidence': 'Confidence',
+    'description': 'Description',
+    'display_name': 'DisplayName',
+    'filepath': 'Filepath',
+    'parent_md5': 'ParentMD5',
+    'parent_sha256': 'ParentSHA256',
+    'pattern_disposition': 'PatternDisposition',
+    'pattern_disposition_details': 'PatternDispositionDetails',
+    'tactic': 'Tactic',
+    'tactic_id': 'TacticID',
+    'technique': 'Technique',
+    'technique_id': 'TechniqueId',
 }
 
 IOC_KEY_MAP = {
@@ -83,6 +99,9 @@ IOC_KEY_MAP = {
     'severity': 'Severity',
     'tags': 'Tags',
 }
+
+IOC_HEADERS = ['ID', 'Action', 'Severity', 'Type', 'Value', 'Expiration', 'CreatedBy', 'CreatedTime', 'Description',
+               'ModifiedBy', 'ModifiedTime', 'Platforms', 'Policy', 'ShareLevel', 'Source', 'Tags']
 
 IOC_DEVICE_COUNT_MAP = {
     'id': 'ID',
@@ -413,6 +432,53 @@ def handle_response_errors(raw_res: dict, err_msg: str = None):
     return
 
 
+def create_json_iocs_list(
+        ioc_type: str,
+        iocs_value: List[str],
+        action: str,
+        platforms: List[str],
+        severity: Optional[str] = None,
+        source: Optional[str] = None,
+        description: Optional[str] = None,
+        expiration: Optional[str] = None,
+        applied_globally: Optional[bool] = None,
+        host_groups: Optional[List[str]] = None,
+        tags: Optional[List[str]] = None) -> List[dict]:
+    """
+    Get a list of iocs values and create a list of Json objects with the iocs data.
+    This function is used for uploading multiple indicator with same arguments with different values.
+    :param ioc_type: The type of the indicator.
+    :param iocs_value: List of the indicator.
+    :param action: Action to take when a host observes the custom IOC.
+    :param platforms: The platforms that the indicator applies to.
+    :param severity: The severity level to apply to this indicator.
+    :param source: The source where this indicator originated.
+    :param description: A meaningful description of the indicator.
+    :param expiration: The date on which the indicator will become inactive.
+    :param applied_globally: Whether the indicator is applied globally.
+    :param host_groups: List of host group IDs that the indicator applies to.
+    :param tags: List of tags to apply to the indicator.
+
+    """
+    iocs_list = []
+    for ioc_value in iocs_value:
+        iocs_list.append(assign_params(
+            type=ioc_type,
+            value=ioc_value,
+            action=action,
+            platforms=platforms,
+            severity=severity,
+            source=source,
+            description=description,
+            expiration=expiration,
+            applied_globally=applied_globally,
+            host_groups=host_groups,
+            tags=tags,
+        ))
+
+    return iocs_list
+
+
 ''' COMMAND SPECIFIC FUNCTIONS '''
 
 
@@ -499,32 +565,39 @@ def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str) -> D
     return response
 
 
-def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str) -> Dict:
+def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, optional_hosts: list = None) -> Dict:
     """
         Sends RTR command scope with write access
         :param batch_id:  Batch ID to execute the command on.
         :param command_type: Read-only command type we are going to execute, for example: ls or cd.
         :param full_command: Full command string for the command.
+        :param optional_hosts: The hosts ids to run the command on.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-active-responder-command/v1'
 
-    body = json.dumps({
+    default_body = {
         'base_command': command_type,
         'batch_id': batch_id,
         'command_string': full_command
-    })
+    }
+    if optional_hosts:
+        default_body['optional_hosts'] = optional_hosts  # type:ignore
+
+    body = json.dumps(default_body)
     response = http_request('POST', endpoint_url, data=body)
     return response
 
 
-def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, timeout: int = 30) -> Dict:
+def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, timeout: int = 30,
+                        optional_hosts: list = None) -> Dict:
     """
         Sends RTR command scope with write access
         :param batch_id:  Batch ID to execute the command on.
         :param command_type: Read-only command type we are going to execute, for example: ls or cd.
         :param full_command: Full command string for the command.
         :param timeout: Timeout for how long to wait for the request in seconds.
+        :param optional_hosts: The hosts ids to run the command on.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-admin-command/v1'
@@ -533,11 +606,15 @@ def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, tim
         'timeout': timeout
     }
 
-    body = json.dumps({
+    default_body = {
         'base_command': command_type,
         'batch_id': batch_id,
         'command_string': full_command
-    })
+    }
+    if optional_hosts:
+        default_body['optional_hosts'] = optional_hosts  # type:ignore
+
+    body = json.dumps(default_body)
     response = http_request('POST', endpoint_url, data=body, params=params)
     return response
 
@@ -571,7 +648,7 @@ def status_get_cmd(request_id: str, timeout: int = None, timeout_duration: str =
 
       :param request_id: ID to the request of `get` command.
       :param timeout: Timeout for how long to wait for the request in seconds
-      :param timeout_duration: Timeout duration for for how long to wait for the request in duration syntax
+      :param timeout_duration: Timeout duration for how long to wait for the request in duration syntax
       :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-get-command/v1'
@@ -611,7 +688,6 @@ def run_single_write_cmd(host_id: str, command_type: str, full_command: str) -> 
     """
     endpoint_url = '/real-time-response/entities/active-responder-command/v1'
     session_id = init_rtr_single_session(host_id)
-
     body = json.dumps({
         'base_command': command_type,
         'command_string': full_command,
@@ -1164,39 +1240,6 @@ def get_custom_ioc(ioc_id: str) -> dict:
     return http_request('GET', '/iocs/entities/indicators/v1', params=params)
 
 
-def upload_custom_ioc(
-    ioc_type: str,
-    value: str,
-    action: str,
-    platforms: str,
-    severity: Optional[str] = None,
-    source: Optional[str] = None,
-    description: Optional[str] = None,
-    expiration: Optional[str] = None,
-    applied_globally: Optional[bool] = None,
-    host_groups: Optional[List[str]] = None,
-) -> dict:
-    """
-    Create a new IOC (or replace an existing one)
-    """
-    payload = {
-        'indicators': [assign_params(
-            type=ioc_type,
-            value=value,
-            action=action,
-            platforms=platforms,
-            severity=severity,
-            source=source,
-            description=description,
-            expiration=expiration,
-            applied_globally=applied_globally,
-            host_groups=host_groups,
-        )]
-    }
-
-    return http_request('POST', '/iocs/entities/indicators/v1', json=payload)
-
-
 def update_custom_ioc(
     ioc_id: str,
     action: Optional[str] = None,
@@ -1502,6 +1545,17 @@ def delete_host_groups(host_group_ids: List[str]) -> Dict:
     return response
 
 
+def upload_batch_custom_ioc(ioc_batch: List[dict]) -> dict:
+    """
+    Upload a list of IOC
+    """
+    payload = {
+        'indicators': ioc_batch
+    }
+
+    return http_request('POST', '/iocs/entities/indicators/v1', json=payload)
+
+
 ''' COMMANDS FUNCTIONS '''
 
 
@@ -1747,7 +1801,7 @@ def search_custom_iocs_command(
     return create_entry_object(
         contents=raw_res,
         ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
-        hr=tableToMarkdown('Indicators of Compromise', ec),
+        hr=tableToMarkdown('Indicators of Compromise', ec, headers=IOC_HEADERS),
     )
 
 
@@ -1781,22 +1835,23 @@ def get_custom_ioc_command(
     return create_entry_object(
         contents=raw_res,
         ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
-        hr=tableToMarkdown('Indicator of Compromise', ec),
+        hr=tableToMarkdown('Indicator of Compromise', ec, headers=IOC_HEADERS),
     )
 
 
 def upload_custom_ioc_command(
-    ioc_type: str,
-    value: str,
-    action: str,
-    platforms: str,
-    severity: Optional[str] = None,
-    source: Optional[str] = None,
-    description: Optional[str] = None,
-    expiration: Optional[str] = None,
-    applied_globally: Optional[bool] = None,
-    host_groups: Optional[List[str]] = None,
-) -> dict:
+        ioc_type: str,
+        value: str,
+        action: str,
+        platforms: str,
+        severity: Optional[str] = None,
+        source: Optional[str] = None,
+        description: Optional[str] = None,
+        expiration: Optional[str] = None,
+        applied_globally: Optional[bool] = None,
+        host_groups: Optional[List[str]] = None,
+        tags: Optional[List[str]] = None,
+) -> List[dict]:
     """
     :param ioc_type: The type of the indicator.
     :param value: The string representation of the indicator.
@@ -1808,29 +1863,32 @@ def upload_custom_ioc_command(
     :param expiration: The date on which the indicator will become inactive.
     :param applied_globally: Whether the indicator is applied globally.
     :param host_groups: List of host group IDs that the indicator applies to.
+    :param tags: List of tags to apply to the indicator.
+
     """
     if action in {'prevent', 'detect'} and not severity:
         raise ValueError(f'Severity is required for action {action}.')
-    raw_res = upload_custom_ioc(
-        ioc_type,
-        value,
-        action,
-        argToList(platforms),
-        severity,
-        source,
-        description,
-        expiration,
-        argToBoolean(applied_globally) if applied_globally else None,
-        argToList(host_groups),
-    )
+    value = argToList(value)
+    applied_globally = argToBoolean(applied_globally) if applied_globally else None
+    host_groups = argToList(host_groups)
+    tags = argToList(tags)
+    platforms = argToList(platforms)
+
+    iocs_json_batch = create_json_iocs_list(ioc_type, value, action, platforms, severity, source, description,
+                                            expiration, applied_globally, host_groups, tags)
+    raw_res = upload_batch_custom_ioc(ioc_batch=iocs_json_batch)
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])
-    ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
-    return create_entry_object(
-        contents=raw_res,
-        ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
-        hr=tableToMarkdown('Custom IOC was created successfully', ec),
-    )
+
+    entry_objects_list = []
+    for ioc in iocs:
+        ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP)]
+        entry_objects_list.append(create_entry_object(
+            contents=raw_res,
+            ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+            hr=tableToMarkdown(f"Custom IOC {ioc['value']} was created successfully", ec),
+        ))
+    return entry_objects_list
 
 
 def update_custom_ioc_command(
@@ -2081,6 +2139,7 @@ def search_detections_command():
     """
     d_args = demisto.args()
     detections_ids = argToList(d_args.get('ids'))
+    extended_data = argToBoolean(d_args.get('extended_data', False))
     if not detections_ids:
         filter_arg = d_args.get('filter')
         if not filter_arg:
@@ -2092,16 +2151,28 @@ def search_detections_command():
     if "resources" in raw_res:
         for detection in demisto.get(raw_res, "resources"):
             detection_entry = {}
+
             for path, new_key in DETECTIONS_BASE_KEY_MAP.items():
                 detection_entry[new_key] = demisto.get(detection, path)
             behaviors = []
+
             for behavior in demisto.get(detection, 'behaviors'):
                 behaviors.append(behavior_to_entry_context(behavior))
             detection_entry['Behavior'] = behaviors
+
+            if extended_data:
+                detection_entry['Device'] = demisto.get(detection, 'device')
+                detection_entry['BehaviorsProcessed'] = demisto.get(detection, 'behaviors_processed')
+
             entries.append(detection_entry)
+
     hr = tableToMarkdown('Detections Found:', entries, headers=headers, removeNull=True, headerTransform=pascalToSpace)
-    ec = {'CrowdStrike.Detection(val.ID === obj.ID)': entries}
-    return create_entry_object(contents=raw_res, ec=ec, hr=hr)
+
+    return CommandResults(readable_output=hr,
+                          outputs=entries,
+                          outputs_key_field='ID',
+                          outputs_prefix='CrowdStrike.Detection',
+                          raw_response=raw_res)
 
 
 def resolve_detection_command():
@@ -2505,7 +2576,8 @@ def run_script_command():
     return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
 
 
-def run_get_command():
+def run_get_command(is_polling=False):
+    request_ids_for_polling = []
     args = demisto.args()
     host_ids = argToList(args.get('host_ids'))
     file_path = args.get('file_path')
@@ -2537,6 +2609,12 @@ def run_get_command():
             'Complete': resource.get('complete') or False,
             'FilePath': file_path
         })
+        request_ids_for_polling.append(
+            {'RequestID': response.get('batch_get_cmd_req_id'),
+             'HostID': resource.get('aid'), })
+
+    if is_polling:
+        return request_ids_for_polling
 
     human_readable = tableToMarkdown(f'Get command has requested for a file {file_path}', output)
     entry_context = {
@@ -2546,8 +2624,8 @@ def run_get_command():
     return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
 
 
-def status_get_command():
-    args = demisto.args()
+def status_get_command(args, is_polling=False):
+    request_ids_for_polling = {}
     request_ids = argToList(args.get('request_ids'))
     timeout = args.get('timeout')
     timeout_duration = args.get('timeout_duration')
@@ -2558,13 +2636,14 @@ def status_get_command():
     files_output = []
     file_standard_context = []
 
+    sha256 = ""  # Used for the polling. When this isn't empty it indicates that the status is "ready".
     for request_id in request_ids:
         response = status_get_cmd(request_id, timeout, timeout_duration)
         responses.append(response)
 
         resources: dict = response.get('resources', {})
 
-        for _, resource in resources.items():
+        for host_id, resource in resources.items():
             errors = resource.get('errors', [])
             if errors:
                 error_message = errors[0].get('message', '')
@@ -2586,6 +2665,12 @@ def status_get_command():
                 'SHA256': resource.get('sha256'),
                 'Size': resource.get('size'),
             })
+            sha256 = resource.get('sha256', '')
+            request_ids_for_polling[host_id] = {'SHA256': sha256}
+
+    if is_polling:
+        args['SHA256'] = sha256
+        return request_ids_for_polling, args
 
     human_readable = tableToMarkdown('CrowdStrike Falcon files', files_output)
     entry_context = {
@@ -2644,8 +2729,7 @@ def status_command():
     return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
 
 
-def get_extracted_file_command():
-    args = demisto.args()
+def get_extracted_file_command(args):
     host_id = args.get('host_id')
     sha256 = args.get('sha256')
     filename = args.get('filename')
@@ -2968,6 +3052,28 @@ def delete_host_groups_command(host_group_ids: List[str]) -> CommandResults:
                           raw_response=response)
 
 
+def upload_batch_custom_ioc_command(
+        multiple_indicators_json: str = None,
+) -> List[dict]:
+    """
+    :param multiple_indicators_json: A JSON object with list of CS Falcon indicators to upload.
+
+    """
+    batch_json = safe_load_json(multiple_indicators_json)
+    raw_res = upload_batch_custom_ioc(batch_json)
+    handle_response_errors(raw_res)
+    iocs = raw_res.get('resources', [])
+    entry_objects_list = []
+    for ioc in iocs:
+        ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP)]
+        entry_objects_list.append(create_entry_object(
+            contents=raw_res,
+            ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+            hr=tableToMarkdown(f"Custom IOC {ioc['value']} was created successfully", ec),
+        ))
+    return entry_objects_list
+
+
 def test_module():
     try:
         get_token(new_token=True)
@@ -2979,6 +3085,271 @@ def test_module():
         except ValueError:
             return 'Error: Something is wrong with the filters you entered for the fetch incident, please try again.'
     return 'ok'
+
+
+def rtr_kill_process_command(args: dict) -> CommandResults:
+    host_id = args.get('host_id')
+    process_ids = remove_duplicates_from_list_arg(args, 'process_ids')
+    command_type = "kill"
+    raw_response = []
+    host_ids = [host_id]
+    batch_id = init_rtr_batch_session(host_ids)
+    outputs = []
+
+    for process_id in process_ids:
+        full_command = f"{command_type} {process_id}"
+        response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command)
+        outputs.extend(parse_rtr_command_response(response, host_ids, process_id=process_id))
+        raw_response.append(response)
+
+    human_readable = tableToMarkdown(
+        f'{INTEGRATION_NAME} {command_type} command on host {host_id}:', outputs, headers=["ProcessID", "Error"])
+    human_readable += get_human_readable_for_failed_command(outputs, process_ids, "ProcessID")
+    return CommandResults(raw_response=raw_response, readable_output=human_readable, outputs=outputs,
+                          outputs_prefix="CrowdStrike.Command.kill", outputs_key_field="ProcessID")
+
+
+def get_human_readable_for_failed_command(outputs, required_elements, element_id):
+    failed_elements = {}
+    for output in outputs:
+        if output.get('Error') != 'Success':
+            failed_elements[output.get(element_id)] = output.get('Error')
+    return add_error_message(failed_hosts=failed_elements, all_requested_hosts=required_elements)
+
+
+def parse_rtr_command_response(response, host_ids, process_id=None) -> list:
+    outputs = []
+    resources: dict = response.get('combined', {}).get('resources', {})
+
+    for host_id, host_data in resources.items():
+        current_error = ""
+        errors = host_data.get('errors')  # API errors
+        stderr = host_data.get('stderr')  # host command error (as path does not exist and more)
+        command_failed_with_error = errors or stderr  # API errors are "stronger" that host stderr
+        if command_failed_with_error:
+            if errors:
+                current_error = errors[0].get('message', '')
+            elif stderr:
+                current_error = stderr
+        outputs_data = {'HostID': host_id, 'Error': current_error if current_error else "Success", }
+        if process_id:
+            outputs_data.update({'ProcessID': process_id})
+
+        outputs.append(outputs_data)
+
+    found_host_ids = {host.get('HostID') for host in outputs}
+    not_found_host_ids = set(host_ids) - found_host_ids
+
+    for not_found_host in not_found_host_ids:
+        outputs.append({
+            'HostID': not_found_host,
+            'Error': "The host ID was not found.",
+        })
+    return outputs
+
+
+def match_remove_command_for_os(operating_system, file_path):
+    if operating_system == 'Windows':
+        return f'rm {file_path} --force'
+    elif operating_system == 'Linux' or operating_system == 'Mac':
+        return f'rm {file_path} -r -d'
+    else:
+        return ""
+
+
+def rtr_remove_file_command(args: dict) -> CommandResults:
+    file_path = args.get('file_path')
+    host_ids = remove_duplicates_from_list_arg(args, 'host_ids')
+    operating_system = args.get('os')
+    full_command = match_remove_command_for_os(operating_system, file_path)
+    command_type = "rm"
+
+    batch_id = init_rtr_batch_session(host_ids)
+    response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids)
+    outputs = parse_rtr_command_response(response, host_ids)
+    human_readable = tableToMarkdown(
+        f'{INTEGRATION_NAME} {command_type} over the file: {file_path}', outputs, headers=["HostID", "Error"])
+    human_readable += get_human_readable_for_failed_command(outputs, host_ids, "HostID")
+    return CommandResults(raw_response=response, readable_output=human_readable, outputs=outputs,
+                          outputs_prefix="CrowdStrike.Command.rm", outputs_key_field="HostID")
+
+
+def execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids=None):
+    """
+    Executes a timer for keeping the session refreshed
+    """
+    timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
+    timer.start()
+    try:
+        response = run_batch_write_cmd(batch_id, command_type=command_type, full_command=full_command,
+                                       optional_hosts=host_ids)
+    finally:
+        timer.cancel()
+    return response
+
+
+def execute_run_batch_admin_cmd_with_timer(batch_id, command_type, full_command, host_ids=None):
+    timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
+    timer.start()
+    try:
+        response = run_batch_admin_cmd(batch_id, command_type=command_type, full_command=full_command,
+                                       optional_hosts=host_ids)
+    finally:
+        timer.cancel()
+    return response
+
+
+def rtr_general_command_on_hosts(host_ids: list, command: str, full_command: str, get_session_function: Callable,
+                                 write_to_context=True) -> \
+        list[CommandResults, dict]:  # type:ignore
+    """
+    General function to run RTR commands depending on the given command.
+    """
+    batch_id = init_rtr_batch_session(host_ids)
+    response = get_session_function(batch_id, command_type=command, full_command=full_command,
+                                    host_ids=host_ids)  # type:ignore
+    output, file, not_found_hosts = parse_rtr_stdout_response(host_ids, response, command)
+
+    human_readable = tableToMarkdown(
+        f'{INTEGRATION_NAME} {command} command on host {host_ids[0]}:', output, headers="Stdout")
+    human_readable += add_error_message(not_found_hosts, host_ids)
+
+    if write_to_context:
+        outputs = {"Filename": file[0].get('File')}
+        return [CommandResults(raw_response=response, readable_output=human_readable, outputs=outputs,
+                               outputs_prefix=f"CrowdStrike.Command.{command}",
+                               outputs_key_field="Filename"), file]
+
+    return [CommandResults(raw_response=response, readable_output=human_readable), file]
+
+
+def parse_rtr_stdout_response(host_ids, response, command, file_name_suffix=""):
+    resources: dict = response.get('combined', {}).get('resources', {})
+    outputs = []
+    files = []
+
+    for host_id, resource in resources.items():
+        current_error = ""
+        errors = resource.get('errors')
+        stderr = resource.get('stderr')
+        command_failed_with_error = errors or stderr
+        if command_failed_with_error:
+            if errors:
+                current_error = errors[0].get('message', '')
+            elif stderr:
+                current_error = stderr
+            return_error(current_error)
+        stdout = resource.get('stdout', "")
+        file_name = f"{command}-{host_id}{file_name_suffix}"
+        outputs.append({'Stdout': stdout, "FileName": file_name})
+        files.append(fileResult(file_name, stdout))
+
+    not_found_hosts = set(host_ids) - resources.keys()
+    return outputs, files, not_found_hosts
+
+
+def rtr_read_registry_keys_command(args: dict):
+    host_ids = remove_duplicates_from_list_arg(args, 'host_ids')
+    registry_keys = remove_duplicates_from_list_arg(args, 'registry_keys')
+    command_type = "reg"
+    raw_response = []
+    batch_id = init_rtr_batch_session(host_ids)
+    outputs = []
+    files = []
+    not_found_hosts = set()
+
+    for registry_key in registry_keys:
+        full_command = f"{command_type} query {registry_key}"
+        response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids=host_ids)
+        output, file, not_found_host = parse_rtr_stdout_response(host_ids, response, command_type,
+                                                                 file_name_suffix=registry_key)
+        not_found_hosts.update(not_found_host)
+        outputs.extend(output)
+        files.append(file)
+        raw_response.append(response)
+
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} {command_type} command on hosts {host_ids}:', outputs)
+    human_readable += add_error_message(not_found_hosts, host_ids)
+    return [CommandResults(raw_response=raw_response, readable_output=human_readable), files]
+
+
+def add_error_message(failed_hosts, all_requested_hosts):
+    human_readable = ""
+    if failed_hosts:
+        if len(all_requested_hosts) == len(failed_hosts):
+            raise DemistoException(f"{INTEGRATION_NAME} The command was failed with the errors: {failed_hosts}")
+        human_readable = "Note: you don't see the following IDs in the results as the request was failed " \
+                         "for them. \n"
+        for host_id in failed_hosts:
+            human_readable += f'ID {host_id} failed as it was not found. \n'
+    return human_readable
+
+
+def rtr_polling_retrieve_file_command(args: dict):
+    """
+    This function is generically handling the polling flow.
+    In this case, the polling flow is:
+    1. run the "cs-falcon-run-get-command" command to get the request id.
+    2. run the "cs-falcon-status-get-command" command to get the status of the first "get" command by the request id.
+    2.1 start polling - wait for the 2nd step to be finished (when we get at least sha256 one time).
+    3. run the "cs-falcon-get-extracted-file" command to get the extracted file.
+    Args:
+        args: the arguments required to the command being called, under cmd
+    Returns:
+        The return value is:
+        1. All the extracted files.
+        2. A list of dictionaries. Each dict includes a host id and a file name.
+    """
+    cmd = "cs-falcon-rtr-retrieve-file"
+    ScheduledCommand.raise_error_if_not_supported()
+    interval_in_secs = int(args.get('interval_in_seconds', 60))
+
+    if 'hosts_and_requests_ids' not in args:
+        # this is the very first time we call the polling function. We don't wont to call this function more that
+        # one time, so we store that arg between the different runs
+        args['hosts_and_requests_ids'] = run_get_command(is_polling=True)  # run the first command to retrieve file
+
+    # we are here after we ran the cs-falcon-run-get-command command at the current run or in previous
+    if not args.get('SHA256'):
+        # this means that we don't have status yet (i.e we didn't get sha256)
+        hosts_and_requests_ids = args.pop('hosts_and_requests_ids')
+        args['request_ids'] = [res.get('RequestID') for res in hosts_and_requests_ids]
+        get_status_response, args = status_get_command(args, is_polling=True)
+
+        if args.get('SHA256'):
+            # the status is ready, we can get the extracted files
+            args.pop('SHA256')
+            return rtr_get_extracted_file(get_status_response, args.get('fileName'))  # type:ignore
+
+        else:
+            # we should call the polling on status, cause the status is not ready
+            args['hosts_and_requests_ids'] = hosts_and_requests_ids
+            args.pop('request_ids')
+            args.pop('SHA256')
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_secs,
+                args=args,
+                timeout_in_seconds=600)
+            command_results = CommandResults(scheduled_command=scheduled_command,
+                                             readable_output="Waiting for the polling execution")
+            return command_results
+
+
+def rtr_get_extracted_file(args_to_get_files: dict, file_name: str):
+    files = []
+    outputs_data = []
+
+    for host_id, values in args_to_get_files.items():
+        arg = {'host_id': host_id, 'sha256': values.get('SHA256'), 'filename': file_name}
+        file = get_extracted_file_command(arg)
+        files.append(file)
+        outputs_data.append(
+            {'HostID': arg.get('host_id'),
+             'FileName': file.get('File')
+             })
+    return [CommandResults(readable_output="CrowdStrike Falcon files", outputs=outputs_data,
+                           outputs_prefix="CrowdStrike.File"), files]
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -3003,7 +3374,7 @@ def main():
         elif command == 'cs-falcon-get-behavior':
             demisto.results(get_behavior_command())
         elif command == 'cs-falcon-search-detection':
-            demisto.results(search_detections_command())
+            return_results(search_detections_command())
         elif command == 'cs-falcon-resolve-detection':
             demisto.results(resolve_detection_command())
         elif command == 'cs-falcon-contain-host':
@@ -3033,11 +3404,11 @@ def main():
         elif command == 'cs-falcon-run-get-command':
             demisto.results(run_get_command())
         elif command == 'cs-falcon-status-get-command':
-            demisto.results(status_get_command())
+            demisto.results(status_get_command(demisto.args()))
         elif command == 'cs-falcon-status-command':
             demisto.results(status_command())
         elif command == 'cs-falcon-get-extracted-file':
-            demisto.results(get_extracted_file_command())
+            demisto.results(get_extracted_file_command(demisto.args()))
         elif command == 'cs-falcon-list-host-files':
             demisto.results(list_host_files_command())
         elif command == 'cs-falcon-refresh-session':
@@ -3100,6 +3471,38 @@ def main():
         elif command == 'cs-falcon-resolve-incident':
             return_results(resolve_incident_command(status=args.get('status'),
                                                     ids=argToList(args.get('ids'))))
+        elif command == 'cs-falcon-batch-upload-custom-ioc':
+            return_results(upload_batch_custom_ioc_command(**args))
+
+        elif command == 'cs-falcon-rtr-kill-process':
+            return_results(rtr_kill_process_command(args))
+
+        elif command == 'cs-falcon-rtr-remove-file':
+            return_results(rtr_remove_file_command(args))
+
+        elif command == 'cs-falcon-rtr-list-processes':
+            host_id = args.get('host_id')
+            return_results(
+                rtr_general_command_on_hosts([host_id], "ps", "ps", execute_run_batch_write_cmd_with_timer, True))
+
+        elif command == 'cs-falcon-rtr-list-network-stats':
+            host_id = args.get('host_id')
+            return_results(
+                rtr_general_command_on_hosts([host_id], "netstat", "netstat", execute_run_batch_write_cmd_with_timer,
+                                             True))
+
+        elif command == 'cs-falcon-rtr-read-registry':
+            return_results(rtr_read_registry_keys_command(args))
+
+        elif command == 'cs-falcon-rtr-list-scheduled-tasks':
+            full_command = f'runscript -Raw=```schtasks /query /fo LIST /v```'  # noqa: F541
+            host_ids = argToList(args.get('host_ids'))
+            return_results(rtr_general_command_on_hosts(host_ids, "runscript", full_command,
+                                                        execute_run_batch_admin_cmd_with_timer))
+
+        elif command == 'cs-falcon-rtr-retrieve-file':
+            return_results(rtr_polling_retrieve_file_command(args))
+
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
