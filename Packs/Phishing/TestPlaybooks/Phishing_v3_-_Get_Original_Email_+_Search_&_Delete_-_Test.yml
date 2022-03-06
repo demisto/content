@@ -1168,7 +1168,7 @@ tasks:
       interval_between_tries:
         simple: "10"
       max_timeout:
-        simple: "100"
+        simple: "2500"
       task_name:
         simple: Close investigation
       task_states:
