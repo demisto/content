@@ -36,11 +36,25 @@ jobs:
           pipenv run ./check_if_needs_to_fill_contribution_form.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN
   contribution_labels_filled_verification:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.head.repo.fork == true && contains(github.event.pull_request.labels.*.name, 'Community') == false && contains(github.event.pull_request.labels.*.name, 'Partner') == false && contains(github.event.pull_request.labels.*.name, 'internal') == false
+    if: |
+      (
+        github.repository == 'demisto/content' &&
+        github.event.pull_request.head.repo.fork == true
+      ) &&
+      (
+        contains(github.event.pull_request.labels.*.name, 'Contribution Form Filled') == false ||
+        (
+          contains(github.event.pull_request.labels.*.name, 'Contribution Form Filled') == true &&
+          contains(github.event.pull_request.labels.*.name, 'Community') == false &&
+          contains(github.event.pull_request.labels.*.name, 'Partner') == false &&
+          contains(github.event.pull_request.labels.*.name, 'internal') == false
+        )
+      )
     steps:
       - name: Contirbution labels were not found
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          CURRENT_LABELS: $$ {{ github.event.pull_request.labels.*.name }}
         run: |
-          echo "PR $PR_NUMBER does not contain any of the labels Community/Partner/internal"
+          echo "PR $PR_NUMBER labels $CURRENT_LABELS must contain 'Contribution Form Filled' label and one of 'Community'/'Partner'/'internal' labels"
           exit 1
