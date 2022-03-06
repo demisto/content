@@ -34,3 +34,13 @@ jobs:
           echo "Checking if contribution form needs to be filled for PR: $PR_NUMBER"
           cd Utils/github_workflow_scripts
           pipenv run ./check_if_needs_to_fill_contribution_form.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN
+  contribution_labels_filled_verification:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.fork == true && contains(github.event.pull_request.labels.*.name, 'Community') == false && contains(github.event.pull_request.labels.*.name, 'Partner') == false && contains(github.event.pull_request.labels.*.name, 'internal') == false
+    steps:
+      - name: Contirbution labels were not found
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          echo "PR $PR_NUMBER does not contain any of the labels Community/Partner/internal"
+          exit 1
