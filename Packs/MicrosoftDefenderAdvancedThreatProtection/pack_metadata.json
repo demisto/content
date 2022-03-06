@@ -16,5 +16,34 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
+    ],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "WindowsDefenderAdvancedThreatProtection": {
+            "mandatory": false,
+            "display_name": "Windows Defender Advanced Threat Protection (Deprecated)"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "CoreAlertFields": {
+            "mandatory": false,
+            "display_name": "Core Alert Fields"
+        }
+    },
+    "displayedImages": [
+        "CommonTypes",
+        "WindowsDefenderAdvancedThreatProtection",
+        "CommonScripts",
+        "CommonPlaybooks",
+        "CoreAlertFields"
     ]
 }
