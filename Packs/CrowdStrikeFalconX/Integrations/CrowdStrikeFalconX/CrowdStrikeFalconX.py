@@ -305,7 +305,6 @@ class Client:
         :param system_time: set a custom time in the format HH:mm for the sandbox environment.
         :return: http response
         """
-        url_suffix = "/falconx/entities/submissions/v1"
         body = {
             "sandbox": [
                 {
@@ -322,7 +321,7 @@ class Client:
             ]
         }
         self._headers['Content-Type'] = 'application/json'
-        return self._http_request("POST", url_suffix, json_data=body)
+        return self._http_request("POST", "/falconx/entities/submissions/v1", json_data=body)
 
     def get_full_report(
             self,
@@ -332,8 +331,7 @@ class Client:
         :param id: id of a submitted malware samples.
         :return: http response
         """
-        url_suffix = "/falconx/entities/reports/v1"
-        return self._http_request("Get", url_suffix, params={"ids": id})
+        return self._http_request("Get", "/falconx/entities/reports/v1", params={"ids": id})
 
     def get_report_summary(
             self,
@@ -354,8 +352,7 @@ class Client:
         :param ids: ids of a submitted malware samples.
         :return: http response
         """
-        url_suffix = "/falconx/entities/submissions/v1"
-        return self._http_request("Get", url_suffix, params={"ids": ids})
+        return self._http_request("Get", "/falconx/entities/submissions/v1", params={"ids": ids})
 
     def download_ioc(
             self,
@@ -399,11 +396,10 @@ class Client:
         :param filter: optional filter and sort criteria in the form of an FQL query, takes precedence over `hash`.
         :param offset: the offset to start retrieving reports from.
         :param sort: sort order: asc or desc
-        :param hashes: sha256 hashes of the file. ignored if `filter` is provided.
+        :param hash: sha256 hash of the file. ignored if `filter` is provided.
         :return: http response
         """
 
-        url_suffix = "/falconx/queries/reports/v1"
         params = {
             "filter": filter,
             "offset": offset,
@@ -413,7 +409,7 @@ class Client:
         if hashes and not filter:
             params['filter'] = ",".join(f'sandbox.sha256:"{sha256}"' for sha256 in hashes)
 
-        return self._http_request("Get", url_suffix, params=params)
+        return self._http_request("Get", "/falconx/queries/reports/v1", params=params)
 
     def find_submission_id(
             self,
@@ -429,15 +425,13 @@ class Client:
         :param sort: sort order: asc or desc
         :return: http response
         """
-        url_suffix = "/falconx/queries/submissions/v1"
-
         params = {
             "filter": filter,
             "offset": offset,
             "limit": limit,
             "sort": sort,
         }
-        return self._http_request("Get", url_suffix, params=params)
+        return self._http_request('Get', '/falconx/queries/submissions/v1', params=params)
 
 
 def filter_dictionary(dictionary: dict, fields_to_keep: Optional[tuple], sort_by_field_list: bool = False) -> dict:
