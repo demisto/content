@@ -2379,7 +2379,7 @@ def test_get_indicator_device_id(mocker, requests_mock):
     from CrowdStrikeFalcon import get_indicator_device_id
     requests_mock.get("https://4.4.4.4/indicators/queries/devices/v1",
                       json=test_data['response_for_get_indicator_device_id'])
-    mocker.patch.object(demisto, 'args', return_value={'type':'sha256', 'value':'example_sha'})
+    mocker.patch.object(demisto, 'args', return_value={'type': 'sha256', 'value': 'example_sha'})
     res = get_indicator_device_id()
 
     # Expecting both DeviceIOC and DeviceID outputs for BC.
@@ -2387,6 +2387,7 @@ def test_get_indicator_device_id(mocker, requests_mock):
     assert res.outputs['DeviceIOC']['Type'] == 'sha256'
     assert res.outputs['DeviceIOC']['Value'] == 'example_sha'
     assert res.outputs['DeviceIOC']['DeviceID'] == res.outputs['DeviceID']
+
 
 def test_validate_response():
     from CrowdStrikeFalcon import validate_response
