@@ -9040,7 +9040,7 @@ def get_fetch_run_time_with_look_back(last_run, first_fetch, look_back=0, timezo
     last_run_time = last_run and 'time' in last_run and last_run['time']
     now = datetime.utcnow() + timedelta(hours=timezone)
     if not last_run_time:
-        last_run_time = dateparser.parse(first_fetch) + timedelta(hours=timezone)
+        last_run_time, _ = parse_date_range(first_fetch)
     else:
         last_run_time = datetime.strptime(last_run_time, date_format)
 
