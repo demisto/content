@@ -1253,9 +1253,7 @@ def update_custom_ioc(
     Update an IOC
     """
     payload = {
-        'indicators': [{
-                           'id': ioc_id,
-                       } | assign_params(
+        'indicators': [{'id': ioc_id, } | assign_params(
             action=action,
             platforms=platforms,
             severity=severity,
