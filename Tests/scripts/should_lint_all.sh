@@ -61,9 +61,9 @@ if [[ -n "$DIFF_RES" ]]; then
 fi
 
 # test if CommonServer has been modified
-DIFF_RES=$(git diff  "$DIFF_COMPARE" -- Packs/Base/Scripts/script-CommonServer.yml)
+DIFF_RES=$(git diff  "$DIFF_COMPARE" -- Packs/Base/Scripts/CommonServer/CommonServer.js)
 if [[ -n "$DIFF_RES" ]]; then
-    echo -e "CommonServer.yml has been modified"
+    echo -e "CommonServer.js has been modified"
     exit 0
 fi
 

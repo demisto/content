@@ -114,10 +114,11 @@ class FireEyeClient(BaseClient):
 
     @logger
     def _generate_token(self) -> str:
-        resp = self._http_request(method='POST', url_suffix='auth/login', resp_type='response')
-        if resp.status_code != 200:
+        try:
+            resp = self._http_request(method='POST', url_suffix='auth/login', resp_type='response')
+        except DemistoException as er:
             raise DemistoException(
-                f'Token request failed with status code {resp.status_code}. message: {str(resp)}')
+                f'Token request failed. message: {str(er)}')
         if 'X-FeApi-Token' not in resp.headers:
             raise DemistoException(
                 f'Token request failed. API token is missing. message: {str(resp)}')
@@ -125,7 +126,7 @@ class FireEyeClient(BaseClient):
 
         integration_context = get_integration_context()
         integration_context.update({'token': token})
-        time_buffer = 10  # minutes by which to lengthen the validity period
+        time_buffer = 600  # 600 seconds (10 minutes) by which to lengthen the validity period
         integration_context.update({'valid_until': datetime.timestamp(datetime.now() + timedelta(seconds=time_buffer))})
         set_integration_context(integration_context)
 

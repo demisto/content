@@ -2,7 +2,7 @@
     "name": "SecurityAdvisor",
     "description": "Contextual coaching and awareness for end users",
     "support": "partner",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "SecurityAdvisor",
     "url": "https://www.securityadvisor.io",
     "email": "support@securityadvisor.io",
@@ -16,5 +16,9 @@
     "githubUser": [
         "r-puri"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

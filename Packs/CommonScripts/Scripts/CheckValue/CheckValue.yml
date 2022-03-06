@@ -1,0 +1,21 @@
+commonfields:
+  id: checkValue
+  version: -1
+name: checkValue
+script: ''
+type: javascript
+tags:
+- Utility
+- Condition
+comment: "Gets a value and return it. This is to be used in playbook conditional tasks\
+  \ - get a value from incident field, label or context, and act accordingly. \nIf\
+  \ an array is returned. the first value will be the decision making value."
+enabled: true
+args:
+- name: value
+  default: true
+  description: Value to check
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- No tests

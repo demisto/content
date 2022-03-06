@@ -2082,7 +2082,7 @@ script:
       type: String
     description: Apply the new or existing tag to the asset, creates a new tag if
       it does not exist in RiskSense.
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: false
   longRunning: false
   longRunningPort: false

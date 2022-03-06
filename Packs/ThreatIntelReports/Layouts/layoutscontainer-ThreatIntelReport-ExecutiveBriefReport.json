@@ -102,7 +102,7 @@
                         "displayType": "CARD",
                         "h": 7,
                         "hideItemTitleOnlyOne": true,
-                        "hideName": false,
+                        "hideName": true,
                         "i": "vug7e0qild-2ecd0f84-0c67-431e-8191-1bc60b09b322-vug7e0qild-2ecd0f84-0c67-431e-8191-1bc60b09b322-vug7e0qild-ea684940-b30a-11eb-941c-e725acf1fbbc",
                         "items": [
                             {

@@ -41,9 +41,8 @@ configuration:
   type: 8
 description: Deploy and manage containerized applications with a fully managed Kubernetes
   service.
-display: Azure Kubernetes Services (Beta)
+display: Azure Kubernetes Services
 name: Azure Kubernetes Services
-beta: true
 script:
   commands:
   - deprecated: false
@@ -184,7 +183,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Resource location.
+      description: Resource location, Can be retrieved using
+        the azure-ks-clusters-list command.
       isArray: false
       name: location
       predefined:

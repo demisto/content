@@ -379,7 +379,7 @@ script:
       description: The number of engines that positively detected the indicator as
         malicious.
       type: string
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   script: ''
   subtype: python3

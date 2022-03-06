@@ -2,7 +2,7 @@
     "name": "RST Threat Feed",
     "description": "Aggregated, filtered, and scored threat intelligence database available via  API to check domains, URLs, and IP addresses",
     "support": "partner",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "RST Cloud",
     "url": "https://rstcloud.net/",
     "email": "support@rstcloud.net",
@@ -53,5 +53,9 @@
         "k1r10n"
     ],
     "dependencies": {},
-    "displayedImages": []
+    "displayedImages": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

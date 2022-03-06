@@ -1,11 +1,11 @@
 {
     "name": "Devo",
     "description": "Use the Devo integration to query Devo for alerts, lookup tables, and to write to lookup tables.",
-    "support": "xsoar",
-    "currentVersion": "1.1.6",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "support": "partner",
+    "currentVersion": "1.1.7",
+    "author": "Devo",
+    "url": "https://www.devo.com",
+    "email": "support@devo.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Analytics & SIEM"
@@ -14,5 +14,9 @@
     "useCases": [],
     "keywords": [
         "Devo"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }
