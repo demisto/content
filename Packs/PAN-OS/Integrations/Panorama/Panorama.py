@@ -7616,15 +7616,15 @@ class Topology:
             # Check if HA is active and if so, what the system state is.
             panorama_ha_state_result = run_op_command(device, "show high-availability state")
             enabled = panorama_ha_state_result.find("./result/enabled")
-
-            if enabled == "yes":
-                # Only associate Firewalls with the active Panorama instance
-                state = find_text_in_element(panorama_ha_state_result, "./result/group/local-info/state")
-                if "active" in state:
-                    # TODO: Work out how to get the Panorama peer serial..
-                    self.ha_active_devices[device.serial] = "peer serial not implemented here.."
-                    self.get_all_child_firewalls(device)
-                    return
+            if enabled is not None:
+                if enabled.text == "yes":
+                    # Only associate Firewalls with the active Panorama instance
+                    state = find_text_in_element(panorama_ha_state_result, "./result/group/local-info/state")
+                    if "active" in state:
+                        # TODO: Work out how to get the Panorama peer serial..
+                        self.ha_active_devices[device.serial] = "peer serial not implemented here.."
+                        self.get_all_child_firewalls(device)
+                        return
             else:
                 self.get_all_child_firewalls(device)
 

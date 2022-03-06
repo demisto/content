@@ -1,7 +1,11 @@
 import json
 
 import pytest
-
+import xml.etree.ElementTree as ElementTree
+from unittest.mock import patch, MagicMock
+from panos.base import PanDevice
+from panos.panorama import Panorama
+from panos.firewall import Firewall
 import demistomock as demisto
 from CommonServerPython import DemistoException
 
@@ -1024,11 +1028,28 @@ class TestDevices:
         assert list(Panorama.devices()) == [('target1', 'vsys1'), ('target1', 'vsys2'), ('target2', None)]
 
 
-class MockFirewallPanDevice:
-    """A mock version of a PanDevice Firewall instance"""
-    def op(self, *args, **kwargs):
-        pass
+def load_xml_root_from_test_file(xml_file: str) -> ElementTree.Element:
+    """Given an XML file, loads it and returns the root element"""
+    xml_tree = ElementTree.parse(xml_file)
+    return xml_tree.getroot()
+
+
+@pytest.fixture
+def mock_firewall():
+    mock_firewall = MagicMock(spec=Firewall)
+    mock_firewall.serial = "000111233444"
+    return mock_firewall
 
 class TestTopology:
     """Tests the Topology class and all of it's methods"""
-    pass
+    SHOW_HA_STATE_XML = "test_data/show_ha_state.xml"
+
+    @patch("Panorama.Topology.get_all_child_firewalls")
+    @patch("Panorama.run_op_command")
+    def test_add_firewall_device_object(self, patched_run_op_command, patched_topology_get_all_firewalls, mock_firewall):
+        from Panorama import Topology
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestTopology.SHOW_HA_STATE_XML)
+        topology = Topology()
+        topology.add_device_object(mock_firewall)
+
+        assert "000111233444" in topology.firewall_objects
