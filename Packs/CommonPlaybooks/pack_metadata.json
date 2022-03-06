@@ -16,6 +16,10 @@
             "mandatory": false,
             "display_name": "Threat Crowd"
         },
+            "CoreAlertFields": {
+            "mandatory": false,
+            "display_name": "Core Alert Fields"
+        },
         "CiscoASA": {
             "mandatory": false,
             "display_name": "Cisco ASA"
