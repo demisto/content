@@ -4,7 +4,7 @@
     "modified": "2022-02-28T12:28:45.706309491Z",
     "name": "Reported Email Message ID",
     "ownerOnly": false,
-    "description": "The message ID of the reported email in a reported (forwarded or attached) phishing email. For example, if email A is a phishing email, and email A was attached to email B in the phishing report, then value of this field would hold the message ID of email A.",
+    "description": "The message ID of the reported email in a reported (forwarded or attached) phishing email. For example, if Email A is a phishing email, and Email A is attached to Email B in the phishing report, the value of this field is the message ID of Email A.",
     "cliName": "reportedemailmessageid",
     "type": "shortText",
     "closeForm": false,
