@@ -1516,14 +1516,16 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The machine ID.
-      isArray: false
+      description: The machine ID. When providing multiple values, each will be checked for the same hash.
+      isArray: true
       name: machine_id
       required: true
       secret: false
     - default: false
-      description: The file SHA1 hash to stop and quarantine on the machine.
-      isArray: false
+      description: |-
+        The file SHA1 hash to stop and quarantine on the machine. 
+        When providing multiple values, each will be checked for the same machine_id.
+      isArray: true
       name: file_hash
       required: true
       secret: false
@@ -3948,7 +3950,7 @@ script:
       secret: false
     - default: false
       auto: PREDEFINED
-      description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256",
+      description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256", "FileMd5",
         "IpAddress", "DomainName", and "Url".'
       isArray: false
       name: indicator_type
@@ -3956,6 +3958,7 @@ script:
       predefined:
       - FileSha1
       - FileSha256
+      - FileMd5
       - IpAddress
       - DomainName
       - Url
@@ -3967,8 +3970,8 @@ script:
       name: action
       required: true
       predefined:
-      - Alert
-      - AlertAndBlock
+      - Audit
+      - BlockAndRemediate
       - Allowed
     - default: false
       auto: PREDEFINED
@@ -4143,7 +4146,7 @@ script:
       secret: false
     - default: false
       auto: PREDEFINED
-      description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256",
+      description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256", "FileMd5",
         "IpAddress", "DomainName", and "Url".'
       isArray: false
       name: indicator_type
@@ -4151,6 +4154,7 @@ script:
       predefined:
       - FileSha1
       - FileSha256
+      - FileMd5
       - IpAddress
       - DomainName
       - Url
@@ -4162,8 +4166,8 @@ script:
       name: action
       required: true
       predefined:
-      - Alert
-      - AlertAndBlock
+      - Audit
+      - BlockAndRemediate
       - Allowed
     - default: false
       auto: PREDEFINED
