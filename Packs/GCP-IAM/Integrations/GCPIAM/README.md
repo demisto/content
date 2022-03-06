@@ -1945,7 +1945,7 @@ Create a custom organization role.
 | role_id | The unique ID of the role to create. A role ID may contain alphanumeric characters, underscores (_), and periods (.). It must contain a minimum of 3 characters and a maximum of 64 characters. | Required | 
 | description | The description of the role to create. | Optional | 
 | title | The title of the role to create. | Optional | 
-| permissions | A comma-separated names of the permissions the role grants when bound. in an IAM policy. | Required | 
+| permissions | A comma-separated names of the permissions the role grants when bound. in an IAM policy. | Optional | 
 | stage | The launch stage of the role. More information can be found here: https://cloud.google.com/iam/docs/reference/rest/v1/organizations.roles#rolelaunchstage. Possible values are: ALPHA, BETA, GA, DEPRECATED, DISABLED, EAP. | Optional | 
 
 

@@ -6,18 +6,46 @@ import copy
 from typing import Callable
 from googleapiclient import discovery
 from oauth2client import service_account
+import httplib2
+from urllib.parse import urlparse
 
 
 class Client:
-    def __init__(self, client_secret: str):
+    def __init__(self, client_secret: str, proxy: bool = False, verify_certificate: bool = False):
         client_secret = json.loads(client_secret)
         scopes = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-identity',
                   'https://www.googleapis.com/auth/iam', ]
         credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(client_secret, scopes=scopes)
 
-        self.cloud_identity_service = discovery.build('cloudidentity', 'v1', credentials=credentials)
-        self.cloud_resource_manager_service = discovery.build('cloudresourcemanager', 'v3', credentials=credentials)
-        self.iam_service = discovery.build('iam', 'v1', credentials=credentials)
+        proxies = handle_proxy()
+
+        if proxy or verify_certificate:
+            http_client = credentials.authorize(self.get_http_client_with_proxy(proxies))
+            self.cloud_identity_service = discovery.build('cloudidentity', 'v1', http=http_client)
+            self.cloud_resource_manager_service = discovery.build('cloudresourcemanager', 'v3', http=http_client)
+            self.iam_service = discovery.build('iam', 'v1', http=http_client)
+
+        else:
+            self.cloud_identity_service = discovery.build('cloudidentity', 'v1', credentials=credentials)
+            self.cloud_resource_manager_service = discovery.build('cloudresourcemanager', 'v3', credentials=credentials)
+            self.iam_service = discovery.build('iam', 'v1', credentials=credentials)
+
+    def get_http_client_with_proxy(self, proxies: dict, proxy: bool = False, verify_certificate: bool = False):
+        proxy_info = None
+        if proxy:
+            if not proxies or not proxies['https']:
+                raise Exception('https proxy value is empty. Check Demisto server configuration')
+            https_proxy = proxies['https']
+            if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
+                https_proxy = 'https://' + https_proxy
+            parsed_proxy = urlparse(https_proxy)
+            proxy_info = httplib2.ProxyInfo(
+                proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
+                proxy_host=parsed_proxy.hostname,
+                proxy_port=parsed_proxy.port,
+                proxy_user=parsed_proxy.username,
+                proxy_pass=parsed_proxy.password)
+        return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=verify_certificate)
 
     def gcp_iam_project_list_request(self, parent: str, limit: int = None, page_token=None,
                                      show_deleted: bool = False) -> dict:
@@ -3639,6 +3667,8 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
 
     service_account_key = params['credentials']['password']
+    verify_certificate: bool = not params.get('insecure', False)
+    proxy: bool = params.get('proxy', False)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
@@ -3647,7 +3677,7 @@ def main() -> None:
         if command == 'test-module':
             return test_module(service_account_key)
 
-        client: Client = Client(client_secret=service_account_key)
+        client: Client = Client(client_secret=service_account_key, proxy=proxy, verify_certificate=verify_certificate)
         commands = {
             'gcp-iam-projects-get': gcp_iam_projects_get_command,
             'gcp-iam-project-iam-policy-get': gcp_iam_project_iam_policy_get_command,
