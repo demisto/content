@@ -1,7 +1,7 @@
 - name: My Rule
   fromvxsiamersion: 3.3
   tags: a
-  rule: >
+  rules: >
     [MODEL: dataset="okta_saas", model="Network", version=0.7]
     | alter outcome_result = json_extract_scalar(outcome, "$.result")
     | alter XDM_Audit_Main_identity_uuid = json_extract_scalar(actor, "$.id"),
@@ -35,9 +35,8 @@
             XDM_Auth_Target_host_device_id = json_extract_scalar(`target`, "$.id"),
             XDM_Auth_Target_host_device_type = json_extract_scalar(`target`, "$.type");
 
-  canonical: {
-    "okta_saas": [ ],
-    "okta_on": [
+  samples: {
+    "okta_on_prem": [
       {
         "cefVersion": "CEF:0",
         "cefDeviceVendor": "Zscaler",

@@ -1,4 +1,5 @@
 - name: My Rule
   fromvxsiamersion: 3.3
   tags: a
-  rule: ''
+  rules: ''
+  samples: ''
