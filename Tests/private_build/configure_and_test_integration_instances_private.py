@@ -27,7 +27,7 @@ def install_private_testing_pack(build: Build, test_pack_zip_path: str):
     :return: No object is returned. concurrently_run_function_on_servers will wait for the process to finish.
     """
     build.concurrently_run_function_on_servers(function=upload_zipped_packs,
-                                pack_path=test_pack_zip_path)
+                                               pack_path=test_pack_zip_path)
 
 
 def install_packs_private(build: Build, pack_ids: list = None) -> bool:

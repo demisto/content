@@ -277,16 +277,6 @@ class Build:
             logging.debug(f'Updated Integrations Since Last Release:\n{modified_integrations_names}')
         return new_integrations_names, modified_integrations_names
 
-    def install_packs_pre_update(self):
-        """
-        Install packs on server according to server version
-        Args:
-            self: A build object
-        """
-        if not self.is_private:
-            pack_ids = get_non_added_packs_ids(self)
-            self.install_packs(pack_ids=pack_ids)
-
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         threads_list = []
 
@@ -305,6 +295,15 @@ class Build:
         run_threads_list(threads_list)
 
     def install_packs(self, pack_ids=None):
+        """
+        Install pack_ids or packs from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" folder, and packs dependencies.
+        Args:
+            pack_ids: Packs to install on the server. If no packs provided, installs packs that was provided
+            by previous step of the build.
+
+        Returns:
+            installed_content_packs_successfully: Whether packs installed successfully
+        """
         pack_ids = self.pack_ids_to_install if pack_ids is None else pack_ids
         installed_content_packs_successfully = True
         for server in self.servers:
@@ -322,7 +321,7 @@ class Build:
         """
         Selects the tests from that should be run in this execution and filters those that cannot run in this server version
         Args:
-            build: Build object
+            self: Build object
 
         Returns:
             Test configurations from conf.json that should be run in this execution
@@ -358,6 +357,9 @@ class Build:
         #  END CHANGE ON LOCAL RUN  #
 
     def configure_server_instances(self, tests_for_iteration, all_new_integrations, modified_integrations):
+        """
+
+        """
         modified_module_instances = []
         new_module_instances = []
         testing_client = self.servers[0].client
@@ -493,7 +495,8 @@ class Build:
 
     def update_content_on_servers(self) -> bool:
         """
-        Updates content on the build's server according to the server version
+        Changes marketplace bucket to new one that was created for current branch.
+        Updates content on the build's server according to the server version.
         Args:
             self: Build object
 
@@ -503,10 +506,8 @@ class Build:
             If the server version is higher or equal to 6.0 - will return True if the packs installation was successful
             both before that update and after the update.
         """
-        installed_content_packs_successfully = True
-        if not self.is_nightly:
-            self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number)
-            installed_content_packs_successfully = self.install_packs()
+        self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number)
+        installed_content_packs_successfully = self.install_packs()
         return installed_content_packs_successfully
 
 
@@ -620,6 +621,7 @@ class XSOARBuild(Build):
             tests_for_iteration,
             new_integrations,
             modified_integrations)
+        #
         successful_tests_pre, failed_tests_pre = self.instance_testing(modified_module_instances, pre_update=True)
         return modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre
 
@@ -1473,24 +1475,30 @@ def main():
     build.disable_instances()  # disable all enabled integrations (Todo in xsiam too)
 
     if build.is_nightly:
-        # XSOAR Nightly: install all packs and upload all test playbooks that currently in master.
+        # XSOAR Nightly: install all existing packs and upload all test playbooks that currently in master.
         build.install_nightly_pack()
     else:
-        # install only modified packs.
-        build.install_packs_pre_update()
+        # Install only modified packs.
+        pack_ids = get_non_added_packs_ids(build)
+        build.install_packs(pack_ids=pack_ids)
 
-        # compares master to commit_sha and return all changes
+        # compares master to commit_sha and return two lists - new integrations and modified in the current branch
         new_integrations, modified_integrations = build.get_changed_integrations()
 
+        # todo: investigate more
+        # Test configurations from conf.json that should be run in this execution
         # Configures integration instances that currently in master (+ press test button)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations,
                                                                                             modified_integrations)
 
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
-        # changes marketplace bucket to new one. Installs all content from current branch.
+
+        # Changes marketplace bucket to the new one that was created. Installs all (new and modified)
+        # required packs from current branch.
         installed_content_packs_successfully = build.update_content_on_servers()
 
-        # After updating packs from branch, press test-module button to check that it was not broken
+        # After updating packs from branch, runs `test-module` for both new and modified integrations,
+        # to check that modified integrations was not broken. Wrapper for `instance_testing` function.
         successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
                                                                                        modified_module_instances)
         # prints results
