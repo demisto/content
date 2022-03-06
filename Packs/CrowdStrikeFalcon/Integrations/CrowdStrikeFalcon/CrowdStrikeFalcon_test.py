@@ -1728,6 +1728,30 @@ def test_list_host_files(requests_mock, mocker):
     assert results['EntryContext'] == expected_results
 
 
+def test_list_host_files_with_given_session_id(mocker):
+    """
+    Given:
+        - session_id to use when getting host files
+    When:
+        - run list_host_files command
+    Then:
+        - validate the givven session_id was used
+    """
+    # prepare
+    import CrowdStrikeFalcon
+    mocker.patch.object(demisto, 'args', return_value={
+        'host_id': 'test_host_id',
+        'session_id': 'test_session_id'
+    })
+    mocker.patch.object(CrowdStrikeFalcon, 'list_host_files', return_value={})
+
+    # call
+    CrowdStrikeFalcon.list_host_files_command()
+
+    # assert
+    CrowdStrikeFalcon.list_host_files.assert_called_with('test_host_id', 'test_session_id')
+
+
 def test_refresh_session(requests_mock, mocker):
     from CrowdStrikeFalcon import refresh_session_command
 

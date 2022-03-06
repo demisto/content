@@ -771,14 +771,16 @@ def status_admin_cmd(request_id: str, sequence_id: Optional[int]) -> Dict:
     return response
 
 
-def list_host_files(host_id: str) -> Dict:
+def list_host_files(host_id: str, session_id: str = None) -> Dict:
     """
         Get a list of files for the specified RTR session on a host.
         :param host_id: Host agent ID to run RTR command on.
+        :param session_id: optional session_id for the command, if not provided a new session_id will generate
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/entities/file/v1'
-    session_id = init_rtr_single_session(host_id)
+    if not session_id:
+        session_id = init_rtr_single_session(host_id)
 
     params = {
         'session_id': session_id
@@ -2755,8 +2757,9 @@ def get_extracted_file_command(args):
 def list_host_files_command():
     args = demisto.args()
     host_id = args.get('host_id')
+    session_id = args.get('session_id')
 
-    response = list_host_files(host_id)
+    response = list_host_files(host_id, session_id)
     resources: list = response.get('resources', [])
 
     files_output = []

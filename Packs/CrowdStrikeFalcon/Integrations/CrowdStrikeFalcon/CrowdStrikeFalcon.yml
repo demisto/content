@@ -1024,6 +1024,12 @@ script:
       name: host_id
       required: true
       secret: false
+    - default: false
+      description: The ID of existing session with the agent.
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: Gets a list of files for the specified RTR session on a host.
     execution: false
