@@ -63,9 +63,9 @@ class MsGraphClient:
     ITEM_ATTACHMENT = '#microsoft.graph.itemAttachment'
     FILE_ATTACHMENT = '#microsoft.graph.fileAttachment'
 
-    def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, certificate_thumbprint, private_key,
+    def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key,
                  app_name, base_url, use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
-                 emails_fetch_limit, timeout=10, endpoint='com'):
+                 emails_fetch_limit, timeout=10, endpoint='com', certificate_thumbprint=None, private_key=None):
 
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
@@ -1627,9 +1627,12 @@ def main():
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
     timeout = arg_to_number(params.get('timeout', '10') or '10')
 
-    client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, certificate_thumbprint,
-                                          private_key, app_name, base_url, use_ssl, proxy, ok_codes, mailbox_to_fetch,
-                                          folder_to_fetch, first_fetch_interval, emails_fetch_limit, timeout, endpoint)
+    client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
+                                          use_ssl, proxy, ok_codes, mailbox_to_fetch,folder_to_fetch,
+                                          first_fetch_interval, emails_fetch_limit, timeout, endpoint,
+                                          certificate_thumbprint=certificate_thumbprint,
+                                          private_key=private_key,
+                                          )
 
     command = demisto.command()
     LOG(f'Command being called is {command}')

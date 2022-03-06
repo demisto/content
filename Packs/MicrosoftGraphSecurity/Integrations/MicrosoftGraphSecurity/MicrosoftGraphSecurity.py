@@ -32,7 +32,7 @@ class MsGraphClient:
     """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
-                 certificate_thumbprint, private_key):
+                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
             proxy=proxy, self_deployed=self_deployed, certificate_thumbprint=certificate_thumbprint,
@@ -539,7 +539,10 @@ def main():
     try:
         client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
                                               app_name=APP_NAME, base_url=url, verify=use_ssl, proxy=proxy,
-                                              self_deployed=self_deployed)
+                                              self_deployed=self_deployed,
+                                              certificate_thumbprint=certificate_thumbprint,
+                                              private_key=private_key,
+                                              )
         if command == "fetch-incidents":
             fetch_time = params.get('fetch_time', '1 day')
             fetch_limit = params.get('fetch_limit', 10)

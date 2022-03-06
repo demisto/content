@@ -185,7 +185,8 @@ VM_LIST_EC = {'Azure.Compute(val.Name && val.Name === obj.Name)': [
 
 client = MsGraphClient(
     base_url="url", tenant_id="tenant", auth_id="auth_id", enc_key="enc_key", app_name="APP_NAME", verify="verify",
-    proxy="proxy", self_deployed="self_deployed", ok_codes=(1, 2), server="server", subscription_id="subscription_id")
+    proxy="proxy", self_deployed="self_deployed", ok_codes=(1, 2), server="server", subscription_id="subscription_id",
+    certificate_thumbprint='', private_key='')
 
 
 @pytest.mark.parametrize(

@@ -209,7 +209,10 @@ class MsGraphClient:
 
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
                  ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit,
-                 auth_code, redirect_uri, certificate_thumbprint, private_key):
+                 auth_code, redirect_uri,
+                 certificate_thumbprint: Optional[str] = None,
+                 private_key: Optional[str] = None,
+                 ):
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
                                          proxy=proxy, ok_codes=ok_codes, refresh_token=refresh_token,

@@ -16,8 +16,8 @@ class MsGraphClient:
                  tenant_id: str,
                  verify: bool,
                  proxy: bool,
-                 certificate_thumbprint: Optional[str],
-                 private_key: Optional[str],
+                 certificate_thumbprint: Optional[str] = None,
+                 private_key: Optional[str] = None,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com',
                  ):
         client_args = {

@@ -24,6 +24,7 @@ def client(requests_mock):
         tenant_id='tenant_id',
         verify=False,
         proxy=False,
+
     )
 
 

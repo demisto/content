@@ -69,7 +69,7 @@ class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool,
                  proxy: bool, self_deployed, refresh_token: str, auth_and_token_url: str,
                  enc_key: Optional[str], auth_code: str, tenant_id: str, redirect_uri: str, timeout: int,
-                 certificate_thumbprint: Optional[str], private_key: Optional[str]):
+                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.tenant_id = tenant_id
         self.suffix_template = '{}/activity/feed/subscriptions/{}'

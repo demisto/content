@@ -48,7 +48,8 @@ EXPECTED_GET_SECURE_SCORE_CONTEXT = {'Azure.Securescore(val.ID && val.ID === obj
 
 client = MsClient(
     server="url", tenant_id="tenant", auth_id="auth_id", enc_key="enc_key", app_name="APP_NAME", verify="verify",
-    proxy="proxy", self_deployed="self_deployed", subscription_id="subscription_id", ok_codes=(1, 3))
+    proxy="proxy", self_deployed="self_deployed", subscription_id="subscription_id", ok_codes=(1, 3),
+    certificate_thumbprint=None, private_key=None)
 
 
 def test_get_atp_command(mocker):
