@@ -37,7 +37,7 @@ demisto-sdk-nightly:run-validations:
 demisto_sdk_nightly:check_idset_dependent_commands:
   tags:
     - gke
-    - us-west1
+    - us-central1
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
@@ -87,7 +87,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
 demisto-sdk-nightly:create-instance:
   tags:
     - gke
-    - us-west1
+    - us-central1
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
@@ -107,7 +107,7 @@ demisto-sdk-nightly:create-instance:
 demisto-sdk-nightly:run-commands-against-instance:
   tags:
     - gke
-    - us-west1
+    - us-central1
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
@@ -155,7 +155,7 @@ demisto-sdk-nightly:run-commands-against-instance:
 demisto-sdk-nightly:fan-in:
   tags:
     - gke
-    - us-west1
+    - us-central1
   stage: fan-in
   extends:
     - .sdk-nightly-schedule-rule-always

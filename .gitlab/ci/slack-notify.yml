@@ -18,7 +18,7 @@ include:
 slack-notify:
   tags:
     - gke
-    - us-west1
+    - us-central1
   stage: notify
   extends: .default-job-settings
   script:

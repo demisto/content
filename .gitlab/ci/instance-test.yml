@@ -5,7 +5,7 @@
 test_instances:
   tags:
     - gke
-    - us-west1
+    - us-central1
   extends:
     - .default-job-settings
     - .instance-test-rule
