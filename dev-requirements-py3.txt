@@ -1,4 +1,4 @@
-flake8==3.9.2
+flake8==4.0.1
 bandit==1.7.0
 demisto-py>=3.0.2
 git+https://github.com/demisto/demisto-sdk.git@7d50950abfa3a808699a2a0368aede72aa539cd9#egg=demisto-sdk

@@ -1,4 +1,4 @@
-flake8==3.9.2
+flake8==4.0.1
 bandit==1.6.2
 demisto-py>=3.0.2
 requests==2.23.0
