@@ -17,6 +17,7 @@ configuration:
   required: false
   type: 15
 - defaultvalue: https://api.github.com
+  additionalinfo: The REST API URL
   display: Server URL
   name: url
   required: false
