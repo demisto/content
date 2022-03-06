@@ -133,7 +133,7 @@ def main():
                     f'"{pageSize}" "{disableHeaders}"'
 
         isMDImagesSupported = is_demisto_version_ge(MD_IMAGE_SUPPORT_MIN_VER)
-        if isMDImagesSupported:
+        if isMDImagesSupported: # pragma: no cover
             # start the server in a background thread
             demisto.debug('Starting markdown artifacts http server...')
             threading.Thread(target=startServer).start()
