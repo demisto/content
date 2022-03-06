@@ -25,6 +25,7 @@ CMD
 CVSS
 DNS
 Hostnames
+LTM
 Src
 Srcs
 Subdomains
@@ -41,6 +42,7 @@ regex
 Bambenek
 csv
 Cloudflare
+PenfieldAssign
 DShield
 Feodo
 Blocklist
@@ -86,7 +88,11 @@ FireEye
 FormatURL
 Gitlab
 GitHub
+Lastline
+VMware
 TAXII
 Syslog
 DomainTools
 replyTo
+SentinelOne
+URLs
