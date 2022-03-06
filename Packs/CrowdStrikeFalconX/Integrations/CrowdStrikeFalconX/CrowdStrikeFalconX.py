@@ -821,6 +821,8 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
                                extra_sandbox_fields=extra_sandbox_fields)
         results.append(result)
 
+    max_indicators = calculate_max_indicators(results)
+
     command_results = []
     for result in results:
         if result.output:
@@ -833,12 +835,22 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
             readable_output = 'There are no results yet for this sample, its analysis might not have been completed. ' \
                               'Please wait to download the report.\n' \
                               'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.',
-        command_results.append(CommandResults(outputs_key_field='id',
-                                              outputs_prefix=OUTPUTS_PREFIX,
-                                              outputs=result.output,
-                                              readable_output=readable_output,
-                                              raw_response=result.response,
-                                              indicator=result.indicator))
+
+        if result.indicator and result.indicator.sha256:  # SHA256 is a primary key, it cannot be missing.
+            result.indicator = max_indicators[result.indicator.sha256]
+        else:
+            result.indicator = None
+
+        command_results.append(
+            CommandResults(
+                outputs_key_field='id',
+                outputs_prefix=OUTPUTS_PREFIX,
+                outputs=result.output,
+                readable_output=readable_output,
+                raw_response=result.response,
+                indicator=result.indicator
+            )
+        )
     if not command_results:
         command_results = [
             CommandResults(readable_output=f'There are no results yet for the any of the queried samples ({ids}), '
@@ -848,6 +860,25 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
                                            'of a sandbox analysis.')
         ]
     return command_results, is_command_finished
+
+
+def calculate_max_indicators(command_result_args: list[CommandResultArguments]):
+    """
+    :param command_result_args: raw results
+    :return: dict mapping a SHA256 to the indicator with the highest score from `results`
+    """
+    max_indicators: dict[str, Common.File] = {}  # indicator with maximal DBotScore per SHA256 value
+    for result in command_result_args:
+        indicator = result.indicator
+        sha256 = indicator.sha256
+
+        if indicator and sha256 and Common.DBotScore.is_valid_score(indicator.dbot_score):
+            if existing := max_indicators.get(sha256):
+                if indicator.dbot_score > existing.dbot_score:
+                    max_indicators[sha256] = indicator
+            else:
+                max_indicators[sha256] = result.indicator
+    return max_indicators
 
 
 def get_report_summary_command(
@@ -992,7 +1023,7 @@ def find_sandbox_reports_command(
     :param filter: optional filter and sort criteria in the form of an FQL query. takes precedence over filter.
     :param offset: the offset to start retrieving reports from.
     :param sort: sort order: asc or desc
-    :param hashes: sha256 hashes to search for, overridden by filter.
+    :param hash: sha256 hash to search for, overridden by filter.
     :return: Demisto outputs when entry_context and responses are lists
     """
     response = client.find_sandbox_reports(limit, filter, offset, sort, hashes=argToList(hashes))
