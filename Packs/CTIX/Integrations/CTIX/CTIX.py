@@ -9,6 +9,7 @@ import base64
 import hashlib
 import hmac
 import time
+import json
 import requests
 import urllib.parse
 import urllib3
@@ -40,6 +41,7 @@ class Client(BaseClient):
     """
         Client to use in the CTIX integration. Overrides BaseClient
     """
+
     def __init__(self, base_url: str, access_id: str, secret_key: str, verify: bool, proxies: dict) -> None:
         self.base_url = base_url
         self.access_id = access_id
@@ -59,19 +61,30 @@ class Client(BaseClient):
         """
         A wrapper to send requests and handle responses.
         """
-        expires = int(time.time() + 5)
+        expires = int(time.time() + 30)
+        request_type = kwargs.pop("request_type", "get")
+        data = kwargs.get("data")
         kwargs["AccessID"] = self.access_id
         kwargs["Expires"] = expires
         kwargs["Signature"] = self.signature(expires)
 
         full_url = full_url + "?" + urllib.parse.urlencode(kwargs)
-        resp = (requests.get(full_url, verify=self.verify, proxies=self.proxies))
+        if request_type == "get":
+            resp = requests.get(full_url, verify=self.verify, proxies=self.proxies)
+        else:
+            headers = {"content-type": "application/json"}
+            resp = requests.post(
+                full_url,
+                data=data,
+                verify=self.verify,
+                proxies=self.proxies,
+                headers=headers,
+            )
         status_code = resp.status_code
         try:
             resp.raise_for_status()  # Raising an exception for non-200 status code
         except requests.exceptions.HTTPError as e:
-            err_msg = 'Error in API call [{}]' \
-                .format(resp.status_code)
+            err_msg = f"Error in API call {[resp.status_code]}"
             raise DemistoException(err_msg, e)
         json_data = resp.json()
         response = {"data": json_data, "status": status_code}
@@ -127,6 +140,21 @@ class Client(BaseClient):
         url_suffix = "objects/indicator/"
         client_url = self.base_url + url_suffix
         return self.http_request(full_url=client_url, **params)
+
+    def create_intel(self, data: dict):
+        """
+        Makes post call and creates Intel In CTIX Platform
+        :type data: ``dict``
+        :param data: Intel data
+
+        :return: dict containing post call response returned from the API
+        :rtype: ``Dict[str, Any]``
+        """
+        url_suffix = "create-intel/"
+        client_url = self.base_url + url_suffix
+        return self.http_request(
+            full_url=client_url, data=json.dumps(data), request_type="post"
+        )
 
     def get_url_details(self, url: list, enhanced: bool = False):
         """Gets the URL Details
@@ -224,27 +252,52 @@ def ip_details_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     enhanced = argToBoolean(args.get('enhanced', False))
     response = client.get_ip_details(ip_addresses_array, enhanced)
     ip_list = response.get("data", {}).get("results", {})
+    ip_map = {ip.get("name2"): ip for ip in ip_list}
+
+    for ip_obj in ip_addresses_array:
+        if ip_obj not in ip_map:
+            ip_map.update({ip_obj: []})
+
     ip_data_list = []
-    for ip_data in ip_list:
-        score = to_dbot_score(ip_data.get("score", 0))
-        dbot_score = Common.DBotScore(
-            indicator=ip_data.get("name2"),
-            indicator_type=DBotScoreType.IP,
-            integration_name='CTIX',
-            score=score
-        )
-        ip_standard_context = Common.IP(
-            ip=ip_data.get("name2"),
-            asn=ip_data.get("asn"),
-            dbot_score=dbot_score
-        )
-        ip_data_list.append(CommandResults(
-            readable_output=tableToMarkdown('IP Data', ip_data, removeNull=True),
-            outputs_prefix='CTIX.IP',
-            outputs_key_field='name2',
-            outputs=ip_data,
-            indicator=ip_standard_context
-        ))
+    for ip_key, ip_data in ip_map.items():
+        if ip_data:
+            score = to_dbot_score(ip_data.get("score", 0))
+            dbot_score = Common.DBotScore(
+                indicator=ip_data.get("name2"),
+                indicator_type=DBotScoreType.IP,
+                integration_name='CTIX',
+                score=score
+            )
+            ip_standard_context = Common.IP(
+                ip=ip_data.get("name2"),
+                asn=ip_data.get("asn"),
+                dbot_score=dbot_score
+            )
+            ip_data_list.append(CommandResults(
+                readable_output=tableToMarkdown('IP Data', ip_data, removeNull=True),
+                outputs_prefix='CTIX.IP',
+                outputs_key_field='name2',
+                outputs=ip_data,
+                indicator=ip_standard_context
+            ))
+        else:
+            dbot_score = Common.DBotScore(
+                indicator=ip_key,
+                indicator_type=DBotScoreType.IP,
+                integration_name="CTIX",
+                score=0,
+            )
+            ip_standard_context = Common.IP(
+                ip=ip_key,
+                dbot_score=dbot_score
+            )
+            ip_data_list.append(CommandResults(
+                readable_output=f'No matches found for IP {ip_key}',
+                outputs_prefix='CTIX.IP',
+                outputs_key_field='name2',
+                outputs=ip_data,
+                indicator=ip_standard_context
+            ))
 
     return ip_data_list
 
@@ -268,26 +321,51 @@ def domain_details_command(client: Client, args: Dict[str, Any]) -> List[Command
     enhanced = argToBoolean(args.get('enhanced', False))
     response = client.get_domain_details(domain_array, enhanced)
     domain_list = response.get("data", {}).get("results", {})
+    domain_map = {domain.get("name2"): domain for domain in domain_list}
+
+    for domain_obj in domain_array:
+        if domain_obj not in domain_map:
+            domain_map.update({domain_obj: []})
+
     domain_data_list = []
-    for domain_data in domain_list:
-        score = to_dbot_score(domain_data.get("score", 0))
-        dbot_score = Common.DBotScore(
-            indicator=domain_data.get("name2"),
-            indicator_type=DBotScoreType.DOMAIN,
-            integration_name='CTIX',
-            score=score
-        )
-        domain_standard_context = Common.Domain(
-            domain=domain_data.get("name2"),
-            dbot_score=dbot_score
-        )
-        domain_data_list.append(CommandResults(
-            readable_output=tableToMarkdown('Domain Data', domain_data, removeNull=True),
-            outputs_prefix='CTIX.Domain',
-            outputs_key_field='name2',
-            outputs=domain_data,
-            indicator=domain_standard_context
-        ))
+    for domain_key, domain_data in domain_map.items():
+        if domain_data:
+            score = to_dbot_score(domain_data.get("score", 0))
+            dbot_score = Common.DBotScore(
+                indicator=domain_key,
+                indicator_type=DBotScoreType.DOMAIN,
+                integration_name='CTIX',
+                score=score
+            )
+            domain_standard_context = Common.Domain(
+                domain=domain_key,
+                dbot_score=dbot_score
+            )
+            domain_data_list.append(CommandResults(
+                readable_output=tableToMarkdown('Domain Data', domain_data, removeNull=True),
+                outputs_prefix='CTIX.Domain',
+                outputs_key_field='name2',
+                outputs=domain_data,
+                indicator=domain_standard_context
+            ))
+        else:
+            dbot_score = Common.DBotScore(
+                indicator=domain_key,
+                indicator_type=DBotScoreType.DOMAIN,
+                integration_name="CTIX",
+                score=0,
+            )
+            domain_standard_context = Common.Domain(
+                domain=domain_key,
+                dbot_score=dbot_score
+            )
+            domain_data_list.append(CommandResults(
+                readable_output=f'No matches found for Domain {domain_key}',
+                outputs_prefix='CTIX.Domain',
+                outputs_key_field='name2',
+                outputs=domain_data,
+                indicator=domain_standard_context
+            ))
 
     return domain_data_list
 
@@ -310,26 +388,51 @@ def url_details_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
     enhanced = argToBoolean(args.get('enhanced', False))
     response = client.get_url_details(url_array, enhanced)
     url_list = response.get("data", {}).get("results", {})
+    url_map = {url["name2"]: url for url in url_list}
+
+    for url_obj in url_array:
+        if url_obj not in url_map:
+            url_map.update({url_obj: []})
+
     url_data_list = []
-    for url_data in url_list:
-        score = to_dbot_score(url_data.get("score", 0))
-        dbot_score = Common.DBotScore(
-            indicator=url_data.get("name2"),
-            indicator_type=DBotScoreType.URL,
-            integration_name='CTIX',
-            score=score,
-        )
-        url_standard_context = Common.URL(
-            url=url_data.get("name2"),
-            dbot_score=dbot_score
-        )
-        url_data_list.append(CommandResults(
-            readable_output=tableToMarkdown('URL Data', url_data, removeNull=True),
-            outputs_prefix='CTIX.URL',
-            outputs_key_field='name2',
-            outputs=url_data,
-            indicator=url_standard_context
-        ))
+    for url_key, url_data in url_map.items():
+        if url_data:
+            score = to_dbot_score(url_data.get("score", 0))
+            dbot_score = Common.DBotScore(
+                indicator=url_key,
+                indicator_type=DBotScoreType.URL,
+                integration_name='CTIX',
+                score=score,
+            )
+            url_standard_context = Common.URL(
+                url=url_key,
+                dbot_score=dbot_score
+            )
+            url_data_list.append(CommandResults(
+                readable_output=tableToMarkdown('URL Data', url_data, removeNull=True),
+                outputs_prefix='CTIX.URL',
+                outputs_key_field='name2',
+                outputs=url_data,
+                indicator=url_standard_context
+            ))
+        else:
+            dbot_score = Common.DBotScore(
+                indicator=url_key,
+                indicator_type=DBotScoreType.URL,
+                integration_name="CTIX",
+                score=0,
+            )
+            url_standard_context = Common.URL(
+                url=url_key,
+                dbot_score=dbot_score
+            )
+            url_data_list.append(CommandResults(
+                readable_output=f'No matches found for URL {url_key}',
+                outputs_prefix='CTIX.URL',
+                outputs_key_field='name2',
+                outputs=url_data,
+                indicator=url_standard_context
+            ))
 
     return url_data_list
 
@@ -352,28 +455,99 @@ def file_details_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
     enhanced = argToBoolean(args.get('enhanced', False))
     response = client.get_file_details(file_array, enhanced)
     file_list = response.get("data", {}).get("results", {})
-    file_data_list = []
-    for file_data in file_list:
-        score = to_dbot_score(file_data.get("score", 0))
-        dbot_score = Common.DBotScore(
-            indicator=file_data.get("name2"),
-            indicator_type=DBotScoreType.FILE,
-            integration_name='CTIX',
-            score=score
-        )
-        file_standard_context = Common.File(
-            name=file_data.get("name2"),
-            dbot_score=dbot_score
-        )
-        file_data_list.append(CommandResults(
-            readable_output=tableToMarkdown('File Data', file_data, removeNull=True),
-            outputs_prefix='CTIX.File',
-            outputs_key_field='name2',
-            outputs=file_data,
-            indicator=file_standard_context
-        ))
+    file_map = {file["name2"]: file for file in file_list}
 
+    for file_obj in file_array:
+        if file_obj not in file_map:
+            file_map.update({file_obj: []})
+    file_data_list = []
+    for file_key, file_data in file_map.items():
+        hash_type = get_hash_type(file_key)
+        if file_data:
+            score = to_dbot_score(file_data.get("score", 0))
+            dbot_score = Common.DBotScore(
+                indicator=file_key,
+                indicator_type=DBotScoreType.FILE,
+                integration_name='CTIX',
+                score=score
+            )
+            file_standard_context = Common.File(
+                name=file_key,
+                dbot_score=dbot_score
+            )
+            if hash_type == "md5":
+                file_standard_context.md5 = file_key
+            elif hash_type == "sha1":
+                file_standard_context.sha1 = file_key
+            elif hash_type == "sha256":
+                file_standard_context.sha256 = file_key
+            elif hash_type == "sha512":
+                file_standard_context.sha512 == file_key
+
+            file_data_list.append(CommandResults(
+                readable_output=tableToMarkdown('File Data', file_data, removeNull=True),
+                outputs_prefix='CTIX.File',
+                outputs_key_field='name2',
+                outputs=file_data,
+                indicator=file_standard_context
+            ))
+        else:
+            dbot_score = Common.DBotScore(
+                indicator=file_key,
+                indicator_type=DBotScoreType.FILE,
+                integration_name="CTIX",
+                score=0,
+            )
+            file_standard_context = Common.File(
+                name=file_key,
+                dbot_score=dbot_score
+            )
+            if hash_type == "md5":
+                file_standard_context.md5 = file_key
+            elif hash_type == "sha1":
+                file_standard_context.sha1 = file_key
+            elif hash_type == "sha256":
+                file_standard_context.sha256 = file_key
+            elif hash_type == "sha512":
+                file_standard_context.sha512 == file_key
+
+            file_data_list.append(CommandResults(
+                readable_output=f'No matches found for FILE {file_key}',
+                outputs_prefix='CTIX.File',
+                outputs_key_field='name2',
+                outputs=file_data,
+                indicator=file_standard_context
+            ))
     return file_data_list
+
+
+def create_intel_command(client: Client, args: Dict[str, Any]) -> Dict:
+    """
+    create_intel command: Creates Intel in CTIX
+    """
+    data = {
+        "ips": args.get("ips", []),
+        "urls": args.get("urls", []),
+        "domains": args.get("domains", []),
+        "files": args.get("files", []),
+        "emails": args.get("emails", []),
+        "malwares": args.get("malwares", []),
+        "threat_actors": args.get("threat_actors", []),
+        "attack_patterns": args.get("attack_patterns", []),
+        "title": args.get("title"),
+        "description": args.get("description"),
+        "confidence": args.get("confidence"),
+        "tlp": args.get("tlp"),
+    }
+    create_intel_response = client.create_intel(data)
+    return {
+        "CTIX": {
+            "Intel": {
+                "response": create_intel_response.get("data"),
+                "status": create_intel_response.get("status")
+            }
+        }
+    }
 
 
 def main() -> None:
@@ -405,6 +579,8 @@ def main() -> None:
             return_results(url_details_command(client, demisto.args()))
         elif demisto.command() == 'file':
             return_results(file_details_command(client, demisto.args()))
+        elif demisto.command() == 'ctix-create-intel':
+            return_results(create_intel_command(client, demisto.args()))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

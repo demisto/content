@@ -17,7 +17,8 @@ from CommonServerPython import set_to_integration_context_with_retries, xml2json
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer
+    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
+    remove_duplicates_from_list_arg
 import CommonServerPython
 
 try:
@@ -1052,6 +1053,16 @@ def test_argToList():
     assert argToList(test5) == [1]
     assert argToList(test6) == ['1']
     assert argToList(test7) == [True]
+
+
+@pytest.mark.parametrize('args, field, expected_output', [
+    ({'ids': "1,2,3"}, 'ids', ["1", "2", "3"]),
+    ({'ids': "1,2,1"}, 'ids', ["1", "2"]),
+    ({'ids': ""}, 'ids', []),
+    ({'ids': ""}, 'name', []),
+])
+def test_remove_duplicates_from_list_arg(args, field, expected_output):
+    assert len(remove_duplicates_from_list_arg(args, field)) == len(expected_output)
 
 
 def test_remove_nulls():
@@ -6385,7 +6396,6 @@ class TestTracebackLineNumberAdgustment:
         CommonServerPython.register_module_line('Cactus', 'statr', -5)
         CommonServerPython.register_module_line('Cactus', 'statr', 0, -1)
 
-
     @staticmethod
     def test_fix_traceback_line_numbers():
         import CommonServerPython
@@ -6410,4 +6420,5 @@ Exception: WTF?!!!'''
 Exception: WTF?!!!'''
         result = CommonServerPython.fix_traceback_line_numbers(traceback)
         assert result == expected_traceback
+
 
