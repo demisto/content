@@ -1198,13 +1198,13 @@ def delete_ioc(ioc_type, value):
 
 
 def search_custom_iocs(
-    types: Optional[Union[list, str]] = None,
-    values: Optional[Union[list, str]] = None,
-    sources: Optional[Union[list, str]] = None,
-    expiration: Optional[str] = None,
-    limit: str = '50',
-    sort: Optional[str] = None,
-    offset: Optional[str] = None,
+        types: Optional[Union[list, str]] = None,
+        values: Optional[Union[list, str]] = None,
+        sources: Optional[Union[list, str]] = None,
+        expiration: Optional[str] = None,
+        limit: str = '50',
+        sort: Optional[str] = None,
+        offset: Optional[str] = None,
 ) -> dict:
     """
     :param types: A list of indicator types. Separate multiple types by comma.
@@ -1241,21 +1241,21 @@ def get_custom_ioc(ioc_id: str) -> dict:
 
 
 def update_custom_ioc(
-    ioc_id: str,
-    action: Optional[str] = None,
-    platforms: Optional[str] = None,
-    severity: Optional[str] = None,
-    source: Optional[str] = None,
-    description: Optional[str] = None,
-    expiration: Optional[str] = None,
+        ioc_id: str,
+        action: Optional[str] = None,
+        platforms: Optional[str] = None,
+        severity: Optional[str] = None,
+        source: Optional[str] = None,
+        description: Optional[str] = None,
+        expiration: Optional[str] = None,
 ) -> dict:
     """
     Update an IOC
     """
     payload = {
         'indicators': [{
-            'id': ioc_id,
-        } | assign_params(
+                           'id': ioc_id,
+                       } | assign_params(
             action=action,
             platforms=platforms,
             severity=severity,
@@ -1767,13 +1767,13 @@ def delete_ioc_command(ioc_type, value):
 
 
 def search_custom_iocs_command(
-    types: Optional[Union[list, str]] = None,
-    values: Optional[Union[list, str]] = None,
-    sources: Optional[Union[list, str]] = None,
-    expiration: Optional[str] = None,
-    limit: str = '50',
-    sort: Optional[str] = None,
-    offset: Optional[str] = None,
+        types: Optional[Union[list, str]] = None,
+        values: Optional[Union[list, str]] = None,
+        sources: Optional[Union[list, str]] = None,
+        expiration: Optional[str] = None,
+        limit: str = '50',
+        sort: Optional[str] = None,
+        offset: Optional[str] = None,
 ) -> dict:
     """
     :param types: A list of indicator types. Separate multiple types by comma.
@@ -1806,9 +1806,9 @@ def search_custom_iocs_command(
 
 
 def get_custom_ioc_command(
-    ioc_type: Optional[str] = None,
-    value: Optional[str] = None,
-    ioc_id: Optional[str] = None,
+        ioc_type: Optional[str] = None,
+        value: Optional[str] = None,
+        ioc_id: Optional[str] = None,
 ) -> dict:
     """
     :param ioc_type: IOC type
@@ -1892,13 +1892,13 @@ def upload_custom_ioc_command(
 
 
 def update_custom_ioc_command(
-    ioc_id: str,
-    action: Optional[str] = None,
-    platforms: Optional[str] = None,
-    severity: Optional[str] = None,
-    source: Optional[str] = None,
-    description: Optional[str] = None,
-    expiration: Optional[str] = None,
+        ioc_id: str,
+        action: Optional[str] = None,
+        platforms: Optional[str] = None,
+        severity: Optional[str] = None,
+        source: Optional[str] = None,
+        description: Optional[str] = None,
+        expiration: Optional[str] = None,
 ) -> dict:
     """
     :param ioc_id: The ID of the indicator to update.
@@ -2860,14 +2860,15 @@ def get_indicator_device_id():
         error_message = build_error_message(raw_res)
         return_error(error_message)
     ioc_id = f"{ioc_type}:{ioc_value}"
-    readable_output = tableToMarkdown(f"Devices that encountered the IOC {ioc_id}", devices_response, headers='Device ID')
+    readable_output = tableToMarkdown(f"Devices that encountered the IOC {ioc_id}", devices_response,
+                                      headers='Device ID')
     outputs = {'DeviceID': devices_response,
-               'DeviceIOC' :
+               'DeviceIOC':
                    {
-                   'Type': ioc_type,
-                   'Value': ioc_value,
-                   'ID': ioc_id,
-                   'DeviceID': devices_response,
+                       'Type': ioc_type,
+                       'Value': ioc_value,
+                       'ID': ioc_id,
+                       'DeviceID': devices_response,
                    }
                }
     return CommandResults(
