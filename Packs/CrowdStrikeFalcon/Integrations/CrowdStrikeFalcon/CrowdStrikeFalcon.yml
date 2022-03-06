@@ -2125,8 +2125,8 @@ script:
     - contextPath: CrowdStrike.DeviceIOC.ID
       description: The indicator's ID.
       type: string
-    - contextPath:CrowdStrike.DeviceIOC.Type
-      description: The indicator's Type.
+    - contextPath: CrowdStrike.DeviceIOC.Type
+      description: The indicator type.
       type: string
     - contextPath: CrowdStrike.DeviceIOC.Value
       description: The indicator's value.
