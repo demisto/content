@@ -7479,7 +7479,7 @@ class Topology:
                 self.add_device_object(new_firewall_object)
                 ha_peer_serial_element: Optional[Element] = device_entry.find("./ha/peer/serial")
                 ha_peer_serial = None
-                if ha_peer_serial_element and hasattr(ha_peer_serial_element, "text"):
+                if ha_peer_serial_element is not None and hasattr(ha_peer_serial_element, "text"):
                     ha_peer_serial = ha_peer_serial_element.text
 
                 if ha_peer_serial:
