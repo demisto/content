@@ -3148,11 +3148,6 @@ def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
     return machines_outputs
 
 
-def remove_duplicates_from_list_arg(args: dict, field: str):
-    convert_to_list = argToList(args.get(field))
-    return list(set(convert_to_list))
-
-
 ''' EXECUTION CODE '''
 ''' LIVE RESPONSE CODE '''
 
