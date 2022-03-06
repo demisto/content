@@ -1,16 +1,16 @@
 import sys
 
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 '''IMPORTS'''
-import time
-import requests
 import collections
 import json as JSON
-from urlparse import urlparse
+import time
+
+import requests
 from requests.utils import quote  # type: ignore
+from urlparse import urlparse
 
 """ POLLING FUNCTIONS"""
 try:
@@ -22,8 +22,8 @@ except ImportError:
 requests.packages.urllib3.disable_warnings()
 
 '''GLOBAL VARS'''
-BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist, ' \
-                                'we will not scan it.'
+BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
+                                'For your own safety we did not perform this scan...'
 BRAND = 'urlscan.io'
 
 """ RELATIONSHIP TYPE"""
@@ -528,7 +528,6 @@ def urlscan_submit_command(client):
         demisto.args()['url'] = url
         response = urlscan_submit_url(client)
         handle_rate_limit_command(response=response)
-        demisto.info("Results are {}".format(response))
         if response.get('url_is_blacklisted'):
             pass
         uuid = response.get('uuid')
@@ -536,7 +535,11 @@ def urlscan_submit_command(client):
 
 
 def urlscan_search(client, search_type, query):
-    r = http_request(client, 'GET', 'search/?q=' + search_type + ':"' + query + '"')
+
+    if search_type == 'advanced':
+        r = http_request(client, 'GET', 'search/?q=' + query)
+    else:
+        r = http_request(client, 'GET', 'search/?q=' + search_type + ':"' + query + '"')
     handle_rate_limit_command(response=r)
     return r
 
@@ -562,16 +565,18 @@ def urlscan_search_command(client):
     LIMIT = int(demisto.args().get('limit'))
     HUMAN_READBALE_HEADERS = ['URL', 'Domain', 'IP', 'ASN', 'Scan ID', 'Scan Date']
     raw_query = demisto.args().get('searchParameter', '')
-    if is_ip_valid(raw_query, accept_v6_ips=True):
-        search_type = 'ip'
-    else:
-        # Parsing query to see if it's a url
-        parsed = urlparse(raw_query)
-        # Checks to see if Netloc is present. If it's not a url, Netloc will not exist
-        if parsed[1] == '' and len(raw_query) == 64:
-            search_type = 'hash'
+    search_type = demisto.args().get('searchType', '')
+    if not search_type:
+        if is_ip_valid(raw_query, accept_v6_ips=True):
+            search_type = 'ip'
         else:
-            search_type = 'page.url'
+            # Parsing query to see if it's a url
+            parsed = urlparse(raw_query)
+            # Checks to see if Netloc is present. If it's not a url, Netloc will not exist
+            if parsed[1] == '' and len(raw_query) == 64:
+                search_type = 'hash'
+            else:
+                search_type = 'page.url'
 
     # Making the query string safe for Elastic Search
     query = quote(raw_query, safe='')
