@@ -125,7 +125,6 @@ You can grant the permissions by per-defined roles or by creating a custom role.
 
 
 
-
 ### Create a Service Account Key
 
 1. Open the [Service accounts page](https://console.developers.google.com/iam-admin/serviceaccounts).
