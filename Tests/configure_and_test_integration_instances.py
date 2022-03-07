@@ -675,7 +675,13 @@ class XSIAMBuild(Build):
 
     def __init__(self, options):
         super().__init__(options)
-        # TODO
+        # self.ami_env = options.ami_env
+        # self.server_to_port_mapping, self.server_numeric_version = self.get_servers(options.ami_env)
+        # self.servers = [XSIAMServer(internal_ip,
+        #                             port,
+        #                             self.username,
+        #                             self.password) for internal_ip, port in self.server_to_port_mapping.items()]
+        # self.service_account = options.service_account
 
     def configure_servers_and_restart(self):
         # No need of this step in XSIAM.

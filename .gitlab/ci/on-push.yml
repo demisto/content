@@ -278,13 +278,15 @@ slack-notify-nightly-build:
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
-# Todo: maybe to lock specific env
     - |
       # workaround for the hard-coded value in the sdk
-      cp "$ARTIFACTS_FOLDER/env_results.json" "./artifacts/env_results.json"  # need to change this file to xsiam instances
+      cp "$ARTIFACTS_FOLDER/env_results.json" "./artifacts/env_results.json"  # todo: need to change this file to xsiam instances
       cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
 
-    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$BUILD_OBJECT_TYPE"|| EXIT_CODE=$?
+# todo: uncomment
+#    - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
+
+    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$BUILD_OBJECT_TYPE" "$XSIAM_CHOSEN_MACHINE_ID"|| EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json #todo: check if meyotar
 
 #    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
@@ -300,9 +302,14 @@ slack-notify-nightly-build:
 #      # todo: write script that unlock instances
 #      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
     - exit $EXIT_CODE
+# todo: uncomment
+#  after_script:
+#    - echo "Job finished, removing lock file"
+#    - gsutil rm "gs://xsoar-ci-artifacts-server-dev/xsiam-ci-locks/*-lock-$CI_PIPELINE_ID"  # todo: change bucket
+#    - echo "Finished removing lock file"
 
 
-xsiam_server_6_6:
+xsiam_server_3_2:
   extends:
     - .test_content_on_xsiam_server_instances_base
   rules:
