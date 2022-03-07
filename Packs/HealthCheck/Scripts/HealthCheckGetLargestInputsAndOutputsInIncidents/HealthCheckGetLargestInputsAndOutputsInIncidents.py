@@ -119,7 +119,8 @@ def format_table(incidentsList):
     if incidentsList:
         for entry in incidentsList:
             new_entry = {'incidentid': entry['incidentid'],
-                         'details': f"- TaskID: {entry['taskid']}\n- TaskName: {entry['taskname']}\n- Argument: {entry['name']}\n- {entry['inputoroutput']} ",
+                         'details': f"- TaskID: {entry['taskid']}\n- TaskName: {entry['taskname']}\n \
+                         - Argument: {entry['name']}\n- {entry['inputoroutput']} ",
                          'size': str(round(entry['size'], 2)) + " MB"}
             new_table.append(new_entry)
         return new_table

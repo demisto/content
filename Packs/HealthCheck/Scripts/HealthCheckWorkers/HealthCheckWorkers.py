@@ -44,11 +44,11 @@ def format_time(table):
 
 
 def format_details(table):
-    #new_table = []
     for entry in table:
         details = entry['Details']
         getdetails = re.compile(
-            r'task \[(?P<taskid>[\d]+)\]\s\[(?P<taskname>[\w\d\s!@#$%^&*()_+-={}]+)], playbook\s\[(?P<pbname>[\w\d\s!@#$%^&*()_+-={}]+)],\sinvestigation\s\[(?P<investigationid>[\d]+)\]')
+            r'task \[(?P<taskid>[\d]+)\]\s\[(?P<taskname>[\w\d\s!@#$%^&*()_+-={}]+)], playbook\s \
+            \[(?P<pbname>[\w\d\s!@#$%^&*()_+-={}]+)],\sinvestigation\s\[(?P<investigationid>[\d]+)\]')
         all_images = [m.groups() for m in getdetails.finditer(details)]
         for item in all_images:
             newdetails = {"TaskID": item[0], "TaskName": item[1], 'PlaybookName': item[2],

@@ -52,4 +52,3 @@ results = CommandResults(
 )
 
 return_results(results)
-

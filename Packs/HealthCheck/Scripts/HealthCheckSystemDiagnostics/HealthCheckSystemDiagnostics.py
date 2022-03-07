@@ -69,7 +69,7 @@ def FormatTableAndSet(data, dataSource):
             newEntry['size'] = FormatSize(entry['workplanSizeBytes'])
             newEntry['info'] = "Big Workplan"
             newEntry['date'] = format_time(entry['created'])
-            newFormat.append(newEntry)           
+            newFormat.append(newEntry)
         elif dataSource == "bigContext":
             newEntry['size'] = FormatSize(entry['size'])
             newEntry['info'] = "Big Context"
@@ -121,7 +121,7 @@ if SystemDiagnosticsResults['bigWorkplans']:
                             "description": f"{DESCRIPTION[1]}",
                             "resolution": f"{RESOLUTION[0]}"
                             })
-                            
+
 if SystemDiagnosticsResults['bigContext']:
     actionableItems.append({"category": "DB Analysis", "severity": "High",
                             "description": f"{DESCRIPTION[2]}",
