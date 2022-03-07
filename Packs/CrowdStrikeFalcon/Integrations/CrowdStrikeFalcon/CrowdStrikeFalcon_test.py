@@ -2375,14 +2375,18 @@ test_data = get_fetch_data()
 test_data2 = get_fetch_data2()
 
 
-def test_get_indicator_device_id(requests_mock):
+def test_get_indicator_device_id(mocker, requests_mock):
     from CrowdStrikeFalcon import get_indicator_device_id
     requests_mock.get("https://4.4.4.4/indicators/queries/devices/v1",
                       json=test_data['response_for_get_indicator_device_id'])
+    mocker.patch.object(demisto, 'args', return_value={'type': 'sha256', 'value': 'example_sha'})
     res = get_indicator_device_id()
-    assert res.outputs == test_data['context_output_for_get_indicator_device_id']
-    assert res.outputs_prefix == 'CrowdStrike.DeviceID'
-    assert res.outputs_key_field == 'DeviceID'
+
+    # Expecting both DeviceIOC and DeviceID outputs for BC.
+    assert set(res.outputs.keys()) - {'DeviceIOC', 'DeviceID'} == set()
+    assert res.outputs['DeviceIOC']['Type'] == 'sha256'
+    assert res.outputs['DeviceIOC']['Value'] == 'example_sha'
+    assert res.outputs['DeviceIOC']['DeviceID'] == res.outputs['DeviceID']
 
 
 def test_validate_response():

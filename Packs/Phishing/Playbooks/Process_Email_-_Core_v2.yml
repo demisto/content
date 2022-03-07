@@ -3,8 +3,8 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Process Email - Core v2
-description: This playbook adds email details to the relevant context entities and handles the case
-  where original emails are attached.
+description: This playbook adds email details to the relevant context entities and
+  handles the case where original emails are attached.
 starttaskid: "0"
 tasks:
   "0":
@@ -125,15 +125,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: aad80f9a-e552-43ae-88fc-81ab3ef53c11
+    taskid: 9a2df146-3c00-4078-8754-a0e120b35266
     type: regular
     task:
-      id: aad80f9a-e552-43ae-88fc-81ab3ef53c11
+      id: 9a2df146-3c00-4078-8754-a0e120b35266
       version: -1
       name: Extract and save email details
-      description: Parses an email from an EML or MSG file and populates all relevant
-        context data to investigate the email. Also extracts indicators from the email
-        messages.
+      description: Parse an email from an eml or msg file and populate all relevant
+        context data to investigate the email. Also extracts inner attachments and
+        returns them to the war room. The incident labels themselves are preserved
+        and not modified - only the "Label/x" context items that originated from the
+        labels, and the best practice is to rely on these for the remainder of the
+        playbook.
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
@@ -194,12 +197,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 553f9128-f60b-488d-8650-ad9648501964
+    taskid: 687360e6-7e9e-48bb-80df-7b01a6be74f5
     type: regular
     task:
-      id: 553f9128-f60b-488d-8650-ad9648501964
+      id: 687360e6-7e9e-48bb-80df-7b01a6be74f5
       version: -1
-      name: Set incident with the email object data
+      name: Display email information in layout
       description: Updates Cortex XSOAR incident fields using data from the email object.
       script: Builtin|||setIncident
       type: regular
@@ -419,6 +422,12 @@ tasks:
               separator:
                 value:
                   simple: ','
+      reportedemailmessageid:
+        complex:
+          root: Email.HeadersMap
+          accessor: Message-ID
+          transformers:
+          - operator: uniq
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -839,7 +848,7 @@ tasks:
       id: c8b63a5f-604d-43c0-8e76-150e8af17d2f
       version: -1
       name: Save attachment sizes
-      description: Saves the size in bytes of the email attachments.
+      description: Saves the sizes in bytes of the email attachments.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1004,7 +1013,8 @@ tasks:
       id: e5c43ca9-cacd-4b3d-847d-2fb32a3cd1b4
       version: -1
       name: Set reported email origin (attached)
-      description: Sets the value of "ReportedEmailOrigin" to "Attached". This value is set later in the "reportedemailorigin" incident field.
+      description: Sets the value of "ReportedEmailOrigin" to "Attached". This value
+        is set later in the "reportedemailorigin" incident field.
       scriptName: Set
       type: regular
       iscommand: false
