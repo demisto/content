@@ -11,8 +11,10 @@ comment: Sends a message via Slack to the user whose upload of a file violated D
 args:
 - name: file_name
   required: true
+  description: The name of the file that triggered the incident
 - name: data_profile_name
   required: true
+  description: The name of the DLP data profile that detected the violation
 - name: task
   description: A manual task that this task can close
 - name: user

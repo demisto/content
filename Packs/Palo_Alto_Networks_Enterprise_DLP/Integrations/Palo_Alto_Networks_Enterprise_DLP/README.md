@@ -156,3 +156,10 @@ Retrieve the customized Slack bot message from the DLP integration instance
 | file_name | The file that triggered the incident. | Required | 
 | data_profile_name | DLP data profile name. | Required |
 | snippets | The violation snippets. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+|  DLP.slack_message | bool | Whether or not violations can be exempted for this data profile. | 
+

@@ -32,7 +32,7 @@ configuration:
 - display: Data profiles to allow exemption
   name: dlp_exemptible_list
   type: 0
-  required: true
+  required: false
   additionalinfo: A comma separated list of data profile names that should give user
     the option to request an exemption
 - display: Slack Bot Message
@@ -102,16 +102,16 @@ script:
         type: boolean
     description: Update a DLP incident with user feedback
   - name: pan-dlp-exemption-eligible
-      arguments:
-          - name: data_profile
-            required: true
-            description: The name of the data profile
-      outputs:
-        - contextPath: DLP.exemption.eligible
-          description: Whether or not the data profile is eligible for exemption
-          type: boolean
-      description: Determines if exemption can be granted on incidents from a certain
-        data profile
+    arguments:
+        - name: data_profile
+          required: true
+          description: The name of the data profile
+    outputs:
+      - contextPath: DLP.exemption.eligible
+        description: Whether or not the data profile is eligible for exemption
+        type: boolean
+    description: Determines if exemption can be granted on incidents from a certain
+      data profile
   - name: pan-dlp-slack-message
     arguments:
       - name: file_name
