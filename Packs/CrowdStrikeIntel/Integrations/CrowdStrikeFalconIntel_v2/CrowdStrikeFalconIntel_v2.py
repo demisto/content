@@ -79,6 +79,9 @@ class Client:
         return filter_query
 
     def get_indicator(self, indicator_value: str, indicator_type: str) -> Dict[str, Any]:
+        # crowdstrike do not allow passing single quotes - so we encode them
+        # we are not encoding the entire indicator value, as the other reserved chars (such as + and &) are allowed
+        indicator_value = indicator_value.replace("'", "%27")
         args: Dict[str, Any] = {
             'indicator': indicator_value,
             'limit': 1

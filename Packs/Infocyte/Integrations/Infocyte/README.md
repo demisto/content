@@ -216,7 +216,7 @@ RESPONSE | 3f0e5549-c7e3-42fb-8fa3-5adbeba733c5 | Terminate Process | pegasusact
 Runs the named Infocyte extension on target host. Extensions are Infocyte script modules that run against a host or set of hosts to either collect additional data or perform a response action like killing a process or changing a configuration. Some Infocyte defined response actions are supported natively through prebuild XSOAR integrated commands like [infocyte-kill-process](#infocyte-kill-process).
 
 You can find the available open sourced extensions here:
-https://github.com/Infocyte/extensions
+https://github.com/Infocyte/extensions-docs
 
 Extensions can be loaded into your instance here:
 `https://<_instancename_>.infocyte.com/admin/extensions/list`

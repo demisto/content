@@ -58,7 +58,8 @@ def main():
         success_flag = install_all_content_packs_from_build_bucket(
             client=server.client, host=server_host, server_version=server_version,
             bucket_packs_root_path=GCPConfig.BUILD_BUCKET_PACKS_ROOT_PATH.format(branch=branch_name,
-                                                                                 build=build_number),
+                                                                                 build=build_number,
+                                                                                 marketplace='xsoar'),
             service_account=options.service_account, extract_destination_path=options.extract_path
         )
 

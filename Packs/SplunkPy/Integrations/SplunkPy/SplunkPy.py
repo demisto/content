@@ -1915,14 +1915,12 @@ def build_search_human_readable(args, parsed_search_results):
         if not isinstance(parsed_search_results[0], dict):
             headers = "results"
         else:
-            search_for_table_args = re.search(r' table (?P<table>.*)(\|)?', args.get('query', ''))
-            if search_for_table_args:
-                table_args = search_for_table_args.group('table')
-                table_args = table_args if '|' not in table_args else table_args.split(' |')[0]
-                chosen_fields = [field.strip('"')
-                                 for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', table_args) if field]
+            chosen_fields = []
+            for table_args in re.findall(r' table (?P<table>[^|]*)', args.get('query', '')):
+                chosen_fields.extend([field.strip('"')
+                                      for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', table_args) if field])
 
-                headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
+            headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
     query = args['query'].replace('`', r'\`')
     human_readable = tableToMarkdown("Splunk Search results for query: {}".format(query),
@@ -1942,7 +1940,7 @@ def update_headers_from_field_names(search_result, chosen_fields):
                 if re.search(temp_field, key):
                     headers.append(key)
 
-        elif field in result_keys:
+        elif field in result_keys and field not in headers:
             headers.append(field)
 
     return headers
@@ -2489,6 +2487,24 @@ def get_store_data(service):
         yield store.data.query(**query)
 
 
+def get_connection_args():
+    """
+    This function gets the connection arguments: host, port, app, and verify.
+
+    Returns: connection args
+    """
+    params = demisto.params()
+    app = params.get('app', '-')
+    connection_args = {
+        'host': params['host'],
+        'port': params['port'],
+        'app': '-' if not app else app,
+        'verify': VERIFY_CERTIFICATE
+    }
+
+    return connection_args
+
+
 def main():
     command = demisto.command()
     if command == 'splunk-parse-raw':
@@ -2498,12 +2514,7 @@ def main():
     proxy = demisto.params().get('proxy')
     use_requests_handler = demisto.params().get('use_requests_handler')
 
-    connection_args = {
-        'host': demisto.params()['host'],
-        'port': demisto.params()['port'],
-        'app': demisto.params().get('app', '-'),
-        'verify': VERIFY_CERTIFICATE
-    }
+    connection_args = get_connection_args()
 
     base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
     auth_token = None

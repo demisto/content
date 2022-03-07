@@ -91,13 +91,23 @@ build_iterator_no_evidence_details_value = [
     }]
 ]
 
+build_iterator_answer_vulnerability = [
+    [{
+        'EvidenceDetails': '{"EvidenceDetails": []}',
+        'Name': 'CVE-2014-1111',
+        'Risk': '90',
+        'RiskString': '4/37'
+    }]
+]
+
 GET_INDICATOR_INPUTS = [
     ('ip', build_iterator_answer_ip, '192.168.1.1', 'IP'),
     ('domain', build_iterator_answer_domain, 'domaintools.com', 'Domain'),
     ('domain', build_iterator_answer_domain_glob, '*domaintools.com', 'DomainGlob'),
     ('hash', build_iterator_answer_hash, '52483514f07eb14570142f6927b77deb7b4da99f', 'File'),
     ('url', build_iterator_answer_url, 'www.securityadvisor.io', 'URL'),
-    ('ip', build_iterator_no_evidence_details_value, '192.168.1.1', 'IP')
+    ('ip', build_iterator_no_evidence_details_value, '192.168.1.1', 'IP'),
+    ('vulnerability', build_iterator_answer_vulnerability, 'CVE-2014-1111', 'CVE'),
 ]
 
 
@@ -205,6 +215,42 @@ def test_fetch_indicators_command(mocker):
             'score': 0,
             'type': 'IP',
             'value': '192.168.0.1'} == client_outputs[0]
+    assert len(client_outputs) == 1
+
+
+def test_fetch_indicators_risk_threshold_command(mocker):
+    """
+    Given:
+     - Recorded Future Feed client initialized with ip indicator type
+     - Iterator which returns entry of IP object with name and risk score
+
+    When:
+     - Fetching indicators with risk score threshold equal to 40
+
+    Then:
+     - Verify the fetch does not returns indicators with lower score than the threshold.
+    """
+    indicator_type = 'ip'
+    client = Client(indicator_type=indicator_type, api_token='dummytoken', services=['fusion'], risk_score_threshold=40)
+    mocker.patch('FeedRecordedFuture.Client.build_iterator')
+    mocker.patch(
+        'FeedRecordedFuture.Client.get_batches_from_file',
+        return_value=DictReaderGenerator(DictReader(open('test_data/response_risk_score.txt')))
+    )
+    client_outputs = []
+    for output in fetch_indicators_command(client, indicator_type):
+        client_outputs.extend(output)
+    assert {'fields': {'recordedfutureevidencedetails': [], 'tags': []},
+            'rawJSON': {'Criticality Label': 'Malicious',
+                        'Name': '192.168.0.1',
+                        'Risk': '80',
+                        'score': 3,
+                        'type': 'IP',
+                        'value': '192.168.0.1'},
+            'score': 3,
+            'type': 'IP',
+            'value': '192.168.0.1'} == client_outputs[0]
+
     assert len(client_outputs) == 1
 
 

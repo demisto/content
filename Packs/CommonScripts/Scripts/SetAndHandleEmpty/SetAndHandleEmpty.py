@@ -29,7 +29,7 @@ def main():
         context_entry = {}
 
     if args.get('append') == 'false' and context_entry:
-        demisto.executeCommand('DeleteContext', {'key': key})
+        demisto.executeCommand('DeleteContext', {'key': key, 'subplaybook': 'auto'})
 
     return_results(CommandResults(
         readable_output=human_readable,
