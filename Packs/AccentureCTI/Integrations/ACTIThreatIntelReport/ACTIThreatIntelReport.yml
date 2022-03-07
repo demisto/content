@@ -47,7 +47,7 @@ script:
     arguments:
     - name: url
       default: true
-      description: url for viewing Intelligence Alert/Report (IA/IR) in the ACTI IntelGraph platform. 
+      description: url for viewing Intelligence Alert/Report (IA/IR) in the ACTI IntelGraph platform.
       isArray: false
     outputs:
     - contextPath: IAIR.abstract
@@ -120,7 +120,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.1.26972
   feed: false
   longRunning: false
   longRunningPort: false
