@@ -26,7 +26,6 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-
 def test_calculate_dbot_score():
     """
     Given:
@@ -50,11 +49,21 @@ def test_calculate_dbot_score():
 
 
 def test_fix_markdown():
-    text_to_update = "##Key Findings and Judgements\n\n* The sophisticated [cyber espionage operation](/#/node/intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4) was selective; it used supply-chain attack techniques, mainly a malicious update of a widely used product from IT monitoring firm SolarWinds, but its final target list appears to number only in the hundreds. Known targets include public- and private-sector entities, mostly in the US, including IT vendors, US government entities, and think tanks (#/node/intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4)."
-    expected_output = "## Key Findings and Judgements\n\n* The sophisticated [cyber espionage operation](https://intelgraph.idefense.com/#/node/intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4) was selective; it used supply-chain attack techniques, mainly a malicious update of a widely used product from IT monitoring firm SolarWinds, but its final target list appears to number only in the hundreds. Known targets include public- and private-sector entities, mostly in the US, including IT vendors, US government entities, and think tanks (https://intelgraph.idefense.com/#/node/intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4)."
+    text_to_update = "##Key Findings and Judgements\n\n* The sophisticated [cyber espionage operation](/#/node/intelligence"\
+        "_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4) was selective; it used supply-chain attack techniques,"\
+        " mainly a malicious update of a widely used product from IT monitoring firm SolarWinds,"\
+        " but its final target list appears to number only in the hundreds. Known targets include public-"\
+        " and private-sector entities, mostly in the US, including IT vendors, US government entities, and think"\
+        " tanks (#/node/intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4)."
+    expected_output = "## Key Findings and Judgements\n\n* The sophisticated [cyber espionage operation](https://intelgraph."\
+        "idefense.com/#/node/intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4) was selective; it"\
+        " used supply-chain attack techniques, mainly a malicious update of a widely used product from IT "\
+        "monitoring firm SolarWinds, but its final target list appears to number only in the hundreds. Known "\
+        "targets include public- and private-sector entities, mostly in the US, including IT vendors, US "\
+        "government entities, and think tanks (https://intelgraph.idefense.com/#/node/intelligence_alert"\
+        "/view/a655306d-bd95-426d-8c93-ebeef57406e4)."
     output = fix_markdown(text_to_update)
     assert expected_output == output
-
 
 
 def test_getThreatReport_command():
@@ -80,16 +89,10 @@ def test_getThreatReport_command():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_res)
         client = Client(API_URL, 'api_token', True, False, '/rest/document')
-       
         results = getThreatReport_command(client, url_to_check, DBotScoreReliability.B)
-       
         output = results.to_context().get('EntryContext', {})
-
         assert output.get('IAIR(val.value && val.value == obj.value)', []) == expected_output.get('IA_IR')
         assert output.get(DBOT_SCORE, []) == expected_output.get('DBot')
-        # assert False
-       
-
 
 
 def test_getThreatReport_not_found():
@@ -104,9 +107,6 @@ def test_getThreatReport_not_found():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_res)
         client = Client(API_URL, 'api_token', True, False, '/rest/document')
-       
         results = getThreatReport_command(client, url_to_check, DBotScoreReliability.B)
-       
         output = results.to_context().get('HumanReadable')
-
         assert expected_output in output
