@@ -54,7 +54,7 @@ jobs:
       - name: Contirbution labels were not found
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          CURRENT_LABELS: $$ {{ github.event.pull_request.labels.*.name }}
+          CURRENT_LABELS: ${{ github.event.pull_request.labels.*.name }}
         run: |
           echo "PR $PR_NUMBER labels $CURRENT_LABELS must contain 'Contribution Form Filled' label and one of 'Community'/'Partner'/'internal' labels"
           exit 1
