@@ -621,7 +621,6 @@ class XSOARBuild(Build):
             tests_for_iteration,
             new_integrations,
             modified_integrations)
-        #
         successful_tests_pre, failed_tests_pre = self.instance_testing(modified_module_instances, pre_update=True)
         return modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre
 
@@ -1480,32 +1479,32 @@ def main():
     else:
         # Install only modified packs.
         pack_ids = get_non_added_packs_ids(build)
-        build.install_packs(pack_ids=pack_ids)
-
-        # compares master to commit_sha and return two lists - new integrations and modified in the current branch
-        new_integrations, modified_integrations = build.get_changed_integrations()
-
-        # todo: investigate more
-        # Test configurations from conf.json that should be run in this execution
-        # Configures integration instances that currently in master (+ press test button)
-        pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations,
-                                                                                            modified_integrations)
-
-        modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
-
-        # Changes marketplace bucket to the new one that was created. Installs all (new and modified)
-        # required packs from current branch.
-        installed_content_packs_successfully = build.update_content_on_servers()
-
-        # After updating packs from branch, runs `test-module` for both new and modified integrations,
-        # to check that modified integrations was not broken. Wrapper for `instance_testing` function.
-        successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
-                                                                                       modified_module_instances)
-        # prints results
-        success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
-                                      new_integrations, build)
-        if not success or not installed_content_packs_successfully:
-            sys.exit(2)
+        # build.install_packs(pack_ids=pack_ids)
+        #
+        # # compares master to commit_sha and return two lists - new integrations and modified in the current branch
+        # new_integrations, modified_integrations = build.get_changed_integrations()
+        #
+        # # todo: investigate more
+        # # Test configurations from conf.json that should be run in this execution
+        # # Configures integration instances that currently in master (+ press test button)
+        # pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations,
+        #                                                                                     modified_integrations)
+        #
+        # modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
+        #
+        # # Changes marketplace bucket to the new one that was created. Installs all (new and modified)
+        # # required packs from current branch.
+        # installed_content_packs_successfully = build.update_content_on_servers()
+        #
+        # # After updating packs from branch, runs `test-module` for both new and modified integrations,
+        # # to check that modified integrations was not broken. Wrapper for `instance_testing` function.
+        # successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
+        #                                                                                modified_module_instances)
+        # # prints results
+        # success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
+        #                               new_integrations, build)
+        # if not success or not installed_content_packs_successfully:
+        #     sys.exit(2)
 
 
 if __name__ == '__main__':
