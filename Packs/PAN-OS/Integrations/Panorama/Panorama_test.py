@@ -1040,16 +1040,54 @@ def mock_firewall():
     mock_firewall.serial = "000111233444"
     return mock_firewall
 
+
+@pytest.fixture
+def mock_panorama():
+    mock_panorama = MagicMock(spec=Panorama)
+    mock_panorama.serial = "111222334455"
+    return mock_panorama
+
+
 class TestTopology:
     """Tests the Topology class and all of it's methods"""
-    SHOW_HA_STATE_XML = "test_data/show_ha_state.xml"
+    SHOW_HA_STATE_ENABLED_XML = "test_data/show_ha_state_enabled.xml"
+    SHOW_HA_STATE_DISABLED_XML = "test_data/show_ha_state_disabled.xml"
+    SHOW_DEVICES_ALL_XML = "test_data/panorama_show_devices_all.xml"
 
     @patch("Panorama.Topology.get_all_child_firewalls")
     @patch("Panorama.run_op_command")
-    def test_add_firewall_device_object(self, patched_run_op_command, patched_topology_get_all_firewalls, mock_firewall):
+    def test_add_firewall_device_object(self, patched_run_op_command, _, mock_firewall):
         from Panorama import Topology
-        patched_run_op_command.return_value = load_xml_root_from_test_file(TestTopology.SHOW_HA_STATE_XML)
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestTopology.SHOW_HA_STATE_DISABLED_XML)
         topology = Topology()
         topology.add_device_object(mock_firewall)
 
         assert "000111233444" in topology.firewall_objects
+
+    @patch("Panorama.Topology.get_all_child_firewalls")
+    @patch("Panorama.run_op_command")
+    def test_add_panorama_device_object(self, patched_run_op_command, _, mock_panorama):
+        from Panorama import Topology
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestTopology.SHOW_HA_STATE_DISABLED_XML)
+        topology = Topology()
+        topology.add_device_object(mock_panorama)
+
+        assert "111222334455" in topology.panorama_objects
+        assert "111222334455" in topology.ha_active_devices
+        assert "111222334455" not in topology.firewall_objects
+
+    @patch("Panorama.run_op_command")
+    def test_get_all_child_firewalls(self, patched_run_op_command, mock_panorama):
+        from Panorama import Topology
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestTopology.SHOW_DEVICES_ALL_XML)
+        topology = Topology()
+
+        topology.get_all_child_firewalls(mock_panorama)
+        # 222... firewall should be Active, with 111... as it's peer
+        assert "222222222222222" in topology.ha_active_devices
+        assert topology.ha_active_devices.get("222222222222222") == "111111111111111"
+
+        # 333... is standalone
+        assert "333333333333333" in topology.ha_active_devices
+        assert topology.ha_active_devices.get("333333333333333") == "STANDALONE"
+

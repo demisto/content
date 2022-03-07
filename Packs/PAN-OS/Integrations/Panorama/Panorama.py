@@ -7589,10 +7589,10 @@ class Topology:
                 self.add_device_object(new_firewall_object)
                 ha_peer_serial_element: Optional[Element] = device_entry.find("./ha/peer/serial")
                 ha_peer_serial = None
-                if ha_peer_serial_element and hasattr(ha_peer_serial_element, "text"):
+                if ha_peer_serial_element is not None and hasattr(ha_peer_serial_element, "text"):
                     ha_peer_serial = ha_peer_serial_element.text
 
-                if ha_peer_serial:
+                if ha_peer_serial is not None:
                     # The key is always the active device.
                     ha_status: str = find_text_in_element(device_entry, "./ha/state")
                     if ha_status == "active":
