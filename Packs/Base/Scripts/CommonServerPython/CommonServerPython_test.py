@@ -6430,11 +6430,13 @@ class TestFetchWithLookBack:
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
         mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
 
+        # Run first fetch
         incidents_phase1 = self.example_fetch_incidents()
 
         assert incidents_phase1 == result_phase1
         assert self.LAST_RUN == expected_last_run
 
+        # Run second fetch
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
         incidents_phase2 = self.example_fetch_incidents()
 
@@ -6453,7 +6455,7 @@ class TestFetchWithLookBack:
              {'incident_id': 7, 'created': (datetime.utcnow() - timedelta(minutes=23)).strftime('%Y-%m-%dT%H:%M:%S')}]
         ),
     ])
-    def test_regular_fetch_with_look_back(self, mocker, params, result_phase1, result_phase2, result_phase3,
+    def test_fetch_with_look_back(self, mocker, params, result_phase1, result_phase2, result_phase3,
                                           expected_last_run_phase1, expected_last_run_phase2, new_incidents):
 
         self.LAST_RUN = {}
@@ -6491,6 +6493,9 @@ class TestFetchWithLookBack:
         assert incidents_phase3 == result_phase3
         if len(new_incidents) > 1:
             assert self.LAST_RUN['time'] == self.INCIDENTS[-1]['created']
+
+        # Remove new incidents from self.INCIDENTS
+        self.INCIDENTS = incidents
 
 
 class TestTracebackLineNumberAdgustment:
