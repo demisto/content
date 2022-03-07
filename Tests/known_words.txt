@@ -94,5 +94,11 @@ TAXII
 Syslog
 DomainTools
 replyTo
+HX
+hostSetName
+fieldSearchName
+fieldSearchOperator
+fieldSearchValue
+Classifiers
 SentinelOne
 URLs
