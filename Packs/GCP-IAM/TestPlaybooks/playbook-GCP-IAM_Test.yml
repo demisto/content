@@ -1173,7 +1173,7 @@ tasks:
       display_name:
         simple: integration-test
       group_email_address:
-        simple: xsoar-test@demistodev.ai
+        simple: xsoar-test@demistodev.com
       parent:
         simple: customers/${GCPIAM.Organization.directoryCustomerId}
     separatecontext: false
