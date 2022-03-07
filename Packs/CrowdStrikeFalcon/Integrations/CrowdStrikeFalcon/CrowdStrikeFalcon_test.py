@@ -3792,8 +3792,13 @@ def test_get_remote_detection_data():
     pass
 
 
-def test_set_xsoar_entries():
-    from CrowdStrikeFalcon import set_xsoar_entries
+def test_set_xsoar_incident_entries():
+    from CrowdStrikeFalcon import set_xsoar_incident_entries
+    pass
+
+
+def test_set_xsoar_detection_entries():
+    from CrowdStrikeFalcon import set_xsoar_detection_entries
     pass
 
 
