@@ -22,7 +22,7 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ResponseMessageError, TransportError)
 from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
-from exchangelib.services import EWSAccountService, EWSService
+from exchangelib.services.common import EWSAccountService, EWSService
 from exchangelib.util import add_xml_child, create_element
 from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
                                  EXCHANGE_2010_SP2, EXCHANGE_2013,
@@ -43,7 +43,7 @@ TNS = None
 if exchangelib.__version__ == "1.12.0":
     MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS
 else:
-    MNS, TNS = exchangelib.transport.MNS, exchangelib.transport.TNS  # pylint: disable=E1101
+    MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS  # pylint: disable=E1101
 
 # consts
 VERSIONS = {
@@ -106,7 +106,6 @@ SERVER_BUILD = ""
 MARK_AS_READ = demisto.params().get('markAsRead', False)
 MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
 FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
-
 
 LAST_RUN_IDS_QUEUE_SIZE = 500
 
@@ -1150,7 +1149,7 @@ def parse_incident_from_item(item, is_fetch):
                                     if not isinstance(v, str):
                                         try:
                                             v = str(v)
-                                        except:     # noqa: E722
+                                        except:  # noqa: E722
                                             demisto.debug('cannot parse the header "{}"'.format(h))
                                             continue
 
@@ -1705,7 +1704,7 @@ def find_folders(target_mailbox=None, is_public=None):
         if is_public:
             root = account.public_folders_root
     folders = []
-    for f in root.walk():  # pylint: disable=E1101
+    for f in root.walk():  # pylint: disable=E110
         folder = folder_to_context_entry(f)
         folders.append(folder)
     folders_tree = root.tree()  # pylint: disable=E1101
@@ -1804,13 +1803,16 @@ def get_folder(folder_path, target_mailbox=None, is_public=None):
 
 
 def folder_to_context_entry(f):
-    f_entry = {
-        'name': f.name,
-        'totalCount': f.total_count,
-        'id': f.folder_id,
-        'childrenFolderCount': f.child_folder_count,
-        'changeKey': f.changekey
-    }
+    try:
+        f_entry = {
+            'name': f.name,
+            'totalCount': f.total_count,
+            'id': f.id,
+            'childrenFolderCount': f.child_folder_count,
+            'changeKey': f.changekey
+        }
+    except Exception:
+        raise Exception(vars(f))
 
     if 'unread_count' in map(lambda x: x.name, Folder.FIELDS):
         f_entry['unreadCount'] = f.unread_count
@@ -2039,7 +2041,7 @@ def get_item_as_eml(item_id, target_mailbox=None):
                 if not isinstance(v, str):
                     try:
                         v = str(v)
-                    except:     # noqa: E722
+                    except:  # noqa: E722
                         demisto.debug('cannot parse the header "{}"'.format(h))
 
                 v = ' '.join(map(str.strip, v.split('\r\n')))
@@ -2280,5 +2282,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ("__builtin__", "builtins"):
+if __name__ in ("__builtin__", "builtins", '__main__'):
     main()
