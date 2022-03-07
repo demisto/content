@@ -3862,6 +3862,11 @@ def test_update_remote_system_command():
     pass
 
 
+def test_close_in_cs_falcon():
+    from CrowdStrikeFalcon import close_in_cs_falcon
+    pass
+
+
 detection_closed_in_xsoar = ({}, IncidentStatus.DONE, True, 'closed')
 detection_status_closed = ({'status': 'closed'}, IncidentStatus.ACTIVE, False, 'closed')
 detection_update_status_true_close_remote = ({'status': 'new'}, IncidentStatus.ACTIVE, True, 'new')

@@ -1853,17 +1853,30 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
     return incident_id
 
 
-def update_remote_detection(delta, inc_status, incident_id):
-    result = ''
-    if inc_status == IncidentStatus.DONE and demisto.params().get('close_in_cs_falcon'):
+def close_in_cs_falcon(delta):
+    """
+    Closing in the remote system should happen only when both:
+        1. The user asked for it
+        2. One of the closing fields appears in the delta
+
+    The second is mandatory so we will not send a closing request at all of the mirroring requests that happen after closing an
+    incident (in case where the incident is updated so there is a delta, but it is not the status that was changed).
+    """
+    closing_fields = {'closeReason', 'closingUserId', 'closeNotes'}
+    return demisto.params().get('close_in_cs_falcon') and any(field in delta for field in closing_fields)
+
+
+def update_remote_detection(delta, inc_status, incident_id) -> str:
+    if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f'Closing detection with remote ID {incident_id} in remote system.')
-        result += str(update_detection_request([incident_id], 'closed'))
+        return str(update_detection_request([incident_id], 'closed'))
 
     # status field in CS Falcon is mapped to State field in XSOAR
     elif 'status' in delta:
         demisto.debug(f'Detection with remote ID {incident_id} status will change to "{delta.get("status")}" in remote system.')
-        result += str(update_detection_request([incident_id], delta.get('status')))
-    return result
+        return str(update_detection_request([incident_id], delta.get('status')))
+
+    return ''
 
 
 def update_remote_incident(delta, inc_status, incident_id):
@@ -1874,7 +1887,7 @@ def update_remote_incident(delta, inc_status, incident_id):
 
 
 def update_remote_incident_status(delta, inc_status, incident_id) -> str:
-    if inc_status == IncidentStatus.DONE and demisto.params().get('close_in_cs_falcon'):
+    if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
         return str(resolve_incident([incident_id], 'Closed'))
 
@@ -1893,8 +1906,8 @@ def update_remote_incident_tags(delta, incident_id) -> str:
         prev_tags = get_previous_tags(incident_id)
         demisto.debug(f'Current tags in XSOAR are {current_tags}, and in remote system {prev_tags}.')
 
-        result += remote_incident_handle_tags(current_tags - prev_tags, 'add_tag', incident_id)
         result += remote_incident_handle_tags(prev_tags - current_tags, 'delete_tag', incident_id)
+        result += remote_incident_handle_tags(current_tags - prev_tags, 'add_tag', incident_id)
 
     return result
 
