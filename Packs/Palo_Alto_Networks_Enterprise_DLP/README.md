@@ -11,3 +11,5 @@ The integration includes commands to:
  - Fetch DLP reports with data pattern match details.
  - Fetch DLP reports with data pattern match details and the corresponding snippet from the file.
  - Update a DLP incident with user feedback
+ - Check if the option to exempt the violation should be provided given a DLP data profile name
+ - Get the customized Slack bot message to send to the user to ask for feedback

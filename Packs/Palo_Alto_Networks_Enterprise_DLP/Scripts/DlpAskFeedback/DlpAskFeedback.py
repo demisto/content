@@ -1,32 +1,24 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from string import Template
 
 import dateparser
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
-FILE_INFO = Template("Your upload of *$file_name* was blocked due to company policy.")
-POLICY_INFO = Template("According to Data Security Policy *$policy_name*, this file contains "
-                       "sensitive information that shouldn't be shared.")
 OPTIONS = [
     {
-        'text': 'A',
+        'text': 'Yes',
         'style': 'primary'
     },
     {
-        'text': 'B',
-        'style': 'primary'
-    },
-    {
-        'text': 'C',
+        'text': 'No',
         'style': 'primary'
     }
 ]
 
 
-def create_blocks(fileName: str, policyName: str, entitlement: str, options: list, reply: str) -> list:
+def create_blocks(message: str, entitlement: str, reply: str) -> list:
     value = json.dumps({
         'entitlement': entitlement,
         'reply': reply
@@ -35,19 +27,13 @@ def create_blocks(fileName: str, policyName: str, entitlement: str, options: lis
         'type': 'section',
         'text': {
                 'type': 'mrkdwn',
-                'text': FILE_INFO.substitute(file_name=fileName)
-        }
-    }, {
-        'type': 'section',
-        'text': {
-                'type': 'mrkdwn',
-                'text': POLICY_INFO.substitute(policy_name=policyName)
+                'text': message
         }
     }
     ]
 
     elements = []
-    for option in options:
+    for option in OPTIONS:
         element = {
             'type': 'button',
             'text': {
@@ -60,19 +46,12 @@ def create_blocks(fileName: str, policyName: str, entitlement: str, options: lis
         if 'style' in option:
             element['style'] = option['style']
         elements.append(element)
-    if elements:
-        actions = {
-            'type': 'actions',
-            'elements': elements
-        }
-        blocks.append({
-            "type": "section",
-            "text": {
-                    "type": "mrkdwn",
-                    "text": "*Please provide a feedback for this incident*"
-            }
-        })
-        blocks.append(actions)
+
+    actions = {
+        'type': 'actions',
+        'elements': elements
+    }
+    blocks.append(actions)
 
     return blocks
 
@@ -84,6 +63,23 @@ def main():
         demisto.results(res)
         sys.exit(0)
     entitlement = demisto.get(res[0], 'Contents')
+
+    args = demisto.args()
+    file_name = args.get('file_name')
+    data_profile_name = args.get('data_profile_name')
+    snippets = args.get('snippets', '')
+
+    res = demisto.executeCommand('pan-dlp-slack-message',
+                                 {'file_name': file_name,
+                                  'data_profile_name': data_profile_name,
+                                  'snippets': snippets
+                                  })
+    if isError(res[0]):
+        demisto.results(res)
+        sys.exit(0)
+    demisto.info(f'DLPAskFeedback - received slack message {json.dumps(res)}')
+    message = demisto.get(res[0], 'Contents')
+    message = message.encode('latin-1', 'backslashreplace').decode('unicode-escape')
 
     lifetime = '1 day'
     try:
@@ -97,26 +93,13 @@ def main():
     if demisto.get(demisto.args(), 'task'):
         entitlement_string += '|' + demisto.get(demisto.args(), 'task')
 
-    args = demisto.args()
-    file_name = args.get('file_name')
-    policy_name = args.get('policy_name')
-    feedback_options = demisto.get(demisto.args(), 'feedback_options')
-
-    options = []
-    if feedback_options:
-        for feedback in feedback_options.split(','):
-            options.append({
-                'text': feedback,
-                'style': 'primary'
-            })
-
     args = {
         'ignoreAddURL': 'true',
         'using-brand': 'SlackV3'
     }
 
     reply = "Thank you for your response."
-    blocks = json.dumps(create_blocks(file_name, policy_name, entitlement_string, options, reply))
+    blocks = json.dumps(create_blocks(message, entitlement_string,  reply))
     args['blocks'] = json.dumps({
         'blocks': blocks,
         'entitlement': entitlement_string,

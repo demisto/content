@@ -125,3 +125,34 @@ Updates a DLP incident with user feedback
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 |  DLP.IncidentUpdate.success | bool | Whether or not the update is successful. | 
+
+### pan-dlp-exemption-eligible
+*** 
+Check if a violation from a DLP data profile can be exempted
+#### Base Command
+
+`pan-dlp-exemption-eligible`
+#### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| data_profile_name | DLP data profile name. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+|  DLP.exemption.eligible | bool | Whether or not violations can be exempted for this data profile. | 
+
+### pan-dlp-slack-message
+***
+Retrieve the customized Slack bot message from the DLP integration instance
+#### Base Command
+
+`pan-dlp-slack-message`
+
+#### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_name | The file that triggered the incident. | Required | 
+| data_profile_name | DLP data profile name. | Required |
+| snippets | The violation snippets. | Optional |

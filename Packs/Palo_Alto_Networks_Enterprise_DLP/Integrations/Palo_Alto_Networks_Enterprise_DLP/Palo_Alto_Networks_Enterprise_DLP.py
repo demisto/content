@@ -8,6 +8,7 @@ from typing import Dict
 from enum import Enum
 from datetime import datetime
 import math
+from string import Template
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -396,6 +397,37 @@ def long_running_execution_command(params: Dict):
             print_debug_msg('Finished fetch loop')
             time.sleep(FETCH_SLEEP)
 
+
+def exemption_eligible(args: dict, params: dict):
+    data_profile = args.get('data_profile')
+    eligible_list = params.get('dlp_exemptible_list')
+    eligible = data_profile in eligible_list
+    result = {
+        'eligible': eligible
+    }
+    results = CommandResults(
+        outputs_prefix='DLP.exemption',
+        outputs_key_field='eligible',
+        outputs=result
+    )
+    demisto.results(results.to_context())
+
+def slack_bot_message(args: dict, params: dict):
+    message_template = params.get('dlp_slack_message')
+    template = Template(message_template)
+    message = template.substitute(file_name=args.get('file_name'),
+                                  data_profile_name=args.get('data_profile_name'),
+                                  snippets=args.get('snippets', ""))
+    result = {
+        'message': message
+    }
+    results = CommandResults(
+        outputs_prefix='DLP.slack_message',
+        outputs_key_field='slack_message',
+        outputs=result
+    )
+    demisto.results(results.to_context())
+
 def main():
     """ Main Function"""
     try:
@@ -405,9 +437,8 @@ def main():
         refresh_token = params.get('refresh_token')
         url = BASE_URL if params.get('env') == 'prod' else STAGING_BASE_URL
         client = Client(url, refresh_token, access_token, params.get('insecure'), params.get('proxy'))
-
+        args = demisto.args()
         if demisto.command() == 'pan-dlp-get-report':
-            args = demisto.args()
             report_id = args.get('report_id')
             fetch_snippets = argToBoolean(args.get('fetch_snippets'))
             report_json, status_code = client.get_dlp_report(report_id, fetch_snippets)
@@ -429,12 +460,15 @@ def main():
         elif demisto.command() == 'long-running-execution':
             long_running_execution_command(params)
         elif demisto.command() == 'pan-dlp-update-incident':
-            args = demisto.args()
             incident_id = args.get('incident_id')
             feedback = args.get('feedback')
             user_id = args.get('user_id')
             region = args.get('region')
             update_incident(client, incident_id, feedback, user_id, region)
+        elif demisto.command() == 'pan-dlp-exemption-eligible':
+            exemption_eligible(args, params)
+        elif demisto.command() == 'pan-dlp-slack-message':
+            slack_bot_message(args, params)
         elif demisto.command() == "test-module":
             test(client)
 

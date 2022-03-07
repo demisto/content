@@ -21,6 +21,29 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: DLP Regions
+  name: dlp_regions
+  type: 16
+  required: false
+  options:
+  - US
+  - EU
+  - AP
+- display: Data profiles to allow exemption
+  name: dlp_exemptible_list
+  type: 0
+  required: true
+  additionalinfo: A comma separated list of data profile names that should give user
+    the option to request an exemption
+- display: Slack Bot Message
+  name: dlp_slack_message
+  defaultvalue: '*We need your feedback* \nYour upload of *$file_name* on Google Drive
+    was blocked due to company policy. This file contains sensitive information which
+    violates *$data_profile_name* policy. \n\n $snippets\n\nPlease confirm if this
+    file contains sencitive information:'
+  type: 12
+  required: false
+  additionalinfo: The Slack message to send to the user to ask for feedback
 description: Palo Alto Networks Enterprise DLP discovers and protects company data
   across every data channel and repository. Integrated Enterprise DLP enables data
   protection and compliance everywhere without complexity.
@@ -78,6 +101,32 @@ script:
         description: Whether or not the update was successful
         type: boolean
     description: Update a DLP incident with user feedback
+  - name: pan-dlp-exemption-eligible
+      arguments:
+          - name: data_profile
+            required: true
+            description: The name of the data profile
+      outputs:
+        - contextPath: DLP.exemption.eligible
+          description: Whether or not the data profile is eligible for exemption
+          type: boolean
+      description: Determines if exemption can be granted on incidents from a certain
+        data profile
+  - name: pan-dlp-slack-message
+    arguments:
+      - name: file_name
+        required: true
+        description: The name of the file that triggered the incident
+      - name: data_profile_name
+        required: true
+        description: The data profile name associated with the incident
+      - name: snippets
+        description: The snippets of the violation
+    outputs:
+      - contextPath: DLP.slack_message
+        description: The Slack bot message
+        type: string
+    description: Get the Slack bot message to send to the user for gathering feedback
   dockerimage: demisto/python3:3.10.1.26972
   isFetchSamples: true
   longRunning: false
