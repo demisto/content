@@ -65,7 +65,8 @@ class MsGraphClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  redirect_uri, auth_code):
-        grant_type = AUTHORIZATION_CODE if self_deployed else CLIENT_CREDENTIALS
+        # grant_type = AUTHORIZATION_CODE if self_deployed else CLIENT_CREDENTIALS
+        grant_type = CLIENT_CREDENTIALS
         resource = None if self_deployed else ''
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
