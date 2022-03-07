@@ -73,7 +73,7 @@ args:
   - Course of Action
   - Infrastructure
   - Intrusion Set
-  required: true
+  required: false
   secret: false
 - default: false
   description: 'The indicator query for all the entity_b results. The indicators that are the results of the query will be used as the destination of the relationship. For example type:ip AND tags:mytag. For more query examples, see https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/manage-indicators/understand-indicators/indicators-page.html. This argument cannot be used in conjunction with the entity_b argument or the entity_b_type argument.'
