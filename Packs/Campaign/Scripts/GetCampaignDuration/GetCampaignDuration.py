@@ -28,23 +28,22 @@ def get_duration_html():
         diff = now - parsed_first_date
 
         return f"""
-                    <div class="demisto-duration vertical-strech">
-                        <div class="duration-widget">
-                            <div class="grid-container">
-                                <div class="duration-icon"><i class="wait icon home"></i></div>
-                                <div class="days-number">{diff.days}</div>
-                                <div class="colon center aligned">:</div>
-                                <div class="hours-number">{(diff.seconds // 3600) % 24}</div>
-                                <div class="colon-2 center aligned">:</div>
-                                <div class="one column wide minutes-number">{(diff.seconds // 60) % 60}</div>
-                                <div class="days-label time-unit title-h5 opacity-description">DAYS</div>
-                                <div class="hours-label time-unit title-h5 opacity-description">HOURS</div>
-                                <div class="minutes-label time-unit title-h5 opacity-description">MIN</div>
-                            </div>
-                        </div>
-                    </div>
+                <div style="display: grid; grid-template-columns: auto auto auto auto auto auto; width: 300px;">
+                <div style="font-size: 25px; ">&#128345;</div>
+                <div style="font-size: 30px; text-align: center;">{diff.days}</div>
+                <div style="font-size: 30px; text-align: center;">:</div>
+                <div style="font-size: 30px; text-align: center;">{(diff.seconds // 3600) % 24}</div>
+                <div style="font-size: 30px; text-align: center;">:</div>
+                <div style="font-size: 30px; text-align: center;">{(diff.seconds // 60) % 60}</div>
+                <div style="font-size: 15px; text-align: center; padding-top: 10px;"></div>
+                <div style="font-size: 15px; text-align: center; padding-top: 10px;">Days</div>
+                <div style="font-size: 15px; text-align: center; padding-top: 10px;"></div>
+                <div style="font-size: 15px; text-align: center; padding-top: 10px;">Hours</div>
+                <div style="font-size: 15px; text-align: center; padding-top: 10px;"></div>
+                <div style="font-size: 15px; text-align: center; padding-top: 10px;">Minutes</div>
+                </div>
+        """
 
-    """
     except FieldNotFound:
         return '<div style="text-align: center;">Duration is not available.</div>'
     except Exception as e:
