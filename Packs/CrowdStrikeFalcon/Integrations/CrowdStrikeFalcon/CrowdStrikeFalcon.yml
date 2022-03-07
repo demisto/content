@@ -72,7 +72,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: When selected, closing the XSOAR incident is mirrored in CrowdStrike Falcon incident or detection,
-  according to the types that were chosen to be fetched and mirrored.
+    according to the types that were chosen to be fetched and mirrored.
   defaultvalue: 'false'
   display: Close Mirrored CrowdStrike Falcon Incident or Detection
   hidden: false
