@@ -6,7 +6,6 @@ import dateutil.relativedelta
 
 THRESHOLDS = {
     'numberofincidentswithmorethan500entries': 300,
-    'numberofincidentsbiggerthan10mb': 1,
     'numberofincidentsbiggerthan1mb': 300,
 }
 DESCRIPTION = [
@@ -24,11 +23,11 @@ def format_dict_keys(entry: Dict[str, Any]) -> Dict:
     for key, value in entry.items():
         if key == 'Size(MB)':
             new_entry['size'] = f'{value} MB'
-        if key == 'AmountOfEntries':
+        elif key == 'AmountOfEntries':
             new_entry['info'] = f'{value} Entries'
         else:
             new_entry[key.lower()] = value
-
+    new_entry.pop('size(mb)', None)
     return new_entry
 
 
@@ -39,7 +38,7 @@ def formatToEntriesGrid(table):
 
 def main(args):
     thresholds = args.get('Thresholds', THRESHOLDS)
-    append = args.get('Append', False)
+    append = args.get('Append', 'False')
     prev_month = datetime.today() + dateutil.relativedelta.relativedelta(months=-1)
     current_month = datetime.today()
     res = execute_command('GetLargestInvestigations', {
@@ -63,7 +62,7 @@ def main(args):
     numberofincidentswithmorethan500entries = len(incidentswithmorethan500entries)
     if incidentswithmorethan500entries:
         formatToEntriesGrid(incidentswithmorethan500entries)
-        
+
     analyzeFields = {
         'healthchecklargeinvestigations': incidentsbiggerthan1mb,
         'healthchecknumberofinvestigationsbiggerthan1mb': numberofincidentsbiggerthan1mb,
@@ -71,11 +70,11 @@ def main(args):
     }
 
     if append == 'False':
-        execute_command('setIncident', analyzeFields)
+        demisto.executeCommand('setIncident', analyzeFields)
     else:
         incident = demisto.incidents()
         prevData = incident[0].get('CustomFields', {}).get('healthchecklargeinvestigations')
-        analyzeFields["healthchecklargeinvestigations"].extend(prevData)
+        analyzeFields.get("healthchecklargeinvestigations", []).extend(prevData)
         demisto.executeCommand('setIncident', analyzeFields)
 
     action_items = []

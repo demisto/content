@@ -24,10 +24,10 @@ LARGEST_INCIDENTS = [
     },
 ]
 EXPECTED_FORMATTED_INCIDENTS = [
-    {'size': '50 MB', 'amountofentries': 100},
-    {'size': '500 MB', 'amountofentries': 100},
-    {'size': '1 MB', 'amountofentries': 1000},
-    {'size': '5 MB', 'amountofentries': 10},
+    {'size': '50 MB', 'info': '100 Entries'},
+    {'size': '500 MB', 'info': '100 Entries'},
+    {'size': '1 MB', 'info': '1000 Entries'},
+    {'size': '5 MB', 'info': '10 Entries'},
 ]
 
 
@@ -49,16 +49,14 @@ def test_main(mocker):
     }])
     args = {'Thresholds': {
         'numberofincidentswithmorethan500entries': 0,
-        'numberofincidentsbiggerthan10mb': 0,
         'numberofincidentsbiggerthan1mb': 0,
     }}
 
     # Arrange
     result = HealthCheckAnalyzeLargeInvestigations.main(args)
-    set_incident_fields = execute_command.call_args.args[1]
+    set_incident_fields = execute_command.call_args[0][1]
 
     # Assert
-    assert len(result.outputs) == 3
-    assert set_incident_fields['healthchecknumberofinvestigationsbiggerthan1mb'] == 2
-    assert set_incident_fields['healthchecknumberofinvestigationsbiggerthan10mb'] == 2
-    assert set_incident_fields['healthchecknumberofinvestigationswithmorethan500entries'] == 1
+    assert len(result.outputs) == 2
+    assert set_incident_fields['healthchecknumberofinvestigationsbiggerthan1mb'] == 3
+    assert len(set_incident_fields['healthcheckincidentslargenumberofentries']) == 1
