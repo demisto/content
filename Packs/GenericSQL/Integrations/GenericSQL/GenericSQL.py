@@ -145,8 +145,7 @@ class Client:
         headers = []
         if results:
             # if the table isn't empty
-            headers = results[0].keys()
-            # headers = list(results[0].keys() if results[0].keys() else '')
+            headers = list(results[0].keys() if results[0].keys() else '')
         return results, headers
 
 
