@@ -915,23 +915,6 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
     return process_incidents(raw_incidents, last_fetch_ids, min_severity, latest_created_time, last_incident_number)
 
 
-def fetch_incidents_via_incident_number(last_incident_number: int, client: AzureSentinelClient):
-    """Fetching incidents.
-    Args:
-        last_incident_number: The last incident number.
-        client: an AzureSentinelClient client.
-
-    Returns:
-        An array of incidents, and a latest created time.
-    """
-    command_args = {'$filter': f'properties/incidentNumber gt {last_incident_number}',
-                    '$orderby': 'properties/incidentNumber asc',
-                    }
-    command_result = list_incidents_command(client, command_args, is_fetch_incidents=True)
-
-    return command_result.outputs
-
-
 def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: int, latest_created_time: datetime,
                       last_incident_number: int):
     """Processing the raw incidents
