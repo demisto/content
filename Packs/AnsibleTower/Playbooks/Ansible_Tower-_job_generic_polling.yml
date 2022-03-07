@@ -199,7 +199,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: AnsibleAWX.Job(val.status !== 'successful').id
+        simple: AnsibleAWX.Job(val.status!=='failed'&&val.status!=='successful').id
     separatecontext: true
     loop:
       iscommand: false
@@ -279,7 +279,9 @@ tasks:
       - "3"
     scriptarguments:
       job_id:
-        simple: ${AnsibleAWX.Job.id}
+        complex:
+          root: AnsibleAWX.Job
+          accessor: id
     separatecontext: false
     view: |-
       {
@@ -373,7 +375,7 @@ outputs:
 - contextPath: AnsibleAWX.JobEvents.event_data
   description: Job event data.
 fromversion: 6.0.0
-description: Generic pooling playbook to launch a specific job template. Returns the job status when the job finishes running.
+description: Generic polling playbook to launch a specific job template. Returns the job status when the job finishes running.
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:
