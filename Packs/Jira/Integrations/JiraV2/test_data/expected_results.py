@@ -85,14 +85,20 @@ GET_JIRA_ISSUE_RES = {
 }
 
 JIRA_ATTACHMENT = [{'created': '1996-11-25T16:29:37.277764067Z',
-                    "content": "https://localhost/secure/attachment/14848/download.png"}]
+                    "content": 'https://localhost/rest/attachment/content/14848'}]
 
 JIRA_ATTACHMENT_ALL = [{'created': '1996-11-25T16:29:37.277764067Z',
-                        "content": "https://localhost/secure/attachment/14848/download.png"},
+                        'content': 'https://localhost/rest/attachment/content/14840',
+                        'filename': 'filename1',
+                        'self': 'https://localhost/rest/attachment/14840'},
                        {'created': '1992-11-25T16:29:37.277764067Z',
-                        "content": "https://localhost/secure/attachment/14848/download1.png"},
+                        'content': 'https://localhost/rest/attachment/content/14841',
+                        'filename': 'filename2',
+                        'self': 'https://localhost/rest/attachment/14841'},
                        {'created': '2170-11-25T16:29:37.277764067Z',
-                        "content": "https://localhost/secure/attachment/14848/download2.png"}]
+                        'content': 'https://localhost/rest/attachment/content/14842',
+                        'filename': 'filename3',
+                        'self': 'https://localhost/rest/attachment/14842'}]
 
 ARGS_FROM_UPDATE_REMOTE_SYS = {
     'lastUpdate': '2020-12-14T12:38:30.006+0200',
