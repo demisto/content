@@ -201,7 +201,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: AnsibleAWX.Job(val.status!=='failed'&&val.status!=='successful').id
+        simple: AnsibleAWX.Job(val.status!=='failed'&&val.status!=='successful'&&val.status!=='canceled'&&val.status!=='error').id
     separatecontext: true
     loop:
       iscommand: false
