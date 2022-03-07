@@ -5474,9 +5474,6 @@
         }
     },
     "test_marketplacev2": [
-        {
-          "packID": "Phishing",
-          "playbookID": "Phishing v2 - Test - Incident Starter"
-        }
+      "Phishing v2 - Test - Incident Starter"
     ]
 }

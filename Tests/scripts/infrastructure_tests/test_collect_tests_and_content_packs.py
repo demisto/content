@@ -415,7 +415,7 @@ class TestChangedIntegrationAndPlaybook:
     def test_changed_runnable_test__unmocked_get_modified_files_on_marketplacev2(self):
         """
         Given:
-            - 2 Modified in packs and only PagerDuty is marketplacev2 supported.
+            - 2 Modified packs where only one of them - PagerDuty is marketplacev2 supported.
         When:
             - Calling get_test_list_and_content_packs_to_install
         Then:
@@ -428,7 +428,7 @@ class TestChangedIntegrationAndPlaybook:
     def test_changed_runnable_test__unmocked_get_modified_files_on_xsoar(self):
         """
         Given:
-            - 2 Modified in packs and only CommonPlaybooks is xsoar supported.
+            - 2 Modified packs where only one of them - CommonPlaybooks is xsoar supported.
         When:
             - Calling get_test_list_and_content_packs_to_install
         Then:
