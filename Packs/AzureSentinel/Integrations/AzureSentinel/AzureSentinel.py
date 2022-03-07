@@ -460,7 +460,7 @@ def test_module(client):
 
 
 def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents=False):
-    """Fetching incidents
+    """Fetching incidents.
     Args:
         client: An AzureSentinelClient client.
         args: Demisto args.
@@ -472,16 +472,16 @@ def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents
 
     limit = None if is_fetch_incidents else min(200, int(args.get('limit')))
     next_link = args.get('next_link', '')
-    params: Dict[str, Any] = {'$filter': args.get('$filter', ''),
-                              '$orderby': args.get('$orderby', ''),
-                              }
 
     if next_link:
         next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
         result = client.http_request('GET', full_url=next_link)
 
     else:
-        params.update({'$top': limit})
+        params = {'$filter': args.get('$filter', ''),
+                  '$orderby': args.get('$orderby', ''),
+                  '$top': limit
+                  }
         remove_nulls_from_dictionary(params)
 
         url_suffix = 'incidents'
