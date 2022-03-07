@@ -1916,10 +1916,10 @@ def build_search_human_readable(args, parsed_search_results):
         else:
             search_for_table_args = re.search(r' table (?P<table>.*)(\|)?', args.get('query', ''))
             if search_for_table_args:
-                table_args = search_for_table_args.group('table')
-                table_args = table_args if '|' not in table_args else table_args.split(' |')[0]
-                chosen_fields = [field.strip('"')
-                                 for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', table_args) if field]
+                chosen_fields = []
+                for table_args in re.findall(r' table (?P<table>[^|]*)', args.get('query', '')):
+                    chosen_fields.extend([field.strip('"')
+                                          for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', table_args) if field])
 
                 headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
@@ -1931,15 +1931,17 @@ def build_search_human_readable(args, parsed_search_results):
 
 def update_headers_from_field_names(search_result, chosen_fields):
     headers = []
-    search_result_keys = search_result[0].keys()
+    result_keys = set()
+    for search_result_keys in search_result:
+        result_keys.update(search_result_keys.keys())
     for field in chosen_fields:
         if field[-1] == '*':
             temp_field = field.replace('*', '.*')
-            for key in search_result_keys:
+            for key in result_keys:
                 if re.search(temp_field, key):
                     headers.append(key)
 
-        elif field in search_result_keys:
+        elif field in result_keys and field not in headers:
             headers.append(field)
 
     return headers
