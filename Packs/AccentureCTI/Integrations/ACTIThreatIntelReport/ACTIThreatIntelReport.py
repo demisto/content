@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 import requests
 import traceback
-from typing import List
 import re
 
 # Disable insecure warnings
@@ -12,10 +11,11 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ENDPOINTS = {
     'document': '/rest/document'
 }
-ATTACHMENT_LINK='https://intelgraph.idefense.com/rest/files/download'
+ATTACHMENT_LINK = 'https://intelgraph.idefense.com/rest/files/download'
+
 
 class Client(BaseClient):
-    def __init__(self, input_url:str, api_key:str, verify_certificate: bool, proxy: bool, endpoint="/rest/document"):
+    def __init__(self, input_url: str, api_key: str, verify_certificate: bool, proxy: bool, endpoint="/rest/document"):
         base_url = urljoin(input_url, endpoint)
         headers = {
             "Content-Type": "application/json",
@@ -89,15 +89,16 @@ def fix_markdown(text):
     return output
 
 
-def getThreatReport_command(client: Client, args: dict , reliability: DBotScoreReliability):
+def getThreatReport_command(client: Client, args: dict, reliability: DBotScoreReliability):
     try:
-        result={}
+        result = {}
         ia_ir_url: str = str(args.get('url'))
         ia_ir_uuid: str = ia_ir_url.split('/')[-1]
         result = client.document_download(url_suffix=f'/v0/{ia_ir_uuid}')
         custom_indicator = _ia_ir_extract(result, reliability, ia_ir_url)
-        return CommandResults(indicator=custom_indicator, raw_response=result, readable_output=f"Report has been fetched!\nUUID: {result['uuid']}\nURL to view report:{ia_ir_url}")
-        
+        return CommandResults(indicator=custom_indicator, raw_response=result,
+                              readable_output=f"Report has been fetched!\nUUID: {result['uuid']}\nURL to view report:{ia_ir_url}")
+
     except Exception as e:
         if 'Failed to parse json object from response' in e.args[0]:
             return CommandResults(indicator=None, raw_response={},
@@ -109,55 +110,60 @@ def getThreatReport_command(client: Client, args: dict , reliability: DBotScoreR
 def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability, ia_ir_url: str):
     """
     """
-    threat_types = Res.get('threat_types','')
-    threattypes=''; uuid=''; indicatortype=''
-    uuid = Res.get('uuid','')
+    threat_types = Res.get('threat_types', '')
+    threattypes = ''
+    uuid = ''
+    indicatortype = ''
+    uuid = Res.get('uuid', '')
     if threat_types:
-            for threat_type in threat_types:
-                threattypes= threattypes+'\n- '+threat_type
+        for threat_type in threat_types:
+            threattypes = threattypes + '\n- ' + threat_type
     context = {
-                'created_on' : Res.get('created_on','NA'),
-                'display_text' : Res.get('display_text','NA'),
-                'dynamic_properties' : Res.get('dynamic_properties','NA'),
-                'index_timestamp' : Res.get('index_timestamp','NA'),
-                'key' : Res.get('key','NA'),
-                'last_modified' : Res.get('last_modified','NA'),
-                'last_published' : Res.get('last_published','NA'),
-                'links' : Res.get('links','NA'),
-                'threat_types' : threattypes,
-                'title' : Res.get('title','NA'),
-                'type' : Res.get('type','NA'),
-                'uuid' : uuid,
-                'analysis' : fix_markdown(Res.get('analysis','NA')),
-                'sources_external' : Res.get('sources_external','NA')
+        'created_on': Res.get('created_on', 'NA'),
+        'display_text': Res.get('display_text', 'NA'),
+        'dynamic_properties': Res.get('dynamic_properties', 'NA'),
+        'index_timestamp': Res.get('index_timestamp', 'NA'),
+        'key': Res.get('key', 'NA'),
+        'last_modified': Res.get('last_modified', 'NA'),
+        'last_published': Res.get('last_published', 'NA'),
+        'links': Res.get('links', 'NA'),
+        'threat_types': threattypes,
+        'title': Res.get('title', 'NA'),
+        'type': Res.get('type', 'NA'),
+        'uuid': uuid,
+        'analysis': fix_markdown(Res.get('analysis', 'NA')),
+        'sources_external': Res.get('sources_external', 'NA')
+    }
 
-        }
-    
-    type_of_report = Res.get('type','NA')
+    type_of_report = Res.get('type', 'NA')
     if 'intelligence_report' in type_of_report:
-        context['conclusion'] = fix_markdown(Res.get('conclusion','NA'))
-        context['summary'] = fix_markdown(Res.get('summary','NA'))
+        context['conclusion'] = fix_markdown(Res.get('conclusion', 'NA'))
+        context['summary'] = fix_markdown(Res.get('summary', 'NA'))
         severity_dbot_score = Common.DBotScore.NONE
         indicatortype = 'ACTI Intelligence Report'
     else:
-        severity_dbot_score = Res.get('severity','NA')
+        severity_dbot_score = Res.get('severity', 'NA')
         if severity_dbot_score != 'NA':
             severity_dbot_score = _calculate_dbot_score(severity_dbot_score)
-        context['mitigation'] = fix_markdown(Res.get('mitigation','NA'))
-        context['severity'] = Res.get('severity','NA')
-        context['abstract'] = fix_markdown(Res.get('abstract','NA'))
-        attachment_links = Res.get('attachment_links','')
+        context['mitigation'] = fix_markdown(Res.get('mitigation', 'NA'))
+        context['severity'] = Res.get('severity', 'NA')
+        context['abstract'] = fix_markdown(Res.get('abstract', 'NA'))
+        attachment_links = Res.get('attachment_links', '')
         fqlink: str = ''
         if attachment_links:
             for link in attachment_links:
-                fqlink= fqlink+'\n- '+(ATTACHMENT_LINK+link)
+                fqlink = fqlink + '\n- ' + (ATTACHMENT_LINK + link)
         else:
             fqlink = 'NA'
         context['attachment_links'] = fqlink
         indicatortype = 'ACTI Intelligence Alert'
-    dbot_score = Common.DBotScore(indicator=ia_ir_url, indicator_type=DBotScoreType.CUSTOM, integration_name='ACTI Threat Intelligence Report', score=severity_dbot_score, reliability=reliability)
-    custom_indicator = Common.CustomIndicator(indicator_type=indicatortype, dbot_score=dbot_score, value=ia_ir_url, data=context, context_prefix='IAIR')
+    dbot_score = Common.DBotScore(indicator=ia_ir_url, indicator_type=DBotScoreType.CUSTOM,
+                                  integration_name='ACTI Threat Intelligence Report',
+                                  score=severity_dbot_score, reliability=reliability)
+    custom_indicator = Common.CustomIndicator(indicator_type=indicatortype, dbot_score=dbot_score,
+                                              value=ia_ir_url, data=context, context_prefix='IAIR')
     return custom_indicator
+
 
 def main():
     params = demisto.params()
@@ -177,7 +183,7 @@ def main():
         Exception("Accenture CTI error: Please provide a valid value for the Source Reliability parameter")
 
     commands = {
-        'acti-getThreatIntelReport' : getThreatReport_command
+        'acti-getThreatIntelReport': getThreatReport_command
     }
 
     try:
@@ -189,7 +195,6 @@ def main():
             return_results(test_module(client))
         elif command in commands:
             return_results(commands[command](client, demisto.args(), reliability))
-            
 
     except Exception as e:
         if 'Error in API call [403]' in e.args[0]:
@@ -197,6 +202,7 @@ def main():
         else:
             demisto.error(traceback.format_exc())
             return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
