@@ -535,30 +535,8 @@ MOCKED_RAW_INCIDENT_OUTPUT = {
         'Name': 'inc_name',
         'IncidentNumber': 2,
         'Title': 'title',
-        'Description': 'desc',
         'Severity': 'High',
-        'Status': 'New',
-        'Owner': {
-            'AssignedTo': 'bla',
-            'Email': 'bla',
-        },
-        'Labels': [{
-            'Name': 'label_name',
-            'Type': 'label_type'
-        }],
-        'FirstActivityTimeUtc': '2020-02-02T14:05:01.5348545Z',
-        'LastActivityTimeUtc': '2020-02-02T14:05:01.5348545Z',
-        'LastModifiedTimeUtc': '2020-02-02T14:05:01.5348545Z',
         'CreatedTimeUTC': '2020-02-02T14:05:01.5348545Z',
-        'AdditionalData': {
-            'AlertsCount': 1,
-            'BookmarksCount': 2,
-            'CommentsCount': 3,
-            'AlertProductNames': ['name1', 'name2'],
-            'Tactics': ['tactic']
-        },
-        'FirstActivityTimeGenerated': '2020-02-02T14:05:01.5348545Z',
-        'LastActivityTimeGenerated': '2020-02-02T14:05:01.5348545Z'
     }]
 }
 
@@ -1272,11 +1250,11 @@ class TestHappyPath:
 
     @pytest.mark.parametrize('args, client, expected_result', [  # disable-secrets-detection
         ({'last_fetch_ids': [], 'min_severity': 3, 'last_incident_number': 1}, mock_client(),
-         {'last_fetch_ids': ['inc_ID'], 'last_incident_number': 2}),
+         {'last_fetch_ids': ['inc_ID'], 'last_incident_number': 2}),  # case 1
         ({'last_fetch_ids': ['inc_ID'], 'min_severity': 3, 'last_incident_number': 2}, mock_client(),
-         {'last_fetch_ids': [], 'last_incident_number': 2}),
+         {'last_fetch_ids': [], 'last_incident_number': 2}),  # case 2
         ({'last_fetch_ids': [], 'min_severity': 3, 'last_incident_number': 5}, mock_client(),
-         {'last_fetch_ids': [], 'last_incident_number': 5})
+         {'last_fetch_ids': [], 'last_incident_number': 5})  # case 3
     ])
     def test_process_incidents(self, args, client, expected_result):
         """
@@ -1287,7 +1265,10 @@ class TestHappyPath:
             - Calling the process_incidents command.
 
         Then:
-            - Validate the return values based on the scenario.
+            - Validate the return values based on the scenario:
+            case 1: We expect to process the incident, so its ID exists in the expected result.
+            case 2: The incident id is in the "last_fetch_ids" array, so we expect to not process the incident.
+            case 3: The last incident number higher than the the raw incident, so we expect to not process the incident.
         """
         # prepare
         raw_incidents = MOCKED_RAW_INCIDENT_OUTPUT.get('value')
@@ -1303,48 +1284,6 @@ class TestHappyPath:
         # validate
         assert next_run.get('last_fetch_ids') == expected_result.get('last_fetch_ids')
         assert next_run.get('last_incident_number') == expected_result.get('last_incident_number')
-
-    @staticmethod
-    def mock_http_request(method: str, url_suffix: str, params: dict):
-        """ Mock an http request to emulate the API behavior in fetching incidents. """
-        incidents_to_return = []
-        if 'properties/createdTimeUtc ge' in params.get('$filter'):
-            incidents_to_return.append(INCIDENTS[0])
-            incidents_to_return.append(INCIDENTS[2])
-        elif 'properties/incidentNumber gt' in params.get('$filter'):
-            incidents_to_return.append(INCIDENTS[0])
-            incidents_to_return.append(INCIDENTS[1])
-            incidents_to_return.append(INCIDENTS[2])
-
-        return {'value': incidents_to_return}
-
-    def test_fetch_incidents(self, mocker):
-        """
-        Given:
-            - A last_run dict, AzureSentinel client, and a minimum severity.
-
-        When:
-            - Calling the fetch incident command.
-        Then:
-            - Validate the number of incidents that got fetched.
-        """
-        # prepare
-        client = mock_client()
-        response = mocker.patch.object(client, 'http_request', side_effect=self.mock_http_request)
-        min_severity = 0
-        last_run = {
-            'last_fetch_time': '2020-02-02T14:05:00.5348545Z',
-            'last_fetch_ids': [],
-            'last_incident_number': 0
-        }
-        first_fetch_time = ''
-
-        # run
-        next_run, incidents = fetch_incidents(client, last_run, first_fetch_time, min_severity)
-        output = response.call_args[1]
-        # validate
-        assert len(next_run.get('last_fetch_ids')) == len(INCIDENTS)
-        assert 'properties/incidentNumber gt' in output.get('params').get('$filter')
 
 
 class TestEdgeCases:

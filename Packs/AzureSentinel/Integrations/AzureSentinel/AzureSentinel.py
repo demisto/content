@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
+import dateparser
 import uuid
 
 # Disable insecure warnings
@@ -469,29 +470,21 @@ def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents
         An array of incidents, and a latest created time.
     """
 
-    filter_expression = args.get('filter')
     limit = None if is_fetch_incidents else min(200, int(args.get('limit')))
     next_link = args.get('next_link', '')
-    result = None
-    params: Dict[str, Any] = {}
+    params: Dict[str, Any] = {'$filter': args.get('$filter'),
+                              '$orderby': args.get('$orderby'),
+                              }
 
     if next_link:
         next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
         result = client.http_request('GET', full_url=next_link)
 
-    elif is_fetch_incidents and not first_fetch:
-        demisto.debug("is_fetch_incidents and not first_fetch")
-        params = {'$orderby': 'properties/incidentNumber asc'}
-
-    else:  # it is a first fetch, or not a part of a fetch command
-        demisto.debug("not is_fetch_incidents or first_fetch")
-        params = {'$orderby': 'properties/createdTimeUtc asc'}
-
-    if not result:
-        params.update({'$top': limit, '$filter': filter_expression})
+    else:
+        params.update({'$top': limit})
         remove_nulls_from_dictionary(params)
-        url_suffix = 'incidents'
 
+        url_suffix = 'incidents'
         result = client.http_request('GET', url_suffix, params=params)
 
     incidents = [incident_data_to_xsoar_format(inc) for inc in result.get('value')]
@@ -902,54 +895,53 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
 
     if last_fetch_time is None:  # this is the first fetch, or the First fetch timestamp was reset
         demisto.debug("handle via timestamp")
-        raw_incidents, latest_created_time = fetch_incidents_via_timestamp(first_fetch_time, client)
+        last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
+        latest_created_time = dateparser.parse(last_fetch_time_str)
+        raw_incidents = fetch_incidents_via_timestamp(latest_created_time, client)
     else:
         demisto.debug("handle via id")
-        raw_incidents, latest_created_time = fetch_incidents_via_incident_number(last_fetch_time, last_incident_number,
-                                                                                 client)
+        latest_created_time = dateparser.parse(last_fetch_time)
+        raw_incidents = fetch_incidents_via_incident_number(last_incident_number, client)
 
     next_run, incidents = process_incidents(raw_incidents, last_fetch_ids, min_severity, latest_created_time,
                                             last_incident_number)
     return next_run, incidents
 
 
-def fetch_incidents_via_timestamp(first_fetch_time: str, client: AzureSentinelClient):
+def fetch_incidents_via_timestamp(last_fetch_time: datetime, client: AzureSentinelClient):
     """Fetching incidents.
     Args:
-        first_fetch_time: The first fetch time.
+        last_fetch_time: The last fetch time.
         client: an AzureSentinelClient client.
 
     Returns:
         An array of incidents, and a latest created time.
     """
-    last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
-    last_fetch_time = dateparser.parse(last_fetch_time_str)
-    latest_created_time = last_fetch_time
-    latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
-    command_args = {'filter': f'properties/createdTimeUtc ge {latest_created_time_str}'}
+
+    latest_created_time_str = last_fetch_time.strftime(DATE_FORMAT)
+    command_args = {'$filter': f'properties/createdTimeUtc ge {latest_created_time_str}',
+                    '$orderby': 'properties/createdTimeUtc asc'}
 
     command_result = list_incidents_command(client, command_args, is_fetch_incidents=True, first_fetch=True)
 
-    return command_result.outputs, latest_created_time
+    return command_result.outputs
 
 
-def fetch_incidents_via_incident_number(last_fetch_time: str, last_incident_number: int, client: AzureSentinelClient):
+def fetch_incidents_via_incident_number(last_incident_number: int, client: AzureSentinelClient):
     """Fetching incidents.
     Args:
-        last_fetch_time: The last fetch time.
         last_incident_number: The last incident number.
         client: an AzureSentinelClient client.
 
     Returns:
         An array of incidents, and a latest created time.
     """
-    last_fetch_time = dateparser.parse(last_fetch_time)
-    latest_created_time = last_fetch_time
-    command_args = {'filter': f'properties/incidentNumber gt {last_incident_number}'}
-
+    command_args = {'$filter': f'properties/incidentNumber gt {last_incident_number}',
+                    '$orderby': 'properties/incidentNumber asc',
+                    }
     command_result = list_incidents_command(client, command_args, is_fetch_incidents=True, first_fetch=False)
 
-    return command_result.outputs, latest_created_time
+    return command_result.outputs
 
 
 def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: int, latest_created_time: datetime,
@@ -968,8 +960,6 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
 
     incidents = []
     current_fetch_ids = []
-    if not last_incident_number:
-        last_incident_number = 0
 
     for incident in raw_incidents:
         incident_severity = severity_to_level(incident.get('Severity'))
