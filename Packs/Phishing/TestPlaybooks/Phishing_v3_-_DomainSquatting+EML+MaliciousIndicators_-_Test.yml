@@ -1,11 +1,7 @@
 id: Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
 version: -1
 name: Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
-description: Checks the domain-squatting flow, with an attached EML file. The EML
-  file should contain some indicators. some of which should be detected as at least
-  suspicious. The email authenticity should get a score of "Fail". Those results together
-  with the domain-squatting, should eventually cause the incident to get a severity
-  of 3.
+description: Checks the domain-squatting flow, with an attached EML file. The EML file should contain some indicators. some of which should be detected as at least suspicious. The email authenticity should get a score of "Fail". Those results together with the domain-squatting, should eventually cause the incident to get a severity of 3.
 starttaskid: "0"
 tasks:
   "0":
@@ -96,7 +92,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 980
+          "y": 850
         }
       }
     note: false
@@ -160,8 +156,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1580,
-          "y": 1910
+          "x": 1590,
+          "y": 2020
         }
       }
     note: false
@@ -173,10 +169,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 1bffd59d-0cfb-45d5-8828-d8b06b8e83c6
+    taskid: 6196ea72-1691-4f96-8b61-606e8dde4365
     type: regular
     task:
-      id: 1bffd59d-0cfb-45d5-8828-d8b06b8e83c6
+      id: 6196ea72-1691-4f96-8b61-606e8dde4365
       version: -1
       name: Get the final Email context
       description: Gets a value from the specified incident's context.
@@ -186,18 +182,19 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+      - "43"
     scriptarguments:
       get_key:
         simple: Email
       incident_id:
-        simple: "234"
+        complex:
+          root: CreatedIncidentID
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1930,
-          "y": 1400
+          "x": 1920,
+          "y": 1365
         }
       }
     note: false
@@ -232,8 +229,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1580,
-          "y": 2100
+          "x": 1590,
+          "y": 2210
         }
       }
     note: false
@@ -259,8 +256,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1010,
-          "y": 2410
+          "x": -1000,
+          "y": 2520
         }
       }
     note: false
@@ -303,8 +300,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1910
+          "x": 460,
+          "y": 2020
         }
       }
     note: false
@@ -339,8 +336,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2100
+          "x": 460,
+          "y": 2210
         }
       }
     note: false
@@ -383,8 +380,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2260,
-          "y": 1910
+          "x": 2270,
+          "y": 2020
         }
       }
     note: false
@@ -427,8 +424,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": 1910
+          "x": 40,
+          "y": 2020
         }
       }
     note: false
@@ -463,8 +460,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": 2100
+          "x": 40,
+          "y": 2210
         }
       }
     note: false
@@ -507,8 +504,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 890,
-          "y": 1910
+          "x": 900,
+          "y": 2020
         }
       }
     note: false
@@ -533,14 +530,13 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: The email was not authenticated in the Phishing - Generic v3 playbook,
-          or something in the CheckEmailAuthenticity script changed.
+        simple: The email was not authenticated in the Phishing - Generic v3 playbook, or something in the CheckEmailAuthenticity script changed.
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 890,
-          "y": 2100
+          "x": 900,
+          "y": 2210
         }
       }
     note: false
@@ -572,8 +568,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1760
+          "x": 460,
+          "y": 1870
         }
       }
     note: false
@@ -602,8 +598,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1580,
-          "y": 1760
+          "x": 1590,
+          "y": 1870
         }
       }
     note: false
@@ -632,8 +628,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2260,
-          "y": 1760
+          "x": 2270,
+          "y": 1870
         }
       }
     note: false
@@ -695,8 +691,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2270,
-          "y": 2100
+          "x": 2280,
+          "y": 2210
         }
       }
     note: false
@@ -739,8 +735,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -450,
-          "y": 1910
+          "x": -440,
+          "y": 2020
         }
       }
     note: false
@@ -775,8 +771,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -450,
-          "y": 2100
+          "x": -440,
+          "y": 2210
         }
       }
     note: false
@@ -848,8 +844,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1930,
-          "y": 1550
+          "x": 1920,
+          "y": 1680
         }
       }
     note: false
@@ -888,10 +884,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 29c514d2-9144-4119-83fc-71a48d08afcb
+    taskid: 552697b1-74a2-447e-82e3-b91fbd00ffd5
     type: regular
     task:
-      id: 29c514d2-9144-4119-83fc-71a48d08afcb
+      id: 552697b1-74a2-447e-82e3-b91fbd00ffd5
       version: -1
       name: Wait and manually remediate
       description: Wait and complete tasks by given status. Used for test playbooks.
@@ -911,7 +907,7 @@ tasks:
       interval_between_tries:
         simple: "15"
       max_timeout:
-        simple: "700"
+        simple: "1100"
       task_name:
         simple: Manually remediate  the incident
       task_states:
@@ -921,7 +917,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1140
+          "y": 1010
         }
       }
     note: false
@@ -968,7 +964,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1320
+          "y": 1190
         }
       }
     note: false
@@ -986,15 +982,14 @@ tasks:
       id: be96971c-a3e8-40ba-835e-7377611fa914
       version: -1
       name: Create phishing incident
-      description: Creates incidents from json files provided, and stores it in the
-        instance context.
+      description: Creates incidents from json files provided, and stores it in the instance context.
       script: '|||create-test-incident-from-file'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "40"
+      - "41"
     scriptarguments:
       attachment_paths:
         simple: TestData/For_Domain_SQT.eml
@@ -1015,48 +1010,14 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
-    taskid: 3a62038d-b089-4bef-8c1f-125553385296
-    type: regular
-    task:
-      id: 3a62038d-b089-4bef-8c1f-125553385296
-      version: -1
-      name: Wait for incident to be fetched
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "41"
-    scriptarguments:
-      seconds:
-        simple: "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 490
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: fa2bf865-fc74-46bb-88ae-8b4bab75ebef
+    taskid: 4385f638-d61f-4c30-87c0-adbf8ed7f15f
     type: regular
     task:
-      id: fa2bf865-fc74-46bb-88ae-8b4bab75ebef
+      id: 4385f638-d61f-4c30-87c0-adbf8ed7f15f
       version: -1
-      name: Find the incident
+      name: Find the incident (with retries)
       description: |-
         Searches Demisto incidents.
 
@@ -1072,15 +1033,19 @@ tasks:
       - "42"
     scriptarguments:
       name:
-        simple: Potential phishing I received
+        simple: Mocked Incident
       notstatus:
         simple: Closed
+      retry-count:
+        simple: "10"
+      retry-interval:
+        simple: "10"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 640
+          "y": 510
         }
       }
     note: false
@@ -1092,10 +1057,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 26a620ba-0c07-4268-88ed-cbca9eaa4dd0
+    taskid: bb23a5df-1aa0-4129-860b-ae1f409e402b
     type: regular
     task:
-      id: 26a620ba-0c07-4268-88ed-cbca9eaa4dd0
+      id: bb23a5df-1aa0-4129-860b-ae1f409e402b
       version: -1
       name: Save the incident ID
       description: Set a value in context under the key you entered.
@@ -1114,6 +1079,11 @@ tasks:
           root: foundIncidents
           accessor: id
           transformers:
+          - operator: sort
+            args:
+              descending:
+                value:
+                  simple: "true"
           - operator: atIndex
             args:
               index:
@@ -1124,7 +1094,44 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 800
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 8c19619c-1fc3-4c8f-85e7-784091e8c335
+    type: regular
+    task:
+      id: 8c19619c-1fc3-4c8f-85e7-784091e8c335
+      version: -1
+      name: Get the DBotScore context
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      get_key:
+        simple: DBotScore
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1920,
+          "y": 1515
         }
       }
     note: false
@@ -1146,8 +1153,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2425,
-        "width": 4330,
+        "height": 2535,
+        "width": 4340,
         "x": -1680,
         "y": 50
       }
