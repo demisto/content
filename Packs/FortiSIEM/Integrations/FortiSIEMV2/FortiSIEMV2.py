@@ -1016,10 +1016,10 @@ def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, s
        None
     """
     validate_fetch_params(max_fetch, max_events_fetch, fetch_with_events, first_fetch, status_list)
-    first_fetch_epoch = date_to_timestamp(arg_to_datetime(first_fetch))
     numeric_status_list = convert_verbal_status_filtering_to_numeric(status_list)
 
     last_run = demisto.getLastRun()
+    first_fetch_epoch = date_to_timestamp(arg_to_datetime(first_fetch)) if not last_run else None
     last_incident_create_time = last_run.get('create_time')
     last_incident_id = last_run.get('incident_id')
     time_from = last_incident_create_time or first_fetch_epoch
