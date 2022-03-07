@@ -429,6 +429,8 @@ outputs:
 sourceplaybookid: Launch Job - Ansible Tower
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+ -  No tests
+marketplaces:
+  - xsoar
 contentitemexportablefields:
   contentitemfields: {}
