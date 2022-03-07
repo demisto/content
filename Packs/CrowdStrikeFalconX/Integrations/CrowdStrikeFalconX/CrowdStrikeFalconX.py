@@ -10,15 +10,15 @@ urllib3.disable_warnings()
 
 
 @dataclass
-class CommandResultArguments:
+class RawCommandResults:
     response: dict
     output: Optional[dict]
     indicator: Optional[Common.File]
 
 
-DBOT_SCORE_DICT = {'malicious': Common.DBotScore.BAD,
-                   'suspicious': Common.DBotScore.SUSPICIOUS,
-                   'no specific threat': Common.DBotScore.GOOD}
+DBOT_SCORE_DICT: dict[str, int] = {'malicious': Common.DBotScore.BAD,
+                                   'suspicious': Common.DBotScore.SUSPICIOUS,
+                                   'no specific threat': Common.DBotScore.GOOD}
 OUTPUTS_PREFIX = 'csfalconx.resource'
 
 
@@ -468,13 +468,23 @@ def file_command(client: Client, **args: dict) -> list[CommandResults]:
 
     resources_fields = ('verdict',)
     sandbox_fields = ('filetype', 'file_size', 'sha256', 'threat_score')
+    report_to_results = {}
 
     for report_id in report_ids:
         response = client.get_full_report(report_id)
-        result = parse_outputs(response, reliability=client.reliability, resources_fields=resources_fields,
-                               sandbox_fields=sandbox_fields)
+        report_to_results[report_id] = parse_outputs(response,
+                                                     reliability=client.reliability,
+                                                     resources_fields=resources_fields,
+                                                     sandbox_fields=sandbox_fields)
+    results = tuple(report_to_results.values())
+    max_indicators: dict[str, Common.File] = max_indicators_per_hash(results)
+    max_outputs = max_output_per_hash(results)
 
-        if result.output:
+    for report_id, result in report_to_results.items():
+        sha256 = result.output.get('sha256')
+        if result.output and sha256 and sha256 in max_outputs:
+            result.output = max_outputs.get(sha256)  # todo test
+            result.indicator = max_indicators.get(sha256)
             readable_output = tableToMarkdown("CrowdStrike Falcon X response:", result.output)
         else:
             readable_output = f'There are no results yet for {report_id=}, ' \
@@ -506,6 +516,50 @@ def file_command(client: Client, **args: dict) -> list[CommandResults]:
     return command_results
 
 
+def max_output_per_hash(results: tuple[RawCommandResults]) -> dict[str, dict]:
+    max_outputs: dict[str, dict] = {}
+    NA = -9  # used for comparing
+
+    for result in filter(None, results):
+        if not result.output:  # nothing to compare
+            continue
+        if sha256 := result.output.get('sha256') is None:  # must have SHA256 to compare
+            continue
+
+        output = result.output
+        temp_max = max_outputs.get(sha256)
+
+        if not temp_max:  # current is first in the dict with this SHA256
+            max_outputs[sha256] = output
+            continue
+
+        if temp_max == output:  # no need to change anything
+            continue
+
+        # comparing temp_max and output
+        new_max = {'sha256': sha256,
+                   'file_size': temp_max.get('file_size') or output.get('file_size')}  # just in case
+
+        # take the one that's more severe. if both are missing, threat_score is omitted from the result.
+        threat_score = max(
+            temp_max.get('file_size', NA),
+            output.get('file_size', NA)
+        )
+        if threat_score != NA:
+            new_max['threat_score'] = threat_score
+
+        # take the one that's more severe.
+        new_max['verdict'] = max(
+            DBOT_SCORE_DICT.get(temp_max.get('verdict'), Common.DBotScore.NONE),
+            DBOT_SCORE_DICT.get(output.get('verdict'), Common.DBotScore.NONE)
+        )
+
+        # done building new_max
+        max_outputs[sha256] = new_max
+
+    return max_outputs
+
+
 def parse_outputs(
         response: dict,
         reliability: str,
@@ -514,7 +568,7 @@ def parse_outputs(
         resources_fields: Optional[tuple] = None,
         sandbox_fields: Optional[tuple] = None,
         extra_sandbox_fields: Optional[tuple] = None,
-) -> CommandResultArguments:
+) -> RawCommandResults:
     """Parse group data as received from CrowdStrike FalconX API matching Demisto conventions
     the output from the API is a dict that contains the keys: meta, resources and errors
     the meta contains a "quota" dict
@@ -554,7 +608,7 @@ def parse_outputs(
         else:  # the resources section is a list of strings
             resources_group_outputs = {"resources": resources_list}
         output |= resources_group_outputs
-    return CommandResultArguments(response, output, indicator)
+    return RawCommandResults(response, output, indicator)
 
 
 def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File]:  # type: ignore[return]
@@ -784,7 +838,7 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
     :param extended_data: Whether to return extended data which includes mitre attacks and signature information.
     :return: list of CommandResults, and a boolean marking at least one of them has `resources` (used for polling)
     """
-    results: list[CommandResultArguments] = []
+    results: list[RawCommandResults] = []
     is_command_finished: bool = False
 
     resources_fields = ('id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
@@ -821,8 +875,6 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
                                extra_sandbox_fields=extra_sandbox_fields)
         results.append(result)
 
-    max_indicators = calculate_max_indicators(results)
-
     command_results = []
     for result in results:
         if result.output:
@@ -835,11 +887,6 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
             readable_output = 'There are no results yet for this sample, its analysis might not have been completed. ' \
                               'Please wait to download the report.\n' \
                               'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.',
-
-        if result.indicator and result.indicator.sha256:  # SHA256 is a primary key, it cannot be missing.
-            result.indicator = max_indicators[result.indicator.sha256]
-        else:
-            result.indicator = None
 
         command_results.append(
             CommandResults(
@@ -862,22 +909,21 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
     return command_results, is_command_finished
 
 
-def calculate_max_indicators(command_result_args: list[CommandResultArguments]):
+def max_indicators_per_hash(results: tuple[RawCommandResults]) -> dict[str, Common.File]:
     """
-    :param command_result_args: raw results
-    :return: dict mapping a SHA256 to the indicator with the highest score from `results`
+    :param results: raw results from a command
+    :return: dict mapping a SHA256 to the indicator with the highest DBotScore
     """
-    max_indicators: dict[str, Common.File] = {}  # indicator with maximal DBotScore per SHA256 value
-    for result in command_result_args:
-        indicator = result.indicator
-        sha256 = indicator.sha256
+    max_indicators: dict[str, Common.File] = {}  # SHA256 to indicator with maximal DBotScore
 
-        if indicator and sha256 and Common.DBotScore.is_valid_score(indicator.dbot_score):
+    for indicator in filter(None, (result.indicator for result in results)):
+        sha256 = indicator.sha256
+        if sha256 and Common.DBotScore.is_valid_score(indicator.dbot_score):
             if existing := max_indicators.get(sha256):
                 if indicator.dbot_score > existing.dbot_score:
                     max_indicators[sha256] = indicator
             else:
-                max_indicators[sha256] = result.indicator
+                max_indicators[sha256] = indicator
     return max_indicators
 
 
@@ -1258,4 +1304,7 @@ def main():
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
+    main()
+
+if __name__ == '__main__':  # todo remove
     main()
