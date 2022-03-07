@@ -61,6 +61,7 @@ NetwitnessQuery
 Deprecated
 SQS
 ACM
+SQL
 unicode
 CloudWatchLogs
 GuardDuty
@@ -88,8 +89,17 @@ FireEye
 FormatURL
 Gitlab
 GitHub
+Lastline
 VMware
 TAXII
 Syslog
 DomainTools
 replyTo
+HX
+hostSetName
+fieldSearchName
+fieldSearchOperator
+fieldSearchValue
+Classifiers
+SentinelOne
+URLs
