@@ -13,7 +13,7 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command, \
     query_threat_indicators_command, create_threat_indicator_command, delete_threat_indicator_command, \
     append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
-    list_threat_indicator_command, NEXTLINK_DESCRIPTION, fetch_incidents, process_incidents
+    list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -539,33 +539,6 @@ MOCKED_RAW_INCIDENT_OUTPUT = {
         'CreatedTimeUTC': '2020-02-02T14:05:01.5348545Z',
     }]
 }
-
-INCIDENTS = [
-    {
-        'name': 'inc_name1',
-        'properties': {
-            'incidentNumber': 1,
-            'createdTimeUtc': '2020-02-02T14:05:01.5348545Z',
-            'title': 'title',
-        }
-    },
-    {
-        'name': 'inc_name2',
-        'properties': {
-            'incidentNumber': 2,
-            'createdTimeUtc': '2020-02-02T14:00:00.00Z',
-            'title': 'title',
-        }
-    },
-    {
-        'name': 'inc_name3',
-        'properties': {
-            'incidentNumber': 3,
-            'createdTimeUtc': '2020-02-02T14:07:01.5348545Z',
-            'title': 'title',
-        }
-    }
-]
 
 
 class TestHappyPath:

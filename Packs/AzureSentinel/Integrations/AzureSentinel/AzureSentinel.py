@@ -459,7 +459,7 @@ def test_module(client):
     return 'ok'
 
 
-def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents=False, first_fetch=False):
+def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents=False):
     """Fetching incidents
     Args:
         client: An AzureSentinelClient client.
@@ -472,8 +472,8 @@ def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents
 
     limit = None if is_fetch_incidents else min(200, int(args.get('limit')))
     next_link = args.get('next_link', '')
-    params: Dict[str, Any] = {'$filter': args.get('$filter'),
-                              '$orderby': args.get('$orderby'),
+    params: Dict[str, Any] = {'$filter': args.get('$filter', ''),
+                              '$orderby': args.get('$orderby', ''),
                               }
 
     if next_link:
@@ -584,8 +584,7 @@ def create_update_watchlist_command(client, args):
     readable_output = tableToMarkdown('Create watchlist results', watchlist,
                                       headers=['Name', 'ID', 'Description'],
                                       headerTransform=pascalToSpace,
-                                      removeNull=True
-                                      )
+                                      removeNull=True)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='AzureSentinel.Watchlist',
@@ -922,7 +921,7 @@ def fetch_incidents_via_timestamp(last_fetch_time: datetime, client: AzureSentin
     command_args = {'$filter': f'properties/createdTimeUtc ge {latest_created_time_str}',
                     '$orderby': 'properties/createdTimeUtc asc'}
 
-    command_result = list_incidents_command(client, command_args, is_fetch_incidents=True, first_fetch=True)
+    command_result = list_incidents_command(client, command_args, is_fetch_incidents=True)
 
     return command_result.outputs
 
@@ -939,7 +938,7 @@ def fetch_incidents_via_incident_number(last_incident_number: int, client: Azure
     command_args = {'$filter': f'properties/incidentNumber gt {last_incident_number}',
                     '$orderby': 'properties/incidentNumber asc',
                     }
-    command_result = list_incidents_command(client, command_args, is_fetch_incidents=True, first_fetch=False)
+    command_result = list_incidents_command(client, command_args, is_fetch_incidents=True)
 
     return command_result.outputs
 
@@ -990,7 +989,7 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
     next_run = {
         'last_fetch_time': latest_created_time.strftime(DATE_FORMAT),
         'last_fetch_ids': current_fetch_ids,
-        'last_incident_number': last_incident_number
+        'last_incident_number': last_incident_number,
     }
     return next_run, incidents
 
@@ -1411,6 +1410,7 @@ def main():
         elif demisto.command() == 'fetch-incidents':
             # How much time before the first fetch to retrieve incidents
             first_fetch_time = params.get('fetch_time', '3 days').strip()
+
             min_severity = severity_to_level(params.get('min_severity', 'Informational'))
 
             # Set and define the fetch incidents command to run after activated via integration settings.
