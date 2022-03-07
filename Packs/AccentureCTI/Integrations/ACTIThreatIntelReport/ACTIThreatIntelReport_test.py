@@ -1,15 +1,3 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
 import json
 import io
 from ACTIThreatIntelReport import Client, _calculate_dbot_score, getThreatReport_command, fix_markdown
@@ -66,7 +54,7 @@ def test_fix_markdown():
     assert expected_output == output
 
 
-def test_getThreatReport_command():
+def test_getThreatReport_ia_command():
     """
     Given:
         - an URL
@@ -80,9 +68,9 @@ def test_getThreatReport_command():
     """
     url = 'https://test.com/rest/document/v0/a487dfdc-08b4-4909-82ea-2d934c27d901'
     status_code = 200
-    json_res = RES_JSON_IA_IR
+    json_res = RES_JSON_IA
 
-    expected_output = expected_output_ia_ir
+    expected_output = expected_output_ia
 
     url_to_check = {'url': 'https://intelgraph.idefense.com/#/node/intelligence_alert/view/a487dfdc-08b4-4909-82ea-2d934c27d901'}
 
@@ -91,7 +79,36 @@ def test_getThreatReport_command():
         client = Client(API_URL, 'api_token', True, False, '/rest/document')
         results = getThreatReport_command(client, url_to_check, DBotScoreReliability.B)
         output = results.to_context().get('EntryContext', {})
-        assert output.get('IAIR(val.value && val.value == obj.value)', []) == expected_output.get('IA_IR')
+        assert output.get('IAIR(val.value && val.value == obj.value)', []) == expected_output.get('IA')
+        assert output.get(DBOT_SCORE, []) == expected_output.get('DBot')
+
+
+def test_getThreatReport_ir_command():
+    """
+    Given:
+        - an URL
+
+    When:
+        - running ThreatReport command and fetch IA/IR
+
+    Then:
+        - return command results containing UUID, dbotscore
+
+    """
+    url = 'https://test.com/rest/document/v0/bdc9d16f-6040-4894-8544-9c98986a41fd'
+    status_code = 200
+    json_res = RES_JSON_IR
+
+    expected_output = expected_output_ir
+
+    url_to_check = {'url': 'https://intelgraph.idefense.com/#/node/intelligence_report/view/bdc9d16f-6040-4894-8544-9c98986a41fd'}
+
+    with requests_mock.Mocker() as m:
+        m.get(url, status_code=status_code, json=json_res)
+        client = Client(API_URL, 'api_token', True, False, '/rest/document')
+        results = getThreatReport_command(client, url_to_check, DBotScoreReliability.B)
+        output = results.to_context().get('EntryContext', {})
+        assert output.get('IAIR(val.value && val.value == obj.value)', []) == expected_output.get('IR')
         assert output.get(DBOT_SCORE, []) == expected_output.get('DBot')
 
 
