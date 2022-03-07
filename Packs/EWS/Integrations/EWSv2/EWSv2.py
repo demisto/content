@@ -12,6 +12,7 @@ from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
                          Body, Build, Configuration, Credentials, EWSDateTime,
                          EWSTimeZone, FileAttachment, Folder, HTMLBody,
                          ItemAttachment, Version)
+import exchangelib.autodiscover as ad
 from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorInvalidIdMalformed,
                                 ErrorInvalidPropertyRequest,
@@ -392,6 +393,10 @@ def create_context_dict(account):
     }
 
 
+def _autodiscover_hostname_patch(**kwargs):
+    raise AutoDiscoverFailed('MonkeyPatch Intentional Exception')
+
+
 def prepare_context(credentials):
     context_dict = demisto.getIntegrationContext()
     global SERVER_BUILD, EWS_SERVER
@@ -406,8 +411,18 @@ def prepare_context(credentials):
             demisto.setIntegrationContext(create_context_dict(account))
         except AutoDiscoverFailed:
             return_error("Auto discovery failed. Check credentials or configure manually")
-        except Exception as e:
-            return_error(e.message)
+        except Exception:
+            exchangelib.autodiscover._autodiscover_hostname = _autodiscover_hostname_patch
+            try:
+                account = Account(
+                    primary_smtp_address=ACCOUNT_EMAIL, autodiscover=True,
+                    access_type=ACCESS_TYPE, credentials=credentials,
+                )
+                EWS_SERVER = account.protocol.service_endpoint
+                SERVER_BUILD = account.protocol.version.build
+                demisto.setIntegrationContext(create_context_dict(account))
+            except Exception as e:
+                return_error(e.message)
     else:
         SERVER_BUILD = get_build_autodiscover(context_dict)
         EWS_SERVER = get_endpoint_autodiscover(context_dict)

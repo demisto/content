@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: EWS v2
+  id: EWS v2_MonkeyPatch
   version: -1
 configuration:
 - display: Email address
@@ -92,8 +92,8 @@ configuration:
   required: false
   type: 8
 description: Exchange Web Services and Office 365 (mail)
-display: EWS v2
-name: EWS v2
+display: EWS v2_MonkeyPatch
+name: EWS v2_MonkeyPatch
 script:
   commands:
   - arguments:
