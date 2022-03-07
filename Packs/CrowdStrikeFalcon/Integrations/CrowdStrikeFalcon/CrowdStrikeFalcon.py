@@ -1684,7 +1684,7 @@ def find_incident_type(remote_incident_id: str):
 
 
 def get_remote_incident_data(remote_incident_id: str):
-    mirrored_data_list = get_incidents_entities([remote_incident_id]).get('resources', [])
+    mirrored_data_list = get_incidents_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
 
     if 'status' in mirrored_data:
@@ -1697,7 +1697,7 @@ def get_remote_incident_data(remote_incident_id: str):
 
 
 def get_remote_detection_data(remote_incident_id: str):
-    mirrored_data_list = get_detections_entities([remote_incident_id]).get('resources', [])
+    mirrored_data_list = get_detections_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
 
     mirrored_data['severity'] = severity_string_to_int(mirrored_data.get('max_severity_displayname'))
@@ -1913,7 +1913,7 @@ def update_remote_incident_tags(delta, incident_id) -> str:
 
 
 def get_previous_tags(remote_incident_id):
-    incidents_entities = get_incidents_entities([remote_incident_id]).get('resources', [])
+    incidents_entities = get_incidents_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     return set(incidents_entities[0].get('tags', ''))
 
 
