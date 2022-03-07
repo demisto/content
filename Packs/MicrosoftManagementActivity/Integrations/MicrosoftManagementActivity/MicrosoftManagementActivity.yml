@@ -258,7 +258,7 @@ script:
     - contextPath: MicrosoftManagement.ContentRecord.UserID
       description: The ID of the record's user.
       type: string
-  dockerimage: demisto/pyjwt3:1.0.0.23674
+  dockerimage: demisto/pyjwt3:1.0.0.27257
   feed: false
   isfetch: true
   longRunning: false

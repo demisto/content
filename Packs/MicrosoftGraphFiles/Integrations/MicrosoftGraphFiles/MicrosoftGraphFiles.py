@@ -108,7 +108,7 @@ class MsGraphClient:
     """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed, ok_codes,
-                 certificate_thumbprint, private_key):
+                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
             base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes,
