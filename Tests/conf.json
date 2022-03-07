@@ -116,6 +116,16 @@
             "playbookID": "FireEyeNX-Test"
         },
         {
+            "integrations": "FireEyeHX v2",
+            "playbookID": "FireEyeHX_v2",
+            "fromversion": "6.2.0",
+            "timeout": 1200
+        },
+        {
+            "integrations": "FireEyeHX v2",
+            "playbookID": "FireEyeHXv2_without_polling"
+        },
+        {
             "integrations": "EmailRepIO",
             "playbookID": "TestEmailRepIOPlaybook",
             "fromversion": "5.0.0"
