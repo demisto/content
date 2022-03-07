@@ -468,19 +468,18 @@ def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents
     Returns:
         A CommandResult object with the array of incidents as output.
     """
-
+    filter_expression = args.get('filter')
     limit = None if is_fetch_incidents else min(200, int(args.get('limit')))
     next_link = args.get('next_link', '')
 
     if next_link:
         next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
         result = client.http_request('GET', full_url=next_link)
-
     else:
         url_suffix = 'incidents'
         params = {
             '$top': limit,
-            '$filter': args.get('filter', ''),
+            '$filter': filter_expression,
             '$orderby': args.get('orderby', 'properties/createdTimeUtc asc')
         }
         remove_nulls_from_dictionary(params)
@@ -938,7 +937,6 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
 
         # fetch only incidents that weren't fetched in the last run and their severity is at least min_severity
         if incident.get('ID') not in last_fetch_ids and incident_severity >= min_severity:
-
             incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
             xsoar_incident = {
                 'name': '[Azure Sentinel] ' + incident.get('Title'),
