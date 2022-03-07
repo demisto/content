@@ -1,6 +1,8 @@
 id: Launch Job - Ansible Tower
 version: -1
 name: Launch Job - Ansible Tower
+description: Generic polling playbook to launch a specific job template. Returns the
+  job status when the job finishes running.
 starttaskid: "0"
 tasks:
   "0":
@@ -11,9 +13,9 @@ tasks:
       id: 41211f80-ab03-41b3-8abb-a83e06bc3566
       version: -1
       name: ""
+      description: ''
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -93,10 +95,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 51aa51b8-6f4c-464e-87e0-d6d2f1d34ea5
+    taskid: 03253e33-0802-4556-86aa-94225742da45
     type: regular
     task:
-      id: 51aa51b8-6f4c-464e-87e0-d6d2f1d34ea5
+      id: 03253e33-0802-4556-86aa-94225742da45
       version: -1
       name: Job template launch
       description: Launch the job template.
@@ -143,16 +145,16 @@ tasks:
       id: 415d0af8-5eb3-475f-8c9b-d5afff54402e
       version: -1
       name: Done
+      description: ''
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1295
         }
       }
     note: false
@@ -164,10 +166,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a33406f6-57e6-43a6-81f5-f16092697b32
+    taskid: 0830e897-e8a7-4233-86ed-a005c42087f7
     type: playbook
     task:
-      id: a33406f6-57e6-43a6-81f5-f16092697b32
+      id: 0830e897-e8a7-4233-86ed-a005c42087f7
       version: -1
       name: GenericPolling
       description: |-
@@ -235,7 +237,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "8"
     scriptarguments:
       job_id:
         complex:
@@ -263,10 +265,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: bd418f5e-49e2-43d0-8c1e-84381ce4773d
+    taskid: 0c921b48-a5c4-4084-875f-0c9ee826de40
     type: regular
     task:
-      id: bd418f5e-49e2-43d0-8c1e-84381ce4773d
+      id: 0c921b48-a5c4-4084-875f-0c9ee826de40
       version: -1
       name: Get Job Events
       description: Retrieves the list of job events of specific job.
@@ -286,6 +288,49 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 50,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a2ae6863-31d0-4eef-840f-7153705c9ff9
+    type: condition
+    task:
+      id: a2ae6863-31d0-4eef-840f-7153705c9ff9
+      version: -1
+      name: Return job's raw events?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.return_job_events
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
           "x": 162.5,
           "y": 895
         }
@@ -302,7 +347,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
+        "height": 1310,
         "width": 492.5,
         "x": 50,
         "y": 50
@@ -311,44 +356,51 @@ view: |-
   }
 inputs:
 - key: job_template_id
-  value:
-    simple: "34"
+  value: {}
   required: true
   description: 'The job template id to launch. '
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: credentials_id
   value: {}
   required: false
-  description: Select the credentials that allows Tower to access the nodes this job will be run against (if needed).
-  playbookInputQuery:
+  description: Select the credentials that allows Tower to access the nodes this job
+    will be run against (if needed).
+  playbookInputQuery: null
 - key: Inventory_id
   value: {}
   required: false
-  description: Select the inventory containing the hosts you want this job to manage (if needed).
-  playbookInputQuery:
+  description: Select the inventory containing the hosts you want this job to manage
+    (if needed).
+  playbookInputQuery: null
 - key: extra_variables
   value: {}
   required: false
   description: Pass extra command line variables to the playbook (if needed).
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: show_output
   value:
     simple: "true"
   required: false
   description: Print output from the job that is running.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Interval
   value:
     simple: "1"
   required: false
   description: Polling frequency - how often the polling command should run (in minutes)
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Timeout
   value:
     simple: "15"
   required: false
   description: How much time (in minutes) to wait before a timeout occurs.
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: return_job_events
+  value:
+    simple: "false"
+  required: false
+  description: Choose if you want to return the job's raw events
+  playbookInputQuery: null
 outputs:
 - contextPath: AnsibleAWX.Job.id
   description: Job id
@@ -374,8 +426,8 @@ outputs:
   description: Ending line number of the execution.
 - contextPath: AnsibleAWX.JobEvents.event_data
   description: Job event data.
+sourceplaybookid: Launch Job - Ansible Tower
 fromversion: 6.0.0
-description: Generic polling playbook to launch a specific job template. Returns the job status when the job finishes running.
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:
