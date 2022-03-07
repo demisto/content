@@ -161,6 +161,7 @@ prepare-testing-bucket-mpv2:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
+    BUILD_OBJECT_TYPE: "XSOAR"
   needs: ["create-instances"]
   stage: run-instances
   script:
@@ -180,7 +181,7 @@ prepare-testing-bucket-mpv2:
       cp "$ARTIFACTS_FOLDER/env_results.json" "./artifacts/env_results.json"
       cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
 
-    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$BUILD_OBJECT_TYPE"|| EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
     - echo Going to sleep for 60 seconds to allow server finish indexing
     - sleep 60
@@ -271,6 +272,7 @@ slack-notify-nightly-build:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json" # all servers info, printed in create instanses step
+    BUILD_OBJECT_TYPE: "XSIAM"
   needs: ["prepare-testing-bucket-mpv2"]
   stage: run-instances
   script:
@@ -282,21 +284,21 @@ slack-notify-nightly-build:
       cp "$ARTIFACTS_FOLDER/env_results.json" "./artifacts/env_results.json"  # need to change this file to xsiam instances
       cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
 
-    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$BUILD_OBJECT_TYPE"|| EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json #todo: check if meyotar
 
-    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
-    - |
-      if [[ -f ./Tests/failed_tests.txt ]]; then
-        cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
-      fi
-    - |
-      if [[ -f ./Tests/succeeded_tests.txt ]]; then
-        cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
-      fi
-
-      # todo: write script that unlock instances
-      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
+#    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+#    - |
+#      if [[ -f ./Tests/failed_tests.txt ]]; then
+#        cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
+#      fi
+#    - |
+#      if [[ -f ./Tests/succeeded_tests.txt ]]; then
+#        cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
+#      fi
+#
+#      # todo: write script that unlock instances
+#      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
     - exit $EXIT_CODE
 
 

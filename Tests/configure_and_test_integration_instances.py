@@ -65,6 +65,8 @@ AVOID_DOCKER_IMAGE_VALIDATION = {
     'content.validate.docker.images': 'false'
 }
 ID_SET_PATH = './artifacts/id_set.json'
+XSOAR_BUILD_TYPE = "XSOAR"
+XSIAM_BUILD_TYPE = "XSIAM"
 
 
 class Running(IntEnum):
@@ -725,6 +727,7 @@ def options_handler():
                         default='./artifacts/filter_file.txt')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
                         default='./artifacts/content_packs_to_install.txt')
+    parser.add_argument('--build_object_type', help='Build type running: XSOAR or XSIAM')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
@@ -736,6 +739,7 @@ def options_handler():
                         required=False)
     # disable-secrets-detection-end
     options = parser.parse_args()
+    logging.info(f'Build type: {options.build_object_type}')
 
     return options
 
@@ -1462,6 +1466,16 @@ def get_non_added_packs_ids(build: Build):
     added_pack_ids = map(lambda x: x.split('/')[1], added_files)
     # build.pack_ids_to_install contains new packs and modified. added_pack_ids contains new packs only.
     return set(build.pack_ids_to_install) - set(added_pack_ids)
+
+
+def create_build_object() -> Build:
+    options = options_handler()
+    if options.build_object_type == XSOAR_BUILD_TYPE:
+        return XSOARBuild(options)
+    elif options.build_object_type == XSIAM_BUILD_TYPE:
+        return XSIAMBuild(options)
+    else:
+        raise Exception(f"Wrong Build object type {options.build_object_type}.")
 
 
 def main():
