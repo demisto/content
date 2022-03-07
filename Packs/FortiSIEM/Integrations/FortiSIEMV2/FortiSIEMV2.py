@@ -1829,10 +1829,10 @@ def main() -> None:
     except Exception as e:
         err_message = str(e)
         if 'Not authorized' in err_message:
-            return_error(
-                "You are not authorized to use FortiSIEM. Please validate your username and password.")
+            return_error(f"You are not authorized to use FortiSIEM. Please validate your username and password."
+                         f"{err_message}")
         if 'HTTP Status 500 - Request failed' in err_message:
-            return_error('Failed to execute the command. Please validate command arguments.')
+            return_error(f"Failed to execute the command. Please validate command arguments.{err_message}")
         return_error(err_message)
 
 
