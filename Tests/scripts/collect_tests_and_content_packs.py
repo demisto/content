@@ -64,9 +64,6 @@ class TestConf(object):
 
         return test_ids
 
-    def get_marketplacev2_tests(self):
-        return self._conf['test_marketplacev2']
-
     def get_all_tested_integrations(self):
         all_integrations = []
         conf_tests = self._conf['tests']
@@ -1271,7 +1268,8 @@ def get_test_list_and_content_packs_to_install(files_string,
                                               compatible_only_with_this_marketplace)
 
     # All filtering out of tests should be done here
-    tests = filter_tests(tests, id_set, modified_packs, marketplace_version, compatible_only_with_this_marketplace)
+    tests = filter_tests(tests, id_set, modified_packs, marketplace_version, False,
+                         compatible_only_with_this_marketplace)
 
     if not tests or changed_common:
         if not tests:
