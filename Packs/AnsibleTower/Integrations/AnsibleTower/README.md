@@ -986,9 +986,7 @@ Retrieves the list of job events.
 | AnsibleAWX.JobEvents.task | String | Task name.                                                                                                | 
 | AnsibleAWX.JobEvents.stdout | String | Standard output of the job.                                                                               | 
 | AnsibleAWX.JobEvents.start_line | Number | Starting line number of the execution.                                                                    | 
-| AnsibleAWX.JobEvents.end_line | Number | Ending line number of the execution.                                                                      | 
-| AnsibleAWX.JobEvents.event_data | String | Job's raw event data.                                                                                     | 
-
+| AnsibleAWX.JobEvents.end_line | Number | Ending line number of the execution.                                                                      |
 
 #### Command Example
 ```!ansible-tower-job-events-list```
@@ -1499,6 +1497,7 @@ Retrieves the list of job events of specific job.
 | AnsibleAWX.JobEvents.stdout | String | Standard output of the job. | 
 | AnsibleAWX.JobEvents.start_line | Number | Starting line number of the execution. | 
 | AnsibleAWX.JobEvents.end_line | Number | Ending line number of the execution. | 
+| AnsibleAWX.JobEvents.event_data | String | Job's raw event data.                                                                                     | 
 
 #### Command Example
 ```!ansible-tower-job-events-list-by-id job_id=69```
