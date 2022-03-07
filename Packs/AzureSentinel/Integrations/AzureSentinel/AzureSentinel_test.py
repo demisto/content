@@ -1225,9 +1225,7 @@ class TestHappyPath:
         ({'last_fetch_ids': [], 'min_severity': 3, 'last_incident_number': 1}, mock_client(),
          {'last_fetch_ids': ['inc_ID'], 'last_incident_number': 2}),  # case 1
         ({'last_fetch_ids': ['inc_ID'], 'min_severity': 3, 'last_incident_number': 2}, mock_client(),
-         {'last_fetch_ids': [], 'last_incident_number': 2}),  # case 2
-        ({'last_fetch_ids': [], 'min_severity': 3, 'last_incident_number': 5}, mock_client(),
-         {'last_fetch_ids': [], 'last_incident_number': 5})  # case 3
+         {'last_fetch_ids': [], 'last_incident_number': 2})  # case 2
     ])
     def test_process_incidents(self, args, client, expected_result):
         """
@@ -1241,7 +1239,6 @@ class TestHappyPath:
             - Validate the return values based on the scenario:
             case 1: We expect to process the incident, so its ID exists in the expected result.
             case 2: The incident id is in the "last_fetch_ids" array, so we expect to not process the incident.
-            case 3: The last incident number higher than the the raw incident, so we expect to not process the incident.
         """
         # prepare
         raw_incidents = MOCKED_RAW_INCIDENT_OUTPUT.get('value')
