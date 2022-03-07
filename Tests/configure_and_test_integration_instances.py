@@ -739,7 +739,6 @@ def options_handler():
                         required=False)
     # disable-secrets-detection-end
     options = parser.parse_args()
-    logging.info(f'Build type: {options.build_object_type}')
 
     return options
 
@@ -1470,6 +1469,7 @@ def get_non_added_packs_ids(build: Build):
 
 def create_build_object() -> Build:
     options = options_handler()
+    logging.info(f'Build type: {options.build_object_type}')
     if options.build_object_type == XSOAR_BUILD_TYPE:
         return XSOARBuild(options)
     elif options.build_object_type == XSIAM_BUILD_TYPE:
@@ -1480,7 +1480,7 @@ def create_build_object() -> Build:
 
 def main():
     install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
-    build = XSOARBuild(options_handler())
+    build = create_build_object()
     logging.info(f"Build Number: {build.ci_build_number}")
 
     # add server config and restart servers
