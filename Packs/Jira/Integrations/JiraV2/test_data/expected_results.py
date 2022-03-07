@@ -85,7 +85,8 @@ GET_JIRA_ISSUE_RES = {
 }
 
 JIRA_ATTACHMENT = [{'created': '1996-11-25T16:29:37.277764067Z',
-                    "content": 'https://localhost/rest/attachment/content/14848'}]
+                    'content': 'https://localhost/rest/attachment/content/14848',
+                    'self': 'https://localhost/rest/attachment/14848'}]
 
 JIRA_ATTACHMENT_ALL = [{'created': '1996-11-25T16:29:37.277764067Z',
                         'content': 'https://localhost/rest/attachment/content/14840',

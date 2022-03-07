@@ -1020,8 +1020,7 @@ def get_attachment_data(attachment):
     attachment_url = f"rest{attachment['content'].split('/rest')[-1]}"
     attachments_zip = jira_req(method='GET', resource_url=attachment_url).content
 
-    ticket_number = attachment_url.split("/")[-1]
-    attachment_metadata_url = attachment_url.split('/content')[0] + '/' + ticket_number
+    attachment_metadata_url = f"rest{attachment['self'].split('/rest')[-1]}"
     attachment_metadata = jira_req(method='GET', resource_url=attachment_metadata_url).json()
 
     filename = attachment_metadata.get('filename')
