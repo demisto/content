@@ -3867,7 +3867,7 @@ def test_close_in_cs_falcon():
     pass
 
 
-detection_closed_in_xsoar = ({}, IncidentStatus.DONE, True, 'closed')
+detection_closed_in_xsoar = ({'closeReason': 'Other'}, IncidentStatus.DONE, True, 'closed')
 detection_status_closed = ({'status': 'closed'}, IncidentStatus.ACTIVE, False, 'closed')
 detection_update_status_true_close_remote = ({'status': 'new'}, IncidentStatus.ACTIVE, True, 'new')
 detection_update_status_false_close_remote = ({'status': 'in_progress'}, IncidentStatus.ACTIVE, False, 'in_progress')
@@ -3890,7 +3890,7 @@ def test_update_remote_detection(mocker, delta, inc_status, close_in_cs_falcon, 
         assert mock_update_detection_request.call_count == 0
 
 
-incident_closed_in_xsoar = ({}, IncidentStatus.DONE, True, 'Closed')
+incident_closed_in_xsoar = ({'closeReason': 'Other'}, IncidentStatus.DONE, True, 'Closed')
 incident_status_closed = ({'status': 'Closed'}, IncidentStatus.ACTIVE, False, 'Closed')
 incident_update_status_true_close_remote = ({'status': 'New'}, IncidentStatus.ACTIVE, True, 'New')
 incident_update_status_false_close_remote = ({'status': 'In Progress'}, IncidentStatus.ACTIVE, False, 'In Progress')
@@ -3917,10 +3917,10 @@ def test_update_remote_incident_tags(mocker):
     mocker.patch('CrowdStrikeFalcon.get_previous_tags', return_value={'tag_stays', 'old_tag'})
     mock_remote_incident_handle_tags = mocker.patch('CrowdStrikeFalcon.remote_incident_handle_tags')
     update_remote_incident_tags({'tag': ['new_tag', 'tag_stays']}, remote_incident_id)
-    assert mock_remote_incident_handle_tags.call_args_list[0].args[0] == {'new_tag'}
-    assert mock_remote_incident_handle_tags.call_args_list[0].args[1] == 'add_tag'
-    assert mock_remote_incident_handle_tags.call_args_list[1].args[0] == {'old_tag'}
-    assert mock_remote_incident_handle_tags.call_args_list[1].args[1] == 'delete_tag'
+    assert mock_remote_incident_handle_tags.call_args_list[0].args[0] == {'old_tag'}
+    assert mock_remote_incident_handle_tags.call_args_list[0].args[1] == 'delete_tag'
+    assert mock_remote_incident_handle_tags.call_args_list[1].args[0] == {'new_tag'}
+    assert mock_remote_incident_handle_tags.call_args_list[1].args[1] == 'add_tag'
 
 
 def test_get_previous_tags(mocker):
