@@ -2,9 +2,9 @@ flake8==4.0.1
 bandit==1.7.2
 demisto-py>=3.0.2
 git+https://github.com/demisto/demisto-sdk.git@cef3aa5ebaaf3034905239c2151517ee4232a84d#egg=demisto-sdk
-pytest==7.0.1
-pytest-mock==3.7.0
-requests-mock==1.9.3
+pytest==6.2.1
+pytest-mock==3.4.0
+requests-mock==1.8.0
 ruamel.yaml<0.17
 pipenv==2020.11.15
 autopep8==1.6.0
