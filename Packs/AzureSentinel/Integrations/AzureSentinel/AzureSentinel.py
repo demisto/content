@@ -898,17 +898,19 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
         last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
         latest_created_time = dateparser.parse(last_fetch_time_str)
         latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
-        command_args = {'filter': f'properties/createdTimeUtc ge {latest_created_time_str}',
-                        'orderby': 'properties/createdTimeUtc asc',
-                        }
+        command_args = {
+            'filter': f'properties/createdTimeUtc ge {latest_created_time_str}',
+            'orderby': 'properties/createdTimeUtc asc',
+        }
         raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
 
     else:
         demisto.debug("handle via id")
         latest_created_time = dateparser.parse(last_fetch_time)
-        command_args = {'filter': f'properties/incidentNumber gt {last_incident_number}',
-                        'orderby': 'properties/incidentNumber asc',
-                        }
+        command_args = {
+            'filter': f'properties/incidentNumber gt {last_incident_number}',
+            'orderby': 'properties/incidentNumber asc',
+        }
         raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
 
     return process_incidents(raw_incidents, last_fetch_ids, min_severity, latest_created_time, last_incident_number)
