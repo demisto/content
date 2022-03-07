@@ -74,7 +74,7 @@ def main(args):
     else:
         incident = demisto.incidents()
         prevData = incident[0].get('CustomFields', {}).get('healthchecklargeinvestigations')
-        analyzeFields.get("healthchecklargeinvestigations", []).extend(prevData)
+        prevData.extend(analyzeFields.get("healthchecklargeinvestigations", []))
         demisto.executeCommand('setIncident', analyzeFields)
 
     action_items = []
