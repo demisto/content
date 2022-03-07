@@ -1,7 +1,8 @@
+from urllib import parse
+
 import os
 import shutil
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
-from urllib import parse
 
 import dateparser
 import demistomock as demisto  # noqa: F401
@@ -11,7 +12,7 @@ from CommonServerPython import *  # noqa: F401
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-
+SIR_INCIDENT = 'sn_si_incident'
 COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
 TICKET_STATES = {
@@ -94,6 +95,10 @@ SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additi
              'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'sys_updated_by', 'sys_updated_on',
              'time_worked', 'title', 'type', 'urgency', 'user_input', 'watch_list', 'work_end', 'work_notes',
              'work_notes_list', 'work_start']
+
+SIR_OUT_FIELDS = ('description', 'short_description', 'sla_due', 'business_criticality',
+                  'priority', 'state', 'urgency', 'severity', 'closed_at',
+                  'risk_score', 'close_notes', 'attack_vector', 'work_notes')
 
 # Every table in ServiceNow should have those fields
 DEFAULT_RECORD_FIELDS = {
@@ -606,7 +611,7 @@ class Client(BaseClient):
         while num_of_tries < max_retries:
             if file:
                 # Not supported in v2
-                url = url.replace('v2', 'v1')
+                url = url.replace('/v2', '/v1')
                 try:
                     file_entry = file['id']
                     file_name = file['name']
@@ -738,6 +743,10 @@ class Client(BaseClient):
         """
         entries = []
         links = []  # type: List[Tuple[str, str]]
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
         attachments_res = self.get_ticket_attachments(ticket_id, sys_created_on)
         if 'result' in attachments_res and len(attachments_res['result']) > 0:
             attachments = attachments_res['result']
@@ -745,8 +754,14 @@ class Client(BaseClient):
                      for attachment in attachments]
 
         for link in links:
-            file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
-                                    proxies=self._proxies)
+            if self.use_oauth:
+                access_token = self.snow_client.get_access_token()
+                headers.update({'Authorization': f'Bearer {access_token}'})
+                file_res = requests.get(link[0], headers=headers, verify=self._verify, proxies=self._proxies)
+            else:
+                file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
+                                        proxies=self._proxies)
+                                    
             if file_res is not None:
                 entries.append(fileResult(link[1], file_res.content))
 
@@ -2129,6 +2144,19 @@ def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, 
     return hr, {}, {}, True
 
 
+def check_assigned_to_field(client: Client, assigned_to: dict) -> Optional[str]:
+    if assigned_to:
+        user_result = client.get('sys_user', assigned_to.get('value'))  # type: ignore[arg-type]
+        user = user_result.get('result', {})
+        if user:
+            user_email = user.get('email')
+            return user_email
+        else:
+            demisto.debug(f'Could not assign user {assigned_to.get("value")} since it does not exist in ServiceNow')
+    return ''
+
+
+
 def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> Union[List[Dict[str, Any]], str]:
     """
     get-remote-data command: Returns an updated incident and entries
@@ -2225,11 +2253,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         group_name = group.get('name')
         ticket['assignment_group'] = group_name
 
-    if assigned_to:
-        user_result = client.get('sys_user', assigned_to.get('value'))
-        user = user_result.get('result', {})
-        user_email = user.get('email')
-        ticket['assigned_to'] = user_email
+    user_assigned = check_assigned_to_field(client, assigned_to)
+    ticket['assigned_to'] = user_assigned
 
     if caller:
         user_result = client.get('sys_user', caller.get('value'))
@@ -2338,7 +2363,8 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     incident_type_scheme = SchemeTypeMapping(type_name=client.ticket_type)
     demisto.debug(f'Collecting incident mapping for incident type - "{client.ticket_type}"')
 
-    for field in SNOW_ARGS:
+    out_fields = SIR_OUT_FIELDS if client.ticket_type == SIR_INCIDENT else SNOW_ARGS
+    for field in out_fields:
         incident_type_scheme.add_field(field)
 
     mapping_response = GetMappingFieldsResponse()
@@ -2572,7 +2598,7 @@ def generic_api_call_command(client: Client, args: Dict) -> Tuple[Any, Dict[Any,
             outputs=resp,
             readable_output=human_readable,
         )
-    demisto.error(f"{err}")
+    
     return f"Request for {method} method is not successful"
 
 

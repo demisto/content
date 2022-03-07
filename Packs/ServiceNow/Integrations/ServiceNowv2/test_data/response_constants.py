@@ -75,7 +75,7 @@ RESPONSE_TICKET_MIRROR = {'result': [{
     'reopened_time': '', 'resolved_at': '', 'approval_set': '', 'subcategory': '', 'work_notes': '',
     'short_description': 'Trouble getting to Oregon mail server', 'close_code': '', 'correlation_display': '',
     'delivery_task': '', 'work_start': '', 'assignment_group':
-        {"link": "https://dev59633.service-now.com/api/now/table/sys_user_group/8a5055c9c61122780043563ef53438e3",
+        {"link": "https://urldefense.com/v3/__https://dev59633.service-now.com/api/now/table/sys_user_group/8a5055c9c61122780043563ef53438e3__;!!Mt_FR42WkD9csi9Y!LmR3z7s_wiLdsMIS6Mo49zgnu2ni_8tPAJBSB624IqJ9-R4BcI3USKsKluJPA6hBS1doMg$ ",
          "value": "8a5055c9c61122780043563ef53438e3"},
     'additional_assignee_list': '', 'business_stc': '',
     'description': 'Unable to access Oregon mail server. Is it down?', 'calendar_duration': '', 'close_notes': '',
@@ -125,7 +125,7 @@ RESPONSE_GET_ATTACHMENT = {'result': [{
     'size_bytes': '17', 'file_name': 'test.txt', 'sys_mod_count': '1', 'average_image_color': '', 'image_width': '',
     'sys_updated_on': '2020-08-16 17:54:16', 'sys_tags': '', 'table_name': 'incident',
     'sys_id': 'd722a127dbe6101053482fb74896195d', 'image_height': '', 'sys_updated_by': 'system',
-    'download_link': 'https://dev59633.service-now.com/api/now/attachment/d722a127dbe6101053482fb74896195d/file',
+    'download_link': 'https://urldefense.com/v3/__https://dev59633.service-now.com/api/now/attachment/d722a127dbe6101053482fb74896195d/file__;!!Mt_FR42WkD9csi9Y!LmR3z7s_wiLdsMIS6Mo49zgnu2ni_8tPAJBSB624IqJ9-R4BcI3USKsKluJPA6i3xOMCsw$ ',
     'content_type': 'text/plain', 'sys_created_on': '2020-08-16 17:54:15', 'size_compressed': '35',
     'compressed': 'true', 'state': 'available', 'table_sys_id': 'e6b06163dbe6101053482fb74896194e',
     'chunk_size_bytes': '700000', 'hash': '1669594220a92d73d62727293e988b4213b5b4829de36c3afe43c9b4f3ddf35e',
@@ -1221,7 +1221,7 @@ RESPONSE_GET_TICKET_NOTES = {
             "sys_created_on": "2020-04-07 07:32:12",
             "sys_id": "sys_id",
             "sys_tags": "",
-            "value": "[code]\u003ca class=\"web\" target=\"_blank\" href=\"http://www.demisto.com\""
+            "value": "[code]\u003ca class=\"web\" target=\"_blank\" href=\"https://urldefense.com/v3/__http://www.demisto.com*5C__;JQ!!Mt_FR42WkD9csi9Y!LmR3z7s_wiLdsMIS6Mo49zgnu2ni_8tPAJBSB624IqJ9-R4BcI3USKsKluJPA6hsNfzz2g$ ""
                      " \u003edemsito_link\u003c/a\u003e[/code]"
         },
         {
@@ -1232,7 +1232,7 @@ RESPONSE_GET_TICKET_NOTES = {
             "sys_created_on": "2020-04-07 07:25:51",
             "sys_id": "sys_id",
             "sys_tags": "",
-            "value": "[code]\u003ca class=\"web\" target=\"_blank\" href=\"http://www.demisto.com\""
+            "value": "[code]\u003ca class=\"web\" target=\"_blank\" href=\"https://urldefense.com/v3/__http://www.demisto.com*5C__;JQ!!Mt_FR42WkD9csi9Y!LmR3z7s_wiLdsMIS6Mo49zgnu2ni_8tPAJBSB624IqJ9-R4BcI3USKsKluJPA6hsNfzz2g$ ""
                      " \u003edemsito_link\u003c/a\u003e[/code]"
         },
         {
@@ -1263,7 +1263,7 @@ RESPONSE_GET_TICKET_NOTES = {
             "sys_created_on": "2020-04-07 07:26:01",
             "sys_id": "d31a605ddb845010ebea8a18489619e2",
             "sys_tags": "",
-            "value": "[code]\u003ca class=\"web\" target=\"_blank\" href=\"http://www.demisto.com\""
+            "value": "[code]\u003ca class=\"web\" target=\"_blank\" href=\"https://urldefense.com/v3/__http://www.demisto.com*5C__;JQ!!Mt_FR42WkD9csi9Y!LmR3z7s_wiLdsMIS6Mo49zgnu2ni_8tPAJBSB624IqJ9-R4BcI3USKsKluJPA6hsNfzz2g$ ""
                      " \u003edemsito_link\u003c/a\u003e[/code]"
         }
     ]
@@ -3032,23 +3032,23 @@ RESPONSE_FETCH_ATTACHMENTS_TICKET = {
             "approval_history": "",
             "approval_set": "",
             "assigned_to": {
-                "link": "https://dev61466.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2007",
+                "link": "https://urldefense.com/v3/__https://dev61466.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2007__;!!Mt_FR42WkD9csi9Y!LmR3z7s_wiLdsMIS6Mo49zgnu2ni_8tPAJBSB624IqJ9-R4BcI3USKsKluJPA6jrgMGGsA$ ",
                 "value": "5137153cc611227c000bbd1bd8cd2007"
             },
             "assignment_group": {
-                "link": "https://dev61466.service-now.com/api/now/table/sys_user_group/287ebd7da9fe198100f92cc8d1d2154e",
+                "link": "https://urldefense.com/v3/__https://dev61466.service-now.com/api/now/table/sys_user_group/287ebd7da9fe198100f92cc8d1d2154e__;!!Mt_FR42WkD9csi9Y!LmR3z7s_wiLdsMIS6Mo49zgnu2ni_8tPAJBSB624IqJ9-R4BcI3USKsKluJPA6iXOEDnxw$ ",
                 "value": "287ebd7da9fe198100f92cc8d1d2154e"
             },
             "business_duration": "1970-01-01 08:00:00",
             "business_service": {
-                "link": "https://dev61466.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16",
+                "link": "https://urldefense.com/v3/__https://dev61466.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16__;!!Mt_FR42WkD9csi9Y!LmR3z7s_wiLdsMIS6Mo49zgnu2ni_8tPAJBSB624IqJ9-R4BcI3USKsKluJPA6iLLrixDg$ ",
                 "value": "27d32778c0a8000b00db970eeaa60f16"
             },
             "business_stc": "28800",
             "calendar_duration": "1970-01-02 04:23:17",
             "calendar_stc": "102197",
             "caller_id": {
-                "link": "https://dev61466.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7",
+                "link": "https://urldefense.com/v3/__https://dev61466.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7__;!!Mt_FR42WkD9csi9Y!LmR3z7s_wiLdsMIS6Mo49zgnu2ni_8tPAJBSB624IqJ9-R4BcI3USKsKluJPA6g_GCCmLA$ ",
                 "value": "681ccaf9c0a8016400b98a06818d57c7"
             },
             "category": "inquiry",
@@ -3058,17 +3058,17 @@ RESPONSE_FETCH_ATTACHMENTS_TICKET = {
             "close_notes": "This incident is resolved.",
             "closed_at": "2016-12-14 02:46:44",
             "closed_by": {
-                "link": "https://dev61466.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7",
+                "link": "https://urldefense.com/v3/__https://dev61466.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7__;!!Mt_FR42WkD9csi9Y!LmR3z7s_wiLdsMIS6Mo49zgnu2ni_8tPAJBSB624IqJ9-R4BcI3USKsKluJPA6g_GCCmLA$ ",
                 "value": "681ccaf9c0a8016400b98a06818d57c7"
             },
             "cmdb_ci": {
-                "link": "https://dev61466.service-now.com/api/now/table/cmdb_ci/109562a3c611227500a7b7ff98cc0dc7",
+                "link": "https://urldefense.com/v3/__https://dev61466.service-now.com/api/now/table/cmdb_ci/109562a3c611227500a7b7ff98cc0dc7__;!!Mt_FR42WkD9csi9Y!LmR3z7s_wiLdsMIS6Mo49zgnu2ni_8tPAJBSB624IqJ9-R4BcI3USKsKluJPA6infXG7qA$ ",
                 "value": "109562a3c611227500a7b7ff98cc0dc7"
             },
             "comments": "",
             "comments_and_work_notes": "",
             "company": {
-                "link": "https://dev61466.service-now.com/api/now/table/core_company/31bea3d53790200044e0bfc8bcbe5dec",
+                "link": "https://urldefense.com/v3/__https://dev61466.service-now.com/api/now/table/core_company/31bea3d53790200044e0bfc8bcbe5dec__;!!Mt_FR42WkD9csi9Y!LmR3z7s_wiLdsMIS6Mo49zgnu2ni_8tPAJBSB624IqJ9-R4BcI3USKsKluJPA6irDSveeA$ ",
                 "value": "31bea3d53790200044e0bfc8bcbe5dec"
             },
             "contact_type": "self-service",
@@ -3093,7 +3093,7 @@ RESPONSE_FETCH_ATTACHMENTS_TICKET = {
             "number": "INC0000060",
             "opened_at": "2016-12-12 15:19:57",
             "opened_by": {
-                "link": "https://dev61466.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7",
+                "link": "https://urldefense.com/v3/__https://dev61466.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7__;!!Mt_FR42WkD9csi9Y!LmR3z7s_wiLdsMIS6Mo49zgnu2ni_8tPAJBSB624IqJ9-R4BcI3USKsKluJPA6g_GCCmLA$ ",
                 "value": "681ccaf9c0a8016400b98a06818d57c7"
             },
             "order": "",
@@ -3107,7 +3107,7 @@ RESPONSE_FETCH_ATTACHMENTS_TICKET = {
             "reopened_time": "",
             "resolved_at": "2016-12-13 21:43:14",
             "resolved_by": {
-                "link": "https://dev61466.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2007",
+                "link": "https://urldefense.com/v3/__https://dev61466.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2007__;!!Mt_FR42WkD9csi9Y!LmR3z7s_wiLdsMIS6Mo49zgnu2ni_8tPAJBSB624IqJ9-R4BcI3USKsKluJPA6jrgMGGsA$ ",
                 "value": "5137153cc611227c000bbd1bd8cd2007"
             },
             "rfc": "",
@@ -3122,7 +3122,7 @@ RESPONSE_FETCH_ATTACHMENTS_TICKET = {
             "sys_created_by": "employee",
             "sys_created_on": "2016-12-12 15:19:57",
             "sys_domain": {
-                "link": "https://dev61466.service-now.com/api/now/table/sys_user_group/global",
+                "link": "https://urldefense.com/v3/__https://dev61466.service-now.com/api/now/table/sys_user_group/global__;!!Mt_FR42WkD9csi9Y!LmR3z7s_wiLdsMIS6Mo49zgnu2ni_8tPAJBSB624IqJ9-R4BcI3USKsKluJPA6gIK2fKlw$ ",
                 "value": "global"
             },
             "sys_domain_path": "/",
@@ -3158,7 +3158,7 @@ RESPONSE_MIRROR_FILE_ENTRY = [
      'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3'}]
 
 RESPONSE_ASSIGNMENT_GROUP = {'result': {'parent': '', 'manager':
-    {'link': 'https://dev59633.service-now.com/api/now/table/sys_user/b6b364e253131300e321ddeeff7b121b',
+    {'link': 'https://urldefense.com/v3/__https://dev59633.service-now.com/api/now/table/sys_user/b6b364e253131300e321ddeeff7b121b__;!!Mt_FR42WkD9csi9Y!LmR3z7s_wiLdsMIS6Mo49zgnu2ni_8tPAJBSB624IqJ9-R4BcI3USKsKluJPA6jSF_KqEA$ ',
      'value': 'b6b364e253131300e321ddeeff7b121b'}, 'roles': '', 'sys_mod_count': '0', 'active': 'true',
                                        'description': '', 'source': '', 'sys_updated_on': '2020-07-11 09:50:32',
                                        'sys_tags': '', 'type': '', 'sys_id': '679434f053231300e321ddeeff7b12d8',
@@ -3199,4 +3199,10 @@ OAUTH_PARAMS = {
     'client_id': 'client_id',
     'client_secret': 'client_secret',
     'use_oauth': True
+}
+
+
+RESPONSE_GENERIC_TICKET = {
+    'sys_created_by': 'svc.SecOps_SplunkPhantom',
+    'sys_class_name': 'sn_si_incident'
 }
