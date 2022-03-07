@@ -61,7 +61,14 @@ def test_get_incidents(requests_mock, mocker):
 
 def test_add_responders(requests_mock, mocker):
     """
-    Test sending request to a responder
+    Given:
+        - a responder request.
+
+    When:
+        - Running PagerDuty-add-responders command.
+
+    Then:
+        - Ensure command returns the correct output.
     """
     mocker.patch.object(
         demisto,
@@ -98,7 +105,14 @@ def test_add_responders(requests_mock, mocker):
 
 def test_add_responders_default(requests_mock, mocker):
     """
-    Test sending request to a responder without specifying responders
+    Given:
+        - a responder request without specifying responders.
+
+    When:
+        - Running add_responders_to_incident function.
+
+    Then:
+        - Ensure the function returns the correct output.
     """
     mocker.patch.object(
         demisto,
@@ -134,7 +148,14 @@ def test_add_responders_default(requests_mock, mocker):
 
 def test_play_response_play(requests_mock, mocker):
     """
-    Test sending request to a responder without specifying responders
+    Given:
+        - a responder request without specifying responders.
+
+    When:
+        - Running PagerDuty-run-response-play function.
+
+    Then:
+        - Ensure the function returns a valid status.
     """
     mocker.patch.object(
         demisto,

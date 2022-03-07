@@ -755,12 +755,14 @@ def add_responders_to_incident(incident_id, message, user_requests=None, escalat
     Send a new responder request for the specified incident. A responder is a specific User to respond to the Incident.
     If the Requestor ID is not specified in command arguments, the Default Requestor defined in instance
     parameter is used.
+
     Args:
-        incident_id:string The ID of the PagerDuty Incident
-        message:string, The message sent with the responder request.
-        user_requests:list, A list of User targets the responder request is being sent to.
-        escalation_policy_requests: A list of escalation policy targets the responder request is being sent to.
-        requestor_id:string, The user id of the requester.
+        incident_id (str): The ID of the PagerDuty Incident
+        message (str): The message sent with the responder request.
+        user_requests (str): Comma separated list of User targets the responder request is being sent to
+        escalation_policy_requests (str): Comma separated list of
+            escalation policy targets the responder request is being sent to.
+        requestor_id (str): The user id of the requester.
     """
 
     if not user_requests:
@@ -853,7 +855,7 @@ def main():
         elif demisto.command() == 'PagerDuty-run-response-play':
             return_results(run_response_play(**demisto.args()))
     except Exception as err:
-        return_error(err)
+        return_error(str(err))
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
