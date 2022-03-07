@@ -808,7 +808,6 @@ tasks:
       name: Panorama Query Logs
       description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering and wildfire.'
       playbookName: Panorama Query Logs
-      playbookName_x2: Panorama Query Logs_x2
       type: playbook
       iscommand: false
       brand: ""
