@@ -42,7 +42,7 @@ configuration:
   hidden: false
   required: false
   type: 0
-  additionalinfo: The maximum limit is 1000.
+  additionalinfo: The maximum limit is 200.
 - name: first_fetch
   defaultvalue: 3 days
   display: First fetch time interval

@@ -107,6 +107,9 @@ def test_fetch_incidents(requests_mock):
     response = fetch_incidents(client=client, env=TAEGIS_ENVIRONMENT, args=args)
     assert response[0]['name'] == FETCH_INCIDENTS_RESPONSE["data"]["allInvestigations"][0]['description']
 
+    with pytest.raises(ValueError, match="Max Fetch cannot be more then 200"):
+        assert fetch_incidents(client=client, env=TAEGIS_ENVIRONMENT, args={"max_fetch": 201})
+
     client = mock_client(requests_mock, FETCH_INCIDENTS_BAD_RESPONSE)
     error = f"Error when fetching investigations: {FETCH_INCIDENTS_BAD_RESPONSE['errors'][0]['message']}"
     with pytest.raises(ValueError, match=error):

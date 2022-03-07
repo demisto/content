@@ -266,10 +266,11 @@ def fetch_incidents(client: Client, env: str, args=None):
     """
     Fetch Taegis Investigations for the use with "Fetch Incidents"
     """
-    page = args.get("page", 0)
-    page_size = args.get("page_size", 200)
-    status = args.get("status", ["Open", "Active"])
-    include_archived = args.get("include_archived", False)
+    page_size = args.get("max_fetch", 200)
+    if page_size > 200:
+        raise ValueError("Max Fetch cannot be more then 200")
+
+    include_archived = False
 
     query = """
     query investigations(
@@ -322,10 +323,10 @@ def fetch_incidents(client: Client, env: str, args=None):
 
     variables = {
         "orderByField": "created_at",
-        "orderDirection": "desc",
-        "page": page,
+        "orderDirection": "asc",
+        "page": 0,
         "perPage": page_size,
-        "status": status
+        "status": ["Open", "Active"]
     }
 
     last_run = demisto.getLastRun()
@@ -362,7 +363,7 @@ def fetch_incidents(client: Client, env: str, args=None):
 
     demisto.debug(f"Located {len(incidents)} Incidents")
 
-    last_run = str(now) if not incidents else incidents[0]["occured"]
+    last_run = str(now) if not incidents else incidents[-1]["occured"]
     demisto.debug(f"Last Run/Incident Time: {last_run}")
     demisto.setLastRun({"start_time": last_run})
 
