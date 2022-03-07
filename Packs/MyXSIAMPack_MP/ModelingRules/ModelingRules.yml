@@ -1,5 +1,5 @@
 - name: My Rule
-  fromvxsiamersion: 3.3
+  fromxsiamversion: 3.3
   tags: a
   rules: >
     [MODEL: dataset="okta_saas", model="Network", version=0.7]
