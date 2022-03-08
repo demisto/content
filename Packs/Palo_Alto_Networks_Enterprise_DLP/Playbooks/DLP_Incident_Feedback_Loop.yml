@@ -197,6 +197,7 @@ tasks:
       id: fb9e8768-7884-46c2-840d-e894cfc488d3
       version: -1
       name: Received feedback
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -348,6 +349,7 @@ tasks:
       id: 4a3bbd9f-7fa3-42c0-872e-a48f48d6583e
       version: -1
       name: User exists on Slack?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -505,6 +507,7 @@ tasks:
       id: 6d395e50-702d-4612-8cb4-9d333a9e2bf0
       version: -1
       name: Ask user if file contains sensitive info
+      description: ""
       scriptName: DlpAskFeedback
       type: regular
       iscommand: false
@@ -711,6 +714,7 @@ tasks:
       id: a8af95e1-af99-4500-8254-04392bb8a43c
       version: -1
       name: Is eligible?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
