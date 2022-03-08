@@ -4485,7 +4485,7 @@ class TestExecuteCommandsMultipleResults:
         assert results[0].result == 'not an error'
 
     @staticmethod
-    def get_result_for_multiple_commands(command, args):
+    def get_result_for_multiple_commands_helper(command, args):
         from CommonServerPython import EntryType
         return [{'Type': EntryType.NOTE,
                  'ModuleName': list(args.keys())[0],
@@ -4498,7 +4498,7 @@ class TestExecuteCommandsMultipleResults:
         from CommonServerPython import execute_commands_multiple_results
         demisto_execute_mock = mocker.patch.object(demisto,
                                                    'executeCommand',
-                                                   side_effect=TestExecuteCommandsMultipleResults.get_result_for_multiple_commands)
+                                                   side_effect=TestExecuteCommandsMultipleResults.get_result_for_multiple_commands_helper)
         results, errors = execute_commands_multiple_results(['command1', 'command2'],
                                                             [{'arg1': 'value1'},
                                                              {'arg2': 'value2'}])
@@ -4521,6 +4521,69 @@ class TestExecuteCommandsMultipleResults:
             execute_commands_multiple_results(['command'], [{'arg': 'val'}, {'arg': 'val'}])
         with pytest.raises(DemistoException):
             execute_commands_multiple_results(['command', 'command1'], [{'arg': 'val'}])
+
+
+class TestGetResultsWrapper:
+    NUM_EXECUTE_COMMAND_CALLED = 0
+
+    @staticmethod
+    def execute_command_mock(commands, args_lst, extract_contents):
+        from CommonServerPython import ResultWrapper
+        TestGetResultsWrapper.NUM_EXECUTE_COMMAND_CALLED += 1
+        results, errors = [], []
+        if isinstance(commands, str) and isinstance(args_lst, dict):
+            commands = [commands]
+            args_lst = [args_lst]
+        for command, args in zip(commands, args_lst):
+            result_wrapper = ResultWrapper(command=command,
+                                           args=args,
+                                           brand='my-brand{}'.format(TestGetResultsWrapper.NUM_EXECUTE_COMMAND_CALLED),
+                                           instance='instance',
+                                           result='Command did not succeeded' if command == 'error-command' else 'Good')
+            if command == 'error-command':
+                errors.append(result_wrapper)
+            else:
+                results.append(result_wrapper)
+        return results, errors
+
+    @staticmethod
+    def test_get_wrapper_results(mocker):
+        from CommonServerPython import get_wrapper_results, CommandWrapper, CommandResults
+        command_wrappers = [CommandWrapper('my-brand1', 'my-command', {'arg': 'val'}),
+                            CommandWrapper('my-brand2', ['command1', 'command2'], [{'arg1': 'val1'}, {'arg2': 'val2'}]),
+                            CommandWrapper('my-brand3', 'error-command', {'bad_arg': 'bad_val'}),
+                            CommandWrapper('brand-no-exist', 'command', {'arg': 'val'})]
+        mocker.patch.object(CommonServerPython, 'execute_commands_multiple_results', side_effect=TestGetResultsWrapper.execute_command_mock)
+        mocker.patch.object(CommonServerPython, 'execute_command', return_value=((True, [{'brand': 'my-brand1'},
+                                                                                         {'brand': 'my-brand2'},
+                                                                                         {'brand': 'my-brand3'}])))
+        results = get_wrapper_results(command_wrappers)
+        assert len(results) == 4  # 1 error (brand3)
+        assert all(res == 'Good' for res in results[:-1])
+        assert isinstance(results[-1], CommandResults)
+        md_summary = """### Results Summary
+|Instance|Command|Result|Comment|
+|---|---|---|---|
+| ***my-brand1***: instance | ***command***: my-command<br>**args**:<br>	***arg***: val | Success |  |
+| ***my-brand2***: instance | ***command***: command1<br>**args**:<br>	***arg1***: val1 | Success |  |
+| ***my-brand2***: instance | ***command***: command2<br>**args**:<br>	***arg2***: val2 | Success |  |
+| ***my-brand3***: instance | ***command***: error-command<br>**args**:<br>	***bad_arg***: bad_val | Error | Command did not succeeded |
+"""
+        assert results[-1].readable_output == md_summary
+
+    @staticmethod
+    def test_get_wrapper_results_error(mocker):
+        from CommonServerPython import get_wrapper_results, CommandWrapper, CommandResults
+        command_wrappers = [CommandWrapper('my-brand1', 'error-command', {'arg': 'val'}),
+                            CommandWrapper('my-brand2', 'error-command', {'bad_arg': 'bad_val'}),
+                            CommandWrapper('brand-no-exist', 'command', {'arg': 'val'})]
+        mocker.patch.object(CommonServerPython, 'execute_commands_multiple_results', side_effect=TestGetResultsWrapper.execute_command_mock)
+        mocker.patch.object(CommonServerPython, 'execute_command', return_value=((True, [{'brand': 'my-brand1'},
+                                                                                         {'brand': 'my-brand2'}])))
+        with pytest.raises(DemistoException) as e:
+            get_wrapper_results(command_wrappers)
+            assert 'Command did not succeeded' in e.value
+            assert 'Script failed. The following errors were encountered:' in e.value
 
 
 

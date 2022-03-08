@@ -2075,7 +2075,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :param date_fields: A list of date fields to format the value to human-readable output.
 
         :type json_transform_mapping: ``Dict[str, JsonTransformer]``
-        :param json_transform_mapping: A mapping between a header key to correspoding JsonTransformer
+        :param json_transform_mapping: A mapping between a header key to corresponding JsonTransformer
 
         :type is_auto_json_transform: ``bool``
         :param is_auto_json_transform: Boolean to try to auto transform complex json
@@ -6399,13 +6399,10 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
     if exit:
         sys.exit(0)
 
-class CommandWrapper:
-    def __init__(self, brand, commands=None, args_lst=None):
-        self.brand = brand
-        self.commands = commands
-        self.args_lst = args_lst
 
-ResultWrapper = namedtuple('ResultWrapper', ['brand', 'instance', 'result'])
+CommandWrapper = namedtuple('CommandWrapper', ['brand', 'commands', 'args_lst'])
+
+ResultWrapper = namedtuple('ResultWrapper', ['command', 'args', 'brand', 'instance', 'result'])
 
 def execute_commands_multiple_results(commands, args_lst, extract_contents=True):
     """
@@ -6435,13 +6432,13 @@ def execute_commands_multiple_results(commands, args_lst, extract_contents=True)
             brand_name = res.get('Brand', 'Unknown') if isinstance(res, dict) else 'Unknown'
             module_name = res.get('ModuleName', 'Unknown') if isinstance(res, dict) else 'Unknown'
             if is_error(res):
-                errors.append(ResultWrapper(brand_name, module_name, get_error(res)))
+                errors.append(ResultWrapper(command, args, brand_name, module_name, get_error(res)))
             else:
                 if extract_contents:
                     res = res.get('Contents', {})
                 if res is None:
                     res = {}
-                results.append(ResultWrapper(brand_name, module_name, res))
+                results.append(ResultWrapper(command, args, brand_name, module_name, res))
     return results, errors
 
 def get_wrapper_results(command_wrappers):
@@ -6466,23 +6463,33 @@ def get_wrapper_results(command_wrappers):
         full_errors.extend(errors)
 
     summary_md = get_wrapper_results_summary(full_results, full_errors)
-    full_results = [res.result for res in full_results]
-    full_results.append(CommandResults(readable_output=summary_md))
-    if not full_results and full_errors:  # no results were given but there are errors
+    command_results = [res.result for res in full_results]
+    if not command_results and full_errors:  # no results were given but there are errors
         errors = ["{instance}: {msg}".format(instance=err.instance, msg=err.result) for err in full_errors]
-        error_msg = '\n'.join(['Script failed. The following errros were encountered: '] + errors)
+        error_msg = '\n'.join(['Script failed. The following errors were encountered: '] + errors)
         raise DemistoException(error_msg)
-    return full_results
+    command_results.append(CommandResults(readable_output=summary_md))
+    return command_results
 
 def get_wrapper_results_summary(results, errors):
     results_summary_table = []
-    headers = ['Instance', 'Result', 'Comment']
+    headers = ['Instance', 'Command', 'Result', 'Comment']
     for res in results:
-        results_summary_table.append({'Instance': f'***{res.brand}***: {res.instance}', 'Result': 'Success', 'Comment': None})
+        command = {'command': res.command,
+                   'args': res.args}
+        results_summary_table.append({'Instance': f'***{res.brand}***: {res.instance}',
+                                      'Command': command,
+                                      'Result': 'Success',
+                                      'Comment': None})
 
     for err in errors:
-        results_summary_table.append({'Instance': f'***{err.brand}***: {err.instance}', 'Result': 'Error', 'Comment': err.result})
-    summary_md = tableToMarkdown('Results Summary', results_summary_table, headers=headers)
+        command = {'command': err.command,
+                   'args': err.args}
+        results_summary_table.append({'Instance': f'***{err.brand}***: {err.instance}',
+                                      'Command': command,
+                                      'Result': 'Error',
+                                      'Comment': err.result})
+    summary_md = tableToMarkdown('Results Summary', results_summary_table, headers=headers, is_auto_json_transform=True)
     return summary_md
 
 
