@@ -45,7 +45,7 @@ def get_incident_init_params():
         'threat_level': demisto.params().get('threat_level', None),
         'threat_type': demisto.params().get('threat_type', None)
     }
-    return {param_k: param_v for param_k, param_v in params_dict.items() if param_v is not None}
+    return {param_k: param_v for param_k, param_v in params_dict.items() if param_v}
 
 
 def item_to_incident(item_info, sixgill_alerts_client):
@@ -91,7 +91,7 @@ def add_sub_alerts_fields(incident, item_info, sixgill_alerts_client):
     incident['status'] = TO_DEMISTO_STATUS[status]
     content_item = {'creator': None, 'title': '', 'content': '', 'description': item_info.get('description', '')}
     # cve alert
-    if item_info.get('content_type', '') == 'cve_item':
+    if item_info.get('es_id') == 'Not Applicable' and 'cve_id' in item_info.get('additional_info'):
         content_item['content'] = f'https://portal.cybersixgill.com/#/cve/{item_info.get("additional_info",{}).get("cve_id", "")}'
     else:
         content = sixgill_alerts_client.get_actionable_alert_content(actionable_alert_id=item_info.get('id'),
@@ -167,45 +167,72 @@ def fetch_incidents():
     filter_alerts_kwargs = get_incident_init_params()
     incidents = []
     items = sixgill_alerts_client.get_actionable_alerts_bulk(limit=MAX_INCIDENTS, **filter_alerts_kwargs)
-    newest_incident_date = datetime.strptime(items[0].get('date'), DATETIME_FORMAT)
-    offset = 0
-    items_to_add = []
-    if newest_incident_date > last_fetch_time:
-        # finding all new alerts since last fetch time
-        while items:
-            for item in items:
-                if datetime.strptime(item.get('date'), DATETIME_FORMAT) > last_fetch_time:
-                    items_to_add.append(item)
 
-            if len(items_to_add) - offset == len(items):
-                offset += len(items)
-                items = sixgill_alerts_client.get_actionable_alerts_bulk(limit=MAX_INCIDENTS, offset=offset,
-                                                                         **filter_alerts_kwargs)
-            else:
-                items = []
-    demisto.info(f'Found {len(items_to_add)} new alerts since {last_fetch_time}')
+    if len(items) > 0:
+        newest_incident_date = datetime.strptime(items[0].get('date'), DATETIME_FORMAT)
+        offset = 0
+        items_to_add = []
+        if newest_incident_date > last_fetch_time:
+            # finding all new alerts since last fetch time
+            while items:
+                for item in items:
+                    if datetime.strptime(item.get('date'), DATETIME_FORMAT) > last_fetch_time:
+                        items_to_add.append(item)
 
-    # getting more info about oldest ~max_incidents_to_return(can be more because of sub alerts)
-    if len(items_to_add):
-        items_to_add.reverse()
-        newest_incident_date = items_to_add[-1].get('date')
-        for item in items_to_add:
-            item_info = sixgill_alerts_client.get_actionable_alert(actionable_alert_id=item.get('id'))
-            item_info['date'] = item.get('date')
-            new_incidents = item_to_incident(item_info, sixgill_alerts_client)
-            incidents.extend(new_incidents)
-            if len(incidents) >= max_incidents_to_return:
-                newest_incident_date = item.get('date')
-                break
+                if len(items_to_add) - offset == len(items):
+                    offset += len(items)
+                    items = sixgill_alerts_client.get_actionable_alerts_bulk(limit=MAX_INCIDENTS, offset=offset,
+                                                                             **filter_alerts_kwargs)
+                else:
+                    items = []
+        demisto.info(f'Found {len(items_to_add)} new alerts since {last_fetch_time}')
 
-    demisto.info(f'Adding {len(incidents)} to demisto')
-    demisto.incidents(incidents)
+        # getting more info about oldest ~max_incidents_to_return(can be more because of sub alerts)
+        if len(items_to_add):
+            items_to_add.reverse()
+            newest_incident_date = items_to_add[-1].get('date')
+            for item in items_to_add:
+                item_info = sixgill_alerts_client.get_actionable_alert(actionable_alert_id=item.get('id'))
+                item_info['date'] = item.get('date')
+                new_incidents = item_to_incident(item_info, sixgill_alerts_client)
+                incidents.extend(new_incidents)
+                if len(incidents) >= max_incidents_to_return:
+                    newest_incident_date = item.get('date')
+                    break
 
-    if len(incidents):
-        demisto.info(f'Update last fetch time to: {newest_incident_date}')
-        demisto.setLastRun({
-            'last_fetch_time': newest_incident_date
-        })
+        demisto.info(f'Adding {len(incidents)} to demisto')
+        demisto.incidents(incidents)
+
+        if len(incidents):
+            demisto.info(f'Update last fetch time to: {newest_incident_date}')
+            demisto.setLastRun({
+                'last_fetch_time': newest_incident_date
+            })
+
+
+def update_alert_status():
+    """
+    Updates the actionable alert status.
+    """
+    alert_status = demisto.args().get('alert_status')
+    alert_id = demisto.args().get('alert_id')
+    alert_body = {
+        "status": {
+            "status": alert_status
+        }
+    }
+
+    sixgill_alerts_client = SixgillActionableAlertClient(client_id=demisto.params()['client_id'],
+                                                         client_secret=demisto.params()['client_secret'],
+                                                         channel_id=CHANNEL_CODE,
+                                                         logger=demisto,
+                                                         session=SESSION,
+                                                         verify=VERIFY)
+
+    res = sixgill_alerts_client.update_actionable_alert(actionable_alert_id=alert_id, json_body=alert_body)
+
+    if res.get('status') == 200:
+        demisto.results("Actionable alert status updated")
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -221,6 +248,9 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
 
         elif command == "fetch-incidents":
             fetch_incidents()
+
+        elif command == "cybersixgill-update-alert-status":
+            update_alert_status()
 
     except Exception as e:
         return_error("Failed to execute {} command. Error: {}".format(demisto.command(), str(e)))
