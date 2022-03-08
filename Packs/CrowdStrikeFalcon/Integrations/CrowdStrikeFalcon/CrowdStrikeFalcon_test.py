@@ -3696,10 +3696,11 @@ detections = {'resources': [
 
 DETECTION_FOR_INCIDENT_CASES = [
     (detections, ['a', 'b'],
-     [{'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_1',
-       'detection_ids': ['example_detection']},
-      {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_2',
-       'detection_ids': ['example_detection2']}],
+     [
+         {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_1',
+          'detection_ids': ['example_detection']},
+         {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_2',
+          'detection_ids': ['example_detection2']}],
      [
          {'behavior_id': 'example_behavior_1',
           'detection_ids': ['example_detection'],
