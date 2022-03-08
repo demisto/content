@@ -1709,19 +1709,21 @@ def get_remote_detection_data(remote_incident_id: str):
 
 
 def set_xsoar_incident_entries(updated_object, entries, remote_incident_id):
-    if (updated_object.get('state') == 'closed' or updated_object.get('status') == 'Closed') and demisto.params().get('close_incident'):
-        close_in_xsoar(entries, remote_incident_id, 'Incident')
+    if demisto.params().get('close_incident'):
+        if updated_object.get('status') == 'Closed':
+            close_in_xsoar(entries, remote_incident_id, 'Incident')
 
-    elif updated_object.get('status') == 'Reopened':
-        reopen_in_xsoar(entries, remote_incident_id, 'Incident')
+        elif updated_object.get('status') in (set(STATUS_TEXT_TO_NUM.keys()) - {'Closed'}):
+            reopen_in_xsoar(entries, remote_incident_id, 'Incident')
 
 
 def set_xsoar_detection_entries(updated_object, entries, remote_incident_id):
-    if updated_object.get('status') == 'closed' and demisto.params().get('close_incident'):
-        close_in_xsoar(entries, remote_incident_id, 'Detection')
+    if demisto.params().get('close_incident'):
+        if updated_object.get('status') == 'closed':
+            close_in_xsoar(entries, remote_incident_id, 'Detection')
 
-    elif updated_object.get('status') == 'reopened':
-        reopen_in_xsoar(entries, remote_incident_id, 'Detection')
+        elif updated_object.get('status') in (set(DETECTION_STATUS) - {'closed'}):
+            reopen_in_xsoar(entries, remote_incident_id, 'Detection')
 
 
 def close_in_xsoar(entries, remote_incident_id, incident_type_name: str):
