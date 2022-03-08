@@ -411,27 +411,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 35e48544-2ec5-4698-88e9-071aa386e46e
+    taskid: 8d7ff93d-ca48-47c3-8b16-71dee9c58297
     type: playbook
     task:
-      id: 35e48544-2ec5-4698-88e9-071aa386e46e
+      id: 8d7ff93d-ca48-47c3-8b16-71dee9c58297
       version: -1
       name: Process Email - Generic v2
       description: |
-        This playbook adds email details to the relevant context entities and handles the case where original emails are attached.
+        This playbook adds email details to the relevant context entities and handles original email attachments.
 
-        This v2 playbook:
-        - Uses incident fields and not incident labels.
-        - Provides separate paths to "Phishing Alerts".
-        - Uses the new **Get Original Email - Generic v2** playbook to retrieve original emails as EML files from the following integrations:
-            * EWS v2
-            * Microsoft Graph Mail integration
-            * Gmail
-            * FireEye EX and FireEye CM
-            * Proofpoint Protection Server
-            * Agari Phishing Defense
-            * Mimecast
-          This helps parse the email artifacts more efficiently.
+        The v2 playbook enables parsing email artifacts more efficiently, including:
+        - Using incident fields and not incident labels.
+        - Providing separate paths to "Phishing Alerts".
+        - Using the new "Get Original Email - Generic v2" playbook to retrieve original emails as EML files from the following integrations:
+          * EWS v2
+          * Microsoft Graph Mail integration
+          * Gmail
+          * FireEye EX and FireEye CM
+          * Proofpoint Protection Server
+          * Agari Phishing Defense (EWS v2, MSGraph Mail, Gmail)
+          * Mimecast
       playbookName: Process Email - Generic v2
       type: playbook
       iscommand: false
@@ -484,6 +483,17 @@ tasks:
       UserID:
         complex:
           root: ReporterAddress
+      EmailFileToExtract:
+        complex:
+          root: inputs.EmailFileToExtract
+      MessageID:
+        complex:
+          root: incident
+          accessor: emailmessageid
+      Thread-Topic:
+        complex:
+          root: incident
+          accessor: emailsubject
     separatecontext: true
     loop:
       iscommand: false
@@ -2111,7 +2121,7 @@ tasks:
       id: 374e403a-75c8-456c-8ebf-e76f33c3d501
       version: -1
       name: Check Microsoft's Headers?
-      description: ""
+      description: "Whether to check Microsoft's proprietary email headers."
       type: condition
       iscommand: false
       brand: ""
@@ -2279,7 +2289,7 @@ tasks:
       id: 80e1c4c2-b760-493f-8038-a5e7f9201cb2
       version: -1
       name: Detonate URL?
-      description: ""
+      description: "Whether to detonate URLs in supported sandboxes."
       type: condition
       iscommand: false
       brand: ""
@@ -3050,9 +3060,27 @@ inputs:
     - This automation may take a few minutes to run.
     - To increase result accuracy, it is recommended to install and enable the "Whois" pack (optional).
   playbookInputQuery:
+- key: EmailFileToExtract
+  value:
+    simple: Inner file
+  required: false
+  description: |-
+    Reported emails and emails retrieved during playbook execution can contain multiple nested email files. For example, an EML nested inside another EML file.
+    If multiple level files are detected, this field determines which file represents the phishing email.
+    
+    For example:
+    User1 receives an email from Attacker. User1 attaches the email as an EML file and sends the email to User2.
+    User2 also attaches that email as a file, and reports it as phishing. In this case, the phishing email would be the "inner file" (as opposed to "outer file").
+    
+    Possible values are: Inner file, Outer file, All files.
+    Inner file: The file at the deepest level is parsed. If there is only one file, that file is parsed.
+    Outer file: The file at the first level is parsed.
+    All files: All files are parsed. Do not use this option in the phishing playbook, as there should only be one phishing email per playbook run.
+  playbookInputQuery:
 outputs: []
 tests:
 - Phishing v2 - Test - Incident Starter
 fromversion: 6.1.0
 contentitemexportablefields:
   contentitemfields: {}
+system: true
