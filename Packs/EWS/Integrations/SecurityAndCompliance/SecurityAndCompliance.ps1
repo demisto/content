@@ -1513,6 +1513,7 @@ function Main {
             }
             "$script:COMMAND_PREFIX-auth-complete" {
                 ($human_readable, $entry_context, $raw_response) = CompleteAuthCommand $oauth2_client
+            }
         }
 
         # Refreshing tokens if expired
