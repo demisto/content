@@ -48,7 +48,11 @@ To setup the mirroring follow these instructions:
 
 Newly fetched incidents or detections will be mirrored in the chosen direction.  However, this selection does not affect existing incidents.
 
-NOTE: In order to ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and CrowdStrike Falcon. 
+**Important Notes**
+ - In order to ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and CrowdStrike Falcon.
+ - When *mirroring in* incidents from CrowdStrike Falcon to XSOAR:
+   - For the `tags` field, tags can only be added from the remote system.
+   - When enabling *Close Mirrored XSOAR Incident* integration parameter, the field in CrowdStrike Falcon that determines whether the incident was closed is the `status` field.
 
 ### 1. Search for a device
 
