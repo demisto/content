@@ -682,10 +682,19 @@ def run_file_command(hash: str, params: dict) -> CommandResults:
             file_information['query_status'] == 'no_results':
         human_readable = f'## URLhaus reputation for {hash_type.upper()} : {hash}\n' \
                          f'No results!'
-
+        dbot_score = Common.DBotScore(indicator=hash,
+                                      indicator_type=DBotScoreType.FILE,
+                                      integration_name='URLhaus',
+                                      score=Common.DBotScore.NONE,
+                                      reliability=params.get('reliability'))
+        if hash_type == 'md5':
+            file_indicator = Common.File(dbot_score=dbot_score, md5=hash)
+        if hash_type == 'sha256':
+            file_indicator = Common.File(dbot_score=dbot_score, sha256=hash)
         return CommandResults(
             readable_output=human_readable,
-            raw_response=file_information)
+            raw_response=file_information,
+            indicator=file_indicator)
 
     elif file_information['query_status'] in ['invalid_md5', 'invalid_sha256']:
         human_readable = f'## URLhaus reputation for {hash_type.upper()} : {hash}\n' \

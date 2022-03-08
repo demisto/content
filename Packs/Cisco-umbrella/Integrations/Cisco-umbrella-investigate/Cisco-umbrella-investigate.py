@@ -862,13 +862,20 @@ def get_domain_command():
                 human_readable = '### Umbrella Investigate Domain for: ' + domain + '\n' \
                     + "Failed to find " + domain + ", reason: " + r.message
 
+                context[outputPaths['domain']] = {'Name': domain}
+                context[outputPaths['dbotscore']] = {'Indicator': domain,
+                                                     'Type': 'domain',
+                                                     'Vendor': 'Cisco Umbrella Investigate',
+                                                     'Score': 0,
+                                                     'Reliability': reliability}
+
                 results.append({
                     'Type': entryTypes['note'],
                     'ContentsFormat': formats['json'],
                     'Contents': contents,
                     'HumanReadable': human_readable,
                     'HumanReadableFormat': formats['markdown'],
-                    'EntryContext': None
+                    'EntryContext': context
                 })
             else:
                 raise r

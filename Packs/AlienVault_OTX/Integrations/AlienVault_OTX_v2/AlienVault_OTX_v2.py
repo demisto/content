@@ -87,6 +87,56 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def build_context_indicator_no_results_status(indicator: str, indicator_type: str, message: str,
+                                              integration_name: str, reliability: Any=None) -> CommandResults:
+    
+    indicator_map = {
+        'file': file_unknown,
+        'ip': ip_unknown,
+        'domain': domain_unknown,
+        'url': url_unknown
+    }
+
+    def file_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.FILE,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        if sha1Regex.match(indicator):
+            return Common.File(sha1=indicator, dbot_score=dbot_score)
+        if sha256Regex.match(indicator):
+            return Common.File(sha256=indicator, dbot_score=dbot_score)
+        if md5Regex.match(indicator):
+            return Common.File(md5=indicator, dbot_score=dbot_score)
+        
+    def url_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.URL,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        return Common.URL(url=indicator, dbot_score=dbot_score)
+
+    def ip_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.IP,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        return Common.IP(ip=indicator, dbot_score=dbot_score)
+
+    def domain_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.DOMAIN,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        return Common.Domain(domain=indicator, dbot_score=dbot_score)
+
+    return CommandResults(readable_output=message, indicator=indicator_map[indicator_type](indicator))
+
+
 def calculate_dbot_score(client: Client, pulse_info: Union[dict, None]) -> float:
     """
     calculate DBot score for query
@@ -256,9 +306,11 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
                 relationships=relationships
             ))
         else:
-            command_results.append(CommandResults(
-                readable_output=f'IP {ip_} could not be found.'))
-
+            command_results.append(build_context_indicator_no_results_status(indicator=ip_,
+                                                                             indicator_type='ip',
+                                                                             message=f'IP {ip_} could not be found.',
+                                                                             integration_name=INTEGRATION_NAME,
+                                                                             reliability=client.reliability))
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query.')]
     return command_results
@@ -310,8 +362,11 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
                 relationships=relationships
             ))
         else:
-            command_results.append(CommandResults(
-                readable_output=f'Domain {domain} could not be found.'))
+            command_results.append(build_context_indicator_no_results_status(indicator=domain,
+                                                                             indicator_type='domain',
+                                                                             message=f'Domain {domain} could not be found.',
+                                                                             integration_name=INTEGRATION_NAME,
+                                                                             reliability=client.reliability))
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query')]
 
@@ -380,8 +435,11 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
                 relationships=relationships
             ))
         else:
-            command_results.append(CommandResults(
-                readable_output=f'File {hash_} could not be found.'))
+            command_results.append(build_context_indicator_no_results_status(indicator=hash_,
+                                                                             indicator_type='file',
+                                                                             message=f'File {hash_} could not be found.',
+                                                                             integration_name=INTEGRATION_NAME,
+                                                                             reliability=client.reliability))
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query')]
 
@@ -410,7 +468,11 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
         raw_response = client.query(section='url', argument=url)
         if raw_response:
             if raw_response == 404:
-                command_results.append(CommandResults(readable_output=f'No matches for URL {url}'))
+                command_results.append(build_context_indicator_no_results_status(indicator=url,
+                                                                                 indicator_type='url',
+                                                                                 message=f'No matches for URL {url}',
+                                                                                 integration_name=INTEGRATION_NAME,
+                                                                                 reliability=client.reliability))
             else:
                 raws.append(raw_response)
 

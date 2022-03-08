@@ -112,6 +112,55 @@ class Client:
 ''' HELPER FUNCTIONS '''
 
 
+def build_context_indicator_no_results_status(indicator: str, indicator_type: str, message: str, integration_name: str, reliability: Any=None):
+    
+    indicator_map = {
+        'file': file_unknown,
+        'ip': ip_unknown,
+        'domain': domain_unknown,
+        'url': url_unknown
+    }
+
+    def file_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.FILE,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        if sha1Regex.match(indicator):
+            return Common.File(sha1=indicator, dbot_score=dbot_score)
+        if sha256Regex.match(indicator):
+            return Common.File(sha256=indicator, dbot_score=dbot_score)
+        if md5Regex.match(indicator):
+            return Common.File(md5=indicator, dbot_score=dbot_score)
+        
+    def url_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.URL,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        return Common.URL(url=indicator, dbot_score=dbot_score)
+
+    def ip_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.IP,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        return Common.IP(ip=indicator, dbot_score=dbot_score)
+
+    def domain_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.DOMAIN,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        return Common.Domain(domain=indicator, dbot_score=dbot_score)
+
+    return CommandResults(readable_output=message, indicator=indicator_map[indicator_type](indicator)) 
+
+
 def get_dbot_score_type(indicator_type: str) -> Union[Exception, DBotScoreType, str]:
     """
     Returns the dbot score type
@@ -244,9 +293,10 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
             ))
 
     else:
-        results.append(CommandResults(
-            readable_output=f'No indicator found for {indicator_value}.'
-        ))
+        results.append(build_context_indicator_no_results_status(indicator=indicator_value,
+                                                                 indicator_type=indicator_type,
+                                                                 message=f'No indicator found for {indicator_value}.',
+                                                                 integration_name='CrowdStrike Falcon Intel v2'))
 
     return results
 

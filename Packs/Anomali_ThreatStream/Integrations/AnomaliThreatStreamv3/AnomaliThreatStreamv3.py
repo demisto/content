@@ -235,6 +235,54 @@ class DBotScoreCalculator:
                 return Common.DBotScore.GOOD
 
 
+def build_context_indicator_no_results_status(indicator: str, indicator_type: str, message: str, integration_name: str, reliability: Any=None):
+    
+    indicator_map = {
+        'file': file_unknown,
+        'ip': ip_unknown,
+        'domain': domain_unknown,
+        'url': url_unknown
+    }
+
+    def file_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.FILE,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        if sha1Regex.match(indicator):
+            return Common.File(sha1=indicator, dbot_score=dbot_score)
+        if sha256Regex.match(indicator):
+            return Common.File(sha256=indicator, dbot_score=dbot_score)
+        if md5Regex.match(indicator):
+            return Common.File(md5=indicator, dbot_score=dbot_score)
+        
+    def url_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.URL,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        return Common.URL(url=indicator, dbot_score=dbot_score)
+
+    def ip_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.IP,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        return Common.IP(ip=indicator, dbot_score=dbot_score)
+
+    def domain_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.DOMAIN,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        return Common.Domain(domain=indicator, dbot_score=dbot_score)
+
+    return CommandResults(readable_output=message, indicator=indicator_map[indicator_type](indicator))
+
 def find_worst_indicator(indicators):
     """
         Sorts list of indicators by confidence score and returns one indicator with the highest confidence.
@@ -449,7 +497,11 @@ def get_ip_reputation(client: Client, score_calc: DBotScoreCalculator, ip, statu
     }
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
-        return NO_INDICATORS_FOUND_MSG.format(searchable_value=ip)
+        return build_context_indicator_no_results_status(message=NO_INDICATORS_FOUND_MSG.format(searchable_value=ip),
+                                                         indicator=ip,
+                                                         indicator_type='ip',
+                                                         integration_name=THREAT_STREAM,
+                                                         reliability=client.reliability)
 
     # Convert the tags objects into s string for the human readable.
     threat_context = get_generic_threat_context(indicator)
@@ -514,7 +566,11 @@ def get_domain_reputation(client: Client, score_calc: DBotScoreCalculator, domai
     params = dict(value=domain, type=DBotScoreType.DOMAIN, status=status, limit=0)
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
-        return NO_INDICATORS_FOUND_MSG.format(searchable_value=domain)
+        return build_context_indicator_no_results_status(message=NO_INDICATORS_FOUND_MSG.format(searchable_value=domain),
+                                                         indicator=domain,
+                                                         indicator_type='domain',
+                                                         integration_name=THREAT_STREAM,
+                                                         reliability=client.reliability)
 
     # Convert the tags objects into s string for the human readable.
     threat_context = get_generic_threat_context(indicator)
@@ -580,7 +636,11 @@ def get_file_reputation(client: Client, score_calc: DBotScoreCalculator, file, s
     params = dict(value=file, type="md5", status=status, limit=0)
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
-        return NO_INDICATORS_FOUND_MSG.format(searchable_value=file)
+        return build_context_indicator_no_results_status(message=NO_INDICATORS_FOUND_MSG.format(searchable_value=file),
+                                                         indicator=file,
+                                                         indicator_type='file',
+                                                         integration_name=THREAT_STREAM,
+                                                         reliability=client.reliability)
 
     # save the hash value under the hash type key
     threat_context = get_generic_threat_context(indicator, indicator_mapping=FILE_INDICATOR_MAPPING)
@@ -653,7 +713,11 @@ def get_url_reputation(client: Client, score_calc: DBotScoreCalculator, url, sta
     params = dict(value=url, type=DBotScoreType.URL, status=status, limit=0)
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
-        return NO_INDICATORS_FOUND_MSG.format(searchable_value=url)
+        return build_context_indicator_no_results_status(message=NO_INDICATORS_FOUND_MSG.format(searchable_value=url),
+                                                         indicator=url,
+                                                         indicator_type='url',
+                                                         integration_name=THREAT_STREAM,
+                                                         reliability=client.reliability)
 
     # Convert the tags objects into s string for the human readable.
     threat_context = get_generic_threat_context(indicator)

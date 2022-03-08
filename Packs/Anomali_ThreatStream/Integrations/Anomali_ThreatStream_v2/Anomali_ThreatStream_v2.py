@@ -14,6 +14,7 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 VENDOR_NAME = 'ThreatStream'
+NO_INDICATORS_FOUND_MSG = 'No intelligence has been found for {searchable_value}'
 HEADERS = {
     'Content-Type': 'application/json'
 }
@@ -132,6 +133,56 @@ class Client:
         dbot_context['Reliability'] = self.reliability
 
         return dbot_context
+
+
+def build_context_indicator_no_results_status(indicator: str, indicator_type: str, message: str,
+                                              integration_name: str, reliability: Any=None) -> CommandResults:
+    
+    indicator_map = {
+        'file': file_unknown,
+        'ip': ip_unknown,
+        'domain': domain_unknown,
+        'url': url_unknown
+    }
+
+    def file_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.FILE,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        if sha1Regex.match(indicator):
+            return Common.File(sha1=indicator, dbot_score=dbot_score)
+        if sha256Regex.match(indicator):
+            return Common.File(sha256=indicator, dbot_score=dbot_score)
+        if md5Regex.match(indicator):
+            return Common.File(md5=indicator, dbot_score=dbot_score)
+        
+    def url_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.URL,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        return Common.URL(url=indicator, dbot_score=dbot_score)
+
+    def ip_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.IP,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        return Common.IP(ip=indicator, dbot_score=dbot_score)
+
+    def domain_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.DOMAIN,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        return Common.Domain(domain=indicator, dbot_score=dbot_score)
+
+    return CommandResults(readable_output=message, indicator=indicator_map[indicator_type](indicator))            
 
 
 def find_worst_indicator(indicators):
@@ -447,6 +498,11 @@ def get_ip_reputation(client: Client, ip, threshold=None, status="active,inactiv
     params = build_params(value=ip, type="ip", status=status, limit=0)
     indicator = search_indicator_by_params(client, params, ip)
     if not indicator:
+        return_results(build_context_indicator_no_results_status(message=NO_INDICATORS_FOUND_MSG.format(searchable_value=ip),
+                                                                 indicator=ip,
+                                                                 indicator_type='ip',
+                                                                 integration_name=VENDOR_NAME,
+                                                                 reliability=client.reliability))
         return
 
     threshold = threshold or client.default_threshold
@@ -487,6 +543,11 @@ def get_domain_reputation(client: Client, domain, threshold=None, status="active
     params = build_params(value=domain, type="domain", status=status, limit=0)
     indicator = search_indicator_by_params(client, params, domain)
     if not indicator:
+        return_results(build_context_indicator_no_results_status(message=NO_INDICATORS_FOUND_MSG.format(searchable_value=domain),
+                                                                 indicator=domain,
+                                                                 indicator_type='domain',
+                                                                 integration_name=VENDOR_NAME,
+                                                                 reliability=client.reliability))
         return
 
     threshold = threshold or client.default_threshold
@@ -527,6 +588,11 @@ def get_file_reputation(client: Client, file, threshold=None, status="active,ina
     params = build_params(value=file, type="md5", status=status, limit=0)
     indicator = search_indicator_by_params(client, params, file)
     if not indicator:
+        return_results(build_context_indicator_no_results_status(message=NO_INDICATORS_FOUND_MSG.format(searchable_value=file),
+                                                                 indicator=file,
+                                                                 indicator_type='file',
+                                                                 integration_name=VENDOR_NAME,
+                                                                 reliability=client.reliability))
         return
 
     threshold = threshold or client.default_threshold
@@ -579,6 +645,11 @@ def get_url_reputation(client: Client, url, threshold=None, status="active,inact
     params = build_params(value=url, type="url", status=status, limit=0)
     indicator = search_indicator_by_params(client, params, url)
     if not indicator:
+        return_results(build_context_indicator_no_results_status(message=NO_INDICATORS_FOUND_MSG.format(searchable_value=url),
+                                                                 indicator=url,
+                                                                 indicator_type='url',
+                                                                 integration_name=VENDOR_NAME,
+                                                                 reliability=client.reliability))
         return
 
     threshold = threshold or client.default_threshold

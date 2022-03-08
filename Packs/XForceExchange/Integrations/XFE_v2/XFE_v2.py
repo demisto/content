@@ -67,6 +67,56 @@ class Client(BaseClient):
         return self._http_request('GET', f'/whois/{host}')
 
 
+def build_context_indicator_no_results_status(indicator: str, indicator_type: str, message: str,
+                                              integration_name: str, reliability: Any=None) -> CommandResults:
+    
+    indicator_map = {
+        'file': file_unknown,
+        'ip': ip_unknown,
+        'domain': domain_unknown,
+        'url': url_unknown
+    }
+
+    def file_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.FILE,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        if sha1Regex.match(indicator):
+            return Common.File(sha1=indicator, dbot_score=dbot_score)
+        if sha256Regex.match(indicator):
+            return Common.File(sha256=indicator, dbot_score=dbot_score)
+        if md5Regex.match(indicator):
+            return Common.File(md5=indicator, dbot_score=dbot_score)
+        
+    def url_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.URL,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        return Common.URL(url=indicator, dbot_score=dbot_score)
+
+    def ip_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.IP,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        return Common.IP(ip=indicator, dbot_score=dbot_score)
+
+    def domain_unknown(indicator):
+        dbot_score = Common.DBotScore(indicator=indicator,
+                                      score=Common.DBotScore.NONE,
+                                      indicator_type=DBotScoreType.DOMAIN,
+                                      integration_name= integration_name,
+                                      reliability= reliability)
+        return Common.Domain(domain=indicator, dbot_score=dbot_score)
+
+    return CommandResults(readable_output=message, indicator=indicator_map[indicator_type](indicator))
+
+
 def calculate_score(score: int, threshold: int) -> int:
     """
     Calculates and converts X-Force Exchange score into Demisto score.
@@ -222,6 +272,13 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
         report = client.url_report(domain)
         if report == "Not Found":
             markdown += f'Domain: {domain} not found\n'
+            context[outputPaths['domain']].append({'Name': domain})
+            context[DBOT_SCORE_KEY].append({
+                'Indicator': domain,
+                'Type': 'domain',
+                'Vendor': 'XFE',
+                'Score': 0
+            })
             continue
         outputs = {'Name': report['url']}
         if report.get('score', 0):
@@ -279,6 +336,8 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         report = client.url_report(url)
         if report == "Not Found":
             markdown += f'URL: {url} not found\n'
+            context[outputPaths['url']].append({'Data': url})
+            context[DBOT_SCORE_KEY].append({'Indicator': url, 'Type': 'url', 'Vendor': 'XFE', 'Score': 0})
             continue
         outputs = {'Data': report['url']}
         dbot_score = {'Indicator': report['url'], 'Type': 'url', 'Vendor': 'XFE',
@@ -394,7 +453,11 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
             report = client.file_report(file_hash)
         except Exception as err:
             if 'Error in API call [404] - Not Found' in str(err):
-                command_results.append(CommandResults(readable_output=f'File: {file_hash} not found\n'))
+                command_results.append(build_context_indicator_no_results_status(indicator=file_hash,
+                                                                                 indicator_type='file',
+                                                                                 message=f'File: {file_hash} not found\n',
+                                                                                 integration_name='XFE',
+                                                                                 reliability=client.reliability))
                 continue
             else:
                 raise
