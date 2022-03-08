@@ -18,7 +18,6 @@ import time
 import traceback
 import types
 import urllib
-from collections.abc import Mapping
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict, namedtuple
