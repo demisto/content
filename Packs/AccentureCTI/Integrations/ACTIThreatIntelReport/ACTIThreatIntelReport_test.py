@@ -3,7 +3,7 @@ import io
 from ACTIThreatIntelReport import Client, _calculate_dbot_score, getThreatReport_command, fix_markdown, connection_module
 from test_data.response_constants import *
 import requests_mock
-from CommonServerPython import DBotScoreReliability
+from CommonServerPython import DBotScoreReliability, DemistoException
 
 API_URL = "https://test.com"
 DBOT_SCORE = "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)"
@@ -142,8 +142,30 @@ def test_connection_module():
 
     """
     with requests_mock.Mocker() as m:
-        print("test----final")
         url = 'https://test.com/rest/document/v0'
         m.get(url, status_code=200, json={})
         client = Client(API_URL, 'api_token', True, False, '/rest/document')
         assert connection_module(client) in "ok"
+
+
+def test_wrong_connection():
+    """
+    Given:
+        - an api token
+
+    When:
+        - checking api access
+
+    Then:
+        - raise error if there is no access because of wrong api token
+
+    """
+
+    with requests_mock.Mocker() as m:
+        url = 'https://test.com/rest/document/v0'
+        m.get(url, status_code=401, json={})
+        client = Client('bad_api_key', 'wrong_token', True, False)
+        try:
+            connection_module(client)
+        except DemistoException as err:
+            assert 'Error in API call - check the input parameters and the API Key.' in str(err)
