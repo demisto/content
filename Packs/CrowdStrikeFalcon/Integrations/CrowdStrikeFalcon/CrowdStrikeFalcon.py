@@ -3376,7 +3376,7 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
     behavior_res = get_behaviors_by_incident(incident_id)
     behaviors_id = behavior_res.get('resources')
 
-    if behavior_res.get('meta', {}).get('pagination', {}).get('total', 0) == 0 or not behaviors_id:
+    if not behaviors_id or behavior_res.get('meta', {}).get('pagination', {}).get('total', 0) == 0:
         return CommandResults(readable_output=f'Could not find behaviors for incident {incident_id}')
 
     detection_res = get_detections_by_behaviors(behaviors_id).get('resources', {})
