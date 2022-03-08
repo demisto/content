@@ -1525,7 +1525,6 @@ function Main {
             "test-module" {
                 ($human_readable, $entry_context, $raw_response) = TestModuleCommand $oauth2_client $cs_client
             }
-            }
             "$script:COMMAND_PREFIX-auth-test" {
                 ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $cs_client
             }
