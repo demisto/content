@@ -43,7 +43,7 @@ tasks:
       id: d487dba3-5670-4c8f-861d-50e627fda648
       version: -1
       name: Get Pool Members
-      description: Get Pool Members
+      description: A task to get a list of configured Pool members by Pool name.
       script: '|||f5-ltm-get-pool-members'
       type: regular
       iscommand: true
@@ -88,7 +88,7 @@ tasks:
       id: 99002c93-6235-42fb-8759-cca5cf5d8ee0
       version: -1
       name: Update Ready Nodes List
-      description: Set a value in context under the key you entered.
+      description: Update the ReadyNodes context key with a list of Nodes that are members of highly available Pools.
       scriptName: Set
       type: regular
       iscommand: false
@@ -128,7 +128,7 @@ tasks:
       id: 008e1113-c975-4dd4-8d4f-b6d0131450f3
       version: -1
       name: Update Not Ready Nodes List
-      description: Set a value in context under the key you entered.
+      description: Update the NotReadyNodes context key with a list of Nodes that are part of not-highly available Pools.
       scriptName: Set
       type: regular
       iscommand: false
@@ -195,7 +195,7 @@ tasks:
       id: f185ce71-1d0d-4655-8ea6-575c056d6ffa
       version: -1
       name: Prepare The Node Name
-      description: Set a value in context under the key you entered.
+      description: Prepare the node name by adding ":" at the end of it.
       scriptName: Set
       type: regular
       iscommand: false
@@ -242,7 +242,7 @@ tasks:
       id: 7f3146de-5bf4-40c0-8dba-83c47a6f4069
       version: -1
       name: Enough Members in the Pool
-      description: ''
+      description: 'Check if all Pools of the inputted Node are configured with at least one additional Node.'
       type: condition
       iscommand: false
       brand: ""

@@ -41,7 +41,7 @@ tasks:
       id: 71a938a4-a0c1-4877-8cd1-0912891be1cc
       version: -1
       name: is F5 LTM enabled?
-      description: ""
+      description: "A task to check if F5 LTM integration is configured"
       type: condition
       iscommand: false
       brand: ""
@@ -190,7 +190,7 @@ tasks:
       id: 88b54972-77ec-4890-86f7-388b9a63bea5
       version: -1
       name: Get Node Stats
-      description: Get Node Stats
+      description: A task to get Node stats by Node name , the stats include the number of current connections and sessions.
       script: '|||f5-ltm-get-node-stats'
       type: regular
       iscommand: true
