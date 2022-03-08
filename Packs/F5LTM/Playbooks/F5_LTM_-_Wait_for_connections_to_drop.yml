@@ -12,6 +12,7 @@ tasks:
       id: 281ba478-71fd-4a18-888e-82adc8920d0e
       version: -1
       name: ""
+      description : ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -40,6 +41,7 @@ tasks:
       id: 71a938a4-a0c1-4877-8cd1-0912891be1cc
       version: -1
       name: is F5 LTM enabled?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -98,6 +100,7 @@ tasks:
       id: f4d42dbd-fcee-4cd1-8ffb-3503e2c48c85
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
