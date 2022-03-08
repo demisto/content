@@ -1,5 +1,5 @@
 from XFE_v2 import Client, ip_command, url_command, cve_get_command, \
-    cve_search_command, file_command, whois_command
+    cve_search_command, file_command, whois_command, build_context_indicator_no_results_status
 from CommonServerPython import outputPaths
 
 DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
@@ -555,3 +555,43 @@ def test_cve_search(requests_mock):
     _, outputs, _ = cve_search_command(client, {'q': MOCK_CVE_QUERY})
 
     assert outputs['XFE.CVESearch']['TotalRows'] == len(outputs[outputPaths['cve']]), 'Mismatch rows and outputs'
+
+
+def test_build_context_indicator_no_results_status():
+
+    inputs = [{'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': 'file',
+               'integration_name': 'test', 'message': 'Not found'},
+              {'indicator': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12', 'indicator_type': 'file',
+               'integration_name': 'test', 'message': 'Not found'},
+              {'indicator': 'cf23df2207d99a74fbe169e3eba035e633b65d94', 'indicator_type': 'file',
+               'integration_name': 'test', 'message': 'Not found'},
+              {'indicator': '8.8.8.8', 'indicator_type': 'ip', 'integration_name': 'test', 'message': 'Not found'},
+              {'indicator': 'www.example.com', 'indicator_type': 'url', 'integration_name': 'test', 'message': 'Not found'},
+              {'indicator': 'example.com', 'indicator_type': 'domain', 'integration_name': 'test', 'message': 'Not found'}]
+    expected_return = [{'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': 'file', 'message': 'Not found',
+                        'sha1': None, 'sha256': None, 'md5': 'd26cec10398f2b10202d23c966022dce'},
+                       {'indicator': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12', 'indicator_type': 'file',
+                        'message': 'Not found', 'sha1': None,
+                        'sha256': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12', 'md5': None},
+                       {'indicator': 'cf23df2207d99a74fbe169e3eba035e633b65d94', 'indicator_type': 'file',
+                        'message': 'Not found', 'sha1': 'cf23df2207d99a74fbe169e3eba035e633b65d94', 'sha256': None, 'md5': None},
+                       {'indicator': '8.8.8.8', 'indicator_type': 'ip',
+                        'message': 'Not found'},
+                       {'indicator': 'www.example.com', 'indicator_type': 'url',
+                        'message': 'Not found'},
+                       {'indicator': 'example.com', 'indicator_type': 'domain',
+                        'message': 'Not found'}]
+
+    for i in range(6):
+        results = build_context_indicator_no_results_status(indicator=inputs[i].get('indicator'),
+                                                            indicator_type=inputs[i].get('indicator_type'),
+                                                            integration_name='test',
+                                                            message=inputs[i].get('message'))
+
+        assert results.readable_output == expected_return[i].get('message')
+        assert results.indicator.dbot_score.score == 0
+        assert results.indicator.dbot_score.indicator_type == expected_return[i].get('indicator_type')
+        if results.indicator.dbot_score.indicator_type == 'file':
+            assert results.indicator.sha1 == expected_return[i].get('sha1')
+            assert results.indicator.sha256 == expected_return[i].get('sha256')
+            assert results.indicator.md5 == expected_return[i].get('md5')

@@ -91,3 +91,5 @@ TAXII
 Syslog
 DomainTools
 replyTo
+indicator
+DBotScore

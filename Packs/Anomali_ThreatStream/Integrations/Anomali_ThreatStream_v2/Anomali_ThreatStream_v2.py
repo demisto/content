@@ -136,8 +136,8 @@ class Client:
 
 
 def build_context_indicator_no_results_status(indicator: str, indicator_type: str, message: str,
-                                              integration_name: str, reliability: Any=None) -> CommandResults:
-    
+                                              integration_name: str, reliability: Any = None) -> CommandResults:
+
     indicator_map = {
         'file': file_unknown,
         'ip': ip_unknown,
@@ -149,40 +149,40 @@ def build_context_indicator_no_results_status(indicator: str, indicator_type: st
         dbot_score = Common.DBotScore(indicator=indicator,
                                       score=Common.DBotScore.NONE,
                                       indicator_type=DBotScoreType.FILE,
-                                      integration_name= integration_name,
-                                      reliability= reliability)
+                                      integration_name=integration_name,
+                                      reliability=reliability)
         if sha1Regex.match(indicator):
             return Common.File(sha1=indicator, dbot_score=dbot_score)
         if sha256Regex.match(indicator):
             return Common.File(sha256=indicator, dbot_score=dbot_score)
         if md5Regex.match(indicator):
             return Common.File(md5=indicator, dbot_score=dbot_score)
-        
+
     def url_unknown(indicator):
         dbot_score = Common.DBotScore(indicator=indicator,
                                       score=Common.DBotScore.NONE,
                                       indicator_type=DBotScoreType.URL,
-                                      integration_name= integration_name,
-                                      reliability= reliability)
+                                      integration_name=integration_name,
+                                      reliability=reliability)
         return Common.URL(url=indicator, dbot_score=dbot_score)
 
     def ip_unknown(indicator):
         dbot_score = Common.DBotScore(indicator=indicator,
                                       score=Common.DBotScore.NONE,
                                       indicator_type=DBotScoreType.IP,
-                                      integration_name= integration_name,
-                                      reliability= reliability)
+                                      integration_name=integration_name,
+                                      reliability=reliability)
         return Common.IP(ip=indicator, dbot_score=dbot_score)
 
     def domain_unknown(indicator):
         dbot_score = Common.DBotScore(indicator=indicator,
                                       score=Common.DBotScore.NONE,
                                       indicator_type=DBotScoreType.DOMAIN,
-                                      integration_name= integration_name,
-                                      reliability= reliability)
+                                      integration_name=integration_name,
+                                      reliability=reliability)
         return Common.Domain(domain=indicator, dbot_score=dbot_score)
 
-    return CommandResults(readable_output=message, indicator=indicator_map[indicator_type](indicator))            
+    return CommandResults(readable_output=message, indicator=indicator_map[indicator_type](indicator))
 
 
 def find_worst_indicator(indicators):
