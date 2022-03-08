@@ -1168,4 +1168,4 @@ inputs:
   description: ""
   playbookInputQuery:
 outputs: []
-fromversion: 6.1.0
+fromversion: 6.2.0
