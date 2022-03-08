@@ -161,9 +161,9 @@ class FortiSIEMClient(BaseClient):
 
         return format_resp_xml_to_dict(response.text)
 
-    def fetch_incidents_request(self, status: List[int], time_from: int, time_to: int, size: int):
+    def fetch_incidents_request(self, status: List[int], time_from: int, time_to: int, size: int, start: int = 0):
         data = {"descending": False, "filters": {"status": status},
-                "orderBy": "incidentFirstSeen", "size": size, "timeFrom": time_from, "timeTo": time_to}
+                "orderBy": "incidentFirstSeen", "size": size, "start": start, "timeFrom": time_from, "timeTo": time_to}
         response = self._http_request('POST', 'pub/incident', json_data=data)
         return response
 
@@ -1021,13 +1021,12 @@ def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, s
     last_run = demisto.getLastRun()
     first_fetch_epoch = date_to_timestamp(arg_to_datetime(first_fetch)) if not last_run else None
     last_incident_create_time = last_run.get('create_time')
-    last_incident_id = last_run.get('incident_id')
     time_from = last_incident_create_time or first_fetch_epoch
 
-    response = client.fetch_incidents_request(numeric_status_list, time_from, date_to_timestamp(datetime.now()),
-                                              max_fetch)
+    relevant_incidents = fetch_relevant_incidents(client, numeric_status_list, time_from,
+                                                  date_to_timestamp(datetime.now()), last_run, max_fetch)
     # The API might return incidents in a timestamp before the last one.
-    formatted_incidents = format_incidents(response, last_incident_id)
+    formatted_incidents = format_incidents(relevant_incidents)
     incidents = []
     for incident in formatted_incidents:
         if fetch_with_events:
@@ -1039,13 +1038,12 @@ def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, s
             'name': incident['incidentTitle'],
             'occurred': timestamp_to_datestring(incident['incidentFirstSeen']),
             'rawJSON': json.dumps(incident)})
-    if formatted_incidents:
-        last_incident: dict = formatted_incidents[-1]
-        demisto.setLastRun(
-            {'incident_id': last_incident.get('incidentId'),
-             'create_time': last_incident.get('incidentFirstSeen')
-             })
+    if incidents:
+        last_run = update_last_run_obj(last_run, formatted_incidents)
+        demisto.setLastRun(last_run)
     demisto.incidents(incidents)
+    # demisto.incidents([])
+
 
 
 def get_related_events_for_fetch_command(incident_id: str, max_events_fetch: int,
@@ -1497,7 +1495,7 @@ def format_update_watchlist_entry_header(entry_id: str, response: Dict[str, Any]
     return f"Successfully Updated Entry: {entry_id}."
 
 
-def filter_irrelevant_incidents(response: Dict[str, Any], last_incident_id: str) -> List[dict]:
+def filter_irrelevant_incidents(response: Dict[str, Any], last_run: Dict[str, Any]) -> List[dict]:
     """
     filter irrelevant incidents, since the API may retrieve an already fetched incidents.
     Args:
@@ -1507,6 +1505,7 @@ def filter_irrelevant_incidents(response: Dict[str, Any], last_incident_id: str)
         List[dict]: Filtered incidents.
     """
     incidents = response.get('data')
+    last_incident_id = last_run.get('incident_id')
     last_incident_index = None
     for index, incident in enumerate(incidents):
         if incident['incidentId'] == last_incident_id:
@@ -1520,20 +1519,60 @@ def filter_irrelevant_incidents(response: Dict[str, Any], last_incident_id: str)
     return incidents
 
 
-def format_incidents(response: Dict[str, Any], last_incident_id: str) -> List[dict]:
+def fetch_relevant_incidents(client: FortiSIEMClient,
+                             status: List[int], time_from: int, time_to: int,
+                             last_run: Dict[str, Any], max_fetch: int) -> List[dict]:
+    """
+    Fetch relevant incidents. In order to handle properly the use case of incidents with the same
+    'incidentFirstSeen' attribute as the last incident's create time of the previous fetch -
+     a pagination mechanism is implemented here.
+
+     Args:
+         client(FortiSIEMClient): FortiSIEM client.
+         status (List[int]): status lists to filter the incidents by.
+         time_from (int): from which time to fetch.
+         time_to (int): Until which time to fetch.
+         last_run (Dict[str, Any]): LastRun object.
+         max_fetch (int): The number of incidents to fetch.
+    Returns:
+        List[dict]: Relevant incidents.
+    """
+    filtered_incidents = []
+    start_index = last_run.get('start_index') or 0
+    page_size: int = 2 * max_fetch
+    response = client.fetch_incidents_request(status, time_from, time_to,
+                                              page_size, start_index)
+    incidents = response.get('data')
+    total = response.get('total')
+    last_fetch_incidents: List[int] = last_run.get('last_incidents')
+
+    if not last_run:
+        return incidents[:min(max_fetch, len(incidents))]
+
+    while len(filtered_incidents) < max_fetch:
+        for incident in incidents:
+            if incident.get('incidentId') not in last_fetch_incidents and len(filtered_incidents) < max_fetch:
+                filtered_incidents.append(copy.deepcopy(incident))
+        if len(incidents) < page_size or start_index >= total:  # last page
+            break
+
+        start_index += page_size
+        response = client.fetch_incidents_request(status, time_from, time_to, page_size, start_index)
+        incidents = response.get('data')
+    return filtered_incidents
+
+
+def format_incidents(relevant_incidents: List[dict]) -> List[dict]:
     """
     Format incidents' content to be more readable for the user:
-    Filtering relevant incidents, Decomposing nested attributes, normalizing severity according to XSOAR scale and
+    Decomposing nested attributes, normalizing severity according to XSOAR scale and
     mapping several integer fields to verbal.
     Args:
-         last_incident_id:str (str): The ID of the last fetched incident.
-         response (str): API response from FortiSIEM.
+         relevant_incidents (List[dict]): The incidents to format.
     Returns:
         List[dict]: Formatted incidents.
     """
-
-    filtered_incidents = filter_irrelevant_incidents(response, last_incident_id)
-    for incident in filtered_incidents:
+    for incident in relevant_incidents:
         incident['normalizedEventSeverity'] = INCIDENT_EVENT_CATEGORY_MAPPING.get(incident.get('eventSeverityCat'), 0.5)
         format_integer_field_to_verbal(incident)  # formatting integer attributes.
 
@@ -1548,7 +1587,7 @@ def format_incidents(response: Dict[str, Any], last_incident_id: str) -> List[di
                         if key:
                             formatted_key = build_readable_attribute_key(key, attribute_name)
                             incident[formatted_key] = value
-    return filtered_incidents
+    return relevant_incidents
 
 
 def format_nested_incident_attribute(attribute_value: str) -> tuple:
@@ -1747,6 +1786,26 @@ def datetime_to_age_out_in_days(age_out_date: datetime) -> str:
         days = delta.days  # interested in interval only.
         return f'{days}d'
     return None
+
+
+def update_last_run_obj(last_run: Dict[str, Any], formatted_incidents: List[dict]):
+    cur_last_incident: dict = formatted_incidents[-1]
+    if cur_last_incident:
+        cur_last_incident_create_time = cur_last_incident.get('incidentFirstSeen')
+        cur_incidents_id: list = [incident.get('incidentId') for incident in formatted_incidents]
+        prev_last_incident_create_time = last_run.get('create_time')
+        if cur_last_incident_create_time == prev_last_incident_create_time:  # stack the incidents ID.
+            last_run['last_incidents'] += cur_incidents_id
+            last_run['start_index'] += len(cur_incidents_id)
+        else:  # flush old incidents ID
+            last_run = {
+                'create_time': cur_last_incident_create_time,
+                'last_incidents': cur_incidents_id,
+                'start_index': 0
+            }
+
+    return last_run
+
 
 
 def main() -> None:
