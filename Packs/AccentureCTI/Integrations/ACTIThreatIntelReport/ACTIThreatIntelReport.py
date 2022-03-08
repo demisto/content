@@ -27,7 +27,7 @@ class Client(BaseClient):
         return self._http_request(method="GET", url_suffix=url_suffix, params=data)
 
 
-def test_module(client: Client) -> str:                                                                         # type: ignore
+def connection_module(client: Client) -> str:                                                                         # type: ignore
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -192,7 +192,7 @@ def main():
         demisto.debug(f'Command being called is {command}')
 
         if command == 'test-module':
-            return_results(test_module(client))
+            return_results(connection_module(client))
         elif command in commands:
             return_results(commands[command](client, demisto.args(), reliability))
 

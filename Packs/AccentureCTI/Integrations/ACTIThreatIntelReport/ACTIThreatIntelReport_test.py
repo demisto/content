@@ -1,6 +1,6 @@
 import json
 import io
-from ACTIThreatIntelReport import Client, _calculate_dbot_score, getThreatReport_command, fix_markdown
+from ACTIThreatIntelReport import Client, _calculate_dbot_score, getThreatReport_command, fix_markdown, connection_module
 from test_data.response_constants import *
 import requests_mock
 from CommonServerPython import DBotScoreReliability
@@ -127,3 +127,23 @@ def test_getThreatReport_not_found():
         results = getThreatReport_command(client, url_to_check, DBotScoreReliability.B)
         output = results.to_context().get('HumanReadable')
         assert expected_output in output
+
+
+def test_connection_module():
+    """
+    Given:
+        - an api token
+
+    When:
+        - checking api access
+
+    Then:
+        - ok if there is access
+
+    """
+    with requests_mock.Mocker() as m:
+        print("test----final")
+        url = 'https://test.com/rest/document/v0'
+        m.get(url, status_code=200, json={})
+        client = Client(API_URL, 'api_token', True, False, '/rest/document')
+        assert connection_module(client) in "ok"
