@@ -69,3 +69,5 @@ ignore=SC106
 
 [known_words]
 UnzipFile
+ConvertFile
+ExtractIndicatorsFromWordFile
