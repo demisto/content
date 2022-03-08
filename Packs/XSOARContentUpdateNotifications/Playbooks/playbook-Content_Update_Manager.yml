@@ -1291,6 +1291,11 @@ tasks:
               complex:
                 root: inputs.slackchannel
             iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.slackchannelid
+            iscontext: true
     view: |-
       {
         "position": {
