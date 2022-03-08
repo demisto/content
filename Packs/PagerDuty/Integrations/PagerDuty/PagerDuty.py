@@ -519,7 +519,7 @@ def extract_responder_request(responder_request_response):
         outputs_key_field='id',
         outputs=outputs,
         raw_response=outputs,
-        readable_output=tableToMarkdown(CONTACT_METHODS, outputs, CONTACT_METHODS_HEADERS)
+        readable_output=tableToMarkdown(CONTACT_METHODS, outputs, CONTACT_METHODS_HEADERS, removeNull=True)
     )
 
 

@@ -824,7 +824,7 @@ Add responders to an incident
 #### Context Example
 ```json
 {
-    "PagerDuty": {
+    "PagerDuty": 
     {
         "ResponderRequests": [
             {
@@ -875,5 +875,5 @@ Response Plays are a package of Incident Actions that can be applied during an I
 ```!PagerDuty-run-response-play incident_id="Q107XAAAAMBBR" from_email="john.doe@example.com" response_play_uuid="111111-88bb-bb37-181d-11111111110dewsq"```
 
 
-#### Human Readable Example
-```Response play successfully run to the incident Q107XAAAAMBBR by john.doe@example.com```
+>#### Human Readable Output
+>Response play successfully run to the incident Q107XAAAAMBBR by john.doe@example.com
