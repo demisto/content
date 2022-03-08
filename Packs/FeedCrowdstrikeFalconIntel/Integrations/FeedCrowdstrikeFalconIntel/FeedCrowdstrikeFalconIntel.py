@@ -262,7 +262,7 @@ def main():
     target_countries = params.get('target_countries')
     target_industries = params.get('target_industries')
     custom_filter = params.get('custom_filter')
-    fetch_limit = params.get('limit')
+    fetch_limit = params.get('limit', '200')
     client = Client(params)
 
     command = demisto.command()

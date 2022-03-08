@@ -87,7 +87,7 @@ configuration:
 - defaultvalue: 200
   display: Number of top indicators to fetch from the feed.
   name: limit
-  required: true
+  required: false
   type: 0
 - additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
