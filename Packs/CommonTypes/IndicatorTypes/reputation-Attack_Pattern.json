@@ -49,7 +49,7 @@
     },
     "mergeContext": false,
     "regex": "\\bT\\d{4}(?:\\.\\d{3})?\\b",
-    "reputationCommand": "",
+    "reputationCommand": "attack-pattern",
     "reputationScriptName": "",
     "sortValues": null,
     "system": false,
