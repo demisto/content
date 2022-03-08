@@ -1,14 +1,8 @@
 {
-	"id": "182480af-0bf8-400f-8ab5-4dc080930a5c",
-	"version": 2,
+	"id": "ACTI Intelligence Alert",
+	"version": -1,
+	"fromVersion": "6.0.0",
 	"modified": "2022-03-07T11:04:11.805017767Z",
-	"packID": "",
-	"itemVersion": "",
-	"fromServerVersion": "",
-	"toServerVersion": "",
-	"definitionId": "",
-	"vcShouldIgnore": false,
-	"vcShouldKeepItemLegacyProdMachine": false,
 	"commitMessage": "",
 	"shouldCommit": false,
 	"regex": "https://intelgraph.idefense.com/#/node/intelligence_alert/view/\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}",
@@ -99,6 +93,5 @@
 	},
 	"fileHashesPriority": null,
 	"expiration": 0,
-	"shouldShareComments": false,
 	"layout": "11efd063-3e83-4376-8572-d74a0846ab02"
 }
