@@ -186,7 +186,6 @@ class Build:
     def __init__(self, options):
         self._proxy = None
         self.servers = None
-        self.service_account = None
         self.server_numeric_version = None
         self.git_sha1 = options.git_sha1
         self.branch_name = options.branch
@@ -1537,6 +1536,15 @@ def main():
     if build.is_nightly:
         # XSOAR Nightly: install all existing packs and upload all test playbooks that currently in master.
         build.install_nightly_pack()
+    elif build.__class__ == XSIAMBuild:
+        logging.info('Starting create bucket folder')
+        from google.cloud import storage
+        storage_client = storage.Client.from_service_account_json(build.service_account)
+        bucket = storage_client.bucket('xsoar-ci-artifacts')
+        blob = bucket.blob('xsiam-ci-locks')
+        blob.upload_from_string('')
+        logging.info('Created bucket folder successfully.')
+
     else:
         # Install only modified packs.
         pack_ids = get_non_added_packs_ids(build)

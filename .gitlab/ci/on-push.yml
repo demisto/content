@@ -285,7 +285,10 @@ slack-notify-nightly-build:
       cp "$ARTIFACTS_FOLDER/env_results.json" "./artifacts/env_results.json"  # todo: need to change this file to xsiam instances
       cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
 
-# todo: uncomment
+# todo: uncomment, what is XSOAR_ARTIFACTS_GCP_KEY ?
+#    - echo "Authing to GCP"
+#    - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
+#    - echo "Auth loaded successfully."
 #    - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
 
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$BUILD_OBJECT_TYPE" "$XSIAM_CHOSEN_MACHINE_ID"|| EXIT_CODE=$?
