@@ -526,3 +526,15 @@ def test_build_constraint_from_args(args, expected_output):
     from FortiSIEMV2 import build_constraint_from_args
     result = build_constraint_from_args(args)
     assert result == expected_output
+
+
+@pytest.mark.parametrize("last_run,incidents_file,event_file",
+                         [({}, "incidents.json", ''),
+                          ({'create_time': 1111, 'last_incidents': [1, 2, 3], 'start_index': 0},
+                           "incidents.json", ''),
+                          ({'create_time': 1111, 'last_incidents': [1, 2, 3], 'start_index': 0}, '', ''),
+                          ({'create_time': 1111, 'last_incidents': [1, 2, 3],
+                            'start_index': 0},
+                           "incidents.json", "triggered_events.json"), ()])
+def test_fetch_incidents(last_run, incidents_file, event_file, requests_mock):
+    assert 1 == 1
