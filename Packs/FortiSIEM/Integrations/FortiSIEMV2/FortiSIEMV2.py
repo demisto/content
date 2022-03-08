@@ -161,7 +161,18 @@ class FortiSIEMClient(BaseClient):
 
         return format_resp_xml_to_dict(response.text)
 
-    def fetch_incidents_request(self, status: List[int], time_from: int, time_to: int, size: int, start: int = 0):
+    def fetch_incidents_request(self, status: List[int], time_from: int, time_to: int, size: int,
+                                start: int = 0) -> Dict[str, Any]:
+        """
+        Fetch incident request.
+
+        Args:
+            status (List[int]): Status list to filter by.
+            time_from (int): From which 'incidentFirstSeen' to fetch the incidents.
+            time_to (int): Until which 'incidentFirstSeen' to fetch the incidents.
+            size (int): Maximum incidents to get.
+            start (int, optional): From which index to get. Defaults to 0.
+        """
         data = {"descending": False, "filters": {"status": status},
                 "orderBy": "incidentFirstSeen", "size": size, "start": start, "timeFrom": time_from, "timeTo": time_to}
         response = self._http_request('POST', 'pub/incident', json_data=data)
@@ -1045,7 +1056,6 @@ def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, s
     # demisto.incidents([])
 
 
-
 def get_related_events_for_fetch_command(incident_id: str, max_events_fetch: int,
                                          client: FortiSIEMClient) -> List[dict]:
     """
@@ -1805,7 +1815,6 @@ def update_last_run_obj(last_run: Dict[str, Any], formatted_incidents: List[dict
             }
 
     return last_run
-
 
 
 def main() -> None:
