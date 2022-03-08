@@ -6,7 +6,6 @@
 trigger-private-build:
   tags:
     - gke
-    - us-west1
   needs: []
   stage: unittests-and-validations
   extends:
@@ -33,6 +32,8 @@ trigger-private-build:
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
 run-unittests-and-lint:
+  tags:
+    - gce-europe-west4
   extends:
     - .run-unittests-and-lint
   rules:
@@ -50,7 +51,6 @@ run-validations:
 create-instances:
   tags:
     - gke
-    - us-west1
   extends:
     - .default-job-settings
   rules:
@@ -112,7 +112,6 @@ create-instances:
 prepare-testing-bucket-mpv2:
   tags:
     - gke
-    - us-west1
   extends:
     - .default-job-settings
   rules:
@@ -158,7 +157,6 @@ prepare-testing-bucket-mpv2:
 .test_content_on_server_instances_base:
   tags:
     - gke
-    - us-west1
   extends:
     - .default-job-settings
     - .push-rule
@@ -240,7 +238,6 @@ server_master:
 fan-in-nightly:
   tags:
     - gke
-    - us-west1
   stage: fan-in
   rules:
     - if: '$NIGHTLY'
