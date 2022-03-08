@@ -3860,3 +3860,25 @@ Gets the RTR extracted file contents for the specified file path.
 #### Human Readable Output
 
 > Waiting for the polling execution
+### cs-falcon-get-detections-for-incident
+***
+Gets the detections for a specific incident.
+
+
+#### Base Command
+
+`cs-falcon-get-detections-for-incident`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident's id to get detections for. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IncidentDetection.incident_id | String | The incident id. | 
+| CrowdStrike.IncidentDetection.behavior_id | String | The behavior id connected to the incident. | 
+| CrowdStrike.IncidentDetection.detection_ids | String | A list of detection ids connected to the incident. | 

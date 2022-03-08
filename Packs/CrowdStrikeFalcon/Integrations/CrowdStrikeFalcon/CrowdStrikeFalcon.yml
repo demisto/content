@@ -3240,6 +3240,29 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
+
+  - arguments:
+      - default: yes
+        description: The incident's id to get detections for.
+        isArray: false
+        name: incident_id
+        required: true
+        secret: false
+    deprecated: false
+    description: Gets the detections for a specific incident.
+    execution: false
+    polling: false
+    name: cs-falcon-get-detections-for-incident
+    outputs:
+      - contextPath: CrowdStrike.IncidentDetection.incident_id
+        description: The incident id.
+        type: String
+      - contextPath: CrowdStrike.IncidentDetection.behavior_id
+        description: The behavior id connected to the incident.
+        type: String
+      - contextPath: CrowdStrike.IncidentDetection.detection_ids
+        description: A list of detection ids connected to the incident.
+        type: String
   dockerimage: demisto/python3:3.10.1.26972
   feed: false
   isfetch: true

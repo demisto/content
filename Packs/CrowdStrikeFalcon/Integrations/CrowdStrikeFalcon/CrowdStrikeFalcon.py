@@ -289,6 +289,9 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             f'Failed to parse json object from response: {exception} - {res.content}')  # type: ignore[str-bytes-safe]
 
 
+''' API FUNCTIONS '''
+
+
 def create_entry_object(contents: Union[List[Any], Dict[str, Any]] = {}, ec: Union[List[Any], Dict[str, Any]] = None,
                         hr: str = ''):
     """
@@ -1552,6 +1555,15 @@ def upload_batch_custom_ioc(ioc_batch: List[dict]) -> dict:
     }
 
     return http_request('POST', '/iocs/entities/indicators/v1', json=payload)
+
+
+def get_behaviors_by_incident(incident_id: str, params: dict = None) -> dict:
+    return http_request('GET', f'/incidents/queries/behaviors/v1?filter=incident_id:"{incident_id}"', params=params)
+
+
+def get_detections_by_behaviors(behaviors_id):
+    body = {'ids': behaviors_id}
+    return http_request('POST', '/incidents/entities/behaviors/GET/v1', data=body)
 
 
 ''' COMMANDS FUNCTIONS '''
@@ -3360,6 +3372,30 @@ def rtr_get_extracted_file(args_to_get_files: dict, file_name: str):
                            outputs_prefix="CrowdStrike.File"), files]
 
 
+def get_detection_for_incident_command(incident_id: str) -> CommandResults:
+    behavior_res = get_behaviors_by_incident(incident_id)
+    behaviors_id = behavior_res.get('resources')
+
+    if behavior_res.get('meta', {}).get('pagination', {}).get('total', 0) == 0 or not behaviors_id:
+        return CommandResults(readable_output=f'Could not find behaviors for incident {incident_id}')
+
+    detection_res = get_detections_by_behaviors(behaviors_id).get('resources', {})
+    outputs = []
+
+    for detection in detection_res:
+        outputs.append({
+            'incident_id': detection.get('incident_id'),
+            'behavior_id': detection.get('behavior_id'),
+            'detection_ids': detection.get('detection_ids'),
+
+        })
+    return CommandResults(outputs_prefix='CrowdStrike.IncidentDetection',
+                          outputs=outputs,
+                          outputs_key_field='incident_id',
+                          readable_output=tableToMarkdown('Detection For Incident', outputs),
+                          raw_response=detection_res)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is {}'.format(demisto.command()))
@@ -3511,6 +3547,8 @@ def main():
         elif command == 'cs-falcon-rtr-retrieve-file':
             return_results(rtr_polling_retrieve_file_command(args))
 
+        elif command == 'cs-falcon-get-detections-for-incident':
+            return_results(get_detection_for_incident_command(args.get('incident_id')))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
