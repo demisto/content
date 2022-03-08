@@ -106,3 +106,4 @@ fieldSearchValue
 Classifiers
 SentinelOne
 URLs
+CrowdStrike
