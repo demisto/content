@@ -1040,6 +1040,7 @@ MOCK_FIREWALL_1_SERIAL = "111111111111111"
 MOCK_FIREWALL_2_SERIAL = "222222222222222"
 MOCK_FIREWALL_3_SERIAL = "333333333333333"
 
+
 @pytest.fixture
 def mock_firewall():
     mock_firewall = MagicMock(spec=Firewall)
@@ -1070,6 +1071,7 @@ def mock_vsys():
     mock_vsys = MagicMock(spec=Vsys)
     mock_vsys.name = "vsys1"
     return [mock_vsys]
+
 
 @pytest.fixture
 def mock_topology(mock_panorama, mock_firewall):
@@ -1146,6 +1148,11 @@ class TestTopology:
         result_list = list(topology.active_devices(filter_str=MOCK_FIREWALL_3_SERIAL))
         assert len(result_list) == 1
 
+        # Now try just getting the "top level" devices - should only return Panorama
+        result_list = list(topology.active_top_level_devices())
+        assert len(result_list) == 1
+        assert isinstance(result_list[0], Panorama)
+
     @patch("Panorama.Template.refreshall", return_value=mock_templates())
     @patch("Panorama.Vsys.refreshall", return_value=[])
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
@@ -1157,3 +1164,31 @@ class TestTopology:
 
         # Because it's panorama, should be; [shared, device-group, template]
         assert len(result) == 3
+
+
+class TestUtilityFunctions:
+    """Tests all the utility fucntions like dataclass_to_dict, etc"""
+
+    def test_dataclass_from_dict(self, mock_panorama):
+        from Panorama import dataclass_from_dict, CommitStatus
+        example_dict = {
+            "job-id": "10",
+            "commit-type": "whatever",
+            "status": "OK",
+            "device-type": "firewall"
+        }
+
+        mock_panorama.hostname = None
+        result_dataclass: CommitStatus = dataclass_from_dict(mock_panorama, example_dict, CommitStatus)
+        assert result_dataclass.job_id
+        assert result_dataclass.commit_type
+        assert result_dataclass.status
+        assert result_dataclass.device_type
+        # With no hostname, hostid should be the serial number of the device
+        assert result_dataclass.hostid == MOCK_PANORAMA_SERIAL
+
+        mock_panorama.hostname = "test"
+        mock_panorama.serial = None
+        result_dataclass: CommitStatus = dataclass_from_dict(mock_panorama, example_dict, CommitStatus)
+        # With a hostname and no serial, hostid shold be the hostname
+        assert result_dataclass.hostid == "test"
