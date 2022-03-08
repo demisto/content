@@ -426,15 +426,15 @@ def prepare():
         prepare_context(credentials)
         return None, credentials
     else:
+        if not MANUAL_USERNAME:
+            return_error('DOMAIN\USERNAME is required for exchange on-premise.')
+        else:
+            USERNAME = MANUAL_USERNAME
         if 'outlook.office365.com' in EWS_SERVER.lower():
             if not AUTH_METHOD_STR:
                 AUTH_METHOD_STR = 'Basic'
             VERSION_STR = '2016'
         else:
-            if not MANUAL_USERNAME:
-                return_error('DOMAIN\USERNAME is required for exchange on-premise.')
-            else:
-                USERNAME = MANUAL_USERNAME
             if not AUTH_METHOD_STR:
                 AUTH_METHOD_STR = 'ntlm'
             if not VERSION_STR:
