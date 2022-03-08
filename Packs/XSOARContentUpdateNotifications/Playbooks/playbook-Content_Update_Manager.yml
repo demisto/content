@@ -875,6 +875,9 @@ tasks:
       channel:
         complex:
           root: inputs.slackchannel
+      channel_id:
+        complex:
+          root: inputs.slackchannelid
       ignoreAddURL:
         simple: "true"
       message:
