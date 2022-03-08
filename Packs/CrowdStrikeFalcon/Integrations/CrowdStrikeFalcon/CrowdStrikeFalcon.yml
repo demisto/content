@@ -3240,7 +3240,6 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
-
   - arguments:
       - default: yes
         description: The incident's id to get detections for.

@@ -3725,6 +3725,12 @@ DETECTION_FOR_INCIDENT_CASES = [
 def test_get_detection_for_incident_command(mocker, detections, resources, expected_outputs, expected_raw,
                                             expected_prefix,
                                             expected_key, expected_md):
+    """
+    Given: An incident ID
+    When: When running cs-falcon-get-detections-for-incident command
+    Then: validates the created command result contains the correct data (whether found or not).
+    """
+
     from CrowdStrikeFalcon import get_detection_for_incident_command
 
     mocker.patch('CrowdStrikeFalcon.get_behaviors_by_incident',
