@@ -528,13 +528,27 @@ def test_build_constraint_from_args(args, expected_output):
     assert result == expected_output
 
 
-@pytest.mark.parametrize("last_run,incidents_file,event_file",
-                         [({}, "incidents.json", ''),
-                          ({'create_time': 1111, 'last_incidents': [1, 2, 3], 'start_index': 0},
-                           "incidents.json", ''),
-                          ({'create_time': 1111, 'last_incidents': [1, 2, 3], 'start_index': 0}, '', ''),
-                          ({'create_time': 1111, 'last_incidents': [1, 2, 3],
+@pytest.mark.parametrize("last_run,incidents_file,fetch_with_events",
+                         [({}, "fetch_incidents.json", False),
+                          ({'create_time': 1646092830000, 'last_incidents': [1, 2, 3], 'start_index': 0},
+                           "fetch_incidents.json", False),
+                          ({'create_time': 1646092830000, 'last_incidents': [1, 2, 3], 'start_index': 0},
+                           'fetch_incidents_empty.json', False),
+                          ({'create_time': 1646092830000, 'last_incidents': [1, 2, 3],
                             'start_index': 0},
-                           "incidents.json", "triggered_events.json"), ()])
-def test_fetch_incidents(last_run, incidents_file, event_file, requests_mock):
-    assert 1 == 1
+                           "fetch_incidents.json", False)])
+def test_fetch_incidents(last_run, incidents_file, fetch_with_events, requests_mock):
+    from FortiSIEMV2 import FortiSIEMClient, fetch_incidents
+    client: FortiSIEMClient = mock_client()
+    status_list = ['Active']
+    max_fetch = 5
+    max_events_fetch = 5
+    first_fetch = "2022-03-01T2:00:30"
+    demisto.setLastRun(last_run)
+    mock_response = load_json_mock_response(incidents_file)
+    requests_mock.post(f'{client._base_url}pub/incident', json=mock_response)
+    if fetch_with_events:
+        events_mock_response = load_json_mock_response("triggered_events.json")
+        requests_mock.get(f'{client._base_url}pub/incident/triggeringEvents', json=events_mock_response)
+    fetch_incidents(client, max_fetch, first_fetch, status_list, fetch_with_events, max_events_fetch)
+    assert 1==1
