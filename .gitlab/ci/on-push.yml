@@ -299,7 +299,7 @@ slack-notify-nightly-build:
 #        cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
 #      fi
 #
-#      # todo: write script that unlock instances
+#      # todo: write script that destroy instanses
 #      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
     - exit $EXIT_CODE
 # todo: uncomment

@@ -4,7 +4,7 @@
 #   Consts
 #==================================
 
-export GCS_LOCKS_PATH=gs://xsoar-ci-artifacts-server-dev/xsiam-ci-locks	# TODO: create bucket
+export GCS_LOCKS_PATH=gs://xsoar-ci-artifacts/xsiam-ci-locks	# TODO: create bucket
 export GCS_QUEUE_FILE=queue
 export LOCK_IDENTIFIER=lock
 export TEST_MACHINES_LIST=TestMachines

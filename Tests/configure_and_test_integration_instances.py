@@ -68,6 +68,16 @@ ID_SET_PATH = './artifacts/id_set.json'
 XSOAR_BUILD_TYPE = "XSOAR"
 XSIAM_BUILD_TYPE = "XSIAM"
 
+JSON_XSIAM_CONF = {"qa2-test-9997333835008": {
+    "ui_url": "https://xsiam1.paloaltonetworks.com/",
+    "instance_name": "qa2-test-9997333835008",
+    "api_key": "some-api-key",
+    "x-xdr-auth-id": 1,
+    "base_url": "https://api-xsiam1.paloaltonetworks.com",
+    "xsiam_version": "3.2.0",
+    "demisto_version": "6.6.0"
+}}
+
 
 class Running(IntEnum):
     CI_RUN = 0
@@ -86,9 +96,13 @@ class Server:
 
 class XSIAMServer(Server):
 
-    def __init__(self):
+    def __init__(self, api_key, server_numeric_version, base_url, xdr_auth_id):
         # TODO
         super().__init__()
+        self.api_key = api_key
+        self.server_numeric_version = server_numeric_version
+        self.base_url = base_url
+        self.xdr_auth_id = xdr_auth_id
         self.__client = None
 
     @property
@@ -99,6 +113,7 @@ class XSIAMServer(Server):
         return self.__client
 
     def reconnect_client(self):
+        # todo: change it
         self.__client = demisto_client.configure(f'https://localhost:{self.ssh_tunnel_port}',
                                                  verify_ssl=False,
                                                  username=self.user_name,
@@ -191,6 +206,7 @@ class Build:
         self.tests_to_run = self.fetch_tests_list(options.tests_to_run)
         self.content_root = options.content_root
         self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
+        self.service_account = options.service_account
 
     @staticmethod
     def fetch_tests_list(tests_to_run_path: str):
@@ -223,16 +239,6 @@ class Build:
                 test_clean = test_from_file.rstrip()
                 tests_to_run.append(test_clean)
         return tests_to_run
-
-    @staticmethod
-    def get_servers(ami_env):
-        env_conf = get_env_conf()
-        server_to_port_mapping = map_server_to_port(env_conf, ami_env)
-        if Build.run_environment == Running.CI_RUN:
-            server_numeric_version = get_server_numeric_version(ami_env)
-        else:
-            server_numeric_version = Build.DEFAULT_SERVER_VERSION
-        return server_to_port_mapping, server_numeric_version
 
     def configure_servers_and_restart(self):
         # TODO: override
@@ -280,21 +286,8 @@ class Build:
         return new_integrations_names, modified_integrations_names
 
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
-        threads_list = []
-
-        if not function:
-            raise Exception('Install method was not provided.')
-
-        # For each server url we install pack/ packs
-        for server in self.servers:
-            #  TODO: xsiam change internal ip
-            kwargs = {'client': server.client, 'host': server.internal_ip}
-            if service_account:
-                kwargs['service_account'] = service_account
-            if pack_path:
-                kwargs['pack_path'] = pack_path
-            threads_list.append(Thread(target=function, kwargs=kwargs))
-        run_threads_list(threads_list)
+        # todo: no need in xsiam
+        pass
 
     def install_packs(self, pack_ids=None):
         """
@@ -523,7 +516,6 @@ class XSOARBuild(Build):
                                     port,
                                     self.username,
                                     self.password) for internal_ip, port in self.server_to_port_mapping.items()]
-        self.service_account = options.service_account
 
     @property
     def proxy(self) -> MITMProxy:
@@ -670,18 +662,48 @@ class XSOARBuild(Build):
         logging.info('sleeping for 60 seconds')
         sleep(60)
 
+    @staticmethod
+    def get_servers(ami_env):
+        env_conf = get_env_conf()
+        server_to_port_mapping = map_server_to_port(env_conf, ami_env)
+        if Build.run_environment == Running.CI_RUN:
+            server_numeric_version = get_server_numeric_version(ami_env)
+        else:
+            server_numeric_version = Build.DEFAULT_SERVER_VERSION
+        return server_to_port_mapping, server_numeric_version
+
+    def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
+        threads_list = []
+
+        if not function:
+            raise Exception('Install method was not provided.')
+
+        # For each server url we install pack/ packs
+        for server in self.servers:
+            kwargs = {'client': server.client, 'host': server.internal_ip}
+            if service_account:
+                kwargs['service_account'] = service_account
+            if pack_path:
+                kwargs['pack_path'] = pack_path
+            threads_list.append(Thread(target=function, kwargs=kwargs))
+        run_threads_list(threads_list)
+
 
 class XSIAMBuild(Build):
 
     def __init__(self, options):
         super().__init__(options)
-        # self.ami_env = options.ami_env
-        # self.server_to_port_mapping, self.server_numeric_version = self.get_servers(options.ami_env)
-        # self.servers = [XSIAMServer(internal_ip,
-        #                             port,
-        #                             self.username,
-        #                             self.password) for internal_ip, port in self.server_to_port_mapping.items()]
-        # self.service_account = options.service_account
+        self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
+            self.get_xsiam_configuration(options.xsiam_machine)
+
+        self.servers = [XSIAMServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id)]
+
+    @staticmethod
+    def get_xsiam_configuration(xsiam_machine):
+        # todo: add secret json xsiam configurations
+        conf = JSON_XSIAM_CONF.get(xsiam_machine, {})
+        logging.info(conf)
+        return conf.get('api_key'), conf.get('demisto_version'), conf.get('base_url'), conf.get('x-xdr-auth-id')
 
     def configure_servers_and_restart(self):
         # No need of this step in XSIAM.
@@ -709,6 +731,24 @@ class XSIAMBuild(Build):
         # Todo: check how to do it in xsiam
         pass
 
+    def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
+        # no need to run this cuncurrently since we have only one server
+        threads_list = []
+
+        if not function:
+            raise Exception('Install method was not provided.')
+
+        # For each server url we install pack/ packs
+        for server in self.servers:
+            #  TODO: xsiam change internal ip
+            kwargs = {'client': server.client, 'host': server.internal_ip}
+            if service_account:
+                kwargs['service_account'] = service_account
+            if pack_path:
+                kwargs['pack_path'] = pack_path
+            threads_list.append(Thread(target=function, kwargs=kwargs))
+        run_threads_list(threads_list)
+
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
@@ -734,6 +774,7 @@ def options_handler():
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
                         default='./artifacts/content_packs_to_install.txt')
     parser.add_argument('--build_object_type', help='Build type running: XSOAR or XSIAM')
+    parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
