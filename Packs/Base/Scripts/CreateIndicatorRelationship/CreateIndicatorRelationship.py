@@ -131,7 +131,7 @@ def validate_arguments(args: dict) -> Dict[str, str]:
         raise Exception("entity_b_query can not be used with entity_b and/or entity_b_type")
     if not args.get('entity_b_query') and not args.get('entity_b'):
         raise Exception("Missing entity_b in the create relationships")
-    if args.get('entity_b') and not args.get('entity_b_type'):
+    if (args.get('entity_b') or args.get('entity_b_query')) and not args.get('entity_b_type'):
         raise Exception("Missing entity_b_type in the create relationships")
 
     args['entity_a_type'] = FeedIndicatorType.indicator_type_by_server_version(args.get('entity_a_type'))
