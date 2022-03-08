@@ -551,7 +551,7 @@ def find_suitable_hash_output(results: tuple[RawCommandResults]) -> dict[str, di
     for result in filter(None, results):  # filters out None results
         if not result.output:  # no output to compare
             continue
-        if sha256 := result.output.get('sha256') is None:  # must have SHA256 to compare
+        if (sha256 := result.output.get('sha256')) is None:  # must have SHA256 to compare
             continue
 
         output = result.output
@@ -565,22 +565,18 @@ def find_suitable_hash_output(results: tuple[RawCommandResults]) -> dict[str, di
             continue
 
         # comparing temp_max and output
-        new_max = {'sha256': sha256,
-                   'file_size': temp_max.get('file_size') or output.get('file_size')  # just in case
-                   }
+        new_max = {
+            'sha256': sha256,
+            'file_size': temp_max.get('file_size') or output.get('file_size')  # sometimes missing
+        }
         # take the one that's more severe. if both are missing, threat_score is omitted from the result.
-        if threat_score := max(
-                temp_max.get('file_size', -1),
-                output.get('file_size', -1)
-        ) != -1:
+        if (threat_score := max(temp_max.get('threat_score', -1), output.get('threat_score', -1))) != -1:
             new_max['threat_score'] = threat_score
 
         if 'verdict' in temp_max or 'verdict' in output:
             # take the one that's more severe.
-            new_max['verdict'] = max(
-                DBOT_SCORE_DICT.get(temp_max.get('verdict'), Common.DBotScore.NONE),
-                DBOT_SCORE_DICT.get(output.get('verdict'), Common.DBotScore.NONE)
-            )
+            new_max['verdict'] = max(temp_max.get('verdict'), output.get('verdict'),
+                                     key=lambda value: DBOT_SCORE_DICT.get(value, Common.DBotScore.NONE))
 
         # done building new_max
         max_outputs[sha256] = new_max
@@ -947,10 +943,9 @@ def find_suitable_hash_indicator(results: tuple[RawCommandResults]) -> dict[str,
     max_indicators: dict[str, Common.File] = {}  # SHA256 to indicator with maximal DBotScore
 
     for indicator in filter(None, (result.indicator for result in results)):
-        sha256 = indicator.sha256
-        if sha256 and Common.DBotScore.is_valid_score(indicator.dbot_score):
+        if sha256 := indicator.sha256:
             if existing := max_indicators.get(sha256):
-                if indicator.dbot_score > existing.dbot_score:
+                if indicator.dbot_score.score > existing.dbot_score.score:
                     max_indicators[sha256] = indicator
             else:
                 max_indicators[sha256] = indicator
