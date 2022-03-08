@@ -164,7 +164,8 @@ class FortiSIEMClient(BaseClient):
     def fetch_incidents_request(self, status: List[int], time_from: int, time_to: int, size: int,
                                 start: int = 0) -> Dict[str, Any]:
         """
-        Fetch incident request.
+        Fetch incident request. Please note that the API request retrieve all the incidents which occurred in
+        the specified time interval.
 
         Args:
             status (List[int]): Status list to filter by.
@@ -1036,8 +1037,8 @@ def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, s
 
     relevant_incidents = fetch_relevant_incidents(client, numeric_status_list, time_from,
                                                   date_to_timestamp(datetime.now()), last_run, max_fetch)
-    # The API might return incidents in a timestamp before the last one.
-    formatted_incidents = format_incidents(relevant_incidents)
+    formatted_incidents = format_incidents(relevant_incidents)  # for Layout
+
     incidents = []
     for incident in formatted_incidents:
         if fetch_with_events:
@@ -1050,10 +1051,8 @@ def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, s
             'occurred': timestamp_to_datestring(incident['incidentFirstSeen']),
             'rawJSON': json.dumps(incident)})
     if incidents:
-        last_run = update_last_run_obj(last_run, formatted_incidents)
-        demisto.setLastRun(last_run)
+        update_last_run_obj(last_run, formatted_incidents)
     demisto.incidents(incidents)
-    # demisto.incidents([])
 
 
 def get_related_events_for_fetch_command(incident_id: str, max_events_fetch: int,
@@ -1533,9 +1532,9 @@ def fetch_relevant_incidents(client: FortiSIEMClient,
                              status: List[int], time_from: int, time_to: int,
                              last_run: Dict[str, Any], max_fetch: int) -> List[dict]:
     """
-    Fetch relevant incidents. In order to handle properly the use case of incidents with the same
-    'incidentFirstSeen' attribute as the last incident's create time of the previous fetch -
-     a pagination mechanism is implemented here.
+    Fetch relevant incidents. The API retrieves the incidents which occurred during the given time interval.
+    Since we are interested in create time, a pagination mechanism is implemented here. inorder to retreive the
+     relevant incidents only.
 
      Args:
          client(FortiSIEMClient): FortiSIEM client.
@@ -1549,21 +1548,22 @@ def fetch_relevant_incidents(client: FortiSIEMClient,
     """
     filtered_incidents = []
     start_index = last_run.get('start_index') or 0
+    last_incident_create_time = last_run.get('create_time') or time_from
+    last_fetch_incidents: List[int] = last_run.get('last_incidents') or []
     page_size: int = 2 * max_fetch
-    response = client.fetch_incidents_request(status, time_from, time_to,
-                                              page_size, start_index)
+    # first API call
+    response = client.fetch_incidents_request(status, time_from, time_to, page_size, start_index)
     incidents = response.get('data')
     total = response.get('total')
-    last_fetch_incidents: List[int] = last_run.get('last_incidents')
 
-    if not last_run:
-        return incidents[:min(max_fetch, len(incidents))]
-
-    while len(filtered_incidents) < max_fetch:
+    # filtering & pagination
+    while len(filtered_incidents) < max_fetch and start_index < total:
         for incident in incidents:
-            if incident.get('incidentId') not in last_fetch_incidents and len(filtered_incidents) < max_fetch:
+            if incident.get('incidentId') not in last_fetch_incidents and \
+                    len(filtered_incidents) < max_fetch and \
+                    incident.get('incidentFirstSeen') >= last_incident_create_time:
                 filtered_incidents.append(copy.deepcopy(incident))
-        if len(incidents) < page_size or start_index >= total:  # last page
+        if len(incidents) < page_size:  # last page
             break
 
         start_index += page_size
@@ -1800,21 +1800,20 @@ def datetime_to_age_out_in_days(age_out_date: datetime) -> str:
 
 def update_last_run_obj(last_run: Dict[str, Any], formatted_incidents: List[dict]):
     cur_last_incident: dict = formatted_incidents[-1]
-    if cur_last_incident:
-        cur_last_incident_create_time = cur_last_incident.get('incidentFirstSeen')
-        cur_incidents_id: list = [incident.get('incidentId') for incident in formatted_incidents]
-        prev_last_incident_create_time = last_run.get('create_time')
-        if cur_last_incident_create_time == prev_last_incident_create_time:  # stack the incidents ID.
-            last_run['last_incidents'] += cur_incidents_id
-            last_run['start_index'] += len(cur_incidents_id)
-        else:  # flush old incidents ID
-            last_run = {
-                'create_time': cur_last_incident_create_time,
-                'last_incidents': cur_incidents_id,
-                'start_index': 0
-            }
-
-    return last_run
+    cur_last_incident_create_time = cur_last_incident.get('incidentFirstSeen')
+    cur_incidents_id: list = [incident.get('incidentId') for incident in formatted_incidents]
+    prev_last_incident_create_time = last_run.get('create_time')
+    if cur_last_incident_create_time == prev_last_incident_create_time and prev_last_incident_create_time:  # stack the incidents ID.
+        last_run['last_incidents'] += cur_incidents_id
+        last_run['start_index'] += len(cur_incidents_id)
+        demisto.setLastRun(copy.deepcopy(last_run))
+    else:  # flush old incidents ID
+        last_run = {
+            'create_time': cur_last_incident_create_time,
+            'last_incidents': cur_incidents_id,
+            'start_index': 0
+        }
+        demisto.setLastRun(copy.deepcopy(last_run))
 
 
 def main() -> None:
