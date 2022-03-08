@@ -431,7 +431,9 @@ def prepare():
                 AUTH_METHOD_STR = 'Basic'
             VERSION_STR = '2016'
         else:
-            if MANUAL_USERNAME:
+            if not MANUAL_USERNAME:
+                return_error('DOMAIN\USERNAME is required for exchange on-premise.')
+            else:
                 USERNAME = MANUAL_USERNAME
             if not AUTH_METHOD_STR:
                 AUTH_METHOD_STR = 'ntlm'
