@@ -8,7 +8,6 @@ import dateparser
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -94,7 +93,7 @@ SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additi
              'problem_id', 'reassignment_count', 'reopen_count', 'resolved_at', 'resolved_by', 'rfc',
              'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'sys_updated_by', 'sys_updated_on',
              'time_worked', 'title', 'type', 'urgency', 'user_input', 'watch_list', 'work_end', 'work_notes',
-             'work_notes_list', 'work_start']
+             'work_notes_list', 'work_start', 'business_criticality', 'risk_score']
 
 SIR_OUT_FIELDS = ('description', 'short_description', 'sla_due', 'business_criticality',
                   'priority', 'state', 'urgency', 'severity', 'closed_at',
@@ -108,7 +107,6 @@ DEFAULT_RECORD_FIELDS = {
     'sys_created_by': 'CreatedBy',
     'sys_created_on': 'CreatedAt'
 }
-
 
 MIRROR_DIRECTION = {
     'None': None,
@@ -556,7 +554,8 @@ class Client(BaseClient):
         else:
             self._auth = (self._username, self._password)
 
-    def generic_request(self, method: str, path: str, body: Optional[Dict] = None, headers: Optional[Dict] = None, sc_api: bool = False, cr_api: bool = False):
+    def generic_request(self, method: str, path: str, body: Optional[Dict] = None, headers: Optional[Dict] = None,
+                        sc_api: bool = False, cr_api: bool = False):
         """Generic request to ServiceNow api.
 
         Args:
@@ -761,7 +760,7 @@ class Client(BaseClient):
             else:
                 file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
                                         proxies=self._proxies)
-                                    
+
             if file_res is not None:
                 entries.append(fileResult(link[1], file_res.content))
 
@@ -2156,7 +2155,6 @@ def check_assigned_to_field(client: Client, assigned_to: dict) -> Optional[str]:
     return ''
 
 
-
 def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> Union[List[Dict[str, Any]], str]:
     """
     get-remote-data command: Returns an updated incident and entries
@@ -2221,7 +2219,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     sys_param_offset = args.get('offset', client.sys_param_offset)
 
     sys_param_query = f'element_id={ticket_id}^sys_created_on>' \
-        f'{datetime.fromtimestamp(last_update)}^element=comments^ORelement=work_notes'
+                      f'{datetime.fromtimestamp(last_update)}^element=comments^ORelement=work_notes'
 
     comments_result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
     demisto.debug(f'Comments result is {comments_result}')
@@ -2303,7 +2301,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
         # Closing sc_type ticket. This ticket type can be closed only when changing the ticket state.
-        if (ticket_type == 'sc_task' or ticket_type == 'sc_req_item')\
+        if (ticket_type == 'sc_task' or ticket_type == 'sc_req_item') \
                 and parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
             parsed_args.data['state'] = '3'
         # Closing incident ticket.
@@ -2598,7 +2596,7 @@ def generic_api_call_command(client: Client, args: Dict) -> Tuple[Any, Dict[Any,
             outputs=resp,
             readable_output=human_readable,
         )
-    
+
     return f"Request for {method} method is not successful"
 
 
@@ -2735,7 +2733,7 @@ def main():
         else:
             raise
 
-from ServiceNowApiModule import *
+from ServiceNowApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
