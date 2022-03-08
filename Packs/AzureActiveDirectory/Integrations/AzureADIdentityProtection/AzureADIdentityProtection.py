@@ -305,7 +305,7 @@ def get_last_fetch_time(last_run, params):
 def build_filter(last_fetch, params):
     start_time_enforcing_filter = f"detectedDateTime gt {last_fetch}Z"
     user_supplied_filter = params.get('fetch_filter_expression', '')
-    query_filter = f'{user_supplied_filter} and {start_time_enforcing_filter}' if user_supplied_filter \
+    query_filter = f'({user_supplied_filter}) and {start_time_enforcing_filter}' if user_supplied_filter \
         else start_time_enforcing_filter
     demisto.debug(f'[AzureADIdentityProtection] query_filter: {query_filter}Z')
     return query_filter
