@@ -47,7 +47,7 @@ def register_module_line(module_name, start_end, line, wrapper=0):
         Register a module in the line mapping for the traceback line correction algorithm.
 
         :type module_name: ``str``
-        :param module_name: The name of the module. (required)
+        :pasaram module_name: The name of the module. (required)
 
         :type start_end: ``str``
         :param start_end: Whether to register the line as the start or the end of the module.
