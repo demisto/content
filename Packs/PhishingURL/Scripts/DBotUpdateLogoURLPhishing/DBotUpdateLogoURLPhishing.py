@@ -8,7 +8,7 @@ import dill
 MAJOR_VERSION = 0
 
 URL_PHISHING_MODEL_NAME = "url_phishing_model"
-MSG_EMPTY_NAME_OR_URL = "Empty logo name or URL"
+MSG_EMPTY_NAME_OR_URL = "Empty logo name or logo image ID"
 MINOR_DEFAULT_VERSION = 0
 OOB_VERSION_INFO_KEY = 'oob_version'
 OOB_MAJOR_VERSION_INFO_KEY = 'major'
@@ -127,18 +127,23 @@ def load_model_from_docker(path=OUT_OF_THE_BOX_MODEL_PATH):
 
 def main():
     msg_list = []
-    logo_url = demisto.args().get('logoImageURL', '')
+    logo_image_id = demisto.args().get('logo_image_id', '')
     logo_name = demisto.args().get('logoName', '')
     debug = demisto.args().get('debug', 'False') == 'True'
 
-    if not logo_url or not logo_name:
+    if not logo_image_id or not logo_name:
         return_error(MSG_EMPTY_NAME_OR_URL)
+
+    res = demisto.getFilePath(logo_image_id)
+    path = res['path']
+    with open(path, 'rb') as file:
+        logo_content = file.read()
 
     exist, demisto_major_version, demisto_minor_version = oob_model_exists_and_updated()
 
     if not exist or (demisto_major_version < MAJOR_VERSION and demisto_minor_version == MINOR_DEFAULT_VERSION):
         model = load_model_from_docker()
-        success, msg = model.add_new_logo(logo_name, logo_url)
+        success, msg = model.add_new_logo(logo_name, logo_content)
         msg_list.append(msg)
         if success:
             minor, model = get_minor_version_upgrade(model)
@@ -149,7 +154,7 @@ def main():
 
     elif (demisto_major_version == MAJOR_VERSION):
         model = load_demisto_model()
-        success, msg = model.add_new_logo(logo_name, logo_url)
+        success, msg = model.add_new_logo(logo_name, logo_content)
         msg_list.append(msg)
         if success:
             minor, model = get_minor_version_upgrade(model)
@@ -163,7 +168,7 @@ def main():
         model_demisto = load_demisto_model()
         model_docker.logos_dict = model_demisto.logos_dict
         msg_list.append(MSG_TRANSFER_LOGO)
-        success, msg = model_docker.add_new_logo(logo_name, logo_url)
+        success, msg = model_docker.add_new_logo(logo_name, logo_content)
         msg_list.append(msg)
         if success:
             model_docker.minor = demisto_minor_version

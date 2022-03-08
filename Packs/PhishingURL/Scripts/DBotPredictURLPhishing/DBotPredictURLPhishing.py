@@ -100,6 +100,9 @@ KEY_HR_URL_SCORE = "URL severity score (from 0 to 1)"
 KEY_CONTENT_SUMMARY_URL = 'URL'
 KEY_CONTENT_SUMMARY_FINAL_VERDICT = 'FinalVerdict'
 
+KEY_IMAGE_RASTERIZE = "image_b64"
+KEY_IMAGE_HTML = "html"
+
 KEY_FINAL_VERDICT = "Final Verdict"
 
 WEIGHT_HEURISTIC = {DOMAIN_AGE_KEY: 3, MODEL_KEY_LOGIN_FORM: 1, MODEL_KEY_SEO: 1,
@@ -247,8 +250,8 @@ def create_X_pred(output_rasterize: Dict, url: str) -> pd.DataFrame:
     :param url: url to examine
     :return: pd.DataFrame
     """
-    website64 = output_rasterize.get('image_b64', None)
-    html = output_rasterize.get('html', None)
+    website64 = output_rasterize.get(KEY_IMAGE_RASTERIZE, None)
+    html = output_rasterize.get(KEY_IMAGE_HTML, None)
     X_pred = pd.DataFrame(columns=['name', 'image', 'html'])
     X_pred.loc[0] = [url, website64, html]
     return X_pred
@@ -389,7 +392,7 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
     if pred_json:
         image = pred_json[MODEL_KEY_LOGO_IMAGE_BYTES]
         if not image:
-            image = image_from_base64_to_bytes(output_rasterize.get('image_b64', None))
+            image = image_from_base64_to_bytes(output_rasterize.get(KEY_IMAGE_RASTERIZE, None))
         res = fileResult(filename='Logo detection engine', data=image)
         res['Type'] = entryTypes['image']
         if pred_json[MODEL_KEY_LOGO_FOUND]:
@@ -530,7 +533,7 @@ def get_prediction_single_url(model, url, force_model, debug):
     res = demisto.executeCommand('rasterize', {'type': 'json',
                                                'url': url,
                                                })
-    if 'image_b64' not in res[0]['Contents'].keys() or 'html' not in res[0]['Contents'].keys():
+    if KEY_IMAGE_RASTERIZE not in res[0]['Contents'].keys() or KEY_IMAGE_HTML not in res[0]['Contents'].keys():
         raise DemistoException(MSG_NEED_TO_UPDATE_RASTERIZE)
     if len(res) > 0:
         output_rasterize = res[0]['Contents']
