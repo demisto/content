@@ -3241,7 +3241,7 @@ script:
       description: The extension of the file.
       type: String
   - arguments:
-      - default: yes
+      - default: true
         description: The incident's id to get detections for.
         isArray: false
         name: incident_id
