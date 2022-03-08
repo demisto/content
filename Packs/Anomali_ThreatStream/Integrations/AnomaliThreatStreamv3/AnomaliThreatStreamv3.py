@@ -65,6 +65,7 @@ DEFAULT_INDICATOR_MAPPING = {
     'org': 'Organization',
     'source': 'Source',
     'tags': 'Tags',
+    'itype': 'IType',
 }
 
 FILE_INDICATOR_MAPPING = {
@@ -73,7 +74,8 @@ FILE_INDICATOR_MAPPING = {
     'status': 'Status',
     'source': 'Source',
     'subtype': 'Type',
-    'tags': 'Tags'
+    'tags': 'Tags',
+    'itype': 'IType',
 }
 
 
