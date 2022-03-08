@@ -7,7 +7,7 @@ ignore=RM104
 [file:ArcSightESMv2_image.png]
 ignore=IM111
 
-[Known_words]
+[known_words]
 ArcSight
 ESM
 params
