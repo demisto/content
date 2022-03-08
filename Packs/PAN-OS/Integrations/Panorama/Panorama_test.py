@@ -4,7 +4,8 @@ import pytest
 import xml.etree.ElementTree as ElementTree
 from unittest.mock import patch, MagicMock
 from panos.base import PanDevice
-from panos.panorama import Panorama
+from panos.device import Vsys
+from panos.panorama import Panorama, DeviceGroup, Template
 from panos.firewall import Firewall
 import demistomock as demisto
 from CommonServerPython import DemistoException
@@ -1034,18 +1035,57 @@ def load_xml_root_from_test_file(xml_file: str) -> ElementTree.Element:
     return xml_tree.getroot()
 
 
+MOCK_PANORAMA_SERIAL = "111222334455"
+MOCK_FIREWALL_1_SERIAL = "111111111111111"
+MOCK_FIREWALL_2_SERIAL = "222222222222222"
+MOCK_FIREWALL_3_SERIAL = "333333333333333"
+
 @pytest.fixture
 def mock_firewall():
     mock_firewall = MagicMock(spec=Firewall)
-    mock_firewall.serial = "000111233444"
+    mock_firewall.serial = MOCK_FIREWALL_1_SERIAL
     return mock_firewall
 
 
 @pytest.fixture
 def mock_panorama():
     mock_panorama = MagicMock(spec=Panorama)
-    mock_panorama.serial = "111222334455"
+    mock_panorama.serial = MOCK_PANORAMA_SERIAL
     return mock_panorama
+
+
+def mock_device_groups():
+    mock_device_group = MagicMock(spec=DeviceGroup)
+    mock_device_group.name = "test-dg"
+    return [mock_device_group]
+
+
+def mock_templates():
+    mock_template = MagicMock(spec=Template)
+    mock_template.name = "test-template"
+    return [mock_template]
+
+
+def mock_vsys():
+    mock_vsys = MagicMock(spec=Vsys)
+    mock_vsys.name = "vsys1"
+    return [mock_vsys]
+
+@pytest.fixture
+def mock_topology(mock_panorama, mock_firewall):
+    from Panorama import Topology
+    topology = Topology()
+    topology.panorama_objects = {
+        MOCK_PANORAMA_SERIAL: mock_panorama,
+    }
+    topology.firewall_objects = {
+        MOCK_FIREWALL_1_SERIAL: mock_firewall
+    }
+    topology.ha_active_devices = {
+        MOCK_PANORAMA_SERIAL: mock_panorama,
+        MOCK_FIREWALL_1_SERIAL: mock_firewall
+    }
+    return topology
 
 
 class TestTopology:
@@ -1062,7 +1102,7 @@ class TestTopology:
         topology = Topology()
         topology.add_device_object(mock_firewall)
 
-        assert "000111233444" in topology.firewall_objects
+        assert MOCK_FIREWALL_1_SERIAL in topology.firewall_objects
 
     @patch("Panorama.Topology.get_all_child_firewalls")
     @patch("Panorama.run_op_command")
@@ -1072,9 +1112,9 @@ class TestTopology:
         topology = Topology()
         topology.add_device_object(mock_panorama)
 
-        assert "111222334455" in topology.panorama_objects
-        assert "111222334455" in topology.ha_active_devices
-        assert "111222334455" not in topology.firewall_objects
+        assert MOCK_PANORAMA_SERIAL in topology.panorama_objects
+        assert MOCK_PANORAMA_SERIAL in topology.ha_active_devices
+        assert MOCK_PANORAMA_SERIAL not in topology.firewall_objects
 
     @patch("Panorama.run_op_command")
     def test_get_all_child_firewalls(self, patched_run_op_command, mock_panorama):
@@ -1084,10 +1124,36 @@ class TestTopology:
 
         topology.get_all_child_firewalls(mock_panorama)
         # 222... firewall should be Active, with 111... as it's peer
-        assert "222222222222222" in topology.ha_active_devices
-        assert topology.ha_active_devices.get("222222222222222") == "111111111111111"
+        assert MOCK_FIREWALL_2_SERIAL in topology.ha_active_devices
+        assert topology.ha_active_devices.get(MOCK_FIREWALL_2_SERIAL) == MOCK_FIREWALL_1_SERIAL
 
         # 333... is standalone
-        assert "333333333333333" in topology.ha_active_devices
-        assert topology.ha_active_devices.get("333333333333333") == "STANDALONE"
+        assert MOCK_FIREWALL_3_SERIAL in topology.ha_active_devices
+        assert topology.ha_active_devices.get(MOCK_FIREWALL_3_SERIAL) == "STANDALONE"
 
+    @patch("Panorama.run_op_command")
+    def test_get_active_devices(self, patched_run_op_command, mock_panorama):
+        from Panorama import Topology
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestTopology.SHOW_DEVICES_ALL_XML)
+        topology = Topology()
+        topology.add_device_object(mock_panorama)
+
+        result_list = list(topology.active_devices())
+        # Should be 3; panorama, one active firewall in a pair, and one stanadlone firewall (from panorama_show_devices_all.xml)
+        assert len(result_list) == 3
+
+        # Same as above by try filtering by serial number
+        result_list = list(topology.active_devices(filter_str=MOCK_FIREWALL_3_SERIAL))
+        assert len(result_list) == 1
+
+    @patch("Panorama.Template.refreshall", return_value=mock_templates())
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_get_containers(self, _, __, ___, mock_panorama):
+        from Panorama import Topology
+        topology = Topology()
+        topology.add_device_object(mock_panorama)
+        result = topology.get_all_object_containers()
+
+        # Because it's panorama, should be; [shared, device-group, template]
+        assert len(result) == 3

@@ -7827,6 +7827,7 @@ class Topology:
             device_retrieval_func = self.active_top_level_devices
 
         for device in device_retrieval_func(device_filter_string):
+            print(device)
             device_groups = DeviceGroup.refreshall(device)
             for device_group in device_groups:
                 containers.append((device, device_group))
