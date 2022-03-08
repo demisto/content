@@ -3802,9 +3802,9 @@ def test_set_xsoar_detection_entries():
     pass
 
 
-keeping_delta = ({'incident_type': 'incident'}, {}, [], {'incident_type': 'incident'})
+keeping_updated_object = ({'incident_type': 'incident'}, {}, [], {'incident_type': 'incident'})
 
-keeping_empty_delta = ({}, {}, [], {})
+keeping_empty_updated_object = ({}, {}, [], {})
 
 no_nested_fields = ({'incident_type': 'incident'}, response_incident, ['state', 'status', 'tags'],
                     {'incident_type': 'incident', 'state': 'closed', 'status': 20, 'tags': ['Objective/Keep Access']})
@@ -3827,24 +3827,24 @@ fields_nested_all_options = ({'incident_type': 'detection'}, response_detection,
                               'behaviors.technique': 'Malicious File', 'device.hostname': 'FALCON-CROWDSTR'})
 
 
-@pytest.mark.parametrize('delta, mirrored_data, mirroring_fields, output',
-                         [keeping_delta, keeping_empty_delta, no_nested_fields, fields_not_existing, field_nested_dict_in_list,
-                          field_nested_in_dict, fields_nested_all_options])
-def test_set_delta(delta, mirrored_data, mirroring_fields, output):
+@pytest.mark.parametrize('updated_object, mirrored_data, mirroring_fields, output',
+                         [keeping_updated_object, keeping_empty_updated_object, no_nested_fields, fields_not_existing,
+                          field_nested_dict_in_list, field_nested_in_dict, fields_nested_all_options])
+def test_set_updated_object(updated_object, mirrored_data, mirroring_fields, output):
     """
     Given:
-        get-remote-data command runs and determines what the delta is
+        get-remote-data command runs and determines what the updated object is
 
     When:
         get-remote-data command runs when mirroring in
 
     Then:
-        The delta is set correctly, also for nested fields
+        The updated object is set correctly, also for nested fields
     """
-    from CrowdStrikeFalcon import set_delta
+    from CrowdStrikeFalcon import set_updated_object
 
-    set_delta(delta, mirrored_data, mirroring_fields)
-    assert delta == output
+    set_updated_object(updated_object, mirrored_data, mirroring_fields)
+    assert updated_object == output
 
 
 def test_get_modified_remote_data_command():

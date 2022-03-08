@@ -1646,24 +1646,24 @@ def get_remote_data_command(args: Dict[str, Any]):
         incident_type = find_incident_type(remote_incident_id)
 
         if incident_type == IncidentType.INCIDENT:
-            mirrored_data, delta = get_remote_incident_data(remote_incident_id)
-            if delta:
-                demisto.debug(f'Update incident {remote_incident_id} with fields: {delta}')
-                set_xsoar_incident_entries(delta, entries, remote_incident_id)  # sets in place
+            mirrored_data, updated_object = get_remote_incident_data(remote_incident_id)
+            if updated_object:
+                demisto.debug(f'Update incident {remote_incident_id} with fields: {updated_object}')
+                set_xsoar_incident_entries(updated_object, entries, remote_incident_id)  # sets in place
 
         elif incident_type == IncidentType.DETECTION:
-            mirrored_data, delta = get_remote_detection_data(remote_incident_id)
-            if delta:
-                demisto.debug(f'Update detection {remote_incident_id} with fields: {delta}')
-                set_xsoar_detection_entries(delta, entries, remote_incident_id)  # sets in place
+            mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
+            if updated_object:
+                demisto.debug(f'Update detection {remote_incident_id} with fields: {updated_object}')
+                set_xsoar_detection_entries(updated_object, entries, remote_incident_id)  # sets in place
 
         else:
             raise Exception(f'Executed get-remote-data command with undefined id: {remote_incident_id}')
 
-        if not delta:
+        if not updated_object:
             demisto.debug(f'No delta was found for detection {remote_incident_id}.')
 
-        return GetRemoteDataResponse(mirrored_object=delta, entries=entries)
+        return GetRemoteDataResponse(mirrored_object=updated_object, entries=entries)
 
     except Exception as e:
         demisto.debug(f"Error in CrowdStrike Falcon incoming mirror for incident or detection: {remote_incident_id}\n"
@@ -1690,10 +1690,10 @@ def get_remote_incident_data(remote_incident_id: str):
     if 'status' in mirrored_data:
         mirrored_data['status'] = STATUS_NUM_TO_TEXT.get(int(str(mirrored_data.get('status'))))
 
-    delta: Dict[str, Any] = {'incident_type': 'incident'}
-    set_delta(delta, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
+    updated_object: Dict[str, Any] = {'incident_type': 'incident'}
+    set_updated_object(updated_object, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
 
-    return mirrored_data, delta
+    return mirrored_data, updated_object
 
 
 def get_remote_detection_data(remote_incident_id: str):
@@ -1702,25 +1702,25 @@ def get_remote_detection_data(remote_incident_id: str):
 
     mirrored_data['severity'] = severity_string_to_int(mirrored_data.get('max_severity_displayname'))
 
-    delta: Dict[str, Any] = {'incident_type': 'detection'}
-    set_delta(delta, mirrored_data, CS_FALCON_DETECTION_INCOMING_ARGS)
+    updated_object: Dict[str, Any] = {'incident_type': 'detection'}
+    set_updated_object(updated_object, mirrored_data, CS_FALCON_DETECTION_INCOMING_ARGS)
 
-    return mirrored_data, delta
+    return mirrored_data, updated_object
 
 
-def set_xsoar_incident_entries(delta, entries, remote_incident_id):
-    if (delta.get('state') == 'closed' or delta.get('status') == 'Closed') and demisto.params().get('close_incident'):
+def set_xsoar_incident_entries(updated_object, entries, remote_incident_id):
+    if (updated_object.get('state') == 'closed' or updated_object.get('status') == 'Closed') and demisto.params().get('close_incident'):
         close_in_xsoar(entries, remote_incident_id, 'Incident')
 
-    elif delta.get('status') == 'Reopened':
+    elif updated_object.get('status') == 'Reopened':
         reopen_in_xsoar(entries, remote_incident_id, 'Incident')
 
 
-def set_xsoar_detection_entries(delta, entries, remote_incident_id):
-    if delta.get('status') == 'closed' and demisto.params().get('close_incident'):
+def set_xsoar_detection_entries(updated_object, entries, remote_incident_id):
+    if updated_object.get('status') == 'closed' and demisto.params().get('close_incident'):
         close_in_xsoar(entries, remote_incident_id, 'Detection')
 
-    elif delta.get('status') == 'reopened':
+    elif updated_object.get('status') == 'reopened':
         reopen_in_xsoar(entries, remote_incident_id, 'Detection')
 
 
@@ -1747,21 +1747,21 @@ def reopen_in_xsoar(entries, remote_incident_id, incident_type_name: str):
     })
 
 
-def set_delta(delta: Dict[str, Any], mirrored_data, mirroring_fields):
+def set_updated_object(updated_object: Dict[str, Any], mirrored_data, mirroring_fields):
     """
-    Sets the delta (in place) for the incident or detection we want to mirror in, from the mirrored data, according to the
-    mirroring fields. In the mirrored data, the mirroring fields might be nested in a dict or in a dict inside a list (if so,
+    Sets the updated object (in place) for the incident or detection we want to mirror in, from the mirrored data, according to
+    the mirroring fields. In the mirrored data, the mirroring fields might be nested in a dict or in a dict inside a list (if so,
     their name will have a dot in it).
     Note that the fields that we mirror right now may have only one dot in them, so we only deal with this case.
 
-    :param delta: The dictionary to set its values, so it will hold the fields we want to mirror in, with their values.
+    :param updated_object: The dictionary to set its values, so it will hold the fields we want to mirror in, with their values.
     :param mirrored_data: The data of the incident or detection we want to mirror in.
     :param mirroring_fields: The mirroring fields that we want to mirror in, given according to whether we want to mirror an
         incident or a detection.
     """
     for field in mirroring_fields:
         if mirrored_data.get(field):
-            delta[field] = mirrored_data.get(field)
+            updated_object[field] = mirrored_data.get(field)
 
         # if the field is not in mirrored_data, it might be a nested field - that has a . in its name
         elif '.' in field:
@@ -1772,13 +1772,13 @@ def set_delta(delta: Dict[str, Any], mirrored_data, mirroring_fields):
                 # if it is a list, it should hold a dictionary in it because it is a json structure
                 for nested_field in nested_mirrored_data:
                     if nested_field.get(field_name_parts[1]):
-                        delta[field] = nested_field.get(field_name_parts[1])
+                        updated_object[field] = nested_field.get(field_name_parts[1])
                         # finding the field in the first time it is satisfying
                         break
 
             elif isinstance(nested_mirrored_data, dict):
                 if nested_mirrored_data.get(field_name_parts[1]):
-                    delta[field] = nested_mirrored_data.get(field_name_parts[1])
+                    updated_object[field] = nested_mirrored_data.get(field_name_parts[1])
 
 
 def get_modified_remote_data_command(args: Dict[str, Any]):
