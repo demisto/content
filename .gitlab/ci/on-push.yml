@@ -282,7 +282,7 @@ slack-notify-nightly-build:
     - !reference [.download-demisto-conf]
     - |
       # workaround for the hard-coded value in the sdk
-      cp "$ARTIFACTS_FOLDER/env_results.json" "./artifacts/env_results.json"  # todo: need to change this file to xsiam instances
+#      cp "$ARTIFACTS_FOLDER/env_results.json" "./artifacts/env_results.json"  # todo: need to change this file to xsiam instances
       cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
 
 # todo: uncomment, what is XSOAR_ARTIFACTS_GCP_KEY ?
