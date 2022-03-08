@@ -1566,7 +1566,7 @@ script:
       type: String
     - contextPath: CarbonBlackEDR.Alert.Results.os_type
       description: The operating system type of the computer for this process; one
-        of windows, linux, osx.
+        of Windows, Linux, OSX.
       type: String
     - contextPath: CarbonBlackEDR.Alert.Results.childproc_count
       description: The count of processes launched by this process.
@@ -1714,7 +1714,7 @@ script:
       type: Number
     - contextPath: CarbonBlackEDR.BinaryMetadata.os_type
       description: The operating system type of the computer for this process; one
-        of windows, linux, osx.
+        of Windows, Linux, OSX.
       type: String
     - contextPath: CarbonBlackEDR.BinaryMetadata.file_desc
       description: |-
