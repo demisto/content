@@ -17,7 +17,7 @@ USE_PROXY = demisto.params().get('proxy', True)
 API_KEY = demisto.params()['APIKey']
 SERVICE_KEY = demisto.params()['ServiceKey']
 FETCH_INTERVAL = demisto.params()['FetchInterval']
-DEFAULT_REQUESTOR = demisto.params()['DefaultRequestor']
+DEFAULT_REQUESTOR = demisto.params().get('DefaultRequestor', '')
 
 SERVER_URL = 'https://api.pagerduty.com/'
 CREATE_EVENT_URL = 'https://events.pagerduty.com/v2/enqueue'
