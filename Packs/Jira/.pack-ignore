@@ -15,7 +15,3 @@ ignore=BA101
 
 [file:playbook-Create_Jira_Issue.yml]
 ignore=PB106
-
-[known_words]
-Atlassian
-Jira
