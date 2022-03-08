@@ -27,7 +27,7 @@ class Client(BaseClient):
         return self._http_request(method="GET", url_suffix=url_suffix, params=data)
 
 
-def connection_module(client: Client) -> str:                                                                         # type: ignore
+def connection_module(client: Client) -> str:                          # type: ignore
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
