@@ -284,6 +284,8 @@ def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetim
         if detection_datetime > latest_incident_time:
             latest_incident_time = detection_datetime
 
+    demisto.debug('This is the incidents: ', {'Incidents': incidents})
+
     return incidents, latest_incident_time
 
 
@@ -342,6 +344,8 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
         user_id=params.get('fetch_user_id', ''),
         user_principal_name=params.get('fetch_user_principal_name', ''),
     )
+
+    demisto.debug('This is the response: ', risk_detection_list_raw)
 
     detections: list = risk_detection_list_raw.get('value', [])
 
