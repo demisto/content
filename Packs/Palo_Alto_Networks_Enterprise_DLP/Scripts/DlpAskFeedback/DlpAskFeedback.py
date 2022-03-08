@@ -101,7 +101,7 @@ def main():
     }
 
     reply = "Thank you for your response."
-    blocks = json.dumps(create_blocks(message, entitlement_string,  reply))
+    blocks = json.dumps(create_blocks(message, entitlement_string, reply))
     args['blocks'] = json.dumps({
         'blocks': blocks,
         'entitlement': entitlement_string,

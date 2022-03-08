@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import entryTypes
-import json
 import dateparser
 import datetime
 import DlpAskFeedback
