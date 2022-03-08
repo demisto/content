@@ -464,29 +464,69 @@ def filter_dictionary(dictionary: dict, fields_to_keep: Optional[tuple], sort_by
 def file_command(client: Client, **args: dict) -> list[CommandResults]:
     file_hashes = argToList(args.get('file', ''))
     report_ids = client.find_sandbox_reports(hashes=file_hashes).get('resources', [])
-    command_results: list[CommandResults] = []
 
     resources_fields = ('verdict',)
     sandbox_fields = ('filetype', 'file_size', 'sha256', 'threat_score')
-    report_to_results = {}
 
+    report_to_results: dict[str, RawCommandResults] = {}
     for report_id in report_ids:
         response = client.get_full_report(report_id)
-        report_to_results[report_id] = parse_outputs(response,
-                                                     reliability=client.reliability,
-                                                     resources_fields=resources_fields,
-                                                     sandbox_fields=sandbox_fields)
+        report_to_results[report_id] = parse_outputs(response, reliability=client.reliability,
+                                                     resources_fields=resources_fields, sandbox_fields=sandbox_fields)
+
+    command_results = parse_file_results(report_to_results)
+
+    if not command_results:
+        command_results = [
+            CommandResults(
+                readable_output=f'There are no results yet for the any of the {file_hashes=}, '
+                                'analysis might not have been completed. '
+                                'Please wait to download the report.\n'
+                                'You can use cs-fx-get-analysis-status to check the status '
+                                'of a sandbox analysis.'
+            )
+        ]
+    return command_results
+
+
+def parse_file_results(report_to_results: dict[str, RawCommandResults]) -> list[CommandResults]:
+    """
+    File results may be returned from multiple reports and include various data.
+    1. The output used uses the highest verdict and threat score.
+    2. The indicator used is the one with the highest DBotScore.
+
+    :param report_to_results: a dictionary of each
+    :return: a list of CommandResults, with only one value per SHA256, using the most suitable data available.
+    """
+    command_results = []
+    # Only one output per SHA256
     results = tuple(report_to_results.values())
-    max_indicators: dict[str, Common.File] = max_indicators_per_hash(results)
-    max_outputs = max_output_per_hash(results)
+
+    max_indicators: dict[str, Common.File] = find_suitable_hash_indicator(results)
+    max_outputs: dict[str, dict] = find_suitable_hash_output(results)
+
+    added_hashes = set()
 
     for report_id, result in report_to_results.items():
-        sha256 = result.output.get('sha256')
-        if result.output and sha256 and sha256 in max_outputs:
-            result.output = max_outputs.get(sha256)  # todo test
+        if result.output:
+            sha256 = result.output.get('sha256')
+            if not sha256:  # todo what values can we have here? odd edge case
+                demisto.debug(f'unexpected result for {report_id=}: '
+                              f'output is not empty but SHA256 could not be found.\n\n'
+                              f'{result.output=}\n'
+                              f'{result.response=}\n'
+                              f'{result.indicator=}\n\n')
+                continue
+            if sha256 in added_hashes:  # most suitable result has already been added
+                continue
+            if result.output != max_outputs[sha256]:  # only use the max output
+                continue
+
             result.indicator = max_indicators.get(sha256)
             readable_output = tableToMarkdown("CrowdStrike Falcon X response:", result.output)
-        else:
+            added_hashes.add(sha256)
+
+        else:  # no output for this report_id
             readable_output = f'There are no results yet for {report_id=}, ' \
                               f'its analysis might not have been completed. ' \
                               'Please wait to download the report.\n' \
@@ -502,26 +542,14 @@ def file_command(client: Client, **args: dict) -> list[CommandResults]:
                 indicator=result.indicator
             )
         )
-
-    if not command_results:
-        command_results = [
-            CommandResults(
-                readable_output=f'There are no results yet for the any of the {file_hashes=}, '
-                                'analysis might not have been completed. '
-                                'Please wait to download the report.\n'
-                                'You can use cs-fx-get-analysis-status to check the status '
-                                'of a sandbox analysis.'
-            )
-        ]
     return command_results
 
 
-def max_output_per_hash(results: tuple[RawCommandResults]) -> dict[str, dict]:
+def find_suitable_hash_output(results: tuple[RawCommandResults]) -> dict[str, dict]:
     max_outputs: dict[str, dict] = {}
-    NA = -9  # used for comparing
 
-    for result in filter(None, results):
-        if not result.output:  # nothing to compare
+    for result in filter(None, results):  # filters out None results
+        if not result.output:  # no output to compare
             continue
         if sha256 := result.output.get('sha256') is None:  # must have SHA256 to compare
             continue
@@ -538,21 +566,21 @@ def max_output_per_hash(results: tuple[RawCommandResults]) -> dict[str, dict]:
 
         # comparing temp_max and output
         new_max = {'sha256': sha256,
-                   'file_size': temp_max.get('file_size') or output.get('file_size')}  # just in case
-
+                   'file_size': temp_max.get('file_size') or output.get('file_size')  # just in case
+                   }
         # take the one that's more severe. if both are missing, threat_score is omitted from the result.
-        threat_score = max(
-            temp_max.get('file_size', NA),
-            output.get('file_size', NA)
-        )
-        if threat_score != NA:
+        if threat_score := max(
+                temp_max.get('file_size', -1),
+                output.get('file_size', -1)
+        ) != -1:
             new_max['threat_score'] = threat_score
 
-        # take the one that's more severe.
-        new_max['verdict'] = max(
-            DBOT_SCORE_DICT.get(temp_max.get('verdict'), Common.DBotScore.NONE),
-            DBOT_SCORE_DICT.get(output.get('verdict'), Common.DBotScore.NONE)
-        )
+        if 'verdict' in temp_max or 'verdict' in output:
+            # take the one that's more severe.
+            new_max['verdict'] = max(
+                DBOT_SCORE_DICT.get(temp_max.get('verdict'), Common.DBotScore.NONE),
+                DBOT_SCORE_DICT.get(output.get('verdict'), Common.DBotScore.NONE)
+            )
 
         # done building new_max
         max_outputs[sha256] = new_max
@@ -635,15 +663,17 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
         if signature and not any(signature.to_context().values()):  # if all values are empty
             signature = None
 
-        return Common.File(dbot_score=dbot,
-                           name=sandbox.get('submit_name'),
-                           sha256=sha256,
-                           size=sandbox.get('file_size'),
-                           file_type=sandbox.get('file_type'),
-                           company=info.get('CompanyName'),
-                           product_name=info.get('ProductName'),
-                           signature=signature,
-                           relationships=relationships or None)
+        return Common.File(
+            dbot_score=dbot,
+            name=sandbox.get('submit_name'),
+            sha256=sha256,
+            size=sandbox.get('file_size'),
+            file_type=sandbox.get('file_type'),
+            company=info.get('CompanyName'),
+            product_name=info.get('ProductName'),
+            signature=signature,
+            relationships=relationships or None
+        )
 
 
 def parse_indicator_relationships(sandbox: dict, indicator_value: str, reliability: str) -> list[EntityRelationship]:
@@ -909,7 +939,7 @@ def get_full_report_command(client: Client, ids: list[str], extended_data: str) 
     return command_results, is_command_finished
 
 
-def max_indicators_per_hash(results: tuple[RawCommandResults]) -> dict[str, Common.File]:
+def find_suitable_hash_indicator(results: tuple[RawCommandResults]) -> dict[str, Common.File]:
     """
     :param results: raw results from a command
     :return: dict mapping a SHA256 to the indicator with the highest DBotScore
