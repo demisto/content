@@ -1,7 +1,5 @@
 id: F5 LTM - Wait for connections to drop
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: F5 LTM - Wait for connections to drop
 description: A playbook to wait for connections to a node to drop to zero.
 starttaskid: "0"
@@ -16,7 +14,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -42,7 +39,6 @@ tasks:
     task:
       id: 71a938a4-a0c1-4877-8cd1-0912891be1cc
       version: -1
-      description: ""
       name: is F5 LTM enabled?
       type: condition
       iscommand: false
@@ -105,13 +101,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 300,
-          "y": 880
+          "x": 310,
+          "y": 750
         }
       }
     note: false
@@ -123,10 +118,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 5448cc43-e9b4-4679-88c0-51d2320f52b0
+    taskid: 7a1a0ccb-8ce4-4bfd-86d4-13617e174a0c
     type: playbook
     task:
-      id: 5448cc43-e9b4-4679-88c0-51d2320f52b0
+      id: 7a1a0ccb-8ce4-4bfd-86d4-13617e174a0c
       version: -1
       name: GenericPolling
       description: |-
@@ -145,6 +140,11 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: partition
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: inputs.Partition_Name
       Ids:
         complex:
           root: F5.LTM.Nodes
@@ -168,8 +168,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 590,
-          "y": 680
+          "x": 580,
+          "y": 580
         }
       }
     note: false
@@ -181,10 +181,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 55854c26-2a40-4620-8c28-a2749d7894ee
+    taskid: 88b54972-77ec-4890-86f7-388b9a63bea5
     type: regular
     task:
-      id: 55854c26-2a40-4620-8c28-a2749d7894ee
+      id: 88b54972-77ec-4890-86f7-388b9a63bea5
       version: -1
       name: Get Node Stats
       description: Get Node Stats
@@ -199,13 +199,17 @@ tasks:
       node:
         simple: ${inputs.node}
       node_name:
-        simple: ${inputs.node}
+        complex:
+          root: inputs.Node_Name
+      partition:
+        complex:
+          root: inputs.Partition_Name
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 590,
-          "y": 510
+          "x": 580,
+          "y": 400
         }
       }
     note: false
@@ -220,31 +224,37 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 895,
-        "width": 670,
-        "x": 300,
+        "height": 765,
+        "width": 650,
+        "x": 310,
         "y": 50
       }
     }
   }
 inputs:
-- key: node
+- key: Node_Name
   value: {}
   required: true
-  description: Node to check
-  playbookInputQuery:
+  description: Node name to check.
+  playbookInputQuery: null
 - key: Interval
   value:
     simple: "1"
   required: false
-  description: Polling frequency - how often the polling command should run (in minutes)
-  playbookInputQuery:
+  description: Polling frequency - how often the polling command should run (in minutes).
+  playbookInputQuery: null
 - key: Timeout
   value:
     simple: "15"
   required: false
   description: How much time (in minutes) to wait before a timeout occurs.
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: Partition_Name
+  value:
+    simple: Common
+  required: false
+  description: Configuration partition name.
+  playbookInputQuery: null
 outputs:
 - contextPath: F5.LTM.Nodes.stats.serverside.curConns.value
   description: The current connections of the Node
@@ -252,6 +262,7 @@ outputs:
   description: The node name
 - contextPath: F5.LTM.Nodes.stats.sessionStatus.description
   description: The node status
+sourceplaybookid: Launch Job - Ansible Tower
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
