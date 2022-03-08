@@ -3695,27 +3695,29 @@ detections = {'resources': [
 ]}
 
 DETECTION_FOR_INCIDENT_CASES = [
-    (detections, ['a', 'b'],
-     [
-         {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_1',
-          'detection_ids': ['example_detection']},
-         {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_2',
-          'detection_ids': ['example_detection2']}],
-     [
-         {'behavior_id': 'example_behavior_1',
-          'detection_ids': ['example_detection'],
-          'incident_id': 'example_incident_id',
-          'some_field': 'some_example'},
-         {'behavior_id': 'example_behavior_2',
-          'detection_ids': ['example_detection2'],
-          'incident_id': 'example_incident_id',
-          'some_field': 'some_example2'}
-     ],
-     'CrowdStrike.IncidentDetection',
-     'incident_id',
-     '### Detection For Incident\n|behavior_id|detection_ids|incident_id|\n|---|---|---|'
-     '\n| example_behavior_1 | example_detection | example_incident_id |\n'
-     '| example_behavior_2 | example_detection2 | example_incident_id |\n'),
+    (
+        detections,
+        ['a', 'b'],
+        [
+            {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_1',
+             'detection_ids': ['example_detection']},
+            {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_2',
+             'detection_ids': ['example_detection2']}],
+        [
+            {'behavior_id': 'example_behavior_1',
+             'detection_ids': ['example_detection'],
+             'incident_id': 'example_incident_id',
+             'some_field': 'some_example'},
+            {'behavior_id': 'example_behavior_2',
+             'detection_ids': ['example_detection2'],
+             'incident_id': 'example_incident_id',
+             'some_field': 'some_example2'}
+        ],
+        'CrowdStrike.IncidentDetection',
+        'incident_id',
+        '### Detection For Incident\n|behavior_id|detection_ids|incident_id|\n|---|---|---|'
+        '\n| example_behavior_1 | example_detection | example_incident_id |\n'
+        '| example_behavior_2 | example_detection2 | example_incident_id |\n'),
     ({'resources': []}, [], None, None, None, None, 'Could not find behaviors for incident zz')
 ]
 
