@@ -789,7 +789,7 @@ def add_responders_to_incident(incident_id, message, user_requests=None, escalat
                 "type": 'escalation_policy_reference'
             }
         })
-    response = http_request('POST', url, data=body)
+    response = http_request('POST', url, json_data=body)
     return extract_responder_request(response)
 
 
