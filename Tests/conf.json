@@ -4411,7 +4411,7 @@
         },
         {
             "playbookID": "Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test",
-            "fromversion": "6.1.0",
+            "fromversion": "6.2.0",
             "timeout": 7000,
             "integrations": [
                 "EWS Mail Sender",
@@ -4439,7 +4439,7 @@
         },
         {
             "playbookID": "Phishing v3 - Get Original Email + Search & Delete - Test",
-            "fromversion": "6.1.0",
+            "fromversion": "6.2.0",
             "timeout": 7000,
             "integrations": [
                 "EWS Mail Sender",
