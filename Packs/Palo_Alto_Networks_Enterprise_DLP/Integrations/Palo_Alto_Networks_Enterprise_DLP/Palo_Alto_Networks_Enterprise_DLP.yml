@@ -25,6 +25,7 @@ configuration:
   name: dlp_regions
   type: 16
   required: false
+  defaultvalue: US,EU,AP
   options:
   - US
   - EU
@@ -37,10 +38,10 @@ configuration:
     the option to request an exemption
 - display: Slack Bot Message
   name: dlp_slack_message
-  defaultvalue: '*We need your feedback* \nYour upload of *$file_name* on Google Drive
-    was blocked due to company policy. This file contains sensitive information which
-    violates *$data_profile_name* policy. \n\n $snippets\n\nPlease confirm if this
-    file contains sencitive information:'
+  defaultvalue: '*We need your feedback* \nYour upload of *$file_name* on *$app_name*
+      was blocked due to company policy. This file contains sensitive information which
+      violates *$data_profile_name* policy. \n\n $snippets\n\nPlease confirm if this
+      file contains sensitive information:'
   type: 12
   required: false
   additionalinfo: The Slack message to send to the user to ask for feedback
@@ -120,6 +121,9 @@ script:
       - name: data_profile_name
         required: true
         description: The data profile name associated with the incident
+      - name: app_name
+        required: true
+        description: The name of the application that performed the upload
       - name: snippets
         description: The snippets of the violation
     outputs:

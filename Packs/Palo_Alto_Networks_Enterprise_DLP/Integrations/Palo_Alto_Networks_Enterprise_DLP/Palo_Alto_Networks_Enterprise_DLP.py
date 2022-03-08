@@ -412,11 +412,13 @@ def exemption_eligible(args: dict, params: dict):
     )
     demisto.results(results.to_context())
 
+
 def slack_bot_message(args: dict, params: dict):
     message_template = params.get('dlp_slack_message')
     template = Template(message_template)
     message = template.substitute(file_name=args.get('file_name'),
                                   data_profile_name=args.get('data_profile_name'),
+                                  app_name=args.get('app_name'),
                                   snippets=args.get('snippets', ""))
     result = {
         'message': message

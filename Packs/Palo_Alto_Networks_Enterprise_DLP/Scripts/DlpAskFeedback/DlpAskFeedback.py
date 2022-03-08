@@ -68,17 +68,19 @@ def main():
     file_name = args.get('file_name')
     data_profile_name = args.get('data_profile_name')
     snippets = args.get('snippets', '')
+    app_name = args.get('app_name')
 
     res = demisto.executeCommand('pan-dlp-slack-message',
                                  {'file_name': file_name,
                                   'data_profile_name': data_profile_name,
+                                  'app_name': app_name,
                                   'snippets': snippets
                                   })
     if isError(res[0]):
         demisto.results(res)
         sys.exit(0)
     demisto.info(f'DLPAskFeedback - received slack message {json.dumps(res)}')
-    message = demisto.get(res[0], 'Contents')
+    message = demisto.get(res[0], 'Contents.message')
     message = message.encode('latin-1', 'backslashreplace').decode('unicode-escape')
 
     lifetime = '1 day'

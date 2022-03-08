@@ -58,8 +58,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 110,
-          "y": 1450
+          "x": 310,
+          "y": 1440
         }
       }
     note: false
@@ -143,8 +143,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1000,
-          "y": 2240
+          "x": 990,
+          "y": 3100
         }
       }
     note: false
@@ -178,52 +178,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -400,
+          "x": -210,
           "y": 1440
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: 5df39ca8-1e5b-4cb1-8e83-dd8e56fef7eb
-    type: regular
-    task:
-      id: 5df39ca8-1e5b-4cb1-8e83-dd8e56fef7eb
-      version: -1
-      name: Ask user for feedback with 2 options
-      description: ""
-      scriptName: DlpAskFeedback
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-    scriptarguments:
-      execution-timeout:
-        simple: "900"
-      feedback_options:
-        simple: True_Positive,False_Positive
-      file_name:
-        simple: ${incident.filename}
-      policy_name:
-        simple: ${incident.dlpdataprofilename}
-      task:
-        simple: "17"
-      user:
-        simple: ${incident.sourceusername}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -170,
-          "y": 920
         }
       }
     note: false
@@ -241,16 +197,13 @@ tasks:
       id: fb9e8768-7884-46c2-840d-e894cfc488d3
       version: -1
       name: Received feedback
-      description: ""
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "18"
-      False_Positive:
       - "12"
-      True_Positive:
+      "Yes":
       - "4"
     separatecontext: false
     sla:
@@ -264,42 +217,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 1240
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: b4035c3e-b25a-4f07-8c8e-664448f64e42
-    type: regular
-    task:
-      id: b4035c3e-b25a-4f07-8c8e-664448f64e42
-      version: -1
-      name: Set feedback to "true positive" and create exemption
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      dlpincidentfeedback:
-        simple: EXCEPTION_REQUESTED
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 540,
-          "y": 1465
+          "x": 70,
+          "y": 1160
         }
       }
     note: false
@@ -311,12 +230,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: f3905774-abba-4988-896d-b018b8358419
+    taskid: 5d2eab81-a9b9-436e-86f1-c281f0d12e27
     type: condition
     task:
-      id: f3905774-abba-4988-896d-b018b8358419
+      id: 5d2eab81-a9b9-436e-86f1-c281f0d12e27
       version: -1
-      name: Save "false positive" feedback failed?
+      name: Save feedback failed?
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
         to check the previous task entries. If array is provided, will return yes
         if one of the entries returned an error.
@@ -326,7 +245,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "11"
+      - "37"
       "yes":
       - "22"
     scriptarguments:
@@ -336,8 +255,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 1785
+          "x": 70,
+          "y": 1795
         }
       }
     note: false
@@ -349,10 +268,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 28846c82-eba3-4715-8f8f-20ab89a63a40
+    taskid: 16ed8716-3138-4089-8064-51235ae7a86d
     type: regular
     task:
-      id: 28846c82-eba3-4715-8f8f-20ab89a63a40
+      id: 16ed8716-3138-4089-8064-51235ae7a86d
       version: -1
       name: 'send-mail '
       description: Send an email
@@ -371,13 +290,13 @@ tasks:
       subject:
         simple: XSOAR Playbook Error
       to:
-        simple: hsue@paloaltonetworks.com
+        simple: dlp-feedback@paloaltonetworks.com
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -250,
-          "y": 1980
+          "x": -580,
+          "y": 2830
         }
       }
     note: false
@@ -429,7 +348,6 @@ tasks:
       id: 4a3bbd9f-7fa3-42c0-872e-a48f48d6583e
       version: -1
       name: User exists on Slack?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -437,7 +355,7 @@ tasks:
       '#default#':
       - "11"
       "yes":
-      - "28"
+      - "33"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -491,51 +409,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 1100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
-    taskid: 16cf7abd-a990-48f1-89f3-2f2940cd58ff
-    type: condition
-    task:
-      id: 16cf7abd-a990-48f1-89f3-2f2940cd58ff
-      version: -1
-      name: Credit Card Data Profile?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "30"
-      "yes":
-      - "16"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsString
-          left:
-            value:
-              simple: incident.dlpdataprofilename
-            iscontext: true
-          right:
-            value:
-              simple: Credit Card
-    view: |-
-      {
-        "position": {
-          "x": 150,
-          "y": 745
+          "x": 70,
+          "y": 970
         }
       }
     note: false
@@ -547,10 +422,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: b3f78016-9c4e-4fdf-8820-6fc0c4187297
+    taskid: abd93cd3-0cdf-4cd4-84f7-bc82f928ff84
     type: regular
     task:
-      id: b3f78016-9c4e-4fdf-8820-6fc0c4187297
+      id: abd93cd3-0cdf-4cd4-84f7-bc82f928ff84
       version: -1
       name: Save feedback to DLP
       description: Update a DLP incident with user feedback
@@ -570,6 +445,7 @@ tasks:
         simple: us
       user_id:
         simple: ${incident.sourceusername}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -585,41 +461,278 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: dba1643e-2715-46c3-8e55-0812aa65a37f
+  "31":
+    id: "31"
+    taskid: 2d9c8b1f-33e3-48b0-872a-ff71cd6e3c53
     type: regular
     task:
-      id: dba1643e-2715-46c3-8e55-0812aa65a37f
+      id: 2d9c8b1f-33e3-48b0-872a-ff71cd6e3c53
       version: -1
-      name: Ask user for feedback with 3 options
-      description: ""
+      name: Close Incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      id:
+        complex:
+          root: incident
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 2860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 6d395e50-702d-4612-8cb4-9d333a9e2bf0
+    type: regular
+    task:
+      id: 6d395e50-702d-4612-8cb4-9d333a9e2bf0
+      version: -1
+      name: Ask user if file contains sensitive info
       scriptName: DlpAskFeedback
       type: regular
       iscommand: false
-      brand: ""
+      brand: SlackV3
     nexttasks:
       '#none#':
       - "27"
     scriptarguments:
-      execution-timeout:
-        simple: "900"
-      feedback_options:
-        simple: True_Positive,False_Positive,Request_Exemption
+      app_name:
+        simple: Office 365
+      data_profile_name:
+        simple: Catch All Leaks
       file_name:
         simple: ${incident.filename}
-      policy_name:
-        simple: ${incident.dlpdataprofilename}
       task:
         simple: "17"
       user:
+        simple: ${Slack.User.Email}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 40a6530f-29fc-4ea0-8c0c-47b2f51f4d0b
+    type: condition
+    task:
+      id: 40a6530f-29fc-4ea0-8c0c-47b2f51f4d0b
+      version: -1
+      name: Ask the user if exemption needed?
+      description: Sends a message (question) to either user (in a direct message)
+        or to a channel. The message includes predefined reply options. The response
+        can also close a task (might be conditional) in a playbook.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "Yes":
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${Slack.User.Email}
+      subject: null
+      body:
+        simple: Do you want to request a temporary exemption?
+      methods:
+      - SlackV3
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: af364e17-5d25-4733-8e92-be365a47bb14
+    type: regular
+    task:
+      id: af364e17-5d25-4733-8e92-be365a47bb14
+      version: -1
+      name: Save feedback to DLP
+      description: Update a DLP incident with user feedback
+      script: '|||pan-dlp-update-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      feedback:
+        simple: ${incident.dlpincidentfeedback}
+      incident_id:
+        simple: ${incident.dlpincidentid}
+      region:
+        simple: us
+      user_id:
         simple: ${incident.sourceusername}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 330,
-          "y": 920
+          "x": -60,
+          "y": 2480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: c0a65af7-2d35-4c94-8752-cb7626afeb55
+    type: condition
+    task:
+      id: c0a65af7-2d35-4c94-8752-cb7626afeb55
+      version: -1
+      name: Save feedback failed?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "22"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 33e72024-f0bd-412a-88e1-fb927b2db435
+    type: regular
+    task:
+      id: 33e72024-f0bd-412a-88e1-fb927b2db435
+      version: -1
+      name: Get eligibility for exemption
+      description: Determines if exemption can be granted on incidents from a certain
+        data profile
+      script: '|||pan-dlp-exemption-eligible'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      data_profile:
+        simple: ${incident.dlpdataprofilename}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: a8af95e1-af99-4500-8254-04392bb8a43c
+    type: condition
+    task:
+      id: a8af95e1-af99-4500-8254-04392bb8a43c
+      version: -1
+      name: Is eligible?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: DLP.exemption.eligible
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 2130
         }
       }
     note: false
@@ -634,15 +747,14 @@ view: |-
     "linkLabelsPosition": {
       "10_11_#default#": 0.48,
       "10_25_yes": 0.52,
-      "17_18_#default#": 0.79,
-      "17_4_True_Positive": 0.6,
-      "21_11_#default#": 0.12
+      "17_12_#default#": 0.72,
+      "17_4_Yes": 0.6
     },
     "paper": {
       "dimensions": {
-        "height": 2240,
-        "width": 1780,
-        "x": -400,
+        "height": 3100,
+        "width": 1950,
+        "x": -580,
         "y": 65
       }
     }
