@@ -1,0 +1,18 @@
+{
+  "RULE_ID": "uuid-32-here-2",
+  "PLAYBOOK_ID": "<ID_OF_PLAYBOOK-ALPHNUMERIC-STRING-2>",
+  "SUGGESTION_REASON": "a good playbook for Ronen type alerts",
+  "DESCRIPTION": "trigger description",
+  "ALERTS_FILTER": {
+    "filter": {
+      "AND": [
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Ronen"
+        }
+      ]
+    }
+  }
+}
+
