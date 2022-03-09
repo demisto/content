@@ -1529,14 +1529,7 @@ def main():
     build = create_build_object()
     logging.info(f"Build Number: {build.ci_build_number}")
 
-    # add server config and restart servers
-    build.configure_servers_and_restart()  # TODO: only xsoar
-    build.disable_instances()  # disable all enabled integrations (Todo in xsiam too)
-
-    if build.is_nightly:
-        # XSOAR Nightly: install all existing packs and upload all test playbooks that currently in master.
-        build.install_nightly_pack()
-    elif build.__class__ == XSIAMBuild:
+    if build.__class__ == XSIAMBuild:
         logging.info('Starting create bucket folder')
         from google.cloud import storage
         storage_client = storage.Client.from_service_account_json(build.service_account)
@@ -1546,34 +1539,42 @@ def main():
         logging.info('Created bucket folder successfully.')
 
     else:
-        # Install only modified packs.
-        pack_ids = get_non_added_packs_ids(build)
-        build.install_packs(pack_ids=pack_ids)
+        # add server config and restart servers
+        build.configure_servers_and_restart()  # TODO: only xsoar
+        build.disable_instances()  # disable all enabled integrations (Todo in xsiam too)
 
-        # compares master to commit_sha and return two lists - new integrations and modified in the current branch
-        new_integrations, modified_integrations = build.get_changed_integrations()
+        if build.is_nightly:
+            # XSOAR Nightly: install all existing packs and upload all test playbooks that currently in master.
+            build.install_nightly_pack()
+        else:
+            # Install only modified packs.
+            pack_ids = get_non_added_packs_ids(build)
+            build.install_packs(pack_ids=pack_ids)
 
-        # todo: investigate more
-        # Test configurations from conf.json that should be run in this execution
-        # Configures integration instances that currently in master (+ press test button)
-        pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations,
-                                                                                            modified_integrations)
+            # compares master to commit_sha and return two lists - new integrations and modified in the current branch
+            new_integrations, modified_integrations = build.get_changed_integrations()
 
-        modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
+            # todo: investigate more
+            # Test configurations from conf.json that should be run in this execution
+            # Configures integration instances that currently in master (+ press test button)
+            pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations,
+                                                                                                modified_integrations)
 
-        # Changes marketplace bucket to the new one that was created. Installs all (new and modified)
-        # required packs from current branch.
-        installed_content_packs_successfully = build.update_content_on_servers()
+            modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
 
-        # After updating packs from branch, runs `test-module` for both new and modified integrations,
-        # to check that modified integrations was not broken. Wrapper for `instance_testing` function.
-        successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
-                                                                                       modified_module_instances)
-        # prints results
-        success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
-                                      new_integrations, build)
-        if not success or not installed_content_packs_successfully:
-            sys.exit(2)
+            # Changes marketplace bucket to the new one that was created. Installs all (new and modified)
+            # required packs from current branch.
+            installed_content_packs_successfully = build.update_content_on_servers()
+
+            # After updating packs from branch, runs `test-module` for both new and modified integrations,
+            # to check that modified integrations was not broken. Wrapper for `instance_testing` function.
+            successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
+                                                                                           modified_module_instances)
+            # prints results
+            success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
+                                          new_integrations, build)
+            if not success or not installed_content_packs_successfully:
+                sys.exit(2)
 
 
 if __name__ == '__main__':
