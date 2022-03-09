@@ -201,7 +201,6 @@ def extract_on_call_now_user_data(users_on_call_now):
         output['Email'] = user.get('email')
         output['User Url'] = user.get('html_url')
         output['Time Zone'] = user.get('time_zone')
-        output['Time Zone'] = user.get('time_zone')
 
         context['ID'] = output['ID']
         context['Role'] = output['Role']
