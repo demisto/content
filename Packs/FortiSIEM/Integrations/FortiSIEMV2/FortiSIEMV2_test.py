@@ -14,7 +14,7 @@ IP_ADDRESS_1 = '1.1.1.1'
 IP_ADDRESS_2 = '2.2.2.2'
 
 
-def load_json_mock_response(file_name: str) -> str:
+def load_json_mock_response(file_name: str) -> dict:
     """
     Load mock file that simulates an API response.
     Args:
@@ -569,8 +569,34 @@ def test_build_constraint_from_args(args, expected_output):
                                   'last_incidents': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                                   'start_index': 0
                               }
-                          })])
+                          }),
+                          ({
+                               'last_incidents': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                               'start_index': 0,
+                               'create_time': 1646092830000
+                           }, "fetch_incidents_same_time.json", False, {
+                               'incidents_number': 5,
+                               'events_number': 0,
+                               'last_run': {
+                                   'last_incidents': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+                                   'start_index': 5,
+                                   'create_time': 1646092830000
+                               }})
+                          ])
 def test_fetch_incidents(last_run, incidents_file, fetch_with_events, expected_output, requests_mock):
+    """
+    Fetching incidents.
+    Given:
+        - 'fetch-incidents' arguments.
+    Scenarios:
+        - Last run do not exist.
+        - Last run exists
+        - No incidents to fetch.
+        - Incidents to fetch with events.
+        - New incidents came in the same time like prev last incidents.
+    Then:
+        - Validate incidents & updated last run obj.
+    """
     from FortiSIEMV2 import FortiSIEMClient, fetch_incidents
     client: FortiSIEMClient = mock_client()
     status_list = ['Active']
@@ -596,5 +622,3 @@ def test_fetch_incidents(last_run, incidents_file, fetch_with_events, expected_o
     assert len(incidents) == expected_incidents_number
     assert updated_last_run == expected_last_run
     assert events_number == expected_events_number
-
-
