@@ -1803,7 +1803,8 @@ def update_last_run_obj(last_run: Dict[str, Any], formatted_incidents: List[dict
     cur_last_incident_create_time = cur_last_incident.get('incidentFirstSeen')
     cur_incidents_id: list = [incident.get('incidentId') for incident in formatted_incidents]
     prev_last_incident_create_time = last_run.get('create_time')
-    if cur_last_incident_create_time == prev_last_incident_create_time and prev_last_incident_create_time:  # stack the incidents ID.
+    if cur_last_incident_create_time == prev_last_incident_create_time and prev_last_incident_create_time:
+        # stack the incidents ID.
         last_run['last_incidents'] += cur_incidents_id
         last_run['start_index'] += len(cur_incidents_id)
     else:  # flush old incidents ID
@@ -1905,5 +1906,5 @@ def main() -> None:
         return_error(err_message)
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ['__main__', 'builtin', 'builtins', "__builtin__"]:
     main()

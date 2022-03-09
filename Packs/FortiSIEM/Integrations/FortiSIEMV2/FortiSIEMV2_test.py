@@ -617,7 +617,7 @@ def test_fetch_incidents(last_run, incidents_file, fetch_with_events, expected_o
     incidents, updated_last_run = fetch_incidents(client, max_fetch, first_fetch, status_list, fetch_with_events,
                                                   max_events_fetch, last_run)
 
-    expected_incidents_number = expected_output.get('incidents_number')
+    # expected_incidents_number = expected_output.get('incidents_number')
     expected_events_number = expected_output.get('events_number')
     expected_last_run = expected_output.get('last_run')
     incident_raw_json = json.loads(incidents[0]['rawJSON']) if incidents else {}
