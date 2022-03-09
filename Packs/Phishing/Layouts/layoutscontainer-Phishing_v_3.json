@@ -525,13 +525,11 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "emailmessageid",
+                                "fieldId": "reportedemailmessageid",
                                 "height": 22,
-                                "id": "b8a85bd0-97ef-11e9-b8bd-0b00be54d2d3",
+                                "id": "9f89b040-9896-11ec-a367-85147a55a6bf",
                                 "index": 10,
-                                "listId": "1vduzkpmlh-swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
