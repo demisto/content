@@ -21,7 +21,8 @@ INDICATOR_FIELDS_MAPPER = {
     'creationdate': 'created_date',
     'updateddate': 'last_modified_date',
     'geocountry': 'origins',
-    'region': 'region'
+    'region': 'region',
+    'hjbbjh': 'jjjjjj'
 }
 
 
