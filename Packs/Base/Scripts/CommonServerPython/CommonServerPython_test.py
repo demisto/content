@@ -4562,13 +4562,23 @@ class TestGetResultsWrapper:
         assert len(results) == 4  # 1 error (brand3)
         assert all(res == 'Good' for res in results[:-1])
         assert isinstance(results[-1], CommandResults)
-        md_summary = """### Results Summary
+        if IS_PY3:
+            md_summary = """### Results Summary
+    |Instance|Command|Result|Comment|
+    |---|---|---|---|
+    | ***my-brand1***: instance | ***command***: my-command<br>**args**:<br>	***arg***: val | Success |  |
+    | ***my-brand2***: instance | ***command***: command1<br>**args**:<br>	***arg1***: val1 | Success |  |
+    | ***my-brand2***: instance | ***command***: command2<br>**args**:<br>	***arg2***: val2 | Success |  |
+    | ***my-brand3***: instance | ***command***: error-command<br>**args**:<br>	***bad_arg***: bad_val | Error | Command did not succeeded |
+    """
+        else:
+            md_summary = u"""### Results Summary
 |Instance|Command|Result|Comment|
 |---|---|---|---|
-| ***my-brand1***: instance | ***command***: my-command<br>**args**:<br>	***arg***: val | Success |  |
-| ***my-brand2***: instance | ***command***: command1<br>**args**:<br>	***arg1***: val1 | Success |  |
-| ***my-brand2***: instance | ***command***: command2<br>**args**:<br>	***arg2***: val2 | Success |  |
-| ***my-brand3***: instance | ***command***: error-command<br>**args**:<br>	***bad_arg***: bad_val | Error | Command did not succeeded |
+| ***my-brand1***: instance | **args**:<br>	***arg***: val<br>***command***: my-command | Success |  |
+| ***my-brand2***: instance | **args**:<br>	***arg1***: val1<br>***command***: command1 | Success |  |
+| ***my-brand2***: instance | **args**:<br>	***arg2***: val2<br>***command***: command2 | Success |  |
+| ***my-brand3***: instance | **args**:<br>	***bad_arg***: bad_val<br>***command***: error-command | Error | Command did not succeeded |
 """
         assert results[-1].readable_output == md_summary
 
