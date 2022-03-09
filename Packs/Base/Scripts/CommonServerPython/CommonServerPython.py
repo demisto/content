@@ -6487,7 +6487,8 @@ def get_wrapper_results_summary(results, errors):
     for res in results:
         command = {'command': res.command,
                    'args': res.args}
-        results_summary_table.append({'Instance': f'***{res.brand}***: {res.instance}',
+        results_summary_table.append({'Instance': '***{brand}***: {instance}'.format(brand=res.brand,
+                                                                                     instance=res.instance),
                                       'Command': command,
                                       'Result': 'Success',
                                       'Comment': None})
@@ -6495,7 +6496,8 @@ def get_wrapper_results_summary(results, errors):
     for err in errors:
         command = {'command': err.command,
                    'args': err.args}
-        results_summary_table.append({'Instance': f'***{err.brand}***: {err.instance}',
+        results_summary_table.append({'Instance': '***{brand}***: {instance}'.format(brand=err.brand,
+                                                                                     instance=err.instance),
                                       'Command': command,
                                       'Result': 'Error',
                                       'Comment': err.result})
