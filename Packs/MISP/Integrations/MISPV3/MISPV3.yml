@@ -1129,7 +1129,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Sharing group ID. Mandator when Sharing_group distribution is set.
+      description: Sharing group ID. Mandatory when Sharing_group distribution is set.
       isArray: false
       name: sharing_group_id
       required: false

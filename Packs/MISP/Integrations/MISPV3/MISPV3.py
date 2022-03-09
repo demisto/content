@@ -498,7 +498,7 @@ def get_new_misp_event_object(args):
 
     sharing_group_id = args.get('sharing_group_id')
     if sharing_group_id:
-        event.sharing_group_id = int(sharing_group_id)
+        event.sharing_group_id = arg_to_number(sharing_group_id)
 
     threat_level_id_arg = args.get('threat_level_id')
     if threat_level_id_arg:
