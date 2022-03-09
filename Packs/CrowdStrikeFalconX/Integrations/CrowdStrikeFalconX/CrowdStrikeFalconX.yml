@@ -121,25 +121,25 @@ script:
     - contextPath: csfalconx.resource.tags
       description: Analysis tags.
       type: String
-    - contextPath: resource.sandbox.http_requests.header
+    - contextPath: csfalconx.resourcesandbox.http_requests.header
       description: The header of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.Accept
+    - contextPath: csfalconx.resourcesandbox.http_requests.Accept
       description: The accept of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.host_ip
+    - contextPath: csfalconx.resourcesandbox.http_requests.host_ip
       description: The host ip of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.host_port
+    - contextPath: csfalconx.resourcesandbox.http_requests.host_port
       description: The host port of the http request.
       type: Number
-    - contextPath: resource.sandbox.http_requests.method
+    - contextPath: csfalconx.resourcesandbox.http_requests.method
       description: The method of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.url
+    - contextPath: csfalconx.resourcesandbox.http_requests.url
       description: The URL of the http request.
       type: String
-    - contextPath: resource.sandbox.User-Agent
+    - contextPath: csfalconx.resourcesandbox.User-Agent
       description: The user agent of the http request.
       type: String
     - contextPath: csfalconx.resource.sandbox.processes.command_line
@@ -444,25 +444,25 @@ script:
     - contextPath: csfalconx.resource.tags
       description: Analysis tags.
       type: String
-    - contextPath: resource.sandbox.http_requests.header
+    - contextPath: csfalconx.resourcesandbox.http_requests.header
       description: The header of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.Accept
+    - contextPath: csfalconx.resourcesandbox.http_requests.Accept
       description: The accept of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.host_ip
+    - contextPath: csfalconx.resourcesandbox.http_requests.host_ip
       description: The host ip of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.host_port
+    - contextPath: csfalconx.resourcesandbox.http_requests.host_port
       description: The host port of the http request.
       type: Number
-    - contextPath: resource.sandbox.http_requests.method
+    - contextPath: csfalconx.resourcesandbox.http_requests.method
       description: The method of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.url
+    - contextPath: csfalconx.resourcesandbox.http_requests.url
       description: The URL of the http request.
       type: String
-    - contextPath: resource.sandbox.User-Agent
+    - contextPath: csfalconx.resourcesandbox.User-Agent
       description: The user agent of the http request.
       type: String
     - contextPath: csfalconx.resource.sandbox.processes.command_line
@@ -703,25 +703,25 @@ script:
     - contextPath: csfalconx.resource.file_name
       description: 'Name of the uploaded file. '
       type: String
-    - contextPath: resource.sandbox.http_requests.header
+    - contextPath: csfalconx.resourcesandbox.http_requests.header
       description: The header of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.Accept
+    - contextPath: csfalconx.resourcesandbox.http_requests.Accept
       description: The accept of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.host_ip
+    - contextPath: csfalconx.resourcesandbox.http_requests.host_ip
       description: The host ip of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.host_port
+    - contextPath: csfalconx.resourcesandbox.http_requests.host_port
       description: The host port of the http request.
       type: Number
-    - contextPath: resource.sandbox.http_requests.method
+    - contextPath: csfalconx.resourcesandbox.http_requests.method
       description: The method of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.url
+    - contextPath: csfalconx.resourcesandbox.http_requests.url
       description: The URL of the http request.
       type: String
-    - contextPath: resource.sandbox.User-Agent
+    - contextPath: csfalconx.resourcesandbox.User-Agent
       description: The user agent of the http request.
       type: String
     - contextPath: csfalconx.resource.sandbox.processes.command_line
@@ -969,7 +969,7 @@ script:
       type: String
     - contextPath: File.Malicious.Description
       description: A description explaining why the file was determined to be malicious
-      type: Unknown
+      type: String
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
       type: String
@@ -1470,39 +1470,6 @@ script:
     - contextPath: csfalconx.resource.id
       description: 'Set of report IDs that match the search criteria. '
       type: Number
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
-      type: String
-    - contextPath: DBotScore.Reliability
-      description: Reliability of the source providing the intelligence data.
-      type: String
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: Number
-    - contextPath: DBotScore.Type
-      description: The indicator type.
-      type: String
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: String
-    - contextPath: File.Malicious.Description
-      description: A description explaining why the file was determined to be malicious
-      type: Unknown
-    - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision.
-      type: String
-    - contextPath: File.Name
-      description: The name of the file.
-      type: String
-    - contextPath: File.SHA256
-      description: The SHA256 hash of the file.
-      type: String
-    - contextPath: File.Size
-      description: The size of the file.
-      type: Number
-    - contextPath: File.Type
-      description: The type of the file.
-      type: String
     - contextPath: csfalconx.resource.file_size
       description: The file size.
       type: Number
@@ -1642,25 +1609,25 @@ script:
     - contextPath: csfalconx.resource.tags
       description: Analysis tags.
       type: String
-    - contextPath: resource.sandbox.http_requests.header
+    - contextPath: csfalconx.resourcesandbox.http_requests.header
       description: The header of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.Accept
+    - contextPath: csfalconx.resourcesandbox.http_requests.Accept
       description: The accept of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.host_ip
+    - contextPath: csfalconx.resourcesandbox.http_requests.host_ip
       description: The host ip of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.host_port
+    - contextPath: csfalconx.resourcesandbox.http_requests.host_port
       description: The host port of the http request.
       type: Number
-    - contextPath: resource.sandbox.http_requests.method
+    - contextPath: csfalconx.resourcesandbox.http_requests.method
       description: The method of the http request.
       type: String
-    - contextPath: resource.sandbox.http_requests.url
+    - contextPath: csfalconx.resourcesandbox.http_requests.url
       description: The URL of the http request.
       type: String
-    - contextPath: resource.sandbox.User-Agent
+    - contextPath: csfalconx.resourcesandbox.User-Agent
       description: The user agent of the http request.
       type: String
     - contextPath: csfalconx.resource.sandbox.processes.command_line

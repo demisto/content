@@ -963,16 +963,16 @@ def get_report_summary_command(
     """
 
     resources_fields = (
-        'id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
-        "ioc_report_broad_csv_artifact_id", "ioc_report_strict_json_artifact_id",
-        "ioc_report_broad_json_artifact_id", "ioc_report_strict_stix_artifact_id",
-        "ioc_report_broad_stix_artifact_id", "ioc_report_strict_maec_artifact_id",
-        "ioc_report_broad_maec_artifact_id"
+        'id', 'verdict', 'created_timestamp', 'ioc_report_strict_csv_artifact_id',
+        'ioc_report_broad_csv_artifact_id', 'ioc_report_strict_json_artifact_id',
+        'ioc_report_broad_json_artifact_id', 'ioc_report_strict_stix_artifact_id',
+        'ioc_report_broad_stix_artifact_id', 'ioc_report_strict_maec_artifact_id',
+        'ioc_report_broad_maec_artifact_id'
     )
 
     sandbox_fields = (
-        "environment_id", "environment_description", "threat_score", "submit_url", "submission_type", "filetype",
-        "filesize", "sha256"
+        'environment_id', 'environment_description', 'threat_score', 'submit_url', 'submission_type', 'filetype',
+        'filesize', 'sha256'
     )
 
     no_outputs_msg = 'There are no results yet, the sample might still be going through analysis.' \
