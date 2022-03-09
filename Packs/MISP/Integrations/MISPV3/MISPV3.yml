@@ -1057,7 +1057,8 @@ script:
       default: false
       defaultValue: Your_organization_only
       description: 'Where to distribute the event. Possible values: "Your_organization_only",
-        "This_community_only", "Connected_communities", "All_communities", and "Inherit_event".'
+        "This_community_only", "Connected_communities", "All_communities", "Sharing_group"
+        and "Inherit_event".'
       isArray: false
       name: distribution
       predefined:
@@ -1065,6 +1066,7 @@ script:
       - This_community_only
       - Connected_communities
       - All_communities
+      - Sharing_group
       - Inherit_event
       required: false
       secret: false
@@ -1124,6 +1126,12 @@ script:
       - initial
       - ongoing
       - completed
+      required: false
+      secret: false
+    - default: false
+      description: Sharing group ID. Mandator when Sharing_group distribution is set.
+      isArray: false
+      name: sharing_group_id
       required: false
       secret: false
     deprecated: false
@@ -2840,7 +2848,7 @@ script:
     description: Publish an event.
     execution: false
     name: misp-publish-event
-  dockerimage: demisto/pymisp2:1.0.0.25484
+  dockerimage: demisto/pymisp2:1.0.0.27224
   feed: false
   isfetch: false
   longRunning: false
