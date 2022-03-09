@@ -132,6 +132,7 @@ MISP_DISTRIBUTION_TO_IDS = {
     'This_community_only': 1,
     'Connected_communities': 2,
     'All_communities': 3,
+    'Sharing_group': 4,
     'Inherit_event': 5
 }
 
@@ -494,9 +495,15 @@ def get_new_misp_event_object(args):
     """
     event = MISPEvent()
     event.distribution = MISP_DISTRIBUTION_TO_IDS[args.get('distribution')]
+
+    sharing_group_id = args.get('sharing_group_id')
+    if sharing_group_id:
+        event.sharing_group_id = arg_to_number(sharing_group_id)
+
     threat_level_id_arg = args.get('threat_level_id')
     if threat_level_id_arg:
         event.threat_level_id = THREAT_LEVELS_TO_ID[threat_level_id_arg]
+
     analysis_arg = args.get('analysis')
     event.analysis = MISP_ANALYSIS_TO_IDS.get(analysis_arg) if analysis_arg in MISP_ANALYSIS_TO_IDS else analysis_arg
     event.info = args.get('info') if args.get('info') else 'Event from XSOAR'
@@ -548,8 +555,12 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
     }
     event_id = event_id if event_id else arg_to_number(demisto_args.get('event_id'), "event_id")
     attributes_args.update({'id': event_id}) if event_id else None
+
     distribution = demisto_args.get('distribution')
     attributes_args.update({'distribution': MISP_DISTRIBUTION_TO_IDS[distribution]}) if distribution else None
+
+    sharing_group_id = demisto_args.get('sharing_group_id')
+    attributes_args.update({'sharing_group_id': sharing_group_id}) if sharing_group_id else None
 
     if not new_event:
         response = PYMISP.search(eventid=event_id, pythonify=True)
