@@ -244,6 +244,93 @@ FILES = [
 ]
 
 
+EMAIL_THREADS = [{"Contents": {"context": {
+    "id": "3",
+    "EmailThreads": [
+        {
+            "EmailBCC": "",
+            "EmailBody": "Outbound test message from XSOAR to User.",
+            "EmailCC": "",
+            "EmailCommsThreadId": "69433507",
+            "EmailCommsThreadNumber": "0",
+            "EmailFrom": "soc_sender@company.com",
+            "EmailHTML": "Outbound test message from XSOAR to User.",
+            "EmailReceived": "",
+            "EmailReplyTo": "soc_sender@company.com",
+            "EmailSubject": "<69433507> Test Email 2",
+            "EmailTo": "end_user@company.com",
+            "MessageDirection": "outbound",
+            "MessageID": "",
+            "MessageTime": "2022-02-04T20:56:53UTC"
+        },
+        {
+            "EmailBCC": "",
+            "EmailBody": "Response from end user to SOC\r\n\r\n\r\nSignature Line\r\n\r\n\r\n\r\n______________________"
+                         "__________\r\nFrom: SOC <soc_sender@company.com>\r\nSent: Friday, February 4, 2022 3:56 PM"
+                         "\r\nTo: End User <end_user@company.com>\r\nSubject: <69433507> Test Email 2\r\n\r\nOutbound "
+                         "test message from XSOAR to User.\r\n",
+            "EmailCC": "",
+            "EmailCommsThreadId": "69433507",
+            "EmailCommsThreadNumber": "0",
+            "EmailFrom": "end_user@company.com",
+            "EmailHTML": "Response from end user to SOC\r\n\r\n\r\nSignature Line\r\n\r\n\r\n\r\n______________________"
+                         "__________\r\nFrom: SOC <soc_sender@company.com>\r\nSent: Friday, February 4, 2022 3:56 PM"
+                         "\r\nTo: End User <end_user@company.com>\r\nSubject: <69433507> Test Email 2\r\n\r\nOutbound "
+                         "test message from XSOAR to User.\r\n",
+            "EmailReceived": "soc_sender@company.com",
+            "EmailReplyTo": "BY5PR09ME5460A9F1D8E34A12904AE86EB6199@BY5VR02MB5660.namprd09.prod.outlook.com",
+            "EmailSubject": "Re: <69433507> Test Email 2",
+            "EmailTo": "soc_sender@company.com",
+            "MessageDirection": "inbound",
+            "MessageID": "AAMkAGRmOGZlZTEzLTkyZGDtNGJkNy1iOTMxLYM0NTAwODZhZjlmNABGAAAAAAAP2ksrJ8icRL4Zhadm7iVXBwAkkBJX"
+                         "Bb0sRJWC0zdXEMqsAAAAAAEMAAAkkBJXBb0fRJWC0zdXEMqsAAApcWVYAAA=",
+            "MessageTime": "2022-02-04T20:58:20UTC"
+        },
+        {
+            "EmailBCC": "",
+            "EmailBody": "Outbound test message from XSOAR to User.",
+            "EmailCC": "",
+            "EmailCommsThreadId": "87692312",
+            "EmailCommsThreadNumber": "1",
+            "EmailFrom": "soc_sender@company.com",
+            "EmailHTML": "Outbound test message from XSOAR to User.",
+            "EmailReceived": "",
+            "EmailReplyTo": "soc_sender@company.com",
+            "EmailSubject": "<87692312> Test Email 4",
+            "EmailTo": "end_user@company.com",
+            "MessageDirection": "outbound",
+            "MessageID": "",
+            "MessageTime": "2022-02-04T20:56:53UTC"
+        },
+        {
+            "EmailBCC": "",
+            "EmailBody": "Response from end user to SOC\r\n\r\n\r\nSignature Line\r\n\r\n\r\n\r\n______________________"
+                         "__________\r\nFrom: SOC <soc_sender@company.com>\r\nSent: Friday, February 4, 2022 3:56 PM"
+                         "\r\nTo: End User <end_user@company.com>\r\nSubject: <87692312> Test Email 4\r\n\r\nOutbound "
+                         "test message from XSOAR to User.\r\n",
+            "EmailCC": "",
+            "EmailCommsThreadId": "87692312",
+            "EmailCommsThreadNumber": "1",
+            "EmailFrom": "end_user@company.com",
+            "EmailHTML": "Response from end user to SOC\r\n\r\n\r\nSignature Line\r\n\r\n\r\n\r\n______________________"
+                         "__________\r\nFrom: SOC <soc_sender@company.com>\r\nSent: Friday, February 4, 2022 3:56 PM"
+                         "\r\nTo: End User <end_user@company.com>\r\nSubject: <87692312> Test Email 4\r\n\r\nOutbound "
+                         "test message from XSOAR to User.\r\n",
+            "EmailReceived": "soc_sender@company.com",
+            "EmailReplyTo": "BY5PR03ME5460A9F1D8E34A12904AE86EB6191@BY5VR12MB5660.namprd09.prod.outlook.com",
+            "EmailSubject": "Re: <87692312> Test Email 4",
+            "EmailTo": "soc_sender@company.com",
+            "MessageDirection": "inbound",
+            "MessageID": "AAMkAGRcOGZlZTEzLTkyZGDtNGJkNy1iOWMxLYM0NTAwODZhZjlxNABGAAAAAAAP2ksrJ8icRL4Zhadm7iVXBwAkkBJX"
+                         "Bb0sRJWC0zdXEMqsAAAAAAEMAAAkkBJFBb0fRJWC0zdXEMqsABApcWVYAAA=",
+            "MessageTime": "2022-02-04T20:58:20UTC"
+        }
+
+    ]
+    }}}
+]
+
+
 def test_main(mocker):
     """
         Given
@@ -268,7 +355,7 @@ def test_main(mocker):
     assert not demisto.results.call_args[0][0]
 
 
-def test_get_email_related_incident_id(mocker):
+def test_get_email_related_incident_id_1(mocker):
     """
         Given
         - Multiple incidents with the same identifying code
@@ -284,3 +371,26 @@ def test_get_email_related_incident_id(mocker):
                                       {'emailsubject': 'subject 2', 'id': '2'}])
     id = get_email_related_incident_id('12345678', 'subject 2')
     assert id == '2'
+
+
+def test_get_email_related_incident_id_2(mocker):
+    """
+        Given
+        - An incident with the matching identifying code
+        When
+        - The incident does not have a value for 'emailsubject'
+        - The incident contains email threads stored in context
+        Then
+        - Validate that the incident ID is returned after searching email threads
+    """
+    import PreprocessEmail
+    from PreprocessEmail import get_email_related_incident_id
+    mocker.patch.object(PreprocessEmail, 'get_incident_by_query', return_value=[{'emailsubject': '', 'id': '3'}])
+    mocker.patch.object(demisto, 'executeCommand', return_value=EMAIL_THREADS)
+    id = get_email_related_incident_id('69433507', 'Test Email 2')
+    assert id == '3'
+
+
+def get_executed_at_command(command, arguments, incidents):
+    from CommonServerPython import return_error
+    return_error(f'command={command}, arguments={arguments}, incidents={incidents}')

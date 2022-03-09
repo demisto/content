@@ -13,6 +13,18 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+EMAIL_SIGNATURE_LIST = [{'Contents': 'Test email signature.'}]
+
+EMAIL_SIGNATURE_APPENDED = '<html><body>Simple HTML message.\r\n\r\nTest email signature.\r\n</body></html>'
+
+
+def test_append_email_signature(mocker):
+    from SendEmailReply import append_email_signature
+    mocker.patch.object(demisto, 'executeCommand', return_value=EMAIL_SIGNATURE_LIST)
+    result = append_email_signature('<html><body>Simple HTML message.\r\n</body></html>')
+    assert result == EMAIL_SIGNATURE_APPENDED
+
+
 def test_send_reply(mocker):
     """Unit test
         Given
@@ -24,9 +36,11 @@ def test_send_reply(mocker):
         """
     from SendEmailReply import send_reply
     email_reply_response = util_load_json('test_data/email_reply.json')
+    mocker.patch("SendEmailReply.append_email_signature")
     mocker.patch("SendEmailReply.send_mail_request", return_value=email_reply_response)
     result = send_reply('123', 'email_subject', 'test1@gmail.com,test2@gmail.com', 'reply_body', 'test.onmicrosoft.com',
-                        'test3@gmail.com', 'reply_html_body', {}, 'item_id', '12345678')
+                        'test3@gmail.com', 'test4@gmail.com', 'reply_html_body', {}, 'item_id', '12345678',
+                        'EWS Mail Sender_instance_1')
     assert "Mail sent successfully. To: test1@gmail.com,test2@gmail.com Cc: test3@gmail.com" == result
 
 
@@ -120,7 +134,7 @@ def test_create_file_data_json():
     from SendEmailReply import create_file_data_json
     attachment_response = util_load_json('test_data/attachment_example.json')
     expected_result = util_open_file('test_data/file_data.txt')
-    result = create_file_data_json(attachment_response)
+    result = create_file_data_json(attachment_response, 'attachment')
     assert result == expected_result
 
 
