@@ -205,7 +205,7 @@ class IncidentType(Enum):
 
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
-MIRROR_INSTANCE = demisto.integrationInstance()
+INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 ''' HELPER FUNCTIONS '''
 
@@ -352,7 +352,7 @@ def add_mirroring_fields(incident: Dict):
         Updates the given incident to hold the needed mirroring fields.
     """
     incident['mirror_direction'] = MIRROR_DIRECTION
-    incident['mirror_instance'] = MIRROR_INSTANCE
+    incident['mirror_instance'] = INTEGRATION_INSTANCE
 
 
 def detection_to_incident(detection):
@@ -1088,10 +1088,8 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
 
     if filter_arg:
         params['filter'] = filter_arg
-
     elif last_created_timestamp:
         params['filter'] = "created_timestamp:>'{0}'".format(last_created_timestamp)
-
     elif last_updated_timestamp:
         params['filter'] = "date_updated:>'{0}'".format(last_updated_timestamp)
 
@@ -1567,7 +1565,7 @@ def resolve_incident(ids: List[str], status: str):
     if status not in STATUS_TEXT_TO_NUM:
         raise DemistoException(f'CrowdStrike Falcon Error: '
                                f'Status given is {status} and it is not in {STATUS_TEXT_TO_NUM.keys()}')
-    return update_incident_request(ids, STATUS_TEXT_TO_NUM[status], "update_status")
+    return update_incident_request(ids, STATUS_TEXT_TO_NUM[status], 'update_status')
 
 
 def update_incident_request(ids: List[str], value: str, action_name: str):
@@ -1644,7 +1642,6 @@ def get_remote_data_command(args: Dict[str, Any]):
         demisto.debug(f'Performing get-remote-data command with incident or detection id: {remote_incident_id} '
                       f'and last_update: {remote_args.last_update}')
         incident_type = find_incident_type(remote_incident_id)
-
         if incident_type == IncidentType.INCIDENT:
             mirrored_data, updated_object = get_remote_incident_data(remote_incident_id)
             if updated_object:
@@ -1658,6 +1655,7 @@ def get_remote_data_command(args: Dict[str, Any]):
                 set_xsoar_detection_entries(updated_object, entries, remote_incident_id)  # sets in place
 
         else:
+            # this is here as prints can disrupt mirroring
             raise Exception(f'Executed get-remote-data command with undefined id: {remote_incident_id}')
 
         if not updated_object:
@@ -1684,6 +1682,11 @@ def find_incident_type(remote_incident_id: str):
 
 
 def get_remote_incident_data(remote_incident_id: str):
+    """
+    Called every time get-remote-data command runs on an incident.
+    Gets the relevant incident entity from the remote system (CrowdStrike Falcon). The remote system returns a list with this
+    entity in it. We take from this entity only the relevant incoming mirroring fields, in order to do the mirroring.
+    """
     mirrored_data_list = get_incidents_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
 
@@ -1692,11 +1695,15 @@ def get_remote_incident_data(remote_incident_id: str):
 
     updated_object: Dict[str, Any] = {'incident_type': 'incident'}
     set_updated_object(updated_object, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
-
     return mirrored_data, updated_object
 
 
 def get_remote_detection_data(remote_incident_id: str):
+    """
+    Called every time get-remote-data command runs on an detection.
+    Gets the relevant detection entity from the remote system (CrowdStrike Falcon). The remote system returns a list with this
+    entity in it. We take from this entity only the relevant incoming mirroring fields, in order to do the mirroring.
+    """
     mirrored_data_list = get_detections_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
 
@@ -1704,7 +1711,6 @@ def get_remote_detection_data(remote_incident_id: str):
 
     updated_object: Dict[str, Any] = {'incident_type': 'detection'}
     set_updated_object(updated_object, mirrored_data, CS_FALCON_DETECTION_INCOMING_ARGS)
-
     return mirrored_data, updated_object
 
 
@@ -1712,7 +1718,6 @@ def set_xsoar_incident_entries(updated_object, entries, remote_incident_id):
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'Closed':
             close_in_xsoar(entries, remote_incident_id, 'Incident')
-
         elif updated_object.get('status') in (set(STATUS_TEXT_TO_NUM.keys()) - {'Closed'}):
             reopen_in_xsoar(entries, remote_incident_id, 'Incident')
 
@@ -1721,7 +1726,6 @@ def set_xsoar_detection_entries(updated_object, entries, remote_incident_id):
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
             close_in_xsoar(entries, remote_incident_id, 'Detection')
-
         elif updated_object.get('status') in (set(DETECTION_STATUS) - {'closed'}):
             reopen_in_xsoar(entries, remote_incident_id, 'Detection')
 
@@ -1777,7 +1781,6 @@ def set_updated_object(updated_object: Dict[str, Any], mirrored_data, mirroring_
                         updated_object[field] = nested_field.get(field_name_parts[1])
                         # finding the field in the first time it is satisfying
                         break
-
             elif isinstance(nested_mirrored_data, dict):
                 if nested_mirrored_data.get(field_name_parts[1]):
                     updated_object[field] = nested_mirrored_data.get(field_name_parts[1])
@@ -1831,13 +1834,14 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
         demisto.debug(f'Got the following delta keys {list(delta.keys())}.')
 
     try:
+        incident_type = find_incident_type(incident_id)
         if parsed_args.incident_changed:
-            if find_incident_type(incident_id) == IncidentType.INCIDENT:
+            if incident_type == IncidentType.INCIDENT:
                 result = update_remote_incident(delta, parsed_args.inc_status, incident_id)
                 if result:
                     demisto.debug(f'Incident updated successfully. Result: {result}')
 
-            elif find_incident_type(incident_id) == IncidentType.DETECTION:
+            elif incident_type == IncidentType.DETECTION:
                 result = update_remote_detection(delta, parsed_args.inc_status, incident_id)
                 if result:
                     demisto.debug(f'Detection updated successfully. Result: {result}')
