@@ -1,5 +1,7 @@
 import pytest
 
+from CommonServerPython import DemistoException
+
 from TaegisXDR import (
     Client,
     execute_playbook_command,
@@ -97,23 +99,16 @@ def test_fetch_incidents(requests_mock):
     """Tests taegis-fetch-incidents command function
     """
     client = mock_client(requests_mock, FETCH_INCIDENTS_RESPONSE)
-    args = {
-        "page": 0,
-        "pager_size": 200,
-        "status": ["Open", "Active"],
-        "include_archived": False,
-    }
-
-    response = fetch_incidents(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    response = fetch_incidents(client=client)
     assert response[0]['name'] == FETCH_INCIDENTS_RESPONSE["data"]["allInvestigations"][0]['description']
 
-    with pytest.raises(ValueError, match="Max Fetch cannot be more then 200"):
-        assert fetch_incidents(client=client, env=TAEGIS_ENVIRONMENT, args={"max_fetch": 201})
+    with pytest.raises(ValueError, match="Max Fetch must be between 1 and 200"):
+        assert fetch_incidents(client=client, max_fetch=201)
 
     client = mock_client(requests_mock, FETCH_INCIDENTS_BAD_RESPONSE)
     error = f"Error when fetching investigations: {FETCH_INCIDENTS_BAD_RESPONSE['errors'][0]['message']}"
-    with pytest.raises(ValueError, match=error):
-        assert fetch_incidents(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    with pytest.raises(DemistoException, match=error):
+        assert fetch_incidents(client=client, max_fetch=200)
 
 
 def test_fetch_investigaton(requests_mock):

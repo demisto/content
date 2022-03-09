@@ -262,15 +262,12 @@ def fetch_alerts_command(client: Client, env: str, args=None):
     return results
 
 
-def fetch_incidents(client: Client, env: str, args=None):
+def fetch_incidents(client: Client, max_fetch: int = 15):
     """
     Fetch Taegis Investigations for the use with "Fetch Incidents"
     """
-    page_size = args.get("max_fetch", 200)
-    if page_size > 200:
-        raise ValueError("Max Fetch cannot be more then 200")
-
-    include_archived = False
+    if int(max_fetch) > 200:
+        raise ValueError("Max Fetch must be between 1 and 200")
 
     query = """
     query investigations(
@@ -325,7 +322,7 @@ def fetch_incidents(client: Client, env: str, args=None):
         "orderByField": "created_at",
         "orderDirection": "asc",
         "page": 0,
-        "perPage": page_size,
+        "perPage": max_fetch,
         "status": ["Open", "Active"]
     }
 
@@ -333,15 +330,15 @@ def fetch_incidents(client: Client, env: str, args=None):
     demisto.debug(f"Last Fetch Incident Run: {last_run}")
 
     now = datetime.now()
-    start_time = now - timedelta(days=1)  # Default start if first ever run
+    start_time = str(now - timedelta(days=1))  # Default start if first ever run
     if last_run and "start_time" in last_run:
         start_time = last_run.get("start_time")
-        variables["createdAfter"] = start_time
+    variables["createdAfter"] = start_time
 
     result = client.graphql_run(query=query, variables=variables)
 
     if result.get("errors") and result["errors"]:
-        raise ValueError(f"Error when fetching investigations: {result['errors'][0]['message']}")
+        raise DemistoException(f"Error when fetching investigations: {result['errors'][0]['message']}")
 
     incidents = []
     for investigation in result["data"]["allInvestigations"]:
@@ -350,7 +347,7 @@ def fetch_incidents(client: Client, env: str, args=None):
             continue
 
         # Skip archived, if necessary
-        if not include_archived and investigation["archived_at"]:
+        if investigation["archived_at"]:
             demisto.debug(f"Skipping Archived Investigation: {investigation['description']} ({investigation['id']})")
             continue
 
@@ -660,10 +657,13 @@ def main():
         client.auth()
 
         if command == "test-module":
-            result = test_module(client)
+            result = commands[command](client=client)
             return return_results(result)
-        else:
-            return_results(commands[command](client=client, env=environment, args=demisto.args()))
+        elif command == "fetch-incidents":
+            result = commands[command](client=client, max_fetch=PARAMS.get("max_fetch"))
+            return return_results(result)
+
+        return_results(commands[command](client=client, env=environment, args=demisto.args()))
     except Exception as e:
         error_string = str(e)
         demisto.error(f"Error running command: {e}")
