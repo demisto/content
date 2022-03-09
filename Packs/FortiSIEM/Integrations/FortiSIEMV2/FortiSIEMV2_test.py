@@ -543,50 +543,47 @@ def test_build_constraint_from_args(args, expected_output):
                                  'last_incidents': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                                  'start_index': 0
                              }
-                         }),
-                          ({'create_time': 1646094600000, 'last_incidents': [1, 2, 3, 4, 5], 'start_index': 0},
-                           "fetch_incidents.json", False, {
-                               'incidents_number': 5,
-                               'events_number': 0,
-                               'last_run': {
-                                   'create_time': 1646105070000,
-                                   'last_incidents': [6, 7, 8, 9, 10],
-                                   'start_index': 0
-                               }
-                           }),
-                          ({'create_time': 1646105070000, 'last_incidents': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                            'start_index': 0},
-                           'fetch_incidents_empty.json', False, {
-                               'incidents_number': 0,
-                               'events_number': 0,
-                               'last_run': {
-                                   'create_time': 1646105070000,
-                                   'last_incidents': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                                   'start_index': 0
-                               }
-                           }),
-                          ({}, "fetch_incidents.json", True, {
-                              'incidents_number': 10,
-                              'events_number': 5,
-                              'last_run': {
-                                  'create_time': 1646105070000,
-                                  'last_incidents': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                                  'start_index': 0
-                              }
-                          }),
-                          ({
-                               'last_incidents': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                               'start_index': 0,
-                               'create_time': 1646092830000
-                           }, "fetch_incidents_same_time.json", False, {
-                               'incidents_number': 5,
-                               'events_number': 0,
-                               'last_run': {
-                                   'last_incidents': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-                                   'start_index': 5,
-                                   'create_time': 1646092830000
-                               }})
-                          ])
+                         }), ({'create_time': 1646094600000, 'last_incidents': [1, 2, 3, 4, 5],
+                               'start_index': 0},
+                              "fetch_incidents.json", False, {
+                                  'incidents_number': 5,
+                                  'events_number': 0,
+                                  'last_run': {
+                                      'create_time': 1646105070000,
+                                      'last_incidents': [6, 7, 8, 9, 10],
+                                      'start_index': 0
+                                  }}
+                              ), ({'create_time': 1646105070000, 'last_incidents': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                                   'start_index': 0}, 'fetch_incidents_empty.json', False,
+                                  {'incidents_number': 0,
+                                   'events_number': 0,
+                                   'last_run': {
+                                       'create_time': 1646105070000,
+                                       'last_incidents': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                                       'start_index': 0
+                                   }
+                                   }), (
+                                  {}, "fetch_incidents.json", True, {
+                                      'incidents_number': 10,
+                                      'events_number': 5,
+                                      'last_run': {
+                                          'create_time': 1646105070000,
+                                          'last_incidents': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                                          'start_index': 0
+                                      }
+                                  }), (
+                                  {
+                                      'last_incidents': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                                      'start_index': 0,
+                                      'create_time': 1646092830000},
+                                  "fetch_incidents_same_time.json", False, {
+                                      'incidents_number': 5,
+                                      'events_number': 0,
+                                      'last_run': {
+                                          'last_incidents': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+                                          'start_index': 5,
+                                          'create_time': 1646092830000
+                                      }})])
 def test_fetch_incidents(last_run, incidents_file, fetch_with_events, expected_output, requests_mock):
     """
     Fetching incidents.
