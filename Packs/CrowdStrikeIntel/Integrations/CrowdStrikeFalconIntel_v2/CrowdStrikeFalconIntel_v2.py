@@ -153,7 +153,7 @@ def build_context_indicator_no_results_status(indicator: str, indicator_type: st
         return Common.Domain(domain=indicator, dbot_score=dbot_score)
 
     indicator_map = {
-        'file': file_unknown,
+        'hash': file_unknown,
         'ip': ip_unknown,
         'domain': domain_unknown,
         'url': url_unknown
