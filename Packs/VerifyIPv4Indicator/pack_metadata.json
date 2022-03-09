@@ -1,8 +1,8 @@
 {
     "name": "VerifyIPv4Indicator",
     "description": "Script to verify if the input or list of inputs is IPv4 address.",
-    "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "support": "community",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
