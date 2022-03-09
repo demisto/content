@@ -702,6 +702,16 @@ script:
     - contextPath: Cybereason.User.Organization
       description: User organization
       type: string
+  - arguments:
+    - default: true
+      description: Element GUID to identify the file
+      name: elementGuids
+      required: true
+    description: Start fetching the file to download
+    name: cybereason-start-fetchfile
+  - arguments: []
+    description: Return a list of all files waiting for download
+    name: cybereason-fetchfile-progress
   isfetch: true
   runonce: false
   script: '-'
