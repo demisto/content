@@ -2,7 +2,7 @@
     "id": "incident_dlpincidentfeedback",
     "version": -1,
     "modified": "2022-02-14T21:41:30.93881212Z",
-    "name": "Palo Alto Networks Enterprise DLP Contribution Pack DLP Incident Feedback",
+    "name": "PAN DLP Incident Feedback",
     "ownerOnly": true,
     "description": "User provided feedback to the DLP incident, such as true positive or false positive",
     "cliName": "dlpincidentfeedback",

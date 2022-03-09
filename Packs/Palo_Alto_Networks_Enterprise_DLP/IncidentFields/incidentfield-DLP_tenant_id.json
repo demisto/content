@@ -2,7 +2,7 @@
     "id": "incident_dlptenantid",
     "version": -1,
     "modified": "2022-02-03T18:55:11.706330684Z",
-    "name": "Palo Alto Networks Enterprise DLP Contribution Pack DLP Tenant ID",
+    "name": "PAN DLP Tenant ID",
     "ownerOnly": false,
     "cliName": "dlptenantid",
     "type": "shortText",

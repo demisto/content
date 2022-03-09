@@ -2,7 +2,7 @@
     "id": "incident_dlpdataprofilename",
     "version": -1,
     "modified": "2022-02-03T18:54:57.582061001Z",
-    "name": "Palo Alto Networks Enterprise DLP Contribution Pack DLP Data Profile Name",
+    "name": "PAN DLP Data Profile Name",
     "ownerOnly": false,
     "cliName": "dlpdataprofilename",
     "type": "shortText",

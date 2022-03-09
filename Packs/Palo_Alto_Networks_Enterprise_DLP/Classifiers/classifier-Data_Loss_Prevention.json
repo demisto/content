@@ -12,11 +12,11 @@
                     "complex": null,
                     "simple": "channel"
                 },
-                "Palo Alto Networks Enterprise DLP Contribution Pack DLP Data Profile Name": {
+                "PAN DLP Data Profile Name": {
                     "complex": null,
                     "simple": "dataProfileName"
                 },
-                "Palo Alto Networks Enterprise DLP Contribution Pack DLP Incident Feedback": {
+                "PAN DLP Incident Feedback": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -25,15 +25,15 @@
                     },
                     "simple": ""
                 },
-                "Palo Alto Networks Enterprise DLP Contribution Pack DLP Incident ID": {
+                "PAN DLP Incident ID": {
                     "complex": null,
                     "simple": "incidentId"
                 },
-                "Palo Alto Networks Enterprise DLP Contribution Pack DLP Incident Region": {
+                "PAN DLP Incident Region": {
                     "complex": null,
                     "simple": "region"
                 },
-                "Palo Alto Networks Enterprise DLP Contribution Pack DLP Tenant ID": {
+                "PAN DLP Tenant ID": {
                     "complex": null,
                     "simple": "tenantId"
                 },
