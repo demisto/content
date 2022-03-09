@@ -1532,8 +1532,8 @@ def main():
     if build.__class__ == XSIAMBuild:
         logging.info('Starting create bucket folder')
         from google.cloud import storage
-        storage_client = storage.Client.from_service_account_json(build.service_account)
-        bucket = storage_client.get_bucket('xsoar-ci-artifacts')
+        storage_client = storage.Client()
+        bucket = storage_client.bucket('xsoar-ci-artifacts')
         blob = bucket.blob('xsiam-ci-locks')
         blob.upload_from_string('queue')
         logging.info('Created bucket folder successfully.')
