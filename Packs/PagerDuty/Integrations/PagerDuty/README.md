@@ -37,7 +37,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 9. [Acknowledge an event: PagerDuty-acknowledge-event](#pagerduty-acknowledge-event)
 10. [Get incident information: PagerDuty-get-incident-data](#pagerduty-get-incident-data)
 11. [Get service keys for each configured service: PagerDuty-get-service-keys](#pagerduty-get-service-keys)
-12. [Add responder to an incident: PagerDuty-get-service-keys](#pagerduty-add-responders)
+12. [Add responder to an incident: PagerDuty-add-responders](#pagerduty-add-responders)
+13. [Run response play to an incident: PagerDuty-run-response-play](#pagerduty-run-response-play)
 
 ### PagerDuty-get-all-schedules
 ***
@@ -823,7 +824,7 @@ Add responders to an incident
 #### Context Example
 ```json
 {
-    "PagerDuty": {
+    "PagerDuty": 
     {
         "ResponderRequests": [
             {
@@ -850,3 +851,29 @@ Add responders to an incident
     }
 }
 ```
+
+
+### PagerDuty-run-response-play
+***
+Run a specified response play on a given incident.
+
+Response Plays are a package of Incident Actions that can be applied during an Incident's life cycle.
+
+
+#### Base Command
+
+`PagerDuty-run-response-play`
+#### Input
+| **Argument Name** | **Description**                                                                   | **Required** |
+| --- |-----------------------------------------------------------------------------------|--------------|
+| incident_id | PagerDuty Incident ID targeted to run the response play                           |  Required    | 
+| from_email | The email address of a valid user associated with the account making the request. | Required     | 
+| response_play_uuid | The response play ID of the response play associated with the request.            | required     | 
+
+
+#### Command Example
+```!PagerDuty-run-response-play incident_id="Q107XAAAAMBBR" from_email="john.doe@example.com" response_play_uuid="111111-88bb-bb37-181d-11111111110dewsq"```
+
+
+>#### Human Readable Output
+>Response play successfully run to the incident Q107XAAAAMBBR by john.doe@example.com

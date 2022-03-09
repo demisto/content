@@ -61,7 +61,14 @@ def test_get_incidents(requests_mock, mocker):
 
 def test_add_responders(requests_mock, mocker):
     """
-    Test sending request to a responder
+    Given:
+        - a responder request.
+
+    When:
+        - Running PagerDuty-add-responders command.
+
+    Then:
+        - Ensure command returns the correct output.
     """
     mocker.patch.object(
         demisto,
