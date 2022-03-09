@@ -4564,13 +4564,13 @@ class TestGetResultsWrapper:
         assert isinstance(results[-1], CommandResults)
         if IS_PY3:
             md_summary = """### Results Summary
-    |Instance|Command|Result|Comment|
-    |---|---|---|---|
-    | ***my-brand1***: instance | ***command***: my-command<br>**args**:<br>	***arg***: val | Success |  |
-    | ***my-brand2***: instance | ***command***: command1<br>**args**:<br>	***arg1***: val1 | Success |  |
-    | ***my-brand2***: instance | ***command***: command2<br>**args**:<br>	***arg2***: val2 | Success |  |
-    | ***my-brand3***: instance | ***command***: error-command<br>**args**:<br>	***bad_arg***: bad_val | Error | Command did not succeeded |
-    """
+|Instance|Command|Result|Comment|
+|---|---|---|---|
+| ***my-brand1***: instance | ***command***: my-command<br>**args**:<br>	***arg***: val | Success |  |
+| ***my-brand2***: instance | ***command***: command1<br>**args**:<br>	***arg1***: val1 | Success |  |
+| ***my-brand2***: instance | ***command***: command2<br>**args**:<br>	***arg2***: val2 | Success |  |
+| ***my-brand3***: instance | ***command***: error-command<br>**args**:<br>	***bad_arg***: bad_val | Error | Command did not succeeded |
+"""
         else:
             md_summary = u"""### Results Summary
 |Instance|Command|Result|Comment|
