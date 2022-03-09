@@ -760,7 +760,7 @@ def upload_file_command(  # type: ignore[return]
             outputs=result.output,
             readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
             raw_response=response,
-            )
+        )
 
     else:
         sha256 = str(result.output.get("sha256"))  # type: ignore[union-attr]
@@ -857,7 +857,11 @@ def send_url_to_sandbox_analysis_command(
         indicator=result.indicator)
 
 
-def get_full_report_command(client: Client, ids: list[str], extended_data: str) -> tuple[list[CommandResults], bool]:
+def get_full_report_command(
+        client: Client,
+        ids: str,  # argToList is called inside
+        extended_data: str = '',
+) -> tuple[list[CommandResults], bool]:
     """Get a full version of a sandbox report.
     :param client: the client object with an access token
     :param ids: ids of a submitted malware samples.
@@ -1000,7 +1004,7 @@ def get_report_summary_command(
 
 def get_analysis_status_command(
         client: Client,
-        ids: str, # argsToList called inside
+        ids: str,  # argsToList called inside
 ) -> list[CommandResults]:
     """Check the status of a sandbox analysis.
     :param client: the client object with an access token
@@ -1041,18 +1045,19 @@ def download_ioc_command(
     :param accept_encoding: format used to compress your downloaded file
     :return: Demisto outputs when entry_context and responses are lists
     """
+    response: Optional[dict] = None
     try:
         response = client.download_ioc(id, name, accept_encoding)
         return CommandResults(
             outputs_prefix=OUTPUTS_PREFIX,
             outputs_key_field='ioc',
-            outputs=response,
+            outputs=[response],  # todo
             readable_output=tableToMarkdown("CrowdStrike Falcon X response:", response),
             raw_response=response
         )
     except Exception as e:
         demisto.debug(f'Download ioc exception {e}')
-        raise DemistoException(f'Download ioc exception {e}', exception=e)
+        raise DemistoException(f'Download ioc encountered an exception: {e}', exception=e, res=response)
 
 
 def check_quota_status_command(

@@ -121,25 +121,25 @@ script:
     - contextPath: csfalconx.resource.tags
       description: Analysis tags.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.header
+    - contextPath: csfalconx.resource.sandbox.http_requests.header
       description: The header of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.Accept
+    - contextPath: csfalconx.resource.sandbox.http_requests.Accept
       description: The accept of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.host_ip
+    - contextPath: csfalconx.resource.sandbox.http_requests.host_ip
       description: The host ip of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.host_port
+    - contextPath: csfalconx.resource.sandbox.http_requests.host_port
       description: The host port of the http request.
       type: Number
-    - contextPath: csfalconx.resourcesandbox.http_requests.method
+    - contextPath: csfalconx.resource.sandbox.http_requests.method
       description: The method of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.url
+    - contextPath: csfalconx.resource.sandbox.http_requests.url
       description: The URL of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.User-Agent
+    - contextPath: csfalconx.resource.sandbox.User-Agent
       description: The user agent of the http request.
       type: String
     - contextPath: csfalconx.resource.sandbox.processes.command_line
@@ -444,25 +444,25 @@ script:
     - contextPath: csfalconx.resource.tags
       description: Analysis tags.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.header
+    - contextPath: csfalconx.resource.sandbox.http_requests.header
       description: The header of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.Accept
+    - contextPath: csfalconx.resource.sandbox.http_requests.Accept
       description: The accept of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.host_ip
+    - contextPath: csfalconx.resource.sandbox.http_requests.host_ip
       description: The host ip of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.host_port
+    - contextPath: csfalconx.resource.sandbox.http_requests.host_port
       description: The host port of the http request.
       type: Number
-    - contextPath: csfalconx.resourcesandbox.http_requests.method
+    - contextPath: csfalconx.resource.sandbox.http_requests.method
       description: The method of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.url
+    - contextPath: csfalconx.resource.sandbox.http_requests.url
       description: The URL of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.User-Agent
+    - contextPath: csfalconx.resource.sandbox.User-Agent
       description: The user agent of the http request.
       type: String
     - contextPath: csfalconx.resource.sandbox.processes.command_line
@@ -639,7 +639,7 @@ script:
     - contextPath: csfalconx.resource.state
       description: Analysis state.
       type: String
-    - contextPath: csfalconx.resource.created_timpestamp
+    - contextPath: csfalconx.resource.created_timestamp
       description: Analysis start time.
       type: String
     - contextPath: csfalconx.resource.sha256
@@ -703,25 +703,25 @@ script:
     - contextPath: csfalconx.resource.file_name
       description: 'Name of the uploaded file. '
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.header
+    - contextPath: csfalconx.resource.sandbox.http_requests.header
       description: The header of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.Accept
+    - contextPath: csfalconx.resource.sandbox.http_requests.Accept
       description: The accept of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.host_ip
+    - contextPath: csfalconx.resource.sandbox.http_requests.host_ip
       description: The host ip of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.host_port
+    - contextPath: csfalconx.resource.sandbox.http_requests.host_port
       description: The host port of the http request.
       type: Number
-    - contextPath: csfalconx.resourcesandbox.http_requests.method
+    - contextPath: csfalconx.resource.sandbox.http_requests.method
       description: The method of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.url
+    - contextPath: csfalconx.resource.sandbox.http_requests.url
       description: The URL of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.User-Agent
+    - contextPath: csfalconx.resource.sandbox.User-Agent
       description: The user agent of the http request.
       type: String
     - contextPath: csfalconx.resource.sandbox.processes.command_line
@@ -901,7 +901,7 @@ script:
     - contextPath: csfalconx.resource.verdict
       description: Analysis verdict.
       type: String
-    - contextPath: csfalconx.resource.created_timpestamp
+    - contextPath: csfalconx.resource.created_timestamp
       description: Analysis start time.
       type: String
     - contextPath: csfalconx.resource.environment_id
@@ -1231,7 +1231,7 @@ script:
     - contextPath: csfalconx.resource.verdict
       description: Analysis verdict.
       type: String
-    - contextPath: csfalconx.resource.created_timpestamp
+    - contextPath: csfalconx.resource.created_timestamp
       description: Analysis start time.
       type: String
     - contextPath: csfalconx.resource.environment_id
@@ -1300,7 +1300,7 @@ script:
     - contextPath: csfalconx.resource.verdict
       description: Analysis verdict.
       type: String
-    - contextPath: csfalconx.resource.created_timpestamp
+    - contextPath: csfalconx.resource.created_timestamp
       description: Analysis start time.
       type: String
     - contextPath: csfalconx.resource.environment_id
@@ -1609,25 +1609,25 @@ script:
     - contextPath: csfalconx.resource.tags
       description: Analysis tags.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.header
+    - contextPath: csfalconx.resource.sandbox.http_requests.header
       description: The header of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.Accept
+    - contextPath: csfalconx.resource.sandbox.http_requests.Accept
       description: The accept of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.host_ip
+    - contextPath: csfalconx.resource.sandbox.http_requests.host_ip
       description: The host ip of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.host_port
+    - contextPath: csfalconx.resource.sandbox.http_requests.host_port
       description: The host port of the http request.
       type: Number
-    - contextPath: csfalconx.resourcesandbox.http_requests.method
+    - contextPath: csfalconx.resource.sandbox.http_requests.method
       description: The method of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.http_requests.url
+    - contextPath: csfalconx.resource.sandbox.http_requests.url
       description: The URL of the http request.
       type: String
-    - contextPath: csfalconx.resourcesandbox.User-Agent
+    - contextPath: csfalconx.resource.sandbox.User-Agent
       description: The user agent of the http request.
       type: String
     - contextPath: csfalconx.resource.sandbox.processes.command_line
@@ -1804,7 +1804,7 @@ script:
     - contextPath: csfalconx.resource.state
       description: Analysis state.
       type: String
-    - contextPath: csfalconx.resource.created_timpestamp
+    - contextPath: csfalconx.resource.created_timestamp
       description: Analysis start time.
       type: String
     - contextPath: csfalconx.resource.sha256
