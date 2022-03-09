@@ -4454,7 +4454,7 @@
             "instance_names": [
                 "ews_mail_sender_srtest02",
                 "virus_total_v3",
-                "ewso365_sec_team"
+                "ewso365_sec_eng_team"
             ],
             "external_playbook_config": 
             {
