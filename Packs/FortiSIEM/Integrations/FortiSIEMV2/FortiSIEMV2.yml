@@ -12,7 +12,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- additionalinfo: Default is 20. Maximum is 200. Note that for values greater than 20, the performance might be harmed (in 'Fetch With Events' mode).
+- additionalinfo: Default is 20. Maximum is 200. Note that for values greater than 20, the performance might be harmed (when using 'Fetch With Events' mode).
   defaultvalue: '20'
   display: Maximum incidents per fetch.
   hidden: false
