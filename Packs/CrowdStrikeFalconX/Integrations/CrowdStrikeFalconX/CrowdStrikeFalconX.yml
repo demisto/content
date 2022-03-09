@@ -670,7 +670,7 @@ script:
       description: The SHA256 hash of the file.
       type: String
     - contextPath: csfalconx.resource.created_timestamp
-      description: Timestamp when the file was created.
+      description: Analysis start time.
       type: Date
     - contextPath: csfalconx.resource.submitted_id
       description: Analysis ID received after submitting the file.
@@ -1028,7 +1028,7 @@ script:
       description: The sandbox contacted hosts protocol.
       type: String
     - contextPath: csfalconx.resource.created_timestamp
-      description: Timestamp when the file was created.
+      description: Analysis start time.
       type: Date
     - contextPath: csfalconx.resource.dns_requests.country
       description: Country the DNS request was sent to.
@@ -1847,7 +1847,7 @@ script:
       description: Environment ID of the analysis.
       type: Unknown
     - contextPath: csfalconx.resource.created_timestamp
-      description: Timestamp when the file was created.
+      description: Analysis start time.
       type: Date
   - arguments:
     - default: false
