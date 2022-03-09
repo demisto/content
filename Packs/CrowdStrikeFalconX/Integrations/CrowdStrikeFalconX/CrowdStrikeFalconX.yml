@@ -1356,13 +1356,13 @@ script:
     execution: false
     name: cs-fx-check-quota
     outputs:
-    - contextPath: csfalconx.resource.quota.total
+    - contextPath: csfalconx.resource.total
       description: 'Total quota number. '
       type: Number
-    - contextPath: csfalconx.resource.quota.used
+    - contextPath: csfalconx.resource.used
       description: Used quota number.
       type: Number
-    - contextPath: csfalconx.resource.quota.in_progress
+    - contextPath: csfalconx.resource.in_progress
       description: Analysis in progress.
       type: Number
     - contextPath: csfalconx.resource.in_progress
