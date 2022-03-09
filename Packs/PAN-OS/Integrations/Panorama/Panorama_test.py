@@ -3,7 +3,6 @@ import json
 import pytest
 import xml.etree.ElementTree as ElementTree
 from unittest.mock import patch, MagicMock
-from panos.base import PanDevice
 from panos.device import Vsys
 from panos.panorama import Panorama, DeviceGroup, Template
 from panos.firewall import Firewall
