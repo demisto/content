@@ -175,7 +175,7 @@ def extract_on_call_user_data(users, schedule_id=None):
         outputs_key_field='ID',
         outputs=contexts,
         raw_response=outputs,
-        readable_output=tableToMarkdown(USERS_ON_CALL, outputs, USERS_ON_CALL_NOW_HEADERS),
+        readable_output=tableToMarkdown(USERS_ON_CALL, outputs, USERS_ON_CALL_NOW_HEADERS, removeNull=True),
     )
 
 
@@ -219,7 +219,7 @@ def extract_on_call_now_user_data(users_on_call_now):
         outputs_key_field='ID',
         outputs=contexts,
         raw_response=outputs,
-        readable_output=tableToMarkdown(USERS_ON_CALL_NOW, outputs, USERS_ON_CALL_NOW_HEADERS),
+        readable_output=tableToMarkdown(USERS_ON_CALL_NOW, outputs, USERS_ON_CALL_NOW_HEADERS, removeNull=True),
     )
 
 

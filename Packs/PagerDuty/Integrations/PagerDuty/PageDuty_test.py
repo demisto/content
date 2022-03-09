@@ -105,7 +105,14 @@ def test_add_responders(requests_mock, mocker):
 
 def test_add_responders_default(requests_mock, mocker):
     """
-    Test sending request to a responder without specifying responders
+    Given:
+        - a responder request without specifying responders.
+
+    When:
+        - Running add_responders_to_incident function.
+
+    Then:
+        - Ensure the function returns the correct output.
     """
     mocker.patch.object(
         demisto,
@@ -141,7 +148,14 @@ def test_add_responders_default(requests_mock, mocker):
 
 def test_play_response_play(requests_mock, mocker):
     """
-    Test sending request to a responder without specifying responders
+    Given:
+        - a responder request without specifying responders.
+
+    When:
+        - Running PagerDuty-run-response-play function.
+
+    Then:
+        - Ensure the function returns a valid status.
     """
     mocker.patch.object(
         demisto,
@@ -175,7 +189,14 @@ def test_play_response_play(requests_mock, mocker):
 
 def test_get_users_on_call(requests_mock, mocker):
     """
-    Test sending request to get user oncall based on schedule ID without specifying responders
+    Given:
+        - a request to get user on-call by schedule ID.
+
+    When:
+        - Running get_on_call_users_command function.
+
+    Then:
+        - Ensure the function returns a valid output.
     """
     mocker.patch.object(
         demisto,
@@ -205,7 +226,14 @@ def test_get_users_on_call(requests_mock, mocker):
 
 def test_get_users_on_call_now(requests_mock, mocker):
     """
-    Test sending request to get user oncall based on schedule ID without specifying responders
+    Given:
+        - a reqest to get user oncall by schedule ID without specifying responders.
+
+    When:
+        - Running get_on_call_users_command function.
+
+    Then:
+        - Ensure the function returns a valid output.
     """
     mocker.patch.object(
         demisto,
