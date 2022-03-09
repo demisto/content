@@ -1258,3 +1258,77 @@ class TestPanoramaCommand:
         assert result[0].serial
         assert result[0].last_commit_all_state_tpl
 
+
+class TestUniversalCommand:
+    """Test all the commands relevant to both Panorama and Firewall devices"""
+    SHOW_SYSTEM_INFO_XML = "test_data/show_system_info.xml"
+
+    @patch("Panorama.run_op_command")
+    def test_get_system_info(self, patched_run_op_command, mock_topology):
+        from Panorama import UniversalCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestUniversalCommand.SHOW_SYSTEM_INFO_XML)
+
+        result = UniversalCommand.get_system_info(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result.result_data:
+            for k, v in result_dataclass.__dict__.items():
+                assert v
+
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for k, v in result_dataclass.__dict__.items():
+                assert v
+
+
+class TestFirewallCommand:
+    """Test all the commands relevant only to Firewall instances"""
+
+    SHOW_ARP_XML = "test_data/show_arp_all.xml"
+    SHOW_ROUTING_SUMMARY_XML = "test_data/show_routing_summary.xml"
+    SHOW_ROUTING_ROUTE_XML = "test_data/show_routing_route.xml"
+
+    @patch("Panorama.run_op_command")
+    def test_get_arp_table(self, patched_run_op_command, mock_topology):
+        from Panorama import FirewallCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_ARP_XML)
+        result = FirewallCommand.get_arp_table(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result.result_data:
+            for k, v in result_dataclass.__dict__.items():
+                assert v
+
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for k, v in result_dataclass.__dict__.items():
+                assert v
+
+    @patch("Panorama.run_op_command")
+    def test_get_routing_summary(self, patched_run_op_command, mock_topology):
+        from Panorama import FirewallCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_ROUTING_SUMMARY_XML)
+        result = FirewallCommand.get_routing_summary(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result.result_data:
+            for k, v in result_dataclass.__dict__.items():
+                assert v
+
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for k, v in result_dataclass.__dict__.items():
+                assert v
+
+    @patch("Panorama.run_op_command")
+    def test_get_routes(self, patched_run_op_command, mock_topology):
+        from Panorama import FirewallCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_ROUTING_ROUTE_XML)
+        result = FirewallCommand.get_routes(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result.result_data:
+            for k, v in result_dataclass.__dict__.items():
+                # Attribute may be int 0
+                assert v is not None
+
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for k, v in result_dataclass.__dict__.items():
+                assert v
