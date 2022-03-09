@@ -60,13 +60,13 @@ Notice that the file identifier (SHA) can be changed as shown in the example bel
 | csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. | 
 | csfalconx.resource.file_name | String | Name of the uploaded file.  |
 | csfalconx.resource.tags | String | Analysis tags. | 
-| resource.sandbox.http_requests.header | String | The header of the http request. | 
-| resource.sandbox.http_requests.Accept | String | The accept of the http request. | 
-| resource.sandbox.http_requests.host_ip | String | The host ip of the http request. | 
-| resource.sandbox.http_requests.host_port | Number | The host port of the http request. | 
-| resource.sandbox.http_requests.method | String | The method of the http request. | 
-| resource.sandbox.http_requests.url | String | The URL of the http request. | 
-| resource.sandbox.User-Agent | String | The user agent of the http request. | 
+| csfalconx.resource.sandbox.http_requests.header | String | The header of the http request. | 
+| csfalconx.resource.sandbox.http_requests.Accept | String | The accept of the http request. | 
+| csfalconx.resource.sandbox.http_requests.host_ip | String | The host ip of the http request. | 
+| csfalconx.resource.sandbox.http_requests.host_port | Number | The host port of the http request. | 
+| csfalconx.resource.sandbox.http_requests.method | String | The method of the http request. | 
+| csfalconx.resource.sandbox.http_requests.url | String | The URL of the http request. | 
+| csfalconx.resource.sandbox.User-Agent | String | The user agent of the http request. | 
 | csfalconx.resource.sandbox.processes.command_line | String | The sandbox process command line. | 
 | csfalconx.resource.sandbox.processes.handles.id | String | The sandbox handled ID. | 
 | csfalconx.resource.sandbox.processes.handles.type | String | The sandbox handled type. | 
@@ -190,13 +190,13 @@ Notice that the file identifiers, SHA and ID are not the same.
 | csfalconx.resource.environment_id | Unknown | Environment ID of the analysis.  | 
 | csfalconx.resource.file_name | String | Name of the uploaded file.  | 
 | csfalconx.resource.tags | String | Analysis tags. | 
-| resource.sandbox.http_requests.header | String | The header of the http request. | 
-| resource.sandbox.http_requests.Accept | String | The accept of the http request. | 
-| resource.sandbox.http_requests.host_ip | String | The host ip of the http request. | 
-| resource.sandbox.http_requests.host_port | Number | The host port of the http request. | 
-| resource.sandbox.http_requests.method | String | The method of the http request. | 
-| resource.sandbox.http_requests.url | String | The URL of the http request. | 
-| resource.sandbox.User-Agent | String | The user agent of the http request. | 
+| csfalconx.resource.sandbox.http_requests.header | String | The header of the http request. | 
+| csfalconx.resource.sandbox.http_requests.Accept | String | The accept of the http request. | 
+| csfalconx.resource.sandbox.http_requests.host_ip | String | The host ip of the http request. | 
+| csfalconx.resource.sandbox.http_requests.host_port | Number | The host port of the http request. | 
+| csfalconx.resource.sandbox.http_requests.method | String | The method of the http request. | 
+| csfalconx.resource.sandbox.http_requests.url | String | The URL of the http request. | 
+| csfalconx.resource.sandbox.User-Agent | String | The user agent of the http request. | 
 | csfalconx.resource.sandbox.processes.command_line | String | The sandbox process command line. | 
 | csfalconx.resource.sandbox.processes.handles.id | String | The sandbox handled ID. | 
 | csfalconx.resource.sandbox.processes.handles.type | String | The sandbox handled type. | 
@@ -330,13 +330,13 @@ Gets a full version of a sandbox report.
 | csfalconx.resource.ioc_report_broad_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). | 
 | csfalconx.resource.tags | String | Analysis tags. | 
 | csfalconx.resource.file_name | String | Name of the uploaded file.  | 
-| resource.sandbox.http_requests.header | String | The header of the http request. | 
-| resource.sandbox.http_requests.Accept | String | The accept of the http request. | 
-| resource.sandbox.http_requests.host_ip | String | The host ip of the http request. | 
-| resource.sandbox.http_requests.host_port | Number | The host port of the http request. | 
-| resource.sandbox.http_requests.method | String | The method of the http request. | 
-| resource.sandbox.http_requests.url | String | The URL of the http request. | 
-| resource.sandbox.User-Agent | String | The user agent of the http request. | 
+| csfalconx.resource.sandbox.http_requests.header | String | The header of the http request. | 
+| csfalconx.resource.sandbox.http_requests.Accept | String | The accept of the http request. | 
+| csfalconx.resource.sandbox.http_requests.host_ip | String | The host ip of the http request. | 
+| csfalconx.resource.sandbox.http_requests.host_port | Number | The host port of the http request. | 
+| csfalconx.resource.sandbox.http_requests.method | String | The method of the http request. | 
+| csfalconx.resource.sandbox.http_requests.url | String | The URL of the http request. | 
+| csfalconx.resource.sandbox.User-Agent | String | The user agent of the http request. | 
 | csfalconx.resource.sandbox.processes.command_line | String | The sandbox process command line. | 
 | csfalconx.resource.sandbox.processes.handles.id | String | The sandbox handled ID. | 
 | csfalconx.resource.sandbox.processes.handles.type | String | The sandbox handled type. | 
@@ -1912,13 +1912,13 @@ Submits a URL or FTP for sandbox analysis.
 | csfalconx.resource.created_timestamp | String | Analysis start time. | 
 | csfalconx.resource.sha256 | Unknown | SHA256 hash of the scanned file. | 
 | csfalconx.resource.environment_id | Unknown | Environment ID of the analysis. | 
-| resource.sandbox.http_requests.header | String | The header of the http request. | 
-| resource.sandbox.http_requests.Accept | String | The accept of the http request. | 
-| resource.sandbox.http_requests.host_ip | String | The host ip of the http request. | 
-| resource.sandbox.http_requests.host_port | Number | The host port of the http request. | 
-| resource.sandbox.http_requests.method | String | The method of the http request. | 
-| resource.sandbox.http_requests.url | String | The URL of the http request. | 
-| resource.sandbox.User-Agent | String | The user agent of the http request. | 
+| csfalconx.resource.sandbox.http_requests.header | String | The header of the http request. | 
+| csfalconx.resource.sandbox.http_requests.Accept | String | The accept of the http request. | 
+| csfalconx.resource.sandbox.http_requests.host_ip | String | The host ip of the http request. | 
+| csfalconx.resource.sandbox.http_requests.host_port | Number | The host port of the http request. | 
+| csfalconx.resource.sandbox.http_requests.method | String | The method of the http request. | 
+| csfalconx.resource.sandbox.http_requests.url | String | The URL of the http request. | 
+| csfalconx.resource.sandbox.User-Agent | String | The user agent of the http request. | 
 | csfalconx.resource.sandbox.processes.command_line | String | The sandbox process command line. | 
 | csfalconx.resource.sandbox.processes.handles.id | String | The sandbox handled ID. | 
 | csfalconx.resource.sandbox.processes.handles.type | String | The sandbox handled type. | 
