@@ -1045,6 +1045,8 @@ MOCK_FIREWALL_3_SERIAL = "333333333333333"
 def mock_firewall():
     mock_firewall = MagicMock(spec=Firewall)
     mock_firewall.serial = MOCK_FIREWALL_1_SERIAL
+    mock_firewall.hostname = None
+
     return mock_firewall
 
 
@@ -1052,6 +1054,7 @@ def mock_firewall():
 def mock_panorama():
     mock_panorama = MagicMock(spec=Panorama)
     mock_panorama.serial = MOCK_PANORAMA_SERIAL
+    mock_panorama.hostname = None
     return mock_panorama
 
 
@@ -1222,4 +1225,36 @@ class TestUtilityFunctions:
 
         device_group = mock_device_groups()[0]
         assert resolve_container_name(device_group) == "test-dg"
+
+
+class TestPanoramaCommand:
+    """Test all the commands relevant to Panorama"""
+
+    SHOW_DEVICEGROUPS_XML = "test_data/show_device_groups.xml"
+    SHOW_TEMPLATESTACK_XML = "test_data/show_template_stack.xml"
+
+    @patch("Panorama.run_op_command")
+    def test_get_device_groups(self, patched_run_op_command, mock_topology):
+        from Panorama import PanoramaCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestPanoramaCommand.SHOW_DEVICEGROUPS_XML)
+
+        result = PanoramaCommand.get_device_groups(mock_topology)
+        assert len(result) == 2
+        assert result[0].name
+        assert result[0].hostid
+        assert result[0].connected
+        assert result[0].serial
+        assert result[0].last_commit_all_state_sp
+
+    @patch("Panorama.run_op_command")
+    def test_get_template_stacks(self, patched_run_op_command, mock_topology):
+        from Panorama import PanoramaCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestPanoramaCommand.SHOW_TEMPLATESTACK_XML)
+        result = PanoramaCommand.get_template_stacks(mock_topology)
+        assert len(result) == 2
+        assert result[0].name
+        assert result[0].hostid
+        assert result[0].connected
+        assert result[0].serial
+        assert result[0].last_commit_all_state_tpl
 
