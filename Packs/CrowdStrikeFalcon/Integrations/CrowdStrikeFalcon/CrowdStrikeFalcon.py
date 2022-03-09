@@ -289,6 +289,9 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             f'Failed to parse json object from response: {exception} - {res.content}')  # type: ignore[str-bytes-safe]
 
 
+''' API FUNCTIONS '''
+
+
 def create_entry_object(contents: Union[List[Any], Dict[str, Any]] = {}, ec: Union[List[Any], Dict[str, Any]] = None,
                         hr: str = ''):
     """
@@ -1200,13 +1203,13 @@ def delete_ioc(ioc_type, value):
 
 
 def search_custom_iocs(
-    types: Optional[Union[list, str]] = None,
-    values: Optional[Union[list, str]] = None,
-    sources: Optional[Union[list, str]] = None,
-    expiration: Optional[str] = None,
-    limit: str = '50',
-    sort: Optional[str] = None,
-    offset: Optional[str] = None,
+        types: Optional[Union[list, str]] = None,
+        values: Optional[Union[list, str]] = None,
+        sources: Optional[Union[list, str]] = None,
+        expiration: Optional[str] = None,
+        limit: str = '50',
+        sort: Optional[str] = None,
+        offset: Optional[str] = None,
 ) -> dict:
     """
     :param types: A list of indicator types. Separate multiple types by comma.
@@ -1243,21 +1246,19 @@ def get_custom_ioc(ioc_id: str) -> dict:
 
 
 def update_custom_ioc(
-    ioc_id: str,
-    action: Optional[str] = None,
-    platforms: Optional[str] = None,
-    severity: Optional[str] = None,
-    source: Optional[str] = None,
-    description: Optional[str] = None,
-    expiration: Optional[str] = None,
+        ioc_id: str,
+        action: Optional[str] = None,
+        platforms: Optional[str] = None,
+        severity: Optional[str] = None,
+        source: Optional[str] = None,
+        description: Optional[str] = None,
+        expiration: Optional[str] = None,
 ) -> dict:
     """
     Update an IOC
     """
     payload = {
-        'indicators': [{
-            'id': ioc_id,
-        } | assign_params(
+        'indicators': [{'id': ioc_id, } | assign_params(
             action=action,
             platforms=platforms,
             severity=severity,
@@ -1558,6 +1559,15 @@ def upload_batch_custom_ioc(ioc_batch: List[dict]) -> dict:
     return http_request('POST', '/iocs/entities/indicators/v1', json=payload)
 
 
+def get_behaviors_by_incident(incident_id: str, params: dict = None) -> dict:
+    return http_request('GET', f'/incidents/queries/behaviors/v1?filter=incident_id:"{incident_id}"', params=params)
+
+
+def get_detections_by_behaviors(behaviors_id):
+    body = {'ids': behaviors_id}
+    return http_request('POST', '/incidents/entities/behaviors/GET/v1', data=body)
+
+
 ''' COMMANDS FUNCTIONS '''
 
 
@@ -1769,13 +1779,13 @@ def delete_ioc_command(ioc_type, value):
 
 
 def search_custom_iocs_command(
-    types: Optional[Union[list, str]] = None,
-    values: Optional[Union[list, str]] = None,
-    sources: Optional[Union[list, str]] = None,
-    expiration: Optional[str] = None,
-    limit: str = '50',
-    sort: Optional[str] = None,
-    offset: Optional[str] = None,
+        types: Optional[Union[list, str]] = None,
+        values: Optional[Union[list, str]] = None,
+        sources: Optional[Union[list, str]] = None,
+        expiration: Optional[str] = None,
+        limit: str = '50',
+        sort: Optional[str] = None,
+        offset: Optional[str] = None,
 ) -> dict:
     """
     :param types: A list of indicator types. Separate multiple types by comma.
@@ -1808,9 +1818,9 @@ def search_custom_iocs_command(
 
 
 def get_custom_ioc_command(
-    ioc_type: Optional[str] = None,
-    value: Optional[str] = None,
-    ioc_id: Optional[str] = None,
+        ioc_type: Optional[str] = None,
+        value: Optional[str] = None,
+        ioc_id: Optional[str] = None,
 ) -> dict:
     """
     :param ioc_type: IOC type
@@ -1894,13 +1904,13 @@ def upload_custom_ioc_command(
 
 
 def update_custom_ioc_command(
-    ioc_id: str,
-    action: Optional[str] = None,
-    platforms: Optional[str] = None,
-    severity: Optional[str] = None,
-    source: Optional[str] = None,
-    description: Optional[str] = None,
-    expiration: Optional[str] = None,
+        ioc_id: str,
+        action: Optional[str] = None,
+        platforms: Optional[str] = None,
+        severity: Optional[str] = None,
+        source: Optional[str] = None,
+        description: Optional[str] = None,
+        expiration: Optional[str] = None,
 ) -> dict:
     """
     :param ioc_id: The ID of the indicator to update.
@@ -2856,19 +2866,29 @@ def get_indicator_device_id():
     for error in errors:
         if error.get('code') == 404:
             return f'No results found for {ioc_type} - {ioc_value}'
-    context_output = ''
+    devices_response = []
     if validate_response(raw_res):
-        context_output = raw_res.get('resources')
+        devices_response = raw_res.get('resources')
     else:
         error_message = build_error_message(raw_res)
         return_error(error_message)
     ioc_id = f"{ioc_type}:{ioc_value}"
-    readable_output = tableToMarkdown(f"Devices that encountered the IOC {ioc_id}", context_output, headers='Device ID')
+    readable_output = tableToMarkdown(f"Devices that encountered the IOC {ioc_id}", devices_response,
+                                      headers='Device ID')
+    outputs = {'DeviceID': devices_response,
+               'DeviceIOC':
+                   {
+                       'Type': ioc_type,
+                       'Value': ioc_value,
+                       'ID': ioc_id,
+                       'DeviceID': devices_response,
+                   }
+               }
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='CrowdStrike.DeviceID',
-        outputs_key_field='DeviceID',
-        outputs=context_output,
+        outputs_prefix='CrowdStrike',
+        outputs_key_field='DeviceIOC.ID',
+        outputs=outputs,
         raw_response=raw_res
     )
 
@@ -3355,6 +3375,30 @@ def rtr_get_extracted_file(args_to_get_files: dict, file_name: str):
                            outputs_prefix="CrowdStrike.File"), files]
 
 
+def get_detection_for_incident_command(incident_id: str) -> CommandResults:
+    behavior_res = get_behaviors_by_incident(incident_id)
+    behaviors_id = behavior_res.get('resources')
+
+    if not behaviors_id or behavior_res.get('meta', {}).get('pagination', {}).get('total', 0) == 0:
+        return CommandResults(readable_output=f'Could not find behaviors for incident {incident_id}')
+
+    detection_res = get_detections_by_behaviors(behaviors_id).get('resources', {})
+    outputs = []
+
+    for detection in detection_res:
+        outputs.append({
+            'incident_id': detection.get('incident_id'),
+            'behavior_id': detection.get('behavior_id'),
+            'detection_ids': detection.get('detection_ids'),
+
+        })
+    return CommandResults(outputs_prefix='CrowdStrike.IncidentDetection',
+                          outputs=outputs,
+                          outputs_key_field='incident_id',
+                          readable_output=tableToMarkdown('Detection For Incident', outputs),
+                          raw_response=detection_res)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is {}'.format(demisto.command()))
@@ -3506,6 +3550,8 @@ def main():
         elif command == 'cs-falcon-rtr-retrieve-file':
             return_results(rtr_polling_retrieve_file_command(args))
 
+        elif command == 'cs-falcon-get-detections-for-incident':
+            return_results(get_detection_for_incident_command(args.get('incident_id')))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
