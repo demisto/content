@@ -49,3 +49,6 @@ ignore=SC101
 [known_words]
 CreateIndicatorRelationship
 
+[known_words]
+CommonServerPython
+
