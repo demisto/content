@@ -8543,6 +8543,7 @@ def flatten_xml_to_dict(element: Element, object_dict: dict, class_type: Callabl
     """
     for child_element in element:
         tag = child_element.tag
+
         # Replace hyphens in tags with underscores to match python attributes
         tag = tag.replace("-", "_")
         dataclass_field = next((x for x in fields(class_type) if x.name == tag), None)

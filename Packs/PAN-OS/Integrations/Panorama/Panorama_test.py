@@ -1168,6 +1168,7 @@ class TestTopology:
 
 class TestUtilityFunctions:
     """Tests all the utility fucntions like dataclass_to_dict, etc"""
+    SHOW_JOBS_ALL_XML = "test_data/show_jobs_all.xml"
 
     def test_dataclass_from_dict(self, mock_panorama):
         from Panorama import dataclass_from_dict, CommitStatus
@@ -1192,3 +1193,33 @@ class TestUtilityFunctions:
         result_dataclass: CommitStatus = dataclass_from_dict(mock_panorama, example_dict, CommitStatus)
         # With a hostname and no serial, hostid shold be the hostname
         assert result_dataclass.hostid == "test"
+
+    def test_flatten_xml_to_dict(self):
+        from Panorama import flatten_xml_to_dict, ShowJobsAllResultData
+
+        xml_element = load_xml_root_from_test_file(TestUtilityFunctions.SHOW_JOBS_ALL_XML)
+        result_element = xml_element.find("./result/job")
+        result = flatten_xml_to_dict(result_element, {}, ShowJobsAllResultData)
+        assert "type" in result
+
+    def test_resolve_host_id(self, mock_panorama):
+        from Panorama import resolve_host_id
+        mock_panorama.hostname = None
+        result = resolve_host_id(mock_panorama)
+
+        assert result == MOCK_PANORAMA_SERIAL
+
+        mock_panorama.hostname = "test"
+        mock_panorama.serial = None
+        result = resolve_host_id(mock_panorama)
+
+        assert result == "test"
+
+    def test_resolve_container_name(self, mock_panorama):
+        from Panorama import resolve_container_name
+        # Test the "shared" container
+        assert resolve_container_name(mock_panorama) == "shared"
+
+        device_group = mock_device_groups()[0]
+        assert resolve_container_name(device_group) == "test-dg"
+
