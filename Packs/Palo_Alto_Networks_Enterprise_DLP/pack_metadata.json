@@ -1,6 +1,6 @@
 {
-    "name": "Palo Alto Networks Enterprise DLP",
-    "description": "Enterprise DLP Integration",
+    "name": "PAN DLP",
+    "description": "Palo Alto Networks Enterprise DLP Integration",
     "created": "2020-11-04T18:13:35Z",
     "support": "xsoar",
     "author": "Enterprise DLP",
