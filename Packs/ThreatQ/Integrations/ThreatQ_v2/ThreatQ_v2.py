@@ -246,54 +246,26 @@ def make_edit_request_for_an_object(obj_id, obj_type, params):
 
 def make_indicator_reputation_request(indicator_type, value, generic_context):
     # Search for the indicator ID by keyword:
-    # demisto.log(indicator_type)
-    # demisto.log(value)
-    # OLD
-    #url_suffix = '/search?query={0}&limit=1'.format(value)
-    #res = tq_request('GET', url_suffix)
-
     access_token = get_access_token()
-    api_call_headers = {'Authorization': 'Bearer ' + access_token}
-    api_call_headers.update({'Content-Type': 'application/json'})
+    api_call_headers = {'Authorization': 'Bearer ' + access_token,
+                        'Content-Type': 'application/json'}
+    body = {}
     if indicator_type == 'ip':
         tq_type = "IP Address"
     elif indicator_type == 'url':
         tq_type = "URL"
 
-        if 'http://' in value:
+        is_httpx = False
+        if value.startswith('http://'):
             value_without_proto = value.replace('http://', '')
-        elif 'https://' in value:
-            value_without_proto = value.replace('https://', '')
-
-        if 'https://' in value or 'http://' in value:
             is_httpx = True
-        else:
-            is_httpx = False
+        elif value.startswith('https://'):
+            value_without_proto = value.replace('https://', '')
+            is_httpx = True
 
-        if is_httpx == True:
-            body = {
-                "criteria":
-                    {
-                        "+or":
-                            [
-                                {
-                                    "value": {"+equals": value}
-                                },
-                                {
-                                    "value":
-                                    {
-                                        "+equals": value_without_proto
-                                    }
-                                }
-
-                            ]
-                    },
-                "filters":
-                    {
-                        "type_name": tq_type
-
-                    }
-            }
+        if is_httpx:
+            body = {"criteria": {"+or": [{"value": {"+equals": value}}, {"value": {"+equals": value_without_proto}}]},
+                    "filters": {"type_name": tq_type}}
         else:
             body = {
                 "criteria": {"value": {"+equals": value}},
@@ -306,38 +278,11 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
         tq_type = "Email Address"
 
     if indicator_type == 'file':
-        body = {
-            "criteria":
-                {
-                    "value":
-                        {
-                            "+equals": value
-                        }
-
-                },
-                "filters":
-                    {
-                        "+or": [
-                            {
-                                "type_name": "MD5"
-                            },
-                            {
-                                "type_name": "SHA-1"
-                            },
-                            {
-                                "type_name": "SHA-256"
-                            },
-                            {
-                                "type_name": "SHA-384"
-                            },
-                            {
-                                "type_name": "SHA-512"
-                            }
-                        ]
-                }
-        }
+        body = {"criteria": {"value": {"+equals": value}},
+                "filters": {
+                    "+or": [{"type_name": "MD5"}, {"type_name": "SHA-1"}, {"type_name": "SHA-256"}, {"type_name": "SHA-384"},
+                            {"type_name": "SHA-512"}]}}
     elif tq_type != "URL":
-
         body = {
             "criteria": {"value": {"+equals": value}},
             "filters": {"type_name": tq_type}
@@ -352,18 +297,14 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
         verify=USE_SSL,
     )
     res = response.json()
-    demisto.log(str(body))
-    # demisto.log(str(res))
 
     indicators: List[Dict] = []
     for obj in res.get('data', []):
-        # demisto.log(str(obj['value']))
         if 'id' in obj:
             # Search for detailed information about the indicator
             url_suffix = '/indicators/{0}?with=attributes,sources,score,type'.format(obj.get('id'))
             res = tq_request('GET', url_suffix)
             indicators.append(indicator_data_to_demisto_format(res['data']))
-    #demisto.log(str(indicators))###########
     indicators = indicators or [{'Value': value, 'TQScore': -1}]
     entry_context = aggregate_search_results(
         indicators=indicators,
