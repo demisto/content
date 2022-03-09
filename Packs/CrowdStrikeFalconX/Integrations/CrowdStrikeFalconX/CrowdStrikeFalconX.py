@@ -760,7 +760,7 @@ def upload_file_command(  # type: ignore[return]
             outputs=result.output,
             readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
             raw_response=response,
-            indicator=result.indicator)
+            )
 
     else:
         sha256 = str(result.output.get("sha256"))  # type: ignore[union-attr]
@@ -954,7 +954,7 @@ def find_suitable_hash_indicator(results: tuple[RawCommandResults]) -> dict[str,
 
 def get_report_summary_command(
         client: Client,
-        ids: list[str]
+        ids: str,  # argToList is called inside
 ) -> list[CommandResults]:
     """Get a short summary version of a sandbox report.
     :param client: the client object with an access token
@@ -980,7 +980,7 @@ def get_report_summary_command(
                      'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.'
     results = []
 
-    for single_id in ids:
+    for single_id in argToList(ids):
         response = client.get_report_summary(single_id)
         result = parse_outputs(response, reliability=client.reliability,
                                resources_fields=resources_fields, sandbox_fields=sandbox_fields)
@@ -1000,7 +1000,7 @@ def get_report_summary_command(
 
 def get_analysis_status_command(
         client: Client,
-        ids: list[str]
+        ids: str, # argsToList called inside
 ) -> list[CommandResults]:
     """Check the status of a sandbox analysis.
     :param client: the client object with an access token
@@ -1012,7 +1012,7 @@ def get_analysis_status_command(
 
     results = []
 
-    for single_id in ids:
+    for single_id in argToList(ids):
         response = client.get_analysis_status([single_id])
         result = parse_outputs(response, reliability=client.reliability, resources_fields=resources_fields,
                                sandbox_fields=sandbox_fields)
@@ -1022,7 +1022,7 @@ def get_analysis_status_command(
                            outputs=result.output,
                            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
                            raw_response=result.response,
-                           indicator=result.indicator,
+                           # not returning indicator
                            )
         )
         return results
@@ -1072,7 +1072,6 @@ def check_quota_status_command(
         CommandResults(
             outputs_prefix=OUTPUTS_PREFIX,
             outputs_key_field='id',
-            indicator=result.indicator,
             readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
             raw_response=response,
             outputs=result.output
@@ -1105,7 +1104,6 @@ def find_sandbox_reports_command(
         outputs=result.output,
         readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
         raw_response=response,
-        indicator=result.indicator
     )
 
 
@@ -1133,7 +1131,6 @@ def find_submission_id_command(
         outputs=result.output,
         readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
         raw_response=result.response,
-        indicator=result.indicator
     )
 
 
