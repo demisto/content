@@ -182,66 +182,66 @@ DATA_WITH_URLS = [(
 COMPLEX_DATA_WITH_URLS = [(
     [
         {'data':
-             {'id': '1',
-              'result':
-                  {'files':
-                      [
+         {'id': '1',
+          'result':
+          {'files':
+           [
                           {
                               'filename': 'name',
                               'size': 0,
                               'url': 'url'
                           }
-                      ]
-                  },
+                          ]
+           },
               'links': ['link']
-              }
+          }
          },
         {'data':
-             {'id': '2',
-              'result':
-                  {'files':
-                      [
-                          {
-                              'filename': 'name',
-                              'size': 0,
-                              'url': 'url'
-                          }
-                      ]
-                  },
+         {'id': '2',
+          'result':
+          {'files':
+           [
+               {
+                   'filename': 'name',
+                   'size': 0,
+                   'url': 'url'
+               }
+           ]
+           },
               'links': ['link']
-              }
+          }
          }
     ],
     [
         {'data':
-             {'id': '1',
-              'result':
-                  {'files':
-                      [
-                          {
-                              'filename': 'name',
-                              'size': 0,
-                              'url': '[url](url)'
-                          }
-                      ]
-                  },
+         {'id': '1',
+          'result':
+          {'files':
+           [
+               {
+                   'filename': 'name',
+                   'size': 0,
+                   'url': '[url](url)'
+               }
+           ]
+           },
               'links': ['[link](link)']
-              }
+          }
          },
         {'data':
-             {'id': '2',
-              'result':
-                  {'files':
-                      [
-                          {
-                              'filename': 'name',
-                              'size': 0,
-                              'url': '[url](url)'
-                          }
-                      ]
-                  },
+         {'id': '2',
+          'result':
+          {'files':
+           [
+               {
+                   'filename': 'name',
+                   'size': 0,
+                   'url': '[url](url)'
+               }
+           ]
+           },
               'links': ['[link](link)']
-              }
+          }
          }
     ])]
 
@@ -1238,7 +1238,7 @@ def test_logger_replace_strs(mocker):
     assert ('' not in ilog.replace_strs)
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
     assert ilog.messages[1] == \
-           'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
+        'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
 
 
 TEST_SSH_KEY_ESC = '-----BEGIN OPENSSH PRIVATE KEY-----\\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
@@ -1876,7 +1876,7 @@ class TestCommandResults:
         results = CommandResults(outputs_prefix='File', outputs_key_field=['sha1', 'sha256', 'md5'], outputs=files)
 
         assert list(results.to_context()['EntryContext'].keys())[0] == \
-               'File(val.sha1 && val.sha1 == obj.sha1 && val.sha256 && val.sha256 == obj.sha256 && val.md5 && val.md5 == obj.md5)'
+            'File(val.sha1 && val.sha1 == obj.sha1 && val.sha256 && val.sha256 == obj.sha256 && val.md5 && val.md5 == obj.md5)'
 
     def test_output_prefix_includes_dt(self):
         """
@@ -1897,7 +1897,7 @@ class TestCommandResults:
                                  outputs_key_field='', outputs=files)
 
         assert list(results.to_context()['EntryContext'].keys())[0] == \
-               'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
+            'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
 
     @pytest.mark.parametrize('score, expected_readable',
                              [(CommonServerPython.Common.DBotScore.NONE, 'Unknown'),
@@ -2478,6 +2478,7 @@ def test_http_request_ssl_ciphers_insecure():
         assert next(cipher for cipher in ciphers_list if cipher['name'] == 'AES128-GCM-SHA256')
     else:
         assert True
+
 
 class TestBaseClient:
     from CommonServerPython import BaseClient
@@ -3634,7 +3635,6 @@ def test_invalid_url_indicator_types(indicator_value):
     assert not re.match(urlRegex, indicator_value)
 
 
-
 def test_handle_proxy(mocker):
     os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
     mocker.patch.object(demisto, 'params', return_value={'insecure': True})
@@ -4553,7 +4553,8 @@ class TestGetResultsWrapper:
                             CommandWrapper('my-brand2', ['command1', 'command2'], [{'arg1': 'val1'}, {'arg2': 'val2'}]),
                             CommandWrapper('my-brand3', 'error-command', {'bad_arg': 'bad_val'}),
                             CommandWrapper('brand-no-exist', 'command', {'arg': 'val'})]
-        mocker.patch.object(CommonServerPython, 'execute_commands_multiple_results', side_effect=TestGetResultsWrapper.execute_command_mock)
+        mocker.patch.object(CommonServerPython, 'execute_commands_multiple_results',
+                            side_effect=TestGetResultsWrapper.execute_command_mock)
         mocker.patch.object(CommonServerPython, 'execute_command', return_value=((True, [{'brand': 'my-brand1'},
                                                                                          {'brand': 'my-brand2'},
                                                                                          {'brand': 'my-brand3'}])))
@@ -4577,15 +4578,14 @@ class TestGetResultsWrapper:
         command_wrappers = [CommandWrapper('my-brand1', 'error-command', {'arg': 'val'}),
                             CommandWrapper('my-brand2', 'error-command', {'bad_arg': 'bad_val'}),
                             CommandWrapper('brand-no-exist', 'command', {'arg': 'val'})]
-        mocker.patch.object(CommonServerPython, 'execute_commands_multiple_results', side_effect=TestGetResultsWrapper.execute_command_mock)
+        mocker.patch.object(CommonServerPython, 'execute_commands_multiple_results',
+                            side_effect=TestGetResultsWrapper.execute_command_mock)
         mocker.patch.object(CommonServerPython, 'execute_command', return_value=((True, [{'brand': 'my-brand1'},
                                                                                          {'brand': 'my-brand2'}])))
         with pytest.raises(DemistoException) as e:
             get_wrapper_results(command_wrappers)
             assert 'Command did not succeeded' in e.value
             assert 'Script failed. The following errors were encountered:' in e.value
-
-
 
 
 def test_arg_to_int__valid_numbers():
@@ -6638,5 +6638,3 @@ Exception: WTF?!!!'''
 Exception: WTF?!!!'''
         result = CommonServerPython.fix_traceback_line_numbers(traceback)
         assert result == expected_traceback
-
-

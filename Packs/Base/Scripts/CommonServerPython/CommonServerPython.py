@@ -1378,6 +1378,7 @@ class SmartGetDict(dict):
     :rtype: ``SmartGetDict``
 
     """
+
     def get(self, key, default=None):
         res = dict.get(self, key)
         if res is not None:
@@ -1944,6 +1945,7 @@ class JsonTransformer:
     :return: None
     :rtype: ``None``
     """
+
     def __init__(self, flatten=False, keys=None, is_nested=False, func=None):
         """
         Constructor for JsonTransformer
@@ -4624,6 +4626,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 gn=None,  # type: Optional[Common.GeneralName]
@@ -4663,6 +4666,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 issuer=None,  # type: Optional[List[Common.GeneralName]]
@@ -4706,6 +4710,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 full_name=None,  # type: Optional[List[Common.GeneralName]]
@@ -4745,6 +4750,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 policy_identifier,  # type: str
@@ -4777,6 +4783,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 access_method,  # type: str
@@ -4805,6 +4812,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 ca,  # type: bool
@@ -5498,6 +5506,7 @@ class IndicatorsTimeline:
     :return: None
     :rtype: ``None``
     """
+
     def __init__(self, indicators=None, category=None, message=None):
         # type: (list, str, str) -> None
         if indicators is None:
@@ -5530,7 +5539,6 @@ class IndicatorsTimeline:
 
 def arg_to_number(arg, arg_name=None, required=False):
     # type: (Any, Optional[str], bool) -> Optional[int]
-
     """Converts an XSOAR argument to a Python int
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -5588,7 +5596,6 @@ def arg_to_number(arg, arg_name=None, required=False):
 
 def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=None):
     # type: (Any, Optional[str], bool, bool, dict) -> Optional[datetime]
-
     """Converts an XSOAR argument to a datetime
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -6403,6 +6410,7 @@ CommandWrapper = namedtuple('CommandWrapper', ['brand', 'commands', 'args_lst'])
 
 ResultWrapper = namedtuple('ResultWrapper', ['command', 'args', 'brand', 'instance', 'result'])
 
+
 def execute_commands_multiple_results(commands, args_lst, extract_contents=True):
     """
     Runs the `demisto.executeCommand()` and check for all the results returned from the command.
@@ -6440,6 +6448,7 @@ def execute_commands_multiple_results(commands, args_lst, extract_contents=True)
                 results.append(ResultWrapper(command, args, brand_name, module_name, res))
     return results, errors
 
+
 def get_wrapper_results(command_wrappers):
     """
     Given a list of command_wrappers, return a list of results (to pass to return_results).
@@ -6452,12 +6461,13 @@ def get_wrapper_results(command_wrappers):
     all_brands = [command_wrapper.brand for command_wrapper in command_wrappers]
     valid, instances_results = execute_command('GetInstances', {'brand': ','.join(all_brands)}, fail_on_error=False)
     if not valid:
-        raise DemistoException(f'Cant get instances because of {str(instances_results)}')
+        raise DemistoException('Cant get instances because of {}'.format(str(instances_results)))
     active_brands = {instance.get('brand') for instance in instances_results}
     for command_wrapper in command_wrappers:
         if command_wrapper.brand not in active_brands:
             continue
-        results, errors = execute_commands_multiple_results(command_wrapper.commands, command_wrapper.args_lst, extract_contents=False)
+        results, errors = execute_commands_multiple_results(
+            command_wrapper.commands, command_wrapper.args_lst, extract_contents=False)
         full_results.extend(results)
         full_errors.extend(errors)
 
@@ -6469,6 +6479,7 @@ def get_wrapper_results(command_wrappers):
         raise DemistoException(error_msg)
     command_results.append(CommandResults(readable_output=summary_md))
     return command_results
+
 
 def get_wrapper_results_summary(results, errors):
     results_summary_table = []
@@ -8538,6 +8549,7 @@ class AutoFocusKeyRetriever:
     :return: No data returned
     :rtype: ``None``
     """
+
     def __init__(self, api_key):
         # demisto.getAutoFocusApiKey() is available from version 6.2.0
         if not api_key:
@@ -9029,6 +9041,7 @@ class PollResult:
     :rtype: ``PollResult``
 
     """
+
     def __init__(self, response, continue_to_poll=False, args_for_next_run=None, partial_result=None):
         """
         Constructor for PollResult
