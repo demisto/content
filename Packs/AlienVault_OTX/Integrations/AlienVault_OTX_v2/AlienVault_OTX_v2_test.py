@@ -5,7 +5,7 @@ import pytest
 
 # Import local packages
 from AlienVault_OTX_v2 import calculate_dbot_score, Client, file_command, url_command, domain_command, \
-     ip_command, build_context_indicator_no_results_status
+    ip_command, build_context_indicator_no_results_status
 from CommonServerPython import *
 import demistomock as demisto
 

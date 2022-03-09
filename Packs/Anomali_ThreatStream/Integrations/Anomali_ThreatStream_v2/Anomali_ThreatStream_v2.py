@@ -138,13 +138,6 @@ class Client:
 def build_context_indicator_no_results_status(indicator: str, indicator_type: str, message: str,
                                               integration_name: str, reliability: Any = None) -> CommandResults:
 
-    indicator_map = {
-        'file': file_unknown,
-        'ip': ip_unknown,
-        'domain': domain_unknown,
-        'url': url_unknown
-    }
-
     def file_unknown(indicator):
         dbot_score = Common.DBotScore(indicator=indicator,
                                       score=Common.DBotScore.NONE,
@@ -181,6 +174,13 @@ def build_context_indicator_no_results_status(indicator: str, indicator_type: st
                                       integration_name=integration_name,
                                       reliability=reliability)
         return Common.Domain(domain=indicator, dbot_score=dbot_score)
+
+    indicator_map = {
+        'file': file_unknown,
+        'ip': ip_unknown,
+        'domain': domain_unknown,
+        'url': url_unknown
+    }
 
     return CommandResults(readable_output=message, indicator=indicator_map[indicator_type](indicator))
 
