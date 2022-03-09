@@ -67,8 +67,8 @@ script:
       isArray: false
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -77,8 +77,8 @@ script:
       isArray: false
       name: extended_data
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -308,8 +308,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: SHA256 ID of the sample, which is a SHA256 hash value. Find the sample
-        ID from the response when uploading a malware sample or search with the cs-fx-upload-file command.
+      description: SHA256 ID of the sample, which is a SHA256 hash value. Find the sample ID from the response when uploading a malware sample or search with the cs-fx-upload-file command.
       isArray: false
       name: sha256
       required: false
@@ -345,15 +344,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Command line script passed to the submitted file at runtime. Max
-        length: 2048 characters.'
+      description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters.'
       isArray: false
       name: command_line
       required: false
       secret: false
     - default: false
-      description: 'Auto-filled for Adobe or Office files that prompt for a password.
-        Max length: 32 characters.'
+      description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters.'
       isArray: false
       name: document_password
       required: false
@@ -369,8 +366,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Name of the malware sample that’s used for file type detection.
-        and analysis.
+      description: Name of the malware sample that’s used for file type detection. and analysis.
       isArray: false
       name: submit_name
       required: false
@@ -387,8 +383,8 @@ script:
       isArray: false
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -397,8 +393,8 @@ script:
       isArray: false
       name: extended_data
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -641,8 +637,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: ID of a submitted malware sample. Find a submission ID from the
-        response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command.
+      description: ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command.
       isArray: true
       name: ids
       required: true
@@ -653,8 +648,8 @@ script:
       isArray: false
       name: extended_data
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -919,8 +914,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of a submitted malware sample. Find a submission ID from the
-        response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command.
+      description: ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command.
       isArray: true
       name: ids
       required: true
@@ -995,8 +989,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of a submitted malware sample. Find a submission ID from the
-        response when submitting a malware sample or search with the cs-fx-submit-uploaded-file/url command.
+      description: ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file/url command.
       isArray: true
       name: ids
       required: true
@@ -1144,8 +1137,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Finds submission IDs for uploaded files by providing an FQL filter
-      and paging details. Returns a set of submission IDs that match the search criteria.
+    description: Finds submission IDs for uploaded files by providing an FQL filter and paging details. Returns a set of submission IDs that match the search criteria.
     execution: false
     name: cs-fx-find-submission-id
     outputs:
@@ -1191,15 +1183,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Command line script passed to the submitted file at runtime. Max
-        length: 2048 characters'
+      description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters'
       isArray: false
       name: command_line
       required: false
       secret: false
     - default: false
-      description: 'Auto-filled for Adobe or Office files that prompt for a password.
-        Max length: 32 characters.'
+      description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters.'
       isArray: false
       name: document_password
       required: false
@@ -1216,8 +1206,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Name of the malware sample that’s used for file type detection
-        and analysis.
+      description: Name of the malware sample that’s used for file type detection and analysis.
       isArray: false
       name: submit_name
       required: false
@@ -1234,8 +1223,8 @@ script:
       isArray: false
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -1251,8 +1240,8 @@ script:
       isArray: false
       name: extended_data
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -1488,8 +1477,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: ID of an artifact, such as an IOC pack, PCAP file, or actor image.
-        Find an artifact ID in a report or summary.
+      description: ID of an artifact, such as an IOC pack, PCAP file, or actor image. Find an artifact ID in a report or summary.
       isArray: false
       name: id
       required: true
@@ -1502,8 +1490,7 @@ script:
       secret: false
     - default: false
       defaultValue: gzip
-      description: Format used to compress the downloaded file. Currently, you must
-        provide the value of the GZIP file.
+      description: Format used to compress the downloaded file. Currently, you must provide the value of the GZIP file.
       isArray: false
       name: accept_encoding
       required: false
@@ -1512,7 +1499,7 @@ script:
     description: Downloads IOC packs, PCAP files, and other analysis artifacts.
     execution: false
     name: cs-fx-download-ioc
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.1.26972
   feed: false
   isfetch: false
   longRunning: false

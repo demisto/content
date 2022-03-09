@@ -203,7 +203,7 @@ class Client:
     def upload_file(
             self,
             file: str,
-            file_name: str,
+            file_name: str = None,
             is_confidential: str = "true",
             comment: str = ""
     ) -> dict:
@@ -216,7 +216,8 @@ class Client:
         """
         get_file_path_res = demisto.getFilePath(file)
         file_path = get_file_path_res["path"]
-        file_name = get_file_path_res["name"]
+        file_name_by_path = get_file_path_res["name"]
+        file_name = file_name if file_name else file_name_by_path
 
         url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}" \
                      f"&comment={comment}"
@@ -545,7 +546,7 @@ def test_module(
 def upload_file_command(
         client: Client,
         file: str,
-        file_name: str,
+        file_name: str = None,
         is_confidential: str = "true",
         comment: str = "",
         submit_file: str = "no",
@@ -1017,8 +1018,6 @@ def validate_command_args(command, args):
     if command == 'cs-fx-upload-file':
         if 'file' not in args:
             raise Exception("file argument is a mandatory for cs-fx-upload-file command")
-        if 'file_name' not in args:
-            raise Exception("file_name argument is a mandatory for cs-fx-upload-file command")
         if 'polling' in args and args.get('submit_file') != 'yes':
             raise Exception("The command cs-fx-upload-file support the polling option "
                             "just when the submit_file argument is yes.")
