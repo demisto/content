@@ -109,6 +109,31 @@ def auth_check(spf_data, dkim_data, dmarc_data, override_dict):
     return 'Pass'
 
 
+def get_authentication_value(headers, original_authentication_header):
+    """
+    Handles the case where the authentication header is given under a different header.
+    This header is represented by the 'original_authentication_header' argument.
+    This can happen when an intermediate server changes the email and holds the original value of the header
+    in a different header.
+    For more info, see issue #46364.
+    Args:
+        headers: The headers dict argument given by the user
+        original_authentication_header: The name of a header which holds the original value of the
+        Authentication-Results header.
+
+    Returns:
+        The suitable authenticator header.
+
+    """
+    header_dict = {str(header.get('name')).lower(): header.get('value') for header in headers if isinstance(header, dict)}
+    if original_authentication_header and original_authentication_header in header_dict:
+        authentication_value = header_dict[original_authentication_header]
+    else:
+        authentication_value = header_dict.get('authentication-results')
+
+    return authentication_value
+
+
 '''MAIN FUNCTION'''
 
 
@@ -116,8 +141,8 @@ def main():
     try:
         args = demisto.args()
         headers = argToList(demisto.args().get('headers'))
-
-        auth = None
+        original_authentication_header = args.get('original_authentication_header', '').lower()
+        auth = get_authentication_value(headers, original_authentication_header)
         spf = None
         message_id = ''
 
@@ -162,8 +187,6 @@ def main():
 
         for header in headers:
             if isinstance(header, dict):
-                if str(header.get('name')).lower() == 'authentication-results':
-                    auth = header.get('value')
                 if str(header.get('name')).lower() == 'received-spf':
                     spf = header.get('value')
                 if str(header.get('name')).lower() == 'message-id':
@@ -172,7 +195,7 @@ def main():
         email_key = "Email(val.Headers.filter(function(header) {{ return header && header.name === 'Message-ID' && " \
                     "header.value === '{}';}}))".format(message_id)
 
-        if auth is None and spf is None:
+        if not auth and not spf:
             context = {
                 '{}.AuthenticityCheck'.format(email_key): 'undetermined'
             }
