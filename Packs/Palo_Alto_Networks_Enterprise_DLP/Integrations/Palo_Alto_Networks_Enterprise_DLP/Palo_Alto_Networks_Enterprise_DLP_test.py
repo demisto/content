@@ -1,9 +1,8 @@
 import json
 
-import demistomock as demisto
-
 from Palo_Alto_Networks_Enterprise_DLP import Client, FeedbackStatus
 DLP_URL = 'https://api.dlp.paloaltonetworks.com'
+
 
 def test_update_incident(requests_mock):
     incident_id = 'abcdefg12345'
@@ -15,4 +14,3 @@ def test_update_incident(requests_mock):
     assert status == 200
     assert result == {}
     assert request.text == json.dumps({"user_id": user_id})
-

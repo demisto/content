@@ -159,33 +159,15 @@ class Client(BaseClient):
         url = INCIDENTS_URL
         params = {}
         if regions:
-            params['regions'] = regions;
+            params['regions'] = regions
         if start_time:
-            params['start_timestamp'] = start_time
+            params['start_timestamp'] = str(start_time)
         if end_time:
-            params['end_timestamp'] = end_time
+            params['end_timestamp'] = str(end_time)
         query_string = urllib.parse.urlencode(params)
         url = f"{url}?{query_string}"
         resp, status_code = self._get_dlp_api_call(url)
         return resp
-        # incidents = []
-        # for event in events:
-        #     incident_creation_time = dateparser.parse(events[-1]['createdAt'])
-        #     incident = {
-        #         'name': f'Palo Alto Networks DLP incident {event["incidentId"]}',  # name is required field, must be set
-        #         'occurred': incident_creation_time.isoformat(),  # must be string of a format ISO8601
-        #         'rawJSON': json.dumps(event)
-        #         # the original event, this will allow mapping of the event in the mapping stage. Don't forget to `json.dumps`
-        #     }
-        #     incidents.append(incident)
-        #
-        # latest_created_time = dateparser.parse(events[-1]['createdAt'])
-        # latest_created_time = latest_created_time.strftime(DATE_FORMAT)
-        # next_run = {'last_fetch': latest_created_time, 'id': events[-1]['incidentId']}
-        # if call_from_test:
-        #     # Returning None
-        #     return {}, []
-        # return next_run, incidents
 
     def update_dlp_incident(self, incident_id: str, feedback: FeedbackStatus, user_id: str, region: str):
         """
@@ -200,7 +182,8 @@ class Client(BaseClient):
             'user_id': user_id
         }
         url = f'{UPDATE_INCIDENT_URL}/{incident_id}?feedback_type={feedback.value}&region={region}'
-        return  self._post_dlp_api_call(url, payload)
+        return self._post_dlp_api_call(url, payload)
+
 
 def parse_data_pattern_rule(report_json, verdict_field, results_field):
     """
@@ -345,13 +328,13 @@ def fetch_incidents(client: Client, start_time: int, end_time: int, regions: str
         for raw_incident in raw_incidents:
             raw_incident['region'] = region
             incident_creation_time = dateparser.parse(raw_incident['createdAt'])
-            event_dump  = json.dumps(raw_incident)
+            event_dump = json.dumps(raw_incident)
             incident = {
-              'name': f'Palo Alto Networks DLP Incident {raw_incident["incidentId"]}',  # name is required field, must be set
-              'type': 'Data Loss Prevention',
-              'occurred': incident_creation_time.isoformat(),  # must be string of a format ISO8601
-              'rawJSON': event_dump,
-              'details': event_dump
+                'name': f'Palo Alto Networks DLP Incident {raw_incident["incidentId"]}',
+                'type': 'Data Loss Prevention',
+                'occurred': incident_creation_time.isoformat(),  # must be string of a format ISO8601
+                'rawJSON': event_dump,
+                'details': event_dump
             }
             incidents.append(incident)
     return incidents
@@ -365,7 +348,7 @@ def long_running_execution_command(params: Dict):
         params (Dict): Demisto params.
 
     """
-    regions = params.get('dlp_regions')
+    regions = demisto.get(params, 'dlp_regions', '')
     refresh_token = params.get('refresh_token')
     url = BASE_URL if params.get('env') == 'prod' else STAGING_BASE_URL
     while True:
@@ -400,7 +383,7 @@ def long_running_execution_command(params: Dict):
 
 def exemption_eligible(args: dict, params: dict):
     data_profile = args.get('data_profile')
-    eligible_list = params.get('dlp_exemptible_list')
+    eligible_list = params.get('dlp_exemptible_list', '')
     eligible = data_profile in eligible_list
     result = {
         'eligible': eligible
@@ -414,7 +397,7 @@ def exemption_eligible(args: dict, params: dict):
 
 
 def slack_bot_message(args: dict, params: dict):
-    message_template = params.get('dlp_slack_message')
+    message_template = params.get('dlp_slack_message', '')
     template = Template(message_template)
     message = template.substitute(file_name=args.get('file_name'),
                                   data_profile_name=args.get('data_profile_name'),
@@ -429,6 +412,7 @@ def slack_bot_message(args: dict, params: dict):
         outputs=result
     )
     demisto.results(results.to_context())
+
 
 def main():
     """ Main Function"""
