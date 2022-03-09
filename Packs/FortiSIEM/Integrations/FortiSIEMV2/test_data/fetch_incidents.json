@@ -22,7 +22,7 @@
             "incidentDetail": "incidentCount:567,",
             "incidentRptDevName": "Palo Alto",
             "eventName": "Excessive End User DNS Queries",
-            "incidentId": 641,
+            "incidentId": 1,
             "incidentStatus": 0,
             "customer": "Super"
         },
@@ -46,7 +46,7 @@
             "incidentDetail": "incidentCount:548,",
             "incidentRptDevName": "Palo Alto",
             "eventName": "Excessive End User DNS Queries",
-            "incidentId": 105,
+            "incidentId": 2,
             "incidentStatus": 0,
             "customer": "Super"
         },
@@ -70,7 +70,7 @@
             "incidentDetail": "incidentCount:21,",
             "incidentRptDevName": "Palo Alto",
             "eventName": "Heavy UDP Port Scan: Single Host",
-            "incidentId": 671,
+            "incidentId": 3,
             "incidentStatus": 0,
             "customer": "Super"
         },
@@ -94,7 +94,7 @@
             "incidentDetail": "incidentCount:38,",
             "incidentRptDevName": "Palo Alto",
             "eventName": "Heavy TCP Port Scan: Single Destination",
-            "incidentId": 667,
+            "incidentId": 4,
             "incidentStatus": 0,
             "customer": "Super"
         },
@@ -118,7 +118,7 @@
             "incidentDetail": "incidentCount:21,",
             "incidentRptDevName": "Palo Alto",
             "eventName": "Heavy UDP Port Scan: Single Host",
-            "incidentId": 781,
+            "incidentId": 5,
             "incidentStatus": 0,
             "customer": "Super"
         },
@@ -142,7 +142,7 @@
             "incidentDetail": "incidentCount:38,",
             "incidentRptDevName": "Palo Alto",
             "eventName": "Heavy TCP Port Scan: Single Destination",
-            "incidentId": 778,
+            "incidentId": 6,
             "incidentStatus": 0,
             "customer": "Super"
         },
@@ -166,7 +166,7 @@
             "incidentDetail": "incidentCount:22,",
             "incidentRptDevName": "Palo Alto",
             "eventName": "Heavy TCP Port Scan: Single Destination",
-            "incidentId": 113,
+            "incidentId": 7,
             "incidentStatus": 0,
             "customer": "Super"
         },
@@ -190,7 +190,7 @@
             "incidentDetail": "incidentCount:23,",
             "incidentRptDevName": "Palo Alto",
             "eventName": "Heavy TCP Port Scan: Single Destination",
-            "incidentId": 683,
+            "incidentId": 8,
             "incidentStatus": 0,
             "customer": "Super"
         },
@@ -214,7 +214,7 @@
             "incidentDetail": "incidentCount:20,",
             "incidentRptDevName": "Palo Alto",
             "eventName": "Heavy UDP Port Scan: Single Host",
-            "incidentId": 682,
+            "incidentId": 9,
             "incidentStatus": 0,
             "customer": "Super"
         },
@@ -238,7 +238,7 @@
             "incidentDetail": "incidentCount:38,",
             "incidentRptDevName": "Palo Alto",
             "eventName": "Heavy TCP Port Scan: Single Destination",
-            "incidentId": 711,
+            "incidentId": 10,
             "incidentStatus": 0,
             "customer": "Super"
         }

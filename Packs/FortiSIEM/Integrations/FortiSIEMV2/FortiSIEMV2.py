@@ -1014,7 +1014,7 @@ def watchlist_entry_delete_command(client: FortiSIEMClient, args: Dict[str, Any]
 
 
 def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, status_list: List[str],
-                    fetch_with_events: bool, max_events_fetch: int) -> None:
+                    fetch_with_events: bool, max_events_fetch: int, last_run: Dict[str, Any]) -> tuple:
     """
     Fetch incidents. May fetch also the triggered events of each incident if requested.
     Args:
@@ -1024,13 +1024,13 @@ def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, s
         status_list (list): List of incidents' status to filter incidents.
         fetch_with_events (bool): Whether or not fetch the incidents with their events.
         max_events_fetch (int): Maximum number of events to fetch per incident.
+        last_run (Dict[str,Any]): Last run object.
     Returns:
-       None
+       tuple: Fetched incidents & updated last_run.
     """
     validate_fetch_params(max_fetch, max_events_fetch, fetch_with_events, first_fetch, status_list)
     numeric_status_list = convert_verbal_status_filtering_to_numeric(status_list)
 
-    last_run = demisto.getLastRun()
     first_fetch_epoch = date_to_timestamp(arg_to_datetime(first_fetch)) if not last_run else None
     last_incident_create_time = last_run.get('create_time')
     time_from = last_incident_create_time or first_fetch_epoch
@@ -1051,8 +1051,8 @@ def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, s
             'occurred': timestamp_to_datestring(incident['incidentFirstSeen']),
             'rawJSON': json.dumps(incident)})
     if incidents:
-        update_last_run_obj(last_run, formatted_incidents)
-    demisto.incidents(incidents)
+        last_run = update_last_run_obj(last_run, formatted_incidents)
+    return incidents, last_run
 
 
 def get_related_events_for_fetch_command(incident_id: str, max_events_fetch: int,
@@ -1806,14 +1806,13 @@ def update_last_run_obj(last_run: Dict[str, Any], formatted_incidents: List[dict
     if cur_last_incident_create_time == prev_last_incident_create_time and prev_last_incident_create_time:  # stack the incidents ID.
         last_run['last_incidents'] += cur_incidents_id
         last_run['start_index'] += len(cur_incidents_id)
-        demisto.setLastRun(copy.deepcopy(last_run))
     else:  # flush old incidents ID
         last_run = {
             'create_time': cur_last_incident_create_time,
             'last_incidents': cur_incidents_id,
             'start_index': 0
         }
-        demisto.setLastRun(copy.deepcopy(last_run))
+    return last_run
 
 
 def main() -> None:
@@ -1875,10 +1874,13 @@ def main() -> None:
                         status_filter_list)
         elif command == 'fetch-incidents':
 
-            fetch_incidents(client, max_fetch,
-                            first_fetch,
-                            status_filter_list, fetch_with_events,
-                            max_events_fetch)
+            incidents, last_run = fetch_incidents(client, max_fetch,
+                                                  first_fetch,
+                                                  status_filter_list, fetch_with_events,
+                                                  max_events_fetch, demisto.getLastRun())
+
+            demisto.setLastRun(last_run)
+            demisto.incidents(incidents)
 
         elif command == 'fortisiem-event-search':
             if argToBoolean(args.get('polling')):
