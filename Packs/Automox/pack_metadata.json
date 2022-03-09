@@ -1,0 +1,19 @@
+{
+    "name": "Automox",
+    "description": "Automox Content Pack for Demisto",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Automox Inc.",
+    "url": "https://www.automox.com/",
+    "email": "support@automox.com",
+    "categories": [
+        "Endpoint"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
