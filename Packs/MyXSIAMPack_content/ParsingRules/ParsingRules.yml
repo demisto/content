@@ -1,5 +1,5 @@
-- name: My Rule
-  fromxsiamversion: 3.3
-  tags: a
-  rules: ''
-  samples: ''
+name: My Rule
+fromxsiamversion: 3.3
+tags: a
+rules: ''
+samples: ''
