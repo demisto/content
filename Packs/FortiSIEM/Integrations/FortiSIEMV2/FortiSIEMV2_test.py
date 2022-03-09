@@ -531,6 +531,7 @@ def test_build_constraint_from_args(args, expected_output):
     result = build_constraint_from_args(args)
     assert result == expected_output
 
+
 @freeze_time(time.ctime(1646205070))
 @pytest.mark.parametrize("last_run,incidents_file,fetch_with_events,expected_output",
                          [({}, "fetch_incidents.json", False, {
