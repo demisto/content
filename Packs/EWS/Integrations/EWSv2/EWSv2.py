@@ -427,7 +427,7 @@ def prepare():
         return None, credentials
     else:
         if not MANUAL_USERNAME:
-            return_error('DOMAIN\USERNAME is required for exchange on-premise.')
+            return_error('DOMAIN\\USERNAME parameter is required for on-premise Exchange Servers.')
         else:
             USERNAME = MANUAL_USERNAME
         if 'outlook.office365.com' in EWS_SERVER.lower():
