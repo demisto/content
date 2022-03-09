@@ -368,7 +368,7 @@ class Client:
         """
         url_suffix = "/falconx/entities/artifacts/v1"
         params = {
-            "ids": id,
+            "id": id,
             "name": name,
             "Accept-Encoding": accept_encoding,
         }
@@ -1041,19 +1041,18 @@ def download_ioc_command(
     :param accept_encoding: format used to compress your downloaded file
     :return: Demisto outputs when entry_context and responses are lists
     """
-    response: dict = {}
     try:
         response = client.download_ioc(id, name, accept_encoding)
+        return CommandResults(
+            outputs_prefix=OUTPUTS_PREFIX,
+            outputs_key_field='ioc',
+            outputs=response,
+            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", response),
+            raw_response=response
+        )
     except Exception as e:
         demisto.debug(f'Download ioc exception {e}')
-
-    return CommandResults(
-        outputs_prefix=OUTPUTS_PREFIX,
-        outputs_key_field='id',
-        outputs=response,
-        readable_output=tableToMarkdown("CrowdStrike Falcon X response:", response),
-        raw_response=response
-    )
+        raise DemistoException(f'Download ioc exception {e}', exception=e)
 
 
 def check_quota_status_command(
