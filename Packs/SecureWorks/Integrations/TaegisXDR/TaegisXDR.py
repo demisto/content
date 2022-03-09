@@ -266,7 +266,7 @@ def fetch_incidents(client: Client, max_fetch: int = 15):
     """
     Fetch Taegis Investigations for the use with "Fetch Incidents"
     """
-    if int(max_fetch) > 200:
+    if not 0 < int(max_fetch) < 201:
         raise ValueError("Max Fetch must be between 1 and 200")
 
     query = """

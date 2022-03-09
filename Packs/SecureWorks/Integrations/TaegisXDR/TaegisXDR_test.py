@@ -103,6 +103,9 @@ def test_fetch_incidents(requests_mock):
     assert response[0]['name'] == FETCH_INCIDENTS_RESPONSE["data"]["allInvestigations"][0]['description']
 
     with pytest.raises(ValueError, match="Max Fetch must be between 1 and 200"):
+        assert fetch_incidents(client=client, max_fetch=0)
+
+    with pytest.raises(ValueError, match="Max Fetch must be between 1 and 200"):
         assert fetch_incidents(client=client, max_fetch=201)
 
     client = mock_client(requests_mock, FETCH_INCIDENTS_BAD_RESPONSE)
