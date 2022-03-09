@@ -669,6 +669,18 @@ script:
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
       type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: string
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the full description.
+      type: string
     - contextPath: csfalconx.resource.created_timestamp
       description: Analysis start time.
       type: Date
@@ -1481,6 +1493,15 @@ script:
       type: Number
     - contextPath: csfalconx.resource.verdict
       description: Analysis verdict.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 found in the parsed file.
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 found in the parsed file.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 found in the parsed file.
       type: String
   - arguments:
     - default: false

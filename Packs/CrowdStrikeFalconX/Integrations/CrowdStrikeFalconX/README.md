@@ -259,8 +259,12 @@ Notice that the file identifiers, SHA and ID are not the same.
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| File.Name | String | The name of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
+| File.Malicious.Description | String | For malicious files, the reason that the vendor made the decision. | 
 
 
 #### Command Example
@@ -468,17 +472,14 @@ Gets a full version of a sandbox report.
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| File.Malicious.Description | Unknown | A description explaining why the file was determined to be malicious | 
-| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
 | File.Name | String | The name of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.Size | Number | The size of the file. | 
 | File.Relationships.EntityA | String | The source of the relationship. | 
 | File.Relationships.EntityAType | String | The type of the source of the relationship. | 
 | File.Relationships.EntityB | String | The destination of the relationship. | 
 | File.Relationships.EntityBType | String | The type of the destination of the relationship. | 
 | File.Relationships.Relationship | String | The name of the relationship. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Size | Number | The size of the file. | 
-| File.Type | String | The type of the file. | 
 
 
 #### Command Example
