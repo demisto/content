@@ -389,7 +389,7 @@ class Client:
             filter: str = "",
             offset: str = "",
             sort: str = "",
-            hashes: Optional[list[str]] = None
+            hashes: Optional[list[str]] = None,
     ) -> dict:
         """Creating the needed arguments for the http request
         :param limit: maximum number of report IDs to return
@@ -539,7 +539,7 @@ def parse_file_results(report_to_results: dict[str, RawCommandResults]) -> list[
                 outputs=result.output,
                 readable_output=readable_output,
                 raw_response=result.response,
-                indicator=result.indicator
+                indicator=result.indicator,
             )
         )
     return command_results
@@ -668,7 +668,7 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
             company=info.get('CompanyName'),
             product_name=info.get('ProductName'),
             signature=signature,
-            relationships=relationships or None
+            relationships=relationships or None,
         )
 
 
@@ -739,7 +739,8 @@ def upload_file_command(  # type: ignore[return]
         file_name: Optional[str] = None,
         is_confidential: str = "true",
         comment: str = "",
-        submit_file: str = "no") -> CommandResults:
+        submit_file: str = "no",
+) -> CommandResults:
     """Upload a file for sandbox analysis.
     :param client: the client object with an access token
     :param file: content of the uploaded sample in binary format
