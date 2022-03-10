@@ -215,7 +215,7 @@ class Client:
     def upload_file(
             self,
             file: str,
-            file_name: str,
+            file_name: Optional[str] = None,
             is_confidential: str = "true",
             comment: str = ""
     ) -> dict:
@@ -228,7 +228,7 @@ class Client:
         """
         get_file_path_res = demisto.getFilePath(file)
         file_path = get_file_path_res["path"]
-        file_name = get_file_path_res["name"]
+        file_name = file_name or get_file_path_res.get("name")
 
         url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}" \
                      f"&comment={comment}"
@@ -736,7 +736,7 @@ def test_module(client: Client) -> str:
 def upload_file_command(  # type: ignore[return]
         client: Client,
         file: str,
-        file_name: str,
+        file_name: Optional[str] = None,
         is_confidential: str = "true",
         comment: str = "",
         submit_file: str = "no") -> CommandResults:
