@@ -60,7 +60,7 @@ def test_varonis_get_alerts_command(mocker: MockerFixture):
 
     result = varonis_get_alerts_command(client, args)
 
-    assert result.outputs_prefix == 'Varonis.Alert'
+    assert result.outputs_prefix == 'Varonis'
     assert result.outputs == expected_outputs
 
 
@@ -131,5 +131,5 @@ def test_varonis_get_alerted_events_command(mocker: MockerFixture):
 
     result = varonis_get_alerted_events_command(client, args)
 
-    assert result.outputs_prefix == 'Varonis.Event'
+    assert result.outputs_prefix == 'Varonis'
     assert result.outputs == expected_outputs

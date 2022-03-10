@@ -65,6 +65,13 @@ script:
       name: Alert_Status
       required: false
       secret: false
+    - default: true
+      defaultValue: '1'
+      description: Page number
+      isArray: false
+      name: page
+      required: false
+      secret: false
     deprecated: false
     description: Get alerts from Varonis DA
     execution: false
@@ -169,6 +176,12 @@ script:
     - contextPath: Varonis.Alert.Device.IPThreatTypes
       description: Indicates whether the alert contains IPs known to be malicious.
       type: String
+    - contextPath: Varonis.Pagination.Page
+      description: Current page number requested by user
+      type: Number
+    - contextPath: Varonis.Pagination.PageSize
+      description: Amount of records on the page
+      type: Number
   - arguments:
     - default: false
       description: Requested alerts
@@ -224,6 +237,13 @@ script:
       description: The max number of alerts to retrieve (up to 5k)
       isArray: false
       name: max_results
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '1'
+      description: Page number
+      isArray: false
+      name: page
       required: false
       secret: false
     deprecated: false
@@ -347,6 +367,12 @@ script:
     - contextPath: Varonis.Event.OnObject.DestinationDevice
       description: The destination host name for relevant services.
       type: String
+    - contextPath: Varonis.Pagination.Page
+      description: Current page number requested by user
+      type: Number
+    - contextPath: Varonis.Pagination.PageSize
+      description: Amount of records on the page
+      type: Number
   dockerimage: demisto/ntlm:1.0.0.24037
   feed: false
   isfetch: false

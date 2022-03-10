@@ -58,30 +58,30 @@ ALERT_COLUMNS = [
 ]
 
 ALERT_OUTPUT = [
-    'Varonis.Alert.ID',
-    'Varonis.Alert.Name',
-    'Varonis.Alert.Time',
-    'Varonis.Alert.Severity',
-    'Varonis.Alert.Category',
-    'Varonis.Alert.Country',
-    'Varonis.Alert.State',
-    'Varonis.Alert.Status',
-    'Varonis.Alert.CloseReason',
-    'Varonis.Alert.BlacklistLocation',
-    'Varonis.Alert.AbnormalLocation',
-    'Varonis.Alert.NumOfAlertedEvents',
-    'Varonis.Alert.UserName',
-    'Varonis.Alert.By.SamAccountName',
-    'Varonis.Alert.By.PreivilegedAccountType',
-    'Varonis.Alert.By.HasFollowUpIndicators',
-    'Varonis.Alert.On.ContainsFlaggedData',
-    'Varonis.Alert.On.ContainsSensitiveData',
-    'Varonis.Alert.On.Platform',
-    'Varonis.Alert.On.Asset',
-    'Varonis.Alert.On.FileServerOrDomain',
-    'Varonis.Alert.Device.Name',
-    'Varonis.Alert.Device.ContainMaliciousExternalIP',
-    'Varonis.Alert.Device.IPThreatTypes'
+    'Alert.ID',
+    'Alert.Name',
+    'Alert.Time',
+    'Alert.Severity',
+    'Alert.Category',
+    'Alert.Country',
+    'Alert.State',
+    'Alert.Status',
+    'Alert.CloseReason',
+    'Alert.BlacklistLocation',
+    'Alert.AbnormalLocation',
+    'Alert.NumOfAlertedEvents',
+    'Alert.UserName',
+    'Alert.By.SamAccountName',
+    'Alert.By.PreivilegedAccountType',
+    'Alert.By.HasFollowUpIndicators',
+    'Alert.On.ContainsFlaggedData',
+    'Alert.On.ContainsSensitiveData',
+    'Alert.On.Platform',
+    'Alert.On.Asset',
+    'Alert.On.FileServerOrDomain',
+    'Alert.Device.Name',
+    'Alert.Device.ContainMaliciousExternalIP',
+    'Alert.Device.IPThreatTypes'
 ]
 
 EVENT_COLUMNS = [
@@ -120,38 +120,38 @@ EVENT_COLUMNS = [
 ]
 
 EVENT_OUTPUT = [
-    'Varonis.Event.ID',  # TODO need to clarify spec
-    'Varonis.Event.Type',
-    'Varonis.Event.UTCTime',
-    'Varonis.Event.Status',
-    'Varonis.Event.Description',
-    'Varonis.Event.Country',
-    'Varonis.Event.State',
-    'Varonis.Event.Details.IsBlacklist',
-    'Varonis.Event.Details.Operation',
-    'Varonis.Event.ByUser.Name',
-    'Varonis.Event.ByUser.UserType',
-    'Varonis.Event.ByUser.UserAccountType',
-    'Varonis.Event.ByUser.SAMAccountNamt',
-    'Varonis.Event.ByUser.Domain',
-    'Varonis.Event.ByUser.DisabledAccount',
-    'Varonis.Event.ByUser.StaleAccount',
-    'Varonis.Event.ByUser.LockoutAccounts',
-    'Varonis.Event.SourceIP',
-    'Varonis.Event.IsMaliciousIP',
-    'Varonis.Event.IPReputation',
-    'Varonis.Event.IPThreatType',
-    'Varonis.Event.OnObject.Name',
-    'Varonis.Event.OnObject.ObjectType',
-    'Varonis.Event.OnObject.Platform',
-    'Varonis.Event.OnObject.IsSensitive',
-    'Varonis.Event.OnObject.FileServerOrDomain',
-    'Varonis.Event.OnObject.IsDisabledAccount',
-    'Varonis.Event.OnObject.IsLockOutAccount',
-    'Varonis.Event.OnObject.SAMAccountName',
-    'Varonis.Event.OnObject.UserAccountType',
-    'Varonis.Event.OnObject.DestinationIP',
-    'Varonis.Event.OnObject.DestinationDevice'
+    'Event.ID',  # TODO need to clarify spec
+    'Event.Type',
+    'Event.UTCTime',
+    'Event.Status',
+    'Event.Description',
+    'Event.Country',
+    'Event.State',
+    'Event.Details.IsBlacklist',
+    'Event.Details.Operation',
+    'Event.ByUser.Name',
+    'Event.ByUser.UserType',
+    'Event.ByUser.UserAccountType',
+    'Event.ByUser.SAMAccountNamt',
+    'Event.ByUser.Domain',
+    'Event.ByUser.DisabledAccount',
+    'Event.ByUser.StaleAccount',
+    'Event.ByUser.LockoutAccounts',
+    'Event.SourceIP',
+    'Event.IsMaliciousIP',
+    'Event.IPReputation',
+    'Event.IPThreatType',
+    'Event.OnObject.Name',
+    'Event.OnObject.ObjectType',
+    'Event.OnObject.Platform',
+    'Event.OnObject.IsSensitive',
+    'Event.OnObject.FileServerOrDomain',
+    'Event.OnObject.IsDisabledAccount',
+    'Event.OnObject.IsLockOutAccount',
+    'Event.OnObject.SAMAccountName',
+    'Event.OnObject.UserAccountType',
+    'Event.OnObject.DestinationIP',
+    'Event.OnObject.DestinationDevice'
 ]
 
 
@@ -175,7 +175,7 @@ class Client(BaseClient):
         :param username: User name with domain 'Domain\\UserMame'
 
         :type password: ``str``
-        :param password: Pasword
+        :param password: Password
 
         :return: Dict containing the authentication token, token type, expiration time (sec) [TODO get sure that in sec]
         :rtype: ``Dict[str, Any]``
@@ -194,7 +194,7 @@ class Client(BaseClient):
         """Gets an enum by enum_id. Usually needs for retrieving object required for a search
 
         :type enum_id: ``int``
-        :param enum_id: Id of enum stored in data base
+        :param enum_id: Id of enum stored in database
 
         :return: The list of objects required for a search filter
         :rtype: ``List[Any]``
@@ -203,7 +203,7 @@ class Client(BaseClient):
         return response
 
     def varonis_execute_search(self, query: Dict[str, Any]) -> List[Any]:
-        """Creats a search job on the server side. Retrives the path to the results
+        """Creates a search job on the server side. Retrieves the path to the results
 
         :type query: ``Dict[str, Any]``
         :param query: A collection of filters
@@ -228,10 +228,16 @@ class Client(BaseClient):
         :param search_location: The location of the results generated by the search job
 
         :type url_query: ``str``
-        :param url_query: Aditional filter (e.g. a range of results)
+        :param url_query: Additional filter (e.g. a range of results)
 
         :type retries: ``int``
         :param retries: Amount of retries, needs for waiting while search job will be done
+
+        :type backoff_factor: ``int``
+        :param backoff_factor: Backoff factor
+
+        :type status_list_to_retry: ``List[int]``
+        :param status_list_to_retry: Http codes for retrying request
 
         :return: Search results
         :rtype: ``Dict[str, Any]``
@@ -422,17 +428,20 @@ class SearchEventQueryBuilder(SearchQueryBuilder):
         self._filters.append(filter_obj)
 
 
-def get_query_range(count: int):
+def get_query_range(count: int, page: int):
     """Generate query for range of the search results
 
     :type count: ``int``
     :param count: Max amount of the search results
 
+    :type page: ``int``
+    :param page: Current page, depends on count
+
     :return: A query range
     :rtype: ``str``
     """
     if count:
-        return f'from=0&to={count-1}'
+        return f'from={(page-1)*count}&to={page*count-1}'
     return ''
 
 
@@ -448,7 +457,7 @@ def get_search_result_path(search_response: List[Any]) -> str:
     return next(x['location'] for x in search_response if x['dataType'] == 'rows')
 
 
-def create_output(columns: List[str], rows: List[List[Any]]) -> List[str]:
+def create_output(columns: List[str], rows: List[List[Any]]) -> Dict[str, Any]:
     """Maps Varonis response to xsoar
 
     :type columns: ``List[str]``
@@ -457,15 +466,30 @@ def create_output(columns: List[str], rows: List[List[Any]]) -> List[str]:
     :type rows: ``List[List[Any]]``
     :param rows: Output values retrieved from Varonis
 
-    :return: The list of xsoar objects
-    :rtype: ``List[str]``
+    :return: Tree like mapping
+    :rtype: ``Dict[str, Any]``
     """
-    outputs: List[Any] = []
+    outputs: Dict[str, List[Any]] = dict()
     for row in rows:
-        output = dict()
+        out_obj: Dict[str, Any] = dict()
         for i in range(0, len(columns)):
-            output[columns[i]] = row[i]
-        outputs.append(output)
+            path = columns[i].split('.')
+            if path[0] not in outputs:
+                outputs[path[0]] = []
+            temp_obj = out_obj
+            part = None
+            for p in range(1, len(path)):
+                part = path[p]
+                if p >= len(path) - 1:
+                    break
+                if part not in temp_obj:
+                    temp_obj[part] = dict()
+                temp_obj = temp_obj[part]
+
+            if part is None:
+                raise ValueError(f'{columns[i]}')
+            temp_obj[part] = row[i]
+        outputs[path[0]].append(out_obj)
     return outputs
 
 
@@ -494,24 +518,23 @@ def try_convert(item, converter, error=None):
     return None
 
 
-def execute_search_query(client: Client, query: Any, count: int) -> Dict[str, Any]:
+def execute_search_query(client: Client, query: Any, data_range: str) -> Dict[str, Any]:
     """Execute search job and waiting for the results
 
     :type client: ``Client``
     :param client: Http client
 
     :type query: ``Any``
-    :param query: Search qery
+    :param query: Search query
 
-    :type count: ``int``
-    :param count: Max amount of the search results
+    :type data_range: ``str``
+    :param data_range: http url query for getting range of data
 
     :return: Search result
     :rtype: ``Dict[str, Any]``
     """
     response = client.varonis_execute_search(query)
     location = get_search_result_path(response)
-    data_range = get_query_range(count)
 
     search_result = client.varonis_get_search_result(location, data_range, SEARCH_RESULT_RETRIES)
     return search_result
@@ -523,7 +546,8 @@ def varonis_get_alerts(
     threats: List[str],
     start: datetime,
     end: datetime,
-    count: int
+    count: int,
+    page: int
 ) -> Dict[str, Any]:
     """Searches and retrieves alerts
 
@@ -545,6 +569,9 @@ def varonis_get_alerts(
     :type count: ``int``
     :param count: Max amount of the search results
 
+    :type page: ``int``
+    :param page: Current page, depends on count
+
     :return: Alerts
     :rtype: ``Dict[str, Any]``
     """
@@ -558,8 +585,30 @@ def varonis_get_alerts(
         builder.create_time_interval_filter(start, end)
 
     query = builder.build()
+    data_range = get_query_range(count, page)
 
-    return execute_search_query(client, query, count)
+    return execute_search_query(client, query, data_range)
+
+
+def enrich_with_pagination(output: Dict[str, Any], page: int, page_size: int) -> Dict[str, Any]:
+    """Enriches command output with pagination info
+
+    :type output: ``Dict[str, Any]``
+    :param output: Command output
+
+    :type page: ``int``
+    :param page: Page number
+
+    :type page_size: ``int``
+    :param page_size: Amount of elements on the page
+
+    :return: Enriched command output
+    :rtype: ``Dict[str, Any]``
+    """
+    output['Pagination'] = dict()
+    output['Pagination']['Page'] = page
+    output['Pagination']['PageSize'] = page_size
+    return output
 
 
 def varonis_update_alert(client: Client, close_reason_id: int, status_id: int, alert_ids: list) -> bool:
@@ -593,7 +642,7 @@ def varonis_update_alert(client: Client, close_reason_id: int, status_id: int, a
     return client.varonis_update_alert_status(query)
 
 
-def varonis_get_alerted_events(client: Client, alerts: List[str], count: int) -> Dict[str, Any]:
+def varonis_get_alerted_events(client: Client, alerts: List[str], count: int, page: int) -> Dict[str, Any]:
     """Searches and retrieves alerted events
 
     :type client: ``Client``
@@ -605,14 +654,18 @@ def varonis_get_alerted_events(client: Client, alerts: List[str], count: int) ->
     :type count: ``int``
     :param count: Max amount of the search results
 
+    :type page: ``int``
+    :param page: Current page, depends on count
+
     :return: Alerted events
     :rtype: ``Dict[str, Any]``
     """
     builder = SearchEventQueryBuilder(client)
     builder.create_alert_id_filter(alerts)
     query = builder.build()
+    data_range = get_query_range(count, page)
 
-    return execute_search_query(client, query, count)
+    return execute_search_query(client, query, data_range)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -654,6 +707,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     :param args:
         all command arguments, usually passed from ``demisto.args()``.
         ``args['threat_model_name']`` List of requested threat models to retrieve
+        ``args['page']`` Page number (default 1)
         ``args['max_results']`` The max number of alerts to retrieve (up to 50)
         ``args['Start_time']`` Start time of the range of alerts
         ``args['End_time']`` End time of the range of alerts
@@ -669,6 +723,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     start_time = args.get('Start_time', None)
     end_time = args.get('End_time', None)
     alert_statuses = args.get('Alert_Status', None)
+    page = args.get('page', '1')
 
     threat_model_names = try_convert(threat_model_names, lambda x: argToList(x))
     max_results = try_convert(
@@ -688,11 +743,18 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
     alert_statuses = try_convert(alert_statuses, lambda x: argToList(x))
+    page = try_convert(
+        page,
+        lambda x: int(x),
+        ValueError(f'page should be integer, but it is {page}.')
+    )
 
-    result = varonis_get_alerts(client, alert_statuses, threat_model_names, start_time, end_time, max_results)
+    result = varonis_get_alerts(client, alert_statuses, threat_model_names, start_time, end_time, max_results, page)
     outputs = create_output(ALERT_OUTPUT, result['rows'])
+    page_size = result['rowsCount']
+    outputs = enrich_with_pagination(outputs, page, page_size)
     return CommandResults(
-        outputs_prefix='Varonis.Alert',
+        outputs_prefix='Varonis',
         outputs_key_field='Varonis.Alert.ID',
         outputs=outputs
     )
@@ -760,6 +822,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     :param args:
         all command arguments, usually passed from ``demisto.args()``.
         ``args['Alert_id']`` List of alert ids
+        ``args['page']`` Page number (default 1)
         ``args['max_results']`` The max number of alerts to retrieve (up to 5k)
 
     :return:
@@ -768,6 +831,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     :rtype: ``CommandResults``
     """
     alerts = args.get('Alert_id', None)
+    page = args.get('page', '1')
     max_results = args.get('max_results', None)
 
     alerts = try_convert(alerts, lambda x: argToList(x))
@@ -776,11 +840,18 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
         lambda x: int(x),
         ValueError(f'max_results should be integer, but it is {max_results}.')
     )
+    page = try_convert(
+        page,
+        lambda x: int(x),
+        ValueError(f'page should be integer, but it is {page}.')
+    )
 
-    result = varonis_get_alerted_events(client, alerts, max_results)
+    result = varonis_get_alerted_events(client, alerts, max_results, page)
     outputs = create_output(EVENT_OUTPUT, result['rows'])
+    page_size = result['rowsCount']
+    outputs = enrich_with_pagination(outputs, page, page_size)
     return CommandResults(
-        outputs_prefix='Varonis.Event',
+        outputs_prefix='Varonis',
         outputs_key_field='Varonis.Event.ID',
         outputs=outputs
     )
