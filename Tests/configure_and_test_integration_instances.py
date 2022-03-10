@@ -692,15 +692,15 @@ class XSIAMBuild(Build):
 
     def __init__(self, options):
         super().__init__(options)
+        self.xsiam_servers = get_json_file(options.xsiam_servers_path)
         self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
-            self.get_xsiam_configuration(options.xsiam_machine)
+            self.get_xsiam_configuration(options.xsiam_machine, self.xsiam_servers)
 
         self.servers = [XSIAMServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id)]
 
     @staticmethod
-    def get_xsiam_configuration(xsiam_machine):
-        # todo: add secret json xsiam configurations
-        conf = JSON_XSIAM_CONF.get(xsiam_machine, {})
+    def get_xsiam_configuration(xsiam_machine, xsiam_servers):
+        conf = xsiam_servers.get(xsiam_machine)
         logging.info(conf)
         return conf.get('api_key'), conf.get('demisto_version'), conf.get('base_url'), conf.get('x-xdr-auth-id')
 
@@ -774,6 +774,7 @@ def options_handler():
                         default='./artifacts/content_packs_to_install.txt')
     parser.add_argument('--build_object_type', help='Build type running: XSOAR or XSIAM')
     parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
+    parser.add_argument('--xsiam_servers_path', help='Path to secret xsiam server metadata file.')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
@@ -1526,10 +1527,9 @@ def create_build_object() -> Build:
 
 def main():
     install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
-    build = create_build_object()
-    logging.info(f"Build Number: {build.ci_build_number}")
-
-    if build.__class__ == XSIAMBuild:
+    options = options_handler()
+    logging.info(f'Build type: {options.build_object_type}')
+    if options.build_object_type == XSIAM_BUILD_TYPE:
         logging.info('Starting create bucket folder')
         from google.cloud import storage
         storage_client = storage.Client()
@@ -1548,8 +1548,10 @@ def main():
             f.write(s)
 
         blob.upload_from_filename('TestMachines')
-
     else:
+        build = create_build_object()
+        logging.info(f"Build Number: {build.ci_build_number}")
+
         # add server config and restart servers
         build.configure_servers_and_restart()  # TODO: only xsoar
         build.disable_instances()  # disable all enabled integrations (Todo in xsiam too)
