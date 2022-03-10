@@ -1534,7 +1534,7 @@ def main():
         from google.cloud import storage
         storage_client = storage.Client()
         bucket = storage_client.bucket('xsoar-ci-artifacts')
-        bucket.delete_blob('xsiam-ci-locks')
+        bucket.delete('xsiam-ci-locks')
         logging.info('File deleted successfully.')
 
         blob = bucket.blob('xsiam-ci-locks/')
