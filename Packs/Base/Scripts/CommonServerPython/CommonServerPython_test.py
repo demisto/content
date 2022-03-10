@@ -1993,7 +1993,7 @@ class TestCommandResults:
             integration_name='Test',
             indicator_type=DBotScoreType.IP,
             score=Common.DBotScore.GOOD,
-            comment='test comment'
+            message='test comment'
         )
 
         ip = Common.IP(
@@ -2036,7 +2036,7 @@ class TestCommandResults:
                         'Vendor': 'Test',
                         'Score': 1,
                         'Type': 'ip',
-                        'Comment': 'test comment'
+                        'Message': 'test comment'
                     }
                 ]
             },
