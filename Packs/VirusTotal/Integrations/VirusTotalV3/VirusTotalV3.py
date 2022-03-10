@@ -1208,7 +1208,8 @@ def build_domain_output(
         ),
         outputs=data,
         raw_response=raw_response,
-        relationships=relationships_list
+        relationships=relationships_list,
+        execution_count=1
     )
 
 
@@ -1278,7 +1279,8 @@ def build_url_output(
         ),
         outputs=data,
         raw_response=raw_response,
-        relationships=relationships_list
+        relationships=relationships_list,
+        execution_count=1
     )
 
 
@@ -1333,7 +1335,8 @@ def build_ip_output(client: Client, score_calculator: ScoreCalculator, ip: str, 
         ),
         outputs=data,
         raw_response=raw_response,
-        relationships=relationships_list
+        relationships=relationships_list,
+        execution_count=1
     )
 
 
@@ -1413,7 +1416,8 @@ def build_file_output(
         ),
         outputs=data,
         raw_response=raw_response,
-        relationships=relationships_list
+        relationships=relationships_list,
+        execution_count=1
     )
 
 
@@ -1539,6 +1543,9 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
         raise_if_ip_not_valid(ip)
         try:
             raw_response = client.ip(ip, relationships)
+            if raw_response.status_code == 204:
+                results.append(CommandResults(error_type=ErrorTypes.RATE_LIMITED, execution_count=1))
+
         except Exception as exception:
             # If anything happens, just keep going
             demisto.debug(f'Could not process IP: "{ip}"\n {str(exception)}')
@@ -1560,6 +1567,8 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
         raise_if_hash_not_valid(file)
         try:
             raw_response = client.file(file, relationships)
+            if raw_response.status_code == 204:
+                results.append(CommandResults(error_type=ErrorTypes.RATE_LIMITED, execution_count=1))
             results.append(build_file_output(client, score_calculator, file, raw_response, extended_data))
         except Exception as exc:
             # If anything happens, just keep going
@@ -1581,6 +1590,8 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
             raw_response = client.url(
                 url, relationships
             )
+            if raw_response.status_code == 204:
+                results.append(CommandResults(error_type=ErrorTypes.RATE_LIMITED, execution_count=1))
         except Exception as exception:
             # If anything happens, just keep going
             demisto.debug(f'Could not process URL: "{url}".\n {str(exception)}')
@@ -1599,6 +1610,8 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
     for domain in domains:
         try:
             raw_response = client.domain(domain, relationships)
+            if raw_response.status_code == 204:
+                results.append(CommandResults(error_type=ErrorTypes.RATE_LIMITED, execution_count=1))
         except Exception as exception:
             # If anything happens, just keep going
             demisto.debug(f'Could not process domain: "{domain}"\n {str(exception)}')

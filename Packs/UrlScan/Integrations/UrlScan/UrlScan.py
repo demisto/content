@@ -25,6 +25,7 @@ requests.packages.urllib3.disable_warnings()
 BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
                                 'For your own safety we did not perform this scan...'
 BRAND = 'urlscan.io'
+POLLING_ARGS = dict()
 
 """ RELATIONSHIP TYPE"""
 RELATIONSHIP_TYPE = {
@@ -113,7 +114,7 @@ def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
                     args=demisto.args(),
                     timeout_in_seconds=600
                 )
-                results = CommandResults(scheduled_command=scheduled_command, error_type=ErrorTypes.RATE_LIMITED)
+                results = CommandResults(scheduled_command=scheduled_command, error_type=ErrorTypes.RATE_LIMITED, execution_count=1)
                 demisto.results(results.to_context())
                 return {'RateLimited': True}
             except DemistoException:
@@ -479,7 +480,8 @@ def format_results(client, uuid):
         outputs=outputs,
         indicator=url,
         raw_response=response,
-        relationships=relationships
+        relationships=relationships,
+        execution_count=1
     )
 
     demisto.results(command_result.to_context())
@@ -749,6 +751,8 @@ def main():
 
     try:
         handle_proxy()
+        global POLLING_ARGS
+        POLLING_ARGS = deepcopy(demisto.args())
         if demisto.command() == 'test-module':
             search_type = 'ip'
             query = '8.8.8.8'

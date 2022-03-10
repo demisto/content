@@ -6108,7 +6108,7 @@ class CommandResults:
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
-                 mark_as_note=False, scheduled_command=None, relationships=None, entry_type=None, error_type=None):
+                 mark_as_note=False, scheduled_command=None, relationships=None, entry_type=None, error_type=None, execution_count=0):
         # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int, str) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
@@ -6123,6 +6123,7 @@ class CommandResults:
         self.indicator = indicator  # type: Optional[Common.Indicator]
         self.entry_type = entry_type  # type: int
         self.error_type = error_type
+        self.execution_count = execution_count
 
         self.outputs_prefix = outputs_prefix
 
@@ -6224,6 +6225,8 @@ class CommandResults:
             return_entry.update(self.scheduled_command.to_results())
         if self.error_type:
             return_entry.update({'ErrorType': self.error_type})
+        if self.execution_count:
+            return_entry.update({'ExecutionCount': self.execution_count})
         return return_entry
 
 
@@ -6330,7 +6333,7 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
     demisto.results(return_entry)
 
 
-def return_error(message, error='', outputs=None):
+def return_error(message, error='', outputs=None, error_type=ErrorTypes.GENERAL):
     """
         Returns error entry with given message and exits the script
 
@@ -6374,7 +6377,8 @@ def return_error(message, error='', outputs=None):
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
             'Contents': message,
-            'EntryContext': outputs
+            'EntryContext': outputs,
+            'ErrorType': error_type
         })
         sys.exit(0)
 

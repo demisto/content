@@ -167,7 +167,8 @@ def url_command(client: Client, args: Dict[str, Any]) -> Union[List[CommandResul
             outputs_prefix=URL_OUTPUT_PREFIX,
             outputs_key_field='IndicatorValue',
             outputs=result,
-            indicator=url_standard_context
+            indicator=url_standard_context,
+            execution_count=1
         )
 
     if result.get('StatusCode'):
@@ -178,7 +179,7 @@ def url_command(client: Client, args: Dict[str, Any]) -> Union[List[CommandResul
                 next_run_in_seconds=5,
                 args=args,
                 timeout_in_seconds=600)
-            return CommandResults(scheduled_command=scheduled_command, error_type=ErrorType.RATE_LIMITED)
+            return CommandResults(scheduled_command=scheduled_command, error_type=ErrorTypes.RATE_LIMITED, execution_count=1)
         else:
             handle_errors(result)
 
