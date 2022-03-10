@@ -7021,9 +7021,12 @@ except Exception as ex:
 def add_sensitive_log_strs(sensitive_str):
     """
     Adds the received string to both LOG and DebuggerLogger, the logger will mask the string each time he encounters it.
-    Args:
-        sensitive_str (str): The string to be replaced.
-    Returns: None
+
+    :type sensitive_str: ``str``
+    :param sensitive_str: The string to be replaced.
+
+    :return: No data returned
+    :rtype: ``None``
     """
     if _requests_logger:
         _requests_logger.int_logger.add_replace_strs(sensitive_str)
