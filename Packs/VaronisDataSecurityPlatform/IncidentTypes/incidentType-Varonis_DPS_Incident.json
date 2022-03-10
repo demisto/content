@@ -1,0 +1,30 @@
+{
+  "fromVersion": "5.0.0",
+  "id": "Varonis DSP Incident",
+  "version": -1,
+  "locked": false,
+  "name": "Varonis DSP Incident",
+  "prevName": "Varonis DSP Incident",
+  "color": "#538eca",
+  "hours": 0,
+  "days": 0,
+  "weeks": 0,
+  "hoursR": 0,
+  "daysR": 0,
+  "weeksR": 0,
+  "system": false,
+  "readonly": false,
+  "default": false,
+  "autorun": false,
+  "preProcessingScript": "",
+  "closureScript": "",
+  "disabled": false,
+  "reputationCalc": 1,
+  "onChangeRepAlg": 1,
+  "layout": "",
+  "detached": false,
+  "extractSettings": {
+    "mode": "All",
+    "fieldCliNameToExtractSettings": {}
+  }
+}
