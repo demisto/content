@@ -46,6 +46,9 @@ XPATH_OBJECTS = ''
 
 XPATH_RULEBASE = ''
 
+# pan-os-python device timeout value, in seconds
+DEVICE_TIMEOUT = 120
+
 # Security rule arguments for output handling
 SECURITY_RULE_ARGS = {
     'rulename': 'Name',
@@ -7759,7 +7762,7 @@ class Topology:
                         api_password=password,
                     )
                 # Set the timeout
-                device.timeout = 120
+                device.timeout = DEVICE_TIMEOUT
                 topology.add_device_object(device)
             except (panos.errors.PanURLError, panos.errors.PanXapiError, HTTPError) as e:
                 demisto.debug(f"Failed to connected to {hostname}, {e}")
