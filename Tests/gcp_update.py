@@ -8,9 +8,9 @@ def main():
     from google.cloud import storage
     storage_client = storage.Client()
     bucket = storage_client.bucket('xsoar-ci-artifacts')
-    blob = bucket.blob('xsiam-ci-locks')
-    blob.delete('xsiam-ci-locks')
-    logging.info('File deleted successfully.')
+    # blob = bucket.blob('xsiam-ci-locks')
+    # blob.delete('xsiam-ci-locks')
+    # logging.info('File deleted successfully.')
 
     blob = bucket.blob('xsiam-ci-locks/')
     blob.upload_from_string('queue')
