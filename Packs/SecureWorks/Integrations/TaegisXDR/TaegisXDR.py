@@ -658,12 +658,12 @@ def main():
 
         if command == "test-module":
             result = commands[command](client=client)
-            return return_results(result)
-        elif command == "fetch-incidents":
-            result = commands[command](client=client, max_fetch=PARAMS.get("max_fetch"))
-            return return_results(result)
+            return_results(result)
 
-        return_results(commands[command](client=client, env=environment, args=demisto.args()))
+        elif command == "fetch-incidents":
+            commands[command](client=client, max_fetch=PARAMS.get("max_fetch"))
+        else:
+            return_results(commands[command](client=client, env=environment, args=demisto.args()))
     except Exception as e:
         error_string = str(e)
         demisto.error(f"Error running command: {e}")
