@@ -8531,11 +8531,11 @@ def dataclass_from_dict(device: Union[Panorama, Firewall], object_dict: dict, cl
         object_dict["hostid"] = device.serial
 
     result_dict = {}
-    for k, v in object_dict.items():
-        d_key = k.replace("-", "_")
+    for key, value in object_dict.items():
+        d_key = key.replace("-", "_")
         dataclass_field = next((x for x in fields(class_type) if x.name == d_key), None)
         if dataclass_field:
-            result_dict[d_key] = v
+            result_dict[d_key] = value
 
     return class_type(**result_dict)
 

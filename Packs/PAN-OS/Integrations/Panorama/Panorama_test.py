@@ -1302,13 +1302,13 @@ class TestUniversalCommand:
         result = UniversalCommand.get_system_info(mock_topology)
         # Check all attributes of result data have values
         for result_dataclass in result.result_data:
-            for k, v in result_dataclass.__dict__.items():
-                assert v
+            for value in result_dataclass.__dict__.values():
+                assert value
 
         # Check all attributes of summary data have values
         for result_dataclass in result.summary_data:
-            for k, v in result_dataclass.__dict__.items():
-                assert v
+            for value in result_dataclass.__dict__.values():
+                assert value
 
 
 class TestFirewallCommand:
@@ -1326,13 +1326,14 @@ class TestFirewallCommand:
         result = FirewallCommand.get_arp_table(mock_topology)
         # Check all attributes of result data have values
         for result_dataclass in result.result_data:
-            for k, v in result_dataclass.__dict__.items():
-                assert v
+            for value in result_dataclass.__dict__.values():
+                assert value
 
         # Check all attributes of summary data have values
         for result_dataclass in result.summary_data:
-            for k, v in result_dataclass.__dict__.items():
-                assert v
+            for value in result_dataclass.__dict__.values():
+                assert value
+
 
     @patch("Panorama.run_op_command")
     def test_get_routing_summary(self, patched_run_op_command, mock_topology):
@@ -1342,13 +1343,14 @@ class TestFirewallCommand:
         result = FirewallCommand.get_routing_summary(mock_topology)
         # Check all attributes of result data have values
         for result_dataclass in result.result_data:
-            for k, v in result_dataclass.__dict__.items():
-                assert v
+            for value in result_dataclass.__dict__.values():
+                assert value
 
         # Check all attributes of summary data have values
         for result_dataclass in result.summary_data:
-            for k, v in result_dataclass.__dict__.items():
-                assert v
+            for value in result_dataclass.__dict__.values():
+                assert value
+
 
     @patch("Panorama.run_op_command")
     def test_get_routes(self, patched_run_op_command, mock_topology):
@@ -1358,11 +1360,11 @@ class TestFirewallCommand:
         result = FirewallCommand.get_routes(mock_topology)
         # Check all attributes of result data have values
         for result_dataclass in result.result_data:
-            for k, v in result_dataclass.__dict__.items():
+            for value in result_dataclass.__dict__.values():
                 # Attribute may be int 0
-                assert v is not None
+                assert value is not None
 
         # Check all attributes of summary data have values
         for result_dataclass in result.summary_data:
-            for k, v in result_dataclass.__dict__.items():
-                assert v
+            for value in result_dataclass.__dict__.values():
+                assert value
