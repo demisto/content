@@ -108,9 +108,17 @@ def exchangelib_cleanup():
 
 
 def get_account(account_email):
-    return Account(
-        primary_smtp_address=account_email, autodiscover=False, config=config, access_type=ACCESS_TYPE,
-    )
+    for i in range(1, 4):
+        response = Account(
+            primary_smtp_address=account_email, autodiscover=False, config=config, access_type=ACCESS_TYPE,
+        )
+        try:
+            response.root  # Check if you have access to root directory
+            return response
+        except UnauthorizedError:
+            demisto.debug("Got unauthorized error, This is attempt number {}".format(i))
+            continue
+    return response
 
 
 def send_email_to_mailbox(account, to, subject, body, bcc=None, cc=None, reply_to=None,
