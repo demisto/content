@@ -9110,8 +9110,7 @@ def get_arp_tables(topology: Topology, device_filter_string: Optional[str] = Non
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: ShowArpCommandResult = FirewallCommand.get_arp_table(topology, device_filter_string)
-    return result
+    return FirewallCommand.get_arp_table(topology, device_filter_string)
 
 
 def get_route_summaries(topology: Topology,
@@ -9121,8 +9120,7 @@ def get_route_summaries(topology: Topology,
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: ShowRouteSummaryCommandResult = FirewallCommand.get_routing_summary(topology, device_filter_string)
-    return result
+    return FirewallCommand.get_routing_summary(topology, device_filter_string)
 
 
 def get_routes(topology: Topology,
@@ -9132,8 +9130,7 @@ def get_routes(topology: Topology,
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: ShowRoutingRouteCommandResult = FirewallCommand.get_routes(topology, device_filter_string)
-    return result
+    return FirewallCommand.get_routes(topology, device_filter_string)
 
 
 def get_system_info(topology: Topology,
@@ -9143,8 +9140,7 @@ def get_system_info(topology: Topology,
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: ShowSystemInfoCommandResult = UniversalCommand.get_system_info(topology, device_filter_string)
-    return result
+    return UniversalCommand.get_system_info(topology, device_filter_string)
 
 
 def get_device_groups(topology: Topology, device_filter_string: Optional[str] = None) -> List[DeviceGroupInformation]:
@@ -9153,8 +9149,7 @@ def get_device_groups(topology: Topology, device_filter_string: Optional[str] = 
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: List[DeviceGroupInformation] = PanoramaCommand.get_device_groups(topology, device_filter_string)
-    return result
+    return PanoramaCommand.get_device_groups(topology, device_filter_string)
 
 
 def get_template_stacks(topology: Topology, device_filter_string: Optional[str] = None) -> List[
@@ -9164,8 +9159,7 @@ def get_template_stacks(topology: Topology, device_filter_string: Optional[str] 
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: List[TemplateStackInformation] = PanoramaCommand.get_template_stacks(topology, device_filter_string)
-    return result
+    return PanoramaCommand.get_template_stacks(topology, device_filter_string)
 
 
 def get_topology() -> Topology:
