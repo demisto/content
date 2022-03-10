@@ -90,18 +90,37 @@ tasks:
       - id: "1"
         label: ""
         labelarg:
-          simple: Who are our early dev-birds (one per team)?
+          simple: "What Ido Van Dijk keeps asking for in #tlv-places?"
         required: true
         gridcolumns: []
         defaultrows: []
         type: singleSelect
         options: []
         optionsarg:
-        - simple: Yuval Ben-Shalom, Shai Yaakovi, Rony Kozakish, Itay Keren
-        - simple: Bar Katzir, Bar Genish, Bar Chen, Bar Hochman
-        - simple: Orel Haim, Adi Daud, Dan Tavori, Itay Keren
-        - simple: Yana Orhov, Eli Sharf, Guy Keller, Itay Keren
-        - simple: Jasmine Beilin, Noy Maimon, Aviya Baumgarten, Darya Koval
+        - simple: Nutella
+        - simple: Bananas
+        - simple: White Chocolate
+        - simple: White Bread
+        - simple: Orange Juice
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: "The first Bar to join the content team was"
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Bar Hochman
+        - simple: Bar Genish
+        - simple: Bar Katzir
+        - simple: Bar Saar
+        - simple: Bar Chen
         fieldassociated: ""
         placeholder: ""
         tooltip: ""
@@ -153,7 +172,17 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Yana Orhov, Eli Sharf, Guy Keller, Itay Keren
+              simple: White Bread
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Content - Office Hours.Answers
+                accessor: "2"
+            iscontext: true
+          right:
+            value:
+              simple: Bar Katzir
     view: |-
       {
         "position": {
