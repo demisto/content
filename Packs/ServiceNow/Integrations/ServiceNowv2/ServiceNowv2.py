@@ -5,8 +5,6 @@ from urllib import parse
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-register_module_line('ServiceNow v2', 'start', __line__())
-
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
