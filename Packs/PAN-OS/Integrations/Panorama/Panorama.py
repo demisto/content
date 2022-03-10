@@ -8583,9 +8583,7 @@ def dataclass_from_element(
         if dataclass_field:
             object_dict[attr_name] = attr_value
 
-    new_dict = flatten_xml_to_dict(element, object_dict, class_type)
-
-    return class_type(**new_dict)
+    return class_type(**flatten_xml_to_dict(element, object_dict, class_type))
 
 
 def resolve_host_id(device: PanDevice):
