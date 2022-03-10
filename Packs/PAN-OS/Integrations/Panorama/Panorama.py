@@ -7318,8 +7318,8 @@ class CustomVersionedPanObject(VersionedPanObject):
         child.parent = self
         childroot = xml.find(child.XPATH[1:])
         if childroot is not None:
-            l = child.refreshall_from_xml(childroot)
-            self.extend(l)
+            child_xml_elements = child.refreshall_from_xml(childroot)
+            self.extend(child_xml_elements)
 
         return self.children
 
@@ -8530,14 +8530,14 @@ def dataclass_from_dict(device: Union[Panorama, Firewall], object_dict: dict, cl
     if device.serial:
         object_dict["hostid"] = device.serial
 
-    r = {}
+    result_dict = {}
     for k, v in object_dict.items():
         d_key = k.replace("-", "_")
         dataclass_field = next((x for x in fields(class_type) if x.name == d_key), None)
         if dataclass_field:
-            r[d_key] = v
+            result_dict[d_key] = v
 
-    return class_type(**r)
+    return class_type(**result_dict)
 
 
 def flatten_xml_to_dict(element: Element, object_dict: dict, class_type: Callable):
@@ -8583,9 +8583,9 @@ def dataclass_from_element(
         if dataclass_field:
             object_dict[attr_name] = attr_value
 
-    d = flatten_xml_to_dict(element, object_dict, class_type)
+    new_dict = flatten_xml_to_dict(element, object_dict, class_type)
 
-    return class_type(**d)
+    return class_type(**new_dict)
 
 
 def resolve_host_id(device: PanDevice):
