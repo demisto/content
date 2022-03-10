@@ -68,16 +68,6 @@ ID_SET_PATH = './artifacts/id_set.json'
 XSOAR_BUILD_TYPE = "XSOAR"
 XSIAM_BUILD_TYPE = "XSIAM"
 
-JSON_XSIAM_CONF = {"qa2-test-9997333835008": {
-    "ui_url": "https://xsiam1.paloaltonetworks.com/",
-    "instance_name": "qa2-test-9997333835008",
-    "api_key": "some-api-key",
-    "x-xdr-auth-id": 1,
-    "base_url": "https://api-xsiam1.paloaltonetworks.com",
-    "xsiam_version": "3.2.0",
-    "demisto_version": "6.6.0"
-}}
-
 
 class Running(IntEnum):
     CI_RUN = 0
@@ -1527,67 +1517,49 @@ def create_build_object() -> Build:
 
 def main():
     install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
-    options = options_handler()
-    logging.info(f'Build type: {options.build_object_type}')
-    if options.build_object_type == XSIAM_BUILD_TYPE:
-        logging.info('Starting create bucket folder')
-        from google.cloud import storage
-        storage_client = storage.Client()
-        bucket = storage_client.bucket('xsoar-ci-artifacts')
-        blob = bucket.blob('xsiam-ci-locks')
-        blob.delete('xsiam-ci-locks')
-        logging.info('File deleted successfully.')
+    build = create_build_object()
+    logging.info(f"Build Number: {build.ci_build_number}")
 
-        blob = bucket.blob('xsiam-ci-locks/')
-        blob.upload_from_string('queue')
-        logging.info('Created bucket folder successfully.')
+    # todo: delete
+    if build.__class__ == XSIAMBuild:
+        sys.exit(0)
 
-        logging.info('Creating new file"')
-        s = """qa2-test-999733383500\nqa2-test-9994443226862\nqa2-test-9997461765391"""
-        with open('TestMachines', 'w') as f:
-            f.write(s)
+    # add server config and restart servers
+    build.configure_servers_and_restart()  # TODO: only xsoar
+    build.disable_instances()  # disable all enabled integrations (Todo in xsiam too)
 
-        blob.upload_from_filename('TestMachines')
+    if build.is_nightly:
+        # XSOAR Nightly: install all existing packs and upload all test playbooks that currently in master.
+        build.install_nightly_pack()
     else:
-        build = create_build_object()
-        logging.info(f"Build Number: {build.ci_build_number}")
+        # Install only modified packs.
+        pack_ids = get_non_added_packs_ids(build)
+        build.install_packs(pack_ids=pack_ids)
 
-        # add server config and restart servers
-        build.configure_servers_and_restart()  # TODO: only xsoar
-        build.disable_instances()  # disable all enabled integrations (Todo in xsiam too)
+        # compares master to commit_sha and return two lists - new integrations and modified in the current branch
+        new_integrations, modified_integrations = build.get_changed_integrations()
 
-        if build.is_nightly:
-            # XSOAR Nightly: install all existing packs and upload all test playbooks that currently in master.
-            build.install_nightly_pack()
-        else:
-            # Install only modified packs.
-            pack_ids = get_non_added_packs_ids(build)
-            build.install_packs(pack_ids=pack_ids)
+        # todo: investigate more
+        # Test configurations from conf.json that should be run in this execution
+        # Configures integration instances that currently in master (+ press test button)
+        pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations,
+                                                                                            modified_integrations)
 
-            # compares master to commit_sha and return two lists - new integrations and modified in the current branch
-            new_integrations, modified_integrations = build.get_changed_integrations()
+        modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
 
-            # todo: investigate more
-            # Test configurations from conf.json that should be run in this execution
-            # Configures integration instances that currently in master (+ press test button)
-            pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations,
-                                                                                                modified_integrations)
+        # Changes marketplace bucket to the new one that was created. Installs all (new and modified)
+        # required packs from current branch.
+        installed_content_packs_successfully = build.update_content_on_servers()
 
-            modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
-
-            # Changes marketplace bucket to the new one that was created. Installs all (new and modified)
-            # required packs from current branch.
-            installed_content_packs_successfully = build.update_content_on_servers()
-
-            # After updating packs from branch, runs `test-module` for both new and modified integrations,
-            # to check that modified integrations was not broken. Wrapper for `instance_testing` function.
-            successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
-                                                                                           modified_module_instances)
-            # prints results
-            success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
-                                          new_integrations, build)
-            if not success or not installed_content_packs_successfully:
-                sys.exit(2)
+        # After updating packs from branch, runs `test-module` for both new and modified integrations,
+        # to check that modified integrations was not broken. Wrapper for `instance_testing` function.
+        successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
+                                                                                       modified_module_instances)
+        # prints results
+        success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
+                                      new_integrations, build)
+        if not success or not installed_content_packs_successfully:
+            sys.exit(2)
 
 
 if __name__ == '__main__':
