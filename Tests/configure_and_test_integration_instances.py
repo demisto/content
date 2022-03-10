@@ -1534,12 +1534,20 @@ def main():
         from google.cloud import storage
         storage_client = storage.Client()
         bucket = storage_client.bucket('xsoar-ci-artifacts')
-        bucket.delete('xsiam-ci-locks')
+        blob = bucket.blob('xsiam-ci-locks')
+        blob.delete('xsiam-ci-locks')
         logging.info('File deleted successfully.')
 
         blob = bucket.blob('xsiam-ci-locks/')
-        blob.upload_from_string('')
+        blob.upload_from_string('queue')
         logging.info('Created bucket folder successfully.')
+
+        logging.info('Creating new file"')
+        s = """qa2-test-999733383500\nqa2-test-9994443226862\nqa2-test-9997461765391"""
+        with open('TestMachines', 'w') as f:
+            f.write(s)
+
+        blob.upload_from_filename('TestMachines')
 
     else:
         # add server config and restart servers

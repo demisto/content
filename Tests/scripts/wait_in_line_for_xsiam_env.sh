@@ -196,7 +196,7 @@ do
 	lock_queue	# locking the queue (it is the file, in the bucket, all builds (waiting and running) listed in line )
   export LOCK_CHANGED="false"
 	#copy queue to local for faster performance
-	gsutil cp $GCS_LOCKS_PATH/$GCS_QUEUE_FILE queue	# copy loccaly for beter perf
+	gsutil cp $GCS_LOCKS_PATH/$GCS_QUEUE_FILE queue	# copy locally for better performance
 	get_number_in_line queue	# checks if curr build num in the line? returns NUMBER_IN_LINE arg
 	# line number smaller then 1 means we have not registered yet
 	if [[ "$NUMBER_IN_LINE" -lt 1 ]]	# if not exsist
