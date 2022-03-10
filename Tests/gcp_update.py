@@ -12,12 +12,8 @@ def main():
 
     bucket = storage_client.bucket('xsoar-ci-artifacts')
 
-    # all_blobs = list(storage_client.list_blobs('xsoar-ci-artifacts'))
-    # logging.info(f'All blobs: {all_blobs}')
-
-    blob = bucket.blob('xsiam-ci-locks/TestMachines')
-    s = """qa2-test-999733383500\nqa2-test-9994443226862\nqa2-test-9997461765391"""
-    blob.upload_from_string(s)
+    blob = bucket.blob('xsiam-ci-locks/queue')
+    blob.upload_from_string('')
     logging.info('Created bucket folder successfully.')
 
     blob = bucket.blob('xsiam-ci-locks')

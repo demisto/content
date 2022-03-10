@@ -283,12 +283,11 @@ slack-notify-nightly-build:
     - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
 #      cp "$ARTIFACTS_FOLDER/env_results.json" "./artifacts/env_results.json"  # todo: need to change this file to xsiam instances
 
-# todo: uncomment, maybe need $GCS_MARKET_KEY?
-#    - echo "Authing to GCP"
-#    - echo "$GCS_ARTIFACTS_KEY" | base64 -d > /tmp/XSOAR_ARTIFACTS_GCP_KEY.json
-#    - gcloud auth activate-service-account --key-file /tmp/XSOAR_ARTIFACTS_GCP_KEY.json
-#    - echo "Auth done successfully"
-#    - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
+# todo: uncomment
+    - echo "Authing to GCP"
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+    - echo "Auth done successfully"
+    - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
 
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$BUILD_OBJECT_TYPE" "$XSIAM_CHOSEN_MACHINE_ID"|| EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json #todo: check if meyotar
@@ -329,9 +328,9 @@ create_gcp_folders:
   script:
     - EXIT_CODE=0
     - echo "Authing to GCP"
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
-#    - echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> $BASH_ENV
-#    - source $BASH_ENV
+#    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+    - echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> $BASH_ENV
+    - source $BASH_ENV
     - python3 ./Tests/gcp_update.py "$GCS_ARTIFACTS_KEY"
     - exit $EXIT_CODE
 
