@@ -1101,6 +1101,7 @@ class TestTopology:
     @patch("Panorama.Topology.get_all_child_firewalls")
     @patch("Panorama.run_op_command")
     def test_add_firewall_device_object(self, patched_run_op_command, _, mock_firewall):
+        """Test we can add a single firewall object into the Topology, which will also run a show ha state on the device."""
         from Panorama import Topology
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestTopology.SHOW_HA_STATE_DISABLED_XML)
         topology = Topology()
@@ -1111,6 +1112,7 @@ class TestTopology:
     @patch("Panorama.Topology.get_all_child_firewalls")
     @patch("Panorama.run_op_command")
     def test_add_panorama_device_object(self, patched_run_op_command, _, mock_panorama):
+        """Test we can add a single Panorama object into the topology, which will also run a show ha state on the device."""
         from Panorama import Topology
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestTopology.SHOW_HA_STATE_DISABLED_XML)
         topology = Topology()
@@ -1122,6 +1124,7 @@ class TestTopology:
 
     @patch("Panorama.run_op_command")
     def test_get_all_child_firewalls(self, patched_run_op_command, mock_panorama):
+        """Test we correctly convert the output of show devices all from panorama into child devices of the topology"""
         from Panorama import Topology
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestTopology.SHOW_DEVICES_ALL_XML)
         topology = Topology()
@@ -1137,6 +1140,7 @@ class TestTopology:
 
     @patch("Panorama.run_op_command")
     def test_get_active_devices(self, patched_run_op_command, mock_panorama):
+        """Test active_devices() returns only devices that are in the HA state of ACTIVE"""
         from Panorama import Topology
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestTopology.SHOW_DEVICES_ALL_XML)
         topology = Topology()
@@ -1159,6 +1163,10 @@ class TestTopology:
     @patch("Panorama.Vsys.refreshall", return_value=[])
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
     def test_get_containers(self, _, __, ___, mock_panorama):
+        """
+        Test get_containers work correctly. Get containers will refresh the list of device groups, vsys and templates from the
+        active device and return them - these containers are then passed to subsequent commands in the code.
+        """
         from Panorama import Topology
         topology = Topology()
         topology.add_device_object(mock_panorama)
@@ -1173,6 +1181,7 @@ class TestUtilityFunctions:
     SHOW_JOBS_ALL_XML = "test_data/show_jobs_all.xml"
 
     def test_dataclass_from_dict(self, mock_panorama):
+        """Test we can convert a dictionary into a provided dataclass"""
         from Panorama import dataclass_from_dict, CommitStatus
         example_dict = {
             "job-id": "10",
@@ -1197,6 +1206,7 @@ class TestUtilityFunctions:
         assert result_dataclass.hostid == "test"
 
     def test_flatten_xml_to_dict(self):
+        """Test that, given an XML Element, we can convert it into a flat dictionary to then be passed into a dataclass."""
         from Panorama import flatten_xml_to_dict, ShowJobsAllResultData
 
         xml_element = load_xml_root_from_test_file(TestUtilityFunctions.SHOW_JOBS_ALL_XML)
@@ -1205,6 +1215,9 @@ class TestUtilityFunctions:
         assert "type" in result
 
     def test_resolve_host_id(self, mock_panorama):
+        """Test the hostid, the unique ID of the device from the perspective of the new commands, can always be resolved
+        as either the hostname or serial number. Pan-os-python will populate only one of these, depending on how the device
+        has been connected."""
         from Panorama import resolve_host_id
         mock_panorama.hostname = None
         result = resolve_host_id(mock_panorama)
@@ -1218,6 +1231,8 @@ class TestUtilityFunctions:
         assert result == "test"
 
     def test_resolve_container_name(self, mock_panorama):
+        """Same as hostid but resolve it for a container, like a device group or template. This will always return the name
+        attribute unless it's a device itself, which is the case for shared objects."""
         from Panorama import resolve_container_name
         # Test the "shared" container
         assert resolve_container_name(mock_panorama) == "shared"
@@ -1227,13 +1242,17 @@ class TestUtilityFunctions:
 
 
 class TestPanoramaCommand:
-    """Test all the commands relevant to Panorama"""
+    """
+    Test all the commands relevant to Panorama
+    All of these commands use the real XML in test_data to ensure it is parsed and converted to dataclasses correctly.
+    """
 
     SHOW_DEVICEGROUPS_XML = "test_data/show_device_groups.xml"
     SHOW_TEMPLATESTACK_XML = "test_data/show_template_stack.xml"
 
     @patch("Panorama.run_op_command")
     def test_get_device_groups(self, patched_run_op_command, mock_topology):
+        """Test we can correctly parse the devicegroup XML into dataclasses"""
         from Panorama import PanoramaCommand
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestPanoramaCommand.SHOW_DEVICEGROUPS_XML)
 
@@ -1247,6 +1266,7 @@ class TestPanoramaCommand:
 
     @patch("Panorama.run_op_command")
     def test_get_template_stacks(self, patched_run_op_command, mock_topology):
+        """Test we can correctly parse the template-stack XML into dataclasses"""
         from Panorama import PanoramaCommand
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestPanoramaCommand.SHOW_TEMPLATESTACK_XML)
         result = PanoramaCommand.get_template_stacks(mock_topology)
@@ -1264,6 +1284,7 @@ class TestUniversalCommand:
 
     @patch("Panorama.run_op_command")
     def test_get_system_info(self, patched_run_op_command, mock_topology):
+        """Test we can correctly parse the system information XML into dataclasses"""
         from Panorama import UniversalCommand
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestUniversalCommand.SHOW_SYSTEM_INFO_XML)
 
@@ -1288,6 +1309,7 @@ class TestFirewallCommand:
 
     @patch("Panorama.run_op_command")
     def test_get_arp_table(self, patched_run_op_command, mock_topology):
+        """Test we can correctly parse the ARP table XML into dataclasses"""
         from Panorama import FirewallCommand
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_ARP_XML)
         result = FirewallCommand.get_arp_table(mock_topology)
@@ -1303,6 +1325,7 @@ class TestFirewallCommand:
 
     @patch("Panorama.run_op_command")
     def test_get_routing_summary(self, patched_run_op_command, mock_topology):
+        """Test we can correctly parse the route summary XML into dataclasses"""
         from Panorama import FirewallCommand
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_ROUTING_SUMMARY_XML)
         result = FirewallCommand.get_routing_summary(mock_topology)
@@ -1318,6 +1341,7 @@ class TestFirewallCommand:
 
     @patch("Panorama.run_op_command")
     def test_get_routes(self, patched_run_op_command, mock_topology):
+        """Test we can correctly parse the show route XML into dataclasses"""
         from Panorama import FirewallCommand
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_ROUTING_ROUTE_XML)
         result = FirewallCommand.get_routes(mock_topology)
