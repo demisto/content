@@ -14,7 +14,7 @@
                     {
                         "h": 1,
                         "hideName": true,
-                        "i": "qpnefeci5o-vvoh19d1ue-dad35280-b1a3-11eb-a261-1f85bcf500af",
+                        "i": "qpnefeci5o-field-changed-qpnefeci5o-pfjeh5flj3-qpnefeci5o-vvoh19d1ue-dad35280-b1a3-11eb-a261-1f85bcf500af",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -32,7 +32,7 @@
                     {
                         "h": 1,
                         "hideName": true,
-                        "i": "qpnefeci5o-vvoh19d1ue-ee5278e0-b1a3-11eb-a261-1f85bcf500af",
+                        "i": "qpnefeci5o-field-changed-qpnefeci5o-pfjeh5flj3-qpnefeci5o-vvoh19d1ue-ee5278e0-b1a3-11eb-a261-1f85bcf500af",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -51,7 +51,7 @@
                         "description": "",
                         "h": 1,
                         "hideName": true,
-                        "i": "qpnefeci5o-vvoh19d1ue-f6b3dba0-b1a3-11eb-a261-1f85bcf500af",
+                        "i": "qpnefeci5o-field-changed-qpnefeci5o-pfjeh5flj3-qpnefeci5o-vvoh19d1ue-f6b3dba0-b1a3-11eb-a261-1f85bcf500af",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -67,39 +67,9 @@
                         "y": 2
                     },
                     {
-                        "description": "The numbers in parenthesis represent the number of incidents from the campaign where that data was found. The incidents composing the campaign were deemed similar in the email subject and body, by textual similarity.",
-                        "displayType": "ROW",
-                        "h": 4,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": false,
-                        "i": "qpnefeci5o-vvoh19d1ue-e1664bf0-b1a5-11eb-a261-1f85bcf500af",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "emailcampaignsummary",
-                                "height": 44,
-                                "id": "bc981d60-c142-11eb-b5c7-f39a4da1b92e",
-                                "index": 0,
-                                "listId": "vvoh19d1ue-e1664bf0-b1a5-11eb-a261-1f85bcf500af",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Campaign Summary",
-                        "static": false,
-                        "w": 2,
-                        "x": 0,
-                        "y": 0
-                    },
-                    {
                         "description": "",
                         "h": 2,
-                        "i": "qpnefeci5o-vvoh19d1ue-a713a290-befc-11eb-b351-7bcfe92e5e24",
+                        "i": "qpnefeci5o-field-changed-qpnefeci5o-pfjeh5flj3-qpnefeci5o-vvoh19d1ue-a713a290-befc-11eb-b351-7bcfe92e5e24",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -112,7 +82,7 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 2,
-                        "y": 4
+                        "y": 6
                     },
                     {
                         "description": "Indicators that were detected in the phishing incidents of the campaign.",
@@ -120,13 +90,13 @@
                         "h": 4,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "qpnefeci5o-vvoh19d1ue-c5ce0e30-c142-11eb-b5c7-f39a4da1b92e",
+                        "i": "qpnefeci5o-field-changed-qpnefeci5o-pfjeh5flj3-qpnefeci5o-vvoh19d1ue-c5ce0e30-c142-11eb-b5c7-f39a4da1b92e",
                         "items": [
                             {
                                 "endCol": 6,
-                                "fieldId": "emailcampaignmutualindicators",
+                                "fieldId": "campaignmutualindicators",
                                 "height": 106,
-                                "id": "e4cca030-c142-11eb-b5c7-f39a4da1b92e",
+                                "id": "5e1423c0-576e-11ec-ad62-537d4cf7b6ec",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -134,20 +104,20 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
+                        "minW": 3,
                         "moved": false,
                         "name": "Mutual Campaign Indicators",
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 7
+                        "y": 9
                     },
                     {
                         "displayType": "ROW",
                         "h": 1,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "qpnefeci5o-vvoh19d1ue-f96d1510-c142-11eb-b5c7-f39a4da1b92e",
+                        "i": "qpnefeci5o-field-changed-qpnefeci5o-pfjeh5flj3-qpnefeci5o-vvoh19d1ue-f96d1510-c142-11eb-b5c7-f39a4da1b92e",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -169,21 +139,21 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 6
+                        "y": 8
                     },
                     {
-                        "description": "A snippet from the latest incident, showing how the campaign email looks. Meaningful phishing and spam words are in bold.",
+                        "description": "A snippet from the latest incident, showing what the campaign email looks like. Meaningful phishing and spam words are in bold.",
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 6,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "qpnefeci5o-30070840-d743-11eb-aff4-fd584214073e",
+                        "i": "qpnefeci5o-field-changed-qpnefeci5o-pfjeh5flj3-qpnefeci5o-30070840-d743-11eb-aff4-fd584214073e",
                         "items": [
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "emailcampaignsnippets",
-                                "height": 44,
+                                "height": 106,
                                 "id": "c339a380-d742-11eb-aff4-fd584214073e",
                                 "index": 0,
                                 "listId": "qpnefeci5o-vvoh19d1ue-e1664bf0-b1a5-11eb-a261-1f85bcf500af",
@@ -193,18 +163,18 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
+                        "minW": 2,
                         "moved": false,
                         "name": "Campaign Snippet",
                         "static": false,
                         "w": 2,
                         "x": 0,
-                        "y": 4
+                        "y": 3
                     },
                     {
                         "h": 1,
                         "hideName": true,
-                        "i": "qpnefeci5o-ad36df40-d7e1-11eb-a10a-1b4621c00953",
+                        "i": "qpnefeci5o-field-changed-qpnefeci5o-pfjeh5flj3-qpnefeci5o-ad36df40-d7e1-11eb-a10a-1b4621c00953",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -218,6 +188,115 @@
                         "w": 1,
                         "x": 2,
                         "y": 3
+                    },
+                    {
+                        "h": 2,
+                        "hideName": true,
+                        "i": "qpnefeci5o-field-changed-qpnefeci5o-16396de0-fe85-11eb-af66-87d0b371bbf6",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Owners",
+                        "query": "ShowCampaignIncidentsOwners",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "description": "The information displayed in the different sections updates dynamically. Changes are expected as incidents progress.",
+                        "h": 1,
+                        "hideName": true,
+                        "i": "qpnefeci5o-a34a1b00-56a8-11ec-a307-6b5fd18fa121",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Information",
+                        "query": "GetCampaignIndicatorsByIncidentId",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 13
+                    },
+                    {
+                        "description": "",
+                        "h": 1,
+                        "hideName": true,
+                        "i": "qpnefeci5o-c09ebb90-576e-11ec-ad62-537d4cf7b6ec",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Similarity Range",
+                        "query": "ShowCampaignSimilarityRange",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "qpnefeci5o-ca2484a0-576f-11ec-ad62-537d4cf7b6ec",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Last incident occurred",
+                        "query": "ShowCampaignLastIncidentOccurred",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "description": "",
+                        "h": 2,
+                        "i": "qpnefeci5o-df917140-576f-11ec-ad62-537d4cf7b6ec",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Campaign Recipients",
+                        "query": "ShowCampaignRecipients",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    },
+                    {
+                        "h": 2,
+                        "i": "qpnefeci5o-ee865490-576f-11ec-ad62-537d4cf7b6ec",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Campaign Senders",
+                        "query": "ShowCampaignSenders",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 1,
+                        "y": 1
                     }
                 ],
                 "type": "custom"
@@ -228,15 +307,15 @@
                 "name": "Campaign Management",
                 "sections": [
                     {
-                        "description": "The following incidents were detected as part of the same campaign by the FindEmailCampaign script. With the default configuration, all similar incidents are also linked to the campaign, which can be changed in the Incident Actions section below.",
+                        "description": "The following incidents were detected as part of the same campaign by the FindEmailCampaign script. With default configuration - all similar incidents are also linked to the campaign, but you can always change this using the Incident Actions section below.",
                         "h": 3,
-                        "i": "pfjeh5flj3-7641f640-b7da-11eb-98eb-1965d2f9391a",
+                        "i": "qpnefeci5o-pfjeh5flj3-qpnefeci5o-pfjeh5flj3-7641f640-b7da-11eb-98eb-1965d2f9391a",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
+                        "minW": 3,
                         "moved": false,
-                        "name": "Similar Incidents",
+                        "name": "Campaign Incidents Info",
                         "query": "GetCampaignIncidentsInfo",
                         "queryType": "script",
                         "static": false,
@@ -246,11 +325,11 @@
                         "y": 0
                     },
                     {
-                        "description": "Take action on incidents that belong to the campaign.",
+                        "description": "Take actions on incidents that belong to the campaign.",
                         "displayType": "CARD",
                         "h": 3,
                         "hideName": false,
-                        "i": "pfjeh5flj3-b3a487f0-b7da-11eb-98eb-1965d2f9391a",
+                        "i": "qpnefeci5o-pfjeh5flj3-qpnefeci5o-pfjeh5flj3-b3a487f0-b7da-11eb-98eb-1965d2f9391a",
                         "items": [
                             {
                                 "endCol": 2,
@@ -306,11 +385,11 @@
                         "y": 3
                     },
                     {
-                        "description": "Send emails to the recipients involved in the incidents. Select specific incidents, or select \"All\" to automatically detect the relevant recipients.",
+                        "description": "Send emails to the recipients involved in the incidents. Select specific incidents, or select \"All\", to automatically detect the relevant recipients.",
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
-                        "i": "pfjeh5flj3-5bc36bf0-bcad-11eb-98fe-53f79cf41cac",
+                        "i": "qpnefeci5o-pfjeh5flj3-qpnefeci5o-pfjeh5flj3-5bc36bf0-bcad-11eb-98fe-53f79cf41cac",
                         "items": [
                             {
                                 "endCol": 4,
@@ -351,32 +430,16 @@
                                 "startCol": 0
                             },
                             {
-                                "args": {
-                                    "body": {
-                                        "complex": {
-                                            "accessor": "campaignemailbody",
-                                            "filters": [],
-                                            "root": "incident",
-                                            "transformers": []
-                                        }
-                                    },
-                                    "subject": {
-                                        "complex": {
-                                            "accessor": "campaignemailsubject",
-                                            "filters": [],
-                                            "root": "incident",
-                                            "transformers": []
-                                        }
-                                    },
-                                    "to": {
-                                        "complex": {
-                                            "accessor": "campaignemailto",
-                                            "filters": [],
-                                            "root": "incident",
-                                            "transformers": []
-                                        }
-                                    }
-                                },
+                                "endCol": 2,
+                                "fieldId": "campaignemailsenderinstance",
+                                "height": 22,
+                                "id": "2d20bc00-6e03-11ec-8818-73c00a708d03",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
                                 "dropEffect": "move",
                                 "endCol": 3,
                                 "fieldId": "",
@@ -385,14 +448,14 @@
                                 "index": 4,
                                 "listId": "pfjeh5flj3-5bc36bf0-bcad-11eb-98fe-53f79cf41cac",
                                 "name": "Send Email",
-                                "scriptId": "EWS Mail Sender|||send-mail",
+                                "scriptId": "SendEmailToCampaignRecipients",
                                 "sectionItemType": "button",
                                 "startCol": 1
                             }
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
+                        "minW": 2,
                         "moved": false,
                         "name": "Notify Recipients",
                         "static": false,
@@ -410,7 +473,7 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "i": "qpnefeci5o-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [
                             {
@@ -468,7 +531,10 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Case Details",
                         "static": false,
@@ -478,8 +544,11 @@
                     },
                     {
                         "h": 2,
-                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxW": 3,
+                        "i": "qpnefeci5o-caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Notes",
                         "static": false,
@@ -491,9 +560,12 @@
                     {
                         "displayType": "ROW",
                         "h": 4,
-                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+                        "i": "qpnefeci5o-caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
+                        "maxH": null,
                         "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
                         "moved": false,
                         "name": "Linked Incidents",
                         "static": false,
@@ -505,8 +577,11 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
-                        "maxW": 3,
+                        "i": "qpnefeci5o-caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Evidence",
                         "static": false,
@@ -519,8 +594,11 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
-                        "maxW": 3,
+                        "i": "qpnefeci5o-caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Team Members",
                         "static": false,
@@ -532,7 +610,7 @@
                     {
                         "displayType": "CARD",
                         "h": 2,
-                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "i": "qpnefeci5o-caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
                         "items": [
                             {
                                 "endCol": 1,
@@ -580,7 +658,10 @@
                                 "startCol": 1
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Timeline Information",
                         "static": false,
@@ -591,7 +672,7 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "i": "qpnefeci5o-caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [
                             {
@@ -622,7 +703,10 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Closing Information",
                         "static": false,
@@ -631,15 +715,16 @@
                         "y": 7
                     },
                     {
-                        "description": "Not all linked incidents may be related to the phishing campaign, and not all related incidents may be linked. This behavior can be customized by configuring the Detect \u0026 Manage Phishing Campaigns playbook, or changed by the user in the Campaign Management tab under the Incident Actions section.",
+                        "description": "Not all linked incidents may actually be related to the phishing campaign, and not all related incidents may be linked. This behavior customized via configuration of the Detect \u0026 Manage Phishing Campaigns playbook, or changed by the user through the Campaign Management tab under the Incident Actions section.",
                         "displayType": "ROW",
                         "h": 1,
                         "hideName": false,
-                        "i": "caseinfoid-ea80f0c0-e001-11eb-a75f-3b984a55fdc6",
+                        "i": "qpnefeci5o-caseinfoid-ea80f0c0-e001-11eb-a75f-3b984a55fdc6",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
+                        "minW": 3,
                         "moved": false,
                         "name": "Note About Linked Incidents",
                         "static": false,
@@ -681,7 +766,7 @@
     "group": "incident",
     "id": "Phishing Campaign",
     "name": "Phishing Campaign",
-    "system": false,
+    "system": true,
     "version": -1,
     "fromVersion": "6.0.0",
     "description": ""

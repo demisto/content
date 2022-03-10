@@ -54,3 +54,10 @@ def test_incremental_level_fetch(mocker):
     mocker.patch.object(client, 'get_tag_details', return_value=util_load_json('test_data/tag_details_result.json'))
     actual_result = incremental_level_fetch(client)
     assert actual_result == [util_load_json('test_data/tag_details_result.json')]
+
+
+def test_user_secrets():
+    from FeedUnit42IntelObjects import Client, LOG
+    client = Client(api_key='%%This_is_API_key%%', base_url='url', verify=False, proxy=False)
+    res = LOG(client.headers)
+    assert "%%This_is_API_key%%" not in res

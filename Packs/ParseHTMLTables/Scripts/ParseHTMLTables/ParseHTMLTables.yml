@@ -1,6 +1,9 @@
 commonfields:
   id: ParseHTMLTables
   version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
 name: ParseHTMLTables
 script: ''
 type: python
@@ -23,6 +26,15 @@ args:
   description: Extract only the tables with given indexes - 0 based
 - name: filter_titles
   description: Extract only the tables with given titles
+- name: default_header_line
+  auto: PREDEFINED
+  predefined:
+  - none
+  - first_row
+  - first_column
+  description: The default table line to consider as a header if no headers are in
+    the table.
+  defaultValue: none
 scripttarget: 0
 subtype: python3
 runonce: false

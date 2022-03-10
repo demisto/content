@@ -1,0 +1,2020 @@
+{
+  "result": [
+    {
+      "parent": {
+        "display_value": "",
+        "value": ""
+      },
+      "planned_end_date": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "made_sla": {
+        "display_value": "false",
+        "value": false
+      },
+      "watch_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "upon_reject": {
+        "display_value": "",
+        "value": ""
+      },
+      "sys_updated_on": {
+        "display_value": "06/02/2020 14:19:51",
+        "value": "2020-02-06 22:19:51",
+        "display_value_internal": "2020-02-06 14:19:51"
+      },
+      "task_effective_number": {
+        "display_value": "CTASK0010001",
+        "value": "CTASK0010001"
+      },
+      "approval_history": {
+        "display_value": "",
+        "value": ""
+      },
+      "skills": {
+        "display_value": "",
+        "value": ""
+      },
+      "number": {
+        "display_value": "CTASK0010001",
+        "value": "CTASK0010001"
+      },
+      "sys_updated_by": {
+        "display_value": "admin",
+        "value": "admin"
+      },
+      "opened_by": {
+        "display_value": "System Administrator",
+        "value": "6816f79cc0a8016401c5a33be04be441"
+      },
+      "user_input": {
+        "display_value": "",
+        "value": ""
+      },
+      "sys_created_on": {
+        "display_value": "06/02/2020 14:19:51",
+        "value": "2020-02-06 22:19:51",
+        "display_value_internal": "2020-02-06 14:19:51"
+      },
+      "sys_domain": {
+        "display_value": "global",
+        "value": "global"
+      },
+      "state": {
+        "display_value": "Open",
+        "value": 1.0
+      },
+      "sys_created_by": {
+        "display_value": "admin",
+        "value": "admin"
+      },
+      "route_reason": {
+        "display_value": "",
+        "value": ""
+      },
+      "knowledge": {
+        "display_value": "false",
+        "value": false
+      },
+      "order": {
+        "display_value": "",
+        "value": ""
+      },
+      "closed_at": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "cmdb_ci": {
+        "display_value": "Oracle",
+        "value": "0c43d5e2c61122750182c132a8b9e2d9"
+      },
+      "delivery_plan": {
+        "display_value": "",
+        "value": ""
+      },
+      "impact": {
+        "display_value": "3 - Low",
+        "value": 3.0
+      },
+      "contract": {
+        "display_value": "",
+        "value": ""
+      },
+      "active": {
+        "display_value": "true",
+        "value": true
+      },
+      "work_notes_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "business_service": {
+        "display_value": "",
+        "value": ""
+      },
+      "priority": {
+        "display_value": "1 - Critical",
+        "value": 1.0
+      },
+      "sys_domain_path": {
+        "display_value": "/",
+        "value": "/"
+      },
+      "time_worked": {
+        "display_value": "",
+        "value": ""
+      },
+      "rejection_goto": {
+        "display_value": "",
+        "value": ""
+      },
+      "expected_start": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "opened_at": {
+        "display_value": "06/02/2020 14:19:51",
+        "value": "2020-02-06 22:19:51",
+        "display_value_internal": "2020-02-06 14:19:51"
+      },
+      "business_duration": {
+        "display_value": "",
+        "value": ""
+      },
+      "group_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "work_end": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "planned_start_date": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "approval_set": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "wf_activity": {
+        "display_value": "",
+        "value": ""
+      },
+      "work_notes": {
+        "display_value": "",
+        "value": ""
+      },
+      "universal_request": {
+        "display_value": "",
+        "value": ""
+      },
+      "short_description": {
+        "display_value": "Back-Up Database",
+        "value": "Back-Up Database"
+      },
+      "close_code": {
+        "display_value": "",
+        "value": ""
+      },
+      "correlation_display": {
+        "display_value": "",
+        "value": ""
+      },
+      "work_start": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "delivery_task": {
+        "display_value": "",
+        "value": ""
+      },
+      "assignment_group": {
+        "display_value": "",
+        "value": ""
+      },
+      "additional_assignee_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "description": {
+        "display_value": "Back-Up Database",
+        "value": "Back-Up Database"
+      },
+      "on_hold_reason": {
+        "display_value": "",
+        "value": ""
+      },
+      "calendar_duration": {
+        "display_value": "",
+        "value": ""
+      },
+      "sys_class_name": {
+        "display_value": "Change Task",
+        "value": "change_task"
+      },
+      "service_offering": {
+        "display_value": "",
+        "value": ""
+      },
+      "close_notes": {
+        "display_value": "",
+        "value": ""
+      },
+      "closed_by": {
+        "display_value": "",
+        "value": ""
+      },
+      "follow_up": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "sys_id": {
+        "display_value": "a9f030cfc611227600f37bb8d031ab1b",
+        "value": "a9f030cfc611227600f37bb8d031ab1b"
+      },
+      "contact_type": {
+        "display_value": "Phone",
+        "value": "phone"
+      },
+      "urgency": {
+        "display_value": "3 - Low",
+        "value": 3.0
+      },
+      "company": {
+        "display_value": "",
+        "value": ""
+      },
+      "reassignment_count": {
+        "display_value": "",
+        "value": ""
+      },
+      "activity_due": {
+        "display_value": "UNKNOWN",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "assigned_to": {
+        "display_value": "Don Goodliffe",
+        "value": "9ee1b13dc6112271007f9d0efdb69cd0"
+      },
+      "variables": {
+        "display_value": "variable_pool",
+        "value": "variable_pool"
+      },
+      "comments": {
+        "display_value": "",
+        "value": ""
+      },
+      "sla_due": {
+        "display_value": "UNKNOWN",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "approval": {
+        "display_value": "Not Yet Requested",
+        "value": "not requested"
+      },
+      "comments_and_work_notes": {
+        "display_value": "",
+        "value": ""
+      },
+      "due_date": {
+        "display_value": "11/02/2020 14:19:41",
+        "value": "2020-02-11 22:19:41",
+        "display_value_internal": "2020-02-11 14:19:41"
+      },
+      "sys_mod_count": {
+        "display_value": "0",
+        "value": 0.0
+      },
+      "on_hold": {
+        "display_value": "false",
+        "value": false
+      },
+      "sys_tags": {
+        "display_value": "",
+        "value": ""
+      },
+      "escalation": {
+        "display_value": "Normal",
+        "value": 0.0
+      },
+      "upon_approval": {
+        "display_value": "",
+        "value": ""
+      },
+      "correlation_id": {
+        "display_value": "",
+        "value": ""
+      },
+      "change_task_type": {
+        "display_value": "",
+        "value": ""
+      },
+      "location": {
+        "display_value": "",
+        "value": ""
+      },
+      "created_from": {
+        "display_value": "",
+        "value": ""
+      },
+      "change_request": {
+        "display_value": "CHG0000001",
+        "value": "a9e9c33dc61122760072455df62663d2"
+      }
+    },
+    {
+      "parent": {
+        "display_value": "",
+        "value": ""
+      },
+      "planned_end_date": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "made_sla": {
+        "display_value": "false",
+        "value": false
+      },
+      "watch_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "upon_reject": {
+        "display_value": "",
+        "value": ""
+      },
+      "sys_updated_on": {
+        "display_value": "06/02/2020 14:20:20",
+        "value": "2020-02-06 22:20:20",
+        "display_value_internal": "2020-02-06 14:20:20"
+      },
+      "task_effective_number": {
+        "display_value": "CTASK0010002",
+        "value": "CTASK0010002"
+      },
+      "approval_history": {
+        "display_value": "",
+        "value": ""
+      },
+      "skills": {
+        "display_value": "",
+        "value": ""
+      },
+      "number": {
+        "display_value": "CTASK0010002",
+        "value": "CTASK0010002"
+      },
+      "sys_updated_by": {
+        "display_value": "admin",
+        "value": "admin"
+      },
+      "opened_by": {
+        "display_value": "System Administrator",
+        "value": "6816f79cc0a8016401c5a33be04be441"
+      },
+      "user_input": {
+        "display_value": "",
+        "value": ""
+      },
+      "sys_created_on": {
+        "display_value": "06/02/2020 14:20:20",
+        "value": "2020-02-06 22:20:20",
+        "display_value_internal": "2020-02-06 14:20:20"
+      },
+      "sys_domain": {
+        "display_value": "global",
+        "value": "global"
+      },
+      "state": {
+        "display_value": "Open",
+        "value": 1.0
+      },
+      "sys_created_by": {
+        "display_value": "admin",
+        "value": "admin"
+      },
+      "route_reason": {
+        "display_value": "",
+        "value": ""
+      },
+      "knowledge": {
+        "display_value": "false",
+        "value": false
+      },
+      "order": {
+        "display_value": "",
+        "value": ""
+      },
+      "closed_at": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "cmdb_ci": {
+        "display_value": "Sales Force Automation",
+        "value": "a9c0c8d2c6112276018f7705562f9cb0"
+      },
+      "delivery_plan": {
+        "display_value": "",
+        "value": ""
+      },
+      "impact": {
+        "display_value": "3 - Low",
+        "value": 3.0
+      },
+      "contract": {
+        "display_value": "",
+        "value": ""
+      },
+      "active": {
+        "display_value": "true",
+        "value": true
+      },
+      "work_notes_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "business_service": {
+        "display_value": "",
+        "value": ""
+      },
+      "priority": {
+        "display_value": "1 - Critical",
+        "value": 1.0
+      },
+      "sys_domain_path": {
+        "display_value": "/",
+        "value": "/"
+      },
+      "time_worked": {
+        "display_value": "",
+        "value": ""
+      },
+      "rejection_goto": {
+        "display_value": "",
+        "value": ""
+      },
+      "expected_start": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "opened_at": {
+        "display_value": "06/02/2020 14:20:20",
+        "value": "2020-02-06 22:20:20",
+        "display_value_internal": "2020-02-06 14:20:20"
+      },
+      "business_duration": {
+        "display_value": "",
+        "value": ""
+      },
+      "group_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "work_end": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "planned_start_date": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "approval_set": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "wf_activity": {
+        "display_value": "",
+        "value": ""
+      },
+      "work_notes": {
+        "display_value": "",
+        "value": ""
+      },
+      "universal_request": {
+        "display_value": "",
+        "value": ""
+      },
+      "short_description": {
+        "display_value": "Take VmWare snapshot of Environment",
+        "value": "Take VmWare snapshot of Environment"
+      },
+      "close_code": {
+        "display_value": "",
+        "value": ""
+      },
+      "correlation_display": {
+        "display_value": "",
+        "value": ""
+      },
+      "work_start": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "delivery_task": {
+        "display_value": "",
+        "value": ""
+      },
+      "assignment_group": {
+        "display_value": "",
+        "value": ""
+      },
+      "additional_assignee_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "description": {
+        "display_value": "Take VmWare snapshot of Environment",
+        "value": "Take VmWare snapshot of Environment"
+      },
+      "on_hold_reason": {
+        "display_value": "",
+        "value": ""
+      },
+      "calendar_duration": {
+        "display_value": "",
+        "value": ""
+      },
+      "sys_class_name": {
+        "display_value": "Change Task",
+        "value": "change_task"
+      },
+      "service_offering": {
+        "display_value": "",
+        "value": ""
+      },
+      "close_notes": {
+        "display_value": "",
+        "value": ""
+      },
+      "closed_by": {
+        "display_value": "",
+        "value": ""
+      },
+      "follow_up": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "sys_id": {
+        "display_value": "a9f0a2d2c6112276001c51b4e5715988",
+        "value": "a9f0a2d2c6112276001c51b4e5715988"
+      },
+      "contact_type": {
+        "display_value": "Phone",
+        "value": "phone"
+      },
+      "urgency": {
+        "display_value": "3 - Low",
+        "value": 3.0
+      },
+      "company": {
+        "display_value": "",
+        "value": ""
+      },
+      "reassignment_count": {
+        "display_value": "",
+        "value": ""
+      },
+      "activity_due": {
+        "display_value": "UNKNOWN",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "assigned_to": {
+        "display_value": "David Loo",
+        "value": "5137153cc611227c000bbd1bd8cd2007"
+      },
+      "variables": {
+        "display_value": "variable_pool",
+        "value": "variable_pool"
+      },
+      "comments": {
+        "display_value": "",
+        "value": ""
+      },
+      "sla_due": {
+        "display_value": "UNKNOWN",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "approval": {
+        "display_value": "Not Yet Requested",
+        "value": "not requested"
+      },
+      "comments_and_work_notes": {
+        "display_value": "",
+        "value": ""
+      },
+      "due_date": {
+        "display_value": "11/02/2020 14:20:17",
+        "value": "2020-02-11 22:20:17",
+        "display_value_internal": "2020-02-11 14:20:17"
+      },
+      "sys_mod_count": {
+        "display_value": "0",
+        "value": 0.0
+      },
+      "on_hold": {
+        "display_value": "false",
+        "value": false
+      },
+      "sys_tags": {
+        "display_value": "",
+        "value": ""
+      },
+      "escalation": {
+        "display_value": "Normal",
+        "value": 0.0
+      },
+      "upon_approval": {
+        "display_value": "",
+        "value": ""
+      },
+      "correlation_id": {
+        "display_value": "",
+        "value": ""
+      },
+      "change_task_type": {
+        "display_value": "",
+        "value": ""
+      },
+      "location": {
+        "display_value": "",
+        "value": ""
+      },
+      "created_from": {
+        "display_value": "",
+        "value": ""
+      },
+      "change_request": {
+        "display_value": "CHG0000001",
+        "value": "a9e9c33dc61122760072455df62663d2"
+      }
+    },
+    {
+      "parent": {
+        "display_value": "",
+        "value": ""
+      },
+      "planned_end_date": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "made_sla": {
+        "display_value": "false",
+        "value": false
+      },
+      "watch_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "upon_reject": {
+        "display_value": "",
+        "value": ""
+      },
+      "sys_updated_on": {
+        "display_value": "06/02/2020 14:21:28",
+        "value": "2020-02-06 22:21:28",
+        "display_value_internal": "2020-02-06 14:21:28"
+      },
+      "task_effective_number": {
+        "display_value": "CTASK0010003",
+        "value": "CTASK0010003"
+      },
+      "approval_history": {
+        "display_value": "",
+        "value": ""
+      },
+      "skills": {
+        "display_value": "",
+        "value": ""
+      },
+      "number": {
+        "display_value": "CTASK0010003",
+        "value": "CTASK0010003"
+      },
+      "sys_updated_by": {
+        "display_value": "admin",
+        "value": "admin"
+      },
+      "opened_by": {
+        "display_value": "System Administrator",
+        "value": "6816f79cc0a8016401c5a33be04be441"
+      },
+      "user_input": {
+        "display_value": "",
+        "value": ""
+      },
+      "sys_created_on": {
+        "display_value": "06/02/2020 14:21:28",
+        "value": "2020-02-06 22:21:28",
+        "display_value_internal": "2020-02-06 14:21:28"
+      },
+      "sys_domain": {
+        "display_value": "global",
+        "value": "global"
+      },
+      "state": {
+        "display_value": "Open",
+        "value": 1.0
+      },
+      "sys_created_by": {
+        "display_value": "admin",
+        "value": "admin"
+      },
+      "route_reason": {
+        "display_value": "",
+        "value": ""
+      },
+      "knowledge": {
+        "display_value": "false",
+        "value": false
+      },
+      "order": {
+        "display_value": "",
+        "value": ""
+      },
+      "closed_at": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "cmdb_ci": {
+        "display_value": "SD1",
+        "value": "a9c68505c6112276017ee7d52f43e7c6"
+      },
+      "delivery_plan": {
+        "display_value": "",
+        "value": ""
+      },
+      "impact": {
+        "display_value": "3 - Low",
+        "value": 3.0
+      },
+      "contract": {
+        "display_value": "",
+        "value": ""
+      },
+      "active": {
+        "display_value": "true",
+        "value": true
+      },
+      "work_notes_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "business_service": {
+        "display_value": "",
+        "value": ""
+      },
+      "priority": {
+        "display_value": "2 - High",
+        "value": 2.0
+      },
+      "sys_domain_path": {
+        "display_value": "/",
+        "value": "/"
+      },
+      "time_worked": {
+        "display_value": "",
+        "value": ""
+      },
+      "rejection_goto": {
+        "display_value": "",
+        "value": ""
+      },
+      "expected_start": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "opened_at": {
+        "display_value": "06/02/2020 14:21:28",
+        "value": "2020-02-06 22:21:28",
+        "display_value_internal": "2020-02-06 14:21:28"
+      },
+      "business_duration": {
+        "display_value": "",
+        "value": ""
+      },
+      "group_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "work_end": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "planned_start_date": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "approval_set": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "wf_activity": {
+        "display_value": "",
+        "value": ""
+      },
+      "work_notes": {
+        "display_value": "",
+        "value": ""
+      },
+      "universal_request": {
+        "display_value": "",
+        "value": ""
+      },
+      "short_description": {
+        "display_value": "Install Oracle 10g onto SD1",
+        "value": "Install Oracle 10g onto SD1"
+      },
+      "close_code": {
+        "display_value": "",
+        "value": ""
+      },
+      "correlation_display": {
+        "display_value": "",
+        "value": ""
+      },
+      "work_start": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "delivery_task": {
+        "display_value": "",
+        "value": ""
+      },
+      "assignment_group": {
+        "display_value": "",
+        "value": ""
+      },
+      "additional_assignee_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "description": {
+        "display_value": "Install Oracle 10g onto SD1",
+        "value": "Install Oracle 10g onto SD1"
+      },
+      "on_hold_reason": {
+        "display_value": "",
+        "value": ""
+      },
+      "calendar_duration": {
+        "display_value": "",
+        "value": ""
+      },
+      "sys_class_name": {
+        "display_value": "Change Task",
+        "value": "change_task"
+      },
+      "service_offering": {
+        "display_value": "",
+        "value": ""
+      },
+      "close_notes": {
+        "display_value": "",
+        "value": ""
+      },
+      "closed_by": {
+        "display_value": "",
+        "value": ""
+      },
+      "follow_up": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "sys_id": {
+        "display_value": "a9f1ab97c611227600a920ad739997ea",
+        "value": "a9f1ab97c611227600a920ad739997ea"
+      },
+      "contact_type": {
+        "display_value": "Phone",
+        "value": "phone"
+      },
+      "urgency": {
+        "display_value": "3 - Low",
+        "value": 3.0
+      },
+      "company": {
+        "display_value": "",
+        "value": ""
+      },
+      "reassignment_count": {
+        "display_value": "",
+        "value": ""
+      },
+      "activity_due": {
+        "display_value": "UNKNOWN",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "assigned_to": {
+        "display_value": "Bow Ruggeri",
+        "value": "f298d2d2c611227b0106c6be7f154bc8"
+      },
+      "variables": {
+        "display_value": "variable_pool",
+        "value": "variable_pool"
+      },
+      "comments": {
+        "display_value": "",
+        "value": ""
+      },
+      "sla_due": {
+        "display_value": "UNKNOWN",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "approval": {
+        "display_value": "Not Yet Requested",
+        "value": "not requested"
+      },
+      "comments_and_work_notes": {
+        "display_value": "",
+        "value": ""
+      },
+      "due_date": {
+        "display_value": "11/02/2020 18:00:00",
+        "value": "2020-02-12 02:00:00",
+        "display_value_internal": "2020-02-11 18:00:00"
+      },
+      "sys_mod_count": {
+        "display_value": "0",
+        "value": 0.0
+      },
+      "on_hold": {
+        "display_value": "false",
+        "value": false
+      },
+      "sys_tags": {
+        "display_value": "",
+        "value": ""
+      },
+      "escalation": {
+        "display_value": "Normal",
+        "value": 0.0
+      },
+      "upon_approval": {
+        "display_value": "",
+        "value": ""
+      },
+      "correlation_id": {
+        "display_value": "",
+        "value": ""
+      },
+      "change_task_type": {
+        "display_value": "",
+        "value": ""
+      },
+      "location": {
+        "display_value": "",
+        "value": ""
+      },
+      "created_from": {
+        "display_value": "",
+        "value": ""
+      },
+      "change_request": {
+        "display_value": "CHG0000001",
+        "value": "a9e9c33dc61122760072455df62663d2"
+      }
+    },
+    {
+      "parent": {
+        "display_value": "",
+        "value": ""
+      },
+      "planned_end_date": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "made_sla": {
+        "display_value": "false",
+        "value": false
+      },
+      "watch_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "upon_reject": {
+        "display_value": "",
+        "value": ""
+      },
+      "sys_updated_on": {
+        "display_value": "06/02/2020 14:22:18",
+        "value": "2020-02-06 22:22:18",
+        "display_value_internal": "2020-02-06 14:22:18"
+      },
+      "task_effective_number": {
+        "display_value": "CTASK0010004",
+        "value": "CTASK0010004"
+      },
+      "approval_history": {
+        "display_value": "",
+        "value": ""
+      },
+      "skills": {
+        "display_value": "",
+        "value": ""
+      },
+      "number": {
+        "display_value": "CTASK0010004",
+        "value": "CTASK0010004"
+      },
+      "sys_updated_by": {
+        "display_value": "admin",
+        "value": "admin"
+      },
+      "opened_by": {
+        "display_value": "System Administrator",
+        "value": "6816f79cc0a8016401c5a33be04be441"
+      },
+      "user_input": {
+        "display_value": "",
+        "value": ""
+      },
+      "sys_created_on": {
+        "display_value": "06/02/2020 14:22:08",
+        "value": "2020-02-06 22:22:08",
+        "display_value_internal": "2020-02-06 14:22:08"
+      },
+      "sys_domain": {
+        "display_value": "global",
+        "value": "global"
+      },
+      "state": {
+        "display_value": "Open",
+        "value": 1.0
+      },
+      "sys_created_by": {
+        "display_value": "admin",
+        "value": "admin"
+      },
+      "route_reason": {
+        "display_value": "",
+        "value": ""
+      },
+      "knowledge": {
+        "display_value": "false",
+        "value": false
+      },
+      "order": {
+        "display_value": "",
+        "value": ""
+      },
+      "closed_at": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "cmdb_ci": {
+        "display_value": "",
+        "value": ""
+      },
+      "delivery_plan": {
+        "display_value": "",
+        "value": ""
+      },
+      "impact": {
+        "display_value": "3 - Low",
+        "value": 3.0
+      },
+      "contract": {
+        "display_value": "",
+        "value": ""
+      },
+      "active": {
+        "display_value": "true",
+        "value": true
+      },
+      "work_notes_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "business_service": {
+        "display_value": "",
+        "value": ""
+      },
+      "priority": {
+        "display_value": "3 - Moderate",
+        "value": 3.0
+      },
+      "sys_domain_path": {
+        "display_value": "/",
+        "value": "/"
+      },
+      "time_worked": {
+        "display_value": "",
+        "value": ""
+      },
+      "rejection_goto": {
+        "display_value": "",
+        "value": ""
+      },
+      "expected_start": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "opened_at": {
+        "display_value": "06/02/2020 14:22:08",
+        "value": "2020-02-06 22:22:08",
+        "display_value_internal": "2020-02-06 14:22:08"
+      },
+      "business_duration": {
+        "display_value": "",
+        "value": ""
+      },
+      "group_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "work_end": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "planned_start_date": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "approval_set": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "wf_activity": {
+        "display_value": "",
+        "value": ""
+      },
+      "work_notes": {
+        "display_value": "",
+        "value": ""
+      },
+      "universal_request": {
+        "display_value": "",
+        "value": ""
+      },
+      "short_description": {
+        "display_value": "Configure Siebel Software for new DB",
+        "value": "Configure Siebel Software for new DB"
+      },
+      "close_code": {
+        "display_value": "",
+        "value": ""
+      },
+      "correlation_display": {
+        "display_value": "",
+        "value": ""
+      },
+      "work_start": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "delivery_task": {
+        "display_value": "",
+        "value": ""
+      },
+      "assignment_group": {
+        "display_value": "",
+        "value": ""
+      },
+      "additional_assignee_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "description": {
+        "display_value": "Configure Siebel Software for new DB",
+        "value": "Configure Siebel Software for new DB"
+      },
+      "on_hold_reason": {
+        "display_value": "",
+        "value": ""
+      },
+      "calendar_duration": {
+        "display_value": "",
+        "value": ""
+      },
+      "sys_class_name": {
+        "display_value": "Change Task",
+        "value": "change_task"
+      },
+      "service_offering": {
+        "display_value": "",
+        "value": ""
+      },
+      "close_notes": {
+        "display_value": "",
+        "value": ""
+      },
+      "closed_by": {
+        "display_value": "",
+        "value": ""
+      },
+      "follow_up": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "sys_id": {
+        "display_value": "a9f2473bc61122760086a27688428a40",
+        "value": "a9f2473bc61122760086a27688428a40"
+      },
+      "contact_type": {
+        "display_value": "Phone",
+        "value": "phone"
+      },
+      "urgency": {
+        "display_value": "3 - Low",
+        "value": 3.0
+      },
+      "company": {
+        "display_value": "",
+        "value": ""
+      },
+      "reassignment_count": {
+        "display_value": "",
+        "value": ""
+      },
+      "activity_due": {
+        "display_value": "UNKNOWN",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "assigned_to": {
+        "display_value": "Don Goodliffe",
+        "value": "9ee1b13dc6112271007f9d0efdb69cd0"
+      },
+      "variables": {
+        "display_value": "variable_pool",
+        "value": "variable_pool"
+      },
+      "comments": {
+        "display_value": "",
+        "value": ""
+      },
+      "sla_due": {
+        "display_value": "UNKNOWN",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "approval": {
+        "display_value": "Not Yet Requested",
+        "value": "not requested"
+      },
+      "comments_and_work_notes": {
+        "display_value": "",
+        "value": ""
+      },
+      "due_date": {
+        "display_value": "12/02/2020 14:21:56",
+        "value": "2020-02-12 22:21:56",
+        "display_value_internal": "2020-02-12 14:21:56"
+      },
+      "sys_mod_count": {
+        "display_value": "1",
+        "value": 1.0
+      },
+      "on_hold": {
+        "display_value": "false",
+        "value": false
+      },
+      "sys_tags": {
+        "display_value": "",
+        "value": ""
+      },
+      "escalation": {
+        "display_value": "Normal",
+        "value": 0.0
+      },
+      "upon_approval": {
+        "display_value": "",
+        "value": ""
+      },
+      "correlation_id": {
+        "display_value": "",
+        "value": ""
+      },
+      "change_task_type": {
+        "display_value": "",
+        "value": ""
+      },
+      "location": {
+        "display_value": "",
+        "value": ""
+      },
+      "created_from": {
+        "display_value": "",
+        "value": ""
+      },
+      "change_request": {
+        "display_value": "CHG0000001",
+        "value": "a9e9c33dc61122760072455df62663d2"
+      }
+    },
+    {
+      "parent": {
+        "display_value": "",
+        "value": ""
+      },
+      "planned_end_date": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "made_sla": {
+        "display_value": "false",
+        "value": false
+      },
+      "watch_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "upon_reject": {
+        "display_value": "",
+        "value": ""
+      },
+      "sys_updated_on": {
+        "display_value": "06/02/2020 14:22:48",
+        "value": "2020-02-06 22:22:48",
+        "display_value_internal": "2020-02-06 14:22:48"
+      },
+      "task_effective_number": {
+        "display_value": "CTASK0010005",
+        "value": "CTASK0010005"
+      },
+      "approval_history": {
+        "display_value": "",
+        "value": ""
+      },
+      "skills": {
+        "display_value": "",
+        "value": ""
+      },
+      "number": {
+        "display_value": "CTASK0010005",
+        "value": "CTASK0010005"
+      },
+      "sys_updated_by": {
+        "display_value": "admin",
+        "value": "admin"
+      },
+      "opened_by": {
+        "display_value": "System Administrator",
+        "value": "6816f79cc0a8016401c5a33be04be441"
+      },
+      "user_input": {
+        "display_value": "",
+        "value": ""
+      },
+      "sys_created_on": {
+        "display_value": "06/02/2020 14:22:48",
+        "value": "2020-02-06 22:22:48",
+        "display_value_internal": "2020-02-06 14:22:48"
+      },
+      "sys_domain": {
+        "display_value": "global",
+        "value": "global"
+      },
+      "state": {
+        "display_value": "Open",
+        "value": 1.0
+      },
+      "sys_created_by": {
+        "display_value": "admin",
+        "value": "admin"
+      },
+      "route_reason": {
+        "display_value": "",
+        "value": ""
+      },
+      "knowledge": {
+        "display_value": "false",
+        "value": false
+      },
+      "order": {
+        "display_value": "",
+        "value": ""
+      },
+      "closed_at": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "cmdb_ci": {
+        "display_value": "",
+        "value": ""
+      },
+      "delivery_plan": {
+        "display_value": "",
+        "value": ""
+      },
+      "impact": {
+        "display_value": "3 - Low",
+        "value": 3.0
+      },
+      "contract": {
+        "display_value": "",
+        "value": ""
+      },
+      "active": {
+        "display_value": "true",
+        "value": true
+      },
+      "work_notes_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "business_service": {
+        "display_value": "",
+        "value": ""
+      },
+      "priority": {
+        "display_value": "3 - Moderate",
+        "value": 3.0
+      },
+      "sys_domain_path": {
+        "display_value": "/",
+        "value": "/"
+      },
+      "time_worked": {
+        "display_value": "",
+        "value": ""
+      },
+      "rejection_goto": {
+        "display_value": "",
+        "value": ""
+      },
+      "expected_start": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "opened_at": {
+        "display_value": "06/02/2020 14:22:48",
+        "value": "2020-02-06 22:22:48",
+        "display_value_internal": "2020-02-06 14:22:48"
+      },
+      "business_duration": {
+        "display_value": "",
+        "value": ""
+      },
+      "group_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "work_end": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "planned_start_date": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "approval_set": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "wf_activity": {
+        "display_value": "",
+        "value": ""
+      },
+      "work_notes": {
+        "display_value": "",
+        "value": ""
+      },
+      "universal_request": {
+        "display_value": "",
+        "value": ""
+      },
+      "short_description": {
+        "display_value": "Preliminary System Testing",
+        "value": "Preliminary System Testing"
+      },
+      "close_code": {
+        "display_value": "",
+        "value": ""
+      },
+      "correlation_display": {
+        "display_value": "",
+        "value": ""
+      },
+      "work_start": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "delivery_task": {
+        "display_value": "",
+        "value": ""
+      },
+      "assignment_group": {
+        "display_value": "",
+        "value": ""
+      },
+      "additional_assignee_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "description": {
+        "display_value": "Preliminary System Testing",
+        "value": "Preliminary System Testing"
+      },
+      "on_hold_reason": {
+        "display_value": "",
+        "value": ""
+      },
+      "calendar_duration": {
+        "display_value": "",
+        "value": ""
+      },
+      "sys_class_name": {
+        "display_value": "Change Task",
+        "value": "change_task"
+      },
+      "service_offering": {
+        "display_value": "",
+        "value": ""
+      },
+      "close_notes": {
+        "display_value": "",
+        "value": ""
+      },
+      "closed_by": {
+        "display_value": "",
+        "value": ""
+      },
+      "follow_up": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "sys_id": {
+        "display_value": "a9f2e5bdc61122760052c1250f7ac503",
+        "value": "a9f2e5bdc61122760052c1250f7ac503"
+      },
+      "contact_type": {
+        "display_value": "Phone",
+        "value": "phone"
+      },
+      "urgency": {
+        "display_value": "3 - Low",
+        "value": 3.0
+      },
+      "company": {
+        "display_value": "",
+        "value": ""
+      },
+      "reassignment_count": {
+        "display_value": "",
+        "value": ""
+      },
+      "activity_due": {
+        "display_value": "UNKNOWN",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "assigned_to": {
+        "display_value": "Bow Ruggeri",
+        "value": "f298d2d2c611227b0106c6be7f154bc8"
+      },
+      "variables": {
+        "display_value": "variable_pool",
+        "value": "variable_pool"
+      },
+      "comments": {
+        "display_value": "",
+        "value": ""
+      },
+      "sla_due": {
+        "display_value": "UNKNOWN",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "approval": {
+        "display_value": "Not Yet Requested",
+        "value": "not requested"
+      },
+      "comments_and_work_notes": {
+        "display_value": "",
+        "value": ""
+      },
+      "due_date": {
+        "display_value": "12/02/2020 14:22:39",
+        "value": "2020-02-12 22:22:39",
+        "display_value_internal": "2020-02-12 14:22:39"
+      },
+      "sys_mod_count": {
+        "display_value": "0",
+        "value": 0.0
+      },
+      "on_hold": {
+        "display_value": "false",
+        "value": false
+      },
+      "sys_tags": {
+        "display_value": "",
+        "value": ""
+      },
+      "escalation": {
+        "display_value": "Normal",
+        "value": 0.0
+      },
+      "upon_approval": {
+        "display_value": "",
+        "value": ""
+      },
+      "correlation_id": {
+        "display_value": "",
+        "value": ""
+      },
+      "change_task_type": {
+        "display_value": "",
+        "value": ""
+      },
+      "location": {
+        "display_value": "",
+        "value": ""
+      },
+      "created_from": {
+        "display_value": "",
+        "value": ""
+      },
+      "change_request": {
+        "display_value": "CHG0000001",
+        "value": "a9e9c33dc61122760072455df62663d2"
+      }
+    },
+    {
+      "parent": {
+        "display_value": "",
+        "value": ""
+      },
+      "planned_end_date": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "made_sla": {
+        "display_value": "false",
+        "value": false
+      },
+      "watch_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "upon_reject": {
+        "display_value": "",
+        "value": ""
+      },
+      "sys_updated_on": {
+        "display_value": "06/02/2020 14:23:24",
+        "value": "2020-02-06 22:23:24",
+        "display_value_internal": "2020-02-06 14:23:24"
+      },
+      "task_effective_number": {
+        "display_value": "CTASK0010006",
+        "value": "CTASK0010006"
+      },
+      "approval_history": {
+        "display_value": "",
+        "value": ""
+      },
+      "skills": {
+        "display_value": "",
+        "value": ""
+      },
+      "number": {
+        "display_value": "CTASK0010006",
+        "value": "CTASK0010006"
+      },
+      "sys_updated_by": {
+        "display_value": "admin",
+        "value": "admin"
+      },
+      "opened_by": {
+        "display_value": "System Administrator",
+        "value": "6816f79cc0a8016401c5a33be04be441"
+      },
+      "user_input": {
+        "display_value": "",
+        "value": ""
+      },
+      "sys_created_on": {
+        "display_value": "06/02/2020 14:23:24",
+        "value": "2020-02-06 22:23:24",
+        "display_value_internal": "2020-02-06 14:23:24"
+      },
+      "sys_domain": {
+        "display_value": "global",
+        "value": "global"
+      },
+      "state": {
+        "display_value": "Open",
+        "value": 1.0
+      },
+      "sys_created_by": {
+        "display_value": "admin",
+        "value": "admin"
+      },
+      "route_reason": {
+        "display_value": "",
+        "value": ""
+      },
+      "knowledge": {
+        "display_value": "false",
+        "value": false
+      },
+      "order": {
+        "display_value": "",
+        "value": ""
+      },
+      "closed_at": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "cmdb_ci": {
+        "display_value": "Sales Force Automation",
+        "value": "a9c0c8d2c6112276018f7705562f9cb0"
+      },
+      "delivery_plan": {
+        "display_value": "",
+        "value": ""
+      },
+      "impact": {
+        "display_value": "3 - Low",
+        "value": 3.0
+      },
+      "contract": {
+        "display_value": "",
+        "value": ""
+      },
+      "active": {
+        "display_value": "true",
+        "value": true
+      },
+      "work_notes_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "business_service": {
+        "display_value": "",
+        "value": ""
+      },
+      "priority": {
+        "display_value": "1 - Critical",
+        "value": 1.0
+      },
+      "sys_domain_path": {
+        "display_value": "/",
+        "value": "/"
+      },
+      "time_worked": {
+        "display_value": "",
+        "value": ""
+      },
+      "rejection_goto": {
+        "display_value": "",
+        "value": ""
+      },
+      "expected_start": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "opened_at": {
+        "display_value": "06/02/2020 14:23:24",
+        "value": "2020-02-06 22:23:24",
+        "display_value_internal": "2020-02-06 14:23:24"
+      },
+      "business_duration": {
+        "display_value": "",
+        "value": ""
+      },
+      "group_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "work_end": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "planned_start_date": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "approval_set": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "wf_activity": {
+        "display_value": "",
+        "value": ""
+      },
+      "work_notes": {
+        "display_value": "",
+        "value": ""
+      },
+      "universal_request": {
+        "display_value": "",
+        "value": ""
+      },
+      "short_description": {
+        "display_value": "Multi-User Testing and QA",
+        "value": "Multi-User Testing and QA"
+      },
+      "close_code": {
+        "display_value": "",
+        "value": ""
+      },
+      "correlation_display": {
+        "display_value": "",
+        "value": ""
+      },
+      "work_start": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "delivery_task": {
+        "display_value": "",
+        "value": ""
+      },
+      "assignment_group": {
+        "display_value": "",
+        "value": ""
+      },
+      "additional_assignee_list": {
+        "display_value": "",
+        "value": ""
+      },
+      "description": {
+        "display_value": "Multi-User Testing and QA",
+        "value": "Multi-User Testing and QA"
+      },
+      "on_hold_reason": {
+        "display_value": "",
+        "value": ""
+      },
+      "calendar_duration": {
+        "display_value": "",
+        "value": ""
+      },
+      "sys_class_name": {
+        "display_value": "Change Task",
+        "value": "change_task"
+      },
+      "service_offering": {
+        "display_value": "",
+        "value": ""
+      },
+      "close_notes": {
+        "display_value": "",
+        "value": ""
+      },
+      "closed_by": {
+        "display_value": "",
+        "value": ""
+      },
+      "follow_up": {
+        "display_value": "",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "sys_id": {
+        "display_value": "a9f3703ac611227601245c4f5fa75b6d",
+        "value": "a9f3703ac611227601245c4f5fa75b6d"
+      },
+      "contact_type": {
+        "display_value": "Phone",
+        "value": "phone"
+      },
+      "urgency": {
+        "display_value": "3 - Low",
+        "value": 3.0
+      },
+      "company": {
+        "display_value": "",
+        "value": ""
+      },
+      "reassignment_count": {
+        "display_value": "",
+        "value": ""
+      },
+      "activity_due": {
+        "display_value": "UNKNOWN",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "assigned_to": {
+        "display_value": "Bow Ruggeri",
+        "value": "f298d2d2c611227b0106c6be7f154bc8"
+      },
+      "variables": {
+        "display_value": "variable_pool",
+        "value": "variable_pool"
+      },
+      "comments": {
+        "display_value": "",
+        "value": ""
+      },
+      "sla_due": {
+        "display_value": "UNKNOWN",
+        "value": "",
+        "display_value_internal": ""
+      },
+      "approval": {
+        "display_value": "Not Yet Requested",
+        "value": "not requested"
+      },
+      "comments_and_work_notes": {
+        "display_value": "",
+        "value": ""
+      },
+      "due_date": {
+        "display_value": "12/02/2020 16:00:00",
+        "value": "2020-02-13 00:00:00",
+        "display_value_internal": "2020-02-12 16:00:00"
+      },
+      "sys_mod_count": {
+        "display_value": "0",
+        "value": 0.0
+      },
+      "on_hold": {
+        "display_value": "false",
+        "value": false
+      },
+      "sys_tags": {
+        "display_value": "",
+        "value": ""
+      },
+      "escalation": {
+        "display_value": "Normal",
+        "value": 0.0
+      },
+      "upon_approval": {
+        "display_value": "",
+        "value": ""
+      },
+      "correlation_id": {
+        "display_value": "",
+        "value": ""
+      },
+      "change_task_type": {
+        "display_value": "",
+        "value": ""
+      },
+      "location": {
+        "display_value": "",
+        "value": ""
+      },
+      "created_from": {
+        "display_value": "",
+        "value": ""
+      },
+      "change_request": {
+        "display_value": "CHG0000001",
+        "value": "a9e9c33dc61122760072455df62663d2"
+      }
+    }
+  ]
+}

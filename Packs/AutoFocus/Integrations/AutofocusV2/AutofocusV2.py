@@ -806,20 +806,25 @@ def search_samples(query=None, scope=None, size=None, sort=None, order=None, fil
                    url=None, wildfire_verdict=None, first_seen=None, last_updated=None, artifact_source=None):
     validate_no_query_and_indicators(query, [file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated])
     if not query:
-        validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
-        query = build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated)
+        indicator_args_for_query = {
+            'file_hash': file_hash,
+            'domain': domain,
+            'ip': ip,
+            'url': url
+        }
+        used_indicator = validate_no_multiple_indicators_for_search(indicator_args_for_query)
+        search_result = []
+        for _batch in batch(indicator_args_for_query[used_indicator], batch_size=100):
+            query = build_sample_search_query(used_indicator, _batch, wildfire_verdict, first_seen, last_updated)
+            search_result.append(run_search('samples', query=query, scope=scope, size=size, sort=sort, order=order,
+                                            artifact_source=artifact_source))
+        return search_result
     return run_search('samples', query=query, scope=scope, size=size, sort=sort, order=order,
                       artifact_source=artifact_source)
 
 
-def build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated):
-    indicator_args_for_query = {
-        'file_hash': file_hash,
-        'domain': domain,
-        'ip': ip,
-        'url': url
-    }
-    indicator_list = build_indicator_children_query(indicator_args_for_query)
+def build_sample_search_query(used_indicator, indicators_values, wildfire_verdict, first_seen, last_updated):
+    indicator_list = build_indicator_children_query(used_indicator, indicators_values)
     indicator_query = build_logic_query('OR', indicator_list)
     filtering_args_for_search = {}  # type: ignore
     if wildfire_verdict:
@@ -839,19 +844,23 @@ def search_sessions(query=None, size=None, sort=None, order=None, file_hash=None
                     from_time=None, to_time=None):
     validate_no_query_and_indicators(query, [file_hash, domain, ip, url, from_time, to_time])
     if not query:
-        validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
-        query = build_session_search_query(file_hash, domain, ip, url, from_time, to_time)
+        indicator_args_for_query = {
+            'file_hash': file_hash,
+            'domain': domain,
+            'ip': ip,
+            'url': url
+        }
+        used_indicator = validate_no_multiple_indicators_for_search(indicator_args_for_query)
+        search_result = []
+        for _batch in batch(indicator_args_for_query[used_indicator], batch_size=100):
+            query = build_session_search_query(used_indicator, _batch, from_time, to_time)
+            search_result.append(run_search('sessions', query=query, size=size, sort=sort, order=order))
+        return search_result
     return run_search('sessions', query=query, size=size, sort=sort, order=order)
 
 
-def build_session_search_query(file_hash, domain, ip, url, from_time, to_time):
-    indicator_args_for_query = {
-        'file_hash': file_hash,
-        'domain': domain,
-        'ip': ip,
-        'url': url
-    }
-    indicator_list = build_indicator_children_query(indicator_args_for_query)
+def build_session_search_query(used_indicator, indicators_batch, from_time, to_time):
+    indicator_list = build_indicator_children_query(used_indicator, indicators_batch)
     indicator_query = build_logic_query('OR', indicator_list)
     time_filters_for_search = {}  # type: ignore
     if from_time and to_time:
@@ -888,12 +897,11 @@ def build_children_query(args_for_query):
     return children_list
 
 
-def build_indicator_children_query(args_for_query):
-    for key, val in args_for_query.items():
-        if val:
-            field_api_name = API_PARAM_DICT['search_arguments'][key]['api_name']  # type: ignore
-            operator = API_PARAM_DICT['search_arguments'][key]['operator']  # type: ignore
-            children_list = children_list_generator(field_api_name, operator, val)
+def build_indicator_children_query(used_indicator, indicators_values):
+    if indicators_values:
+        field_api_name = API_PARAM_DICT['search_arguments'][used_indicator]['api_name']  # type: ignore
+        operator = API_PARAM_DICT['search_arguments'][used_indicator]['operator']  # type: ignore
+        children_list = children_list_generator(field_api_name, operator, indicators_values)
     return children_list
 
 
@@ -916,17 +924,17 @@ def validate_no_query_and_indicators(query, arg_list):
                              'or use the builtin arguments, but not both')
 
 
-def validate_no_multiple_indicators_for_search(arg_list):
+def validate_no_multiple_indicators_for_search(arg_dict):
     used_arg = None
-    for arg in arg_list:
-        if arg and used_arg:
+    for arg, val in arg_dict.items():
+        if val and used_arg:
             return_error(f'The search command can receive one indicator type at a time, two were given: {used_arg}, '
                          f'{arg}. For multiple indicator types use the custom query')
-        elif arg:
+        elif val:
             used_arg = arg
     if not used_arg:
         return_error('In order to perform a samples/sessions search, a query or an indicator must be given.')
-    return
+    return used_arg
 
 
 def search_indicator(indicator_type, indicator_value):
@@ -1389,43 +1397,55 @@ def search_ip_command(ip, reliability, create_relationships):
         ip_type = 'ipv6_address' if is_ipv6_valid(ip_address) else 'ipv4_address'
         raw_res = search_indicator(ip_type, ip_address)
 
-        if not raw_res.get('indicator'):
-            raise ValueError('Invalid response for indicator')
-
         indicator = raw_res.get('indicator')
-        raw_tags = raw_res.get('tags')
+        if indicator:
+            raw_tags = raw_res.get('tags')
 
-        score = calculate_dbot_score(indicator, indicator_type)
-        dbot_score = Common.DBotScore(
-            indicator=ip_address,
-            indicator_type=DBotScoreType.IP,
-            integration_name=VENDOR_NAME,
-            score=score,
-            reliability=reliability
-        )
-        if create_relationships:
-            relationships = create_relationships_list(entity_a=ip_address, entity_a_type=indicator_type, tags=raw_tags,
-                                                      reliability=reliability)
-        ip = Common.IP(
-            ip=ip_address,
-            dbot_score=dbot_score,
-            malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
-            tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
-            relationships=relationships
-        )
+            score = calculate_dbot_score(indicator, indicator_type)
+            dbot_score = Common.DBotScore(
+                indicator=ip_address,
+                indicator_type=DBotScoreType.IP,
+                integration_name=VENDOR_NAME,
+                score=score,
+                reliability=reliability
+            )
+            if create_relationships:
+                relationships = create_relationships_list(entity_a=ip_address, entity_a_type=indicator_type, tags=raw_tags,
+                                                          reliability=reliability)
+            ip = Common.IP(
+                ip=ip_address,
+                dbot_score=dbot_score,
+                malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+                tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
+                relationships=relationships
+            )
 
-        autofocus_ip_output = parse_indicator_response(indicator, raw_tags, indicator_type)
+            autofocus_ip_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
-        # create human readable markdown for ip
-        tags = autofocus_ip_output.get('Tags')
-        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {ip_address}'
-        if tags:
-            indicators_data = autofocus_ip_output.copy()
-            del indicators_data['Tags']
-            md = tableToMarkdown(table_name, indicators_data)
-            md += tableToMarkdown('Indicator Tags:', tags)
+            # create human readable markdown for ip
+            tags = autofocus_ip_output.get('Tags')
+            table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {ip_address}'
+            if tags:
+                indicators_data = autofocus_ip_output.copy()
+                del indicators_data['Tags']
+                md = tableToMarkdown(table_name, indicators_data)
+                md += tableToMarkdown('Indicator Tags:', tags)
+            else:
+                md = tableToMarkdown(table_name, autofocus_ip_output)
         else:
-            md = tableToMarkdown(table_name, autofocus_ip_output)
+            dbot_score = Common.DBotScore(
+                indicator=ip_address,
+                indicator_type=DBotScoreType.IP,
+                integration_name=VENDOR_NAME,
+                score=0,
+                reliability=reliability,
+            )
+            ip = Common.IP(
+                ip=ip_address,
+                dbot_score=dbot_score,
+            )
+            md = f'### The IP indicator: {ip_address} was not found in AutoFocus'
+            autofocus_ip_output = {'IndicatorValue': ip_address}
 
         command_results.append(CommandResults(
             outputs_prefix='AutoFocus.IP',
@@ -1527,46 +1547,59 @@ def search_url_command(url, reliability, create_relationships):
 
     for url_name in url_list:
         raw_res = search_indicator('url', convert_url_to_ascii_character(url_name))
-        if not raw_res.get('indicator'):
-            raise ValueError('Invalid response for indicator')
 
         indicator = raw_res.get('indicator')
-        indicator['indicatorValue'] = url_name
-        raw_tags = raw_res.get('tags')
+        if indicator:
+            indicator['indicatorValue'] = url_name
+            raw_tags = raw_res.get('tags')
 
-        score = calculate_dbot_score(indicator, indicator_type)
+            score = calculate_dbot_score(indicator, indicator_type)
 
-        dbot_score = Common.DBotScore(
-            indicator=url_name,
-            indicator_type=DBotScoreType.URL,
-            integration_name=VENDOR_NAME,
-            score=score,
-            reliability=reliability
-        )
-        if create_relationships:
-            relationships = create_relationships_list(entity_a=url_name, entity_a_type=indicator_type,
-                                                      tags=raw_tags,
-                                                      reliability=reliability)
-        url = Common.URL(
-            url=url_name,
-            dbot_score=dbot_score,
-            malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
-            tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
-            relationships=relationships
-        )
+            dbot_score = Common.DBotScore(
+                indicator=url_name,
+                indicator_type=DBotScoreType.URL,
+                integration_name=VENDOR_NAME,
+                score=score,
+                reliability=reliability
+            )
+            if create_relationships:
+                relationships = create_relationships_list(entity_a=url_name, entity_a_type=indicator_type,
+                                                          tags=raw_tags,
+                                                          reliability=reliability)
+            url = Common.URL(
+                url=url_name,
+                dbot_score=dbot_score,
+                malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+                tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
+                relationships=relationships
+            )
 
-        autofocus_url_output = parse_indicator_response(indicator, raw_tags, indicator_type)
-        autofocus_url_output = {k: v for k, v in autofocus_url_output.items() if v}
+            autofocus_url_output = parse_indicator_response(indicator, raw_tags, indicator_type)
+            autofocus_url_output = {k: v for k, v in autofocus_url_output.items() if v}
 
-        tags = autofocus_url_output.get('Tags')
-        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {url_name}'
-        if tags:
-            indicators_data = autofocus_url_output.copy()
-            del indicators_data['Tags']
-            md = tableToMarkdown(table_name, indicators_data)
-            md += tableToMarkdown('Indicator Tags:', tags)
+            tags = autofocus_url_output.get('Tags')
+            table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {url_name}'
+            if tags:
+                indicators_data = autofocus_url_output.copy()
+                del indicators_data['Tags']
+                md = tableToMarkdown(table_name, indicators_data)
+                md += tableToMarkdown('Indicator Tags:', tags)
+            else:
+                md = tableToMarkdown(table_name, autofocus_url_output)
         else:
-            md = tableToMarkdown(table_name, autofocus_url_output)
+            dbot_score = Common.DBotScore(
+                indicator=url_name,
+                indicator_type=DBotScoreType.URL,
+                integration_name=VENDOR_NAME,
+                score=0,
+                reliability=reliability
+            )
+            url = Common.URL(
+                url=url_name,
+                dbot_score=dbot_score
+            )
+            md = f'### The URL indicator: {url_name} was not found in AutoFocus'
+            autofocus_url_output = {'IndicatorValue': url_name}
 
         command_results.append(CommandResults(
             outputs_prefix='AutoFocus.URL',
@@ -1588,45 +1621,64 @@ def search_file_command(file, reliability, create_relationships):
     command_results = []
     relationships = []
 
-    for sha256 in file_list:
-        raw_res = search_indicator('filehash', sha256.lower())
-        if not raw_res.get('indicator'):
-            raise ValueError('Invalid response for indicator')
+    for file_hash in file_list:
+        raw_res = search_indicator('filehash', file_hash.lower())
 
         indicator = raw_res.get('indicator')
-        raw_tags = raw_res.get('tags')
+        if indicator:
+            raw_tags = raw_res.get('tags')
 
-        score = calculate_dbot_score(indicator, indicator_type)
-        dbot_score = Common.DBotScore(
-            indicator=sha256,
-            indicator_type=DBotScoreType.FILE,
-            integration_name=VENDOR_NAME,
-            score=score,
-            reliability=reliability
-        )
-        if create_relationships:
-            relationships = create_relationships_list(entity_a=sha256, entity_a_type=indicator_type,
-                                                      tags=raw_tags,
-                                                      reliability=reliability)
-        autofocus_file_output = parse_indicator_response(indicator, raw_tags, indicator_type)
+            score = calculate_dbot_score(indicator, indicator_type)
+            dbot_score = Common.DBotScore(
+                indicator=file_hash,
+                indicator_type=DBotScoreType.FILE,
+                integration_name=VENDOR_NAME,
+                score=score,
+                reliability=reliability
+            )
+            if create_relationships:
+                relationships = create_relationships_list(entity_a=file_hash, entity_a_type=indicator_type,
+                                                          tags=raw_tags,
+                                                          reliability=reliability)
+            autofocus_file_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
-        tags = autofocus_file_output.get('Tags')
-        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {sha256}'
-        if tags:
-            indicators_data = autofocus_file_output.copy()
-            del indicators_data['Tags']
-            md = tableToMarkdown(table_name, indicators_data)
-            md += tableToMarkdown('Indicator Tags:', tags)
+            tags = autofocus_file_output.get('Tags')
+            table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {file_hash}'
+            if tags:
+                indicators_data = autofocus_file_output.copy()
+                del indicators_data['Tags']
+                md = tableToMarkdown(table_name, indicators_data)
+                md += tableToMarkdown('Indicator Tags:', tags)
+            else:
+                md = tableToMarkdown(table_name, autofocus_file_output)
+
+            hash_type = get_hash_type(file_hash)
+
+            file = Common.File(
+                md5=file_hash if hash_type == 'md5' else None,
+                sha1=file_hash if hash_type == 'sha1' else None,
+                sha256=file_hash if hash_type == 'sha256' else None,
+                dbot_score=dbot_score,
+                malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+                tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
+                relationships=relationships
+            )
         else:
-            md = tableToMarkdown(table_name, autofocus_file_output)
-
-        file = Common.File(
-            sha256=sha256,
-            dbot_score=dbot_score,
-            malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
-            tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
-            relationships=relationships
-        )
+            dbot_score = Common.DBotScore(
+                indicator=file_hash,
+                indicator_type=DBotScoreType.FILE,
+                integration_name=VENDOR_NAME,
+                score=0,
+                reliability=reliability
+            )
+            hash_type = get_hash_type(file_hash)
+            hash_val_arg = {hash_type: file_hash}
+            file = Common.File(
+                dbot_score=dbot_score,
+                **hash_val_arg
+            )
+            md = f'### The File indicator: {file_hash} was not found in AutoFocus'
+            autofocus_file_output = {'IndicatorValue': file_hash}
 
         command_results.append(CommandResults(
             outputs_prefix='AutoFocus.File',

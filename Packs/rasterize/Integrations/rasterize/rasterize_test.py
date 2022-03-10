@@ -175,3 +175,26 @@ def test_rasterize_image_to_pdf(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['entryInfoFile']
+
+
+TEST_DATA = [
+    (
+        'test_data/many_pages.pdf',
+        21,
+        2,
+    ),
+    (
+        'test_data/many_pages.pdf',
+        20,
+        1,
+    ),
+]
+
+
+@pytest.mark.parametrize('file_path, max_pages, expected_length', TEST_DATA)
+def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length):
+    from rasterize import convert_pdf_to_jpeg
+    res = convert_pdf_to_jpeg(file_path, max_pages, "pass")
+
+    assert type(res) == list
+    assert len(res) == expected_length

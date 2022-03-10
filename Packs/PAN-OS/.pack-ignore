@@ -2,7 +2,7 @@
 ignore=PA116
 
 [file:Panorama.yml]
-ignore=IN136,IN145
+ignore=IN136,IN145,IN124
 
 [file:README.md]
 ignore=RM102,RM106
@@ -14,4 +14,10 @@ ignore=RM106
 ignore=RM106
 
 [file:playbook-PAN-OS_Create_Or_Edit_Rule_Test.yml]
+ignore=auto-test
+
+[file:playbook-Endpoint_Malware_Investigation_-_Generic_-_Test.yml]
+ignore=auto-test
+
+[file:PCAP_Parsing_And_Indicator_Enrichment_Test.yml]
 ignore=auto-test

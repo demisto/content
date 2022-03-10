@@ -1,31 +1,35 @@
 {
-  "name": "SolarWinds",
-  "description": "SolarWinds allows users to fetch alerts and events by using the fetch incidents capability and commands.",
-  "support": "xsoar",
-  "currentVersion": "1.0.2",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2021-04-30T11:19:28Z",
-  "categories": [
-    "Network Security"
-  ],
-  "tags": [
-    "Alerts",
-    "Network"
-  ],
-  "useCases": [
-    "Network Security"
-  ],
-  "keywords": [
-    "SolarWinds",
-    "Network",
-    "Log",
-    "NCM",
-    "NPM",
-    "IPAM",
-    "NTA",
-    "SAM"
-  ],
-  "githubUser": []
+    "name": "SolarWinds",
+    "description": "SolarWinds allows users to fetch alerts and events by using the fetch incidents capability and commands.",
+    "support": "xsoar",
+    "currentVersion": "1.0.5",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2021-04-30T11:19:28Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+        "Alerts",
+        "Network"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "SolarWinds",
+        "Network",
+        "Log",
+        "NCM",
+        "NPM",
+        "IPAM",
+        "NTA",
+        "SAM"
+    ],
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

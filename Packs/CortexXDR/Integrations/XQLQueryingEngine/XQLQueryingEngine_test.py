@@ -422,27 +422,6 @@ def test_start_xql_query_valid(mocker):
     assert response == 'execution_id'
 
 
-def test_start_xql_query_invalid(mocker):
-    """
-    Given:
-    - An invalid query to search.
-
-    When:
-    - Calling start_xql_query function.
-
-    Then:
-    - Ensure an error is returned.
-    """
-    args = {
-        'query': 'test_query // Some Note',
-        'time_frame': '1 year'
-    }
-    mocker.patch.object(CLIENT, 'start_xql_query', return_value='execution_id')
-    with pytest.raises(Exception) as exc:
-        XQLQueryingEngine.start_xql_query(CLIENT, args=args)
-    assert str(exc.value) == 'Please remove notes (//) from query'
-
-
 def test_get_xql_query_results_success_under_1000(mocker):
     """
     Given:

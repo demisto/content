@@ -1,0 +1,451 @@
+commonfields:
+  id: Hybrid Analysis
+  version: -1
+fromversion: 5.0.0
+name: Hybrid Analysis
+display: Hybrid Analysis
+category: Forensics & Malware Analysis
+description: Fully automated malware analysis with unique Hybrid Analysis.
+configuration:
+- display: Server URL (e.g. https://216.3.128.82)
+  name: serverUrl
+  defaultvalue: https://www.hybrid-analysis.com
+  type: 0
+  required: true
+- display: API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: hybrid-analysis-scan
+    arguments:
+    - name: file
+      required: true
+      description: The MD5, SHA1, or SHA256 hash of the file.
+    - name: malicious_threat_levels
+      description: A CSV list of threat level values. Files that have a threat level
+        specified in the list will be considered malicious.
+      isArray: true
+      defaultValue: "2"
+    outputs:
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: string
+    - contextPath: File.environmentId
+      description: 'The environment ID of the file. '
+      type: string
+    - contextPath: File.analysis_start_time
+      description: The start time of the file analysis.
+      type: string
+    - contextPath: File.submitname
+      description: The submission name of the file.
+      type: string
+    - contextPath: File.classification_tags
+      description: A list of classification tags of the file.
+      type: string
+    - contextPath: File.vxfamily
+      description: The family classification of the file.
+      type: string
+    - contextPath: File.total_network_connections
+      description: The total number of network connections of the file.
+      type: string
+    - contextPath: File.total_processes
+      description: The total processes count of the file.
+      type: string
+    - contextPath: File.total_signatures
+      description: The total signatures count of the file.
+      type: string
+    - contextPath: File.hosts
+      description: A list of hosts of the file.
+      type: string
+    - contextPath: File.isinteresting
+      description: Whether the server found the file interesting.
+      type: string
+    - contextPath: File.domains
+      description: A list of domains related to the file.
+      type: string
+    - contextPath: File.isurlanalysis
+      description: Whether the file was analyzed by a URL.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason that the vendor made the decision.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The DBot score vendor.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The DBot score.
+      type: number
+    description: Returns summary information for a given MD5, SHA1 or SHA256 hash,
+      and all reports generated for any environment ID.
+  - name: hybrid-analysis-submit-sample
+    arguments:
+    - name: entryId
+      required: true
+      default: true
+      description: TheWar-room entry ID of sample file
+    - name: environmentID
+      required: true
+      description: The environment ID to which to submit the file. Run the vx-get-environments
+        command to get all environment IDs.
+    outputs:
+    - contextPath: HybridAnalysis.Submit.JobID
+      description: JobID of the submission
+      type: string
+    - contextPath: HybridAnalysis.Submit.SHA256
+      description: 'The SHA256 hash of the submission. '
+      type: string
+    - contextPath: HybridAnalysis.Submit.EnvironmentID
+      description: 'The environment ID of the submission. '
+      type: string
+    description: Submits a file from the investigation to the analysis server. The
+      minimum required authorization is "default".
+  - name: hybrid-analysis-search
+    arguments:
+    - name: query
+      description: 'The query to run, in the Hybrid Analysis query syntax. For more
+        information, see `<server url>/faq#advanced-search-options`. For example:
+        url:google, host:95.181.53.78.'
+    - name: filename
+      description: The full file name, including the file extension.
+    - name: filetype
+      description: Filetype e.g. docx
+    - name: filetype_desc
+      description: A description of the file type, for example, PE32 executable.
+    - name: env_id
+      description: The environment ID.
+    - name: country
+      description: 'The ISO code of the country by which to filter results, for example:
+        swe'
+    - name: verdict
+      description: 'The verdict by which to filter results. Can be "1- whitelisted",
+        "2- no verdict", "3- "no specific threat", "4- suspicious", or "5- malicious".'
+    - name: av_detect
+      description: 'The AV multi-scan range (0-100) by which to filter results, for
+        example: "50-70".'
+    - name: vx_family
+      description: 'The AV family substring by which to filter results, for example:
+        "nemucod".'
+    - name: tag
+      description: 'The hashtag by which to filter results, for example: "ransomware".'
+    - name: port
+      description: The port by which to filter results.
+    - name: host
+      description: The host (IP address) by which to filter results.
+    - name: domain
+      description: The domain by which to filter results.
+    - name: url
+      description: The HTTP request substring by which to filter results.
+    - name: similar_to
+      description: 'Similar samples, for example: <sha256>.'
+    - name: context
+      description: 'Sample context, for example: <sha256>.'
+    - name: imp_hash
+      description: The import hash.
+    - name: ssdeep
+      description: The ssdeep hash.
+    - name: authentihash
+      description: The authentication hash.
+    - name: min_malicious_scanners
+      description: The number of scanners that report the file as malicious to determine
+        whether the file is malicious. Default is "2".
+      defaultValue: "2"
+    outputs:
+    - contextPath: HybridAnalysis.Search.SHA256
+      description: The SHA256 hash of the search result.
+      type: string
+    - contextPath: HybridAnalysis.Search.SHA1
+      description: The SHA1 hash of the search result.
+      type: string
+    - contextPath: HybridAnalysis.Search.MD5
+      description: The MD5 hash of the search result.
+      type: string
+    - contextPath: HybridAnalysis.Search.environmentId
+      description: The environment ID of the search result.
+      type: string
+    - contextPath: HybridAnalysis.Search.start_time
+      description: The start time of the search result.
+      type: date
+    - contextPath: HybridAnalysis.Search.threatscore
+      description: The threat score of the search result, by server.
+      type: string
+    - contextPath: HybridAnalysis.Search.verdict
+      description: The verdict of the search result.
+      type: string
+    - contextPath: HybridAnalysis.Search.environmentDescription
+      description: The environment description of search result.
+      type: string
+    - contextPath: HybridAnalysis.Search.submitname
+      description: The submission name of the search result.
+      type: string
+    - contextPath: HybridAnalysis.Search.vxfamily
+      description: The family of search result.
+      type: string
+    - contextPath: HybridAnalysis.Search.threatscore
+      description: The threat score of the search result.
+      type: string
+    - contextPath: HybridAnalysis.Search.type_short
+      description: 'The type of search result, for example: "url" or "host".'
+      type: string
+    - contextPath: HybridAnalysis.Search.size
+      description: The size of the search result.
+      type: number
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason that the vendor made the decision.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The DBotScore vendor.
+    - contextPath: DBotScore.Score
+      description: The DBot score.
+    description: Performs a search on the database using the Hybrid Analysis search
+      syntax.
+  - name: hybrid-analysis-detonate-file
+    arguments:
+    - name: entryId
+      required: true
+      description: The War Room entry ID of the sample file you want to detonate.
+    - name: environmentID
+      required: true
+      description: The environment ID to which to submit the file for detonation.
+        Run the vx-get-environments command to get all environment IDs. Default is
+        100, or other WINDOWS ID.
+    - name: delay
+      description: The amount of time (in seconds) to wait between calls. Default
+        is "3".
+      defaultValue: "3"
+    - name: timeout
+      description: The total wait time (in seconds) before timeout. Default is "60".
+      defaultValue: "60"
+    - name: malicious_threat_levels
+      description: A CSV list of threat level values. Files that have a threat level
+        specified in the list will be considered malicious.
+      isArray: true
+      defaultValue: "2"
+    outputs:
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: string
+    - contextPath: File.environmentId
+      description: 'The environment ID of the file. '
+      type: string
+    - contextPath: File.analysis_start_time
+      description: The start time of the file analysis.
+      type: string
+    - contextPath: File.submitname
+      description: The submission name of the file.
+      type: string
+    - contextPath: File.classification_tags
+      description: A list of classification tags of the file.
+      type: string
+    - contextPath: File.vxfamily
+      description: The family classification of the file.
+      type: string
+    - contextPath: File.total_network_connections
+      description: The total number of network connections of the file.
+      type: string
+    - contextPath: File.total_processes
+      description: The total processes count of the file.
+      type: string
+    - contextPath: File.total_signatures
+      description: The total signatures count of the file.
+      type: string
+    - contextPath: File.hosts
+      description: A list of hosts of the file.
+      type: string
+    - contextPath: File.isinteresting
+      description: Whether the server found the file interesting.
+      type: string
+    - contextPath: File.domains
+      description: A list of domains related to the file.
+      type: string
+    - contextPath: File.isurlanalysis
+      description: Whether the file was analyzed by a URL.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason that the vendor made the decision.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The DBot score vendor.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The DBot score.
+      type: number
+    description: Submits a file for detonation in Hybrid Analysis.
+  - name: hybrid-analysis-get-report-status
+    arguments:
+    - name: jobID
+      description: The Job ID of the submission.
+    - name: sha256
+      description: The submission SHA256.
+    - name: environmentID
+      description: The environmentID of the submission.
+    outputs:
+    - contextPath: HybridAnalysis.Submit.State
+      description: The state of the process.
+      type: string
+    - contextPath: HybridAnalysis.Submit.SHA256
+      description: The SHA256 hash of the submission.
+      type: string
+    - contextPath: HybridAnalysis.Submit.JobID
+      description: The job ID of the submission.
+      type: string
+    - contextPath: HybridAnalysis.Submit.EnvironmentID
+      description: The environment ID of the submission.
+      type: string
+    description: Returns the state of the file submission.
+  - name: hybrid-analysis-quick-scan-url
+    arguments:
+    - name: scan_type
+      description: The type of scan. Run the hybrid-analysis-list-scanners command
+        to view available scanners.
+      defaultValue: all
+    - name: url
+      required: true
+      description: The website URL, or the URL that contains the file to submit.
+    outputs:
+    - contextPath: HybridAnalysis.URL.Data
+      description: The URL.
+      type: string
+    - contextPath: HybridAnalysis.URL.ScanID
+      description: The scan ID.
+      type: string
+    - contextPath: HybridAnalysis.URL.SHA256
+      description: The SHA256 hash of the URL.
+      type: string
+    - contextPath: HybridAnalysis.URL.Finished
+      description: Whether the scan completed.
+      type: boolean
+    - contextPath: File.Name
+      description: The URL.
+      type: string
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: string
+    - contextPath: HybridAnalysis.URL.SubmissionType
+      description: The type of the submission. Can be "file" or "url".
+      type: string
+    description: Submits the URL of a website, or the URL that contains the file,
+      for analysis.
+  - name: hybrid-analysis-submit-url
+    arguments:
+    - name: url
+      required: true
+      description: The URL of the file to submit.
+      defaultValue: The URL of the website, or the URL that contains the file to submit.
+    - name: environmentID
+      required: true
+      description: The environment ID to which to submit the file. Run the vx-get-environments
+        command to get all environment IDs.
+    outputs:
+    - contextPath: HybridAnalysis.Submit.JobID
+      description: The job ID of the submission.
+      type: string
+    - contextPath: HybridAnalysis.Submit.SHA256
+      description: The SHA256 of the submission.
+      type: string
+    - contextPath: HybridAnalysis.Submit.EnvironmentID
+      description: The environment ID of the submission.
+      type: number
+    - contextPath: HybridAnalysis.Submit.SubmissionType
+      description: The type of the submission. Can be "file" or "url".
+      type: string
+    description: Submits The URL of a website or the URL that contains the file, for
+      analysis.
+  - name: hybrid-analysis-list-scanners
+    arguments: []
+    outputs:
+    - contextPath: HybridAnalysis.Scanner.Available
+      description: Whether the scanner is available.
+    - contextPath: HybridAnalysis.Scanner.Name
+      description: The scanner name.
+    - contextPath: HybridAnalysis.Scanner.Description
+      description: The scanner description.
+    description: ' Returns a list of available scanners.'
+  - name: hybrid-analysis-quick-scan-url-results
+    arguments:
+    - name: scanID
+      required: true
+      description: The scan ID of the scanned URL.
+    - name: min_malicious_scanners
+      required: true
+      description: The number of scanners that report the file as malicious to determine
+        whether the file is malicious. Default is "2".
+      defaultValue: "2"
+    outputs:
+    - contextPath: HybridAnalysis.URL.ScanID
+      description: The scan ID.
+      type: string
+    - contextPath: HybridAnalysis.URL.SHA256
+      description: The SHA256 hash of the indicator.
+      type: string
+    - contextPath: HybridAnalysis.URL.Finished
+      description: Whether the process completed.
+      type: boolean
+    - contextPath: HybridAnalysis.URL.Scanner.Name
+      description: The scanner name.
+      type: string
+    - contextPath: HybridAnalysis.URL.Scanner.Positives
+      description: The number of positive results.
+      type: number
+    - contextPath: HybridAnalysis.URL.Scanner.Status
+      description: The status of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: string
+    description: Returns the scan results of the given URL ID.
+  runonce: false
+tests:
+- Detonate File - HybridAnalysis - Test
+- HybridAnalysis-Test

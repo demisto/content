@@ -19,5 +19,9 @@
         "IT Services"
     ],
     "keywords": [],
-    "githubUser": []
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

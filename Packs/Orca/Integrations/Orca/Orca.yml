@@ -30,6 +30,7 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+  additionalinfo: The number of objects to process. Maximum value is 500
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

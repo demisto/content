@@ -8,8 +8,7 @@
   "contextValue": "MD5",
   "contextPath": "File(val.MD5 && val.MD5 === obj.MD5)",
   "enhancementScriptNames": [
-    "FileReputation",
-    "SplunkPySearch"
+    "FileReputation"
   ],
   "fromVersion": "5.0.0"
 }

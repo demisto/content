@@ -1,3 +1,6 @@
+import collections
+import os
+
 import pytest
 from collections import OrderedDict
 from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client, fetch_indicators_command
@@ -88,13 +91,23 @@ build_iterator_no_evidence_details_value = [
     }]
 ]
 
+build_iterator_answer_vulnerability = [
+    [{
+        'EvidenceDetails': '{"EvidenceDetails": []}',
+        'Name': 'CVE-2014-1111',
+        'Risk': '90',
+        'RiskString': '4/37'
+    }]
+]
+
 GET_INDICATOR_INPUTS = [
     ('ip', build_iterator_answer_ip, '192.168.1.1', 'IP'),
     ('domain', build_iterator_answer_domain, 'domaintools.com', 'Domain'),
     ('domain', build_iterator_answer_domain_glob, '*domaintools.com', 'DomainGlob'),
     ('hash', build_iterator_answer_hash, '52483514f07eb14570142f6927b77deb7b4da99f', 'File'),
     ('url', build_iterator_answer_url, 'www.securityadvisor.io', 'URL'),
-    ('ip', build_iterator_no_evidence_details_value, '192.168.1.1', 'IP')
+    ('ip', build_iterator_no_evidence_details_value, '192.168.1.1', 'IP'),
+    ('vulnerability', build_iterator_answer_vulnerability, 'CVE-2014-1111', 'CVE'),
 ]
 
 
@@ -138,7 +151,7 @@ def test_get_indicators_command_by_risk_rules(mocker, indicator_type, risk_rules
      - Verify the raw response and the human readable output of the command are correct, and include fetched indicators
       of all the defined risk rules.
     """
-    client = Client(indicator_type=indicator_type, api_token='123', risk_rule=risk_rules, services='ConnectApi')
+    client = Client(indicator_type=indicator_type, api_token='123', risk_rule=risk_rules, services=['ConnectApi'])
     args = {
         'indicator_type': indicator_type,
         'limit': 1
@@ -205,6 +218,42 @@ def test_fetch_indicators_command(mocker):
     assert len(client_outputs) == 1
 
 
+def test_fetch_indicators_risk_threshold_command(mocker):
+    """
+    Given:
+     - Recorded Future Feed client initialized with ip indicator type
+     - Iterator which returns entry of IP object with name and risk score
+
+    When:
+     - Fetching indicators with risk score threshold equal to 40
+
+    Then:
+     - Verify the fetch does not returns indicators with lower score than the threshold.
+    """
+    indicator_type = 'ip'
+    client = Client(indicator_type=indicator_type, api_token='dummytoken', services=['fusion'], risk_score_threshold=40)
+    mocker.patch('FeedRecordedFuture.Client.build_iterator')
+    mocker.patch(
+        'FeedRecordedFuture.Client.get_batches_from_file',
+        return_value=DictReaderGenerator(DictReader(open('test_data/response_risk_score.txt')))
+    )
+    client_outputs = []
+    for output in fetch_indicators_command(client, indicator_type):
+        client_outputs.extend(output)
+    assert {'fields': {'recordedfutureevidencedetails': [], 'tags': []},
+            'rawJSON': {'Criticality Label': 'Malicious',
+                        'Name': '192.168.0.1',
+                        'Risk': '80',
+                        'score': 3,
+                        'type': 'IP',
+                        'value': '192.168.0.1'},
+            'score': 3,
+            'type': 'IP',
+            'value': '192.168.0.1'} == client_outputs[0]
+
+    assert len(client_outputs) == 1
+
+
 @pytest.mark.parametrize('tags', (['tag1', 'tag2'], []))
 def test_feed_tags(mocker, tags):
     """
@@ -215,7 +264,7 @@ def test_feed_tags(mocker, tags):
     Then:
     - Validate the tags supplied exists in the indicators
     """
-    client = Client(indicator_type='ip', api_token='dummytoken', services='fusion', tags=tags)
+    client = Client(indicator_type='ip', api_token='dummytoken', services=['fusion'], tags=tags)
     mocker.patch('FeedRecordedFuture.Client.build_iterator')
     mocker.patch('FeedRecordedFuture.Client.get_batches_from_file', return_value=[[{'Name': '192.168.1.1'}]])
     indicators = next(fetch_indicators_command(client, 'ip'))
@@ -267,8 +316,96 @@ def test_risk_rule_validations(mocker, indicator_type, risk_rules, service, expe
     mocker.patch('FeedRecordedFuture.Client.get_risk_rules',
                  return_value={'data': {'results': [{'name': 'dhsAis'}, {'name': 'phishingUrl'}]}})
 
-    client = Client(indicator_type=indicator_type, api_token='123', risk_rule=risk_rules, services=service)
+    client = Client(indicator_type=indicator_type, api_token='123', risk_rule=risk_rules, services=[service])
 
     return_error_result = mocker.patch('FeedRecordedFuture.return_error')
     Client.run_parameters_validations(client)
     assert expected_err_msg in return_error_result.call_args[0][0]
+
+
+def test_duplicated_indicators_in_different_batches(mocker):
+    """
+    Given:
+    - Recorded Future Feed client initialized with URL indicator type and a file named response.txt which is created
+      during the run of the test in order to simulate the response of the Client.build_iterator function.
+      The response file includes 4 urls:
+      1. http://www.google.com
+      2. http://michosalementres.test.zapto.org/vg
+      3. http://michosalementres.test.zapto.org/VG
+      4. http://michosalementres.test.zapto.org/vg
+      Two of the urls (2,4) are equal and the third url (3) is almost equal (the only difference is 'VG' suffix instead
+      of 'vg' - case sensitive difference).
+
+    When:
+    - Running fetch_indicators_command with limit=1 (what determined that indicators 1+2 will composed a batch and
+      indicators 3+4 will composed a different batch. The duplicated indicator appears in two different batches).
+
+    Then:
+    - Verify that the fetched output includes only 3 indicators (1, 2 and 3) what means that the duplicated indicator
+      was skipped and wasn't send to server again.
+    - Verify that the duplicated url appears in the fetch function's output only once.
+    - Verify that the third indicator (with the 'VG' suffix) considered as a new indicator from content side -
+      i.e url indicators are case sensitive.
+    """
+    indicator_type = 'url'
+    response_content = 'Name,Risk,RiskString,EvidenceDetails\n' \
+                       'http://www.google.com,72,4/24,{"EvidenceDetails": []}\n' \
+                       'http://michosalementres.test.zapto.org/vg,72,4/24,{"EvidenceDetails": [{"Rule": "test"}]}\n' \
+                       'http://michosalementres.test.zapto.org/VG,72,4/24,{"EvidenceDetails": [{"Rule": "test1"}]}\n' \
+                       'http://michosalementres.test.zapto.org/vg,72,4/24,{"EvidenceDetails": [{"Rule": "test"}]}\n'
+
+    with open('response.txt', 'w') as f:
+        f.write(response_content)
+    mocker.patch('FeedRecordedFuture.Client.build_iterator')
+    client = Client(indicator_type=indicator_type, api_token='123', services=['fusion'])
+
+    client_outputs = []
+    indicators_values = []
+    for output in fetch_indicators_command(client, indicator_type, limit=1):
+        client_outputs.extend(output)
+        for indicator in output:
+            indicators_values.append(indicator.get('value'))
+
+    if os.path.exists('response.txt'):
+        os.remove('response.txt')
+
+    assert len(client_outputs) == 3
+    indicators_occurrences = collections.Counter(indicators_values)
+    assert indicators_occurrences.get('http://michosalementres.test.zapto.org/vg') == 1
+    assert indicators_occurrences.get('http://michosalementres.test.zapto.org/VG') == 1
+
+
+def test_duplicated_indicator_in_the_same_batch(mocker):
+    """
+    Given:
+    - Recorded Future Feed client initialized with URL indicator type and a mock response of
+      Client.get_batches_from_file which includes 3 URL indicators in one batch.
+      Two of the urls are equal and the third is almost equal (the only difference is 'ORG' suffix instead of 'org')
+
+    When:
+    - Fetching indicators
+
+    Then:
+    - Verify that the fetch output includes only 2 indicators - what means that the duplicated indicator
+      was skipped and wasn't send to server again, and that the third indicator considered as a new indicator from
+      content side - i.e url indicators are case sensitive.
+    """
+    indicator_type = 'url'
+    mocker.patch('FeedRecordedFuture.Client.build_iterator')
+    mocker.patch(
+        'FeedRecordedFuture.Client.get_batches_from_file',
+        return_value=DictReaderGenerator(DictReader(open('test_data/response_for_duplicate_indicator_test.txt')))
+    )
+    client = Client(indicator_type=indicator_type, api_token='123', services=['fusion'])
+
+    client_outputs = []
+    indicators_values = []
+    for output in fetch_indicators_command(client, indicator_type):
+        client_outputs.extend(output)
+        for indicator in output:
+            indicators_values.append(indicator.get('value'))
+
+    assert len(client_outputs) == 2
+    indicators_occurrences = collections.Counter(indicators_values)
+    assert indicators_occurrences.get('http://www.test.duckdns.org/') == 1
+    assert indicators_occurrences.get('http://www.test.duckdns.ORG/') == 1

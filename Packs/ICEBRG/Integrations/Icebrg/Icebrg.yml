@@ -1,0 +1,223 @@
+commonfields:
+  id: icebrg
+  version: -1
+name: icebrg
+display: Icebrg
+category: Network Security
+description: Reduces risk by accelerating threat detection, triage, and response to
+  rapidly-evolving breaches across global networks.
+configuration:
+- display: Server URL for the search API (e.g. https://192.168.0.1)
+  name: url_search
+  defaultvalue: https://events.icebrg.io/v2/query
+  type: 0
+  required: false
+- display: Server URL for the reports API (e.g. https://192.168.0.1)
+  name: url_reports
+  defaultvalue: https://report.icebrg.io/v1/reports
+  type: 0
+  required: false
+- display: ICEBRG token
+  name: token
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: icebrg-search-events
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The query string or entity for which to search.
+    - name: start_date
+      description: The beginning of the temporal extent by which to restrict filter
+        results, inclusive.
+    - name: end_date
+      description: The end of the temporal extent by which to restrict filter results,
+        exclusive.
+    - name: limit
+      description: A limit on the number of events returned in filter results. Default
+        is 100. Max is 10000
+    - name: order_by
+      description: The event property by which to order results. Default is timestamp.
+    - name: order
+      description: The order of results, either asc or desc. Default is desc.
+    - name: customer_id
+      description: The customer ID by which to restrict filter results. Default is
+        user account.
+    - name: history
+      description: When true, save this query in user Query History and include up
+        to the last 50 queries from users Query History. Default is false.
+    - name: service_traffic
+      description: When true, the service will include the service_traffic aggregation.
+        Default is false.
+    outputs:
+    - contextPath: Icebrg.Events.QueryType
+      description: Query type
+    - contextPath: Icebrg.Events.Total
+      description: Total events
+    - contextPath: Icebrg.Events.OrderBy
+      description: Key to order events by
+    - contextPath: Icebrg.Events.Order
+      description: Order of the events
+    - contextPath: Icebrg.Events.Offset
+      description: Events offset
+    - contextPath: Icebrg.Events.History
+      description: History of events
+    - contextPath: Icebrg.Events.Limit
+      description: Limit number of events to show
+    description: Perform an ICEBRG datastore event search
+  - name: icebrg-get-history
+    arguments: []
+    outputs:
+    - contextPath: Icebrg.UserQueryHistory.Total
+      description: Total user queries
+    - contextPath: Icebrg.UserQueryHistory.Timestamp
+      description: Timestamp of user query
+    - contextPath: Icebrg.UserQueryHistory.Query
+      description: Called query
+    - contextPath: Icebrg.UserQueryHistory.QueryId
+      description: ID of query
+    - contextPath: Icebrg.UserQueryHistory.UserId
+      description: User ID
+    description: Gets history of the events
+  - name: icebrg-saved-searches
+    arguments: []
+    outputs:
+    - contextPath: Icebrg.SavedSearches.Tags
+      description: Query tags
+    - contextPath: Icebrg.SavedSearches.Description
+      description: Query description
+    - contextPath: Icebrg.SavedSearches.Title
+      description: Query title
+    - contextPath: Icebrg.SavedSearches.Timestamp
+      description: Query timestamp
+    - contextPath: Icebrg.SavedSearches.Query
+      description: Called query
+    - contextPath: Icebrg.SavedSearches.Id
+      description: Query ID
+    description: Gets user saved searches
+  - name: icebrg-get-reports
+    arguments:
+    - name: limit
+      description: The maximum number of records to return. The default is no limit.
+    - name: offset
+      description: The number of records to skip past. The default is none.
+    - name: sort_by
+      description: The field to sort by created, updated, or published. The default
+        is unsorted.
+    - name: sort_order
+      description: The sort order asc or desc. The default is asc if sort_by is provided.
+    - name: account_uuid
+      description: UUID of account to filter by.
+    - name: archived
+      description: Archived status to filter by.
+    - name: confidence
+      auto: PREDEFINED
+      predefined:
+      - low
+      - moderate
+      - high
+      description: Confidence to filter by (low, moderate, high).
+    - name: risk
+      auto: PREDEFINED
+      predefined:
+      - low
+      - moderate
+      - high
+      description: Risk to filter by (low, moderate, high).
+    - name: search
+      description: Text string to search on title and summary.
+    - name: status
+      description: Status to filter by.
+    - name: published_start
+      description: Published start date to filter by (inclusive). RFC3339 format,
+        i.e. 2017-01-24T10:13:13.418Z
+    - name: published_end
+      description: Published end date to filter by (exclusive). RFC3339 format, i.e.
+        2017-01-24T10:13:13.418Z
+    outputs:
+    - contextPath: Icebrg.Reports.Publishes.UserUuid
+      description: User UUID that published the report
+    - contextPath: Icebrg.Reports.Publishes.Published
+      description: Timestamp of published report
+    - contextPath: Icebrg.Reports.AssetCount
+      description: Asset count of report
+    - contextPath: Icebrg.Reports.IndicatorCount
+      description: Indicator count of report
+    - contextPath: Icebrg.Reports.Archived
+      description: True if archived, else false
+    - contextPath: Icebrg.Reports.Details
+      description: Report details
+    - contextPath: Icebrg.Reports.Summary
+      description: Report summary
+    - contextPath: Icebrg.Reports.Category
+      description: Category of the report
+    - contextPath: Icebrg.Reports.Confidence
+      description: Confidence of report
+    - contextPath: Icebrg.Reports.Risk
+      description: Risk of report
+    - contextPath: Icebrg.Reports.Title
+      description: Report title
+    - contextPath: Icebrg.Reports.Status
+      description: Status of report
+    - contextPath: Icebrg.Reports.AccountUuid
+      description: Account UUID of report
+    - contextPath: Icebrg.Reports.UpdatedUserUuid
+      description: User UUID that updated the report
+    - contextPath: Icebrg.Reports.CreatedUserUuid
+      description: User UUID that created the report
+    - contextPath: Icebrg.Reports.Updated
+      description: Timestamp of report update
+    - contextPath: Icebrg.Reports.Created
+      description: Timestamp of report creation
+    - contextPath: Icebrg.Reports.Uuid
+      description: Report UUID
+    description: Gets a list of reports
+  - name: icebrg-get-report-indicators
+    arguments:
+    - name: report_uuid
+      required: true
+      default: true
+      description: Report UUID to get indicator of
+    outputs:
+    - contextPath: Icebrg.ReportIndicators.Type
+      description: Type of indicator
+    - contextPath: Icebrg.ReportIndicators.Indicators.Observable
+      description: Observable of Indicator
+    description: Gets indicators for a reports
+  - name: icebrg-get-report-assets
+    arguments:
+    - name: report_uuid
+      required: true
+      default: true
+      description: Report UUID to get asset of
+    outputs:
+    - contextPath: Icebrg.ReportAssets.Asset
+      description: Assets of Report UUID
+    description: Gets impacted assets for a report
+  isfetch: true
+tests:
+- Icebrg Test
+fromversion: 5.0.0

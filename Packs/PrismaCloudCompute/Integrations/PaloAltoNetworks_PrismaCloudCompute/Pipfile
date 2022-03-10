@@ -1,18 +1,34 @@
 [[source]]
-name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
-
-[dev-packages]
-pylint = "*"
-pytest = "==5.0.1"
-pytest-mock = "*"
-requests-mock = "*"
-pytest-asyncio = "*"
-pytest-xdist = "*"
-freezegun = "*"
+name = "pypi"
 
 [packages]
 
+[dev-packages]
+flake8 = "==3.9.2"
+bandit = "==1.7.0"
+demisto-py = "==3.0.2"
+demisto-sdk = "==1.5.3"
+pytest = "==6.2.1"
+pytest-mock = "==3.4.0"
+requests-mock = "==1.8.0"
+"ruamel.yaml" = "<0.17"
+pipenv = "==2020.11.15"
+autopep8 = "==1.5.4"
+mypy = "==0.782"
+networkx = "==2.5"
+beautifulsoup4 = "==4.9.3"
+freezegun = "==0.3.12"
+vulture = "==1.5"
+parinx = {ref = "6493798ceba8089345d970f71be4a896eb6b081d", git = "https://github.com/coyo8/parinx.git"}
+pylint = "==2.6.0"
+coloredlogs = "==15.0"
+pandas = "==1.2.0"
+timeout-decorator = "==0.5.0"
+sendgrid = "==6.6.0"
+GitPython = "==3.1.11"
+PyPDF2 = "==1.26.0"
+
 [requires]
-python_version = "3.7"
+python_version = "3.9"

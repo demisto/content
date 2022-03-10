@@ -70,7 +70,7 @@ def test_fetch_incidents(requests_mock):
     mock_socradar_company_id = "0"
     mock_socradar_api_key = "APIKey"
     mock_response = util_load_json('test_data/fetch_incidents_response.json')
-    suffix = f'company/{mock_socradar_company_id}/incidents/latest?key={mock_socradar_api_key}' \
+    suffix = f'company/{mock_socradar_company_id}/incidents/v2?key={mock_socradar_api_key}' \
              f'&severity=Medium%2CHigh' \
              f'&limit=2' \
              f'&start_date=1594512000'

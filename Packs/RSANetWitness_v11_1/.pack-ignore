@@ -1,2 +1,12 @@
 [file:RSANetWitness_v11_1.yml]
 ignore=IN126,BA108,BA109
+
+[file:README.md]
+ignore=RM104
+
+
+[file:RSANetWitness_v11_1_image.png]
+ignore=IM111
+
+[file:RSANetWitnessv115_image.png]
+ignore=IM111

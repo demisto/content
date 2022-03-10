@@ -25,7 +25,7 @@ INTEGRATION_NAME = 'Cortex XDR - IR'
 
 XDR_INCIDENT_FIELDS = {
     "status": {"description": "Current status of the incident: \"new\",\"under_"
-                              "investigation\",\"resolved_threat_handled\",\"resolved_known_issue\","
+                              "investigation\",\"resolved_known_issue\","
                               "\"resolved_duplicate\",\"resolved_false_positive\","
                               "\"resolved_true_positive\",\"resolved_security_testing\",\"resolved_other\"",
                "xsoar_field_name": 'xdrstatusv2'},
@@ -41,7 +41,6 @@ XDR_INCIDENT_FIELDS = {
 }
 
 XDR_RESOLVED_STATUS_TO_XSOAR = {
-    'resolved_threat_handled': 'Resolved',
     'resolved_known_issue': 'Other',
     'resolved_duplicate': 'Duplicate',
     'resolved_false_positive': 'False Positive',
@@ -1948,11 +1947,23 @@ def endpoint_command(client, args):
     endpoint_ip_list = argToList(args.get('ip'))
     endpoint_hostname_list = argToList(args.get('hostname'))
 
-    endpoints = client.get_endpoints(
-        endpoint_id_list=endpoint_id_list,
-        ip_list=endpoint_ip_list,
-        hostname=endpoint_hostname_list,
-    )
+    if not endpoint_id_list and not endpoint_ip_list and not endpoint_hostname_list:
+        raise Exception(f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
+
+    # The `!endpoint` command should use an OR operator between filters. Since XDR API supports only AND, we handle it
+    # by sending multiple requests with a single filter and appending the returned results to previous results.
+    endpoints = []
+    if endpoint_id_list:
+        endpoints.extend(client.get_endpoints(endpoint_id_list=endpoint_id_list))
+    if endpoint_ip_list:
+        endpoints.extend(client.get_endpoints(ip_list=endpoint_ip_list))
+    if endpoint_hostname_list:
+        endpoints.extend(client.get_endpoints(hostname=endpoint_hostname_list))
+
+    # Remove duplicates by taking entries with unique `endpoint_id`:
+    if endpoints:
+        endpoints = list({v['endpoint_id']: v for v in endpoints}.values())
+
     standard_endpoints = generate_endpoint_by_contex_standard(endpoints, True)
     command_results = []
     if standard_endpoints:
@@ -2984,7 +2995,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             description = raw_incident.get('description')
             occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
             incident = {
-                'name': f'#{incident_id} - {description}',
+                'name': f'XDR Incident {incident_id} - {description}',
                 'occurred': occurred,
                 'rawJSON': json.dumps(incident_data),
             }

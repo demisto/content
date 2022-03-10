@@ -49,7 +49,7 @@ tasks:
       - "4"
     scriptarguments:
       ip:
-        simple: 8.3.3.3
+        simple: 8.3.3.3,8.2.2.2
       note:
         simple: test blacklist
       siteName:

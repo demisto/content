@@ -1,0 +1,31 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Policy Optimizer"
+ ],
+ "caseInsensitive": true,
+ "cliName": "panosportbasedrules",
+ "closeForm": false,
+ "content": true,
+ "description": "Port based firewall rules found by PAN-OS Policy Optimizer.",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_panosportbasedrules",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "PAN-OS Port Based Rules",
+ "neverSetAsRequired": false,
+ "openEnded": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "markdown",
+ "unmapped": false,
+ "unsearchable": true,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

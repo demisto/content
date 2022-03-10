@@ -1,0 +1,114 @@
+args:
+- default: false
+  description: Space-separated list of URLs.
+  isArray: true
+  name: urls
+  required: false
+  secret: false
+- default: false
+  description: Body of the email for URL extraction.
+  isArray: false
+  name: emailBody
+  required: false
+  secret: false
+- default: false
+  description: HTML of the email for URL extraction.
+  isArray: false
+  name: emailHTML
+  required: false
+  secret: false
+- default: false
+  defaultValue: '3'
+  description: Maximum number of extracted URLs on which to run the model.
+  isArray: false
+  name: maxNumberOfURL
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Whether to force the model to run if the URL belongs to the whitelist.
+    If True, the model will run in every case. If False, the model will run only if
+    the URL does not belong to the whitelist.
+  isArray: false
+  name: forceModel
+  predefined:
+  - 'True'
+  - 'False'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Whether to reset the model to the model existing in Docker.
+  isArray: false
+  name: resetModel
+  predefined:
+  - 'False'
+  - 'True'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Whether to enter debug mode.
+  isArray: false
+  name: debug
+  predefined:
+  - 'False'
+  - 'True'
+  required: false
+  secret: false
+comment: Predict phishing URLs using a pre-trained model.
+commonfields:
+  id: DBotPredictURLPhishing
+  version: -1
+enabled: true
+name: DBotPredictURLPhishing
+outputs:
+- contextPath: DBotPredictURLPhishing.URL
+  description: URL on which the model ran.
+  type: String
+- contextPath: DBotPredictURLPhishing.FinalVerdict
+  description: Final verdict of the URL.
+  type: String
+- contextPath: DBotPredictURLPhishing.UseOfSuspiciousLogo
+  description: 'Whether a logo (from our list of top most use company for phishing)
+    has been fraudulently used. Our predefined list of logos is: Paypal, Instagram,
+    Gmail, Outlook, Linkedin, Facebook, Ebay, amazon, Google, Microsoft.'
+  type: String
+- contextPath: DBotPredictURLPhishing.HasLoginForm
+  description: Whether there is a login form in the HTML. Usually phishing attacks
+    aim to steal credentials from the victim and attackers using login forms to retrieve
+    this information.
+  type: String
+- contextPath: DBotPredictURLPhishing.URLStaticScore
+  description: Probability for the URL to be malicious based only on the URL syntax.
+  type: Number
+- contextPath: DBotPredictURLPhishing.BadSEOQuality
+  description: Whether the domain has a good search engine optimization. Malicious domains
+    tend to have a poor SEO.
+  type: String
+- contextPath: DBotPredictURLPhishing.NewDomain
+  description: Whether the domain is younger than 6 months. New domains tend to be
+    malicious.
+  type: String
+- contextPath: DBotPredictURLPhishing.TopMajesticDomain
+  description: Whether the domain belongs to the top Majestic domain list. If it does, we will always consider this domain as benign.
+  type: String
+- contextPath: DBotScore.Score
+  description: Severity score
+  type: Number
+script: '-'
+subtype: python3
+system: false
+tags:
+- ''
+timeout: '0'
+type: python
+dockerimage: demisto/mlurlphishing:1.0.0.26063
+runas: DBotRole
+runonce: false
+tests:
+- DBotPredictURLPhishing_test
+fromversion: 6.0.0

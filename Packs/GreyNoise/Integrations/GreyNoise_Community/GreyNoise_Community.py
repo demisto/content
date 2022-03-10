@@ -294,7 +294,7 @@ def main() -> None:
     else:
         packs = []
 
-    pack_version = "1.1.1"
+    pack_version = "1.1.2"
     for pack in packs:
         if pack["name"] == "GreyNoise":
             pack_version = pack["currentVersion"]

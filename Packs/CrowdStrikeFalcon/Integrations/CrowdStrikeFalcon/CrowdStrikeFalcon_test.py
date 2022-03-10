@@ -2,6 +2,8 @@ import pytest
 import os
 import json
 
+from _pytest.python_api import raises
+
 import demistomock as demisto
 from CommonServerPython import outputPaths, entryTypes, DemistoException
 
@@ -105,11 +107,31 @@ incident_context = {'name': 'Incident ID: inc:afb5d1512a00480f53e9ad91dc3e4b55:1
                         'Techniques: External Remote Services. Involved hosts and end users: SFO-M-Y81WHJ.", '
                         '"tags": ["Objective/Keep Access"], "fine_score": 38}'}
 
+IOCS_JSON_LIST = [{'type': 'ipv4', 'value': '4.4.4.4', 'source': 'cortex xsoar', 'action': 'no_action',
+                   'severity': 'informational', 'description': 'lala', 'platforms': ['linux'],
+                   'tags': ['test'], 'expiration': '2022-02-15T15:55:09Z', 'applied_globally': True,
+                   }, {'type': 'ipv4', 'value': '5.5.5.5', 'source': 'cortex xsoar',
+                       'action': 'no_action', 'severity': 'informational',
+                       'description': 'lala',
+                       'platforms': ['linux'], 'tags': ['test'],
+                       'expiration': '2022-02-15T15:55:09Z', 'applied_globally': True,
+                       }]
+
 
 def test_incident_to_incident_context():
     from CrowdStrikeFalcon import incident_to_incident_context
     res = incident_to_incident_context(response_incident)
     assert res == incident_context
+
+
+def test_create_json_iocs_list():
+    from CrowdStrikeFalcon import create_json_iocs_list
+
+    res = create_json_iocs_list(ioc_type='ipv4', iocs_value=['4.4.4.4', '5.5.5.5'], action='no_action',
+                                platforms=['linux'], severity='informational', source='cortex xsoar',
+                                description='lala', expiration='2022-02-15T15:55:09Z', applied_globally=True,
+                                host_groups=[], tags=['test'])
+    assert res == IOCS_JSON_LIST
 
 
 def test_timestamp_length_equalization():
@@ -1485,7 +1507,7 @@ def test_status_get(requests_mock, mocker):
         json=response,
         status_code=201
     )
-    results = status_get_command()
+    results = status_get_command(demisto.args())
     expected_results = {
         "CrowdStrike.File(val.ID === obj.ID || val.TaskID === obj.TaskID)": [
             {
@@ -1605,7 +1627,7 @@ def test_get_extracted_file(requests_mock, mocker):
         content=response_content,
         status_code=201
     )
-    results = get_extracted_file_command()
+    results = get_extracted_file_command(demisto.args())
 
     fpath = demisto.investigation()['id'] + '_' + results['FileID']
     with open(fpath, 'rb') as f:
@@ -2353,14 +2375,18 @@ test_data = get_fetch_data()
 test_data2 = get_fetch_data2()
 
 
-def test_get_indicator_device_id(requests_mock):
+def test_get_indicator_device_id(mocker, requests_mock):
     from CrowdStrikeFalcon import get_indicator_device_id
     requests_mock.get("https://4.4.4.4/indicators/queries/devices/v1",
                       json=test_data['response_for_get_indicator_device_id'])
+    mocker.patch.object(demisto, 'args', return_value={'type': 'sha256', 'value': 'example_sha'})
     res = get_indicator_device_id()
-    assert res.outputs == test_data['context_output_for_get_indicator_device_id']
-    assert res.outputs_prefix == 'CrowdStrike.DeviceID'
-    assert res.outputs_key_field == 'DeviceID'
+
+    # Expecting both DeviceIOC and DeviceID outputs for BC.
+    assert set(res.outputs.keys()) - {'DeviceIOC', 'DeviceID'} == set()
+    assert res.outputs['DeviceIOC']['Type'] == 'sha256'
+    assert res.outputs['DeviceIOC']['Value'] == 'example_sha'
+    assert res.outputs['DeviceIOC']['DeviceID'] == res.outputs['DeviceID']
 
 
 def test_validate_response():
@@ -2647,8 +2673,8 @@ def test_search_custom_iocs_command_exists(requests_mock):
         status_code=200
     )
     results = search_custom_iocs_command()
-    assert '| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-01T09:09:04Z | high | md5 | testmd5 |' \
-        in results["HumanReadable"]
+    assert '| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | prevent | high | md5 |' \
+           in results["HumanReadable"]
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
 
@@ -2702,7 +2728,9 @@ def test_search_custom_iocs_command_filter(requests_mock):
         }]
     }
     requests_mock.get(
-        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27%5D&limit=50',  # noqa: E501
+        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27'
+        f'%5D&limit=50',
+        # noqa: E501
         json=ioc_response,
         status_code=200
     )
@@ -2710,7 +2738,8 @@ def test_search_custom_iocs_command_filter(requests_mock):
         types=ioc_type,
         values=ioc_value,
     )
-    assert f'| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-01T09:09:04Z | high | {ioc_type} | {ioc_value} |' in results["HumanReadable"]  # noqa: E501
+    assert f'| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | prevent | high | {ioc_type} |' \
+           f' {ioc_value} |' in results["HumanReadable"]  # noqa: E501
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == ioc_value
 
 
@@ -2743,7 +2772,9 @@ def test_get_custom_ioc_command_exists(requests_mock):
     }
 
     requests_mock.get(
-        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27%5D&limit=50',  # noqa: E501
+        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27'
+        f'%5D&limit=50',
+        # noqa: E501
         json=ioc_response,
         status_code=200,
     )
@@ -2846,8 +2877,8 @@ def test_upload_custom_ioc_command_successful(requests_mock):
         platforms='mac,linux',
     )
     assert '| 2020-10-01T09:09:04Z | Eicar file | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r |' \
-        in results["HumanReadable"]
-    assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
+           in results[0]["HumanReadable"]
+    assert results[0]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
 
 def test_upload_custom_ioc_command_fail(requests_mock):
@@ -2911,7 +2942,7 @@ def test_upload_custom_ioc_command_duplicate(requests_mock, mocker):
         'resources': [{
             'row': 1,
             'value':
-            'test2.com',
+                'test2.com',
             'type': 'domain',
             'message_type': 'warning',
             'message': f"Warning: Duplicate type: '{ioc_type}' and value: '{ioc_value}' combination."
@@ -2970,6 +3001,7 @@ def test_update_custom_ioc_command(requests_mock):
             'indicators': [{'id': ioc_id, 'severity': updated_severity}]
         }:
             return True
+
     requests_mock.patch(
         f'{SERVER_URL}/iocs/entities/indicators/v1',
         json=ioc_response,
@@ -3364,6 +3396,53 @@ def test_list_host_group_members(requests_mock):
         assert expected_results == ectual_results
 
 
+def test_upload_batch_custom_ioc_command(requests_mock):
+    """
+    Test cs-falcon-batch-upload-custom-ioc when an upload of iocs batch is successful
+
+    Given:
+     - The user tries to create multiple IOCs
+    When:
+     - The server creates IOCs
+    Then:
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right values
+    """
+    from CrowdStrikeFalcon import upload_batch_custom_ioc_command
+    ioc_response = {
+        'meta': {'query_time': 0.132378491, 'pagination': {'limit': 0, 'total': 2}, 'powered_by': 'ioc-manager',
+                 'trace_id': '121f377b-016a-4e34-bca7-992cec821ab3'}, 'errors': None, 'resources': [
+            {'id': '1196afeae04528228e782d4efc0c1d8257554dcd99552e1151ca3a3d2eed03f1', 'type': 'ipv4',
+             'value': '8.9.6.8', 'source': 'Cortex XSOAR', 'action': 'no_action', 'mobile_action': 'no_action',
+             'severity': 'informational', 'platforms': ['linux'], 'expiration': '2022-02-16T11:41:01Z',
+             'expired': False, 'deleted': False, 'applied_globally': True, 'from_parent': False,
+             'created_on': '2022-02-15T11:42:17.397548307Z', 'created_by': '2bf188d347e44e08946f2e61ef590c24',
+             'modified_on': '2022-02-15T11:42:17.397548307Z', 'modified_by': '2bf188d347e44e08946f2e61ef590c24'},
+            {'id': '1156f19c5a384117e7e6023f467ed3b58412ddd5d0591872f3a111335fae79a5', 'type': 'ipv4',
+             'value': '4.5.8.6', 'source': 'Cortex XSOAR', 'action': 'no_action', 'mobile_action': 'no_action',
+             'severity': 'informational', 'platforms': ['linux'], 'expiration': '2022-02-16T11:40:47Z',
+             'expired': False, 'deleted': False, 'applied_globally': True, 'from_parent': False,
+             'created_on': '2022-02-15T11:42:17.397548307Z', 'created_by': '2bf188d347e44e08946f2e61ef590c24',
+             'modified_on': '2022-02-15T11:42:17.397548307Z', 'modified_by': '2bf188d347e44e08946f2e61ef590c24'}]}
+
+    requests_mock.post(
+        f'{SERVER_URL}/iocs/entities/indicators/v1',
+        json=ioc_response,
+        status_code=200,
+    )
+    results = upload_batch_custom_ioc_command(json.dumps(IOCS_JSON_LIST))
+    assert '2022-02-16T11:41:01Z | 1196afeae04528228e782d4efc0c1d8257554dcd99552e1151ca3a3d2eed03f1 | ' \
+           '2bf188d347e44e08946f2e61ef590c24 | 2022-02-15T11:42:17.397548307Z | linux | informational | Cortex XSOAR ' \
+           '| ipv4 | 8.9.6.8 |' in results[0]["HumanReadable"]
+
+    assert '2022-02-16T11:40:47Z | 1156f19c5a384117e7e6023f467ed3b58412ddd5d0591872f3a111335fae79a5 | ' \
+           '2bf188d347e44e08946f2e61ef590c24 | 2022-02-15T11:42:17.397548307Z | linux | informational | Cortex XSOAR ' \
+           '| ipv4 | 4.5.8.6 |' in results[1]["HumanReadable"]
+
+    assert results[0]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == '8.9.6.8'
+    assert results[1]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == '4.5.8.6'
+
+
 @pytest.mark.parametrize('endpoint_status, status, is_isolated',
                          [('Normal', 'Online', ''),
                           ('normal', 'Online', ''),
@@ -3398,3 +3477,275 @@ def test_generate_status_field_invalid():
     from CrowdStrikeFalcon import generate_status_fields
     with pytest.raises(DemistoException):
         generate_status_fields('unknown status')
+
+
+def test_list_incident_summaries_command_no_given_ids(requests_mock, mocker):
+    """
+    Test list_incident_summaries_command without ids arg
+    Given
+     - No arguments given, as is
+    When
+     - The user is running list_incident_summaries_command with no ids
+    Then
+     - Function is executed properly and get_incidents_ids func was called once
+     """
+    from CrowdStrikeFalcon import list_incident_summaries_command
+
+    query_response = {"errors": [], "meta": {"pagination": {"limit": 0, "offset": 0, "total": 0},
+                                             "powered_by": "string", "query_time": 0, "trace_id": "string",
+                                             "writes": {"resources_affected": 0}}, "resources": ['id1']}
+
+    entity_response = {"errors": [],
+                       "meta": {"pagination": {"limit": 0, "offset": 0, "total": 0}, "powered_by": "string"},
+                       "resources": [{"assigned_to": "Test no ids", "assigned_to_name": "string", "cid": "string",
+                                      "created": "2022-02-21T16:36:57.759Z", "description": "string",
+                                      "end": "2022-02-21T16:36:57.759Z",
+                                      "events_histogram": [{"count": 0}], "fine_score": 0, "host_ids": ["string"],
+                                      "hosts": [{"agent_load_flags": "string", "tags": ["string"]}],
+                                      "incident_id": "string", "incident_type": 0,
+                                      "lm_host_ids": ["string"], "start": "2022-02-21T16:36:57.759Z", "state": "string",
+                                      "status": 0,
+                                      "tactics": ["string"], "tags": ["string"], "techniques": ["string"],
+                                      "users": ["string"], "visibility": 0}]}
+
+    requests_mock.get(
+        f'{SERVER_URL}/incidents/queries/incidents/v1',
+        json=query_response,
+        status_code=200,
+    )
+    get_incidents_ids_func = requests_mock.post(
+        f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
+        json=entity_response,
+        status_code=200,
+    )
+    mocker.patch.object(demisto, 'args', return_value={})
+
+    outputs = list_incident_summaries_command().outputs
+
+    assert outputs[0]['assigned_to'] == 'Test no ids'
+    assert get_incidents_ids_func.call_count == 1
+
+
+def test_list_incident_summaries_command_with_given_ids(requests_mock, mocker):
+    """
+    Test list_incident_summaries_command with ids arg
+    Given
+     - ids
+    When
+     - The user is running list_incident_summaries_command with ids
+    Then
+     - Function is executed properly and get_incidents_ids func was not called
+     """
+    from CrowdStrikeFalcon import list_incident_summaries_command
+
+    query_response = {"errors": [], "meta": {"pagination": {"limit": 0, "offset": 0, "total": 0},
+                                             "powered_by": "string", "query_time": 0, "trace_id": "string",
+                                             "writes": {"resources_affected": 0}}, "resources": ['id1']}
+
+    entity_response = {"errors": [],
+                       "meta": {"pagination": {"limit": 0, "offset": 0, "total": 0}, "powered_by": "string"},
+                       "resources": [{"assigned_to": "Test with ids", "assigned_to_name": "string", "cid": "string",
+                                      "created": "2022-02-21T16:36:57.759Z", "description": "string",
+                                      "end": "2022-02-21T16:36:57.759Z",
+                                      "events_histogram": [{"count": 0}], "fine_score": 0, "host_ids": ["string"],
+                                      "hosts": [{"agent_load_flags": "string", "tags": ["string"]}],
+                                      "incident_id": "string", "incident_type": 0,
+                                      "lm_host_ids": ["string"], "start": "2022-02-21T16:36:57.759Z", "state": "string",
+                                      "status": 0,
+                                      "tactics": ["string"], "tags": ["string"], "techniques": ["string"],
+                                      "users": ["string"], "visibility": 0}]}
+
+    get_incidents_ids_func = requests_mock.get(
+        f'{SERVER_URL}/incidents/queries/incidents/v1',
+        json=query_response,
+        status_code=200,
+    )
+    requests_mock.post(
+        f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
+        json=entity_response,
+        status_code=200,
+    )
+    mocker.patch.object(demisto, 'args', return_value={'ids': 'id1,id2'})
+
+    outputs = list_incident_summaries_command().outputs
+
+    assert outputs[0]['assigned_to'] == 'Test with ids'
+    assert get_incidents_ids_func.call_count == 0
+
+
+def test_parse_rtr_command_response_host_exists_stderr_output():
+    from CrowdStrikeFalcon import parse_rtr_command_response
+    response_data = load_json('test_data/rtr_outputs_with_stderr.json')
+    parsed_result = parse_rtr_command_response(response_data, ["1"])
+    assert len(parsed_result) == 1
+    assert parsed_result[0].get('HostID') == "1"
+    assert parsed_result[0].get('Error') == "Cannot find a process with the process identifier 5260."
+
+
+def test_parse_rtr_command_response_host_exists_error_output():
+    from CrowdStrikeFalcon import parse_rtr_command_response
+    response_data = load_json('test_data/rtr_outputs_with_error.json')
+    parsed_result = parse_rtr_command_response(response_data, ["1"])
+    assert len(parsed_result) == 1
+    assert parsed_result[0].get('HostID') == "1"
+    assert parsed_result[0].get('Error') == "Some error"
+
+
+def test_parse_rtr_command_response_host_not_exist():
+    from CrowdStrikeFalcon import parse_rtr_command_response
+    response_data = load_json('test_data/rtr_outputs_host_not_exist.json')
+    parsed_result = parse_rtr_command_response(response_data, ["1", "2"])
+    assert len(parsed_result) == 2
+    for res in parsed_result:
+        if res.get('HostID') == "1":
+            assert res.get('Error') == "Success"
+        elif res.get('HostID') == "2":
+            assert res.get('Error') == "The host ID was not found."
+
+
+def test_parse_rtr_stdout_response(mocker):
+    from CrowdStrikeFalcon import parse_rtr_stdout_response
+    response_data = load_json('test_data/rtr_list_processes_response.json')
+    mocker.patch('CrowdStrikeFalcon.fileResult',
+                 return_value={'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'netstat-1', 'FileID': 'c'})
+    parsed_result = parse_rtr_stdout_response(["1"], response_data, "netstat")
+    assert parsed_result[0][0].get('Stdout') == "example stdout"
+    assert parsed_result[0][0].get('FileName') == "netstat-1"
+    assert parsed_result[1][0].get('File') == "netstat-1"
+
+
+@pytest.mark.parametrize('failed_devices, all_requested_devices, expected_result', [
+    ({}, ["id1", "id2"], ""),
+    ({'id1': "some error"}, ["id1", "id2"], "Note: you don't see the following IDs in the results as the request was"
+                                            " failed for them. \nID id1 failed as it was not found. \n"),
+])
+def test_add_error_message(failed_devices, all_requested_devices, expected_result):
+    from CrowdStrikeFalcon import add_error_message
+    assert add_error_message(failed_devices, all_requested_devices) == expected_result
+
+
+@pytest.mark.parametrize('failed_devices, all_requested_devices', [
+    ({'id1': "some error", 'id2': "some error"}, ["id1", "id2"]),
+    ({'id1': "some error1", 'id2': "some error2"}, ["id1", "id2"]),
+])
+def test_add_error_message_raise_error(failed_devices, all_requested_devices):
+    from CrowdStrikeFalcon import add_error_message
+    with raises(DemistoException,
+                match=f'CrowdStrike Falcon The command was failed with the errors: {failed_devices}'):
+        add_error_message(failed_devices, all_requested_devices)
+
+
+def test_rtr_kill_process_command(mocker):
+    from CrowdStrikeFalcon import rtr_kill_process_command
+    mocker.patch('CrowdStrikeFalcon.init_rtr_batch_session', return_value="1")
+    response_data = load_json('test_data/rtr_general_response.json')
+    args = {'host_id': "1", 'process_ids': "2,3"}
+    mocker.patch('CrowdStrikeFalcon.execute_run_batch_write_cmd_with_timer', return_value=response_data)
+    parsed_result = rtr_kill_process_command(args).outputs
+    for res in parsed_result:
+        assert res.get('Error') == "Success"
+
+
+@pytest.mark.parametrize('operating_system, expected_result', [
+    ("Windows", 'rm test.txt --force'),
+    ("Linux", 'rm test.txt -r -d'),
+    ("Mac", 'rm test.txt -r -d'),
+    ("bla", ""),
+])
+def test_match_remove_command_for_os(operating_system, expected_result):
+    from CrowdStrikeFalcon import match_remove_command_for_os
+    assert match_remove_command_for_os(operating_system, "test.txt") == expected_result
+
+
+def test_rtr_remove_file_command(mocker):
+    from CrowdStrikeFalcon import rtr_remove_file_command
+    mocker.patch('CrowdStrikeFalcon.init_rtr_batch_session', return_value="1")
+    response_data = load_json('test_data/rtr_general_response.json')
+    args = {'host_ids': "1", 'file_path': "c:\\test", 'os': "Windows"}
+    mocker.patch('CrowdStrikeFalcon.execute_run_batch_write_cmd_with_timer', return_value=response_data)
+    parsed_result = rtr_remove_file_command(args).outputs
+    for res in parsed_result:
+        assert res.get('Error') == "Success"
+
+
+def test_rtr_read_registry_keys_command(mocker):
+    from CrowdStrikeFalcon import rtr_read_registry_keys_command
+    mocker.patch('CrowdStrikeFalcon.init_rtr_batch_session', return_value="1")
+    response_data = load_json('test_data/rtr_general_response.json')
+    args = {'host_ids': "1", 'registry_keys': "key", 'os': "Windows"}
+    mocker.patch('CrowdStrikeFalcon.execute_run_batch_write_cmd_with_timer', return_value=response_data)
+    mocker.patch('CrowdStrikeFalcon.fileResult',
+                 return_value={'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'netstat-1', 'FileID': 'c'})
+    parsed_result = rtr_read_registry_keys_command(args)
+    assert len(parsed_result) == 2
+    assert "reg-1key" in parsed_result[0].readable_output
+
+
+detections = {'resources': [
+    {'behavior_id': 'example_behavior_1',
+     'detection_ids': ['example_detection'],
+     'incident_id': 'example_incident_id',
+     'some_field': 'some_example',
+     },
+    {'behavior_id': 'example_behavior_2',
+     'detection_ids': ['example_detection2'],
+     'incident_id': 'example_incident_id',
+     'some_field': 'some_example2',
+     }
+]}
+
+DETECTION_FOR_INCIDENT_CASES = [
+    (
+        detections,
+        ['a', 'b'],
+        [
+            {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_1',
+             'detection_ids': ['example_detection']},
+            {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_2',
+             'detection_ids': ['example_detection2']}],
+        [
+            {'behavior_id': 'example_behavior_1',
+             'detection_ids': ['example_detection'],
+             'incident_id': 'example_incident_id',
+             'some_field': 'some_example'},
+            {'behavior_id': 'example_behavior_2',
+             'detection_ids': ['example_detection2'],
+             'incident_id': 'example_incident_id',
+             'some_field': 'some_example2'}
+        ],
+        'CrowdStrike.IncidentDetection',
+        'incident_id',
+        '### Detection For Incident\n|behavior_id|detection_ids|incident_id|\n|---|---|---|'
+        '\n| example_behavior_1 | example_detection | example_incident_id |\n'
+        '| example_behavior_2 | example_detection2 | example_incident_id |\n'),
+    ({'resources': []}, [], None, None, None, None, 'Could not find behaviors for incident zz')
+]
+
+
+@pytest.mark.parametrize(
+    'detections, resources, expected_outputs, expected_raw, expected_prefix, expected_key, expected_md',
+    DETECTION_FOR_INCIDENT_CASES)
+def test_get_detection_for_incident_command(mocker, detections, resources, expected_outputs, expected_raw,
+                                            expected_prefix,
+                                            expected_key, expected_md):
+    """
+    Given: An incident ID
+    When: When running cs-falcon-get-detections-for-incident command
+    Then: validates the created command result contains the correct data (whether found or not).
+    """
+
+    from CrowdStrikeFalcon import get_detection_for_incident_command
+
+    mocker.patch('CrowdStrikeFalcon.get_behaviors_by_incident',
+                 return_value={'resources': resources, 'meta': {'pagination': {'total': len(resources)}}})
+
+    mocker.patch('CrowdStrikeFalcon.get_detections_by_behaviors',
+                 return_value=detections)
+
+    res = get_detection_for_incident_command(incident_id='zz')
+
+    assert res.outputs == expected_outputs
+    assert res.outputs_key_field == expected_key
+    assert res.raw_response == expected_raw
+    assert res.readable_output == expected_md
+    assert res.outputs_prefix == expected_prefix
