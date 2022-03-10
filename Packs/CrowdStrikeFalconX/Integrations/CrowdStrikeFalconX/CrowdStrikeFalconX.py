@@ -1058,7 +1058,7 @@ def download_ioc_command(
         return CommandResults(
             outputs_prefix=OUTPUTS_PREFIX,
             outputs_key_field='ioc',
-            outputs=[response],  # todo
+            outputs=response,
             readable_output=tableToMarkdown("CrowdStrike Falcon X response:", response),
             raw_response=response
         )
