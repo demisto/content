@@ -276,6 +276,7 @@ slack-notify-nightly-build:
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json" # all servers info, printed in create instanses step
     BUILD_OBJECT_TYPE: "XSIAM"
 #  needs: ["prepare-testing-bucket-mpv2"]
+  needs: []
   stage: run-instances
   script:
     - EXIT_CODE=0
