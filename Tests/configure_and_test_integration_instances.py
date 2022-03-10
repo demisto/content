@@ -1534,8 +1534,11 @@ def main():
         from google.cloud import storage
         storage_client = storage.Client()
         bucket = storage_client.bucket('xsoar-ci-artifacts')
-        blob = bucket.blob('xsiam-ci-locks')
-        blob.upload_from_string('queue')
+        bucket.delete_blob('xsiam-ci-locks')
+        logging.info('File deleted successfully.')
+
+        blob = bucket.blob('xsiam-ci-locks/')
+        blob.upload_from_string('')
         logging.info('Created bucket folder successfully.')
 
     else:
