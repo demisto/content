@@ -57,7 +57,7 @@ import exchangelib  # noqa: E402
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter  # noqa: E402
 from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, \
     EXCHANGE_2016  # noqa: E402
-from exchangelib import HTMLBody, Message, FileAttachment, Account, IMPERSONATION, Credentials, Configuration, NTLM, \
+from exchangelib import HTMLBody, Message, FileAttachment, Account, IMPERSONATION, ServiceAccount, Configuration, NTLM, \
     BASIC, DIGEST, Version, DELEGATE  # noqa: E402
 from exchangelib.errors import ErrorItemNotFound, UnauthorizedError  # noqa: E402
 
@@ -108,17 +108,9 @@ def exchangelib_cleanup():
 
 
 def get_account(account_email):
-    for i in range(1, 4):
-        response = Account(
-            primary_smtp_address=account_email, autodiscover=False, config=config, access_type=ACCESS_TYPE,
-        )
-        try:
-            response.root  # Check if you have access to root directory
-            return response
-        except UnauthorizedError:
-            demisto.debug("Got unauthorized error, This is attempt number {}".format(i))
-            continue
-    return response
+    return Account(
+        primary_smtp_address=account_email, autodiscover=False, config=config, access_type=ACCESS_TYPE,
+    )
 
 
 def send_email_to_mailbox(account, to, subject, body, bcc=None, cc=None, reply_to=None,
@@ -319,7 +311,7 @@ def prepare():
         os.environ['NO_PROXY'] = EWS_SERVER
 
     version = get_version(VERSION_STR)
-    credentials = Credentials(username=USERNAME, password=PASSWORD)
+    credentials = ServiceAccount(username=USERNAME, password=PASSWORD)
     config_args = {
         'credentials': credentials,
         'auth_type': get_auth_method(AUTH_METHOD_STR),
