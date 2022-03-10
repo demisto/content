@@ -7,8 +7,8 @@ def main():
     install_logging('Create_GCP.log', logger=logging)
     logging.info('Starting create bucket folder')
     from google.cloud import storage
-    # storage_client = storage.Client()
-    storage_client = storage.Client.from_service_account_json(sys.argv[1])
+    storage_client = storage.Client()
+    # storage_client = storage.Client.from_service_account_json(sys.argv[1])
 
     bucket = storage_client.bucket('xsoar-ci-artifacts')
 
