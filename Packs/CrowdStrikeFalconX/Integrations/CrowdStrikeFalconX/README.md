@@ -261,7 +261,7 @@ Notice that the file identifiers, SHA and ID are not the same.
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | File.SHA1 | String | The SHA1 hash of the file. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Name | String | The name of the file. | 
+| File.Name | String | The name of the file. |
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | String | For malicious files, the reason that the vendor made the decision. | 
@@ -474,6 +474,9 @@ Gets a full version of a sandbox report.
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | File.Name | String | The name of the file. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
+| File.Type | String | The type of the file. | 
+| File.Malicious.Description | Unknown | A description explaining why the file was determined to be malicious | 
+| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
 | File.Size | Number | The size of the file. | 
 | File.Relationships.EntityA | String | The source of the relationship. | 
 | File.Relationships.EntityAType | String | The type of the source of the relationship. | 
@@ -1831,6 +1834,8 @@ Gets the full report for one or more files, by their sha256 hash.
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Size | Number | The size of the file. | 
 | File.Type | String | The type of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.MD5 | String | The MD5 hash of the file. | 
 
 
 #### Command Example

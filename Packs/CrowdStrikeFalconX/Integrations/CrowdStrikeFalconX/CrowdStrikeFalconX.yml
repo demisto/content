@@ -671,16 +671,16 @@ script:
       type: String
     - contextPath: File.MD5
       description: The MD5 hash of the file.
-      type: string
+      type: String
     - contextPath: File.SHA1
       description: The SHA1 hash of the file.
-      type: string
+      type: String
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
-      type: string
+      type: String
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
-      type: string
+      type: String
     - contextPath: csfalconx.resource.created_timestamp
       description: Analysis start time.
       type: Date
@@ -1503,6 +1503,39 @@ script:
     - contextPath: File.SHA256
       description: SHA256 found in the parsed file.
       type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.Type
+      description: The type of the file.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the full description.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
   - arguments:
     - default: false
       description: |-
