@@ -285,9 +285,11 @@ slack-notify-nightly-build:
 
 # todo: uncomment, what is $GCS_MARKET_KEY
 #    - echo "Authing to GCP"
-    - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
+#    - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
     - echo "Auth loaded successfully."
 #    - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
+    - echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> $BASH_ENV
+    - source $BASH_ENV
 
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$BUILD_OBJECT_TYPE" "$XSIAM_CHOSEN_MACHINE_ID"|| EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json #todo: check if meyotar
