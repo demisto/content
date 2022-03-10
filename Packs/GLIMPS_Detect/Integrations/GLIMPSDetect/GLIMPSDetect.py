@@ -1,173 +1,226 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
+# Imports
 import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *
+from CommonServerUserPython import *
+from gdetect import Client
+''' IMPORTS '''
 
+import json
 import requests
-import traceback
-from typing import Dict, Any
+import tempfile
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+requests.packages.urllib3.disable_warnings()
 
-
-''' CONSTANTS '''
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
-''' CLIENT CLASS '''
+# Class Client TO TEST
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
+    """
+    Client will implement the service API, should not contain Cortex XSOAR logic.
+    Should do requests and return data
     """
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
+    def __init__(self, url: str, api_token: str, insecure: bool):
+        super().__init__()
+        self.url = url
+        self.client = Client(url=self.url, token=api_token, insecure=insecure)
 
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
+    def gdetect_send(self, filepath: str) -> str:
+        """Sends file to GLIMPS Detect API.
 
-        :return: dict as {"dummy": dummy}
+        :type filepath: ``str``
+        :param filepath: File to send to GLIMPS detect
+
+        :return: ID of the entry file to send to GLIMPS detect
         :rtype: ``str``
         """
 
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+        return self.client.push(filepath)
+
+    def gdetect_get(self, uuid: str) -> Dict[str, Any]:
+        """Gets GLIMPS Detect result for given uuid.
+
+        :type uuid: ``str``
+        :param uuid: GLIMPS Detect Binary UUID
+
+        :return: dict containing the analysis results
+        :rtype: ``Dict[str, Any]``
+        """
+
+        return self.client.get(uuid)
+
+# test_module TODO Checking errors
 
 
-''' HELPER FUNCTIONS '''
-
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
-
-''' COMMAND FUNCTIONS '''
-
-
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+def test_module(client):
     """
+    Returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
 
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
+    Args:
+        client: HelloWorld client
+
+    Returns:
+        'ok' if test passed, anything else will fail the test
+    """
+    with tempfile.NamedTemporaryFile() as tmp:
+        result = client.gdetect_send(tmp.name)
+        if 'Hello DBot' == result:  # Check errors
+            return 'ok'
         else:
-            raise e
-    return message
+            return 'Test failed because ......'
+
+# Commands TODO
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
-    )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
-
-
-''' MAIN FUNCTION '''
-
-
-def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
+def gdetect_send_command(client, args):  # TO TEST
     """
+    Returns GLIMPS Detect Binary UUID.
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
+    Args:
+        client: GLIMPSDetect client
+        args: all command arguments
 
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    Returns:
+        GLIMPS Detect Binary UUID.
 
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+        readable_output: This will be presented in Warroom - should be in markdown syntax - human readable
+        outputs: Dictionary/JSON - saved in incident context in order to be used as input for other tasks in the
+                 playbook
+        raw_response: Used for debugging/troubleshooting purposes - will be shown only if the command executed with
+                      raw-response=true
+    """
+    entry_id = args.get('entryID')
+    req = requests.get(f'/entry/download/{entry_id}')
+    with tempfile.NamedTemporaryFile() as tmp:
+        tmp.write(req.content)
+        uuid = client.gdetect_send(tmp.name)
 
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
+    # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
+    readable_output = f'## {uuid}'
+    outputs = {
+        'entryID': entry_id,
+        'GLIMPSDetect UUID': uuid
+    }
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    results = CommandResults(
+        outputs_prefix='GLIMPSDetect.Result',
+        outputs_key_field='name',
+        outputs=outputs,
+
+        readable_output=readable_output,
+        raw_response=uuid
+    )
+
+    return results
+
+
+def gdetect_get_command(client, args):  # TO TEST
+    """
+    Returns GLIMPS Detect analysis results
+
+    Args:
+        client: GLIMPSDetect client
+        args: all command arguments
+
+    Returns:
+        GLIMPS GLIMPS Detect analysis results
+
+        readable_output: This will be presented in Warroom - should be in markdown syntax - human readable
+        outputs: Dictionary/JSON - saved in incident context in order to be used as input for other tasks in the
+                 playbook
+        raw_response: Used for debugging/troubleshooting purposes - will be shown only if the command executed with
+                      raw-response=true
+    """
+    uuid = args.get('uuid')
+    results = client.gdetect_get(uuid)
+    sid = results.pop('sid')
+    results['link'] = f'{client.url}/expert/en/analysis/advanced/{sid}'
+    outputs = results
+    readable_output = '''
+    ## GLIMPSDetect
+    | PATH | VALUE |
+    | ---  | --- |
+    | GLIMPS.GDetect.UUID  | {uuid} |
+    | GLIMPS.GDetect.SHA256  | {sha256} |
+    | GLIMPS.GDetect.SHA1  | {sha1} |
+    | GLIMPS.GDetect.MD5  | {md5} |
+    | GLIMPS.GDetect.SSDeep  | {ssdeep} |
+    | GLIMPS.GDetect.IsMalware  | {is_malware} |
+    | GLIMPS.GDetect.Score  | {score} |
+    | GLIMPS.GDetect.Done  | {done} |
+    | GLIMPS.GDetect.Timestamp  | {timestamp} |
+    | GLIMPS.GDetect.Filetype  | {filetype} |
+    | GLIMPS.GDetect.Size  | {size} |
+    | GLIMPS.GDetect.Filenames  | {filenames} |
+    | GLIMPS.GDetect.Malwares  | {malwares} |
+    '''.format(**results)
+    for file in results.get('files'):
+        readable_output += '''
+        | GLIMPS.GDetect.File.SHA256  | {sha256} |
+        | GLIMPS.GDetect.File.SHA1  | {sha1} |
+        | GLIMPS.GDetect.File.MD5  | {md5} |
+        | GLIMPS.GDetect.File.SSDeep  | {ssdeep} |
+        | GLIMPS.GDetect.File.Magic  | {magic} |
+        '''
+        if file.get('is_malware'):
+            for av_result in file.get('av_results'):
+                readable_output += '''
+                | GLIMPS.GDetect.File.AVResults.AV  | {av} |
+                | GLIMPS.GDetect.File.AVResults.Result  | {result} |
+                | GLIMPS.GDetect.File.AVResults.Score  | {score} |
+                '''.format(**av_result)
+        readable_output += '''
+        | GLIMPS.GDetect.File.Size  | {size} |
+        | GLIMPS.GDetect.File.IsMalware  | {is_malware} |
+        '''
+    readable_output += '''
+    | GLIMPS.GDetect.FileCount  | {file_count} |
+    | GLIMPS.GDetect.Duration  | {duration} |
+    | GLIMPS.GDetect.Token  | {token} |
+    | GLIMPS.GDetect.Status  | {status} |
+    | GLIMPS.GDetect.Link  | {link} |
+    '''.format(**results)
+
+    results = CommandResults(
+        outputs_prefix='GLIMPSDetect.Result',
+        outputs_key_field='name',
+        outputs=outputs,
+
+        readable_output=readable_output,
+        raw_response=outputs
+    )
+
+    return results
+
+# Main TODO
+
+
+def main():
+    """
+        PARSE AND VALIDATE INTEGRATION PARAMS
+    """
+    params = demisto.params()
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
     try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
-
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
-
-        if demisto.command() == 'test-module':
+        client = Client(params.get('url'), params.get('api_token'), params.get('insecure'))
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
 
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+        elif command == 'gdetect-send':
+            return_results(gdetect_send_command(client, demisto.args()))
 
-    # Log exceptions and return errors
+        elif command == 'gdetect-get':
+            return_results(gdetect_get_command(client, demisto.args()))
+
+    # Log exceptions
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 
-''' ENTRY POINT '''
-
-
+# Start Main
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
