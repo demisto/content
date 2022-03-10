@@ -733,5 +733,7 @@ inputs:
   playbookInputQuery: null
 outputs: []
 quiet: true
+marketplaces:
+  marketplacev2
 tests:
 - No test

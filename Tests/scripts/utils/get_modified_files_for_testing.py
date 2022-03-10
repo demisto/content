@@ -158,6 +158,42 @@ def create_type_to_file(files_string: str) -> Dict[FileType, Set[str]]:
     return types_to_files
 
 
+def filter_modified_files(files_string: str, id_set: dict) -> Dict[FileType, Set[str]]:
+    """Classifies the files in the diff list (files_string) using tools.find_type
+
+    Returns:
+        A dict of {FileType: Set of files}
+    """
+    v2_files_string = ''
+    for line in files_string.split("\n"):
+        if line:
+            file_status, file_path = line.split(maxsplit=1)
+            file_status = file_status.lower()
+            # Get to right file_path on renamed
+            if file_status.startswith("r"):
+                _, file_path = file_path.split(maxsplit=1)
+            # ignoring deleted files.
+            # also, ignore files in ".circle", ".github" and ".hooks" directories and .
+            if file_path:
+                if (file_status in ("m", "a") or file_status.startswith("r")) and file_path.startswith("Packs/"):
+                    if file_path.endswith('.py'):
+                        file_path = file_path.rstrip('py')
+                    file_data = file_path.split('/')
+                    obj_repo_name = replace_to_id_set_name(file_data[2])
+                    for obj in id_set.get(obj_repo_name):
+
+                        data = obj[list(obj.keys())[0]]
+                        if file_path in data.get('file_path') and data.get('marketplaces') == ['marketplacev2']:
+                            v2_files_string += f'{line}\n'
+    return v2_files_string
+
+
+def replace_to_id_set_name(name: str):
+    if name in ['Scripts', 'Playbooks', 'Integrations']:
+        name = name.lower()
+    return name
+
+
 def remove_common_files(
         types_to_files: Dict[FileType, Set[str]], changed_common_files: Set[str]) -> Dict[FileType, Set[str]]:
     if changed_common_files:

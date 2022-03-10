@@ -22,6 +22,7 @@ core_reputation_to_demisto: Dict = {
     'SUSPICIOUS': 2,
     'BAD': 3
 }
+
 demisto_score_to_core: Dict[int, str] = {
     1: 'GOOD',
     2: 'SUSPICIOUS',

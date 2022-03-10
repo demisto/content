@@ -19,7 +19,7 @@ from Tests.scripts.utils import collect_helpers
 from Tests.scripts.utils.collect_helpers import LANDING_PAGE_SECTIONS_JSON_PATH
 from Tests.scripts.utils.content_packs_util import should_test_content_pack, should_install_content_pack, \
     is_pack_xsoar_supported
-from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
+from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing, filter_modified_files
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 from demisto_sdk.commands.common import constants
@@ -1191,6 +1191,7 @@ def get_test_list_and_content_packs_to_install(files_string,
                                                conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
     """Create a test list that should run"""
+    files_string = filter_modified_files(files_string, id_set)
     modified_files_instance = get_modified_files_for_testing(files_string)
 
     modified_files_with_relevant_tests = modified_files_instance.modified_files
@@ -1271,22 +1272,24 @@ def get_test_list_and_content_packs_to_install(files_string,
     tests = filter_tests(tests, id_set, modified_packs, marketplace_version, False,
                          compatible_only_with_this_marketplace)
 
-    if not tests or changed_common:
-        if not tests:
-            logging.info("No tests found running sanity check only.")
-        else:
-            logging.info("Changed one of the Common Server files, running sanity check too.")
+    if marketplace_version != 'marketplacev2':
+        if not tests or changed_common:
+            if not tests:
+                logging.info("No tests found running sanity check only.")
+            else:
+                logging.info("Changed one of the Common Server files, running sanity check too.")
 
-        logging.debug(f"Adding sanity tests: {SANITY_TESTS}")
-        tests.update(SANITY_TESTS)
-        logging.debug("Adding HelloWorld to tests as most of the sanity tests requires it.")
-        logging.debug(
-            "Adding Gmail to packs to install as 'Sanity Test - Playbook with Unmockable Integration' uses it"
-        )
-        packs_to_install.update(["HelloWorld", "Gmail"])
+            logging.debug(f"Adding sanity tests: {SANITY_TESTS}")
+            tests.update(SANITY_TESTS)
+            logging.debug("Adding HelloWorld to tests as most of the sanity tests requires it.")
+            logging.debug(
+                "Adding Gmail to packs to install as 'Sanity Test - Playbook with Unmockable Integration' uses it"
+            )
+            packs_to_install.update(["HelloWorld", "Gmail"])
 
     # We add Base and DeveloperTools packs for every build
-    packs_to_install.update(["DeveloperTools", "Base"])
+    if tests or packs_to_install:
+        packs_to_install.update(["DeveloperTools", "Base"])
 
     return tests, packs_to_install
 

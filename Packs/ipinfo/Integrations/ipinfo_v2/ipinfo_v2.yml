@@ -169,6 +169,8 @@ script:
   script: '-'
   subtype: python3
   type: python
+  marketplaces:
+    marketplacev2
 tests:
 - IPInfo_v2Test
 fromversion: 5.5.0

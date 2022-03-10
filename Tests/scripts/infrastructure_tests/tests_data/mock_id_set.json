@@ -222,7 +222,7 @@
     {
       "PagerDuty v2": {
         "name": "PagerDuty v2",
-        "file_path": "Integrations/PagerDuty/PagerDuty.yml",
+        "file_path": "Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.yml",
         "commands": [
           "PagerDuty-get-all-schedules",
           "PagerDuty-get-users-on-call",
@@ -238,6 +238,9 @@
         ],
         "tests": [
           "PagerDuty Test"
+        ],
+        "marketplaces": [
+          "marketplacev2"
         ]
       }
     }

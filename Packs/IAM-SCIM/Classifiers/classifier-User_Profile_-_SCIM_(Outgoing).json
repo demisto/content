@@ -737,5 +737,8 @@
  "name": "User Profile - SCIM (Outgoing)",
  "type": "mapping-outgoing",
  "version": -1,
+ "marketplaces": [
+   "marketplacev2"
+ ],
  "fromVersion": "6.0.0"
 }
