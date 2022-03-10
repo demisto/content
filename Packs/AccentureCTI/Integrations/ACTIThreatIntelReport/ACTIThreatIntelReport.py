@@ -112,8 +112,6 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability, ia_ir_url: str)
     """
     threat_types = Res.get('threat_types', '')
     threattypes = ''
-    uuid = ''
-    indicatortype = ''
     uuid = Res.get('uuid', '')
     if threat_types:
         for threat_type in threat_types:

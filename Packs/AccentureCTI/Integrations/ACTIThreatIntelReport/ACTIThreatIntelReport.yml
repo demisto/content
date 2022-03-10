@@ -49,6 +49,7 @@ script:
       default: true
       description: url for viewing Intelligence Alert/Report (IA/IR) in the ACTI IntelGraph platform.
       isArray: false
+      required: true
     outputs:
     - contextPath: IAIR.abstract
       description: This field is specific to Intelligence Alert and provides a summarised context, for example, 'The worldwide COVID-19 outbreak...'
