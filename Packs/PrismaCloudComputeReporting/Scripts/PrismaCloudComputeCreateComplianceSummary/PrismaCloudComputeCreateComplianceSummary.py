@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 def create_compliance_summary(images):
-    compliance_issues = {}
+    compliance_issues = {}  # type: ignore
     for image in images:
         if image.get('complianceIssues') is not None:
             for compliance_issue in image.get('complianceIssues', []):

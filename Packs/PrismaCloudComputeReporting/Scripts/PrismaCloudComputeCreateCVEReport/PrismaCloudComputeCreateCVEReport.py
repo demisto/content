@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # ${CreatedIndicator.Value}
-#cve = "CVE-2021-42379"
+# cve = "CVE-2021-42379"
 
 
 def main(cves):
