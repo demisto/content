@@ -507,17 +507,17 @@ class Notable:
     def submitted(self):
         """ Returns an indicator on whether any of the notable's enrichments was submitted or not """
         return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in self.enrichments) and \
-            len(self.enrichments) == len(ENABLED_ENRICHMENTS)
+               len(self.enrichments) == len(ENABLED_ENRICHMENTS)
 
     def failed_to_submit(self):
         """ Returns an indicator on whether all notable's enrichments were failed to submit or not """
         return all(enrichment.status == Enrichment.FAILED for enrichment in self.enrichments) and \
-            len(self.enrichments) == len(ENABLED_ENRICHMENTS)
+               len(self.enrichments) == len(ENABLED_ENRICHMENTS)
 
     def handled(self):
         """ Returns an indicator on whether all notable's enrichments were handled or not """
         return all(enrichment.status in Enrichment.HANDLED for enrichment in self.enrichments) or \
-            any(enrichment.status == Enrichment.EXCEEDED_TIMEOUT for enrichment in self.enrichments)
+               any(enrichment.status == Enrichment.EXCEEDED_TIMEOUT for enrichment in self.enrichments)
 
     def get_submitted_enrichments(self):
         """ Returns indicators on whether each enrichment was submitted/failed or not initiated """
@@ -1919,14 +1919,17 @@ def build_search_human_readable(args, parsed_search_results):
             table_args = re.findall(r' {} (?P<{}>[^|]*)'.format('table', 'table'), query)
             rename_args = re.findall(r' {} (?P<{}>[^|]*)'.format('rename', 'rename'), query)
 
-            # iterating through 'table' and 'rename' arguments and save the results.
-            # Example: table field_1 field_2 | rename field_1 AS field_1_new
-            # chosen_fields = ["field_1", "field_2"]
-            # rename_dict = {"field_1": "field_1_new"}
-            chosen_fields = [field.strip('"') for arg_string in table_args
-                             for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', arg_string) if field]
-            rename_dict = {field[0].strip('"'): field[-1].strip('"') for arg_string in rename_args for field in
-                           re.findall(r'((?:".*?")|(?:[^\s,]+))( AS )((?:".*?")|(?:[^\s,]+))', arg_string) if field}
+            chosen_fields = []
+            for arg_string in table_args:
+                for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', arg_string):
+                    if field:
+                        chosen_fields.append(field.strip('"'))
+
+            rename_dict = {}
+            for arg_string in rename_args:
+                for field in re.findall(r'((?:".*?")|(?:[^\s,]+))( AS )((?:".*?")|(?:[^\s,]+))', arg_string):
+                    if field:
+                        rename_dict[field[0].strip('"')] = field[-1].strip('"')
 
             # replace renamed fields
             chosen_fields = [rename_dict.get(field, field) for field in chosen_fields]
@@ -2254,7 +2257,6 @@ def splunk_parse_raw_command():
 
 
 def test_module(service):
-
     try:
         # validate connection
         service.info()
