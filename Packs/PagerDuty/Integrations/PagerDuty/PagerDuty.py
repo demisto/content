@@ -191,7 +191,7 @@ def extract_on_call_now_user_data(users_on_call_now):
 
         data = oncalls[i]
         user = data.get('user')
-        schedule_id = data.get('schedule', {}).get('id')
+        schedule_id = (data.get('schedule') or {}).get('id')
         if schedule_id:
             output['Schedule ID'] = schedule_id
             context['ScheduleID'] = output['Schedule ID']
