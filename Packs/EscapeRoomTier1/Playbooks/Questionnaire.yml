@@ -1,6 +1,6 @@
-id: Questionnaire - 1
+id: Questionnaire
 version: -1
-name: Questionnaire - 1
+name: Questionnaire
 starttaskid: "0"
 tasks:
   "0":
@@ -37,7 +37,7 @@ tasks:
     task:
       id: a09707cc-f75a-48aa-8d66-8f4b543a26ab
       version: -1
-      name: Questionnaire - 1
+      name: Questionnaire
       description: ""
       type: collection
       iscommand: false

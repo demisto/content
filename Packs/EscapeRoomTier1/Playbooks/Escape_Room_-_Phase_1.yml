@@ -164,8 +164,8 @@ tasks:
     task:
       id: 04effe7c-4351-42fd-8990-aa020b8de5c1
       version: -1
-      name: Questionnaire - 1
-      playbookName: Questionnaire - 1
+      name: Questionnaire
+      playbookName: Questionnaire
       scriptName: AreValuesEqual
       type: playbook
       iscommand: false
