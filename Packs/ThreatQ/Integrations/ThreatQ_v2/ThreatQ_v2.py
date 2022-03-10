@@ -246,9 +246,6 @@ def make_edit_request_for_an_object(obj_id, obj_type, params):
 
 def make_indicator_reputation_request(indicator_type, value, generic_context):
     # Search for the indicator ID by keyword:
-    access_token = get_access_token()
-    api_call_headers = {'Authorization': 'Bearer ' + access_token,
-                        'Content-Type': 'application/json'}
     body = {}
     if indicator_type == 'ip':
         tq_type = "IP Address"
@@ -289,20 +286,18 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
         }
 
     url_suffix = '/indicators/query?limit=500&offset=0&sort=id'
-    response = requests.request(
-        "POST",
-        API_URL + url_suffix,
-        json=body,
-        headers=api_call_headers,
-        verify=USE_SSL,
+
+    res = tq_request(
+        method="POST",
+        url_suffix=url_suffix,
+        params=body
     )
-    res = response.json()
 
     indicators: List[Dict] = []
     for obj in res.get('data', []):
-        if 'id' in obj:
+        if obj.get('object') == 'indicator':
             # Search for detailed information about the indicator
-            url_suffix = '/indicators/{0}?with=attributes,sources,score,type'.format(obj.get('id'))
+            url_suffix = f'/indicators/{obj.get("id")}?with=attributes,sources,score,type'
             res = tq_request('GET', url_suffix)
             indicators.append(indicator_data_to_demisto_format(res['data']))
     indicators = indicators or [{'Value': value, 'TQScore': -1}]

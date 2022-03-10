@@ -228,7 +228,6 @@ def test_create_indicator_command(mocker, requests_mock):
     requests_mock.post(MOCK_API_URL + '/token', json=MOCK_ACCESS_TOKEN)
     requests_mock.get(MOCK_API_URL + '/indicator/statuses/1', json=MOCK_GET_INDICATOR_STATUS_RESPONSE_1)
     requests_mock.get(MOCK_API_URL + '/indicator/types/4', json=MOCK_GET_INDICATOR_TYPE_RESPONSE_1)
-
     from ThreatQ_v2 import create_indicator_command
     create_indicator_command()
 
@@ -288,8 +287,7 @@ def test_upload_file_command(mocker, requests_mock):
 def test_get_email_reputation(mocker, requests_mock):
     mock_demisto(mocker, MOCK_EMAIL_REPUTATION_ARGUMENTS)
     requests_mock.post(MOCK_API_URL + '/token', json=MOCK_ACCESS_TOKEN)
-    requests_mock.get(MOCK_API_URL + '/search?query=foo@demisto.com&limit=1',
-                      json=MOCK_SEARCH_BY_NAME_RESPONSE)
+    requests_mock.post(MOCK_API_URL + '/indicators/query?limit=500&offset=0&sort=id', json=MOCK_SEARCH_BY_NAME_RESPONSE)
     requests_mock.get(MOCK_API_URL + '/indicators/2019?with=attributes,sources,score,type',
                       json=MOCK_GET_INDICATOR_RESPONSE)
     requests_mock.get(MOCK_API_URL + '/indicator/statuses/1', json=MOCK_GET_INDICATOR_STATUS_RESPONSE_1)
