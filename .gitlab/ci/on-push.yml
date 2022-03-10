@@ -330,7 +330,7 @@ create_gcp_folders:
     - echo "Authing to GCP"
     - echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> $BASH_ENV
     - source $BASH_ENV
-    - python3 /Tests/scripts/gcp_update.py
+    - python3 ./Tests/gcp_update.py
     - exit $EXIT_CODE
 
 
