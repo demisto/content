@@ -6,6 +6,7 @@ from _pytest.python_api import raises
 
 import demistomock as demisto
 from CommonServerPython import outputPaths, entryTypes, DemistoException, IncidentStatus
+from test_data import input_data
 
 RETURN_ERROR_TARGET = 'CrowdStrikeFalcon.return_error'
 SERVER_URL = 'https://4.4.4.4'
@@ -36,52 +37,6 @@ def get_access_token(requests_mock, mocker):
         status_code=200
     )
 
-
-response_incident = {"incident_id": "inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd",
-                     "cid": "24ab288b109b411aba970e570d1ddf58",
-                     "host_ids": [
-                         "afb5d1512a00480f53e9ad91dc3e4b55"
-                     ],
-                     "hosts": [
-                         {"device_id": "afb5d1512a00480f53e9ad91dc3e4b55",
-                          "cid": "24ab288b109b411aba970e570d1ddf58",
-                          "agent_load_flags": "0",
-                          "agent_local_time": "2020-05-06T23:36:34.594Z",
-                          "agent_version": "5.28.10902.0",
-                          "bios_manufacturer": "Apple Inc.",
-                          "bios_version": "1037.100.359.0.0 (iBridge: 17.16.14263.0.0,0)",
-                          "config_id_base": "65994753",
-                          "config_id_build": "10902",
-                          "config_id_platform": "4",
-                          "external_ip": "1.1.1.1",
-                          "hostname": "SFO-M-Y81WHJ",
-                          "first_seen": "2019-05-10T17:20:39Z",
-                          "last_seen": "2020-05-17T16:59:42Z",
-                          "local_ip": "1.1.1.1",
-                          "mac_address": "86-89-ad-65-d0-30",
-                          "major_version": "18",
-                          "minor_version": "7",
-                          "os_version": "Mojave (10.14)",
-                          "platform_id": "1",
-                          "platform_name": "Mac",
-                          "product_type_desc": "Workstation",
-                          "status": "normal",
-                          "system_manufacturer": "Apple Inc.",
-                          "system_product_name": "MacBookPro15,1",
-                          "modified_timestamp": "2020-05-17T16:59:56Z"}
-                     ],
-                     "created": "2020-05-17T17:30:38Z",
-                     "start": "2020-05-17T17:30:38Z",
-                     "end": "2020-05-17T17:30:38Z",
-                     "state": "closed",
-                     "status": 20,
-                     "name": "Incident on SFO-M-Y81WHJ at 2020-05-17T17:30:38Z",
-                     "description": "Objectives in this incident: Keep Access. Techniques: External Remote Services. "
-                                    "Involved hosts and end users: SFO-M-Y81WHJ.",
-                     "tags": [
-                         "Objective/Keep Access"
-                     ],
-                     "fine_score": 38}
 
 incident_context = {'name': 'Incident ID: inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd',
                     'occurred': '2020-05-17T17:30:38Z',
@@ -118,96 +73,10 @@ IOCS_JSON_LIST = [{'type': 'ipv4', 'value': '4.4.4.4', 'source': 'cortex xsoar',
                        'expiration': '2022-02-15T15:55:09Z', 'applied_globally': True,
                        }]
 
-response_detection = {"cid": "20879a8064904ecfbb62c118a6a19411",
-                      "created_timestamp": "2021-12-19T13:53:34.708949512Z",
-                      "detection_id": "ldt:15dbb9d8f06b89fe9f61eb46e829d986:528715079668",
-                      "device": {
-                          "device_id": "15dbb9d7f06b45fe0f61eb46e829d986",
-                          "cid": "20897a8064904ecfbb62c118a3a19411",
-                          "agent_load_flags": "0",
-                          "agent_local_time": "2021-12-03T22:06:35.590Z",
-                          "agent_version": "6.30.14406.0",
-                          "bios_manufacturer": "Google",
-                          "bios_version": "Google",
-                          "config_id_base": "65994853",
-                          "config_id_build": "14706",
-                          "config_id_platform": "3",
-                          "external_ip": "35.224.136.145",
-                          "hostname": "FALCON-CROWDSTR",
-                          "first_seen": "2020-02-10T12:40:18Z",
-                          "last_seen": "2021-12-19T13:35:53Z",
-                          "local_ip": "10.128.0.7",
-                          "mac_address": "42-03-0a-80-92-07",
-                          "major_version": "10",
-                          "minor_version": "0",
-                          "os_version": "Windows Server 2019",
-                          "platform_id": "0",
-                          "platform_name": "Windows",
-                          "product_type": "3",
-                          "product_type_desc": "Server",
-                          "status": "normal",
-                          "system_manufacturer": "Google",
-                          "system_product_name": "Google Compute Engine",
-                          "modified_timestamp": "2021-12-19T13:51:07Z",
-                          "instance_id": "5278723726495898635",
-                          "service_provider": "GCP",
-                          "service_provider_account_id": "578609343865"
-                      },
-                      "behaviors": [
-                          {
-                              "device_id": "15dbb9d8f06b45fe9f61eb46e829d986",
-                              "timestamp": "2021-12-19T13:53:27Z",
-                              "template_instance_id": "382",
-                              "behavior_id": "10197",
-                              "filename": "choice.exe",
-                              "filepath": "\\Device\\HarddiskVolume1\\Windows\\System32\\choice.exe",
-                              "alleged_filetype": "exe",
-                              "cmdline": "choice  /m crowdstrike_sample_detection",
-                              "scenario": "suspicious_activity",
-                              "objective": "Falcon Detection Method",
-                              "tactic": "Malware",
-                              "tactic_id": "CSTA0001",
-                              "technique": "Malicious File",
-                              "technique_id": "CST0001",
-                              "display_name": "SampleTemplateDetection",
-                              "description": "For evaluation only - benign, no action needed.",
-                              "severity": 30,
-                              "confidence": 80,
-                              "ioc_type": "",
-                              "ioc_value": "",
-                              "ioc_source": "",
-                              "ioc_description": "",
-                              "user_name": "admin",
-                              "user_id": "S-1-5-21-3482992587-1103702653-2661900019-1000",
-                              "control_graph_id": "ctg:15dbb9d8f06b45fe9f61eb46e829d986:528715219540",
-                              "triggering_process_graph_id": "pid:15dbb9d8f06b45fe9f61eb46e829d986:1560553487562",
-                              "sha256": "90f352c1fb7b21cc0216b2f0701a236db92b786e4301904d28f4ec4cb81f2a8b",
-                              "md5": "463b5477ff96ab86a01ba44bcc02b539",
-                              "pattern_disposition": 0,
-                          }
-                      ],
-                      "email_sent": False,
-                      "first_behavior": "2021-12-19T13:53:27Z",
-                      "last_behavior": "2021-12-19T13:53:27Z",
-                      "max_confidence": 80,
-                      "max_severity": 30,
-                      "max_severity_displayname": "Low",
-                      "show_in_ui": True,
-                      "status": "new",
-                      "hostinfo": {
-                          "domain": ""
-                      },
-                      "seconds_to_triaged": 0,
-                      "seconds_to_resolved": 0,
-                      "behaviors_processed": [
-                          "pid:15dbb9d8f06b45fe9f61eb46e829d986:1560553487562:10194"
-                      ],
-                      "date_updated": "2021-12-19T13:53:34.708949512Z"}
-
 
 def test_incident_to_incident_context():
     from CrowdStrikeFalcon import incident_to_incident_context
-    res = incident_to_incident_context(response_incident.copy())
+    res = incident_to_incident_context(input_data.response_incident.copy())
     assert res == incident_context
 
 
@@ -3768,68 +3637,79 @@ def test_rtr_read_registry_keys_command(mocker):
     assert "reg-1key" in parsed_result[0].readable_output
 
 
-remote_incident_id = 'inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd'
-remote_detection_id = 'ldt:15dbb9d8f06b89fe9f61eb46e829d986:528715079668'
-
-
-def test_get_remote_data_command():
+@pytest.mark.parametrize('remote_id, close_incident, incident_status, detection_status, mirrored_object, entries',
+                         input_data.get_remote_data_command_args)
+def test_get_remote_data_command(mocker, remote_id, close_incident, incident_status, detection_status, mirrored_object, entries):
     from CrowdStrikeFalcon import get_remote_data_command
-    pass
+    incident_entity = input_data.response_incident.copy()
+    incident_entity['status'] = incident_status
+    mocker.patch(f'CrowdStrikeFalcon.get_incidents_entities', return_value={'resources': [incident_entity]})
+    detection_entity = input_data.response_detection.copy()
+    detection_entity['status'] = detection_status
+    mocker.patch(f'CrowdStrikeFalcon.get_detections_entities', return_value={'resources': [detection_entity]})
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
+
+    result = get_remote_data_command({'id': remote_id, 'lastUpdate': '2022-03-08T08:17:09Z'})
+    assert result.mirrored_object == mirrored_object
+    assert result.entries == entries
 
 
 def test_find_incident_type():
     from CrowdStrikeFalcon import find_incident_type, IncidentType
-    pass
+    assert find_incident_type(input_data.remote_incident_id) == IncidentType.INCIDENT
+    assert find_incident_type(input_data.remote_detection_id) == IncidentType.DETECTION
+    assert find_incident_type('') is None
 
 
-def test_get_remote_incident_data():
+def test_get_remote_incident_data(mocker):
     from CrowdStrikeFalcon import get_remote_incident_data
-    pass
+    incident_entity = input_data.response_incident.copy()
+    mocker.patch(f'CrowdStrikeFalcon.get_incidents_entities', return_value={'resources': [incident_entity.copy()]})
+    mirrored_data, updated_object = get_remote_incident_data(input_data.remote_incident_id)
+    incident_entity['status'] = 'New'
+    assert mirrored_data == incident_entity
+    assert updated_object == {'state': 'closed', 'status': 'New', 'tags': ['Objective/Keep Access'],
+                              'hosts.hostname': 'SFO-M-Y81WHJ', 'incident_type': 'incident'}
 
 
-def test_get_remote_detection_data():
+def test_get_remote_detection_data(mocker):
     from CrowdStrikeFalcon import get_remote_detection_data
-    pass
+    detection_entity = input_data.response_detection.copy()
+    mocker.patch(f'CrowdStrikeFalcon.get_detections_entities', return_value={'resources': [detection_entity.copy()]})
+    mirrored_data, updated_object = get_remote_detection_data(input_data.remote_detection_id)
+    detection_entity['severity'] = 2
+    assert mirrored_data == detection_entity
+    assert updated_object == {'status': 'new', 'severity': 2, 'behaviors.tactic': 'Malware',
+                              'behaviors.scenario': 'suspicious_activity', 'behaviors.objective': 'Falcon Detection Method',
+                              'behaviors.technique': 'Malicious File', 'device.hostname': 'FALCON-CROWDSTR',
+                              'incident_type': 'detection'}
 
 
-def test_set_xsoar_incident_entries():
+@pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_incident_entries_args)
+def test_set_xsoar_incident_entries(mocker, updated_object, entry_content, close_incident):
     from CrowdStrikeFalcon import set_xsoar_incident_entries
-    pass
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
+    entries = []
+    set_xsoar_incident_entries(updated_object, entries, input_data.remote_incident_id)
+    if entry_content:
+        assert entry_content in entries[0].get('Contents')
+    else:
+        assert entries == []
 
 
-def test_set_xsoar_detection_entries():
+@pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_detection_entries_args)
+def test_set_xsoar_detection_entries(mocker, updated_object, entry_content, close_incident):
     from CrowdStrikeFalcon import set_xsoar_detection_entries
-    pass
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
+    entries = []
+    set_xsoar_detection_entries(updated_object, entries, input_data.remote_incident_id)
+    if entry_content:
+        assert entry_content in entries[0].get('Contents')
+    else:
+        assert entries == []
 
 
-keeping_updated_object = ({'incident_type': 'incident'}, {}, [], {'incident_type': 'incident'})
-
-keeping_empty_updated_object = ({}, {}, [], {})
-
-no_nested_fields = ({'incident_type': 'incident'}, response_incident, ['state', 'status', 'tags'],
-                    {'incident_type': 'incident', 'state': 'closed', 'status': 20, 'tags': ['Objective/Keep Access']})
-
-fields_not_existing = ({}, response_incident, ['tactics.', 'techniques', 'objectives'], {})
-
-field_nested_dict_in_list = ({'incident_type': 'incident'}, response_incident, ['state', 'hosts.hostname'],
-                             {'incident_type': 'incident', 'state': 'closed', 'hosts.hostname': 'SFO-M-Y81WHJ'})
-
-field_nested_in_dict = ({}, response_detection, ['behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
-                                                 'behaviors.technique'],
-                        {'behaviors.objective': 'Falcon Detection Method', 'behaviors.scenario': 'suspicious_activity',
-                         'behaviors.tactic': 'Malware', 'behaviors.technique': 'Malicious File'})
-
-fields_nested_all_options = ({'incident_type': 'detection'}, response_detection,
-                             ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
-                              'behaviors.technique', 'device.hostname'],
-                             {'incident_type': 'detection', 'status': 'new', 'behaviors.objective': 'Falcon Detection Method',
-                              'behaviors.scenario': 'suspicious_activity', 'behaviors.tactic': 'Malware',
-                              'behaviors.technique': 'Malicious File', 'device.hostname': 'FALCON-CROWDSTR'})
-
-
-@pytest.mark.parametrize('updated_object, mirrored_data, mirroring_fields, output',
-                         [keeping_updated_object, keeping_empty_updated_object, no_nested_fields, fields_not_existing,
-                          field_nested_dict_in_list, field_nested_in_dict, fields_nested_all_options])
+@pytest.mark.parametrize('updated_object, mirrored_data, mirroring_fields, output', input_data.set_updated_object_args)
 def test_set_updated_object(updated_object, mirrored_data, mirroring_fields, output):
     """
     Given:
@@ -3847,65 +3727,85 @@ def test_set_updated_object(updated_object, mirrored_data, mirroring_fields, out
     assert updated_object == output
 
 
-def test_get_modified_remote_data_command():
+def test_get_modified_remote_data_command(mocker):
     from CrowdStrikeFalcon import get_modified_remote_data_command
-    pass
+    mock_get_incidents = mocker.patch('CrowdStrikeFalcon.get_incidents_ids',
+                                      return_value={'resources': [input_data.remote_incident_id]})
+    mock_get_detections = mocker.patch('CrowdStrikeFalcon.get_fetch_detections',
+                                       return_value={'resources': [input_data.remote_detection_id]})
+    last_update = '2022-03-08T08:17:09Z'
+    result = get_modified_remote_data_command({'lastUpdate': last_update})
+    assert mock_get_incidents.call_args.kwargs['last_updated_timestamp'] == last_update
+    assert mock_get_detections.call_args.kwargs['last_updated_timestamp'] == last_update
+    assert result.modified_incident_ids == [input_data.remote_incident_id, input_data.remote_detection_id]
 
 
-def test_update_detection_request():
+@pytest.mark.parametrize('status', ['new', 'in_progress', 'true_positive', 'false_positive', 'ignored', 'closed', 'reopened'])
+def test_update_detection_request_good(mocker, status):
     from CrowdStrikeFalcon import update_detection_request
-    pass
+    mock_resolve_detection = mocker.patch('CrowdStrikeFalcon.resolve_detection')
+    update_detection_request([input_data.remote_detection_id], status)
+    assert mock_resolve_detection.call_args.kwargs['ids'] == [input_data.remote_detection_id]
+    assert mock_resolve_detection.call_args.kwargs['status'] == status
 
 
-def test_update_remote_system_command():
+@pytest.mark.parametrize('status', ['other', ''])
+def test_update_detection_request_bad(status):
+    from CrowdStrikeFalcon import update_detection_request
+    with pytest.raises(DemistoException) as de:
+        update_detection_request([input_data.remote_detection_id], status)
+    assert 'CrowdStrike Falcon Error' in str(de.value)
+
+
+@pytest.mark.parametrize('args, to_mock, call_args, remote_id, prev_tags, close_in_cs_falcon_param',
+                         input_data.update_remote_system_command_args)
+def test_update_remote_system_command(mocker, args, to_mock, call_args, remote_id, prev_tags, close_in_cs_falcon_param):
     from CrowdStrikeFalcon import update_remote_system_command
-    pass
+    mock_call = mocker.patch(f'CrowdStrikeFalcon.{to_mock}')
+    mocker.patch(f'CrowdStrikeFalcon.get_previous_tags', return_value=prev_tags)
+    mocker.patch.object(demisto, 'params', return_value={'close_in_cs_falcon': close_in_cs_falcon_param})
+    command_result = update_remote_system_command(args)
+    assert command_result == remote_id
+    for i, call in enumerate(call_args):
+        assert mock_call.call_args_list[i].args == call
 
 
-def test_close_in_cs_falcon():
+@pytest.mark.parametrize('delta, close_in_cs_falcon_param, to_close', input_data.close_in_cs_falcon_args)
+def test_close_in_cs_falcon(mocker, delta, close_in_cs_falcon_param, to_close):
     from CrowdStrikeFalcon import close_in_cs_falcon
-    pass
-
-
-detection_closed_in_xsoar = ({'closeReason': 'Other'}, IncidentStatus.DONE, True, 'closed')
-detection_status_closed = ({'status': 'closed'}, IncidentStatus.ACTIVE, False, 'closed')
-detection_update_status_true_close_remote = ({'status': 'new'}, IncidentStatus.ACTIVE, True, 'new')
-detection_update_status_false_close_remote = ({'status': 'in_progress'}, IncidentStatus.ACTIVE, False, 'in_progress')
-detection_update_by_status_dont_close = ({'status': 'false_positive'}, IncidentStatus.DONE, False, 'false_positive')
-detection_didnt_change = ({}, IncidentStatus.ACTIVE, False, '')
+    mocker.patch.object(demisto, 'params', return_value={'close_in_cs_falcon': close_in_cs_falcon_param})
+    assert close_in_cs_falcon(delta) == to_close
 
 
 @pytest.mark.parametrize('delta, inc_status, close_in_cs_falcon, detection_request_status',
-                         [detection_closed_in_xsoar, detection_status_closed, detection_update_status_true_close_remote,
-                          detection_update_status_false_close_remote, detection_update_by_status_dont_close,
-                          detection_didnt_change])
+                         input_data.update_remote_detection_args)
 def test_update_remote_detection(mocker, delta, inc_status, close_in_cs_falcon, detection_request_status):
     from CrowdStrikeFalcon import update_remote_detection
     mocker.patch.object(demisto, 'params', return_value={'close_in_cs_falcon': close_in_cs_falcon})
     mock_update_detection_request = mocker.patch('CrowdStrikeFalcon.update_detection_request')
-    update_remote_detection(delta, inc_status, remote_detection_id)
+    update_remote_detection(delta, inc_status, input_data.remote_detection_id)
     if detection_request_status:
         assert mock_update_detection_request.call_args[0][1] == detection_request_status
     else:
         assert mock_update_detection_request.call_count == 0
 
 
-incident_closed_in_xsoar = ({'closeReason': 'Other'}, IncidentStatus.DONE, True, 'Closed')
-incident_status_closed = ({'status': 'Closed'}, IncidentStatus.ACTIVE, False, 'Closed')
-incident_update_status_true_close_remote = ({'status': 'New'}, IncidentStatus.ACTIVE, True, 'New')
-incident_update_status_false_close_remote = ({'status': 'In Progress'}, IncidentStatus.ACTIVE, False, 'In Progress')
-incident_update_by_status_dont_close = ({'status': 'New'}, IncidentStatus.DONE, False, 'New')
-incident_didnt_change = ({}, IncidentStatus.ACTIVE, False, '')
+def test_update_remote_incident(mocker):
+    from CrowdStrikeFalcon import update_remote_incident
+    mock_update_tags = mocker.patch('CrowdStrikeFalcon.update_remote_incident_tags')
+    mock_update_status = mocker.patch('CrowdStrikeFalcon.update_remote_incident_status')
+    update_remote_incident({}, IncidentStatus.ACTIVE, input_data.remote_incident_id)
+    assert mock_update_tags.called
+    assert mock_update_status.called
 
 
 @pytest.mark.parametrize('delta, inc_status, close_in_cs_falcon, resolve_incident_status',
-                         [incident_closed_in_xsoar, incident_status_closed, incident_update_status_true_close_remote,
-                          incident_update_status_false_close_remote, incident_update_by_status_dont_close, incident_didnt_change])
+                         input_data.update_remote_incident_status_args)
 def test_update_remote_incident_status(mocker, delta, inc_status, close_in_cs_falcon, resolve_incident_status):
     from CrowdStrikeFalcon import update_remote_incident_status
     mocker.patch.object(demisto, 'params', return_value={'close_in_cs_falcon': close_in_cs_falcon})
     mock_resolve_incident = mocker.patch('CrowdStrikeFalcon.resolve_incident')
-    update_remote_incident_status(delta, inc_status, remote_incident_id)
+    update_remote_incident_status(delta, inc_status, input_data.remote_incident_id)
     if resolve_incident_status:
         assert mock_resolve_incident.call_args[0][1] == resolve_incident_status
     else:
@@ -3916,7 +3816,7 @@ def test_update_remote_incident_tags(mocker):
     from CrowdStrikeFalcon import update_remote_incident_tags
     mocker.patch('CrowdStrikeFalcon.get_previous_tags', return_value={'tag_stays', 'old_tag'})
     mock_remote_incident_handle_tags = mocker.patch('CrowdStrikeFalcon.remote_incident_handle_tags')
-    update_remote_incident_tags({'tag': ['new_tag', 'tag_stays']}, remote_incident_id)
+    update_remote_incident_tags({'tag': ['new_tag', 'tag_stays']}, input_data.remote_incident_id)
     assert mock_remote_incident_handle_tags.call_args_list[0].args[0] == {'old_tag'}
     assert mock_remote_incident_handle_tags.call_args_list[0].args[1] == 'delete_tag'
     assert mock_remote_incident_handle_tags.call_args_list[1].args[0] == {'new_tag'}
@@ -3927,26 +3827,18 @@ def test_get_previous_tags(mocker):
     from CrowdStrikeFalcon import get_previous_tags
     incident_response = {'meta': {'query_time': 0.013811475, 'powered_by': 'incident-api',
                                   'trace_id': '7fce39d4-d695-4aac-bdcf-2d9138bea57c'},
-                         'resources': [response_incident],
+                         'resources': [input_data.response_incident],
                          'errors': []}
     mock_get_incidents_entities = mocker.patch('CrowdStrikeFalcon.get_incidents_entities', return_value=incident_response)
-    assert get_previous_tags(remote_incident_id) == set(response_incident["tags"])
-    assert mock_get_incidents_entities.call_args[0][0] == [remote_incident_id]
+    assert get_previous_tags(input_data.remote_incident_id) == set(input_data.response_incident["tags"])
+    assert mock_get_incidents_entities.call_args[0][0] == [input_data.remote_incident_id]
 
 
-no_tags = (set(), 'add_tag')
-one_tag_add = ({'tag1'}, 'add_tag')
-one_tag_delete = ({'Tag2'}, 'delete_tag')
-add_tags = ({'Objective/Keep Access', 'Detected', 'ignored'}, 'add_tag')
-delete_tags = ({'Objective/Keep Access', 'detected', 'Ignored'}, 'delete_tag')
-
-
-@pytest.mark.parametrize('tags, action_name',
-                         [no_tags, one_tag_add, one_tag_delete, add_tags, delete_tags])
+@pytest.mark.parametrize('tags, action_name', input_data.remote_incident_handle_tags_args)
 def test_remote_incident_handle_tags(mocker, tags, action_name):
     from CrowdStrikeFalcon import remote_incident_handle_tags
     mock_update_incident_request = mocker.patch('CrowdStrikeFalcon.update_incident_request')
-    remote_incident_handle_tags(tags, action_name, remote_incident_id)
+    remote_incident_handle_tags(tags, action_name, input_data.remote_incident_id)
     assert mock_update_incident_request.call_count == len(tags)
     if len(tags):
         assert mock_update_incident_request.call_args[0][2] == action_name
@@ -3954,4 +3846,8 @@ def test_remote_incident_handle_tags(mocker, tags, action_name):
 
 def test_get_mapping_fields_command():
     from CrowdStrikeFalcon import get_mapping_fields_command
-    pass
+    result = get_mapping_fields_command()
+    assert result.scheme_types_mappings[0].type_name == 'CrowdStrike Falcon Incident'
+    assert result.scheme_types_mappings[0].fields.keys() == {'status', 'tag'}
+    assert result.scheme_types_mappings[1].type_name == 'CrowdStrike Falcon Detection'
+    assert result.scheme_types_mappings[1].fields.keys() == {'status'}
