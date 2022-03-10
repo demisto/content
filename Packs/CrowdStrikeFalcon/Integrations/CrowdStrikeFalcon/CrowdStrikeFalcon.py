@@ -1695,7 +1695,7 @@ def get_remote_data_command(args: Dict[str, Any]):
         return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
 
 
-def find_incident_type(remote_incident_id: str):
+def find_incident_type(remote_incident_id: str) -> IncidentType:
     if remote_incident_id[0:3] == IncidentType.INCIDENT.value:
         return IncidentType.INCIDENT
     if remote_incident_id[0:3] == IncidentType.DETECTION.value:
@@ -1735,7 +1735,7 @@ def get_remote_detection_data(remote_incident_id: str):
     return mirrored_data, updated_object
 
 
-def set_xsoar_incident_entries(updated_object, entries, remote_incident_id):
+def set_xsoar_incident_entries(updated_object: Dict[str, Any], entries: List, remote_incident_id: str):
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'Closed':
             close_in_xsoar(entries, remote_incident_id, 'Incident')
@@ -1743,15 +1743,15 @@ def set_xsoar_incident_entries(updated_object, entries, remote_incident_id):
             reopen_in_xsoar(entries, remote_incident_id, 'Incident')
 
 
-def set_xsoar_detection_entries(updated_object, entries, remote_incident_id):
+def set_xsoar_detection_entries(updated_object: Dict[str, Any], entries: List, remote_detection_id: str):
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
-            close_in_xsoar(entries, remote_incident_id, 'Detection')
+            close_in_xsoar(entries, remote_detection_id, 'Detection')
         elif updated_object.get('status') in (set(DETECTION_STATUS) - {'closed'}):
-            reopen_in_xsoar(entries, remote_incident_id, 'Detection')
+            reopen_in_xsoar(entries, remote_detection_id, 'Detection')
 
 
-def close_in_xsoar(entries, remote_incident_id, incident_type_name: str):
+def close_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: str):
     demisto.debug(f'{incident_type_name} is closed: {remote_incident_id}')
     entries.append({
         'Type': EntryType.NOTE,
@@ -1763,7 +1763,7 @@ def close_in_xsoar(entries, remote_incident_id, incident_type_name: str):
     })
 
 
-def reopen_in_xsoar(entries, remote_incident_id, incident_type_name: str):
+def reopen_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: str):
     demisto.debug(f'{incident_type_name} is reopened: {remote_incident_id}')
     entries.append({
         'Type': EntryType.NOTE,
@@ -1774,7 +1774,7 @@ def reopen_in_xsoar(entries, remote_incident_id, incident_type_name: str):
     })
 
 
-def set_updated_object(updated_object: Dict[str, Any], mirrored_data, mirroring_fields):
+def set_updated_object(updated_object: Dict[str, Any], mirrored_data: Dict[str, Any], mirroring_fields: List[str]):
     """
     Sets the updated object (in place) for the incident or detection we want to mirror in, from the mirrored data, according to
     the mirroring fields. In the mirrored data, the mirroring fields might be nested in a dict or in a dict inside a list (if so,
@@ -1880,7 +1880,7 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
     return incident_id
 
 
-def close_in_cs_falcon(delta):
+def close_in_cs_falcon(delta: Dict[str, Any]) -> bool:
     """
     Closing in the remote system should happen only when both:
         1. The user asked for it
@@ -1893,27 +1893,27 @@ def close_in_cs_falcon(delta):
     return demisto.params().get('close_in_cs_falcon') and any(field in delta for field in closing_fields)
 
 
-def update_remote_detection(delta, inc_status, incident_id) -> str:
+def update_remote_detection(delta: Dict[str, Any], inc_status: IncidentStatus, detection_id: str) -> str:
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
-        demisto.debug(f'Closing detection with remote ID {incident_id} in remote system.')
-        return str(update_detection_request([incident_id], 'closed'))
+        demisto.debug(f'Closing detection with remote ID {detection_id} in remote system.')
+        return str(update_detection_request([detection_id], 'closed'))
 
     # status field in CS Falcon is mapped to State field in XSOAR
     elif 'status' in delta:
-        demisto.debug(f'Detection with remote ID {incident_id} status will change to "{delta.get("status")}" in remote system.')
-        return str(update_detection_request([incident_id], delta.get('status')))
+        demisto.debug(f'Detection with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
+        return str(update_detection_request([detection_id], delta.get('status')))
 
     return ''
 
 
-def update_remote_incident(delta, inc_status, incident_id):
+def update_remote_incident(delta: Dict[str, Any], inc_status: IncidentStatus, incident_id: str) -> str:
     result = ''
     result += update_remote_incident_tags(delta, incident_id)
     result += update_remote_incident_status(delta, inc_status, incident_id)
     return result
 
 
-def update_remote_incident_status(delta, inc_status, incident_id) -> str:
+def update_remote_incident_status(delta: Dict[str, Any], inc_status: IncidentStatus, incident_id: str) -> str:
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
         return str(resolve_incident([incident_id], 'Closed'))
@@ -1926,7 +1926,7 @@ def update_remote_incident_status(delta, inc_status, incident_id) -> str:
     return ''
 
 
-def update_remote_incident_tags(delta, incident_id) -> str:
+def update_remote_incident_tags(delta: Dict[str, Any], incident_id: str) -> str:
     result = ''
     if 'tag' in delta:
         current_tags = set(delta.get('tag'))
@@ -1939,12 +1939,12 @@ def update_remote_incident_tags(delta, incident_id) -> str:
     return result
 
 
-def get_previous_tags(remote_incident_id):
+def get_previous_tags(remote_incident_id: str):
     incidents_entities = get_incidents_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     return set(incidents_entities[0].get('tags', ''))
 
 
-def remote_incident_handle_tags(tags, request, incident_id) -> str:
+def remote_incident_handle_tags(tags: Set, request: str, incident_id: str) -> str:
     result = ''
     for tag in tags:
         demisto.debug(f'{request} will be requested for incident with remote ID {incident_id} and tag "{tag}" in remote system.')

@@ -3737,10 +3737,10 @@ def test_get_remote_data_command(mocker, remote_id, close_incident, incident_sta
     from CrowdStrikeFalcon import get_remote_data_command
     incident_entity = input_data.response_incident.copy()
     incident_entity['status'] = incident_status
-    mocker.patch(f'CrowdStrikeFalcon.get_incidents_entities', return_value={'resources': [incident_entity]})
+    mocker.patch('CrowdStrikeFalcon.get_incidents_entities', return_value={'resources': [incident_entity]})
     detection_entity = input_data.response_detection.copy()
     detection_entity['status'] = detection_status
-    mocker.patch(f'CrowdStrikeFalcon.get_detections_entities', return_value={'resources': [detection_entity]})
+    mocker.patch('CrowdStrikeFalcon.get_detections_entities', return_value={'resources': [detection_entity]})
     mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
 
     result = get_remote_data_command({'id': remote_id, 'lastUpdate': '2022-03-08T08:17:09Z'})
@@ -3758,7 +3758,7 @@ def test_find_incident_type():
 def test_get_remote_incident_data(mocker):
     from CrowdStrikeFalcon import get_remote_incident_data
     incident_entity = input_data.response_incident.copy()
-    mocker.patch(f'CrowdStrikeFalcon.get_incidents_entities', return_value={'resources': [incident_entity.copy()]})
+    mocker.patch('CrowdStrikeFalcon.get_incidents_entities', return_value={'resources': [incident_entity.copy()]})
     mirrored_data, updated_object = get_remote_incident_data(input_data.remote_incident_id)
     incident_entity['status'] = 'New'
     assert mirrored_data == incident_entity
@@ -3769,7 +3769,7 @@ def test_get_remote_incident_data(mocker):
 def test_get_remote_detection_data(mocker):
     from CrowdStrikeFalcon import get_remote_detection_data
     detection_entity = input_data.response_detection.copy()
-    mocker.patch(f'CrowdStrikeFalcon.get_detections_entities', return_value={'resources': [detection_entity.copy()]})
+    mocker.patch('CrowdStrikeFalcon.get_detections_entities', return_value={'resources': [detection_entity.copy()]})
     mirrored_data, updated_object = get_remote_detection_data(input_data.remote_detection_id)
     detection_entity['severity'] = 2
     assert mirrored_data == detection_entity
@@ -3856,7 +3856,7 @@ def test_update_detection_request_bad(status):
 def test_update_remote_system_command(mocker, args, to_mock, call_args, remote_id, prev_tags, close_in_cs_falcon_param):
     from CrowdStrikeFalcon import update_remote_system_command
     mock_call = mocker.patch(f'CrowdStrikeFalcon.{to_mock}')
-    mocker.patch(f'CrowdStrikeFalcon.get_previous_tags', return_value=prev_tags)
+    mocker.patch('CrowdStrikeFalcon.get_previous_tags', return_value=prev_tags)
     mocker.patch.object(demisto, 'params', return_value={'close_in_cs_falcon': close_in_cs_falcon_param})
     command_result = update_remote_system_command(args)
     assert command_result == remote_id
