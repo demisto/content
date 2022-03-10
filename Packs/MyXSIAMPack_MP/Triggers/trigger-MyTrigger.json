@@ -3,6 +3,7 @@
   "PLAYBOOK_ID": "<ID_OF_PLAYBOOK-ALPHNUMERIC-STRING-1>",
   "SUGGESTION_REASON": "it is a good playbook for these alerts",
   "DESCRIPTION": "trigger description",
+  "RULE_NAME": "The is a rule name",
   "ALERTS_FILTER": {
     "filter": {
       "AND": [

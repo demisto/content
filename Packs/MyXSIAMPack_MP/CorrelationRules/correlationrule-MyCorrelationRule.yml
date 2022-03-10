@@ -3,8 +3,8 @@ alert_description: host $agent_id reached $dest_count destinations
 alert_fields:
   { 'hash': 'the_hash_field_in_my_query' }
 crontab: mandatory when execution mode is SCHEDULED. the cron schedule for this query
+description: My correlation description
 dataset: alerts
-description: My descirption
 drilldown_query_timeframe: QUERY
 execution_mode: SCHEDULED
 investigation_query_link: dataset = xdr_data | filter agent_id=$the_agent_id_field_in_the_result

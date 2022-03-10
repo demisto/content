@@ -1,19 +1,151 @@
 {
-    "name": "pack_name",
-    "description": "some description",
-    "support": "xsiam",
-    "currentVersion": "1.0.0",
-    "author": "Cortex XSIAM",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "categories": [
-        "Analytics & SIEM"
+  "name": "My XSIAM Pack",
+  "description": "some description",
+  "support": "xsoar",
+  "currentVersion": "1.0.0",
+  "author": "Cortex XSIAM",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "categories": [
+    "Analytics & SIEM"
+  ],
+  "tags": [],
+  "marketplaces": [
+    "marketplacev2"
+  ],
+  "contentItems": {
+    "automation": [],
+    "playbook": [],
+    "integration": [
+      {
+        "name": "APIVoid",
+        "description": "APIVoid wraps up a number of services such as ipvoid & urlvoid",
+        "category": "Data Enrichment & Threat Intelligence",
+        "commands": [
+          {
+            "name": "apivoid-ip",
+            "description": "Returns the reputation and extended context of the IP."
+          },
+          {
+            "name": "apivoid-domain",
+            "description": "Returns the reputation of the domain."
+          },
+          {
+            "name": "apivoid-url",
+            "description": "Returns the reputation of the URL."
+          },
+          {
+            "name": "ip",
+            "description": "Returns the reputation of the IP."
+          },
+          {
+            "name": "domain",
+            "description": "Returns the reputation of the domain."
+          },
+          {
+            "name": "url",
+            "description": "Returns the reputation of the URL."
+          },
+          {
+            "name": "apivoid-dns-lookup",
+            "description": "Gets DNS records of a host."
+          },
+          {
+            "name": "apivoid-ssl-info",
+            "description": "Get useful SSL information from a remote host"
+          },
+          {
+            "name": "apivoid-email-verify",
+            "description": "Checks if an email address is disposable, if it has MX records, and more."
+          },
+          {
+            "name": "apivoid-threatlog",
+            "description": "Check if a website is present on ThreatLog database"
+          },
+          {
+            "name": "apivoid-parked-domain",
+            "description": "Detect if a domain (i.e google.com) is actually parked"
+          },
+          {
+            "name": "apivoid-domain-age",
+            "description": "Get the registration date of a domain and the domain age in days"
+          },
+          {
+            "name": "apivoid-url-to-image",
+            "description": "Capture a high-quality screenshot of any website or URL"
+          },
+          {
+            "name": "apivoid-url-to-pdf",
+            "description": "Convert an URL info high-quality and printable PDF document"
+          },
+          {
+            "name": "apivoid-url-to-html",
+            "description": "Get the body of an html page after javascript has been executed"
+          },
+          {
+            "name": "apivoid-site-trustworthiness",
+            "description": "A smart API that accurately checks a website's trustworthiness."
+          }
+        ]
+      }
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "dependencies": {},
-    "marketplaces": [
-        "marketplacev2"
+    "incidentfield": [],
+    "incidenttype": [],
+    "dashboard": [],
+    "indicatorfield": [],
+    "report": [],
+    "reputation": [],
+    "layoutscontainer": [],
+    "pre-process-rule": [],
+    "job": [],
+    "classifier": [],
+    "widget": [],
+    "genericfield": [],
+    "generictype": [],
+    "genericmodule": [],
+    "genericdefinition": [],
+    "list": [],
+    "correlationrule": [
+      {
+        "name": "My rule name",
+        "description": "My correlation description",
+        "category": "Data Enrichment & Threat Intelligence"
+      }
+    ],
+    "modelingrule": [
+      {
+      }
+    ],
+    "parsingrule": [
+    ],
+    "trigger": [
+      {
+        "name": "The is a ruule name",
+        "description": "trigger description"
+      }
+    ],
+    "xsiamreport": [
+      {
+        "name": "MyReport",
+        "description": "description"
+      },
+      {
+        "name": "MyReport2",
+        "description": "description"
+      }
+    ],
+    "xsiamdashboard": [
+      {
+        "name": "MyDash",
+        "description": "description"
+      },
+      {
+        "name": "MyDash2",
+        "description": "description"
+      }
     ]
+  },
+  "useCases": [],
+  "keywords": [],
+  "dependencies": {}
 }
