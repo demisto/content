@@ -28,7 +28,7 @@ function setLock(guid, info, version) {
         if (!integrationContext[lockName]) {
             integrationContext[lockName] = {};
         }
-        return integrationContext[lockName];
+        return [integrationContext[lockName], null];
     }
 }
 var lockName = args.name || 'Default';
@@ -77,7 +77,13 @@ switch (command) {
         break;
 
     case 'demisto-lock-release':
-        mergeVersionedIntegrationContext({newContext : {[lockName] : {}}, retries : 5});
+        if(sync)   {
+            mergeVersionedIntegrationContext({newContext : {[lockName] : 'remove'}, retries : 5});
+        } else {
+            integrationContext = getVersionedIntegrationContext(sync);
+            delete integrationContext[lockName];
+            setVersionedIntegrationContext(integrationContext, sync);
+        }
 
         var md = '### Demisto Locking Mechanism\n';
         md += 'Lock released successfully';

@@ -2050,12 +2050,20 @@ function mergeVersionedIntegrationContext({newContext, retries = 0,version, obje
 */
 function mergeContexts(newContext, existingContext, objectKeys = {}) {
     for (var key in newContext) {
-        existingContext[key] = existingContext[key] && objectKeys[key] ?
-            mergeContextLists(newContext[key], existingContext[key], objectKeys[key])
-            : existingContext[key] = newContext[key];
+        if('remove' === newContext[key]){
+            delete existingContext[key]
+        }
+        else if(existingContext[key] && objectKeys[key]){
+            existingContext[key] = mergeContextLists(newContext[key], existingContext[key], objectKeys[key]);
+        }
+        else{
+            existingContext[key] = newContext[key];
+        }
     }
 }
 function mergeContextLists(newItems, oldItems, objectKey) {
+    //if have a list like {a : b, c : d}, {a:z, b : y} and the key is b
+    //should get the following { 'd': {a : b, c : d} , y : {a:z, b : y}
     let toMapByKey = (prev, curr) => {
         prev[curr[objectKey]] = curr;
         return prev;
