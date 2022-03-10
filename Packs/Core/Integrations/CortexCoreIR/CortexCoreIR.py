@@ -3118,14 +3118,14 @@ def main():
             "Content-Type": "application/json"
         }
         url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
-        LOG.add_replace_strs(demisto.getLicenseCustomField("Core.ApiKey"))
+        add_sensitive_log_strs(demisto.getLicenseCustomField("Core.ApiKey"))
     else:
         headers = {
             "Content-Type": "application/json",
             "x-xdr-auth-id": str(api_key_id),
             "Authorization": api_key
         }
-        LOG.add_replace_strs(api_key)
+        add_sensitive_log_strs(api_key)
 
     base_url = urljoin(url, '/public_api/v1')
     proxy = demisto.params().get('proxy')
