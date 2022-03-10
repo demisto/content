@@ -197,20 +197,20 @@ def test_bang_commands(mocker, indicators_type, values):
 DBOT_SCORE_UNKNOWN = [
 
     (
-        {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': 'file',
+        {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': 'hash',
          'integration_name': 'test', 'message': 'Not found'},
         {'indicator': 'd26cec10398f2b10202d23c966022dce', 'indicator_type': 'file', 'message': 'Not found',
          'sha1': None, 'sha256': None, 'md5': 'd26cec10398f2b10202d23c966022dce'}
     ),
     (
-        {'indicator': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12', 'indicator_type': 'file',
+        {'indicator': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12', 'indicator_type': 'hash',
          'integration_name': 'test', 'message': 'Not found'},
         {'indicator': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12', 'indicator_type': 'file',
          'message': 'Not found', 'sha1': None,
          'sha256': 'f4dad67d0f0a8e53d87fc9506e81b76e043294da77ae50ce4e8f0482127e7c12', 'md5': None}
     ),
     (
-        {'indicator': 'cf23df2207d99a74fbe169e3eba035e633b65d94', 'indicator_type': 'file',
+        {'indicator': 'cf23df2207d99a74fbe169e3eba035e633b65d94', 'indicator_type': 'hash',
          'integration_name': 'test', 'message': 'Not found'},
         {'indicator': 'cf23df2207d99a74fbe169e3eba035e633b65d94', 'indicator_type': 'file',
          'message': 'Not found', 'sha1': 'cf23df2207d99a74fbe169e3eba035e633b65d94', 'sha256': None, 'md5': None}
