@@ -5,11 +5,12 @@ playbook
 firewalls
 IOCs
 Emails
+centric
 IncidentsPerFeed
 McAfee
 Endpoints
 IOC
-Deprecated
+deprecated
 EPOFindSystem
 boolean
 xdr
@@ -61,6 +62,7 @@ NetwitnessQuery
 Deprecated
 SQS
 ACM
+SQL
 unicode
 CloudWatchLogs
 GuardDuty
@@ -94,5 +96,13 @@ TAXII
 Syslog
 DomainTools
 replyTo
+HX
+hostSetName
+fieldSearchName
+fieldSearchOperator
+fieldSearchValue
+Classifiers
 SentinelOne
 URLs
+hostname
+EDR

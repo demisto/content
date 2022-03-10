@@ -1728,6 +1728,30 @@ def test_list_host_files(requests_mock, mocker):
     assert results['EntryContext'] == expected_results
 
 
+def test_list_host_files_with_given_session_id(mocker):
+    """
+    Given:
+        - session_id to use when getting host files
+    When:
+        - run list_host_files command
+    Then:
+        - validate the givven session_id was used
+    """
+    # prepare
+    import CrowdStrikeFalcon
+    mocker.patch.object(demisto, 'args', return_value={
+        'host_id': 'test_host_id',
+        'session_id': 'test_session_id'
+    })
+    mocker.patch.object(CrowdStrikeFalcon, 'list_host_files', return_value={})
+
+    # call
+    CrowdStrikeFalcon.list_host_files_command()
+
+    # assert
+    CrowdStrikeFalcon.list_host_files.assert_called_with('test_host_id', 'test_session_id')
+
+
 def test_refresh_session(requests_mock, mocker):
     from CrowdStrikeFalcon import refresh_session_command
 
@@ -2375,14 +2399,18 @@ test_data = get_fetch_data()
 test_data2 = get_fetch_data2()
 
 
-def test_get_indicator_device_id(requests_mock):
+def test_get_indicator_device_id(mocker, requests_mock):
     from CrowdStrikeFalcon import get_indicator_device_id
     requests_mock.get("https://4.4.4.4/indicators/queries/devices/v1",
                       json=test_data['response_for_get_indicator_device_id'])
+    mocker.patch.object(demisto, 'args', return_value={'type': 'sha256', 'value': 'example_sha'})
     res = get_indicator_device_id()
-    assert res.outputs == test_data['context_output_for_get_indicator_device_id']
-    assert res.outputs_prefix == 'CrowdStrike.DeviceID'
-    assert res.outputs_key_field == 'DeviceID'
+
+    # Expecting both DeviceIOC and DeviceID outputs for BC.
+    assert set(res.outputs.keys()) - {'DeviceIOC', 'DeviceID'} == set()
+    assert res.outputs['DeviceIOC']['Type'] == 'sha256'
+    assert res.outputs['DeviceIOC']['Value'] == 'example_sha'
+    assert res.outputs['DeviceIOC']['DeviceID'] == res.outputs['DeviceID']
 
 
 def test_validate_response():
@@ -3675,3 +3703,73 @@ def test_rtr_read_registry_keys_command(mocker):
     parsed_result = rtr_read_registry_keys_command(args)
     assert len(parsed_result) == 2
     assert "reg-1key" in parsed_result[0].readable_output
+
+
+detections = {'resources': [
+    {'behavior_id': 'example_behavior_1',
+     'detection_ids': ['example_detection'],
+     'incident_id': 'example_incident_id',
+     'some_field': 'some_example',
+     },
+    {'behavior_id': 'example_behavior_2',
+     'detection_ids': ['example_detection2'],
+     'incident_id': 'example_incident_id',
+     'some_field': 'some_example2',
+     }
+]}
+
+DETECTION_FOR_INCIDENT_CASES = [
+    (
+        detections,
+        ['a', 'b'],
+        [
+            {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_1',
+             'detection_ids': ['example_detection']},
+            {'incident_id': 'example_incident_id', 'behavior_id': 'example_behavior_2',
+             'detection_ids': ['example_detection2']}],
+        [
+            {'behavior_id': 'example_behavior_1',
+             'detection_ids': ['example_detection'],
+             'incident_id': 'example_incident_id',
+             'some_field': 'some_example'},
+            {'behavior_id': 'example_behavior_2',
+             'detection_ids': ['example_detection2'],
+             'incident_id': 'example_incident_id',
+             'some_field': 'some_example2'}
+        ],
+        'CrowdStrike.IncidentDetection',
+        'incident_id',
+        '### Detection For Incident\n|behavior_id|detection_ids|incident_id|\n|---|---|---|'
+        '\n| example_behavior_1 | example_detection | example_incident_id |\n'
+        '| example_behavior_2 | example_detection2 | example_incident_id |\n'),
+    ({'resources': []}, [], None, None, None, None, 'Could not find behaviors for incident zz')
+]
+
+
+@pytest.mark.parametrize(
+    'detections, resources, expected_outputs, expected_raw, expected_prefix, expected_key, expected_md',
+    DETECTION_FOR_INCIDENT_CASES)
+def test_get_detection_for_incident_command(mocker, detections, resources, expected_outputs, expected_raw,
+                                            expected_prefix,
+                                            expected_key, expected_md):
+    """
+    Given: An incident ID
+    When: When running cs-falcon-get-detections-for-incident command
+    Then: validates the created command result contains the correct data (whether found or not).
+    """
+
+    from CrowdStrikeFalcon import get_detection_for_incident_command
+
+    mocker.patch('CrowdStrikeFalcon.get_behaviors_by_incident',
+                 return_value={'resources': resources, 'meta': {'pagination': {'total': len(resources)}}})
+
+    mocker.patch('CrowdStrikeFalcon.get_detections_by_behaviors',
+                 return_value=detections)
+
+    res = get_detection_for_incident_command(incident_id='zz')
+
+    assert res.outputs == expected_outputs
+    assert res.outputs_key_field == expected_key
+    assert res.raw_response == expected_raw
+    assert res.readable_output == expected_md
+    assert res.outputs_prefix == expected_prefix
