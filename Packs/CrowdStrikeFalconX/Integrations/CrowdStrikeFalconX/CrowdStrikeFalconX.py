@@ -545,36 +545,41 @@ def parse_file_results(report_to_results: dict[str, RawCommandResults]) -> list[
     return command_results
 
 
-def find_suitable_hash_output(results: tuple[RawCommandResults]) -> dict[str, dict]:
+def find_suitable_hash_output(raw_results: tuple[RawCommandResults]) -> dict[str, dict]:
+    """
+    Aggregates data fields from various outputs, to create a single output per SHA256.
+    :param raw_results: result that may include multiple outputs for the same SHA256 value.
+    :return: mapping of SHA256 -> output
+    """
     max_outputs: dict[str, dict] = {}
 
-    for result in filter(None, results):  # filters out None results
-        if not result.output:  # no output to compare
-            continue
-        if (sha256 := result.output.get('sha256')) is None:  # must have SHA256 to compare
-            continue
+    for result in filter(None, raw_results):  # filters out None results
+        if not (output := result.output):
+            continue  # no output to compare
+        if not (sha256 := output.get('sha256')):
+            continue  # must have SHA256 to compare
 
-        output = result.output
-        temp_max = max_outputs.get(sha256)
-
-        if not temp_max:  # current is first in the dict with this SHA256
+        if not (temp_max := max_outputs.get(sha256)):
+            # current result is first one with this SHA256
             max_outputs[sha256] = output
             continue
 
-        if temp_max == output:  # no need to change anything
+        if temp_max == output:
+            # nothing to update, a dupe value
             continue
 
-        # comparing temp_max and output
         new_max = {
             'sha256': sha256,
-            'file_size': temp_max.get('file_size') or output.get('file_size')  # sometimes missing
+            'file_size': temp_max.get('file_size') or output.get('file_size')  # one may be missing
         }
-        # take the one that's more severe. if both are missing, threat_score is omitted from the result.
-        if (threat_score := max(temp_max.get('threat_score', -1), output.get('threat_score', -1))) != -1:
+        # take the one that's more severe. If both are missing, threat_score is omitted from the result.
+        threat_score = max(temp_max.get('threat_score', -1),
+                           output.get('threat_score', -1))
+        if threat_score != -1:
             new_max['threat_score'] = threat_score
 
         if 'verdict' in temp_max or 'verdict' in output:
-            # take the one that's more severe.
+            # take the one whose DBotScore equivalent of the verdict is more severe.
             new_max['verdict'] = max(temp_max.get('verdict'), output.get('verdict'),
                                      key=lambda value: DBOT_SCORE_DICT.get(value, Common.DBotScore.NONE))
 
@@ -942,6 +947,7 @@ def get_full_report_command(
 
 def find_suitable_hash_indicator(results: tuple[RawCommandResults]) -> dict[str, Common.File]:
     """
+    Returns the indicator with the highest dbot_score for every hash.
     :param results: raw results from a command
     :return: dict mapping a SHA256 to the indicator with the highest DBotScore
     """
