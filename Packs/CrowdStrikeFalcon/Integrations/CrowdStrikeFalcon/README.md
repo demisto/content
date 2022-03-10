@@ -3892,3 +3892,54 @@ Gets the RTR extracted file contents for the specified file path.
 #### Human Readable Output
 
 > Waiting for the polling execution
+
+### cs-falcon-get-detections-for-incident
+***
+Gets the detections for a specific incident.
+
+
+#### Base Command
+
+`cs-falcon-get-detections-for-incident`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident's id to get detections for. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IncidentDetection.incident_id | String | The incident id. | 
+| CrowdStrike.IncidentDetection.behavior_id | String | The behavior id connected to the incident. | 
+| CrowdStrike.IncidentDetection.detection_ids | String | A list of detection ids connected to the incident. | 
+
+#### Command example
+```!cs-falcon-get-detections-for-incident incident_id=`inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593````
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "IncidentDetection": {
+            "behavior_id": "ind:0bde2c4645294245aca522971ccc44c4:162589633341-10303-6705920",
+            "detection_ids": [
+                "ldt:0bde2c4645294245aca522971ccc44c4:38655034604"
+            ],
+            "incident_id": "inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Detection For Incident
+>|behavior_id|detection_ids|incident_id|
+>|---|---|---|
+>| ind:0bde2c4645294245aca522971ccc44c4:162590282130-10303-6707968 | ldt:0bde2c4645294245aca522971ccc44c4:38656254663 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
+>| ind:0bde2c4645294245aca522971ccc44c4:162596456872-10303-6710016 | ldt:0bde2c4645294245aca522971ccc44c4:38657629548 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
+>| ind:0bde2c4645294245aca522971ccc44c4:162597577534-10305-6712576 | ldt:0bde2c4645294245aca522971ccc44c4:38658614774 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
+>| ind:0bde2c4645294245aca522971ccc44c4:162589633341-10303-6705920 | ldt:0bde2c4645294245aca522971ccc44c4:38655034604 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
+
