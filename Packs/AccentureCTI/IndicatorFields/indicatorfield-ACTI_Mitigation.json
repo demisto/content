@@ -18,7 +18,11 @@
     "group": 2,
     "hidden": false,
     "openEnded": false,
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "ACTI Intelligence Alert",
+        "ACTI Intelligence Report"
+    ],
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
