@@ -34,7 +34,9 @@ def get_redirect_url_proof_point_v2(non_formatted_url: str, parse_results: Parse
     Returns:
         (str): Redirected URL from Proof Point.
     """
+    demisto.debug(f"get_redirect_url_proof_point_v2 start on {non_formatted_url}")
     url_: str = get_redirect_url_from_query(non_formatted_url, parse_results, 'u')
+    demisto.debug(f"get_redirect_url_proof_point_v2 after redirect is {url_}")
     trans = str.maketrans('-_', '%/')
     url_ = url_.translate(trans)
     return url_
@@ -49,8 +51,10 @@ def get_redirect_url_proof_point_v3(non_formatted_url: str) -> str:
     Returns:
         (str): Redirected URL from Proof Point.
     """
+    demisto.debug(f"get_redirect_url_proof_point_v3 start on {non_formatted_url}")
     url_regex = re.compile(r'v3/__(?P<url>.+?)__;(?P<enc_bytes>.*?)!')
     if match := url_regex.search(non_formatted_url):
+        demisto.debug(f"{non_formatted_url} matches regex")
         non_formatted_url = match.group('url')
     else:
         demisto.error(f'Could not parse Proof Point redirected URL. Returning original URL: {non_formatted_url}')
@@ -67,7 +71,9 @@ def get_redirect_url_from_query(non_formatted_url: str, parse_results: ParseResu
     Returns:
         (str): The URL the ATP Safe Link points to.
     """
+    demisto.debug(f"get_redirect_url_from_query start on {non_formatted_url}, {parse_results} and {redirect_param_name}")
     query_params_dict: Dict[str, List[str]] = parse_qs(parse_results.query)
+    demisto.debug(f"get_redirect_url_from_query - query params: {query_params_dict}")
     if not (query_urls := query_params_dict.get(redirect_param_name, [])):
         demisto.error(f'Could not find redirected URL. Returning the original URL: {non_formatted_url}')
         return non_formatted_url
@@ -87,6 +93,7 @@ def replace_protocol(url_: str) -> str:
     Returns:
         (str): URL with replaced protocol, if needed to replace, else the URL itself.
     """
+    demisto.debug(f"url before protocol change: {url_}")
     for prefix_to_normalize in PREFIX_TO_NORMALIZE:
         if url_.startswith(prefix_to_normalize):
             url_ = url_.replace(prefix_to_normalize, HTTP)
@@ -115,16 +122,20 @@ def search_for_redirect_url_in_first_query_parameter(parse_results: ParseResult)
     Returns:
         (Optional[str]): Redirected URL if satisfies above condition, None otherwise.
     """
+    demisto.debug(f"search_for_redirect_url_in_first_query_parameter start for {parse_results}")
     if not parse_results.query:
+        demisto.debug(f"search_for_redirect_url_in_first_query_parameter parse results query is empty")
         return None
     # parse_results.query has a structure of <param1>=<param1-value>&<param2>=<param2-value>...
     # if there are no query params, then parse_results.query is ''.
     query_parameters: List[str] = parse_results.query.split('&')
+    demisto.debug(f"Query parameters received by search_for_redirect_url_in_first_query_parameter {query_parameters}")
     # Having at least one query parameter means that the len is at least 2, because first cell is empty given above
     # mentioned structure of <param1>=<param1-value>&<param2>=<param2-value>...
     if query_parameters:
         # First query parameter is of structure <param1>=<param1-value>
         first_query_parameter: List[str] = query_parameters[0].split('=')
+        demisto.debug(f"first parameter: {first_query_parameter}")
         # Validation of unexpected split behaviour
         if not len(first_query_parameter) == 2:
             demisto.debug(
@@ -134,6 +145,7 @@ def search_for_redirect_url_in_first_query_parameter(parse_results: ParseResult)
         first_query_parameter_value: str = first_query_parameter[1]
         # Redirect URL according to the given assumption
         if first_query_parameter_value.startswith('http'):
+            demisto.debug(f"return first parameter value: {first_query_parameter_value}")
             return first_query_parameter_value
     return None
 
@@ -153,27 +165,41 @@ def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
         parse_results: ParseResult = urlparse(non_formatted_url)
         additional_redirect_url: Optional[str] = None
         if re.match(ATP_REGEX, non_formatted_url):
+            demisto.debug(f"URL matches ATP_REGEX: {ATP_REGEX}")
             non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'url')
         elif re.match(FIREEYE_REGEX, non_formatted_url):
+            demisto.debug(f"URL matches FIREEYE_REGEX: {FIREEYE_REGEX}")
             if '&amp;' in non_formatted_url:
+                demisto.debug(f"&amp in url: {FIREEYE_REGEX}")
                 non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'amp;u')
             else:
+                demisto.debug(f"&amp not in url: {FIREEYE_REGEX}")
                 non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'u')
         elif match := PROOF_POINT_URL_REG.search(non_formatted_url):
+            demisto.debug(f"PROOF_POINT_URL_REG in URL {non_formatted_url}")
             proof_point_ver: str = match.group(2)
             if proof_point_ver == 'v3':
+                demisto.debug(f"PROOF_POINT_URL version v3")
                 non_formatted_url = get_redirect_url_proof_point_v3(non_formatted_url)
             elif proof_point_ver == 'v2':
+                demisto.debug(f"PROOF_POINT_URL version v2")
                 non_formatted_url = get_redirect_url_proof_point_v2(non_formatted_url, parse_results)
             else:
+                demisto.debug(f"PROOF_POINT_URL version not v3 nor v2")
                 non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'u')
         else:
+            demisto.debug(f"None match for {non_formatted_url}")
             additional_redirect_url = search_for_redirect_url_in_first_query_parameter(parse_results)
+            if additional_redirect_url:
+                demisto.debug(f"Additional redirect url: {additional_redirect_url}")
+
         # Common handling for unescape and normalizing
+        demisto.debug(f"URL after match: {non_formatted_url}")
         non_formatted_url = unquote(unescape(non_formatted_url.replace('[.]', '.')))
         formatted_url = replace_protocol(non_formatted_url)
+        demisto.debug(f"url after format: {formatted_url}")
         return [formatted_url, additional_redirect_url] if additional_redirect_url else [formatted_url]
-
+    demisto.debug(f"URLs before format: {non_formatted_urls}")
     formatted_urls_groups = [format_single_url(url_) for url_ in non_formatted_urls]
     return [{
         'Type': entryTypes['note'],

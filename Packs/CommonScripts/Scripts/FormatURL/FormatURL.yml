@@ -8,10 +8,10 @@ args:
 comment: "Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP URL,\
   \ extracts its redirect URL."
 commonfields:
-  id: FormatURL
+  id: CustomFormatURL
   version: -1
 enabled: false
-name: FormatURL
+name: CustomFormatURL
 outputs:
 - contextPath: URL
   description: URL formatted.
