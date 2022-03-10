@@ -281,13 +281,11 @@ slack-notify-nightly-build:
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
-    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
+#    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
 #      cp "$ARTIFACTS_FOLDER/env_results.json" "./artifacts/env_results.json"  # todo: need to change this file to xsiam instances
 
 # todo: uncomment, what is $GCS_MARKET_KEY
-#    - echo "Authing to GCP"
-#    - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
-    - echo "Auth loaded successfully."
+    - echo "Authing to GCP"
 #    - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
     - echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> $BASH_ENV
     - source $BASH_ENV
