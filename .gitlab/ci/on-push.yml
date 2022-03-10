@@ -329,9 +329,10 @@ create_gcp_folders:
   script:
     - EXIT_CODE=0
     - echo "Authing to GCP"
-    - echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> $BASH_ENV
-    - source $BASH_ENV
-    - python3 ./Tests/gcp_update.py
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+#    - echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> $BASH_ENV
+#    - source $BASH_ENV
+    - python3 ./Tests/gcp_update.py "$GCS_ARTIFACTS_KEY"
     - exit $EXIT_CODE
 
 
