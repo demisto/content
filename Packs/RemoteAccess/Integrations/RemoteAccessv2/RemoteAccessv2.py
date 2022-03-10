@@ -165,7 +165,16 @@ def copy_to_command(ssh_client: SSHClient, args: Dict[str, Any]) -> CommandResul
     Returns:
         (CommandResults).
     """
-    entry_id: str = args.get('entry_id', '')
+    dest_dir_arg = args.get('dest-dir', '')
+    destination_path_arg = args.get('destination_path', '')
+    if dest_dir_arg and destination_path_arg:
+        raise DemistoException('Please provide at most one of "dest-dir" argument or "destination_path", not both.')
+
+    # Support `entry` argument to maintain BC:
+    entry: str = args.get('entry', '')
+    entry_id: str = args.get('entry_id', entry)
+    # todo: check if it's necessary to raise an exception if neither of entry/entry_id is provided
+
     if timeout := args.get('timeout'):
         timeout = float(timeout)
     else:
@@ -173,7 +182,22 @@ def copy_to_command(ssh_client: SSHClient, args: Dict[str, Any]) -> CommandResul
     file_path_data = demisto.getFilePath(entry_id)
     if not (file_path := file_path_data.get('path', '')):
         raise DemistoException('Could not find given entry ID path. Please assure given entry ID is correct.')
-    destination_path: str = args.get('destination_path', file_path)
+    file_name = file_path_data.get('name', '')
+
+    if dest_dir_arg:
+        destination_path = os.path.join(dest_dir_arg, file_name)
+        destination_dir = dest_dir_arg
+    elif destination_path_arg:
+        destination_path = destination_path_arg
+        destination_dir = os.path.split(destination_path)[0]
+    else:
+        destination_path = file_name
+        destination_dir = ''
+
+    # Create all folders to destination_path in the remote machine
+    if destination_dir:
+        execute_shell_command(ssh_client, args={'cmd': f'mkdir -p {destination_dir}'})
+
     perform_copy_command(ssh_client, file_path, destination_path, copy_to_remote=True, socket_timeout=timeout)
     return CommandResults(readable_output=f'### The file corresponding to entry ID: {entry_id} was copied to remote'
                                           ' host.')
@@ -193,7 +217,13 @@ def copy_from_command(ssh_client: SSHClient, args: Dict[str, Any]) -> Dict:
         timeout = float(timeout)
     else:
         timeout = DEFAULT_TIMEOUT
-    file_path: str = args.get('file_path', '')
+    # Support `file` argument to maintain BC:
+    file: str = args.get('file', '')
+    if file:
+        print(f'Warning: `file` argument is deprecated. Use `file_path` argument instead.')
+        demisto.info(f'Warning: `file` argument is deprecated. Use `file_path` argument instead.')
+
+    file_path: str = args.get('file_path', file)
     file_name: str = args.get('file_name', os.path.basename(file_path))
     remote_file_data = perform_copy_command(ssh_client, file_path, file_name, copy_to_remote=False,
                                             socket_timeout=timeout)

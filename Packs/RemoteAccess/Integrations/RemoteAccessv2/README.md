@@ -98,12 +98,14 @@ Copies the given file from Cortex XSOAR to the remote machine.
 `copy-to`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| entry_id | Entry ID of the file to be copied from Cortex XSOAR to the remote machine. | Required | 
-| destination_path | Destination of the path of the copied file in the remote machine. Defaults to the `entry_id` file path if not specified. | Optional | 
-| additional_password | Password. Required to match the Additional Password parameter if it was supplied in order to run the command. | Optional | 
-| timeout | Timeout for command, in seconds. Default is 10.0 seconds. | Optional |
+| **Argument Name**   | **Description**                                                                                                                                                                                             | **Required** |
+|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| entry_id            | Entry ID of the file to be copied from Cortex XSOAR to the remote machine.                                                                                                                                  | Optional     | 
+| destination_path    | Destination of the path of the copied file in the remote machine. Defaults to the `entry_id` file path if not specified.                                                                                    | Optional     | 
+| additional_password | Password. Required to match the Additional Password parameter if it was supplied in order to run the command.                                                                                               | Optional     | 
+| timeout             | Timeout for command, in seconds. Default is 10.0 seconds.                                                                                                                                                   | Optional     |
+| dest-dir            | Destination of the directory to copy the file to in the remote machine. Creates the desitnation directory in the remote machine if it does not exist. | Optional     | 
+| entry               | This input is deprecated. Please use the `entry_id` input instead.                                                                                                                                          | Optional     | 
 
 
 #### Context Output
@@ -127,12 +129,13 @@ Copies the given file from the remote machine to Cortex XSOAR.
 `copy-from`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| file_path | Path of the file in the remote machine to be copied to Cortex XSOAR. | Required | 
-| file_name | Name of the file to be copied to Cortex XSOAR. Defaults to the file name in `file_path` if not specified. For example, if `file_path` is "a/b/c.txt", the file name will be c.txt. | Optional | 
-| additional_password | Password. Required to match the Additional Password parameter if it was supplied in order to run the command. | Optional | 
-| timeout | Timeout for command, in seconds. Default is 10.0 seconds. | Optional |
+| **Argument Name** | **Description**                                                                                                                                                                    | **Required** |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| file_path | Path of the file in the remote machine to be copied to Cortex XSOAR.                                                                                                               | Optional     | 
+| file_name | Name of the file to be copied to Cortex XSOAR. Defaults to the file name in `file_path` if not specified. For example, if `file_path` is "a/b/c.txt", the file name will be c.txt. | Optional     | 
+| additional_password | Password. Required to match the Additional Password parameter if it was supplied in order to run the command.                                                                      | Optional     | 
+| timeout | Timeout for command, in seconds. Default is 10.0 seconds.                                                                                                                          | Optional     |
+| file | This input is deprecated. Please use the `file_path` input instead.                                                                                                                | Optional     | 
 
 
 #### Context Output
