@@ -507,17 +507,17 @@ class Notable:
     def submitted(self):
         """ Returns an indicator on whether any of the notable's enrichments was submitted or not """
         return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in self.enrichments) and \
-               len(self.enrichments) == len(ENABLED_ENRICHMENTS)
+            len(self.enrichments) == len(ENABLED_ENRICHMENTS)
 
     def failed_to_submit(self):
         """ Returns an indicator on whether all notable's enrichments were failed to submit or not """
         return all(enrichment.status == Enrichment.FAILED for enrichment in self.enrichments) and \
-               len(self.enrichments) == len(ENABLED_ENRICHMENTS)
+            len(self.enrichments) == len(ENABLED_ENRICHMENTS)
 
     def handled(self):
         """ Returns an indicator on whether all notable's enrichments were handled or not """
         return all(enrichment.status in Enrichment.HANDLED for enrichment in self.enrichments) or \
-               any(enrichment.status == Enrichment.EXCEEDED_TIMEOUT for enrichment in self.enrichments)
+            any(enrichment.status == Enrichment.EXCEEDED_TIMEOUT for enrichment in self.enrichments)
 
     def get_submitted_enrichments(self):
         """ Returns indicators on whether each enrichment was submitted/failed or not initiated """
