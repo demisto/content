@@ -4378,6 +4378,13 @@
             ]
         },
         {
+            "playbookID": "CrowdStrike_FalconX_Test",
+            "fromversion": "6.1.0",
+            "integrations": [
+                "CrowdStrike Falcon X"
+            ]
+        },
+        {
             "playbookID": "Phishing - Core - Test - Actual Incident",
             "fromversion": "6.0.0",
             "timeout": 4600,
@@ -5171,7 +5178,6 @@
         "ZeroFox": "Issue 29284",
         "Symantec Management Center": "Issue 23960",
         "Fidelis Elevate Network": "Issue 26453",
-        "CrowdStrike Falcon X": "Issue 26209",
         "ArcSight Logger": "Issue 19117",
         "Sophos Central": "No instance",
         "MxToolBox": "No instance",
