@@ -1,0 +1,20 @@
+{
+    "name": "compliance_scan_with_summary",
+    "execute": "response_raw = CimTrak.compliance_scan_with_summary_command(client,{'objectId':1,'retryCount':20,'retrySeconds':10})\n\nresponse = response_raw[0].outputs\nif len(response_raw) > 1:\n\tret_results: List[Dict[str, Any]] = response_raw[1].outputs\n\tresponse['results'] = list()\n\tresponse_raw[1].outputs\n\tresponse['results'].append(ret_results)\n",
+    "posts": [
+        {
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getComplianceArchiveSummary",
+            "reply": {
+                "status": "success",
+                "errorCode": "",
+                "errorDescription": "",
+                "results": []
+            }
+        }
+    ],
+    "response": {
+        "status": "success",
+        "errorCode": "",
+        "errorDescription": ""
+    }
+}
