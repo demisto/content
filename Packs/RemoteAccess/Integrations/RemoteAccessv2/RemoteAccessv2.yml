@@ -14,7 +14,9 @@ configuration:
   type: 9
 - additionalinfo: Will require an additional password as an argument to run any command
     of this module.
+  displaypassword: Additional Password
   name: additional_password
+  hiddenusername: true
   required: false
   type: 9
 - additionalinfo: A comma-separated list of ciphers to use. If none of the specified

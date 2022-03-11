@@ -173,7 +173,8 @@ def copy_to_command(ssh_client: SSHClient, args: Dict[str, Any]) -> CommandResul
     # Support `entry` argument to maintain BC:
     entry: str = args.get('entry', '')
     entry_id: str = args.get('entry_id', entry)
-    # todo: check if it's necessary to raise an exception if neither of entry/entry_id is provided
+    if not entry_id:
+        raise DemistoException('No entry ID path given. Please provide one of the "entry_id" (recommended) or "entry" inputs.')
 
     if timeout := args.get('timeout'):
         timeout = float(timeout)
@@ -219,10 +220,6 @@ def copy_from_command(ssh_client: SSHClient, args: Dict[str, Any]) -> Dict:
         timeout = DEFAULT_TIMEOUT
     # Support `file` argument to maintain BC:
     file: str = args.get('file', '')
-    if file:
-        print(f'Warning: `file` argument is deprecated. Use `file_path` argument instead.')
-        demisto.info(f'Warning: `file` argument is deprecated. Use `file_path` argument instead.')
-
     file_path: str = args.get('file_path', file)
     file_name: str = args.get('file_name', os.path.basename(file_path))
     remote_file_data = perform_copy_command(ssh_client, file_path, file_name, copy_to_remote=False,
