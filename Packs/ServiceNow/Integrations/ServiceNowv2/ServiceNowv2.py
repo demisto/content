@@ -575,7 +575,8 @@ class Client(BaseClient):
         else:
             self._auth = (self._username, self._password)
 
-    def generic_request(self, method: str, path: str, body: Optional[Dict] = None, headers: Optional[Dict] = None, sc_api: bool = False, cr_api: bool = False):
+    def generic_request(self, method: str, path: str, body: Optional[Dict] = None, headers: Optional[Dict] = None,
+                        sc_api: bool = False, cr_api: bool = False):
         """Generic request to ServiceNow api.
 
         Args:
@@ -2579,7 +2580,7 @@ def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Ite
     return item
 
 
-def generic_api_call_command(client: Client, args: Dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
+def generic_api_call_command(client: Client, args: Dict) -> Union[str, CommandResults]:
     """make a call to ServiceNow api
     Args:
         (Required Arguments)

@@ -258,12 +258,18 @@ script:
       description: Attachment MD5 hash.
       type: string
   - arguments:
-    - description: Short description of the ticket.
+    - default: false
+      description: Short description of the ticket.
+      isArray: false
       name: short_description
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
+      isArray: false
       name: ticket_type
       predefined:
       - incident
@@ -272,63 +278,132 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: Ticket urgency. You can either select from the predefined options
         or enter another value. For example, "Urgent" or "5".
+      isArray: false
       name: urgency
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: Ticket severity. You can either select from the predefined options
         or enter another value. For example, "Urgent" or "5".
+      isArray: false
       name: severity
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: Ticket impact.
+      isArray: false
       name: impact
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: Whether to set the ticket as Active. Can be "true" or "false".
+      isArray: false
       name: active
       predefined:
       - 'true'
       - 'false'
-    - description: The ticket activity due date, in the format "2016-07-02 21:51:11".
+      required: false
+      secret: false
+    - default: false
+      description: The ticket activity due date, in the format "2016-07-02 21:51:11".
+      isArray: false
       name: activity_due
-    - description: List of users assigned to the ticket.
+      required: false
+      secret: false
+    - default: false
+      description: List of users assigned to the ticket.
+      isArray: false
       name: additional_assignee_list
-    - description: Ticket history approval.
+      required: false
+      secret: false
+    - default: false
+      description: Ticket history approval.
+      isArray: false
       name: approval_history
-    - description: The ticket approval set date, in the format "2016-07-02 21:51:11".
+      required: false
+      secret: false
+    - default: false
+      description: The ticket approval set date, in the format "2016-07-02 21:51:11".
+      isArray: false
       name: approval_set
-    - description: User assigned to the ticket.
+      required: false
+      secret: false
+    - default: false
+      description: User assigned to the ticket.
+      isArray: false
       name: assigned_to
-    - description: 'Business duration, in the format: YYYY-MM-DD HH:MM:SS.'
+      required: false
+      secret: false
+    - default: false
+      description: 'Business duration, in the format: YYYY-MM-DD HH:MM:SS.'
+      isArray: false
       name: business_duration
-    - description: Business service.
+      required: false
+      secret: false
+    - default: false
+      description: Business service.
+      isArray: false
       name: business_service
-    - description: Business source.
+      required: false
+      secret: false
+    - default: false
+      description: Business source.
+      isArray: false
       name: business_stc
-    - description: 'Calendar duration, in the format: YYYY-MM-DD HH:MM:SS.'
+      required: false
+      secret: false
+    - default: false
+      description: 'Calendar duration, in the format: YYYY-MM-DD HH:MM:SS.'
+      isArray: false
       name: calendar_duration
-    - description: Caller ID (UID format).
+      required: false
+      secret: false
+    - default: false
+      description: Caller ID (UID format).
+      isArray: false
       name: caller_id
-    - description: Category of the ticket.
+      required: false
+      secret: false
+    - default: false
+      description: Category of the ticket.
+      isArray: false
       name: category
-    - description: UID Format
+      required: false
+      secret: false
+    - default: false
+      description: UID Format
+      isArray: false
       name: caused_by
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: Ticket's close code. Can be "Solved (Work Around)", "Solved (Permanently)",
         "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved
         (Not Reproducible)", "Not Solved (Too Costly)", or "Closed/Resolved by Caller".
+      isArray: false
       name: close_code
       predefined:
       - Solved (Work Around)
@@ -338,103 +413,275 @@ script:
       - Not Solved (Not Reproducible)
       - Not Solved (Too Costly)
       - Closed/Resolved by Caller
-    - description: Close notes of the ticket.
+      required: false
+      secret: false
+    - default: false
+      description: Close notes of the ticket.
+      isArray: false
       name: close_notes
-    - description: 'When the ticket was closed, in the format: YYYY-MM-DD HH:MM:SS.'
+      required: false
+      secret: false
+    - default: false
+      description: 'When the ticket was closed, in the format: YYYY-MM-DD HH:MM:SS.'
+      isArray: false
       name: closed_at
-    - description: User who closed the ticket.
+      required: false
+      secret: false
+    - default: false
+      description: User who closed the ticket.
+      isArray: false
       name: closed_by
-    - description: UID Format.
+      required: false
+      secret: false
+    - default: false
+      description: UID Format.
+      isArray: false
       name: cmdb_ci
-    - description: Format type journal input.
+      required: false
+      secret: false
+    - default: false
+      description: Format type journal input.
+      isArray: false
       name: comments
-    - description: Format type journal input.
+      required: false
+      secret: false
+    - default: false
+      description: Format type journal input.
+      isArray: false
       name: comments_and_work_notes
-    - description: Company (UID format).
+      required: false
+      secret: false
+    - default: false
+      description: Company (UID format).
+      isArray: false
       name: company
-    - description: Contact type.
+      required: false
+      secret: false
+    - default: false
+      description: Contact type.
+      isArray: false
       name: contact_type
-    - description: Correlation display.
+      required: false
+      secret: false
+    - default: false
+      description: Correlation display.
+      isArray: false
       name: correlation_display
-    - description: Correlation ID.
+      required: false
+      secret: false
+    - default: false
+      description: Correlation ID.
+      isArray: false
       name: correlation_id
-    - description: Delivery plan (UID format).
+      required: false
+      secret: false
+    - default: false
+      description: Delivery plan (UID format).
+      isArray: false
       name: delivery_plan
-    - description: Ticket description.
+      required: false
+      secret: false
+    - default: false
+      description: Ticket description.
+      isArray: false
       name: description
-    - description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
+      required: false
+      secret: false
+    - default: false
+      description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
+      isArray: false
       name: due_date
-    - description: 'Expected start date/time, in the format: YYYY-MM-DD HH:MM:SS.'
+      required: false
+      secret: false
+    - default: false
+      description: 'Expected start date/time, in the format: YYYY-MM-DD HH:MM:SS.'
+      isArray: false
       name: expected_start
-    - description: 'Follow up date/time, in the format: YYYY-MM-DD HH:MM:SS.'
+      required: false
+      secret: false
+    - default: false
+      description: 'Follow up date/time, in the format: YYYY-MM-DD HH:MM:SS.'
+      isArray: false
       name: follow_up
-    - description: UID format list (group).
+      required: false
+      secret: false
+    - default: false
+      description: UID format list (group).
+      isArray: false
       name: group_list
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: Whether the ticket is solved in the knowledge base. Can be "true"
         or "false".
+      isArray: false
       name: knowledge
       predefined:
       - 'true'
       - 'false'
-    - description: Location of the ticket.
+      required: false
+      secret: false
+    - default: false
+      description: Location of the ticket.
+      isArray: false
       name: location
-    - description: SLA of the ticket.
+      required: false
+      secret: false
+    - default: false
+      description: SLA of the ticket.
+      isArray: false
       name: made_sla
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: Whether to be notified about this ticket. Can be "1" or "0".
+      isArray: false
       name: notify
       predefined:
       - '1'
       - '0'
-    - description: Order number.
+      required: false
+      secret: false
+    - default: false
+      description: Order number.
+      isArray: false
       name: order
-    - description: UID Format
+      required: false
+      secret: false
+    - default: false
+      description: UID Format
+      isArray: false
       name: parent
-    - description: UID Format
+      required: false
+      secret: false
+    - default: false
+      description: UID Format
+      isArray: false
       name: parent_incident
-    - description: UID Format
+      required: false
+      secret: false
+    - default: false
+      description: UID Format
+      isArray: false
       name: problem_id
-    - description: The number of users included in this ticket.
+      required: false
+      secret: false
+    - default: false
+      description: The number of users included in this ticket.
+      isArray: false
       name: reassignment_count
-    - description: How many times the ticket has been reopened.
+      required: false
+      secret: false
+    - default: false
+      description: How many times the ticket has been reopened.
+      isArray: false
       name: reopen_count
-    - description: 'The date/time that the ticket was resolved, in the format: YYYY-MM-DD
+      required: false
+      secret: false
+    - default: false
+      description: 'The date/time that the ticket was resolved, in the format: YYYY-MM-DD
         HH:MM:SS.'
+      isArray: false
       name: resolved_at
-    - description: ID of the user that resolved the ticket.
+      required: false
+      secret: false
+    - default: false
+      description: ID of the user that resolved the ticket.
+      isArray: false
       name: resolved_by
-    - description: UID
+      required: false
+      secret: false
+    - default: false
+      description: UID
+      isArray: false
       name: rfc
-    - description: 'SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS.'
+      required: false
+      secret: false
+    - default: false
+      description: 'SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS.'
+      isArray: false
       name: sla_due
-    - description: Ticket subcategory.
+      required: false
+      secret: false
+    - default: false
+      description: Ticket subcategory.
+      isArray: false
       name: subcategory
-    - description: Last updated by.
+      required: false
+      secret: false
+    - default: false
+      description: Last updated by.
+      isArray: false
       name: sys_updated_by
-    - description: 'Last date/time that the system was updated, in the format: YYYY-MM-DD
+      required: false
+      secret: false
+    - default: false
+      description: 'Last date/time that the system was updated, in the format: YYYY-MM-DD
         HH:MM:SS.'
+      isArray: false
       name: sys_updated_on
-    - description: Input from the end user.
+      required: false
+      secret: false
+    - default: false
+      description: Input from the end user.
+      isArray: false
       name: user_input
-    - description: A list of watched tickets.
+      required: false
+      secret: false
+    - default: false
+      description: A list of watched tickets.
+      isArray: false
       name: watch_list
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+      required: false
+      secret: false
+    - default: false
+      description: 'Format: YYYY-MM-DD HH:MM:SS'
+      isArray: false
       name: work_end
-    - description: Format journal list
+      required: false
+      secret: false
+    - default: false
+      description: Format journal list
+      isArray: false
       name: work_notes
-    - description: List work notes UIDs.
+      required: false
+      secret: false
+    - default: false
+      description: List work notes UIDs.
+      isArray: false
       name: work_notes_list
-    - description: Date/time when work started on the ticket.
+      required: false
+      secret: false
+    - default: false
+      description: Date/time when work started on the ticket.
+      isArray: false
       name: work_start
-    - description: The sys_id of the group to assign.
+      required: false
+      secret: false
+    - default: false
+      description: The sys_id of the group to assign.
+      isArray: false
       name: assignment_group
-    - description: The number that represents the incident state.
+      required: false
+      secret: false
+    - default: false
+      description: The number that represents the incident state.
+      isArray: false
       name: incident_state
-    - description: Ticket number.
+      required: false
+      secret: false
+    - default: false
+      description: Ticket number.
+      isArray: false
       name: number
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: Priority of the ticket.
+      isArray: false
       name: priority
       predefined:
       - 5 - Planning
@@ -442,44 +689,105 @@ script:
       - 3 - Moderate
       - 2 - High
       - 1 - Critical
-    - description: Template name to use as the basis to create new tickets.
+      required: false
+      secret: false
+    - default: false
+      description: Template name to use as the basis to create new tickets.
+      isArray: false
       name: template
-    - description: 'Custom (user defined) fields in the format: fieldname1=value;fieldname2=value;
+      required: false
+      secret: false
+    - default: false
+      description: 'Custom (user defined) fields in the format: fieldname1=value;fieldname2=value;
         custom fields start with a "u_".'
+      isArray: false
       name: custom_fields
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: normal
       description: Type of Change Request ticket. Can be "normal", "standard", or
         "emergency". Default is "normal".
+      isArray: false
       name: change_type
       predefined:
       - normal
       - standard
       - emergency
-    - description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed".'
+      required: false
+      secret: false
+    - default: false
+      description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed".'
+      isArray: false
       name: state
-    - description: ' Date/time the ticket was opened, in the format: YYYY-MM-DD HH:MM:SS.'
+      required: false
+      secret: false
+    - default: false
+      description: ' Date/time the ticket was opened, in the format: YYYY-MM-DD HH:MM:SS.'
+      isArray: false
       name: opened_at
-    - description: Caller system ID.
+      required: false
+      secret: false
+    - default: false
+      description: Caller system ID.
+      isArray: false
       name: caller
-    - description: Ticket approval.
+      required: false
+      secret: false
+    - default: false
+      description: Ticket approval.
+      isArray: false
       name: approval
-    - description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
+      required: false
+      secret: false
+    - default: false
+      description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
+      isArray: false
       name: additional_fields
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: Flag that indicates whether to set field values using the display
         value or the actual value. 'true' treats input values as the display value.
         'false' treats input values as actual values. Default is false.
+      isArray: false
       name: input_display_value
       predefined:
       - 'false'
       - 'true'
-    - defaultValue: ;
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
       description: The delimiter character to use as a separator for a list of fields
         in an argument for this command. Default is ';'.
+      isArray: false
       name: fields_delimiter
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Business criticallity of the ticket.
+      isArray: false
+      name: business_criticality
+      predefined:
+        - 3 - Non-Critical
+        - 2 - High
+        - 1 - Critical
+      required: false
+      secret: false
+    - default: false
+      description: Incident risk score.
+      isArray: false
+      name: risk_score
+      required: false
+      secret: false
+    deprecated: false
     description: Creates new ServiceNow ticket.
+    execution: false
     name: servicenow-create-ticket
     outputs:
     - contextPath: ServiceNow.Ticket.ID
