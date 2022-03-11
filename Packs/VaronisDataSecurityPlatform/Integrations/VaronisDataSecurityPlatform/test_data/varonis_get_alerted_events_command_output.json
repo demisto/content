@@ -1,36 +1,48 @@
-[
-    {
-        "Varonis.Event.ID": "16B36D9C-CF0A-4EAE-ADAD-C2ECE4C1FBBF",
-        "Varonis.Event.Type": "Client DNS request",
-        "Varonis.Event.UTCTime": "2022-02-22T12:16:48Z",
-        "Varonis.Event.Status": "Success",
-        "Varonis.Event.Description": "The DNS Server has resolved successfully ",
-        "Varonis.Event.Country": "",
-        "Varonis.Event.State": "",
-        "Varonis.Event.Details.IsBlacklist": "",
-        "Varonis.Event.Details.Operation": "Request",
-        "Varonis.Event.ByUser.Name": "",
-        "Varonis.Event.ByUser.UserType": "",
-        "Varonis.Event.ByUser.UserAccountType": "",
-        "Varonis.Event.ByUser.SAMAccountNamt": "",
-        "Varonis.Event.ByUser.Domain": "",
-        "Varonis.Event.ByUser.DisabledAccount": "",
-        "Varonis.Event.ByUser.StaleAccount": "",
-        "Varonis.Event.ByUser.LockoutAccounts": "",
-        "Varonis.Event.SourceIP": "",
-        "Varonis.Event.IsMaliciousIP": "",
-        "Varonis.Event.IPReputation": "",
-        "Varonis.Event.IPThreatType": "",
-        "Varonis.Event.OnObject.Name": "localdb-ip-rtu.brightcloud.com",
-        "Varonis.Event.OnObject.ObjectType": "Dns",
-        "Varonis.Event.OnObject.Platform": "DNS",
-        "Varonis.Event.OnObject.IsSensitive": "",
-        "Varonis.Event.OnObject.FileServerOrDomain": "DNS",
-        "Varonis.Event.OnObject.IsDisabledAccount": "",
-        "Varonis.Event.OnObject.IsLockOutAccount": "",
-        "Varonis.Event.OnObject.SAMAccountName": "",
-        "Varonis.Event.OnObject.UserAccountType": "",
-        "Varonis.Event.OnObject.DestinationIP": "",
-        "Varonis.Event.OnObject.DestinationDevice": ""
+{
+    "Event": [
+        {
+            "ID": "16B36D9C-CF0A-4EAE-ADAD-C2ECE4C1FBBF",
+            "Type": "Client DNS request",
+            "UTCTime": "2022-02-22T12:16:48Z",
+            "Status": "Success",
+            "Description": "The DNS Server has resolved successfully ",
+            "Country": "",
+            "State": "",
+            "Details": {
+                "IsBlacklist": "",
+                "Operation": "Request"
+            },
+            "ByUser": {
+                "Name": "",
+                "UserType": "",
+                "UserAccountType": "",
+                "SAMAccountNamt": "",
+                "Domain": "",
+                "DisabledAccount": "",
+                "StaleAccount": "",
+                "LockoutAccounts": ""
+            },
+            "SourceIP": "",
+            "IsMaliciousIP": "",
+            "IPReputation": "",
+            "IPThreatType": "",
+            "OnObject": {
+                "Name": "localdb-ip-rtu.brightcloud.com",
+                "ObjectType": "Dns",
+                "Platform": "DNS",
+                "IsSensitive": "",
+                "FileServerOrDomain": "DNS",
+                "IsDisabledAccount": "",
+                "IsLockOutAccount": "",
+                "SAMAccountName": "",
+                "UserAccountType": "",
+                "DestinationIP": "",
+                "DestinationDevice": ""
+            }
+        }
+    ],
+    "Pagination": {
+        "Page": 1,
+        "PageSize": 1
     }
-]
+}
