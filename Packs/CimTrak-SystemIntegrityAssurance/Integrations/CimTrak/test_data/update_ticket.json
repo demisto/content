@@ -1,0 +1,25 @@
+{
+    "name": "update_ticket",
+    "execute": "response_raw = CimTrak.update_ticket_command(client,{'ticketId':'6','title':'test','priority':1,'autoPromote':'False','requiresAcknowledgement':'False','requiresAssessment':'False','requiresConfirmation':'False','assignedToUserId':'0','assignedToGroupId':'0'})\n\nresponse = response_raw[0].outputs\nif len(response_raw) > 1:\n\tret_results: List[Dict[str, Any]] = response_raw[1].outputs\n\tresponse['results'] = list()\n\tresponse_raw[1].outputs\n\tresponse['results'].append(ret_results)\n",
+    "posts": [
+        {
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.updateTickets",
+            "reply": {
+                "results": [],
+                "status": "failed",
+                "errorCode": "JSON_PARSE_ERROR",
+                "errorDescription": "Input failed data validation for API 'client.processUpdateTicket'.",
+                "errorDetails": [
+                    "priority is of incorrect type",
+                    "priority failed validation",
+                    "data failed validation"
+                ]
+            }
+        }
+    ],
+    "response": {
+        "status": "failed",
+        "errorCode": "JSON_PARSE_ERROR",
+        "errorDescription": "Input failed data validation for API 'client.processUpdateTicket'."
+    }
+}

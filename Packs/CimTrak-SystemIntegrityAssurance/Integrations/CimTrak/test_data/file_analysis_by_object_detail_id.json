@@ -1,0 +1,42 @@
+{
+    "name": "file_analysis_by_object_detail_id",
+    "execute": "response_raw = CimTrak.file_analysis_by_object_detail_id_command(client,{'ObjectDetailId':42})\n\nresponse = response_raw[0].outputs\nif len(response_raw) > 1:\n\tret_results: List[Dict[str, Any]] = response_raw[1].outputs\n\tresponse['results'] = list()\n\tresponse_raw[1].outputs\n\tresponse['results'].append(ret_results)\n",
+    "posts": [
+        {
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.fileAnalysisByObjectDetailId",
+            "reply": {
+                "results": [
+                    {
+                        "analysisEngine": "VirusTotal",
+                        "analysisSuccess": true,
+                        "analysisResults": {
+                            "response_code": 0,
+                            "resource": "6C0D22C9BADB67B3E16CC8DE00013EF843872F14E501CA202EFD4BBE94F24A07",
+                            "verbose_msg": "The requested resource is not among the finished, queued or pending scans"
+                        }
+                    }
+                ],
+                "status": "success",
+                "errorCode": "",
+                "errorDescription": "",
+                "errorDetails": []
+            }
+        }
+    ],
+    "response": {
+        "results": [
+            {
+                "analysisEngine": "VirusTotal",
+                "analysisSuccess": true,
+                "analysisResults": {
+                    "response_code": 0,
+                    "resource": "6C0D22C9BADB67B3E16CC8DE00013EF843872F14E501CA202EFD4BBE94F24A07",
+                    "verbose_msg": "The requested resource is not among the finished, queued or pending scans"
+                }
+            }
+        ],
+        "status": "success",
+        "errorCode": "",
+        "errorDescription": ""
+    }
+}
