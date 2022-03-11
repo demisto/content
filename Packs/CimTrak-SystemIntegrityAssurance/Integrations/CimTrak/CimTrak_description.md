@@ -1,7 +1,8 @@
 ***
-## Hello World
-- This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
-- You can use the following API Key: `43ea9b2d-4998-43a6-ae91-aba62a26868c`
-
+## CimTrak
+- Fill in the URL to your App Server
+- Create an API Key in the CimTrak Management Console and populate in XSOAR
+- Fill in the Repository IP relative to the App Server (IE: If App Server is running on the same machine as the Repository you can use 127.0.0.1)
+- Fill in Repository Port
+- Once configured all unreconciled items from CimTrak will be brought into XSOAR.
 ---
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/hello-world)

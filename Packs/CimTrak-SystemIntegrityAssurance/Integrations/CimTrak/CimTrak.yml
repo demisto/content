@@ -55,18 +55,8 @@ contentitemexportablefields:
     packID: 25043b93-4265-49a0-8858-04aed0ec4edd
     propagationLabels: []
     toServerVersion: ""
-description: 'The CimTrak integration with Palo Alto XSOAR allows you further vet
-  and respond to emerging threats to your infrastructure.  CimTrak performs realtime
-  detection of unauthorized modifications to servers and network devices, while also
-  levering CIS Benchmarks to ensure that your key servers and devices are always in
-  a hardened state.   In addition, CimTrak can perform advanced remediation actions
-  such as rolling back to a previous version of critical files.    By combining CimTrak
-  & Palo Alto XSOAR, via this integration, you now have the power to further analyze
-  certain security events using CimTrak''s rich file assessment engines and/or verify
-  them against a curated allow-list.   In addition, this integration will allow you
-  to leverage CimTrak to integrate your your existing ITSM system such as ServiceNow,
-  BMC Remedy, and Jira.     By unlocking dozens of new capabilities, this integration
-  truly unlocks the orchestration and response capabilities of the Palo Alto SOAR. '
+description: The CimTrak integration helps you detect unexpected system/device/config
+  modifications and automatically respond/react to threats
 display: CimTrak - System Integrity Assurance
 name: CimTrak
 script:
@@ -279,7 +269,7 @@ script:
       description: Hash found in registry
       type: string
   - arguments:
-    - description: Array of hashes of file to check IE:42,43
+    - description: Array of object detail IDs of file to check IE:42,43
       name: ObjectDetaildIds
     description: This function sets a file (or list of files) as the authoritative
       baseline.
@@ -307,7 +297,7 @@ script:
       description: Status
       type: string
   - arguments:
-    - description: Array of hashes of file to check IE:42,43
+    - description: Array of object detail IDs of file to check IE:42,43
       name: ObjectDetaildIds
     description: This function removes a file (or list of files) from being the authoritaive
       baseline.
@@ -367,9 +357,12 @@ script:
     - contextPath: CommandStatus.errorDescription
       description: Error description of request
       type: string
-    - contextPath: CimTrak.Ticket.taskId
+    - contextPath: CimTrak.Ticket.id
       description: Ticket Id
       type: number
+    - contextPath: CimTrak.Ticket.ticketNumber
+      description: Ticket number
+      type: string
     - contextPath: CimTrak.Ticket.sentiment
       description: Ticket sentiment
       type: string

@@ -1262,9 +1262,17 @@ class CimTrak:
                     target_gen = subgen["subGenerationId"]
                     agent_objectId = subgen["agentObjectId"]
         if self.debug >= 4:
-            self.debug_print("Got targetgent:" + str(target_gen))
+            self.debug_print("Got target agent:" + str(target_gen))
         if target_gen != 0:
             return self.deploy(agent_objectId, target_gen)
+        else:
+            ret_data: Dict[str, Any] = {}
+            ret_results: List[Dict[str, Any]] = []
+            ret_data['status'] = 'Success'
+            ret_data['errorCode'] = ''
+            ret_data['errorDescription'] = ''
+            ret_data['results'] = ret_results
+            return ret_data
 
     def compliance_scan_children(self, object_parent_id):
         request_response = self.get_objects(parent_id=object_parent_id)
@@ -1275,6 +1283,13 @@ class CimTrak:
                 if self.debug >= 4:
                     self.debug_print("Scanning compliance object:" + str(object["objectId"]))
                 self.force_sync(object["objectId"])
+        ret_data: Dict[str, Any] = {}
+        ret_results: List[Dict[str, Any]] = []
+        ret_data['status'] = 'Success'
+        ret_data['errorCode'] = ''
+        ret_data['errorDescription'] = ''
+        ret_data['results'] = ret_results
+        return ret_data
 
     def compliance_scan_with_summary(self, object_id, retry_count=20, retry_seconds=10):
         if self.debug >= 4:
@@ -1384,6 +1399,11 @@ class CimTrak:
             ip_fixed = "cast($DQ$" + ip + "$DQ$::inet - $DQ$0.0.0.0$DQ$::inet as bigint)"
         else:
             ip_fixed = "cast($DQ$" + ip + "$DQ$::inet - $DQ$::ffff:0.0.0.0$DQ$::inet as bigint)"
+        ip_if_statement = "cast(iif(position($DQ$:$DQ$ in get_objects.szlastip) > 0  ,"
+        ip_if_statement += "cast(get_objects.szlastip::inet - $DQ$::ffff:0.0.0.0$DQ$::inet  as text)"
+        ip_if_statement += ",iif(position($DQ$.$DQ$ in get_objects.szlastip) > 0 ,"
+        ip_if_statement += "cast(get_objects.szlastip::inet - $DQ$::ffff:0.0.0.0$DQ$::inet as text),$DQ$0$DQ$)) as bigint) - "
+        ip_if_statement += ip_fixed
         filter = [
             {"name": "", "operator": "(", "value": ""},
             {"name": "position($DQ$.$DQ$ in get_objects.szlastip)", "operator": ">", "value": 0},
@@ -1391,7 +1411,7 @@ class CimTrak:
             {"name": "position($DQ$:$DQ$ in get_objects.szlastip)", "operator": ">", "value": 0},
             {"name": "", "operator": ")", "value": ""},
             {"name": "", "operator": "AND", "value": ""},
-            {"name": "cast(iif(position($DQ$:$DQ$ in get_objects.szlastip) > 0  ,cast(get_objects.szlastip::inet - $DQ$::ffff:0.0.0.0$DQ$::inet  as text),iif(position($DQ$.$DQ$ in get_objects.szlastip) > 0 ,cast(get_objects.szlastip::inet - $DQ$::ffff:0.0.0.0$DQ$::inet as text),$DQ$0$DQ$)) as bigint) - " + ip_fixed, "operator": "=", "value": 0},
+            {"name": ip_if_statement, "operator": "=", "value": 0},
         ]
         request_response = self.get_objects(object_type=self.OBJECT_TYPE_AGENT, filter=filter)
         results = request_response["results"]
@@ -1399,7 +1419,7 @@ class CimTrak:
         ret_results: List[Dict[str, Any]] = []
         for object in results:
             ret_results.append(object)
-        ret_data['status'] = 'Success'
+        ret_data['status'] = 'success'
         ret_data['errorCode'] = ''
         ret_data['errorDescription'] = ''
         ret_data['results'] = ret_results
@@ -1633,126 +1653,51 @@ def get_events_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'id',
+        'leventid',
+        'lagentid',
+        'lobjectid',
+        'lobjectdetailid',
+        'lobjectdetailidint',
+        'lmessagelevel',
+        'szuser',
+        'szfileuser',
+        'szmessageid',
+        'szmessage',
+        'szfile',
+        'szcorrectionid',
+        'szcorrection',
+        'lcategory',
+        'lemailsent',
+        'lstoragestatus',
+        'dtmdatetime1',
+        'dtmdatetime2',
+        'szchecksum',
+        'status',
+        'lprocessid',
+        'lthreadid',
+        'szprocess',
+        'szforensicdata',
+        'dtmdeleted',
+        'ltickcount',
+        'lsubtype',
+        'ticketNumber',
+        'ldeleteobjectdetailid',
+        'bfoundinblacklist',
+        'filecontenthash',
+        'lobjectsettingid',
+        'reconciled',
+        'isauthcopy',
+        'externalticketnumber',
+        'lparentid',
+        'szobjectpath',
+        'dfilesize',
+    ]
     for result in results:
-        if 'id' not in result:
-            result['id'] = ''
-        if 'leventid' not in result:
-            result['leventid'] = ''
-        if 'lagentid' not in result:
-            result['lagentid'] = ''
-        if 'lobjectid' not in result:
-            result['lobjectid'] = ''
-        if 'lobjectdetailid' not in result:
-            result['lobjectdetailid'] = ''
-        if 'lobjectdetailidint' not in result:
-            result['lobjectdetailidint'] = ''
-        if 'lmessagelevel' not in result:
-            result['lmessagelevel'] = ''
-        if 'szuser' not in result:
-            result['szuser'] = ''
-        if 'szfileuser' not in result:
-            result['szfileuser'] = ''
-        if 'szmessageid' not in result:
-            result['szmessageid'] = ''
-        if 'szmessage' not in result:
-            result['szmessage'] = ''
-        if 'szfile' not in result:
-            result['szfile'] = ''
-        if 'szcorrectionid' not in result:
-            result['szcorrectionid'] = ''
-        if 'szcorrection' not in result:
-            result['szcorrection'] = ''
-        if 'lcategory' not in result:
-            result['lcategory'] = ''
-        if 'lemailsent' not in result:
-            result['lemailsent'] = ''
-        if 'lstoragestatus' not in result:
-            result['lstoragestatus'] = ''
-        if 'dtmdatetime1' not in result:
-            result['dtmdatetime1'] = ''
-        if 'dtmdatetime2' not in result:
-            result['dtmdatetime2'] = ''
-        if 'szchecksum' not in result:
-            result['szchecksum'] = ''
-        if 'status' not in result:
-            result['status'] = ''
-        if 'lprocessid' not in result:
-            result['lprocessid'] = ''
-        if 'lthreadid' not in result:
-            result['lthreadid'] = ''
-        if 'szprocess' not in result:
-            result['szprocess'] = ''
-        if 'szforensicdata' not in result:
-            result['szforensicdata'] = ''
-        if 'dtmdeleted' not in result:
-            result['dtmdeleted'] = ''
-        if 'ltickcount' not in result:
-            result['ltickcount'] = ''
-        if 'lsubtype' not in result:
-            result['lsubtype'] = ''
-        if 'ticketNumber' not in result:
-            result['ticketNumber'] = ''
-        if 'ldeleteobjectdetailid' not in result:
-            result['ldeleteobjectdetailid'] = ''
-        if 'bfoundinblacklist' not in result:
-            result['bfoundinblacklist'] = ''
-        if 'filecontenthash' not in result:
-            result['filecontenthash'] = ''
-        if 'lobjectsettingid' not in result:
-            result['lobjectsettingid'] = ''
-        if 'reconciled' not in result:
-            result['reconciled'] = ''
-        if 'isauthcopy' not in result:
-            result['isauthcopy'] = ''
-        if 'externalticketnumber' not in result:
-            result['externalticketnumber'] = ''
-        if 'lparentid' not in result:
-            result['lparentid'] = ''
-        if 'szobjectpath' not in result:
-            result['szobjectpath'] = ''
-        if 'dfilesize' not in result:
-            result['dfilesize'] = ''
-        result_final = {
-            'id': result['id'],
-            'leventid': result['leventid'],
-            'lagentid': result['lagentid'],
-            'lobjectid': result['lobjectid'],
-            'lobjectdetailid': result['lobjectdetailid'],
-            'lobjectdetailidint': result['lobjectdetailidint'],
-            'lmessagelevel': result['lmessagelevel'],
-            'szuser': result['szuser'],
-            'szfileuser': result['szfileuser'],
-            'szmessageid': result['szmessageid'],
-            'szmessage': result['szmessage'],
-            'szfile': result['szfile'],
-            'szcorrectionid': result['szcorrectionid'],
-            'szcorrection': result['szcorrection'],
-            'lcategory': result['lcategory'],
-            'lemailsent': result['lemailsent'],
-            'lstoragestatus': result['lstoragestatus'],
-            'dtmdatetime1': result['dtmdatetime1'],
-            'dtmdatetime2': result['dtmdatetime2'],
-            'szchecksum': result['szchecksum'],
-            'status': result['status'],
-            'lprocessid': result['lprocessid'],
-            'lthreadid': result['lthreadid'],
-            'szprocess': result['szprocess'],
-            'szforensicdata': result['szforensicdata'],
-            'dtmdeleted': result['dtmdeleted'],
-            'ltickcount': result['ltickcount'],
-            'lsubtype': result['lsubtype'],
-            'ticketNumber': result['ticketNumber'],
-            'ldeleteobjectdetailid': result['ldeleteobjectdetailid'],
-            'bfoundinblacklist': result['bfoundinblacklist'],
-            'filecontenthash': result['filecontenthash'],
-            'lobjectsettingid': result['lobjectsettingid'],
-            'reconciled': result['reconciled'],
-            'isauthcopy': result['isauthcopy'],
-            'externalticketnumber': result['externalticketnumber'],
-            'lparentid': result['lparentid'],
-            'szobjectpath': result['szobjectpath'],
-            'dfilesize': result['dfilesize'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -1785,18 +1730,15 @@ def file_analysis_by_hash_command(client: Client, args: Dict[str, Any]) -> List[
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'analysisEngine',
+        'analysisSuccess',
+        'analysisResults',
+    ]
     for result in results:
-        if 'analysisEngine' not in result:
-            result['analysisEngine'] = ''
-        if 'analysisSuccess' not in result:
-            result['analysisSuccess'] = ''
-        if 'analysisResults' not in result:
-            result['analysisResults'] = ''
-        result_final = {
-            'analysisEngine': result['analysisEngine'],
-            'analysisSuccess': result['analysisSuccess'],
-            'analysisResults': result['analysisResults'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -1829,18 +1771,15 @@ def file_analysis_by_object_detail_id_command(client: Client, args: Dict[str, An
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'analysisEngine',
+        'analysisSuccess',
+        'analysisResults',
+    ]
     for result in results:
-        if 'analysisEngine' not in result:
-            result['analysisEngine'] = ''
-        if 'analysisSuccess' not in result:
-            result['analysisSuccess'] = ''
-        if 'analysisResults' not in result:
-            result['analysisResults'] = ''
-        result_final = {
-            'analysisEngine': result['analysisEngine'],
-            'analysisSuccess': result['analysisSuccess'],
-            'analysisResults': result['analysisResults'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -1873,12 +1812,13 @@ def check_file_against_trusted_file_registry_by_hash_command(client: Client, arg
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'hash',
+    ]
     for result in results:
-        if 'hash' not in result:
-            result['hash'] = ''
-        result_final = {
-            'hash': result['hash'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -1911,21 +1851,16 @@ def promote_authoritative_baseline_files_command(client: Client, args: Dict[str,
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'objectDetailId',
+        'status',
+        'errorCode',
+        'errorDescription',
+    ]
     for result in results:
-        if 'objectDetailId' not in result:
-            result['objectDetailId'] = ''
-        if 'status' not in result:
-            result['status'] = ''
-        if 'errorCode' not in result:
-            result['errorCode'] = ''
-        if 'errorDescription' not in result:
-            result['errorDescription'] = ''
-        result_final = {
-            'objectDetailId': result['objectDetailId'],
-            'status': result['status'],
-            'errorCode': result['errorCode'],
-            'errorDescription': result['errorDescription'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -1958,15 +1893,14 @@ def demote_authoritative_baseline_files_command(client: Client, args: Dict[str, 
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'objectDetailId',
+        'status',
+    ]
     for result in results:
-        if 'objectDetailId' not in result:
-            result['objectDetailId'] = ''
-        if 'status' not in result:
-            result['status'] = ''
-        result_final = {
-            'objectDetailId': result['objectDetailId'],
-            'status': result['status'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -2001,15 +1935,14 @@ def update_task_disposition_command(client: Client, args: Dict[str, Any]) -> Lis
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'taskId',
+        'status',
+    ]
     for result in results:
-        if 'taskId' not in result:
-            result['taskId'] = ''
-        if 'status' not in result:
-            result['status'] = ''
-        result_final = {
-            'taskId': result['taskId'],
-            'status': result['status'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -2041,87 +1974,39 @@ def get_tickets_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'id',
+        'ticketNumber',
+        'sentiment',
+        'sentimenttypeid',
+        'title',
+        'description',
+        'priority',
+        'disposition',
+        'creationDate',
+        'createdByUser',
+        'modificationDate',
+        'modifiedByUser',
+        'requiresAcknowledgement',
+        'requiresConfirmation',
+        'requiresAssessment',
+        'startDate',
+        'endDate',
+        'autoPromote',
+        'assignedToUserId',
+        'assignedToUser',
+        'assignedToGroupId',
+        'assignedToGroup',
+        'externalTicketNumber',
+        'externalTicketType',
+        'tasks',
+        'comments',
+        'events',
+    ]
     for result in results:
-        if 'id' not in result:
-            result['id'] = ''
-        if 'sentiment' not in result:
-            result['sentiment'] = ''
-        if 'sentimenttypeid' not in result:
-            result['sentimenttypeid'] = ''
-        if 'title' not in result:
-            result['title'] = ''
-        if 'description' not in result:
-            result['description'] = ''
-        if 'priority' not in result:
-            result['priority'] = ''
-        if 'disposition' not in result:
-            result['disposition'] = ''
-        if 'creationDate' not in result:
-            result['creationDate'] = ''
-        if 'createdByUser' not in result:
-            result['createdByUser'] = ''
-        if 'modificationDate' not in result:
-            result['modificationDate'] = ''
-        if 'modifiedByUser' not in result:
-            result['modifiedByUser'] = ''
-        if 'requiresAcknowledgement' not in result:
-            result['requiresAcknowledgement'] = ''
-        if 'requiresConfirmation' not in result:
-            result['requiresConfirmation'] = ''
-        if 'requiresAssessment' not in result:
-            result['requiresAssessment'] = ''
-        if 'startDate' not in result:
-            result['startDate'] = ''
-        if 'endDate' not in result:
-            result['endDate'] = ''
-        if 'autoPromote' not in result:
-            result['autoPromote'] = ''
-        if 'assignedToUserId' not in result:
-            result['assignedToUserId'] = ''
-        if 'assignedToUser' not in result:
-            result['assignedToUser'] = ''
-        if 'assignedToGroupId' not in result:
-            result['assignedToGroupId'] = ''
-        if 'assignedToGroup' not in result:
-            result['assignedToGroup'] = ''
-        if 'externalTicketNumber' not in result:
-            result['externalTicketNumber'] = ''
-        if 'externalTicketType' not in result:
-            result['externalTicketType'] = ''
-        if 'tasks' not in result:
-            result['tasks'] = ''
-        if 'comments' not in result:
-            result['comments'] = ''
-        if 'events' not in result:
-            result['events'] = ''
-        result_final = {
-            'taskId': result['id'],
-            'sentiment': result['sentiment'],
-            'sentimenttypeid': result['sentimenttypeid'],
-            'title': result['title'],
-            'description': result['description'],
-            'priority': result['priority'],
-            'disposition': result['disposition'],
-            'creationDate': result['creationDate'],
-            'createdByUser': result['createdByUser'],
-            'modificationDate': result['modificationDate'],
-            'modifiedByUser': result['modifiedByUser'],
-            'requiresAcknowledgement': result['requiresAcknowledgement'],
-            'requiresConfirmation': result['requiresConfirmation'],
-            'requiresAssessment': result['requiresAssessment'],
-            'startDate': result['startDate'],
-            'endDate': result['endDate'],
-            'autoPromote': result['autoPromote'],
-            'assignedToUserId': result['assignedToUserId'],
-            'assignedToUser': result['assignedToUser'],
-            'assignedToGroupId': result['assignedToGroupId'],
-            'assignedToGroup': result['assignedToGroup'],
-            'externalTicketNumber': result['externalTicketNumber'],
-            'externalTicketType': result['externalTicketType'],
-            'tasks': result['tasks'],
-            'comments': result['comments'],
-            'events': result['events'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -2153,93 +2038,40 @@ def get_ticket_tasks_command(client: Client, args: Dict[str, Any]) -> List[Comma
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'id',
+        'ticketId',
+        'agentObjectId',
+        'startDate',
+        'endDate',
+        'disposition',
+        'creationDate',
+        'createdByUserId',
+        'modificationDate',
+        'modifiedByUserId',
+        'assignedToUserId',
+        'assignedToGroupId',
+        'assigneeDisposition',
+        'ticketTitle',
+        'description',
+        'priority',
+        'ticketDisposition',
+        'ticketCreationDate',
+        'ticketCreatedByUserId',
+        'ticketModificationDate',
+        'requiresAcknowledgement',
+        'requiresConfirmation',
+        'requiresAssessment',
+        'ticketNumber',
+        'agentName',
+        'createdByUsername',
+        'modifiedByUsername',
+        'assigneeName',
+    ]
     for result in results:
-        if 'id' not in result:
-            result['id'] = ''
-        if 'ticketId' not in result:
-            result['ticketId'] = ''
-        if 'agentObjectId' not in result:
-            result['agentObjectId'] = ''
-        if 'startDate' not in result:
-            result['startDate'] = ''
-        if 'endDate' not in result:
-            result['endDate'] = ''
-        if 'disposition' not in result:
-            result['disposition'] = ''
-        if 'creationDate' not in result:
-            result['creationDate'] = ''
-        if 'createdByUserId' not in result:
-            result['createdByUserId'] = ''
-        if 'modificationDate' not in result:
-            result['modificationDate'] = ''
-        if 'modifiedByUserId' not in result:
-            result['modifiedByUserId'] = ''
-        if 'assignedToUserId' not in result:
-            result['assignedToUserId'] = ''
-        if 'assignedToGroupId' not in result:
-            result['assignedToGroupId'] = ''
-        if 'assigneeDisposition' not in result:
-            result['assigneeDisposition'] = ''
-        if 'ticketTitle' not in result:
-            result['ticketTitle'] = ''
-        if 'description' not in result:
-            result['description'] = ''
-        if 'priority' not in result:
-            result['priority'] = ''
-        if 'ticketDisposition' not in result:
-            result['ticketDisposition'] = ''
-        if 'ticketCreationDate' not in result:
-            result['ticketCreationDate'] = ''
-        if 'ticketCreatedByUserId' not in result:
-            result['ticketCreatedByUserId'] = ''
-        if 'ticketModificationDate' not in result:
-            result['ticketModificationDate'] = ''
-        if 'requiresAcknowledgement' not in result:
-            result['requiresAcknowledgement'] = ''
-        if 'requiresConfirmation' not in result:
-            result['requiresConfirmation'] = ''
-        if 'requiresAssessment' not in result:
-            result['requiresAssessment'] = ''
-        if 'ticketNumber' not in result:
-            result['ticketNumber'] = ''
-        if 'agentName' not in result:
-            result['agentName'] = ''
-        if 'createdByUsername' not in result:
-            result['createdByUsername'] = ''
-        if 'modifiedByUsername' not in result:
-            result['modifiedByUsername'] = ''
-        if 'assigneeName' not in result:
-            result['assigneeName'] = ''
-        result_final = {
-            'taskId': result['id'],
-            'ticketId': result['ticketId'],
-            'agentObjectId': result['agentObjectId'],
-            'startDate': result['startDate'],
-            'endDate': result['endDate'],
-            'disposition': result['disposition'],
-            'creationDate': result['creationDate'],
-            'createdByUserId': result['createdByUserId'],
-            'modificationDate': result['modificationDate'],
-            'modifiedByUserId': result['modifiedByUserId'],
-            'assignedToUserId': result['assignedToUserId'],
-            'assignedToGroupId': result['assignedToGroupId'],
-            'assigneeDisposition': result['assigneeDisposition'],
-            'ticketTitle': result['ticketTitle'],
-            'description': result['description'],
-            'priority': result['priority'],
-            'ticketDisposition': result['ticketDisposition'],
-            'ticketCreationDate': result['ticketCreationDate'],
-            'ticketCreatedByUserId': result['ticketCreatedByUserId'],
-            'ticketModificationDate': result['ticketModificationDate'],
-            'requiresAcknowledgement': result['requiresAcknowledgement'],
-            'requiresConfirmation': result['requiresConfirmation'],
-            'requiresAssessment': result['requiresAssessment'],
-            'ticketNumber': result['ticketNumber'],
-            'agentName': result['agentName'],
-            'createdByUsername': result['createdByUsername'],
-            'modifiedByUsername': result['modifiedByUsername'],
-            'assigneeName': result['assigneeName'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -2302,90 +2134,39 @@ def add_ticket_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'id',
+        'ticketNumber',
+        'sentiment',
+        'sentimenttypeid',
+        'title',
+        'description',
+        'priority',
+        'disposition',
+        'creationDate',
+        'createdByUser',
+        'modificationDate',
+        'modifiedByUser',
+        'requiresAcknowledgement',
+        'requiresConfirmation',
+        'requiresAssessment',
+        'startDate',
+        'endDate',
+        'autoPromote',
+        'assignedToUserId',
+        'assignedToUser',
+        'assignedToGroupId',
+        'assignedToGroup',
+        'externalTicketNumber',
+        'externalTicketType',
+        'tasks',
+        'comments',
+        'events',
+    ]
     for result in results:
-        if 'id' not in result:
-            result['id'] = ''
-        if 'ticketNumber' not in result:
-            result['ticketNumber'] = ''
-        if 'sentiment' not in result:
-            result['sentiment'] = ''
-        if 'sentimenttypeid' not in result:
-            result['sentimenttypeid'] = ''
-        if 'title' not in result:
-            result['title'] = ''
-        if 'description' not in result:
-            result['description'] = ''
-        if 'priority' not in result:
-            result['priority'] = ''
-        if 'disposition' not in result:
-            result['disposition'] = ''
-        if 'creationDate' not in result:
-            result['creationDate'] = ''
-        if 'createdByUser' not in result:
-            result['createdByUser'] = ''
-        if 'modificationDate' not in result:
-            result['modificationDate'] = ''
-        if 'modifiedByUser' not in result:
-            result['modifiedByUser'] = ''
-        if 'requiresAcknowledgement' not in result:
-            result['requiresAcknowledgement'] = ''
-        if 'requiresConfirmation' not in result:
-            result['requiresConfirmation'] = ''
-        if 'requiresAssessment' not in result:
-            result['requiresAssessment'] = ''
-        if 'startDate' not in result:
-            result['startDate'] = ''
-        if 'endDate' not in result:
-            result['endDate'] = ''
-        if 'autoPromote' not in result:
-            result['autoPromote'] = ''
-        if 'assignedToUserId' not in result:
-            result['assignedToUserId'] = ''
-        if 'assignedToUser' not in result:
-            result['assignedToUser'] = ''
-        if 'assignedToGroupId' not in result:
-            result['assignedToGroupId'] = ''
-        if 'assignedToGroup' not in result:
-            result['assignedToGroup'] = ''
-        if 'externalTicketNumber' not in result:
-            result['externalTicketNumber'] = ''
-        if 'externalTicketType' not in result:
-            result['externalTicketType'] = ''
-        if 'tasks' not in result:
-            result['tasks'] = ''
-        if 'comments' not in result:
-            result['comments'] = ''
-        if 'events' not in result:
-            result['events'] = ''
-        result_final = {
-            'taskId': result['id'],
-            'ticketNumber': result['ticketNumber'],
-            'sentiment': result['sentiment'],
-            'sentimenttypeid': result['sentimenttypeid'],
-            'title': result['title'],
-            'description': result['description'],
-            'priority': result['priority'],
-            'disposition': result['disposition'],
-            'creationDate': result['creationDate'],
-            'createdByUser': result['createdByUser'],
-            'modificationDate': result['modificationDate'],
-            'modifiedByUser': result['modifiedByUser'],
-            'requiresAcknowledgement': result['requiresAcknowledgement'],
-            'requiresConfirmation': result['requiresConfirmation'],
-            'requiresAssessment': result['requiresAssessment'],
-            'startDate': result['startDate'],
-            'endDate': result['endDate'],
-            'autoPromote': result['autoPromote'],
-            'assignedToUserId': result['assignedToUserId'],
-            'assignedToUser': result['assignedToUser'],
-            'assignedToGroupId': result['assignedToGroupId'],
-            'assignedToGroup': result['assignedToGroup'],
-            'externalTicketNumber': result['externalTicketNumber'],
-            'externalTicketType': result['externalTicketType'],
-            'tasks': result['tasks'],
-            'comments': result['comments'],
-            'events': result['events'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -2450,90 +2231,39 @@ def update_ticket_command(client: Client, args: Dict[str, Any]) -> List[CommandR
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'id',
+        'ticketNumber',
+        'sentiment',
+        'sentimenttypeid',
+        'title',
+        'description',
+        'priority',
+        'disposition',
+        'creationDate',
+        'createdByUser',
+        'modificationDate',
+        'modifiedByUser',
+        'requiresAcknowledgement',
+        'requiresConfirmation',
+        'requiresAssessment',
+        'startDate',
+        'endDate',
+        'autoPromote',
+        'assignedToUserId',
+        'assignedToUser',
+        'assignedToGroupId',
+        'assignedToGroup',
+        'externalTicketNumber',
+        'externalTicketType',
+        'tasks',
+        'comments',
+        'events',
+    ]
     for result in results:
-        if 'id' not in result:
-            result['id'] = ''
-        if 'ticketNumber' not in result:
-            result['ticketNumber'] = ''
-        if 'sentiment' not in result:
-            result['sentiment'] = ''
-        if 'sentimenttypeid' not in result:
-            result['sentimenttypeid'] = ''
-        if 'title' not in result:
-            result['title'] = ''
-        if 'description' not in result:
-            result['description'] = ''
-        if 'priority' not in result:
-            result['priority'] = ''
-        if 'disposition' not in result:
-            result['disposition'] = ''
-        if 'creationDate' not in result:
-            result['creationDate'] = ''
-        if 'createdByUser' not in result:
-            result['createdByUser'] = ''
-        if 'modificationDate' not in result:
-            result['modificationDate'] = ''
-        if 'modifiedByUser' not in result:
-            result['modifiedByUser'] = ''
-        if 'requiresAcknowledgement' not in result:
-            result['requiresAcknowledgement'] = ''
-        if 'requiresConfirmation' not in result:
-            result['requiresConfirmation'] = ''
-        if 'requiresAssessment' not in result:
-            result['requiresAssessment'] = ''
-        if 'startDate' not in result:
-            result['startDate'] = ''
-        if 'endDate' not in result:
-            result['endDate'] = ''
-        if 'autoPromote' not in result:
-            result['autoPromote'] = ''
-        if 'assignedToUserId' not in result:
-            result['assignedToUserId'] = ''
-        if 'assignedToUser' not in result:
-            result['assignedToUser'] = ''
-        if 'assignedToGroupId' not in result:
-            result['assignedToGroupId'] = ''
-        if 'assignedToGroup' not in result:
-            result['assignedToGroup'] = ''
-        if 'externalTicketNumber' not in result:
-            result['externalTicketNumber'] = ''
-        if 'externalTicketType' not in result:
-            result['externalTicketType'] = ''
-        if 'tasks' not in result:
-            result['tasks'] = ''
-        if 'comments' not in result:
-            result['comments'] = ''
-        if 'events' not in result:
-            result['events'] = ''
-        result_final = {
-            'taskId': result['id'],
-            'ticketNumber': result['ticketNumber'],
-            'sentiment': result['sentiment'],
-            'sentimenttypeid': result['sentimenttypeid'],
-            'title': result['title'],
-            'description': result['description'],
-            'priority': result['priority'],
-            'disposition': result['disposition'],
-            'creationDate': result['creationDate'],
-            'createdByUser': result['createdByUser'],
-            'modificationDate': result['modificationDate'],
-            'modifiedByUser': result['modifiedByUser'],
-            'requiresAcknowledgement': result['requiresAcknowledgement'],
-            'requiresConfirmation': result['requiresConfirmation'],
-            'requiresAssessment': result['requiresAssessment'],
-            'startDate': result['startDate'],
-            'endDate': result['endDate'],
-            'autoPromote': result['autoPromote'],
-            'assignedToUserId': result['assignedToUserId'],
-            'assignedToUser': result['assignedToUser'],
-            'assignedToGroupId': result['assignedToGroupId'],
-            'assignedToGroup': result['assignedToGroup'],
-            'externalTicketNumber': result['externalTicketNumber'],
-            'externalTicketType': result['externalTicketType'],
-            'tasks': result['tasks'],
-            'comments': result['comments'],
-            'events': result['events'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -2597,24 +2327,17 @@ def add_hash_allow_list_command(client: Client, args: Dict[str, Any]) -> List[Co
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'status',
+        'errorCode',
+        'errorDescription',
+        'hash',
+        'tagId',
+    ]
     for result in results:
-        if 'status' not in result:
-            result['status'] = ''
-        if 'errorCode' not in result:
-            result['errorCode'] = ''
-        if 'errorDescription' not in result:
-            result['errorDescription'] = ''
-        if 'hash' not in result:
-            result['hash'] = ''
-        if 'tagId' not in result:
-            result['tagId'] = ''
-        result_final = {
-            'status': result['status'],
-            'errorCode': result['errorCode'],
-            'errorDescription': result['errorDescription'],
-            'hash': result['hash'],
-            'tagId': result['tagId'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -2653,24 +2376,17 @@ def add_hash_deny_list_command(client: Client, args: Dict[str, Any]) -> List[Com
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'status',
+        'errorCode',
+        'errorDescription',
+        'hash',
+        'tagId',
+    ]
     for result in results:
-        if 'status' not in result:
-            result['status'] = ''
-        if 'errorCode' not in result:
-            result['errorCode'] = ''
-        if 'errorDescription' not in result:
-            result['errorDescription'] = ''
-        if 'hash' not in result:
-            result['hash'] = ''
-        if 'tagId' not in result:
-            result['tagId'] = ''
-        result_final = {
-            'status': result['status'],
-            'errorCode': result['errorCode'],
-            'errorDescription': result['errorDescription'],
-            'hash': result['hash'],
-            'tagId': result['tagId'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -2705,18 +2421,15 @@ def delete_hash_allow_list_command(client: Client, args: Dict[str, Any]) -> List
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'status',
+        'hash',
+        'tagId',
+    ]
     for result in results:
-        if 'status' not in result:
-            result['status'] = ''
-        if 'hash' not in result:
-            result['hash'] = ''
-        if 'tagId' not in result:
-            result['tagId'] = ''
-        result_final = {
-            'status': result['status'],
-            'hash': result['hash'],
-            'tagId': result['tagId'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -2751,18 +2464,15 @@ def delete_hash_deny_list_command(client: Client, args: Dict[str, Any]) -> List[
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'status',
+        'hash',
+        'tagId',
+    ]
     for result in results:
-        if 'status' not in result:
-            result['status'] = ''
-        if 'hash' not in result:
-            result['hash'] = ''
-        if 'tagId' not in result:
-            result['tagId'] = ''
-        result_final = {
-            'status': result['status'],
-            'hash': result['hash'],
-            'tagId': result['tagId'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -2795,48 +2505,25 @@ def get_sub_generations_command(client: Client, args: Dict[str, Any]) -> List[Co
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'caseSensitive',
+        'agentObjectId',
+        'subGenerationId',
+        'objectId',
+        'generationId',
+        'subRevision',
+        'notes',
+        'creationDate',
+        'files',
+        'directories',
+        'totalSize',
+        'revision',
+        'userName',
+    ]
     for result in results:
-        if 'caseSensitive' not in result:
-            result['caseSensitive'] = ''
-        if 'agentObjectId' not in result:
-            result['agentObjectId'] = ''
-        if 'subGenerationId' not in result:
-            result['subGenerationId'] = ''
-        if 'objectId' not in result:
-            result['objectId'] = ''
-        if 'generationId' not in result:
-            result['generationId'] = ''
-        if 'subRevision' not in result:
-            result['subRevision'] = ''
-        if 'notes' not in result:
-            result['notes'] = ''
-        if 'creationDate' not in result:
-            result['creationDate'] = ''
-        if 'files' not in result:
-            result['files'] = ''
-        if 'directories' not in result:
-            result['directories'] = ''
-        if 'totalSize' not in result:
-            result['totalSize'] = ''
-        if 'revision' not in result:
-            result['revision'] = ''
-        if 'userName' not in result:
-            result['userName'] = ''
-        result_final = {
-            'caseSensitive': result['caseSensitive'],
-            'agentObjectId': result['agentObjectId'],
-            'subGenerationId': result['subGenerationId'],
-            'objectId': result['objectId'],
-            'generationId': result['generationId'],
-            'subRevision': result['subRevision'],
-            'notes': result['notes'],
-            'creationDate': result['creationDate'],
-            'files': result['files'],
-            'directories': result['directories'],
-            'totalSize': result['totalSize'],
-            'revision': result['revision'],
-            'userName': result['userName'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -2896,114 +2583,47 @@ def get_object_group_command(client: Client, args: Dict[str, Any]) -> List[Comma
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'agentIsFilesystem',
+        'cancel',
+        'connected',
+        'logsByDays',
+        'requireNotes',
+        'inService',
+        'children',
+        'events',
+        'intrusions',
+        'intrusionSize',
+        'objectId',
+        'objectStatus',
+        'objectSubType',
+        'objectType',
+        'parentId',
+        'revisions',
+        'templateId',
+        'securityAdd',
+        'securityEdit',
+        'securityLock',
+        'securityReport',
+        'securityUnlock',
+        'securityView',
+        'warnMinutes',
+        'contact',
+        'createDate',
+        'description',
+        'location',
+        'name',
+        'objectPath',
+        'url',
+        'agentObjectId',
+        'objectsCustom',
+        'watchArray',
+        'comparisonMethod',
+    ]
     for result in results:
-        if 'agentIsFilesystem' not in result:
-            result['agentIsFilesystem'] = ''
-        if 'cancel' not in result:
-            result['cancel'] = ''
-        if 'connected' not in result:
-            result['connected'] = ''
-        if 'logsByDays' not in result:
-            result['logsByDays'] = ''
-        if 'requireNotes' not in result:
-            result['requireNotes'] = ''
-        if 'inService' not in result:
-            result['inService'] = ''
-        if 'children' not in result:
-            result['children'] = ''
-        if 'events' not in result:
-            result['events'] = ''
-        if 'intrusions' not in result:
-            result['intrusions'] = ''
-        if 'intrusionSize' not in result:
-            result['intrusionSize'] = ''
-        if 'objectId' not in result:
-            result['objectId'] = ''
-        if 'objectStatus' not in result:
-            result['objectStatus'] = ''
-        if 'objectSubType' not in result:
-            result['objectSubType'] = ''
-        if 'objectType' not in result:
-            result['objectType'] = ''
-        if 'parentId' not in result:
-            result['parentId'] = ''
-        if 'revisions' not in result:
-            result['revisions'] = ''
-        if 'templateId' not in result:
-            result['templateId'] = ''
-        if 'securityAdd' not in result:
-            result['securityAdd'] = ''
-        if 'securityEdit' not in result:
-            result['securityEdit'] = ''
-        if 'securityLock' not in result:
-            result['securityLock'] = ''
-        if 'securityReport' not in result:
-            result['securityReport'] = ''
-        if 'securityUnlock' not in result:
-            result['securityUnlock'] = ''
-        if 'securityView' not in result:
-            result['securityView'] = ''
-        if 'warnMinutes' not in result:
-            result['warnMinutes'] = ''
-        if 'contact' not in result:
-            result['contact'] = ''
-        if 'createDate' not in result:
-            result['createDate'] = ''
-        if 'description' not in result:
-            result['description'] = ''
-        if 'location' not in result:
-            result['location'] = ''
-        if 'name' not in result:
-            result['name'] = ''
-        if 'objectPath' not in result:
-            result['objectPath'] = ''
-        if 'url' not in result:
-            result['url'] = ''
-        if 'agentObjectId' not in result:
-            result['agentObjectId'] = ''
-        if 'objectsCustom' not in result:
-            result['objectsCustom'] = ''
-        if 'watchArray' not in result:
-            result['watchArray'] = ''
-        if 'comparisonMethod' not in result:
-            result['comparisonMethod'] = ''
-        result_final = {
-            'agentIsFilesystem': result['agentIsFilesystem'],
-            'cancel': result['cancel'],
-            'connected': result['connected'],
-            'logsByDays': result['logsByDays'],
-            'requireNotes': result['requireNotes'],
-            'inService': result['inService'],
-            'children': result['children'],
-            'events': result['events'],
-            'intrusions': result['intrusions'],
-            'intrusionSize': result['intrusionSize'],
-            'objectId': result['objectId'],
-            'objectStatus': result['objectStatus'],
-            'objectSubType': result['objectSubType'],
-            'objectType': result['objectType'],
-            'parentId': result['parentId'],
-            'revisions': result['revisions'],
-            'templateId': result['templateId'],
-            'securityAdd': result['securityAdd'],
-            'securityEdit': result['securityEdit'],
-            'securityLock': result['securityLock'],
-            'securityReport': result['securityReport'],
-            'securityUnlock': result['securityUnlock'],
-            'securityView': result['securityView'],
-            'warnMinutes': result['warnMinutes'],
-            'contact': result['contact'],
-            'createDate': result['createDate'],
-            'description': result['description'],
-            'location': result['location'],
-            'name': result['name'],
-            'objectPath': result['objectPath'],
-            'url': result['url'],
-            'agentObjectId': result['agentObjectId'],
-            'objectsCustom': result['objectsCustom'],
-            'watchArray': result['watchArray'],
-            'comparisonMethod': result['comparisonMethod'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -3082,105 +2702,44 @@ def get_object_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'agentIsFilesystem',
+        'cancel',
+        'connected',
+        'logsByDays',
+        'requireNotes',
+        'inService',
+        'children',
+        'events',
+        'intrusions',
+        'intrusionSize',
+        'objectId',
+        'objectStatus',
+        'objectSubType',
+        'objectType',
+        'parentId',
+        'revisions',
+        'templateId',
+        'securityAdd',
+        'securityEdit',
+        'securityLock',
+        'securityReport',
+        'securityUnlock',
+        'securityView',
+        'warnMinutes',
+        'contact',
+        'createDate',
+        'description',
+        'location',
+        'name',
+        'objectPath',
+        'url',
+        'agentObjectId',
+    ]
     for result in results:
-        if 'agentIsFilesystem' not in result:
-            result['agentIsFilesystem'] = ''
-        if 'cancel' not in result:
-            result['cancel'] = ''
-        if 'connected' not in result:
-            result['connected'] = ''
-        if 'logsByDays' not in result:
-            result['logsByDays'] = ''
-        if 'requireNotes' not in result:
-            result['requireNotes'] = ''
-        if 'inService' not in result:
-            result['inService'] = ''
-        if 'children' not in result:
-            result['children'] = ''
-        if 'events' not in result:
-            result['events'] = ''
-        if 'intrusions' not in result:
-            result['intrusions'] = ''
-        if 'intrusionSize' not in result:
-            result['intrusionSize'] = ''
-        if 'objectId' not in result:
-            result['objectId'] = ''
-        if 'objectStatus' not in result:
-            result['objectStatus'] = ''
-        if 'objectSubType' not in result:
-            result['objectSubType'] = ''
-        if 'objectType' not in result:
-            result['objectType'] = ''
-        if 'parentId' not in result:
-            result['parentId'] = ''
-        if 'revisions' not in result:
-            result['revisions'] = ''
-        if 'templateId' not in result:
-            result['templateId'] = ''
-        if 'securityAdd' not in result:
-            result['securityAdd'] = ''
-        if 'securityEdit' not in result:
-            result['securityEdit'] = ''
-        if 'securityLock' not in result:
-            result['securityLock'] = ''
-        if 'securityReport' not in result:
-            result['securityReport'] = ''
-        if 'securityUnlock' not in result:
-            result['securityUnlock'] = ''
-        if 'securityView' not in result:
-            result['securityView'] = ''
-        if 'warnMinutes' not in result:
-            result['warnMinutes'] = ''
-        if 'contact' not in result:
-            result['contact'] = ''
-        if 'createDate' not in result:
-            result['createDate'] = ''
-        if 'description' not in result:
-            result['description'] = ''
-        if 'location' not in result:
-            result['location'] = ''
-        if 'name' not in result:
-            result['name'] = ''
-        if 'objectPath' not in result:
-            result['objectPath'] = ''
-        if 'url' not in result:
-            result['url'] = ''
-        if 'agentObjectId' not in result:
-            result['agentObjectId'] = ''
-        result_final = {
-            'agentIsFilesystem': result['agentIsFilesystem'],
-            'cancel': result['cancel'],
-            'connected': result['connected'],
-            'logsByDays': result['logsByDays'],
-            'requireNotes': result['requireNotes'],
-            'inService': result['inService'],
-            'children': result['children'],
-            'events': result['events'],
-            'intrusions': result['intrusions'],
-            'intrusionSize': result['intrusionSize'],
-            'objectId': result['objectId'],
-            'objectStatus': result['objectStatus'],
-            'objectSubType': result['objectSubType'],
-            'objectType': result['objectType'],
-            'parentId': result['parentId'],
-            'revisions': result['revisions'],
-            'templateId': result['templateId'],
-            'securityAdd': result['securityAdd'],
-            'securityEdit': result['securityEdit'],
-            'securityLock': result['securityLock'],
-            'securityReport': result['securityReport'],
-            'securityUnlock': result['securityUnlock'],
-            'securityView': result['securityView'],
-            'warnMinutes': result['warnMinutes'],
-            'contact': result['contact'],
-            'createDate': result['createDate'],
-            'description': result['description'],
-            'location': result['location'],
-            'name': result['name'],
-            'objectPath': result['objectPath'],
-            'url': result['url'],
-            'agentObjectId': result['agentObjectId'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -3236,12 +2795,13 @@ def view_file_command(client: Client, args: Dict[str, Any]) -> List[CommandResul
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'contents',
+    ]
     for result in results:
-        if 'contents' not in result:
-            result['contents'] = ''
-        result_final = {
-            'contents': result['contents'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -3278,12 +2838,13 @@ def run_report_by_name_command(client: Client, args: Dict[str, Any]) -> List[Com
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'html',
+    ]
     for result in results:
-        if 'html' not in result:
-            result['html'] = ''
-        result_final = {
-            'html': result['html'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -3343,36 +2904,21 @@ def get_current_compliance_items_command(client: Client, args: Dict[str, Any]) -
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'objectid',
+        'type',
+        'name',
+        'description',
+        'scanstarttime',
+        'scanendtime',
+        'scanid',
+        'compliancemappingid',
+        'id',
+    ]
     for result in results:
-        if 'objectid' not in result:
-            result['objectid'] = ''
-        if 'type' not in result:
-            result['type'] = ''
-        if 'name' not in result:
-            result['name'] = ''
-        if 'description' not in result:
-            result['description'] = ''
-        if 'scanstarttime' not in result:
-            result['scanstarttime'] = ''
-        if 'scanendtime' not in result:
-            result['scanendtime'] = ''
-        if 'scanid' not in result:
-            result['scanid'] = ''
-        if 'compliancemappingid' not in result:
-            result['compliancemappingid'] = ''
-        if 'id' not in result:
-            result['id'] = ''
-        result_final = {
-            'objectid': result['objectid'],
-            'type': result['type'],
-            'name': result['name'],
-            'description': result['description'],
-            'scanstarttime': result['scanstarttime'],
-            'scanendtime': result['scanendtime'],
-            'scanid': result['scanid'],
-            'compliancemappingid': result['compliancemappingid'],
-            'id': result['id'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -3415,129 +2961,52 @@ def get_objects_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'repositoryDisplayName',
+        'connected',
+        'agentObjectId',
+        'description',
+        'name',
+        'objectPath',
+        'agentIsFilesystem',
+        'cancel',
+        'logsByDays',
+        'requireNotes',
+        'inService',
+        'events',
+        'intrusions',
+        'intrusionSize',
+        'objectId',
+        'objectStatus',
+        'objectSubType',
+        'objectType',
+        'parentId',
+        'revisions',
+        'templateId',
+        'securityAdd',
+        'securityEdit',
+        'securityLock',
+        'securityReport',
+        'securityUnlock',
+        'securityView',
+        'warnMinutes',
+        'contact',
+        'createDate',
+        'location',
+        'url',
+        'parentName',
+        'children',
+        'agentVersion',
+        'agentBuild',
+        'agentOsVersion',
+        'agentIp',
+        'agentName',
+        'agentInstalled',
+    ]
     for result in results:
-        if 'repositoryDisplayName' not in result:
-            result['repositoryDisplayName'] = ''
-        if 'connected' not in result:
-            result['connected'] = ''
-        if 'agentObjectId' not in result:
-            result['agentObjectId'] = ''
-        if 'description' not in result:
-            result['description'] = ''
-        if 'name' not in result:
-            result['name'] = ''
-        if 'objectPath' not in result:
-            result['objectPath'] = ''
-        if 'agentIsFilesystem' not in result:
-            result['agentIsFilesystem'] = ''
-        if 'cancel' not in result:
-            result['cancel'] = ''
-        if 'logsByDays' not in result:
-            result['logsByDays'] = ''
-        if 'requireNotes' not in result:
-            result['requireNotes'] = ''
-        if 'inService' not in result:
-            result['inService'] = ''
-        if 'events' not in result:
-            result['events'] = ''
-        if 'intrusions' not in result:
-            result['intrusions'] = ''
-        if 'intrusionSize' not in result:
-            result['intrusionSize'] = ''
-        if 'objectId' not in result:
-            result['objectId'] = ''
-        if 'objectStatus' not in result:
-            result['objectStatus'] = ''
-        if 'objectSubType' not in result:
-            result['objectSubType'] = ''
-        if 'objectType' not in result:
-            result['objectType'] = ''
-        if 'parentId' not in result:
-            result['parentId'] = ''
-        if 'revisions' not in result:
-            result['revisions'] = ''
-        if 'templateId' not in result:
-            result['templateId'] = ''
-        if 'securityAdd' not in result:
-            result['securityAdd'] = ''
-        if 'securityEdit' not in result:
-            result['securityEdit'] = ''
-        if 'securityLock' not in result:
-            result['securityLock'] = ''
-        if 'securityReport' not in result:
-            result['securityReport'] = ''
-        if 'securityUnlock' not in result:
-            result['securityUnlock'] = ''
-        if 'securityView' not in result:
-            result['securityView'] = ''
-        if 'warnMinutes' not in result:
-            result['warnMinutes'] = ''
-        if 'contact' not in result:
-            result['contact'] = ''
-        if 'createDate' not in result:
-            result['createDate'] = ''
-        if 'location' not in result:
-            result['location'] = ''
-        if 'url' not in result:
-            result['url'] = ''
-        if 'parentName' not in result:
-            result['parentName'] = ''
-        if 'children' not in result:
-            result['children'] = ''
-        if 'agentVersion' not in result:
-            result['agentVersion'] = ''
-        if 'agentBuild' not in result:
-            result['agentBuild'] = ''
-        if 'agentOsVersion' not in result:
-            result['agentOsVersion'] = ''
-        if 'agentIp' not in result:
-            result['agentIp'] = ''
-        if 'agentName' not in result:
-            result['agentName'] = ''
-        if 'agentInstalled' not in result:
-            result['agentInstalled'] = ''
-        result_final = {
-            'repositoryDisplayName': result['repositoryDisplayName'],
-            'connected': result['connected'],
-            'agentObjectId': result['agentObjectId'],
-            'description': result['description'],
-            'name': result['name'],
-            'objectPath': result['objectPath'],
-            'agentIsFilesystem': result['agentIsFilesystem'],
-            'cancel': result['cancel'],
-            'logsByDays': result['logsByDays'],
-            'requireNotes': result['requireNotes'],
-            'inService': result['inService'],
-            'events': result['events'],
-            'intrusions': result['intrusions'],
-            'intrusionSize': result['intrusionSize'],
-            'objectId': result['objectId'],
-            'objectStatus': result['objectStatus'],
-            'objectSubType': result['objectSubType'],
-            'objectType': result['objectType'],
-            'parentId': result['parentId'],
-            'revisions': result['revisions'],
-            'templateId': result['templateId'],
-            'securityAdd': result['securityAdd'],
-            'securityEdit': result['securityEdit'],
-            'securityLock': result['securityLock'],
-            'securityReport': result['securityReport'],
-            'securityUnlock': result['securityUnlock'],
-            'securityView': result['securityView'],
-            'warnMinutes': result['warnMinutes'],
-            'contact': result['contact'],
-            'createDate': result['createDate'],
-            'location': result['location'],
-            'url': result['url'],
-            'parentName': result['parentName'],
-            'children': result['children'],
-            'agentVersion': result['agentVersion'],
-            'agentBuild': result['agentBuild'],
-            'agentOsVersion': result['agentOsVersion'],
-            'agentIp': result['agentIp'],
-            'agentName': result['agentName'],
-            'agentInstalled': result['agentInstalled'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -3570,21 +3039,16 @@ def get_agent_info_command(client: Client, args: Dict[str, Any]) -> List[Command
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'objectData',
+        'objectsCustom',
+        'agentData',
+        'state',
+    ]
     for result in results:
-        if 'objectData' not in result:
-            result['objectData'] = ''
-        if 'objectsCustom' not in result:
-            result['objectsCustom'] = ''
-        if 'agentData' not in result:
-            result['agentData'] = ''
-        if 'state' not in result:
-            result['state'] = ''
-        result_final = {
-            'objectData': result['objectData'],
-            'objectsCustom': result['objectsCustom'],
-            'agentData': result['agentData'],
-            'state': result['state'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -3625,138 +3089,55 @@ def get_compliance_archive_details_command(client: Client, args: Dict[str, Any])
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'testdate',
+        'datatype',
+        'scanid',
+        'ipaddress',
+        'lobjectid',
+        'alternatesystemid',
+        'agentuuid',
+        'agentname',
+        'objectpath',
+        'benchmark',
+        'profile',
+        'test',
+        'pass',
+        'iswaived',
+        'adjustedscore',
+        'possiblescore',
+        'rawscore',
+        'weight',
+        'testran',
+        'remediation',
+        'severity',
+        'version',
+        'rationale',
+        'description',
+        'assessment',
+        'disposition',
+        'conjunction',
+        'negatatevalue',
+        'comment',
+        'controlversion',
+        'controlnumber',
+        'osversion',
+        'personality',
+        'objectid',
+        'userId',
+        'block',
+        'bunlock',
+        'bview',
+        'bedit',
+        'badd',
+        'breports',
+        'blogon',
+        'isadmin',
+    ]
     for result in results:
-        if 'testdate' not in result:
-            result['testdate'] = ''
-        if 'datatype' not in result:
-            result['datatype'] = ''
-        if 'scanid' not in result:
-            result['scanid'] = ''
-        if 'ipaddress' not in result:
-            result['ipaddress'] = ''
-        if 'lobjectid' not in result:
-            result['lobjectid'] = ''
-        if 'alternatesystemid' not in result:
-            result['alternatesystemid'] = ''
-        if 'agentuuid' not in result:
-            result['agentuuid'] = ''
-        if 'agentname' not in result:
-            result['agentname'] = ''
-        if 'objectpath' not in result:
-            result['objectpath'] = ''
-        if 'benchmark' not in result:
-            result['benchmark'] = ''
-        if 'profile' not in result:
-            result['profile'] = ''
-        if 'test' not in result:
-            result['test'] = ''
-        if 'pass' not in result:
-            result['pass'] = ''
-        if 'iswaived' not in result:
-            result['iswaived'] = ''
-        if 'adjustedscore' not in result:
-            result['adjustedscore'] = ''
-        if 'possiblescore' not in result:
-            result['possiblescore'] = ''
-        if 'rawscore' not in result:
-            result['rawscore'] = ''
-        if 'weight' not in result:
-            result['weight'] = ''
-        if 'testran' not in result:
-            result['testran'] = ''
-        if 'remediation' not in result:
-            result['remediation'] = ''
-        if 'severity' not in result:
-            result['severity'] = ''
-        if 'version' not in result:
-            result['version'] = ''
-        if 'rationale' not in result:
-            result['rationale'] = ''
-        if 'description' not in result:
-            result['description'] = ''
-        if 'assessment' not in result:
-            result['assessment'] = ''
-        if 'disposition' not in result:
-            result['disposition'] = ''
-        if 'conjunction' not in result:
-            result['conjunction'] = ''
-        if 'negatatevalue' not in result:
-            result['negatatevalue'] = ''
-        if 'comment' not in result:
-            result['comment'] = ''
-        if 'controlversion' not in result:
-            result['controlversion'] = ''
-        if 'controlnumber' not in result:
-            result['controlnumber'] = ''
-        if 'osversion' not in result:
-            result['osversion'] = ''
-        if 'personality' not in result:
-            result['personality'] = ''
-        if 'objectid' not in result:
-            result['objectid'] = ''
-        if 'userId' not in result:
-            result['userId'] = ''
-        if 'block' not in result:
-            result['block'] = ''
-        if 'bunlock' not in result:
-            result['bunlock'] = ''
-        if 'bview' not in result:
-            result['bview'] = ''
-        if 'bedit' not in result:
-            result['bedit'] = ''
-        if 'badd' not in result:
-            result['badd'] = ''
-        if 'breports' not in result:
-            result['breports'] = ''
-        if 'blogon' not in result:
-            result['blogon'] = ''
-        if 'isadmin' not in result:
-            result['isadmin'] = ''
-        result_final = {
-            'testdate': result['testdate'],
-            'datatype': result['datatype'],
-            'scanid': result['scanid'],
-            'ipaddress': result['ipaddress'],
-            'lobjectid': result['lobjectid'],
-            'alternatesystemid': result['alternatesystemid'],
-            'agentuuid': result['agentuuid'],
-            'agentname': result['agentname'],
-            'objectpath': result['objectpath'],
-            'benchmark': result['benchmark'],
-            'profile': result['profile'],
-            'test': result['test'],
-            'pass': result['pass'],
-            'iswaived': result['iswaived'],
-            'adjustedscore': result['adjustedscore'],
-            'possiblescore': result['possiblescore'],
-            'rawscore': result['rawscore'],
-            'weight': result['weight'],
-            'testran': result['testran'],
-            'remediation': result['remediation'],
-            'severity': result['severity'],
-            'version': result['version'],
-            'rationale': result['rationale'],
-            'description': result['description'],
-            'assessment': result['assessment'],
-            'disposition': result['disposition'],
-            'conjunction': result['conjunction'],
-            'negatatevalue': result['negatatevalue'],
-            'comment': result['comment'],
-            'controlversion': result['controlversion'],
-            'controlnumber': result['controlnumber'],
-            'osversion': result['osversion'],
-            'personality': result['personality'],
-            'objectid': result['objectid'],
-            'userId': result['userId'],
-            'block': result['block'],
-            'bunlock': result['bunlock'],
-            'bview': result['bview'],
-            'bedit': result['bedit'],
-            'badd': result['badd'],
-            'breports': result['breports'],
-            'blogon': result['blogon'],
-            'isadmin': result['isadmin'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -3797,93 +3178,40 @@ def get_compliance_archive_summary_command(client: Client, args: Dict[str, Any])
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'testdate',
+        'scanid',
+        'ipaddress',
+        'datatype',
+        'alternatesystemid',
+        'agentuuid',
+        'agentname',
+        'objectpath',
+        'lobjectid',
+        'benchmark',
+        'profile',
+        'totalfailcount',
+        'totalpasscount',
+        'totaltestsskipped',
+        'totalwaivecount',
+        'pass',
+        'totaltestsran',
+        'osversion',
+        'personality',
+        'userId',
+        'objectid',
+        'block',
+        'bunlock',
+        'bview',
+        'bedit',
+        'badd',
+        'breports',
+        'blogon',
+    ]
     for result in results:
-        if 'testdate' not in result:
-            result['testdate'] = ''
-        if 'scanid' not in result:
-            result['scanid'] = ''
-        if 'ipaddress' not in result:
-            result['ipaddress'] = ''
-        if 'datatype' not in result:
-            result['datatype'] = ''
-        if 'alternatesystemid' not in result:
-            result['alternatesystemid'] = ''
-        if 'agentuuid' not in result:
-            result['agentuuid'] = ''
-        if 'agentname' not in result:
-            result['agentname'] = ''
-        if 'objectpath' not in result:
-            result['objectpath'] = ''
-        if 'lobjectid' not in result:
-            result['lobjectid'] = ''
-        if 'benchmark' not in result:
-            result['benchmark'] = ''
-        if 'profile' not in result:
-            result['profile'] = ''
-        if 'totalfailcount' not in result:
-            result['totalfailcount'] = ''
-        if 'totalpasscount' not in result:
-            result['totalpasscount'] = ''
-        if 'totaltestsskipped' not in result:
-            result['totaltestsskipped'] = ''
-        if 'totalwaivecount' not in result:
-            result['totalwaivecount'] = ''
-        if 'pass' not in result:
-            result['pass'] = ''
-        if 'totaltestsran' not in result:
-            result['totaltestsran'] = ''
-        if 'osversion' not in result:
-            result['osversion'] = ''
-        if 'personality' not in result:
-            result['personality'] = ''
-        if 'userId' not in result:
-            result['userId'] = ''
-        if 'objectid' not in result:
-            result['objectid'] = ''
-        if 'block' not in result:
-            result['block'] = ''
-        if 'bunlock' not in result:
-            result['bunlock'] = ''
-        if 'bview' not in result:
-            result['bview'] = ''
-        if 'bedit' not in result:
-            result['bedit'] = ''
-        if 'badd' not in result:
-            result['badd'] = ''
-        if 'breports' not in result:
-            result['breports'] = ''
-        if 'blogon' not in result:
-            result['blogon'] = ''
-        result_final = {
-            'testdate': result['testdate'],
-            'scanid': result['scanid'],
-            'ipaddress': result['ipaddress'],
-            'datatype': result['datatype'],
-            'alternatesystemid': result['alternatesystemid'],
-            'agentuuid': result['agentuuid'],
-            'agentname': result['agentname'],
-            'objectpath': result['objectpath'],
-            'lobjectid': result['lobjectid'],
-            'benchmark': result['benchmark'],
-            'profile': result['profile'],
-            'totalfailcount': result['totalfailcount'],
-            'totalpasscount': result['totalpasscount'],
-            'totaltestsskipped': result['totaltestsskipped'],
-            'totalwaivecount': result['totalwaivecount'],
-            'pass': result['pass'],
-            'totaltestsran': result['totaltestsran'],
-            'osversion': result['osversion'],
-            'personality': result['personality'],
-            'userId': result['userId'],
-            'objectid': result['objectid'],
-            'block': result['block'],
-            'bunlock': result['bunlock'],
-            'bview': result['bview'],
-            'bedit': result['bedit'],
-            'badd': result['badd'],
-            'breports': result['breports'],
-            'blogon': result['blogon'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -3943,93 +3271,40 @@ def compliance_scan_with_summary_command(client: Client, args: Dict[str, Any]) -
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'testdate',
+        'scanid',
+        'ipaddress',
+        'datatype',
+        'alternatesystemid',
+        'agentuuid',
+        'agentname',
+        'objectpath',
+        'lobjectid',
+        'benchmark',
+        'profile',
+        'totalfailcount',
+        'totalpasscount',
+        'totaltestsskipped',
+        'totalwaivecount',
+        'pass',
+        'totaltestsran',
+        'osversion',
+        'personality',
+        'userId',
+        'objectid',
+        'block',
+        'bunlock',
+        'bview',
+        'bedit',
+        'badd',
+        'breports',
+        'blogon',
+    ]
     for result in results:
-        if 'testdate' not in result:
-            result['testdate'] = ''
-        if 'scanid' not in result:
-            result['scanid'] = ''
-        if 'ipaddress' not in result:
-            result['ipaddress'] = ''
-        if 'datatype' not in result:
-            result['datatype'] = ''
-        if 'alternatesystemid' not in result:
-            result['alternatesystemid'] = ''
-        if 'agentuuid' not in result:
-            result['agentuuid'] = ''
-        if 'agentname' not in result:
-            result['agentname'] = ''
-        if 'objectpath' not in result:
-            result['objectpath'] = ''
-        if 'lobjectid' not in result:
-            result['lobjectid'] = ''
-        if 'benchmark' not in result:
-            result['benchmark'] = ''
-        if 'profile' not in result:
-            result['profile'] = ''
-        if 'totalfailcount' not in result:
-            result['totalfailcount'] = ''
-        if 'totalpasscount' not in result:
-            result['totalpasscount'] = ''
-        if 'totaltestsskipped' not in result:
-            result['totaltestsskipped'] = ''
-        if 'totalwaivecount' not in result:
-            result['totalwaivecount'] = ''
-        if 'pass' not in result:
-            result['pass'] = ''
-        if 'totaltestsran' not in result:
-            result['totaltestsran'] = ''
-        if 'osversion' not in result:
-            result['osversion'] = ''
-        if 'personality' not in result:
-            result['personality'] = ''
-        if 'userId' not in result:
-            result['userId'] = ''
-        if 'objectid' not in result:
-            result['objectid'] = ''
-        if 'block' not in result:
-            result['block'] = ''
-        if 'bunlock' not in result:
-            result['bunlock'] = ''
-        if 'bview' not in result:
-            result['bview'] = ''
-        if 'bedit' not in result:
-            result['bedit'] = ''
-        if 'badd' not in result:
-            result['badd'] = ''
-        if 'breports' not in result:
-            result['breports'] = ''
-        if 'blogon' not in result:
-            result['blogon'] = ''
-        result_final = {
-            'testdate': result['testdate'],
-            'scanid': result['scanid'],
-            'ipaddress': result['ipaddress'],
-            'datatype': result['datatype'],
-            'alternatesystemid': result['alternatesystemid'],
-            'agentuuid': result['agentuuid'],
-            'agentname': result['agentname'],
-            'objectpath': result['objectpath'],
-            'lobjectid': result['lobjectid'],
-            'benchmark': result['benchmark'],
-            'profile': result['profile'],
-            'totalfailcount': result['totalfailcount'],
-            'totalpasscount': result['totalpasscount'],
-            'totaltestsskipped': result['totaltestsskipped'],
-            'totalwaivecount': result['totalwaivecount'],
-            'pass': result['pass'],
-            'totaltestsran': result['totaltestsran'],
-            'osversion': result['osversion'],
-            'personality': result['personality'],
-            'userId': result['userId'],
-            'objectid': result['objectid'],
-            'block': result['block'],
-            'bunlock': result['bunlock'],
-            'bview': result['bview'],
-            'bedit': result['bedit'],
-            'badd': result['badd'],
-            'breports': result['breports'],
-            'blogon': result['blogon'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -4062,12 +3337,13 @@ def get_agent_object_id_by_alternate_system_id_command(client: Client, args: Dic
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'agentObjectId',
+    ]
     for result in results:
-        if 'agentObjectId' not in result:
-            result['agentObjectId'] = ''
-        result_final = {
-            'agentObjectId': result['agentObjectId'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -4100,105 +3376,44 @@ def get_agent_object_by_name_command(client: Client, args: Dict[str, Any]) -> Li
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'agentIsFilesystem',
+        'cancel',
+        'connected',
+        'logsByDays',
+        'requireNotes',
+        'inService',
+        'children',
+        'events',
+        'intrusions',
+        'intrusionSize',
+        'objectId',
+        'objectStatus',
+        'objectSubType',
+        'objectType',
+        'parentId',
+        'revisions',
+        'templateId',
+        'securityAdd',
+        'securityEdit',
+        'securityLock',
+        'securityReport',
+        'securityUnlock',
+        'securityView',
+        'warnMinutes',
+        'contact',
+        'createDate',
+        'description',
+        'location',
+        'name',
+        'objectPath',
+        'url',
+        'agentObjectId',
+    ]
     for result in results:
-        if 'agentIsFilesystem' not in result:
-            result['agentIsFilesystem'] = ''
-        if 'cancel' not in result:
-            result['cancel'] = ''
-        if 'connected' not in result:
-            result['connected'] = ''
-        if 'logsByDays' not in result:
-            result['logsByDays'] = ''
-        if 'requireNotes' not in result:
-            result['requireNotes'] = ''
-        if 'inService' not in result:
-            result['inService'] = ''
-        if 'children' not in result:
-            result['children'] = ''
-        if 'events' not in result:
-            result['events'] = ''
-        if 'intrusions' not in result:
-            result['intrusions'] = ''
-        if 'intrusionSize' not in result:
-            result['intrusionSize'] = ''
-        if 'objectId' not in result:
-            result['objectId'] = ''
-        if 'objectStatus' not in result:
-            result['objectStatus'] = ''
-        if 'objectSubType' not in result:
-            result['objectSubType'] = ''
-        if 'objectType' not in result:
-            result['objectType'] = ''
-        if 'parentId' not in result:
-            result['parentId'] = ''
-        if 'revisions' not in result:
-            result['revisions'] = ''
-        if 'templateId' not in result:
-            result['templateId'] = ''
-        if 'securityAdd' not in result:
-            result['securityAdd'] = ''
-        if 'securityEdit' not in result:
-            result['securityEdit'] = ''
-        if 'securityLock' not in result:
-            result['securityLock'] = ''
-        if 'securityReport' not in result:
-            result['securityReport'] = ''
-        if 'securityUnlock' not in result:
-            result['securityUnlock'] = ''
-        if 'securityView' not in result:
-            result['securityView'] = ''
-        if 'warnMinutes' not in result:
-            result['warnMinutes'] = ''
-        if 'contact' not in result:
-            result['contact'] = ''
-        if 'createDate' not in result:
-            result['createDate'] = ''
-        if 'description' not in result:
-            result['description'] = ''
-        if 'location' not in result:
-            result['location'] = ''
-        if 'name' not in result:
-            result['name'] = ''
-        if 'objectPath' not in result:
-            result['objectPath'] = ''
-        if 'url' not in result:
-            result['url'] = ''
-        if 'agentObjectId' not in result:
-            result['agentObjectId'] = ''
-        result_final = {
-            'agentIsFilesystem': result['agentIsFilesystem'],
-            'cancel': result['cancel'],
-            'connected': result['connected'],
-            'logsByDays': result['logsByDays'],
-            'requireNotes': result['requireNotes'],
-            'inService': result['inService'],
-            'children': result['children'],
-            'events': result['events'],
-            'intrusions': result['intrusions'],
-            'intrusionSize': result['intrusionSize'],
-            'objectId': result['objectId'],
-            'objectStatus': result['objectStatus'],
-            'objectSubType': result['objectSubType'],
-            'objectType': result['objectType'],
-            'parentId': result['parentId'],
-            'revisions': result['revisions'],
-            'templateId': result['templateId'],
-            'securityAdd': result['securityAdd'],
-            'securityEdit': result['securityEdit'],
-            'securityLock': result['securityLock'],
-            'securityReport': result['securityReport'],
-            'securityUnlock': result['securityUnlock'],
-            'securityView': result['securityView'],
-            'warnMinutes': result['warnMinutes'],
-            'contact': result['contact'],
-            'createDate': result['createDate'],
-            'description': result['description'],
-            'location': result['location'],
-            'name': result['name'],
-            'objectPath': result['objectPath'],
-            'url': result['url'],
-            'agentObjectId': result['agentObjectId'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -4231,105 +3446,44 @@ def get_agent_object_by_alternate_id_command(client: Client, args: Dict[str, Any
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'agentIsFilesystem',
+        'cancel',
+        'connected',
+        'logsByDays',
+        'requireNotes',
+        'inService',
+        'children',
+        'events',
+        'intrusions',
+        'intrusionSize',
+        'objectId',
+        'objectStatus',
+        'objectSubType',
+        'objectType',
+        'parentId',
+        'revisions',
+        'templateId',
+        'securityAdd',
+        'securityEdit',
+        'securityLock',
+        'securityReport',
+        'securityUnlock',
+        'securityView',
+        'warnMinutes',
+        'contact',
+        'createDate',
+        'description',
+        'location',
+        'name',
+        'objectPath',
+        'url',
+        'agentObjectId',
+    ]
     for result in results:
-        if 'agentIsFilesystem' not in result:
-            result['agentIsFilesystem'] = ''
-        if 'cancel' not in result:
-            result['cancel'] = ''
-        if 'connected' not in result:
-            result['connected'] = ''
-        if 'logsByDays' not in result:
-            result['logsByDays'] = ''
-        if 'requireNotes' not in result:
-            result['requireNotes'] = ''
-        if 'inService' not in result:
-            result['inService'] = ''
-        if 'children' not in result:
-            result['children'] = ''
-        if 'events' not in result:
-            result['events'] = ''
-        if 'intrusions' not in result:
-            result['intrusions'] = ''
-        if 'intrusionSize' not in result:
-            result['intrusionSize'] = ''
-        if 'objectId' not in result:
-            result['objectId'] = ''
-        if 'objectStatus' not in result:
-            result['objectStatus'] = ''
-        if 'objectSubType' not in result:
-            result['objectSubType'] = ''
-        if 'objectType' not in result:
-            result['objectType'] = ''
-        if 'parentId' not in result:
-            result['parentId'] = ''
-        if 'revisions' not in result:
-            result['revisions'] = ''
-        if 'templateId' not in result:
-            result['templateId'] = ''
-        if 'securityAdd' not in result:
-            result['securityAdd'] = ''
-        if 'securityEdit' not in result:
-            result['securityEdit'] = ''
-        if 'securityLock' not in result:
-            result['securityLock'] = ''
-        if 'securityReport' not in result:
-            result['securityReport'] = ''
-        if 'securityUnlock' not in result:
-            result['securityUnlock'] = ''
-        if 'securityView' not in result:
-            result['securityView'] = ''
-        if 'warnMinutes' not in result:
-            result['warnMinutes'] = ''
-        if 'contact' not in result:
-            result['contact'] = ''
-        if 'createDate' not in result:
-            result['createDate'] = ''
-        if 'description' not in result:
-            result['description'] = ''
-        if 'location' not in result:
-            result['location'] = ''
-        if 'name' not in result:
-            result['name'] = ''
-        if 'objectPath' not in result:
-            result['objectPath'] = ''
-        if 'url' not in result:
-            result['url'] = ''
-        if 'agentObjectId' not in result:
-            result['agentObjectId'] = ''
-        result_final = {
-            'agentIsFilesystem': result['agentIsFilesystem'],
-            'cancel': result['cancel'],
-            'connected': result['connected'],
-            'logsByDays': result['logsByDays'],
-            'requireNotes': result['requireNotes'],
-            'inService': result['inService'],
-            'children': result['children'],
-            'events': result['events'],
-            'intrusions': result['intrusions'],
-            'intrusionSize': result['intrusionSize'],
-            'objectId': result['objectId'],
-            'objectStatus': result['objectStatus'],
-            'objectSubType': result['objectSubType'],
-            'objectType': result['objectType'],
-            'parentId': result['parentId'],
-            'revisions': result['revisions'],
-            'templateId': result['templateId'],
-            'securityAdd': result['securityAdd'],
-            'securityEdit': result['securityEdit'],
-            'securityLock': result['securityLock'],
-            'securityReport': result['securityReport'],
-            'securityUnlock': result['securityUnlock'],
-            'securityView': result['securityView'],
-            'warnMinutes': result['warnMinutes'],
-            'contact': result['contact'],
-            'createDate': result['createDate'],
-            'description': result['description'],
-            'location': result['location'],
-            'name': result['name'],
-            'objectPath': result['objectPath'],
-            'url': result['url'],
-            'agentObjectId': result['agentObjectId'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
@@ -4362,105 +3516,44 @@ def get_agent_object_by_ip_command(client: Client, args: Dict[str, Any]) -> List
         )
     )
     results = response['results']
+    result_final = {}
+    keys = [
+        'agentIsFilesystem',
+        'cancel',
+        'connected',
+        'logsByDays',
+        'requireNotes',
+        'inService',
+        'children',
+        'events',
+        'intrusions',
+        'intrusionSize',
+        'objectId',
+        'objectStatus',
+        'objectSubType',
+        'objectType',
+        'parentId',
+        'revisions',
+        'templateId',
+        'securityAdd',
+        'securityEdit',
+        'securityLock',
+        'securityReport',
+        'securityUnlock',
+        'securityView',
+        'warnMinutes',
+        'contact',
+        'createDate',
+        'description',
+        'location',
+        'name',
+        'objectPath',
+        'url',
+        'agentObjectId',
+    ]
     for result in results:
-        if 'agentIsFilesystem' not in result:
-            result['agentIsFilesystem'] = ''
-        if 'cancel' not in result:
-            result['cancel'] = ''
-        if 'connected' not in result:
-            result['connected'] = ''
-        if 'logsByDays' not in result:
-            result['logsByDays'] = ''
-        if 'requireNotes' not in result:
-            result['requireNotes'] = ''
-        if 'inService' not in result:
-            result['inService'] = ''
-        if 'children' not in result:
-            result['children'] = ''
-        if 'events' not in result:
-            result['events'] = ''
-        if 'intrusions' not in result:
-            result['intrusions'] = ''
-        if 'intrusionSize' not in result:
-            result['intrusionSize'] = ''
-        if 'objectId' not in result:
-            result['objectId'] = ''
-        if 'objectStatus' not in result:
-            result['objectStatus'] = ''
-        if 'objectSubType' not in result:
-            result['objectSubType'] = ''
-        if 'objectType' not in result:
-            result['objectType'] = ''
-        if 'parentId' not in result:
-            result['parentId'] = ''
-        if 'revisions' not in result:
-            result['revisions'] = ''
-        if 'templateId' not in result:
-            result['templateId'] = ''
-        if 'securityAdd' not in result:
-            result['securityAdd'] = ''
-        if 'securityEdit' not in result:
-            result['securityEdit'] = ''
-        if 'securityLock' not in result:
-            result['securityLock'] = ''
-        if 'securityReport' not in result:
-            result['securityReport'] = ''
-        if 'securityUnlock' not in result:
-            result['securityUnlock'] = ''
-        if 'securityView' not in result:
-            result['securityView'] = ''
-        if 'warnMinutes' not in result:
-            result['warnMinutes'] = ''
-        if 'contact' not in result:
-            result['contact'] = ''
-        if 'createDate' not in result:
-            result['createDate'] = ''
-        if 'description' not in result:
-            result['description'] = ''
-        if 'location' not in result:
-            result['location'] = ''
-        if 'name' not in result:
-            result['name'] = ''
-        if 'objectPath' not in result:
-            result['objectPath'] = ''
-        if 'url' not in result:
-            result['url'] = ''
-        if 'agentObjectId' not in result:
-            result['agentObjectId'] = ''
-        result_final = {
-            'agentIsFilesystem': result['agentIsFilesystem'],
-            'cancel': result['cancel'],
-            'connected': result['connected'],
-            'logsByDays': result['logsByDays'],
-            'requireNotes': result['requireNotes'],
-            'inService': result['inService'],
-            'children': result['children'],
-            'events': result['events'],
-            'intrusions': result['intrusions'],
-            'intrusionSize': result['intrusionSize'],
-            'objectId': result['objectId'],
-            'objectStatus': result['objectStatus'],
-            'objectSubType': result['objectSubType'],
-            'objectType': result['objectType'],
-            'parentId': result['parentId'],
-            'revisions': result['revisions'],
-            'templateId': result['templateId'],
-            'securityAdd': result['securityAdd'],
-            'securityEdit': result['securityEdit'],
-            'securityLock': result['securityLock'],
-            'securityReport': result['securityReport'],
-            'securityUnlock': result['securityUnlock'],
-            'securityView': result['securityView'],
-            'warnMinutes': result['warnMinutes'],
-            'contact': result['contact'],
-            'createDate': result['createDate'],
-            'description': result['description'],
-            'location': result['location'],
-            'name': result['name'],
-            'objectPath': result['objectPath'],
-            'url': result['url'],
-            'agentObjectId': result['agentObjectId'],
-        }
+        for key in keys:
+            result_final[key] = result.get(key, '')
         command_results.append(
             CommandResults(
                 readable_output=result,
