@@ -9111,8 +9111,7 @@ def get_arp_tables(topology: Topology, device_filter_string: Optional[str] = Non
     return FirewallCommand.get_arp_table(topology, device_filter_string)
 
 
-def get_route_summaries(topology: Topology,
-                        device_filter_string: Optional[str] = None) -> ShowRouteSummaryCommandResult:
+def get_route_summaries(topology: Topology, device_filter_string: Optional[str] = None) -> ShowRouteSummaryCommandResult:
     """
     Pulls all route summary information from the topology
     :param topology: `Topology` instance !no-auto-argument
@@ -9121,8 +9120,7 @@ def get_route_summaries(topology: Topology,
     return FirewallCommand.get_routing_summary(topology, device_filter_string)
 
 
-def get_routes(topology: Topology,
-               device_filter_string: Optional[str] = None) -> ShowRoutingRouteCommandResult:
+def get_routes(topology: Topology, device_filter_string: Optional[str] = None) -> ShowRoutingRouteCommandResult:
     """
     Pulls all route summary information from the topology
     :param topology: `Topology` instance !no-auto-argument
@@ -9131,8 +9129,7 @@ def get_routes(topology: Topology,
     return FirewallCommand.get_routes(topology, device_filter_string)
 
 
-def get_system_info(topology: Topology,
-                    device_filter_string: Optional[str] = None) -> ShowSystemInfoCommandResult:
+def get_system_info(topology: Topology, device_filter_string: Optional[str] = None) -> ShowSystemInfoCommandResult:
     """
     Gets information from all PAN-OS systems in the topology.
     :param topology: `Topology` instance !no-auto-argument
