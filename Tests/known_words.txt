@@ -5,12 +5,15 @@ playbook
 firewalls
 IOCs
 Emails
+centric
 IncidentsPerFeed
 McAfee
 Endpoints
 IOC
-Deprecated
+deprecated
 EPOFindSystem
+TaegisXDR
+Taegis
 boolean
 xdr
 Darktrace
@@ -126,3 +129,5 @@ PCAP
 GZIP
 ioc
 XSOAR's
+hostname
+EDR
