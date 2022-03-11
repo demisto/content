@@ -1,0 +1,260 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Varonis DSP Incident - Incoming Mapper",
+    "mapping": {
+        "Varonis DSP Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert Category": {
+                    "simple": "Category"
+                },
+                "Alert ID": {
+                    "simple": "ID"
+                },
+                "Alert Name": {
+                    "simple": "Name"
+                },
+                "Alert Source": {
+                    "simple": "On.Platform"
+                },
+                "Country": {
+                    "simple": "Country"
+                },
+                "Device Name": {
+                    "simple": "Device.Name"
+                },
+                "Source Status": {
+                    "simple": "Status"
+                },
+                "Source Username": {
+                    "simple": "UserName"
+                },
+                "State": {
+                    "simple": "State"
+                },
+                "Threat Name": {
+                    "simple": "Device.IPThreatTypes"
+                },
+                "Varonis Data Security Platform Abnormal Location": {
+                    "complex": {
+                        "filters": [],
+                        "root": "AbnormalLocation",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "condition": {},
+                                    "else": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "equals": {
+                                        "value": {
+                                            "simple": "Yes"
+                                        }
+                                    },
+                                    "lhs": {},
+                                    "options": {},
+                                    "rhs": {},
+                                    "then": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    }
+                },
+                "Varonis Data Security Platform Asset": {
+                    "simple": "On.Asset"
+                },
+                "Varonis Data Security Platform Blacklist Location": {
+                    "complex": {
+                        "filters": [],
+                        "root": "BlacklistLocation",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "condition": {},
+                                    "else": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "equals": {
+                                        "value": {
+                                            "simple": "Yes"
+                                        }
+                                    },
+                                    "lhs": {},
+                                    "options": {},
+                                    "rhs": {},
+                                    "then": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    }
+                },
+                "Varonis Data Security Platform By Privileged Account Type": {
+                    "simple": "By.PreivilegedAccountType"
+                },
+                "Varonis Data Security Platform Close Reason": {
+                    "simple": "CloseReason"
+                },
+                "Varonis Data Security Platform Contains Flagged Data": {
+                    "complex": {
+                        "accessor": "ContainsFlaggedData",
+                        "filters": [],
+                        "root": "On",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "condition": {},
+                                    "else": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "equals": {
+                                        "value": {
+                                            "simple": "Yes"
+                                        }
+                                    },
+                                    "lhs": {},
+                                    "options": {},
+                                    "rhs": {},
+                                    "then": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    }
+                },
+                "Varonis Data Security Platform Contains Malicious External IP": {
+                    "complex": {
+                        "accessor": "ContainMaliciousExternalIP",
+                        "filters": [],
+                        "root": "Device",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "condition": {},
+                                    "else": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "equals": {
+                                        "value": {
+                                            "simple": "Yes"
+                                        }
+                                    },
+                                    "lhs": {},
+                                    "options": {},
+                                    "rhs": {},
+                                    "then": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    }
+                },
+                "Varonis Data Security Platform Contains Sensitive Data": {
+                    "complex": {
+                        "accessor": "ContainsSensitiveData",
+                        "filters": [],
+                        "root": "On",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "condition": {},
+                                    "else": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "equals": {
+                                        "value": {
+                                            "simple": "Yes"
+                                        }
+                                    },
+                                    "lhs": {},
+                                    "options": {},
+                                    "rhs": {},
+                                    "then": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    }
+                },
+                "Varonis Data Security Platform Has Follow Up Indicators": {
+                    "complex": {
+                        "accessor": "HasFollowUpIndicators",
+                        "filters": [],
+                        "root": "By",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "condition": {},
+                                    "else": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "equals": {
+                                        "value": {
+                                            "simple": "Yes"
+                                        }
+                                    },
+                                    "lhs": {},
+                                    "options": {},
+                                    "rhs": {},
+                                    "then": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    }
+                },
+                "Varonis Data Security Platform Number Of Events": {
+                    "simple": "NumOfAlertedEvents"
+                },
+                "Varonis Data Security Platform On File Server Or Domain": {
+                    "simple": "On.FileServerOrDomain"
+                },
+                "Varonis Data Security Platform sAMAccountName": {
+                    "simple": "By.SamAccountName"
+                }
+            }
+        }
+    },
+    "name": "Varonis DSP Incident - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

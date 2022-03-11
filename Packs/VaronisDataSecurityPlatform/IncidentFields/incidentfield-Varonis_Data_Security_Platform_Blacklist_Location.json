@@ -1,0 +1,29 @@
+{
+    "version": -1,
+    "fromVersion": "5.0.0",
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Varonis DSP Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "varonisdatasecurityplatformblacklistlocation",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_varonisdatasecurityplatformblacklistlocation",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Varonis Data Security Platform Blacklist Location",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "boolean",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false
+}

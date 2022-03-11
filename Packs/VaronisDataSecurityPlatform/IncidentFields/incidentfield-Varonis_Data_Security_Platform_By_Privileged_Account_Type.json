@@ -1,0 +1,29 @@
+{
+    "version": -1,
+    "fromVersion": "5.0.0",
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Varonis DSP Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "varonisdatasecurityplatformbyprivilegedaccounttype",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_varonisdatasecurityplatformbyprivilegedaccounttype",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Varonis Data Security Platform By Privileged Account Type",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false
+}
