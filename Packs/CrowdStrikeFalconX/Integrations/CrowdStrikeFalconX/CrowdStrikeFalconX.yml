@@ -1366,22 +1366,13 @@ script:
     name: cs-fx-check-quota
     outputs:
     - contextPath: csfalconx.resource.total
-      description: 'Total quota number. '
+      description: Total quota number.
       type: Number
     - contextPath: csfalconx.resource.used
       description: Used quota number.
       type: Number
     - contextPath: csfalconx.resource.in_progress
-      description: Analysis in progress.
-      type: Number
-    - contextPath: csfalconx.resource.in_progress
       description: The number of calls in progress
-      type: Number
-    - contextPath: csfalconx.resource.total
-      description: The total available quota
-      type: Number
-    - contextPath: csfalconx.resource.used
-      description: The number of calls used
       type: Number
   - arguments:
     - default: false
@@ -1854,9 +1845,6 @@ script:
       type: Unknown
     - contextPath: csfalconx.resource.state
       description: Analysis state.
-      type: String
-    - contextPath: csfalconx.resource.created_timestamp
-      description: Analysis start time.
       type: String
     - contextPath: csfalconx.resource.sha256
       description: SHA256 hash of the scanned file.
