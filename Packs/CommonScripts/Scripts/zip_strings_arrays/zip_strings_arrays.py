@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 def mapper_command(args: Dict[str, Any]) -> CommandResults:
-    format = str(args.get('format', '{1}/{2}'))
+    format = str(args.get('format', '{1}-{2}'))
     list1 = args.get('list1', [])
     list2 = args.get('list2', [])
 
