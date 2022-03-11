@@ -681,9 +681,6 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
       type: String
-    - contextPath: csfalconx.resource.created_timestamp
-      description: Analysis start time.
-      type: Date
     - contextPath: csfalconx.resource.submitted_id
       description: Analysis ID received after submitting the file.
       type: String
@@ -919,7 +916,7 @@ script:
     - contextPath: csfalconx.resource.environment_id
       description: Environment ID.
       type: String
-    - contextPath: csfalconx.resource.snadbox.environment_description
+    - contextPath: csfalconx.resource.sandbox.environment_description
       description: Environment description.
       type: String
     - contextPath: csfalconx.resource.threat_score
@@ -934,7 +931,7 @@ script:
     - contextPath: csfalconx.resource.filetype
       description: File type.
       type: String
-    - contextPath: csfalconx.resource.filesize
+    - contextPath: csfalconx.resource.file_size
       description: File size.
       type: Int
     - contextPath: csfalconx.resource.sha256
@@ -1264,7 +1261,7 @@ script:
     - contextPath: csfalconx.resource.filetype
       description: File type.
       type: String
-    - contextPath: csfalconx.resource.filesize
+    - contextPath: csfalconx.resource.file_size
       description: File size.
       type: Int
     - contextPath: csfalconx.resource.sha256
@@ -1333,7 +1330,7 @@ script:
     - contextPath: csfalconx.resource.filetype
       description: File type.
       type: String
-    - contextPath: csfalconx.resource.filesize
+    - contextPath: csfalconx.resource.file_size
       description: File size.
       type: Int
     - contextPath: csfalconx.resource.sha256
@@ -1475,7 +1472,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets the full report for one or more files, by their sha256 hash.
+    description: Gets reputation data for one or more files, by sha256 hashes.
     execution: false
     name: file
     outputs:

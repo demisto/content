@@ -317,12 +317,12 @@ Gets a full version of a sandbox report.
 | csfalconx.resource.verdict | String | Analysis verdict. | 
 | csfalconx.resource.created_timestamp | String | Analysis start time. | 
 | csfalconx.resource.environment_id | String | Environment ID. | 
-| csfalconx.resource.snadbox.environment_description | String | Environment description. | 
+| csfalconx.resource.sandbox.environment_description | String | Environment description. |
 | csfalconx.resource.threat_score | Int | Score of the threat. | 
 | csfalconx.resource.submit_url | String | URL submitted for analysis. | 
 | csfalconx.resource.submission_type | String | Type of submitted artifact, for example file, URL, etc. | 
 | csfalconx.resource.filetype | String | File type. | 
-| csfalconx.resource.filesize | Int | File size. | 
+| csfalconx.resource.file_size | Int | File size. | 
 | csfalconx.resource.sha256 | String | SHA256 hash of the submitted file. | 
 | csfalconx.resource.ioc_report_strict_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). | 
 | csfalconx.resource.ioc_report_broad_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). | 
@@ -1514,7 +1514,7 @@ Gets a short summary version of a sandbox report.
 | csfalconx.resource.submit_url | String | URL submitted for analysis. | 
 | csfalconx.resource.submission_type | String | Type of submitted artifact. For example, file, URL, etc. | 
 | csfalconx.resource.filetype | String | File type. | 
-| csfalconx.resource.filesize | Int | File size. | 
+| csfalconx.resource.file_size | Int | File size. | 
 | csfalconx.resource.sha256 | String | SHA256 hash of the submitted file. | 
 | csfalconx.resource.ioc_report_strict_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). | 
 | csfalconx.resource.ioc_report_broad_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). | 
@@ -1602,7 +1602,7 @@ Checks the status of a sandbox analysis.
 | csfalconx.resource.submit_url | String | URL submitted for analysis. | 
 | csfalconx.resource.submission_type | String | Type of submitted artifact. For example, file, URL, etc. | 
 | csfalconx.resource.filetype | String | File type. | 
-| csfalconx.resource.filesize | Int | File size. | 
+| csfalconx.resource.file_size | Int | File size. | 
 | csfalconx.resource.sha256 | String | SHA256 hash of the submitted file. | 
 | csfalconx.resource.ioc_report_strict_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). | 
 | csfalconx.resource.ioc_report_broad_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). | 
@@ -1801,7 +1801,7 @@ Finds submission IDs for uploaded files by providing an FQL filter and paging de
 
 ### file
 ***
-Gets the full report for one or more files, by their sha256 hash.
+Gets reputation info for one or more files, by their sha256 hash.
 
 
 #### Base Command

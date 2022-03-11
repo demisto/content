@@ -1280,6 +1280,7 @@ def validate_command_args(command: str, args: dict) -> None:
 def remove_polling_related_args(args: dict) -> None:
     args.pop('interval_in_seconds', None)
     args.pop('extended_data', None)
+    args.pop('polling', None)
 
 
 def main():
