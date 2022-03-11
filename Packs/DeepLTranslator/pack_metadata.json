@@ -1,0 +1,17 @@
+{
+    "name": "DeepL Translator",
+    "description": "Deepl Translator enables you to translate text or files from one language to another.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Harri Ruuttila",
+    "url": "",
+    "email": "",
+    "created": "2022-03-11T11:14:26Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "Hruuttila"
+    ]
+}
