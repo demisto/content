@@ -4476,15 +4476,21 @@ class TestExecuteCommandsMultipleResults:
         entries = [
             {'Type': EntryType.ERROR, 'Contents': 'error number 1'},
             {'Type': EntryType.NOTE, 'Contents': 'not an error'},
-            {'Type': EntryType.ERROR, 'Contents': 'error number 2'},
-            {'Type': EntryType.ERROR, 'Contents': 'Unsupported Command'}  # should ignore this one
+            {'Type': EntryType.ERROR, 'Contents': 'error number 2'}
         ]
+
+        def execute_command_mock(command, args):
+            if command == 'unsupported':
+                raise ValueError()
+            return entries
         demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
-                                                   return_value=entries)
+                                                   side_effect=execute_command_mock)
 
-        results, errors = execute_commands_multiple_results('bad', {'arg1': 'value'})
+        results, errors = execute_commands_multiple_results(['command', 'unsupported'],
+                                                            [{'arg1': 'value'}, {}])
 
-        assert demisto_execute_mock.call_count == 1
+        # validate that errors were found and the unsupported is ignored
+        assert demisto_execute_mock.call_count == 2
         assert isinstance(results, list)
         assert isinstance(errors, list)
         assert len(results) == 1
@@ -4492,6 +4498,14 @@ class TestExecuteCommandsMultipleResults:
         assert errors[0].result == 'error number 1'
         assert errors[1].result == 'error number 2'
         assert results[0].result == 'not an error'
+
+
+    @staticmethod
+    def test_with_ignored_command(mocker):
+        from CommonServerPython import execute_commands_multiple_results
+
+        execute_commands_multiple_results('not-existing-command', {})
+
 
     @staticmethod
     def get_result_for_multiple_commands_helper(command, args):
