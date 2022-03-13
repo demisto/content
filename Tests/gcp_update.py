@@ -12,17 +12,13 @@ def main():
 
     bucket = storage_client.bucket('xsoar-ci-artifacts')
 
-    blob = bucket.blob('xsiam-ci-locks/queue')
-    downloaded_blob = blob.download_as_string()
-    logging.info(f'{downloaded_blob=}')
+    blob = bucket.blob('content-locks/test123')
+    blob.upload_from_string('')
+    logging.info('Created file')
 
-    blob2 = bucket.blob('xsiam-ci-locks/queue-lock-2552972')
-    downloaded_blob2 = blob2.download_as_string()
-    logging.info(f'{downloaded_blob2=}')
-
-    blob = bucket.blob('xsiam-ci-locks/queue')
-    blob.delete()
-    logging.info('File deleted successfully.')
+    # blob = bucket.blob('content-locks/')
+    # blob.delete()
+    # logging.info('Delted folder.')
 
 
 if __name__ == '__main__':
