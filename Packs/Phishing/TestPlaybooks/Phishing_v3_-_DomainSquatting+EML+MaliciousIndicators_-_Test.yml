@@ -90,6 +90,7 @@ tasks:
         complex:
           root: CreatedIncidentID
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
