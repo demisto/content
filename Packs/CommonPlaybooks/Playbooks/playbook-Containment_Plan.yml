@@ -7,7 +7,7 @@ description: |-
   * Isolate endpoint
   * Disable account
   * Quarantine file
-  * Block indicators (currently, the playbook supports only hashes)
+  * Block indicators
   * Clear user session (currently, the playbook supports only Okta)
 
   The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
@@ -36,7 +36,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": -280
+          "y": -420
         }
       }
     note: false
@@ -48,12 +48,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 557561c1-f1a8-4071-8f9b-890b2d5d390a
+    taskid: bda1af20-c8d7-4e92-86c1-8dc1108e4f89
     type: regular
     task:
-      id: 557561c1-f1a8-4071-8f9b-890b2d5d390a
+      id: bda1af20-c8d7-4e92-86c1-8dc1108e4f89
       version: -1
-      name: Auto block indicators
+      name: Auto add to XSIAM hash block list
       description: Block lists requested files which have not already been block listed or added to allow list.
       script: '|||core-blocklist-files'
       type: regular
@@ -61,7 +61,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "54"
+      - "100"
     scriptarguments:
       comment:
         complex:
@@ -90,12 +90,13 @@ tasks:
                   simple: inputs.FileHash
                 iscontext: true
           - operator: uniq
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1200,
-          "y": 220
+          "y": 60
         }
       }
     note: false
@@ -140,7 +141,7 @@ tasks:
       {
         "position": {
           "x": -1690,
-          "y": 30
+          "y": -120
         }
       }
     note: false
@@ -240,7 +241,7 @@ tasks:
       {
         "position": {
           "x": 80,
-          "y": 220
+          "y": 60
         }
       }
     note: false
@@ -285,7 +286,7 @@ tasks:
       {
         "position": {
           "x": -570,
-          "y": 220
+          "y": 60
         }
       }
     note: false
@@ -315,7 +316,7 @@ tasks:
       {
         "position": {
           "x": -1690,
-          "y": -125
+          "y": -265
         }
       }
     note: false
@@ -345,7 +346,7 @@ tasks:
       {
         "position": {
           "x": -810,
-          "y": -125
+          "y": -265
         }
       }
     note: false
@@ -375,7 +376,7 @@ tasks:
       {
         "position": {
           "x": 80,
-          "y": -125
+          "y": -265
         }
       }
     note: false
@@ -405,7 +406,7 @@ tasks:
       {
         "position": {
           "x": 970,
-          "y": -125
+          "y": -265
         }
       }
     note: false
@@ -537,13 +538,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "64"
+      - "60"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1870,
-          "y": -125
+          "x": 1630,
+          "y": -265
         }
       }
     note: false
@@ -570,7 +571,7 @@ tasks:
       "no":
       - "62"
       "yes":
-      - "83"
+      - "64"
     scriptarguments:
       brandname:
         simple: Okta
@@ -580,8 +581,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2100,
-          "y": 220
+          "x": 1630,
+          "y": -120
         }
       }
     note: false
@@ -619,14 +620,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2100,
+          "x": 2490,
           "y": 615
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -646,7 +647,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1870,
+          "x": 1630,
           "y": 1140
         }
       }
@@ -716,7 +717,7 @@ tasks:
       {
         "position": {
           "x": 970,
-          "y": 30
+          "y": -120
         }
       }
     note: false
@@ -728,10 +729,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 28568b8b-78a7-435c-82f1-f65e1b535c80
+    taskid: 5314943a-ff39-40e8-8a5a-bcc7f29c449d
     type: condition
     task:
-      id: 28568b8b-78a7-435c-82f1-f65e1b535c80
+      id: 5314943a-ff39-40e8-8a5a-bcc7f29c449d
       version: -1
       name: Should clear user sessions?
       description: Whether to clear Okta user sessions automatically, manually or not at all.
@@ -744,7 +745,7 @@ tasks:
       Manual:
       - "81"
       "yes":
-      - "60"
+      - "83"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -784,8 +785,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1870,
-          "y": 30
+          "x": 2000,
+          "y": 60
         }
       }
     note: false
@@ -854,7 +855,7 @@ tasks:
       {
         "position": {
           "x": -810,
-          "y": 30
+          "y": -120
         }
       }
     note: false
@@ -889,7 +890,7 @@ tasks:
       {
         "position": {
           "x": -1690,
-          "y": 615
+          "y": 465
         }
       }
     note: false
@@ -919,7 +920,7 @@ tasks:
       {
         "position": {
           "x": -2110,
-          "y": 615
+          "y": 465
         }
       }
     note: false
@@ -1022,7 +1023,7 @@ tasks:
       {
         "position": {
           "x": -2110,
-          "y": 785
+          "y": 605
         }
       }
     note: false
@@ -1052,7 +1053,7 @@ tasks:
       {
         "position": {
           "x": -2340,
-          "y": 960
+          "y": 795
         }
       }
     note: false
@@ -1064,12 +1065,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: bdc4759c-0185-4dec-8046-f4b3a6da0b52
+    taskid: 5a3905e8-73cd-4d5f-8625-6033e1abe97f
     type: regular
     task:
-      id: bdc4759c-0185-4dec-8046-f4b3a6da0b52
+      id: 5a3905e8-73cd-4d5f-8625-6033e1abe97f
       version: -1
-      name: Block indicators
+      name: Add to XSIAM hash block list
       description: Block lists requested files which have not already been block listed or added to allow lists.
       script: '|||core-blocklist-files'
       type: regular
@@ -1077,7 +1078,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "54"
+      - "101"
     scriptarguments:
       hash_list:
         complex:
@@ -1086,8 +1087,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 795
+          "x": 520,
+          "y": 615
         }
       }
     note: false
@@ -1099,10 +1100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: a7160ec6-11a0-49e4-8285-04339efd258f
+    taskid: bc181906-8aee-427b-8218-1d7c2e49e1ed
     type: collection
     task:
-      id: a7160ec6-11a0-49e4-8285-04339efd258f
+      id: bc181906-8aee-427b-8218-1d7c2e49e1ed
       version: -1
       name: Choose indicators to block
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
@@ -1117,7 +1118,7 @@ tasks:
       {
         "position": {
           "x": 740,
-          "y": 220
+          "y": 60
         }
       }
     note: false
@@ -1146,7 +1147,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Which indicators should be blocked?
+          simple: Which file should be blocked?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -1156,6 +1157,30 @@ tasks:
         - complex:
             root: inputs.FilePath
             transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Which IP or Domain should be blocked?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.IP
+            transformers:
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: inputs.Domain
+                  iscontext: true
             - operator: uniq
         fieldassociated: ""
         placeholder: ""
@@ -1172,10 +1197,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: 9f0b5584-b5c7-4342-8d52-f56c3226e5f4
+    taskid: 871fca10-93d2-41f1-8194-aa74ba9103d1
     type: condition
     task:
-      id: 9f0b5584-b5c7-4342-8d52-f56c3226e5f4
+      id: 871fca10-93d2-41f1-8194-aa74ba9103d1
       version: -1
       name: Check user answer
       description: Check the user answer.
@@ -1185,11 +1210,13 @@ tasks:
     nexttasks:
       '#default#':
       - "54"
-      "yes":
+      All:
       - "77"
+      IP or Domain:
+      - "101"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: All
       condition:
       - - operator: isNotEmpty
           left:
@@ -1201,11 +1228,27 @@ tasks:
           right:
             value: {}
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Block Indicators.Answers
+                accessor: "1"
+            iscontext: true
+    - label: IP or Domain
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Block Indicators.Answers
+                accessor: "1"
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 740,
-          "y": 420
+          "y": 270
         }
       }
     note: false
@@ -1217,10 +1260,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: a6d385c6-5a47-4a4b-876b-a7cde6a6f6bb
+    taskid: c6f3ade9-838c-47ca-8029-9917b3713e92
     type: regular
     task:
-      id: a6d385c6-5a47-4a4b-876b-a7cde6a6f6bb
+      id: c6f3ade9-838c-47ca-8029-9917b3713e92
       version: -1
       name: Set selected indicators to block
       description: Set a value in context under the key you entered.
@@ -1271,8 +1314,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 615
+          "x": 520,
+          "y": 465
         }
       }
     note: false
@@ -1316,7 +1359,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1640,
+          "x": 2000,
           "y": 420
         }
       }
@@ -1354,7 +1397,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1640,
+          "x": 2000,
           "y": 615
         }
       }
@@ -1384,8 +1427,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1640,
-          "y": 220
+          "x": 2000,
+          "y": 270
         }
       }
     note: false
@@ -1502,14 +1545,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1640,
+          "x": 2000,
           "y": 960
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1575,14 +1618,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2100,
-          "y": 420
+          "x": 2490,
+          "y": 270
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1616,14 +1659,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1640,
+          "x": 2000,
           "y": 795
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1647,7 +1690,7 @@ tasks:
       {
         "position": {
           "x": -150,
-          "y": 420
+          "y": 270
         }
       }
     note: false
@@ -1735,7 +1778,7 @@ tasks:
       {
         "position": {
           "x": -150,
-          "y": 615
+          "y": 465
         }
       }
     note: false
@@ -1775,7 +1818,7 @@ tasks:
       {
         "position": {
           "x": -150,
-          "y": 795
+          "y": 615
         }
       }
     note: false
@@ -1849,7 +1892,7 @@ tasks:
       {
         "position": {
           "x": -150,
-          "y": 960
+          "y": 795
         }
       }
     note: false
@@ -1879,7 +1922,7 @@ tasks:
       {
         "position": {
           "x": -1050,
-          "y": 220
+          "y": 60
         }
       }
     note: false
@@ -1967,7 +2010,7 @@ tasks:
       {
         "position": {
           "x": -1050,
-          "y": 420
+          "y": 260
         }
       }
     note: false
@@ -2007,7 +2050,7 @@ tasks:
       {
         "position": {
           "x": -1050,
-          "y": 615
+          "y": 465
         }
       }
     note: false
@@ -2052,7 +2095,7 @@ tasks:
       {
         "position": {
           "x": -1050,
-          "y": 795
+          "y": 615
         }
       }
     note: false
@@ -2087,7 +2130,7 @@ tasks:
       {
         "position": {
           "x": -1690,
-          "y": 220
+          "y": 60
         }
       }
     note: false
@@ -2189,7 +2232,7 @@ tasks:
       {
         "position": {
           "x": -1690,
-          "y": 420
+          "y": 270
         }
       }
     note: false
@@ -2201,10 +2244,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "98":
     id: "98"
-    taskid: 48dd562e-cd78-4aa9-8e8b-5db94812031f
+    taskid: 528cc2ad-75e3-42f0-8853-efb6792cf7f9
     type: regular
     task:
-      id: 48dd562e-cd78-4aa9-8e8b-5db94812031f
+      id: 528cc2ad-75e3-42f0-8853-efb6792cf7f9
       version: -1
       name: Get file quarantine status
       description: Retrieves the quarantine status for a selected file.
@@ -2270,12 +2313,13 @@ tasks:
                   simple: \"
               replaceWith: {}
           - operator: uniq
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 80,
-          "y": 30
+          "y": -120
         }
       }
     note: false
@@ -2357,7 +2401,139 @@ tasks:
       {
         "position": {
           "x": 310,
-          "y": 420
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: de2e1a27-7b53-4136-8e24-5c5487ddbabe
+    type: playbook
+    task:
+      id: de2e1a27-7b53-4136-8e24-5c5487ddbabe
+      version: -1
+      name: Block Indicators - Generic v2
+      description: |+
+        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic
+        - Block Account - Generic
+        - Block IP - Generic v2
+        - Block File - Generic v2
+        - Block Email - Generic
+        - Block Domain - Generic
+
+      playbookName: Block Indicators - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      DomainToBlock:
+        complex:
+          root: inputs.Domain
+      IP:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: bdd30230-356a-4b06-850e-7cb2a647d5b4
+    type: playbook
+    task:
+      id: bdd30230-356a-4b06-850e-7cb2a647d5b4
+      version: -1
+      name: Block Indicators - Generic v2
+      description: |+
+        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic
+        - Block Account - Generic
+        - Block IP - Generic v2
+        - Block File - Generic v2
+        - Block Email - Generic
+        - Block Domain - Generic
+
+      playbookName: Block Indicators - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      DomainToBlock:
+        complex:
+          root: inputs.Domain
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: inputs.Domain
+                iscontext: true
+              right:
+                value:
+                  simple: Block Indicators.Answers.1
+                iscontext: true
+              ignorecase: true
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: inputs.IP
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+              right:
+                value:
+                  simple: Block Indicators.Answers.1
+                iscontext: true
+              ignorecase: true
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 795
         }
       }
     note: false
@@ -2372,39 +2548,40 @@ view: |-
     "linkLabelsPosition": {
       "29_57_#default#": 0.15,
       "29_95_yes": 0.63,
-      "35_53_#default#": 0.17,
+      "35_53_#default#": 0.15,
       "35_86_Manual": 0.65,
       "35_99_yes": 0.73,
-      "60_62_no": 0.32,
-      "60_83_yes": 0.51,
+      "60_62_no": 0.11,
+      "60_64_yes": 0.43,
       "63_25_yes": 0.72,
       "63_54_#default#": 0.13,
       "63_75_Manual": 0.63,
-      "64_60_yes": 0.73,
-      "64_62_#default#": 0.13,
-      "64_81_Manual": 0.63,
+      "64_62_#default#": 0.22,
+      "64_81_Manual": 0.61,
+      "64_83_yes": 0.9,
       "67_45_yes": 0.69,
-      "67_56_#default#": 0.13,
+      "67_56_#default#": 0.1,
       "67_90_Manual": 0.59,
       "71_57_No": 0.13,
       "71_72_Manual": 0.62,
-      "76_54_#default#": 0.24,
-      "76_77_yes": 0.41,
-      "79_62_#default#": 0.24,
+      "76_101_IP or Domain": 0.89,
+      "76_54_#default#": 0.22,
+      "76_77_All": 0.41,
+      "79_62_#default#": 0.3,
       "79_80_yes": 0.44,
-      "87_53_#default#": 0.35,
+      "87_53_#default#": 0.31,
       "87_88_yes": 0.37,
-      "91_56_#default#": 0.24,
+      "91_56_#default#": 0.23,
       "91_92_yes": 0.53,
       "97_68_Yes": 0.76,
       "97_70_Manual": 0.67
     },
     "paper": {
       "dimensions": {
-        "height": 1495,
-        "width": 4820,
+        "height": 1635,
+        "width": 5210,
         "x": -2340,
-        "y": -280
+        "y": -420
       }
     }
   }
@@ -2448,10 +2625,7 @@ inputs:
   description: Boolean. Set to 'true' if you want to clear the user active Okta sessions.
   playbookInputQuery:
 - key: EndpointID
-  value:
-    complex:
-      root: alert
-      accessor: agentid
+  value: {}
   required: false
   description: The endpoint ID to run commands over.
   playbookInputQuery:
@@ -2470,6 +2644,16 @@ inputs:
   required: false
   description: The path of the file to block.
   playbookInputQuery:
+- key: IP
+  value: {}
+  required: false
+  description: IP indicators.
+  playbookInputQuery:
+- key: Domain
+  value: {}
+  required: false
+  description: Domain indicators.
+  playbookInputQuery:
 - key: IAMUserDomain
   value:
     simple: '@demisto.com'
@@ -2485,7 +2669,4 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-marketplaces: [
-    "marketplacev2"
-]
 fromversion: 6.6.0
