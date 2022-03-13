@@ -4462,6 +4462,7 @@
                 "input_parameters":
                 {
                     "SearchAndDelete": {"simple": "True"},
+                    "GetOriginalEmail": {"simple": "True"},
                     "SearchAndDeleteIntegration": {"Simple": "O365"},
                     "O365DeleteType": {"Simple": "Soft"}
                 }
