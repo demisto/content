@@ -1,8 +1,7 @@
 commonfields:
-  id: 068b3107-de82-461f-81a6-a915a227045e
-  version: 51
-vcShouldKeepItemLegacyProdMachine: false
-name: zip_strings
+  id: zip_strings
+  version: -1
+name: ZipStrings
 script: ''
 type: python
 tags: []
@@ -28,9 +27,10 @@ outputs:
   type: string
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.1.26972
 runas: DBotWeakRole
-engineinfo: {}
-mainengineinfo: {}
+fromversion: 5.5.0
+comment: ''
+tests:
+- No tests (auto formatted)

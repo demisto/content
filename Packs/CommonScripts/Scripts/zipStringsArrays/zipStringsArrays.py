@@ -11,7 +11,6 @@ def mapper_command(args: Dict[str, Any]) -> CommandResults:
 
     res = [format.replace('{1}', x).replace('{2}', y) for x, y in zip(list1, list2)]
 
-
     return CommandResults(outputs={
         'zipped_list': res
     })
@@ -20,7 +19,7 @@ def mapper_command(args: Dict[str, Any]) -> CommandResults:
 ''' MAIN FUNCTION '''
 
 
-def main():
+def main():  # pragma: no cover
     try:
         return_results(mapper_command(demisto.args()))
     except Exception as ex:
