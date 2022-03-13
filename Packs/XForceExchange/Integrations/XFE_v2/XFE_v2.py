@@ -70,53 +70,36 @@ class Client(BaseClient):
 def build_context_indicator_no_results_status(indicator: str, indicator_type: str, message: str,
                                               integration_name: str, reliability: Any = None) -> CommandResults:
 
-    def file_unknown(indicator):
-        dbot_score = Common.DBotScore(indicator=indicator,
-                                      score=Common.DBotScore.NONE,
-                                      indicator_type=DBotScoreType.FILE,
-                                      integration_name=integration_name,
-                                      reliability=reliability)
-        if sha1Regex.match(indicator):
-            return Common.File(sha1=indicator, dbot_score=dbot_score)
-        if sha256Regex.match(indicator):
-            return Common.File(sha256=indicator, dbot_score=dbot_score)
-        if md5Regex.match(indicator):
-            return Common.File(md5=indicator, dbot_score=dbot_score)
-
-    def url_unknown(indicator):
-        dbot_score = Common.DBotScore(indicator=indicator,
-                                      score=Common.DBotScore.NONE,
-                                      indicator_type=DBotScoreType.URL,
-                                      integration_name=integration_name,
-                                      reliability=reliability)
-        return Common.URL(url=indicator, dbot_score=dbot_score)
-
-    def ip_unknown(indicator):
-        dbot_score = Common.DBotScore(indicator=indicator,
-                                      score=Common.DBotScore.NONE,
-                                      indicator_type=DBotScoreType.IP,
-                                      integration_name=integration_name,
-                                      reliability=reliability)
-        return Common.IP(ip=indicator, dbot_score=dbot_score)
-
-    def domain_unknown(indicator):
-        dbot_score = Common.DBotScore(indicator=indicator,
-                                      score=Common.DBotScore.NONE,
-                                      indicator_type=DBotScoreType.DOMAIN,
-                                      integration_name=integration_name,
-                                      reliability=reliability)
-        return Common.Domain(domain=indicator, dbot_score=dbot_score)
-
     indicator_map = {
-        'file': file_unknown,
-        'ip': ip_unknown,
-        'domain': domain_unknown,
-        'url': url_unknown
+        'file': DBotScoreType.FILE,
+        'ip': DBotScoreType.IP,
+        'domain': DBotScoreType.DOMAIN,
+        'url': DBotScoreType.URL
     }
 
-    return CommandResults(readable_output=message, indicator=indicator_map[indicator_type](indicator))
+    dbot_score = Common.DBotScore(indicator=indicator,
+                                  score=Common.DBotScore.NONE,
+                                  indicator_type=indicator_map[indicator_type],
+                                  integration_name=integration_name,
+                                  reliability=reliability)
+    indicator_ = None
+    if indicator_type == 'file':
+        if sha1Regex.match(indicator):
+            indicator_ = Common.File(sha1=indicator, dbot_score=dbot_score)
+        if sha256Regex.match(indicator):
+            indicator_ = Common.File(sha256=indicator, dbot_score=dbot_score)
+        if md5Regex.match(indicator):
+            indicator_ = Common.File(md5=indicator, dbot_score=dbot_score)
+    elif indicator_type == 'ip':
+        indicator_ = Common.IP(ip=indicator, dbot_score=dbot_score)
+    elif indicator_type == 'domain':
+        indicator_ = Common.Domain(domain=indicator, dbot_score=dbot_score)
+    elif indicator_type == 'url':
+        indicator_ = Common.URL(url=indicator, dbot_score=dbot_score)
 
+    return CommandResults(readable_output=message, indicator=indicator_)
 
+    
 def calculate_score(score: int, threshold: int) -> int:
     """
     Calculates and converts X-Force Exchange score into Demisto score.
