@@ -13,6 +13,6 @@ TEST_CASES = [
 
 @pytest.mark.parametrize('args, expected', TEST_CASES)
 def test_mapper_command(mocker, args, expected):
-    from zipStringsArrays import mapper_command
+    from ZipStringsArrays import mapper_command
     res = mapper_command(args)
     assert res.outputs.get('zipped_list') == expected
