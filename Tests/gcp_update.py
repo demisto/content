@@ -27,6 +27,12 @@ def main():
     s = blob.download_as_string()
     logging.info(f'{s=}')
 
+    blob = bucket.blob('content-locks-xsiam/test123')
+    blob.upload_from_string('')
+    logging.info('Created file test123')
+    blob.delete()
+    logging.info('Deleted file test123')
+
     # blob = bucket.blob('content-locks/test123')
     # blob.delete()
     # logging.info('Delted folder.')
