@@ -44,7 +44,7 @@ configuration:
   type: 13
 - additionalinfo: 'Choose the direction to mirror the detection: Incoming (from CrowdStrike
     Falcon to XSOAR), Outgoing (from XSOAR to CrowdStrike Falcon), or Incoming and
-    Outgoing (from/to XSOAR and CrowdStrike Falcon).'
+    Outgoing (to/from CrowdStrike Falcon and XSOAR).'
   defaultvalue: None
   display: Mirroring Direction
   hidden: false
@@ -64,14 +64,14 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: When selected, closing the CrowdStrike Falcon incident or detection is mirrored in Cortex XSOAR incident.
+- additionalinfo: When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   hidden: false
   name: close_incident
   required: false
   type: 8
-- additionalinfo: When selected, closing the XSOAR incident is mirrored in CrowdStrike Falcon incident or detection,
+- additionalinfo: When selected, closes the XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection,
     according to the types that were chosen to be fetched and mirrored.
   defaultvalue: 'false'
   display: Close Mirrored CrowdStrike Falcon Incident or Detection
@@ -79,7 +79,7 @@ configuration:
   name: close_in_cs_falcon
   required: false
   type: 8
-- additionalinfo: Choose what to fetch - incidents or detections or both
+- additionalinfo: Choose what to fetch - incidents, detections, or both.
   defaultvalue: Detections
   display: Fetch types
   hidden: false
@@ -3331,8 +3331,8 @@ script:
       secret: false
     deprecated: false
     description: Get the list of incidents and detections that were modified since the last update time.
-      Note that this method is used for debugging purposes. The get-modified-remote-data command
-      is used as part of a Mirroring feature, which is available since version 6.1.
+      This method is used for debugging purposes. The get-modified-remote-data command
+      is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
     execution: false
     name: get-modified-remote-data
   - deprecated: false
