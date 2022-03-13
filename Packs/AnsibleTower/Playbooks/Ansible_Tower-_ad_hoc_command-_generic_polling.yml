@@ -314,7 +314,7 @@ outputs:
 - contextPath: AnsibleAWX.JobStdout.content
   description: Job content output.
 fromversion: 5.0.0
-description: Generic pooling playbook for runing ad hoc commands. Ad-hoc commands in Ansible allows you to execute simple
+description: Generic polling playbook for runing ad hoc commands. Ad-hoc commands in Ansible allows you to execute simple
   tasks at the command line against one or all of your hosts. This playbook first launchrd an ad hoc command, then reportd the status of the task
   when it finishes running, and at the end returns the output of the task.
 tests:

@@ -289,6 +289,9 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             f'Failed to parse json object from response: {exception} - {res.content}')  # type: ignore[str-bytes-safe]
 
 
+''' API FUNCTIONS '''
+
+
 def create_entry_object(contents: Union[List[Any], Dict[str, Any]] = {}, ec: Union[List[Any], Dict[str, Any]] = None,
                         hr: str = ''):
     """
@@ -771,14 +774,16 @@ def status_admin_cmd(request_id: str, sequence_id: Optional[int]) -> Dict:
     return response
 
 
-def list_host_files(host_id: str) -> Dict:
+def list_host_files(host_id: str, session_id: str = None) -> Dict:
     """
         Get a list of files for the specified RTR session on a host.
         :param host_id: Host agent ID to run RTR command on.
+        :param session_id: optional session_id for the command, if not provided a new session_id will generate
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/entities/file/v1'
-    session_id = init_rtr_single_session(host_id)
+    if not session_id:
+        session_id = init_rtr_single_session(host_id)
 
     params = {
         'session_id': session_id
@@ -1310,10 +1315,11 @@ def get_proccesses_ran_on(ioc_type, value, device_id):
     return http_request('GET', '/indicators/queries/processes/v1', payload)
 
 
-def search_device():
+def search_device(filter_operator='AND'):
     """
         Searches for devices using the argument provided by the command execution. Returns empty
-        result of no device was found
+        result if no device was found
+        :param: filter_operator: the operator that should be used between filters, default is 'AND'
         :return: Search device response json
     """
     args = demisto.args()
@@ -1322,9 +1328,14 @@ def search_device():
         'status': str(args.get('status', '')).split(','),
         'hostname': str(args.get('hostname', '')).split(','),
         'platform_name': str(args.get('platform_name', '')).split(','),
-        'site_name': str(args.get('site_name', '')).split(',')
+        'site_name': str(args.get('site_name', '')).split(','),
+        'local_ip': str(args.get('ip', '')).split(',')
     }
     url_filter = '{}'.format(str(args.get('filter', '')))
+    op = ',' if filter_operator == 'OR' else '+'
+    # In Falcon Query Language, '+' stands for AND and ',' for OR
+    # (https://falcon.crowdstrike.com/documentation/45/falcon-query-language-fql)
+
     for k, arg in input_arg_dict.items():
         if arg:
             if type(arg) is list:
@@ -1334,11 +1345,12 @@ def search_device():
                         first_arg = '{filter},{inp_arg}'.format(filter=arg_filter, inp_arg=k) if arg_filter else k
                         arg_filter = "{first}:'{second}'".format(first=first_arg, second=arg_elem)
                 if arg_filter:
-                    url_filter = "{url_filter}{arg_filter}".format(url_filter=url_filter + '+' if url_filter else '',
+                    url_filter = "{url_filter}{arg_filter}".format(url_filter=url_filter + op if url_filter else '',
                                                                    arg_filter=arg_filter)
             else:
                 # All args should be a list. this is a fallback
-                url_filter = "{url_filter}+{inp_arg}:'{arg_val}'".format(url_filter=url_filter, inp_arg=k, arg_val=arg)
+                url_filter = "{url_filter}{operator}{inp_arg}:'{arg_val}'".format(url_filter=url_filter, operator=op,
+                                                                                  inp_arg=k, arg_val=arg)
     raw_res = http_request('GET', '/devices/queries/devices/v1', params={'filter': url_filter})
     device_ids = raw_res.get('resources')
     if not device_ids:
@@ -1552,6 +1564,15 @@ def upload_batch_custom_ioc(ioc_batch: List[dict]) -> dict:
     }
 
     return http_request('POST', '/iocs/entities/indicators/v1', json=payload)
+
+
+def get_behaviors_by_incident(incident_id: str, params: dict = None) -> dict:
+    return http_request('GET', f'/incidents/queries/behaviors/v1?filter=incident_id:"{incident_id}"', params=params)
+
+
+def get_detections_by_behaviors(behaviors_id):
+    body = {'ids': behaviors_id}
+    return http_request('POST', '/incidents/entities/behaviors/GET/v1', data=body)
 
 
 ''' COMMANDS FUNCTIONS '''
@@ -2081,16 +2102,12 @@ def get_endpoint_command():
     if 'id' in args.keys():
         args['ids'] = args.get('id', '')
 
-    # handles the search by id or by hostname
-    raw_res = search_device()
-
-    if ip := args.get('ip') and raw_res:
-        # there is no option to filter by ip in an api call, therefore we would filter the devices in the code
-        raw_res = search_device_by_ip(raw_res, ip)
-
-    if not ip and not args.get('id') and not args.get('hostname'):
+    if not args.get('ip') and not args.get('id') and not args.get('hostname'):
         # in order not to return all the devices
         return create_entry_object(hr='Please add a filter argument - ip, hostname or id.')
+
+    # use OR operator between filters (https://github.com/demisto/etc/issues/46353)
+    raw_res = search_device(filter_operator='OR')
 
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
@@ -2753,8 +2770,9 @@ def get_extracted_file_command(args):
 def list_host_files_command():
     args = demisto.args()
     host_id = args.get('host_id')
+    session_id = args.get('session_id')
 
-    response = list_host_files(host_id)
+    response = list_host_files(host_id, session_id)
     resources: list = response.get('resources', [])
 
     files_output = []
@@ -3360,6 +3378,30 @@ def rtr_get_extracted_file(args_to_get_files: dict, file_name: str):
                            outputs_prefix="CrowdStrike.File"), files]
 
 
+def get_detection_for_incident_command(incident_id: str) -> CommandResults:
+    behavior_res = get_behaviors_by_incident(incident_id)
+    behaviors_id = behavior_res.get('resources')
+
+    if not behaviors_id or behavior_res.get('meta', {}).get('pagination', {}).get('total', 0) == 0:
+        return CommandResults(readable_output=f'Could not find behaviors for incident {incident_id}')
+
+    detection_res = get_detections_by_behaviors(behaviors_id).get('resources', {})
+    outputs = []
+
+    for detection in detection_res:
+        outputs.append({
+            'incident_id': detection.get('incident_id'),
+            'behavior_id': detection.get('behavior_id'),
+            'detection_ids': detection.get('detection_ids'),
+
+        })
+    return CommandResults(outputs_prefix='CrowdStrike.IncidentDetection',
+                          outputs=outputs,
+                          outputs_key_field='incident_id',
+                          readable_output=tableToMarkdown('Detection For Incident', outputs),
+                          raw_response=detection_res)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is {}'.format(demisto.command()))
@@ -3511,6 +3553,8 @@ def main():
         elif command == 'cs-falcon-rtr-retrieve-file':
             return_results(rtr_polling_retrieve_file_command(args))
 
+        elif command == 'cs-falcon-get-detections-for-incident':
+            return_results(get_detection_for_incident_command(args.get('incident_id')))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
