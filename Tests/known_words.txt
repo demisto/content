@@ -104,3 +104,6 @@ fieldSearchValue
 Classifiers
 SentinelOne
 URLs
+unisolate
+CrowdStrike
+MSDE
