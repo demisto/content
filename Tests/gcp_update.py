@@ -16,13 +16,13 @@ def main():
     downloaded_blob = blob.download_as_string()
     logging.info(f'{downloaded_blob=}')
 
-    blob2 = bucket.blob('xsiam-ci-locks/TestMachines')
+    blob2 = bucket.blob('xsiam-ci-locks/queue-lock-2552972')
     downloaded_blob2 = blob2.download_as_string()
     logging.info(f'{downloaded_blob2=}')
 
-    # blob = bucket.blob('xsiam-ci-locks')
-    # blob.delete()
-    # logging.info('File deleted successfully.')
+    blob = bucket.blob('queue')
+    blob.delete()
+    logging.info('File deleted successfully.')
 
 
 if __name__ == '__main__':

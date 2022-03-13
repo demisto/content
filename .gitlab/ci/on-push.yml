@@ -332,7 +332,7 @@ create_gcp_folders:
 #    - gsutil rm "gs://xsoar-ci-artifacts/xsiam-ci-locks/queue-lock-2552972"
     - echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> $BASH_ENV
     - source $BASH_ENV
-    - python3 ./Tests/gcp_update.py "$GCS_ARTIFACTS_KEY"
+    - python3 ./Tests/gcp_update.py
     - exit $EXIT_CODE
 
 
