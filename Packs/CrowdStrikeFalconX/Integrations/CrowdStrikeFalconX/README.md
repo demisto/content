@@ -1764,7 +1764,7 @@ Finds submission IDs for uploaded files by providing an FQL filter and paging de
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.id | Number | Set of report IDs that match the search criteria.  | 
+| csfalconx.resources.resource | String | Set of report IDs that match the search criteria.  |
 
 
 #### Command Example

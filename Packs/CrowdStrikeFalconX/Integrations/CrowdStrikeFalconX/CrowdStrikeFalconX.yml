@@ -1451,7 +1451,7 @@ script:
     execution: false
     name: cs-fx-find-submission-id
     outputs:
-    - contextPath: csfalconx.resources.resource
+    - contextPath: csfalconx.resource.resources
       description: 'Set of report IDs that match the search criteria. '
       type: Number
   - arguments:
