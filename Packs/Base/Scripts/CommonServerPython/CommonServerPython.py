@@ -9015,7 +9015,7 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
     return dec
 
 
-def get_fetch_run_time_with_look_back(last_run, first_fetch, look_back=0, timezone=0, date_format='%Y-%m-%dT%H:%M:%S'):
+def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, date_format='%Y-%m-%dT%H:%M:%S'):
     """
     Gets the time range for fetch
 
@@ -9034,15 +9034,15 @@ def get_fetch_run_time_with_look_back(last_run, first_fetch, look_back=0, timezo
     :type date_format: ``str``
     :param date_format: The date format
 
-    :return: The time range o fetch in
+    :return: The time range of the creation date for the incidents to fetch in the current run.
     :rtype: ``Tuple``
     """
     last_run_time = last_run and 'time' in last_run and last_run['time']
     now = datetime.utcnow() + timedelta(hours=timezone)
     if not last_run_time:
-        last_run_time, _ = parse_date_range(first_fetch)
+        last_run_time = dateparser.parse(first_fetch) + timedelta(hours=timezone)
     else:
-        last_run_time = datetime.strptime(last_run_time, date_format)
+        last_run_time = dateparser.parse(last_run_time)
 
     if look_back > 0:
         if now - last_run_time < timedelta(minutes=look_back):
@@ -9062,13 +9062,13 @@ def look_for_incidents_in_last_run(last_run):
     :rtype: ``list``
     """
     incidents = []
-    if 'incidents' in last_run and len(last_run['incidents']) > 0:
-        incidents = last_run['incidents']
+    if 'remained_incidents' in last_run and len(last_run['remained_incidents']) > 0:
+        incidents = last_run['remained_incidents']
 
     return incidents
 
 
-def get_incidents_from_response(incidents_res, last_run, id_field='id'):
+def remove_duplicate_incidents_from_response(incidents_res, last_run, id_field='id'):
     """
     Remove duplicates incidents from response
 
@@ -9156,7 +9156,7 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
 
 
 def set_next_fetch_run(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
-                       created_time_field, id_field='id', date_format='%Y-%m-%dT%H:%M:%S', save_incidents_in_last_run=False,
+                       created_time_field, id_field='id', date_format='%Y-%m-%dT%H:%M:%S', save_remained_incidents_in_last_run=False,
                        increase_last_run_time=False):
     """
     Sets the next run
@@ -9188,8 +9188,8 @@ def set_next_fetch_run(last_run, incidents, fetch_limit, start_fetch_time, end_f
     :type date_format: ``str``
     :param date_format: The date format
 
-    :type save_incidents_in_last_run: ``bool``
-    :param save_incidents_in_last_run: Whether to incidents in the last run object
+    :type save_remained_incidents_in_last_run: ``bool``
+    :param save_remained_incidents_in_last_run: Whether to save the remained incidents in the last run object
 
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
@@ -9229,8 +9229,8 @@ def set_next_fetch_run(last_run, incidents, fetch_limit, start_fetch_time, end_f
             'found_incident_ids': found_incidents
         }
 
-    if save_incidents_in_last_run:
-        new_last_run['incidents'] = incidents_from_limit
+    if save_remained_incidents_in_last_run:
+        new_last_run['remained_incidents'] = incidents_from_limit
 
     return new_last_run, incidents
 

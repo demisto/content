@@ -6353,7 +6353,7 @@ class TestFetchWithLookBack:
     
     def example_fetch_incidents(self):
 
-        from CommonServerPython import get_fetch_run_time_with_look_back, look_for_incidents_in_last_run, get_incidents_from_response, \
+        from CommonServerPython import get_fetch_run_time_range, look_for_incidents_in_last_run, remove_duplicate_incidents_from_response, \
             set_next_fetch_run
 
         incidents = []
@@ -6372,7 +6372,7 @@ class TestFetchWithLookBack:
             last_run['limit'] = fetch_limit
 
         incidents = look_for_incidents_in_last_run(last_run)
-        start_fetch_time, end_fetch_time = get_fetch_run_time_with_look_back(last_run, first_fetch, look_back, time_zone)
+        start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run, first_fetch, look_back, time_zone)
 
         if incidents:
             last_run, incidents = set_next_fetch_run(last_run, incidents, fetch_limit_param, start_fetch_time, end_fetch_time, look_back, 
@@ -6383,7 +6383,7 @@ class TestFetchWithLookBack:
         query = self.build_query(start_fetch_time, end_fetch_time, fetch_limit, return_incidents_by_limit)
         incident_res = self.get_incidents_request(query)
 
-        incidents = get_incidents_from_response(incident_res, last_run, 'incident_id')
+        incidents = remove_duplicate_incidents_from_response(incident_res, last_run, 'incident_id')
 
         new_last_run, incidents = set_next_fetch_run(last_run, incidents, fetch_limit_param, start_fetch_time, end_fetch_time, look_back,
                                                     'created', 'incident_id')
