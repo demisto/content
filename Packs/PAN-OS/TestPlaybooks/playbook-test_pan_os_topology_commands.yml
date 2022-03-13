@@ -1,15 +1,15 @@
 id: test_pan_os_topology_commands
 name: test_pan_os_topology_commands
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: 'dac49482-78ff-4050-8932-9f3881b5b2cc'
     type: start
     task:
-      id: '0'
+      id: 'dac49482-78ff-4050-8932-9f3881b5b2cc'
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '1'
+    taskid: '3bdf7012-70b2-4e54-b2a1-9eaea27821cd'
     type: regular
     task:
-      id: '1'
+      id: '3bdf7012-70b2-4e54-b2a1-9eaea27821cd'
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: '2'
+    taskid: 'f57e2a53-f0fe-48c8-975f-ee72145e49a1'
     type: regular
     task:
-      id: '2'
+      id: 'f57e2a53-f0fe-48c8-975f-ee72145e49a1'
       version: -1
       name: pan-os-platform-get-arp-tables
       description: ''
@@ -73,10 +73,10 @@ tasks:
     skipunavailable: false
   '3':
     id: '3'
-    taskid: '3'
+    taskid: '22c20c05-176b-4c9e-990d-9b4125f4d13a'
     type: condition
     task:
-      id: '3'
+      id: '22c20c05-176b-4c9e-990d-9b4125f4d13a'
       version: -1
       name: Verify Outputs
       type: condition
@@ -157,10 +157,10 @@ tasks:
     skipunavailable: false
   '4':
     id: 4
-    taskid: '4'
+    taskid: '6614b4ff-1fba-4f92-8a60-680a704f0d2a'
     type: regular
     task:
-      id: '4'
+      id: '6614b4ff-1fba-4f92-8a60-680a704f0d2a'
       version: -1
       name: pan-os-platform-get-route-summary
       description: ''
@@ -180,10 +180,10 @@ tasks:
     skipunavailable: false
   '5':
     id: '5'
-    taskid: '5'
+    taskid: '9b833742-deb3-4cad-bc6e-8721fb6f4dd0'
     type: condition
     task:
-      id: '5'
+      id: '9b833742-deb3-4cad-bc6e-8721fb6f4dd0'
       version: -1
       name: Verify Outputs
       type: condition
@@ -224,10 +224,10 @@ tasks:
     skipunavailable: false
   '6':
     id: 6
-    taskid: '6'
+    taskid: 'fff2fc55-00b0-4ff4-ac4b-10824f562b16'
     type: regular
     task:
-      id: '6'
+      id: 'fff2fc55-00b0-4ff4-ac4b-10824f562b16'
       version: -1
       name: pan-os-platform-get-routes
       description: ''
@@ -247,10 +247,10 @@ tasks:
     skipunavailable: false
   '7':
     id: '7'
-    taskid: '7'
+    taskid: '204ce545-46a2-4d1b-b19a-1361671b3577'
     type: condition
     task:
-      id: '7'
+      id: '204ce545-46a2-4d1b-b19a-1361671b3577'
       version: -1
       name: Verify Outputs
       type: condition
@@ -331,10 +331,10 @@ tasks:
     skipunavailable: false
   '8':
     id: 8
-    taskid: '8'
+    taskid: 'fafd913b-8ef1-4b35-a3e1-f33522f8047c'
     type: regular
     task:
-      id: '8'
+      id: 'fafd913b-8ef1-4b35-a3e1-f33522f8047c'
       version: -1
       name: pan-os-platform-get-system-info
       description: ''
@@ -354,10 +354,10 @@ tasks:
     skipunavailable: false
   '9':
     id: '9'
-    taskid: '9'
+    taskid: '015b255b-5d22-43c6-b36d-0a86345e34d5'
     type: condition
     task:
-      id: '9'
+      id: '015b255b-5d22-43c6-b36d-0a86345e34d5'
       version: -1
       name: Verify Outputs
       type: condition
@@ -523,10 +523,10 @@ tasks:
     skipunavailable: false
   '10':
     id: 10
-    taskid: '10'
+    taskid: '4e3c0a61-dbf8-409d-9c89-0516d4b513a9'
     type: regular
     task:
-      id: '10'
+      id: '4e3c0a61-dbf8-409d-9c89-0516d4b513a9'
       version: -1
       name: pan-os-platform-get-template-stacks
       description: ''
@@ -546,10 +546,10 @@ tasks:
     skipunavailable: false
   '11':
     id: '11'
-    taskid: '11'
+    taskid: 'ca2a570c-3be6-4b92-a890-91f9985167d1'
     type: condition
     task:
-      id: '11'
+      id: 'ca2a570c-3be6-4b92-a890-91f9985167d1'
       version: -1
       name: Verify Outputs
       type: condition
@@ -600,10 +600,10 @@ tasks:
     skipunavailable: false
   '12':
     id: '12'
-    taskid: '12'
+    taskid: 'd25de336-8584-483a-b0c2-328b5776660a'
     type: title
     task:
-      id: '12'
+      id: 'd25de336-8584-483a-b0c2-328b5776660a'
       version: -1
       name: Test Done
       type: title
@@ -620,3 +620,4 @@ view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width
   380, "x": 50, "y": 50}}}'
 inputs: []
 outputs: []
+description: ''

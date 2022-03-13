@@ -7345,7 +7345,7 @@ class AntiSpywareProfileBotnetDomains(CustomVersionedPanObject):
     def _setup(self):
         # xpaths
         self._xpaths.add_profile(value="/botnet-domains")
-        self._params = tuple()
+        self._params = tuple() # type: ignore[var-annotated]
 
 
 class AntiSpywareProfileRule(VersionedPanObject):
@@ -7384,7 +7384,7 @@ class AntiSpywareProfile(CustomVersionedPanObject):
     def _setup(self):
         # xpaths
         self._xpaths.add_profile(value="/profiles/spyware")
-        self._params = tuple()
+        self._params = tuple() # type: ignore[var-annotated]
 
 
 class VulnerabilityProfileRule(VersionedPanObject):
@@ -7427,7 +7427,7 @@ class VulnerabilityProfile(CustomVersionedPanObject):
     def _setup(self):
         # xpaths
         self._xpaths.add_profile(value="/profiles/vulnerability")
-        self._params = tuple()
+        self._params = tuple() # type: ignore[var-annotated]
 
 
 class URLFilteringProfile(VersionedPanObject):
@@ -8559,16 +8559,16 @@ class PanoramaCommand:
                 for device_group_xml in response.findall("./result/devicegroups/entry"):
                     dg_name = get_element_attribute(device_group_xml, "name")
                     for device_xml in device_group_xml.findall("./devices/entry"):
-                        device_group_information: DeviceGroupInformation = dataclass_from_element(device, DeviceGroupInformation,
-                                                                           device_xml)
+                        device_group_information: DeviceGroupInformation = dataclass_from_element(
+                            device, DeviceGroupInformation, device_xml
+                        )
                         device_group_information.name = dg_name
                         result.append(device_group_information)
 
         return result
 
     @staticmethod
-    def get_template_stacks(topology: Topology, device_filter_str: str = None) -> List[
-        TemplateStackInformation]:
+    def get_template_stacks(topology: Topology, device_filter_str: str = None) -> List[TemplateStackInformation]:
         """Get all the template-stacks from Panorama and their associated devices."""
 
         result = []
@@ -8578,9 +8578,9 @@ class PanoramaCommand:
                 for template_stack_xml in response.findall("./result/template-stack/entry"):
                     template_name = get_element_attribute(template_stack_xml, "name")
                     for device_xml in template_stack_xml.findall("./devices/entry"):
-                        result_template_stack_information: TemplateStackInformation = dataclass_from_element(device,
-                                                                                                             TemplateStackInformation,
-                                                                                                             device_xml)
+                        result_template_stack_information: TemplateStackInformation = dataclass_from_element(
+                            device, TemplateStackInformation, device_xml
+                        )
                         result_template_stack_information.name = template_name
                         result.append(result_template_stack_information)
 
@@ -8893,7 +8893,9 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_counter_global(topology: Topology, device_filter_str: Optional[str] = None) -> ShowCounterGlobalCommmandResult:
+    def get_counter_global(
+        topology: Topology, device_filter_str: Optional[str] = None
+    ) -> ShowCounterGlobalCommmandResult:
         result_data: List[ShowCounterGlobalResultData] = []
         summary_data: List[ShowCounterGlobalSummaryData] = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
@@ -8908,7 +8910,9 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_routing_summary(topology: Topology, device_filter_str: Optional[str] = None) -> ShowRouteSummaryCommandResult:
+    def get_routing_summary(
+        topology: Topology, device_filter_str: Optional[str] = None
+    ) -> ShowRouteSummaryCommandResult:
         summary_data = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
             response = run_op_command(firewall, FirewallCommand.ROUTING_SUMMARY_COMMAND)
@@ -8921,7 +8925,9 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_bgp_peers(topology: Topology, device_filter_str: Optional[str] = None) -> ShowRoutingProtocolBGPCommandResult:
+    def get_bgp_peers(
+        topology: Topology, device_filter_str: Optional[str] = None
+    ) -> ShowRoutingProtocolBGPCommandResult:
         summary_data = []
         result_data = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
@@ -9112,7 +9118,8 @@ def get_topology() -> Topology:
 
 def dataclasses_to_command_results(result: Any, empty_result_message: str = "No results."):
     """
-    Given a dataclass or list of dataclasses, convert it into a tabular format and finally return CommandResults to demisto.
+    Given a dataclass or list of dataclasses,
+    convert it into a tabular format and finally return CommandResults to demisto.
 
     :param empty_result_message: If the result data is non
     """
@@ -9126,8 +9133,6 @@ def dataclasses_to_command_results(result: Any, empty_result_message: str = "No 
     # Convert the dataclasses into dicts
     outputs: Union[list, dict] = {}
     summary_list = []
-    title = ""
-    output_prefix = ""
 
     if not hasattr(result, "summary_data"):
         # If this isn't a regular summary/result return, but instead, is just one object or a list of flat
@@ -9548,35 +9553,46 @@ def main():
 
         elif demisto.command() == 'pan-os-platform-get-arp-tables':
             topology = get_topology()
-            command_result = get_arp_tables(topology, **demisto.args())
-            return_results(dataclasses_to_command_results(command_result, empty_result_message="No ARP entries."))
+            return_results(
+                dataclasses_to_command_results(
+                    get_arp_tables(topology, **demisto.args()),
+                    empty_result_message="No ARP entries."
+                )
+            )
         elif demisto.command() == 'pan-os-platform-get-route-summary':
             topology = get_topology()
-            command_result = get_route_summaries(topology, **demisto.args())
-            return_results(dataclasses_to_command_results(
-                command_result, empty_result_message="Empty route summary result.")
+            return_results(
+                dataclasses_to_command_results(
+                    get_route_summaries(topology, **demisto.args()),
+                    empty_result_message="Empty route summary result."
+                )
             )
         elif demisto.command() == 'pan-os-platform-get-routes':
             topology = get_topology()
-            command_result = get_routes(topology, **demisto.args())
-            return_results(dataclasses_to_command_results(
-                command_result, empty_result_message="Empty route summary result.")
+            return_results(
+                dataclasses_to_command_results(
+                    get_routes(topology, **demisto.args()),
+                    empty_result_message="Empty route summary result."
+                )
             )
         elif demisto.command() == 'pan-os-platform-get-system-info':
             topology = get_topology()
-            command_result = get_system_info(topology, **demisto.args())
-            return_results(dataclasses_to_command_results(command_result))
+            return_results(dataclasses_to_command_results(get_system_info(topology, **demisto.args())))
         elif demisto.command() == 'pan-os-platform-get-device-groups':
             topology = get_topology()
-            command_result = get_device_groups(topology, **demisto.args())
-            return_results(dataclasses_to_command_results(
-                command_result, empty_result_message="No device groups found.")
+            return_results(
+                dataclasses_to_command_results(
+                    get_device_groups(topology, **demisto.args()),
+                    empty_result_message="No device groups found."
+                )
             )
         elif demisto.command() == 'pan-os-platform-get-template-stacks':
             topology = get_topology()
-            command_result = get_template_stacks(topology, **demisto.args())
-            return_results(dataclasses_to_command_results(
-                command_result, empty_result_message="No template stacks found.")
+            return_results(
+                dataclasses_to_command_results(
+                    get_template_stacks(topology, **demisto.args()),
+                    empty_result_message="No template stacks found."
+                )
             )
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
