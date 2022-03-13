@@ -2297,9 +2297,10 @@ Adds an attribute to an existing MISP event.
 | type | Attribute type. For example: "md5", "sha1", "email", "url". Default is other. | Optional | 
 | category | Attribute category. For example: "Other", "Person", "Attribution", "Payload type". Default is External analysis. | Optional | 
 | to_ids | Whether to create the attribute with the Intrusion Detection System flag. Possible values: "true" and "false". Possible values are: true, false. Default is true. | Optional | 
-| distribution | Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "All_communities", and "Inherit_event". Possible values are: Your_organization_only, This_community_only, Connected_communities, All_communities, Inherit_event. Default is Inherit_event. | Optional | 
+| distribution | Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "Sharing_group", "All_communities", and "Inherit_event". Possible values are: Your_organization_only, This_community_only, Connected_communities, All_communities, Sharing_group, Inherit_event. Default is Inherit_event. | Optional | 
 | comment | Comment for the attribute. | Optional | 
 | value | Attribute value. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs). | Required | 
+| sharing_group_id | Sharing group ID. Mandatory when Sharing_group distribution is set. | Optional | 
 
 
 #### Context Output
