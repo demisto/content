@@ -497,6 +497,10 @@ def get_new_misp_event_object(args):
     event.distribution = MISP_DISTRIBUTION_TO_IDS[args.get('distribution')]
 
     sharing_group_id = args.get('sharing_group_id')
+    if event.distribution == 4 and not sharing_group_id:
+        raise DemistoException(
+            f"Error: When setting distribution to be 'Sharing_group', you have to specify the"
+            f" 'sharing_group_id' argument.")
     if sharing_group_id:
         event.sharing_group_id = arg_to_number(sharing_group_id)
 
