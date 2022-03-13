@@ -1378,7 +1378,6 @@ class SmartGetDict(dict):
     :rtype: ``SmartGetDict``
 
     """
-
     def get(self, key, default=None):
         res = dict.get(self, key)
         if res is not None:
@@ -4626,7 +4625,6 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
-
             def __init__(
                 self,
                 gn=None,  # type: Optional[Common.GeneralName]
@@ -4666,7 +4664,6 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
-
             def __init__(
                 self,
                 issuer=None,  # type: Optional[List[Common.GeneralName]]
@@ -4710,7 +4707,6 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
-
             def __init__(
                 self,
                 full_name=None,  # type: Optional[List[Common.GeneralName]]
@@ -4750,7 +4746,6 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
-
             def __init__(
                 self,
                 policy_identifier,  # type: str
@@ -4783,7 +4778,6 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
-
             def __init__(
                 self,
                 access_method,  # type: str
@@ -4812,7 +4806,6 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
-
             def __init__(
                 self,
                 ca,  # type: bool
@@ -5506,7 +5499,6 @@ class IndicatorsTimeline:
     :return: None
     :rtype: ``None``
     """
-
     def __init__(self, indicators=None, category=None, message=None):
         # type: (list, str, str) -> None
         if indicators is None:
@@ -5539,6 +5531,7 @@ class IndicatorsTimeline:
 
 def arg_to_number(arg, arg_name=None, required=False):
     # type: (Any, Optional[str], bool) -> Optional[int]
+
     """Converts an XSOAR argument to a Python int
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -5596,6 +5589,7 @@ def arg_to_number(arg, arg_name=None, required=False):
 
 def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=None):
     # type: (Any, Optional[str], bool, bool, dict) -> Optional[datetime]
+
     """Converts an XSOAR argument to a datetime
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -8547,7 +8541,6 @@ class AutoFocusKeyRetriever:
     :return: No data returned
     :rtype: ``None``
     """
-
     def __init__(self, api_key):
         # demisto.getAutoFocusApiKey() is available from version 6.2.0
         if not api_key:
@@ -9039,7 +9032,6 @@ class PollResult:
     :rtype: ``PollResult``
 
     """
-
     def __init__(self, response, continue_to_poll=False, args_for_next_run=None, partial_result=None):
         """
         Constructor for PollResult
