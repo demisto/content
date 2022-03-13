@@ -6915,124 +6915,124 @@ script:
       type: string
   - arguments:
     - default: false
-      description: String to filter to only show specific hostnames or serial numbers.
+      description: String by which to filter the results to only show specific hostnames or serial numbers.
       isArray: false
       name: device_filter_string
       required: false
       secret: false
     deprecated: false
-    description: Gets all arp tables from all firewalls in the topology.
+    description: Gets all ARP tables from all firewalls in the topology.
     name: pan-os-platform-get-arp-tables
     outputs:
     - contextPath: PANOS.ShowArp.Summary.hostid
-      description: ID of PAN-OS host
+      description: ID of the PAN-OS host.
       type: String
     - contextPath: PANOS.ShowArp.Summary.max
-      description: Maximum supported ARP Entries
+      description: Maximum number of supported ARP entries.
       type: String
     - contextPath: PANOS.ShowArp.Summary.total
-      description: Total current arp entries
+      description: Total number of current ARP entries.
       type: String
     - contextPath: PANOS.ShowArp.Summary.timeout
-      description: ARP entry timeout
+      description: ARP entry timeout.
       type: String
     - contextPath: PANOS.ShowArp.Summary.dp
-      description: Firewall dataplane associated with Entry
+      description: Firewall dataplane associated with the entry.
       type: String
     - contextPath: PANOS.ShowArp.Result.hostid
-      description: ID of PAN-OS host
+      description: ID of the PAN-OS host.
       type: String
     - contextPath: PANOS.ShowArp.Result.interface
-      description: Network interface learnt ARP entry
+      description: Network interface learned ARP entry.
       type: String
     - contextPath: PANOS.ShowArp.Result.ip
-      description: layer 3 address
+      description: Layer 3 address.
       type: String
     - contextPath: PANOS.ShowArp.Result.mac
-      description: Layer 2 address
+      description: Layer 2 address.
       type: String
     - contextPath: PANOS.ShowArp.Result.port
-      description: Network interface matching entry
+      description: Network interface matching entry.
       type: String
     - contextPath: PANOS.ShowArp.Result.status
-      description: ARP Entry status
+      description: ARP entry status.
       type: String
     - contextPath: PANOS.ShowArp.Result.ttl
-      description: Time to Live
+      description: Time to live.
       type: String
   - arguments:
     - default: false
-      description: String to filter to only show specific hostnames or serial numbers.
+      description: String by which to filter the results to only show specific hostnames or serial numbers.
       isArray: false
       name: device_filter_string
       required: false
       secret: false
     deprecated: false
-    description: Pulls all route summary information from the topology
+    description: Pulls all route summary information from the topology.
     name: pan-os-platform-get-route-summary
     outputs:
     - contextPath: PANOS.ShowRouteSummary.Summary.hostid
-      description: ID of PAN-OS host
+      description: ID of the PAN-OS host.
       type: Number
     - contextPath: PANOS.ShowRouteSummary.Summary.total
-      description: Total routes
+      description: Total number of routes.
       type: Number
     - contextPath: PANOS.ShowRouteSummary.Summary.limit
-      description: Maximum routes for platform
+      description: Maximum number of routes for the platform.
       type: Number
     - contextPath: PANOS.ShowRouteSummary.Summary.active
-      description: Active routes in routing table
+      description: Active routes in the routing table.
       type: Number
   - arguments:
     - default: false
-      description: String to filter to only show specific hostnames or serial numbers.
+      description: String by which to filter the results to only show specific hostnames or serial numbers.
       isArray: false
       name: device_filter_string
       required: false
       secret: false
     deprecated: false
-    description: Pulls all route summary information from the topology
+    description: Pulls all route summary information from the topology.
     name: pan-os-platform-get-routes
     outputs:
     - contextPath: PANOS.ShowRoute.Summary.hostid
-      description: ID of PAN-OS host
+      description: ID of the PAN-OS host.
       type: String
     - contextPath: PANOS.ShowRoute.Summary.interface
-      description: Next hop interface
+      description: Next hop interface.
       type: String
     - contextPath: PANOS.ShowRoute.Summary.route_count
-      description: Total routes seen on virtual router interface
+      description: Total number of routes seen on the virtual router interface.
       type: Number
     - contextPath: PANOS.ShowRoute.Result.hostid
-      description: ID of PAN-OS host
+      description: ID of the PAN-OS host.
       type: String
     - contextPath: PANOS.ShowRoute.Result.virtual_router
-      description: Virtual router this route belongs to
+      description: Virtual router this route belongs to.
       type: String
     - contextPath: PANOS.ShowRoute.Result.destination
-      description: Network destination of route
+      description: Network destination of the route.
       type: String
     - contextPath: PANOS.ShowRoute.Result.nexthop
-      description: Next hop to destination
+      description: Next hop to the destination.
       type: String
     - contextPath: PANOS.ShowRoute.Result.metric
-      description: Route metric
+      description: Route metric.
       type: String
     - contextPath: PANOS.ShowRoute.Result.flags
-      description: Route flags
+      description: Route flags.
       type: String
     - contextPath: PANOS.ShowRoute.Result.age
-      type: Number
-      description: Age of the route
+      description: Age of the route.
+      type: Number      
     - contextPath: PANOS.ShowRoute.Result.interface
-      description: Next hop interface
+      description: Next hop interface.
       type: String
     - contextPath: PANOS.ShowRoute.Result.route_table
-      type: String
-      description: Which route table this route belongs to
+      description: The route table this route belongs to.
+      type: String      
   - arguments:
     - default: false
-      description: String to filter to only show specific hostnames or serial numbers.
+      description: String by which to filter the results to only show specific hostnames or serial numbers.
       isArray: false
       name: device_filter_string
       required: false
@@ -7042,95 +7042,95 @@ script:
     name: pan-os-platform-get-system-info
     outputs:
     - contextPath: PANOS.ShowSystemInfo.Summary.hostid
-      description: ID of PAN-OS host
+      description: ID of the PAN-OS host.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Summary.ip_address
-      description: Management IP Address
+      description: Management IP address.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Summary.sw_version
-      description: System software version
+      description: System software version.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Summary.family
-      description: Platform family
+      description: Platform family.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Summary.model
-      description: Platform model
+      description: Platform model.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Summary.uptime
-      description: Total System uptime
+      description: Total system uptime.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Summary.hostname
-      description: System Hostname
+      description: System hostname.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.hostid
-      description: ID of PAN-OS host
+      description: ID of the PAN-OS host.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.ip_address
-      description: Management IP Address
+      description: Management IP address.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.netmask
-      description: Management Netmask
+      description: Management netmask.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.mac_address
-      description: Management MAC address
+      description: Management MAC address.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.uptime
-      description: Total System uptime
+      description: Total system uptime.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.family
-      description: Platform family
+      description: Platform family.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.model
-      description: Platform model
+      description: Platform model.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.sw_version
-      description: System software version
+      description: System software version.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.operational_mode
-      description: Current operational mode
+      description: Current operational mode.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.ipv6_address
-      description: Management IPv6 address
+      description: Management IPv6 address.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.default_gateway
-      description: Management Default Gateway
+      description: Management default gateway.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.public_ip_address
-      type: String
-      description: Firewall Public IP
+      description: Firewall public IP address.
+      type: String        
     - contextPath: PANOS.ShowSystemInfo.Result.hostname
-      type: String
-      description: Device hostname
+      description: Device hostname.
+      type: String      
     - contextPath: PANOS.ShowSystemInfo.Result.av_version
-      description: System anti-virus version
+      description: System anti-virus version.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.av_release_date
-      type: String
-      description: Release date of antivirus content
+       description: Release date of the antivirus content.
+       type: String     
     - contextPath: PANOS.ShowSystemInfo.Result.app_version
-      description: App content version
+      description: App content version.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.app_release_date
-      description: Release date of application content
+      description: Release date of the application content.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.threat_version
-      description: Threat content version
+      description: Threat content version.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.threat_release_date
-      description: Release date of threat content
+      description: Release date of the threat content.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.wildfire_version
-      description: Wildfire content version
+      description: Wildfire content version.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.wildfire_release_date
-      description: Wildfire release date
+      description: Wildfire release date.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.url_filtering_version
-      description: URL Filtering content version
+      description: URL filtering content version.
       type: String
   - arguments:
     - default: false
-      description: String to filter to only show specific hostnames or serial numbers.
+      description: String by which to filter the results to only show specific hostnames or serial numbers.
       isArray: false
       name: device_filter_string
       required: false
@@ -7140,51 +7140,51 @@ script:
     name: pan-os-platform-get-device-groups
     outputs:
     - contextPath: PANOS.DeviceGroupOp.hostid
-      description: ID of PAN-OS host
+      description: ID of the PAN-OS host.
       type: String
     - contextPath: PANOS.DeviceGroupOp.serial
-      description: Serial number of firewall
+      description: Serial number of the firewall.
       type: String
     - contextPath: PANOS.DeviceGroupOp.connected
-      description: Whether the firewall is currently connected
+      description: Whether the firewall is currently connected.
       type: String
     - contextPath: PANOS.DeviceGroupOp.hostname
-      description: Firewall hostname
+      description: Firewall hostname.
       type: String
     - contextPath: PANOS.DeviceGroupOp.last_commit_all_state_sp
-      description: Text state of last commit
+      description: State of the last commit.
       type: String
     - contextPath: PANOS.DeviceGroupOp.name
-      description: Device group Name
+      description: Device group name.
       type: String
   - arguments:
     - default: false
-      description: String to filter to only show specific hostnames or serial numbers.
+      description: String by which to filter the results to only show specific hostnames or serial numbers.
       isArray: false
       name: device_filter_string
       required: false
       secret: false
     deprecated: false
-    description: Gets the operational information of the template-stacks in the topology.
+    description: Gets the operational information of the template stacks in the topology.
     name: pan-os-platform-get-template-stacks
     outputs:
     - contextPath: PANOS.TemplateStackOp.hostid
-      description: ID of PAN-OS host
+      description: ID of the PAN-OS host.
       type: String
     - contextPath: PANOS.TemplateStackOp.serial
-      description: Serial number of firewall
+      description: Serial number of the firewall.
       type: String
     - contextPath: PANOS.TemplateStackOp.connected
-      description: Whether the firewall is currently connected
+      description: Whether the firewall is currently connected.
       type: String
     - contextPath: PANOS.TemplateStackOp.hostname
-      description: Firewall hostname
+      description: Firewall hostname.
       type: String
     - contextPath: PANOS.TemplateStackOp.last_commit_all_state_tpl
-      description: Text state of last commit
+      description: State of the last commit.
       type: String
     - contextPath: PANOS.TemplateStackOp.name
-      description: Template Stack Name
+      description: Template stack name.
       type: String
   dockerimage: demisto/pan-os-python:1.0.0.27504
   feed: false
