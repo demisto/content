@@ -1695,7 +1695,7 @@ def get_remote_data_command(args: Dict[str, Any]):
         return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
 
 
-def find_incident_type(remote_incident_id: str) -> IncidentType:
+def find_incident_type(remote_incident_id: str):
     if remote_incident_id[0:3] == IncidentType.INCIDENT.value:
         return IncidentType.INCIDENT
     if remote_incident_id[0:3] == IncidentType.DETECTION.value:
@@ -1893,7 +1893,7 @@ def close_in_cs_falcon(delta: Dict[str, Any]) -> bool:
     return demisto.params().get('close_in_cs_falcon') and any(field in delta for field in closing_fields)
 
 
-def update_remote_detection(delta: Dict[str, Any], inc_status: IncidentStatus, detection_id: str) -> str:
+def update_remote_detection(delta, inc_status: IncidentStatus, detection_id: str) -> str:
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f'Closing detection with remote ID {detection_id} in remote system.')
         return str(update_detection_request([detection_id], 'closed'))
@@ -1913,7 +1913,7 @@ def update_remote_incident(delta: Dict[str, Any], inc_status: IncidentStatus, in
     return result
 
 
-def update_remote_incident_status(delta: Dict[str, Any], inc_status: IncidentStatus, incident_id: str) -> str:
+def update_remote_incident_status(delta, inc_status: IncidentStatus, incident_id: str) -> str:
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
         return str(resolve_incident([incident_id], 'Closed'))
@@ -1926,7 +1926,7 @@ def update_remote_incident_status(delta: Dict[str, Any], inc_status: IncidentSta
     return ''
 
 
-def update_remote_incident_tags(delta: Dict[str, Any], incident_id: str) -> str:
+def update_remote_incident_tags(delta, incident_id: str) -> str:
     result = ''
     if 'tag' in delta:
         current_tags = set(delta.get('tag'))
