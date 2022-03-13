@@ -1,10 +1,11 @@
 This playbook handles all the eradication actions available with XSIAM.
-The playbook allows to eradicate the incident with one of the following tasks:
+The following tasks are used to eradicate the incident:
 * Reset user password
 * Delete file
 * Kill process (currently, the playbook supports terminating a process by name)
 
-The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+**Note:** The playbook inputs enable manipulating the execution flow, read the input descriptions for details.
+
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -16,7 +17,7 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* Set
+Set
 
 ### Commands
 * core-run-script-delete-file
@@ -28,11 +29,11 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| AutoEradicate | Boolean. Set to 'true' if you want to execute the eradication playbook automatically. | Auto | Optional |
+| AutoEradicate | Set to True to execute the eradication playbook automatically. | Auto | Optional |
 | EndpointID | The endpoint ID. | alert.agentid | Optional |
 | FilePath | The file path for the file deletion task. | foundIncidents.CustomFields.initiatorpath | Optional |
-| Username | The username to reset password for. | foundIncidents.CustomFields.username | Optional |
-| FileRemediation | Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. <br/>e.g. Choosing 'Delete' will ignore the 'Quarantine file' task under the containment playbook and will execute only file deletion and vice versa. | Delete | Optional |
+| Username | The username to reset the password for. | foundIncidents.CustomFields.username | Optional |
+| FileRemediation | Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. <br/>For example, Choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and executes only file quarantine. | Delete | Optional |
 
 ## Playbook Outputs
 ---
