@@ -5,5 +5,4 @@ ignore=IN110,IN109
 ignore=BA108,BA109
 
 [known_words]
-threat
-threats
+ThreatQ
