@@ -12,6 +12,8 @@ Endpoints
 IOC
 deprecated
 EPOFindSystem
+TaegisXDR
+Taegis
 boolean
 xdr
 Darktrace
@@ -107,3 +109,5 @@ URLs
 unisolate
 CrowdStrike
 MSDE
+hostname
+EDR
