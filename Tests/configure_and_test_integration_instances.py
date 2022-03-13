@@ -681,7 +681,7 @@ class XSOARBuild(Build):
 class XSIAMBuild(Build):
 
     def __init__(self, options):
-        super().__init__(options)
+        # super().__init__(options)
         logging.info(f'{options.xsiam_servers_path=}')
         self.xsiam_servers = get_json_file(options.xsiam_servers_path)
         logging.info(f'{self.xsiam_servers=}')
