@@ -606,7 +606,7 @@
                                 "index": 0,
                                 "listId": "lh0m3xwmh0-ac7e8da0-6e40-11ec-a5f2-8bef6c226235",
                                 "name": "Click to Update",
-                                "scriptId": "a0e80035-f917-4ad5-8236-54904ad5d6e6",
+                                "scriptId": "PrismaCloudComputeCreateImpactTableForCVE",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             }
