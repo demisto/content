@@ -275,12 +275,12 @@ slack-notify-nightly-build:
     GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json" # all servers info, printed in create instanses step
     BUILD_OBJECT_TYPE: "XSIAM"
-  needs: ["prepare-testing-bucket-mpv2"]
+  needs: []
   stage: run-instances
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
-    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
+#    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
 #      cp "$ARTIFACTS_FOLDER/env_results.json" "./artifacts/env_results.json"  # todo: need to change this file to xsiam instances
 
     - echo "Authing to GCP"
@@ -329,7 +329,7 @@ create_gcp_folders:
     - EXIT_CODE=0
     - echo "Authing to GCP"
 #    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
-    - gsutil rm "gs://xsoar-ci-artifacts/xsiam-ci-locks"
+    - gsutil rm "gs://xsoar-ci-artifacts/xsiam-ci-locks/queue-lock-2552972"
 #    - echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> $BASH_ENV
 #    - source $BASH_ENV
 #    - python3 ./Tests/gcp_update.py "$GCS_ARTIFACTS_KEY"

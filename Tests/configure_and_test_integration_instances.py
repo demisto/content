@@ -682,7 +682,9 @@ class XSIAMBuild(Build):
 
     def __init__(self, options):
         super().__init__(options)
+        logging.info(f'{options.xsiam_servers_path=}')
         self.xsiam_servers = get_json_file(options.xsiam_servers_path)
+        logging.info(f'{self.xsiam_servers=}')
         self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
             self.get_xsiam_configuration(options.xsiam_machine, self.xsiam_servers)
 
