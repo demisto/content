@@ -1,5 +1,7 @@
 id: Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
 description: Checks the domain-squatting flow, with an attached EML file. The EML file should contain some indicators. some of which should be detected as at least suspicious. The email authenticity should get a score of "Fail". Those results together with the domain-squatting, should eventually cause the incident to get a severity of 3.
 starttaskid: "0"
@@ -92,7 +94,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 850
+          "y": 1100
         }
       }
     note: false
@@ -157,7 +159,7 @@ tasks:
       {
         "position": {
           "x": 1590,
-          "y": 2020
+          "y": 2270
         }
       }
     note: false
@@ -194,7 +196,7 @@ tasks:
       {
         "position": {
           "x": 1920,
-          "y": 1365
+          "y": 1615
         }
       }
     note: false
@@ -230,7 +232,7 @@ tasks:
       {
         "position": {
           "x": 1590,
-          "y": 2210
+          "y": 2460
         }
       }
     note: false
@@ -257,7 +259,7 @@ tasks:
       {
         "position": {
           "x": -1000,
-          "y": 2520
+          "y": 2770
         }
       }
     note: false
@@ -301,7 +303,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2020
+          "y": 2270
         }
       }
     note: false
@@ -337,7 +339,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2210
+          "y": 2460
         }
       }
     note: false
@@ -381,7 +383,7 @@ tasks:
       {
         "position": {
           "x": 2270,
-          "y": 2020
+          "y": 2270
         }
       }
     note: false
@@ -425,7 +427,7 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 2020
+          "y": 2270
         }
       }
     note: false
@@ -461,7 +463,7 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 2210
+          "y": 2460
         }
       }
     note: false
@@ -505,7 +507,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 2020
+          "y": 2270
         }
       }
     note: false
@@ -536,7 +538,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 2210
+          "y": 2460
         }
       }
     note: false
@@ -569,7 +571,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1870
+          "y": 2120
         }
       }
     note: false
@@ -599,7 +601,7 @@ tasks:
       {
         "position": {
           "x": 1590,
-          "y": 1870
+          "y": 2120
         }
       }
     note: false
@@ -629,7 +631,7 @@ tasks:
       {
         "position": {
           "x": 2270,
-          "y": 1870
+          "y": 2120
         }
       }
     note: false
@@ -659,7 +661,7 @@ tasks:
       {
         "position": {
           "x": -1680,
-          "y": 1530
+          "y": 1780
         }
       }
     note: false
@@ -692,7 +694,7 @@ tasks:
       {
         "position": {
           "x": 2280,
-          "y": 2210
+          "y": 2460
         }
       }
     note: false
@@ -736,7 +738,7 @@ tasks:
       {
         "position": {
           "x": -440,
-          "y": 2020
+          "y": 2270
         }
       }
     note: false
@@ -772,7 +774,7 @@ tasks:
       {
         "position": {
           "x": -440,
-          "y": 2210
+          "y": 2460
         }
       }
     note: false
@@ -807,7 +809,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1550
+          "y": 1800
         }
       }
     note: false
@@ -845,7 +847,7 @@ tasks:
       {
         "position": {
           "x": 1920,
-          "y": 1680
+          "y": 1930
         }
       }
     note: false
@@ -872,7 +874,7 @@ tasks:
       {
         "position": {
           "x": -1680,
-          "y": 1680
+          "y": 1930
         }
       }
     note: false
@@ -917,7 +919,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1010
+          "y": 1260
         }
       }
     note: false
@@ -964,7 +966,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1190
+          "y": 1440
         }
       }
     note: false
@@ -989,7 +991,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "41"
+      - "44"
     scriptarguments:
       attachment_paths:
         simple: TestData/For_Domain_SQT.eml
@@ -1012,12 +1014,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 4385f638-d61f-4c30-87c0-adbf8ed7f15f
+    taskid: ecf81c42-9a73-4259-85c7-c79980821ba4
     type: regular
     task:
-      id: 4385f638-d61f-4c30-87c0-adbf8ed7f15f
+      id: ecf81c42-9a73-4259-85c7-c79980821ba4
       version: -1
-      name: Find the incident (with retries)
+      name: Find the incident
       description: |-
         Searches Demisto incidents.
 
@@ -1037,15 +1039,15 @@ tasks:
       notstatus:
         simple: Closed
       retry-count:
-        simple: "10"
+        simple: "0"
       retry-interval:
-        simple: "10"
+        simple: "0"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 510
+          "y": 710
         }
       }
     note: false
@@ -1094,7 +1096,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 670
+          "y": 920
         }
       }
     note: false
@@ -1131,7 +1133,7 @@ tasks:
       {
         "position": {
           "x": 1920,
-          "y": 1515
+          "y": 1765
         }
       }
     note: false
@@ -1141,6 +1143,41 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 7f993d63-e21f-4bd6-85ae-33abb60e8126
+    type: regular
+    task:
+      id: 7f993d63-e21f-4bd6-85ae-33abb60e8126
+      version: -1
+      name: Wait for incident to be created
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      seconds:
+        simple: "45"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1153,7 +1190,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2535,
+        "height": 2785,
         "width": 4340,
         "x": -1680,
         "y": 50
