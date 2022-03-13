@@ -24,15 +24,16 @@ script:
   - arguments:
     - default: false
       description: A comma-separated list of project names to retrieve. For example,
-        projects/415104041262. Leave empty to retrieve a list of projects under a specified parent resource.
+        projects/415104041262. Leave empty to retrieve a list of projects under a
+        specified parent resource.
       isArray: true
       name: project_name
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1. Maximum
-        value is 100.
+      description: The maximum number of results to retrieve. Minimum value is 1.
+        Maximum value is 100.
       isArray: false
       name: limit
       required: false
@@ -55,7 +56,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: If true, projects that have been marked for deletion will also be retrieved.
+      description: If true, projects that have been marked for deletion will also
+        be retrieved.
       isArray: false
       name: show_deleted
       predefined:
@@ -64,8 +66,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Lists project under the specified parent, or retrieves a specific project's information.
-      'One of the following arguments must be provided: "parent" or "project_name".'
+    description: 'Lists project under the specified parent, or retrieves a specific
+      project''s information. One of the following arguments must be provided: "parent"
+      or "project_name".'
     execution: false
     name: gcp-iam-projects-get
     outputs:
@@ -124,8 +127,8 @@ script:
       description: The role that is assigned to the list of members.
       type: String
     - contextPath: GCPIAM.Policy.name
-      description: The unique resource name of the project. Note that this
-        output was added manually.
+      description: The unique resource name of the project. Note that this output
+        was added manually.
       type: String
   - arguments:
     - default: false
@@ -136,14 +139,16 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of permission names to validate for the resource.
+      description: A comma-separated list of permission names to validate for the
+        resource.
       isArray: true
       name: permissions
       required: true
       secret: false
     deprecated: false
-    description: Returns permissions that a caller has on the specified project. The permission
-      list can be obtained by running the 'gcp-iam-testable-permission-list' command.
+    description: Returns permissions that a caller has on the specified project. The
+      permission list can be obtained by running the 'gcp-iam-testable-permission-list'
+      command.
     execution: false
     name: gcp-iam-project-iam-permission-test
     outputs:
@@ -177,8 +182,8 @@ script:
     name: gcp-iam-project-iam-member-add
   - arguments:
     - default: false
-      description: The name of the project for which the policy is being specified. For
-        example, projects/415104041262.
+      description: The name of the project for which the policy is being specified.
+        For example, projects/415104041262.
       isArray: false
       name: project_name
       required: true
@@ -203,8 +208,8 @@ script:
     name: gcp-iam-project-iam-member-remove
   - arguments:
     - default: false
-      description: The name of the project for which the policy is being specified. For
-        example, projects/415104041262.
+      description: The name of the project for which the policy is being specified.
+        For example, projects/415104041262.
       isArray: false
       name: project_name
       required: true
@@ -236,13 +241,13 @@ script:
       description: The role that is assigned to the list of members.
       type: String
     - contextPath: GCPIAM.Policy.name
-      description: The unique resource name of the project. Note that this
-        output was added manually.
+      description: The unique resource name of the project. Note that this output
+        was added manually.
       type: String
   - arguments:
     - default: false
-      description: The name of the project for which the policy is being specified. For
-        example, projects/415104041262.
+      description: The name of the project for which the policy is being specified.
+        For example, projects/415104041262.
       isArray: false
       name: project_name
       required: true
@@ -267,8 +272,8 @@ script:
     name: gcp-iam-project-iam-policy-create
   - arguments:
     - default: false
-      description: The name of the project for which the policy is being specified. For
-        example, projects/415104041262.
+      description: The name of the project for which the policy is being specified.
+        For example, projects/415104041262.
       isArray: false
       name: project_name
       required: true
@@ -286,7 +291,8 @@ script:
   - arguments:
     - default: false
       description: A comma-separated list of folder names to retrieve. For example,
-        folders/12342. Leave empty to retrieve a list of folders under a specified parent resource.
+        folders/12342. Leave empty to retrieve a list of folders under a specified
+        parent resource.
       isArray: true
       name: folder_name
       required: false
@@ -301,8 +307,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1, maximum
-        value is 100.
+      description: The maximum number of results to retrieve. Minimum value is 1,
+        maximum value is 100.
       isArray: false
       name: limit
       required: false
@@ -317,7 +323,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: If true, folders that have been marked for deletion will also be retrieved.
+      description: If true, folders that have been marked for deletion will also be
+        retrieved.
       isArray: false
       name: show_deleted
       predefined:
@@ -326,8 +333,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists folders under the specified parent, or retrieves a specific folder
-      information. One of the arguments: ''parent'' or ''folder_name''  must be provided.'
+    description: 'Lists folders under the specified parent, or retrieves a specific
+      folder information. One of the arguments: ''parent'' or ''folder_name''  must
+      be provided.'
     execution: false
     name: gcp-iam-folders-get
     outputs:
@@ -383,8 +391,8 @@ script:
       description: The role that is assigned to the list of members.
       type: String
     - contextPath: GCPIAM.Policy.name
-      description: The unique resource name of the folder. Note that this output
-        was added manually.
+      description: The unique resource name of the folder. Note that this output was
+        added manually.
       type: String
   - arguments:
     - default: false
@@ -395,14 +403,16 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of permission names to validate for the resource.
+      description: A comma-separated list of permission names to validate for the
+        resource.
       isArray: true
       name: permissions
       required: true
       secret: false
     deprecated: false
-    description: Returns permissions that a caller has on the specified folder. The permission
-      list can be obtained by running the 'gcp-iam-testable-permission-list' command.
+    description: Returns permissions that a caller has on the specified folder. The
+      permission list can be obtained by running the 'gcp-iam-testable-permission-list'
+      command.
     execution: false
     name: gcp-iam-folder-iam-permission-test
     outputs:
@@ -436,8 +446,8 @@ script:
     name: gcp-iam-folder-iam-member-add
   - arguments:
     - default: false
-      description: The name of the folder for which the policy is being specified. For
-        example, folders/12342.
+      description: The name of the folder for which the policy is being specified.
+        For example, folders/12342.
       isArray: false
       name: folder_name
       required: true
@@ -462,8 +472,8 @@ script:
     name: gcp-iam-folder-iam-member-remove
   - arguments:
     - default: false
-      description: The name of the folder for which the policy is being specified. For
-        example, folders/12342.
+      description: The name of the folder for which the policy is being specified.
+        For example, folders/12342.
       isArray: false
       name: folder_name
       required: true
@@ -495,13 +505,13 @@ script:
       description: The role that is assigned to the list of members.
       type: String
     - contextPath: GCPIAM.Policy.name
-      description: The unique resource name of the folder. Note that this output
-        was added manually.
+      description: The unique resource name of the folder. Note that this output was
+        added manually.
       type: String
   - arguments:
     - default: false
-      description: The name of the folder for which the policy is being specified. For
-        example, folders/12342.
+      description: The name of the folder for which the policy is being specified.
+        For example, folders/12342.
       isArray: false
       name: folder_name
       required: true
@@ -526,8 +536,8 @@ script:
     name: gcp-iam-folder-iam-policy-create
   - arguments:
     - default: false
-      description: The name of the folder for which the policy is being specified. For
-        example, folders/12342.
+      description: The name of the folder for which the policy is being specified.
+        For example, folders/12342.
       isArray: false
       name: folder_name
       required: true
@@ -545,8 +555,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1, maximum
-        value is 50.
+      description: The maximum number of results to retrieve. Minimum value is 1,
+        maximum value is 50.
       isArray: false
       name: limit
       required: false
@@ -560,7 +570,8 @@ script:
       secret: false
     - default: false
       description: A comma-separated list of organization names to retrieve. For example,
-        organizations/3456. Leave empty to retrieve a list of organizations that are visible to the caller.
+        organizations/3456. Leave empty to retrieve a list of organizations that are
+        visible to the caller.
       isArray: true
       name: organization_name
       required: false
@@ -591,8 +602,8 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: The organization name for which the policy is being requested. For
-        example, organizations/3456.
+      description: The organization name for which the policy is being requested.
+        For example, organizations/3456.
       isArray: false
       name: organization_name
       required: true
@@ -623,19 +634,20 @@ script:
       description: The role that is assigned to the list of members.
       type: String
     - contextPath: GCPIAM.Policy.name
-      description: The unique resource name of the organization. Note that
-        this output was added manually.
+      description: The unique resource name of the organization. Note that this output
+        was added manually.
       type: String
   - arguments:
     - default: false
-      description: The organization name for which the permissions is being tested. For
-        example, organizations/3456.
+      description: The organization name for which the permissions is being tested.
+        For example, organizations/3456.
       isArray: false
       name: organization_name
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of permission names to validate for the resource.
+      description: A comma-separated list of permission names to validate for the
+        resource.
       isArray: true
       name: permissions
       required: true
@@ -736,8 +748,8 @@ script:
       description: The role that is assigned to the list of members.
       type: String
     - contextPath: GCPIAM.Policy.name
-      description: The unique resource name of the organization. Note that
-        this output was added manually.
+      description: The unique resource name of the organization. Note that this output
+        was added manually.
       type: String
   - arguments:
     - default: false
@@ -969,8 +981,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1, maximum
-        value is 500.
+      description: The maximum number of results to retrieve. Minimum value is 1,
+        maximum value is 500.
       isArray: false
       name: limit
       required: false
@@ -1069,8 +1081,8 @@ script:
     name: gcp-iam-group-membership-role-remove
   - arguments:
     - default: false
-      description: 'A comma-separated list of resource names of the memberships to delete. Must
-        be of the form: groups/{group_id}/memberships/{membership_id}.'
+      description: 'A comma-separated list of resource names of the memberships to
+        delete. Must be of the form: groups/{group_id}/memberships/{membership_id}.'
       isArray: true
       name: membership_names
       required: true
@@ -1167,7 +1179,8 @@ script:
   - arguments:
     - default: false
       description: 'A comma-separated list of service accounts names to retrieve in
-        the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. Leave empty to retrieve a list of service accounts under a specified project resource.'
+        the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. Leave
+        empty to retrieve a list of service accounts under a specified project resource.'
       isArray: true
       name: service_account_name
       required: false
@@ -1181,8 +1194,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1, maximum
-        value is 100.
+      description: The maximum number of results to retrieve. Minimum value is 1,
+        maximum value is 100.
       isArray: false
       name: limit
       required: false
@@ -1195,9 +1208,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists service accounts in project, or retrieves a specific service accounts information.
-      One of the arguments: ''service_account_name'' or ''project_name''  must be
-      provided.'
+    description: 'Lists service accounts in project, or retrieves a specific service
+      accounts information. One of the arguments: ''service_account_name'' or ''project_name''  must
+      be provided.'
     execution: false
     name: gcp-iam-service-accounts-get
     outputs:
@@ -1221,8 +1234,8 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: 'A comma-separated list of names of service accounts to enable. Every
-        resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}'
+      description: 'A comma-separated list of names of service accounts to enable.
+        Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}'
       isArray: true
       name: service_account_name
       required: true
@@ -1245,8 +1258,8 @@ script:
     name: gcp-iam-service-account-disable
   - arguments:
     - default: false
-      description: The name of the service account associated with the key. Must
-        be of the form projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.
+      description: The name of the service account associated with the key. Must be
+        of the form projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.
       isArray: false
       name: service_account_name
       required: true
@@ -1299,7 +1312,9 @@ script:
   - arguments:
     - default: false
       description: 'The resource name of the service account key to retrieve. The
-        resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}. Leave empty to retrieve a list of service account keys that are associated with the service account resource.'
+        resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}.
+        Leave empty to retrieve a list of service account keys that are associated
+        with the service account resource.'
       isArray: false
       name: key_name
       required: false
@@ -1326,8 +1341,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists service account keys, or retrieves a specific service account key information.
-      One of the arguments: ''service_account_name'' or ''key_name''  must be provided.'
+    description: 'Lists service account keys, or retrieves a specific service account
+      key information. One of the arguments: ''service_account_name'' or ''key_name''  must
+      be provided.'
     execution: false
     name: gcp-iam-service-account-keys-get
     outputs:
@@ -1420,8 +1436,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of names of the permissions the role grants when bound
-        in an IAM policy.
+      description: A comma-separated list of names of the permissions the role grants
+        when bound in an IAM policy.
       isArray: true
       name: permissions
       required: true
@@ -1469,9 +1485,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of names of the permissions the role grants when bound
-        in an IAM policy. Note that this command argument will replace the
-        existing permissions.
+      description: A comma-separated list of names of the permissions the role grants
+        when bound in an IAM policy. Note that this command argument will replace
+        the existing permissions.
       isArray: true
       name: permissions
       required: false
@@ -1515,7 +1531,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of names of the permissions to add to the role.
+      description: A comma-separated list of names of the permissions to add to the
+        role.
       isArray: true
       name: permissions
       required: true
@@ -1532,7 +1549,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of names of the permissions to remove from the role.
+      description: A comma-separated list of names of the permissions to remove from
+        the role.
       isArray: false
       name: permissions
       required: true
@@ -1562,8 +1580,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1, maximum
-        value is 1,000.
+      description: The maximum number of results to retrieve. Minimum value is 1,
+        maximum value is 1,000.
       isArray: false
       name: limit
       required: false
@@ -1578,7 +1596,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description:  If true, roles that have been deleted will also be retrieved.
+      description: If true, roles that have been deleted will also be retrieved.
       isArray: false
       name: show_deleted
       predefined:
@@ -1594,10 +1612,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of role permissions. Used to filter the retrieved
-        roles by their permissions. The command will retrieve the rules that include
-        all the provided permissions in their permissions list. If the argument is
-        provided, the command will include the role permissions in the output.
+      description: A comma-separated list of role permissions. Used to filter the
+        retrieved roles by their permissions. The command will retrieve the rules
+        that include all the provided permissions in their permissions list. If the
+        argument is provided, the command will include the role permissions in the
+        output.
       isArray: true
       name: permission_filter
       required: false
@@ -1612,8 +1631,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A comma-separated list of organization roles to retrieve. Every role
-        name should be in the following format: organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}'
+      description: 'A comma-separated list of organization roles to retrieve. Every
+        role name should be in the following format: organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}'
       isArray: true
       name: role_name
       required: true
@@ -1628,8 +1647,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A comma-separated list of organization roles to delete. Every role
-        name should be in the following format: organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}'
+      description: 'A comma-separated list of organization roles to delete. Every
+        role name should be in the following format: organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}'
       isArray: true
       name: role_name
       required: true
@@ -1666,8 +1685,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of names of the permissions the role grants when bound
-        in an IAM policy.
+      description: A comma-separated list of names of the permissions the role grants
+        when bound in an IAM policy.
       isArray: true
       name: permissions
       required: false
@@ -1715,9 +1734,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of names of the permissions the role grants when bound
-        in an IAM policy. Note that this command argument will replace the
-        existing permissions.
+      description: A comma-separated list of names of the permissions the role grants
+        when bound in an IAM policy. Note that this command argument will replace
+        the existing permissions.
       isArray: true
       name: permissions
       required: false
@@ -1761,7 +1780,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of names of the permissions to add to the role.
+      description: A comma-separated list of names of the permissions to add to the
+        role.
       isArray: true
       name: permissions
       required: true
@@ -1778,7 +1798,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of names of the permissions to remove from the role.
+      description: A comma-separated list of names of the permissions to remove from
+        the role.
       isArray: false
       name: permissions
       required: true
@@ -1807,8 +1828,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1, maximum
-        value is 1,000.
+      description: The maximum number of results to retrieve. Minimum value is 1,
+        maximum value is 1,000.
       isArray: false
       name: limit
       required: false
@@ -1839,10 +1860,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of role permissions. Used to filter the retrieved
-        roles by their permissions. The command will retrieve the rules that include
-        all the provided permissions in their permissions list. If the argument is
-        provided, the command will include the role permissions in the output.
+      description: A comma-separated list of role permissions. Used to filter the
+        retrieved roles by their permissions. The command will retrieve the rules
+        that include all the provided permissions in their permissions list. If the
+        argument is provided, the command will include the role permissions in the
+        output.
       isArray: true
       name: permission_filter
       required: false
@@ -1857,8 +1879,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A comma-separated list of project roles to retrieve. Every role name
-        should be in the following format: projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}'
+      description: 'A comma-separated list of project roles to retrieve. Every role
+        name should be in the following format: projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}'
       isArray: true
       name: role_name
       required: true
@@ -1873,8 +1895,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A comma-separated list of project roles to delete. Every role name
-        should be in the following format: projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}'
+      description: 'A comma-separated list of project roles to delete. Every role
+        name should be in the following format: projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}'
       isArray: true
       name: role_name
       required: true
@@ -1894,8 +1916,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1, maximum
-        value is 1,000.
+      description: The maximum number of results to retrieve. Minimum value is 1,
+        maximum value is 1,000.
       isArray: false
       name: limit
       required: false
@@ -1920,8 +1942,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A comma-separated list of names of service accounts to delete. Every
-        resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.'
+      description: 'A comma-separated list of names of service accounts to delete.
+        Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.'
       isArray: true
       name: service_account_name
       required: true
@@ -1932,8 +1954,8 @@ script:
     name: gcp-iam-service-account-delete
   - arguments:
     - default: false
-      description: The resource name to query from the list of grantable roles. For a
-        project''s resource, provide "projects/project-ID", and for organizations,
+      description: The resource name to query from the list of grantable roles. For
+        a project''s resource, provide "projects/project-ID", and for organizations,
         provide "organizations/organization-ID".
       isArray: false
       name: resource_name
@@ -1941,8 +1963,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1, maximum
-        value is 1,000.
+      description: The maximum number of results to retrieve. Minimum value is 1,
+        maximum value is 1,000.
       isArray: false
       name: limit
       required: false
@@ -1966,8 +1988,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A comma-separated list of GCP IAM predefined roles to retrieve. Every
-        role name should be in the following format: roles/{ROLE_NAME}'
+      description: 'A comma-separated list of GCP IAM predefined roles to retrieve.
+        Every role name should be in the following format: roles/{ROLE_NAME}'
       isArray: true
       name: role_name
       required: true
@@ -1994,8 +2016,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to retrieve. Minimum value is 1, maximum
-        value is 1,000.
+      description: The maximum number of results to retrieve. Minimum value is 1,
+        maximum value is 1,000.
       isArray: false
       name: limit
       required: false
@@ -2026,10 +2048,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of role permissions. Used to filter the retrieved
-        roles by their permissions. The command will retrieve the rules that include
-        all the provided permissions in their permissions list. If the argument is
-        provided, the command will include the role permissions in the output.
+      description: A comma-separated list of role permissions. Used to filter the
+        retrieved roles by their permissions. The command will retrieve the rules
+        that include all the provided permissions in their permissions list. If the
+        argument is provided, the command will include the role permissions in the
+        output.
       isArray: true
       name: permission_filter
       required: false
