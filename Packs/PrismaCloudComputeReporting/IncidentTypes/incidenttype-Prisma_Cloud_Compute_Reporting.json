@@ -17,7 +17,7 @@
     "locked": false,
     "name": "Prisma Cloud Compute Reporting",
     "onChangeRepAlg": 0,
-    "playbookId": "Prisma Cloud Compute Reporting",
+    "playbookId": "Prisma Cloud Compute Vulnerability and Compliance Reporting",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,
