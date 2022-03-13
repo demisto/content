@@ -4,7 +4,7 @@
 #   Consts
 #==================================
 
-export GCS_LOCKS_PATH=gs://xsoar-ci-artifacts/xsiam-ci-locks	# TODO: create bucket
+export GCS_LOCKS_PATH=gs://xsoar-ci-artifacts/content-locks-xsiam	# TODO: create bucket
 export GCS_QUEUE_FILE=queue
 export LOCK_IDENTIFIER=lock
 export TEST_MACHINES_LIST=TestMachines
@@ -25,7 +25,7 @@ export QUEUE_SELF_LOCK=$GCS_QUEUE_FILE-$LOCK_IDENTIFIER-$CI_PIPELINE_ID
 #   Functions & helpers
 #==================================
 
-function get_build_job_statuses() {   # todo: GITLAB_STATUS_TOKEN
+function get_build_job_statuses() {
 	export BUILD_STATUSES=`echo $1 | tr ' ' '\n' | xargs -I {} curl --header "PRIVATE-TOKEN: $GITLAB_STATUS_TOKEN" $BUILD_STATUS_API/{}/jobs -s | jq -c '.[] | select(.name=="test:xsiam-system-tests") | .status' | sed 's/"//g' | tr ' ' '\n' | sort | uniq`
 }
 
@@ -119,7 +119,7 @@ function lock_machine() {
 
 function poll_for_env() {
   export START=$SECONDS
-  # this line remove all exsiting lock files, even if they runs. CLEAN_XSIAM_LOCKS - gitlab variable
+  # this line remove all existing lock files, even if they runs. CLEAN_XSIAM_LOCKS - gitlab variable
   if [ ! -z $CLEAN_XSIAM_LOCKS ]; then gsutil -m rm "$GCS_LOCKS_PATH/*-$LOCK_IDENTIFIER-*"; fi
 
   # remove old self locks - this will ensure that in case of retries we won't interfere with other builds or lock a machine out of use
@@ -184,7 +184,7 @@ touch ChosenMachine
 touch XSIAMEnvVariables
 
 # copy TestMachines locally for faster perf
-gsutil cp $GCS_LOCKS_PATH/$TEST_MACHINES_LIST $TEST_MACHINES_LIST	# copy file from bucker. 3 machines names.
+gsutil cp $GCS_LOCKS_PATH/$TEST_MACHINES_LIST $TEST_MACHINES_LIST	# copy file from bucket. 3 machines names.
 export NUM_OF_TEST_MACHINES=`sed -n '$=' $TEST_MACHINES_LIST`	# reads num of lines in file (this is the num of machines)
 
 echo -e "We have $NUM_OF_TEST_MACHINES machines for testing and a lot more builds to test"
@@ -199,7 +199,7 @@ do
 	gsutil cp $GCS_LOCKS_PATH/$GCS_QUEUE_FILE queue	# copy locally for better performance
 	get_number_in_line queue	# checks if curr build num in the line? returns NUMBER_IN_LINE arg
 	# line number smaller then 1 means we have not registered yet
-	if [[ "$NUMBER_IN_LINE" -lt 1 ]]	# if not exsist
+	if [[ "$NUMBER_IN_LINE" -lt 1 ]]	# if not exist
 	then
 		# register at the end of the line (writes build number in this file at the end)
 	  echo -e "We are new in line. Taking a number"
@@ -210,7 +210,7 @@ do
 	# prev functions updates NUMBER_IN_LINE arg
 	echo -e "Our number in line is $NUMBER_IN_LINE"
 
-  # previous build might have stopped. in that case let's kick it out (Curr build respnsible to kick out dead builds)
+  # previous build might have stopped. in that case let's kick it out (Curr build responsible to kick out dead builds)
 	if [[ "$NUMBER_IN_LINE" -gt $(($NUM_OF_TEST_MACHINES + 1)) ]] # if I am in line and not the next who should be served (my num is 5+)
 	then
     handle_previous_builds "$NUMBER_IN_LINE" queue	# Only need to check if build before me still alive, if no remove it from line.

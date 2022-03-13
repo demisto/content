@@ -281,8 +281,6 @@ slack-notify-nightly-build:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
     - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
-#      cp "$ARTIFACTS_FOLDER/env_results.json" "./artifacts/env_results.json"  # todo: need to change this file to xsiam instances
-
     - echo "Authing to GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
     - echo "Auth done successfully"
@@ -290,7 +288,7 @@ slack-notify-nightly-build:
 #    - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
 
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$BUILD_OBJECT_TYPE" "$XSIAM_CHOSEN_MACHINE_ID"|| EXIT_CODE=$?
-    - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json #todo: check if meyotar
+    - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json # todo: check if meyotar
 
 #    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
 #    - |
@@ -301,6 +299,7 @@ slack-notify-nightly-build:
 #      if [[ -f ./Tests/succeeded_tests.txt ]]; then
 #        cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
 #      fi
+      # todo: add support for run_tests
 #
 #      # todo: write script that destroy instanses
 #      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
@@ -308,7 +307,7 @@ slack-notify-nightly-build:
 # todo: uncomment
 #  after_script:
 #    - echo "Job finished, removing lock file"
-#    - gsutil rm "gs://xsoar-ci-artifacts/xsiam-ci-locks/*-lock-$CI_PIPELINE_ID"
+#    - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-$CI_PIPELINE_ID"
 #    - echo "Finished removing lock file"
 
 
@@ -322,14 +321,13 @@ create_gcp_folders:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
-    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json" # all servers info, printed in create instanses step
   needs: []
   stage: run-instances
   script:
     - EXIT_CODE=0
     - echo "Authing to GCP"
 #    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
-#    - gsutil rm "gs://xsoar-ci-artifacts/xsiam-ci-locks/queue-lock-2552972"
+#    - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/queue-lock-2552972"
     - echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> $BASH_ENV
     - source $BASH_ENV
     - python3 ./Tests/gcp_update.py
