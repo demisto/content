@@ -1,10 +1,10 @@
 {
-  "RULE_ID": "uuid-32-here-1",
-  "PLAYBOOK_ID": "<ID_OF_PLAYBOOK-ALPHNUMERIC-STRING-1>",
-  "SUGGESTION_REASON": "it is a good playbook for these alerts",
-  "DESCRIPTION": "trigger description",
-  "RULE_NAME": "The is a rule name",
-  "ALERTS_FILTER": {
+  "trigger_id": "uuid-32-here-1",
+  "playbook_id": "<ID_OF_PLAYBOOK-ALPHNUMERIC-STRING-1>",
+  "suggestion_reason": "it is a good playbook for these alerts",
+  "description": "trigger description",
+  "trigger_name": "The is a rule name",
+  "alerts_filter": {
     "filter": {
       "AND": [
         {

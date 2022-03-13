@@ -116,8 +116,7 @@
       {
       }
     ],
-    "parsingrule": [
-    ],
+    "parsingrule": [{}],
     "trigger": [
       {
         "name": "The is a ruule name",
