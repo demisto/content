@@ -5,12 +5,15 @@ playbook
 firewalls
 IOCs
 Emails
+centric
 IncidentsPerFeed
 McAfee
 Endpoints
 IOC
-Deprecated
+deprecated
 EPOFindSystem
+TaegisXDR
+Taegis
 boolean
 xdr
 Darktrace
@@ -103,3 +106,5 @@ fieldSearchValue
 Classifiers
 SentinelOne
 URLs
+hostname
+EDR

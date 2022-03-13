@@ -1133,19 +1133,22 @@ def test_build_search_human_readable(mocker):
         Test headers are calculated correctly:
             * comma-separated, space-separated
             * support commas and spaces inside header values (if surrounded with parenthesis)
-
+            * rename headers
     """
     func_patch = mocker.patch('SplunkPy.update_headers_from_field_names')
     results = [
-        {'ID': 1, 'Header with space': 'h1', 'header3': 1, 'header_without_space': '1234'},
-        {'ID': 2, 'Header with space': 'h2', 'header3': 2, 'header_without_space': '1234'},
+        {'ID': 1, 'Header with space': 'h1', 'header3': 1, 'header_without_space': '1234',
+         'old_header_1': '1', 'old_header_2': '2'},
+        {'ID': 2, 'Header with space': 'h2', 'header3': 2, 'header_without_space': '1234',
+         'old_header_1': '1', 'old_header_2': '2'},
     ]
     args = {
         'query': 'something | table ID "Header with space" header3 header_without_space '
-                 'comma,separated "Single,Header,with,Commas" | something else'
+                 'comma,separated "Single,Header,with,Commas" old_header_1 old_header_2 | something else'
+                 ' | rename old_header_1 AS new_header_1 old_header_2 AS new_header_2'
     }
     expected_headers = ['ID', 'Header with space', 'header3', 'header_without_space',
-                        'comma', 'separated', 'Single,Header,with,Commas']
+                        'comma', 'separated', 'Single,Header,with,Commas', 'new_header_1', 'new_header_2']
 
     splunk.build_search_human_readable(args, results)
     headers = func_patch.call_args[0][1]
