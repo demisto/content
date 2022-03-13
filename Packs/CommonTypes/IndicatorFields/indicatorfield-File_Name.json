@@ -1,8 +1,6 @@
 {
     "associatedToAll": false,
-    "associatedTypes": [
-        "File"
-    ],
+    "associatedTypes": [],
     "caseInsensitive": true,
     "cliName": "filename",
     "closeForm": false,
