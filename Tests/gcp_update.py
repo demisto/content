@@ -12,13 +12,13 @@ def main():
 
     bucket = storage_client.bucket('xsoar-ci-artifacts')
 
-    blob = bucket.blob('content-locks/test123')
-    blob.upload_from_string('')
-    logging.info('Created file')
+    # blob = bucket.blob('content-locks/test123')
+    # blob.upload_from_string('')
+    # logging.info('Created file')
 
-    # blob = bucket.blob('content-locks/')
-    # blob.delete()
-    # logging.info('Delted folder.')
+    blob = bucket.blob('content-locks/test123')
+    blob.delete()
+    logging.info('Delted folder.')
 
 
 if __name__ == '__main__':
