@@ -4,6 +4,6 @@ ignore=IN110,IN109
 [file:ThreatQ_v2.yml]
 ignore=BA108,BA109
 
-[known-words]
+[known_words]
 threat
 threats
