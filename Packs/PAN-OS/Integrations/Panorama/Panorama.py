@@ -7325,7 +7325,7 @@ class CustomVersionedPanObject(VersionedPanObject):
 
 
 class AntiSpywareProfileBotnetDomainList(CustomVersionedPanObject):
-    ROOT = Root.VSYS
+    ROOT = Root.VSYS  # pylint: disable=E1101
     SUFFIX = ENTRY
 
     def _setup(self):
