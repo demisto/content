@@ -2215,6 +2215,9 @@ def gcp_iam_group_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     readable_message = get_pagination_readable_message(header='Groups List:', limit=limit, page=page)
 
     validate_pagination_arguments(limit, page)
+    if limit > 500:
+        raise Exception("The limit argument is out of range. It must be between 1 and 500.")
+
     if page > 1:
         page_token = get_next_page_token(limit, page, client.gcp_iam_group_list_request, args={"parent": parent})
 
@@ -2355,6 +2358,9 @@ def gcp_iam_group_membership_list_command(client: Client, args: Dict[str, Any]) 
     readable_message = get_pagination_readable_message(header='Membership List:', limit=limit, page=page)
 
     validate_pagination_arguments(limit, page)
+    if limit > 500:
+        raise Exception("The limit argument is out of range. It must be between 1 and 500.")
+
     if page > 1:
         page_token = get_next_page_token(limit, page, client.gcp_iam_group_membership_list_request,
                                          args={"group_name": group_name})
@@ -3492,8 +3498,12 @@ def gcp_iam_testable_permission_list_command(client: Client, args: Dict[str, Any
     page_token = None
     readable_message = get_pagination_readable_message(header=f'{resource_name} testable permissions list:',
                                                        limit=limit, page=page)
+    max_limit = 1000
 
     validate_pagination_arguments(limit, page)
+    if limit > max_limit:
+        raise Exception("The limit argument is out of range. It must be between 1 and 1000.")
+
     if page > 1:
         page_token = get_next_page_token(limit, page, client.gcp_iam_testable_permission_list_request,
                                          args={"full_resource_name": full_resource_name})
@@ -3544,7 +3554,12 @@ def gcp_iam_grantable_role_list_command(client: Client, args: Dict[str, Any]) ->
     readable_message = get_pagination_readable_message(header=f'{resource_name} grantable roles list:',
                                                        limit=limit, page=page)
 
+    max_limit = 1000
+
     validate_pagination_arguments(limit, page)
+    if limit > max_limit:
+        raise Exception("The limit argument is out of range. It must be between 1 and 1000.")
+
     if page > 1:
         page_token = get_next_page_token(limit, page, client.gcp_iam_grantable_role_list_request,
                                          args={"full_resource_name": full_resource_name})

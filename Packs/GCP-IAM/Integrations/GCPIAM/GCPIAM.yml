@@ -301,7 +301,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of results to retrieve. Minimum value is 1.
+      description: The number of results to retrieve. Minimum value is 1, maximum
+        value is 100.
       isArray: false
       name: limit
       required: false
@@ -544,7 +545,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The number of results to retrieve. Minimum value is 1.
+      description: The number of results to retrieve. Minimum value is 1, maximum
+        value is 50.
       isArray: false
       name: limit
       required: false
@@ -847,7 +849,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of results to retrieve. Minimum value is 1.
+      description: The number of results to retrieve.Minimum value is 1, maximum
+        value is 500.
       isArray: false
       name: limit
       required: false
@@ -966,7 +969,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of results to retrieve. Minimum value is 1.
+      description: The number of results to retrieve. Minimum value is 1, maximum
+        value is 500.
       isArray: false
       name: limit
       required: false
@@ -1558,7 +1562,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of results to retrieve. Minimum value is 1.
+      description: The number of results to retrieve. Minimum value is 1, maximum
+        value is 1,000.
       isArray: false
       name: limit
       required: false
@@ -1804,7 +1809,7 @@ script:
     - default: false
       defaultValue: '50'
       description: The number of results to retrieve. Minimum value is 1, maximum
-        value is 1000.
+        value is 1,000.
       isArray: false
       name: limit
       required: false
@@ -1890,7 +1895,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of results to retrieve. Minimum value is 1.
+      description: The number of results to retrieve. Minimum value is 1, maximum
+        value is 1,000.
       isArray: false
       name: limit
       required: false
@@ -1936,7 +1942,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of results to retrieve. Minimum value is 1.
+      description: The number of results to retrieve. Minimum value is 1, maximum
+        value is 1,000.
       isArray: false
       name: limit
       required: false
@@ -1989,7 +1996,7 @@ script:
     - default: false
       defaultValue: '50'
       description: The number of results to retrieve. Minimum value is 1, maximum
-        value is 1000.
+        value is 1,000.
       isArray: false
       name: limit
       required: false

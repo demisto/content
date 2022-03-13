@@ -368,7 +368,7 @@ Lists folders under the specified parent, or retrieves a specific folder informa
 | --- | --- | --- |
 | folder_name | A comma-separated list of folder names to retrieve.  For example, folders/12342. Leave empty to retrieve a list of folders under a specified parent resource. | Optional | 
 | parent | The name of the parent resource to list folders under. For example, setting this field to 'folders/1234' would list all folder directly under that folder. | Optional | 
-| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
+| limit | The number of results to retrieve. Minimum value is 1, maximum value is 100. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
 | show_deleted | If true, folders that have been marked for deletion will also be retrieved. Possible values are: False, True. Default is False. | Optional | 
 
@@ -699,7 +699,7 @@ Lists organization resources that are visible to the caller, or retrieves an org
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
-| page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
+| page | The page number of the results to retrieve. Minimum value is 1, maximum value is 50. Default is 1. | Optional | 
 | organization_name | A comma-separated list of organization names to retrieve. For example, organizations/3456. Leave empty to retrieve a list of organizations that are visible to the caller. | Optional | 
 
 
@@ -1088,7 +1088,7 @@ List groups that visible to the caller.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | parent | The parent resource of the groups to retrieve. This parameter is usually equal to the organization customer ID. For example customers/C01234. | Required | 
-| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
+| limit | The number of results to retrieve. Minimum value is 1, maximum value is 500. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
 
 
@@ -1300,7 +1300,7 @@ List group memberships.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_name | The name of the group which contains the membership. Must be of the form groups/{group_id}. | Required | 
-| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
+| limit | The number of results to retrieve. Minimum value is 1, maximum value is 500. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
 
 
@@ -2088,7 +2088,7 @@ List organization custom roles.
 | --- | --- | --- |
 | organization_name | The name of the organization which contains the custom role. For example organizations/12345. | Required | 
 | include_permissions | Indicates whether to include permissions in the response. Possible values are: True, False. Default is True. | Optional | 
-| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
+| limit | The number of results to retrieve. Minimum value is 1, maximum value is 1,000. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1, maximum value is 1000. Default is 1. | Optional | 
 | show_deleted | If true, roles that have been deleted will also be retrieved. Possible values are: False, True. Default is False. | Optional | 
 | title_filter | Used to filter the retrieved roles by the rule title. The command will retrieve the rules which includes the provided argument in their title. | Optional | 
@@ -2388,7 +2388,7 @@ List project custom roles.
 | project_id | The ID of the project which contains the custom role. | Required | 
 | include_permissions | Indicates whether to include permissions in the response. Possible values are: True, False. Default is True. | Optional | 
 | limit | The number of results to retrieve. Minimum value is 1, maximum value is 1000. Default is 50. | Optional | 
-| page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
+| page | The page number of the results to retrieve. Minimum value is 1, maximum value is 1,000. Default is 1. | Optional | 
 | show_deleted | If true, roles that have been deleted will also be retrieved. Possible values are: False, True. Default is False. | Optional | 
 | title_filter | Used to filter the retrieved roles by the rule title. The command will retrieve the rules which includes the provided argument in their title. | Optional | 
 | permission_filter | A comma-separated list of role permissions. Used to filter the retrieved roles by their permissions. The command will retrieve the rules which includes all the provided permissions in their permissions list. If the argument is provided, the command will include the role permissions in the output. | Optional |
@@ -2544,7 +2544,7 @@ Lists every permission can be tested on a resource.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_name | The name of the resource to query from the list of testable permissions. For projectrs resource please provide "projects/project-ID", and for orgnaizations please provide "organizations/rganization-ID". | Required | 
-| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
+| limit | The number of results to retrieve. Minimum value is 1, maximum value is 1,000. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
 
 
@@ -2629,7 +2629,7 @@ Lists roles that can be granted on a Google Cloud resource. A role is grantable 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_name | The resource name to query from the list of grantable roles. For projectrs resource please provide "projects/project-ID", and for orgnaizations please provide "organizations/rganization-ID". | Required | 
-| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
+| limit | The number of results to retrieve. Minimum value is 1, maximum value is 1,000. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
 
 
@@ -2740,7 +2740,7 @@ List GCP IAM predefined roles.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | include_permissions | Indicates whether to include permissions in the response. Possible values are: True, False. Default is True. | Optional | 
-| limit | The number of results to retrieve. Minimum value is 1, maximum value is 1000. Default is 50. | Optional | 
+| limit | The number of results to retrieve. Minimum value is 1, maximum value is 1,000. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
 | show_deleted | If true, roles that have been deleted will also be retrieved. Possible values are: False, True. Default is False. | Optional | 
 | title_filter | Used to filter the retrieved roles by the rule title. The command will retrieve the rules which includes the provided argument in their title. | Optional | 
