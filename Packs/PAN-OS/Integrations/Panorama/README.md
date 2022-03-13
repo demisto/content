@@ -76,107 +76,115 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-1. [Run any command supported in the Panorama API: panorama](#pan-os)
+1. [Run any command supported in the Panorama API: panorama](#panorama)
 2. [Get pre-defined threats list from a Firewall or Panorama and stores as a JSON file in the context: panorama-get-predefined-threats-list](#pan-os-get-predefined-threats-list)
 3. [Commit a configuration: panorama-commit](#pan-os-commit)
-4. [Pushes rules from PAN-OS to the configured device group: panorama-push-to-device-group](pan-os-push-to-device-group)
-5. [Returns a list of addresses: panorama-list-addresses](pan-os-list-addresses)
-6. [Returns address details for the supplied address name: panorama-get-address](pan-os-get-address)
-7. [Creates an address object: panorama-create-address](pan-os-create-address)
-8. [Delete an address object: panorama-delete-address](pan-os-delete-address)
-9. [Returns a list of address groups: panorama-list-address-groups](pan-os-list-address-groups)
-10. [Get details for the specified address group: panorama-get-address-group](pan-os-get-address-group)
-11. [Creates a static or dynamic address group: panorama-create-address-group](pan-os-create-address-group)
-12. [Sets a vulnerability signature to block mode: panorama-block-vulnerability](pan-os-block-vulnerability)
-13. [Deletes an address group: panorama-delete-address-group](pan-os-delete-address-group)
-14. [Edits a static or dynamic address group: panorama-edit-address-group](pan-os-edit-address-group)
-15. [Returns a list of addresses: panorama-list-services](pan-os-list-services)
-16. [Returns service details for the supplied service name: panorama-get-service](pan-os-get-service)
-17. [Creates a service: panorama-create-service](pan-os-create-service)
-18. [Deletes a service: panorama-delete-service](pan-os-delete-service)
-19. [Returns a list of service groups: panorama-list-service-groups](pan-os-list-service-groups)
-20. [Returns details for the specified service group: panorama-get-service-group](pan-os-get-service-group)
-21. [Creates a service group: panorama-create-service-group](pan-os-create-service-group)
-22. [Deletes a service group: panorama-delete-service-group](pan-os-delete-service-group)
-23. [Edit a service group: panorama-edit-service-group](pan-os-edit-service-group)
-24. [Returns information for a custom URL category: panorama-get-custom-url-category](pan-os-get-custom-url-category)
-25. [Creates a custom URL category: panorama-create-custom-url-category](pan-os-create-custom-url-category)
-26. [Deletes a custom URL category: panorama-delete-custom-url-category](pan-os-delete-custom-url-category)
-27. [Adds or removes sites to and from a custom URL category: panorama-edit-custom-url-category](pan-os-edit-custom-url-category)
-28. [Gets a URL category from URL Filtering: panorama-get-url-category](pan-os-get-url-category)
+4. [Pushes rules from PAN-OS to the configured device group: panorama-push-to-device-group](#pan-os-push-to-device-group)
+5. [Returns a list of addresses: panorama-list-addresses](#pan-os-list-addresses)
+6. [Returns address details for the supplied address name: panorama-get-address](#pan-os-get-address)
+7. [Creates an address object: panorama-create-address](#pan-os-create-address)
+8. [Delete an address object: panorama-delete-address](#pan-os-delete-address)
+9. [Returns a list of address groups: panorama-list-address-groups](#pan-os-list-address-groups)
+10. [Get details for the specified address group: panorama-get-address-group](#pan-os-get-address-group)
+11. [Creates a static or dynamic address group: panorama-create-address-group](#pan-os-create-address-group)
+12. [Sets a vulnerability signature to block mode: panorama-block-vulnerability](#pan-os-block-vulnerability)
+13. [Deletes an address group: panorama-delete-address-group](#pan-os-delete-address-group)
+14. [Edits a static or dynamic address group: panorama-edit-address-group](#pan-os-edit-address-group)
+15. [Returns a list of addresses: panorama-list-services](#pan-os-list-services)
+16. [Returns service details for the supplied service name: panorama-get-service](#pan-os-get-service)
+17. [Creates a service: panorama-create-service](#pan-os-create-service)
+18. [Deletes a service: panorama-delete-service](#pan-os-delete-service)
+19. [Returns a list of service groups: panorama-list-service-groups](#pan-os-list-service-groups)
+20. [Returns details for the specified service group: panorama-get-service-group](#pan-os-get-service-group)
+21. [Creates a service group: panorama-create-service-group](#pan-os-create-service-group)
+22. [Deletes a service group: panorama-delete-service-group](#pan-os-delete-service-group)
+23. [Edit a service group: panorama-edit-service-group](#pan-os-edit-service-group)
+24. [Returns information for a custom URL category: panorama-get-custom-url-category](#pan-os-get-custom-url-category)
+25. [Creates a custom URL category: panorama-create-custom-url-category](#pan-os-create-custom-url-category)
+26. [Deletes a custom URL category: panorama-delete-custom-url-category](#pan-os-delete-custom-url-category)
+27. [Adds or removes sites to and from a custom URL category: panorama-edit-custom-url-category](#pan-os-edit-custom-url-category)
+28. [Gets a URL category from URL Filtering: panorama-get-url-category](#pan-os-get-url-category)
 29. [Gets a URL information: url](#url)
-30. [Returns a URL category from URL Filtering in the cloud: panorama-get-url-category-from-cloud](pan-os-get-url-category-from-cloud)
-31. [Returns a URL category from URL Filtering on the host: panorama-get-url-category-from-host](pan-os-get-url-category-from-host)
-32. [Returns information for a URL filtering rule: panorama-get-url-filter](pan-os-get-url-filter)
-33. [Creates a URL filtering rule: panorama-create-url-filter](pan-os-create-url-filter)
-34. [Edit a URL filtering rule: panorama-edit-url-filter](pan-os-edit-url-filter)
-35. [Deletes a URL filtering rule: panorama-delete-url-filter](pan-os-delete-url-filter)
-36. [Returns a list of external dynamic lists: panorama-list-edls](pan-os-list-edls)
-37. [Returns information for an external dynamic list: panorama-get-edl](pan-os-get-edl)
-38. [Creates an external dynamic list: panorama-create-edl](pan-os-create-edl)
-39. [Modifies an element of an external dynamic list: panorama-edit-edl](pan-os-edit-edl)
-40. [Deletes an external dynamic list: panorama-delete-edl](pan-os-delete-edl)
-41. [Refreshes the specified external dynamic list: panorama-refresh-edl](pan-os-refresh-edl)
-42. [Creates a policy rule: panorama-create-rule](pan-os-create-rule)
-43. [Creates a custom block policy rule: panorama-custom-block-rule](pan-os-custom-block-rule)
-44. [Changes the location of a policy rule: panorama-move-rule](pan-os-move-rule)
-45. [Edits a policy rule: panorama-edit-rule](pan-os-edit-rule)
-46. [Deletes a policy rule: panorama-delete-rule](pan-os-delete-rule)
-47. [Returns a list of applications: panorama-list-applications](pan-os-list-applications)
-48. [Returns commit status for a configuration: panorama-commit-status](pan-os-commit-status)
-49. [Returns the push status for a configuration: panorama-push-status](pan-os-push-status)
-50. [Returns information for a Panorama PCAP file: panorama-get-pcap](pan-os-get-pcap)
-51. [Returns a list of all PCAP files by PCAP type: panorama-list-pcaps](pan-os-list-pcaps)
-52. [Registers IP addresses to a tag: panorama-register-ip-tag](pan-os-register-ip-tag)
-53. [Unregisters IP addresses from a tag: panorama-unregister-ip-tag](pan-os-unregister-ip-tag)
-54. [Registers Users to a tag: panorama-register-user-tag](pan-os-register-user-tag)
-55. [Unregisters Users from a tag: panorama-unregister-user-tag](pan-os-unregister-user-tag)
-56. [Deprecated. Queries traffic logs: panorama-query-traffic-logs](pan-os-query-traffic-logs)
-57. [Deprecated. Checks the query status of traffic logs: panorama-check-traffic-logs-status](pan-os-check-traffic-logs-status)
-58. [Deprecated. Retrieves traffic log query data by job id: panorama-get-traffic-logs](pan-os-get-traffic-logs)
-59. [Returns a list of predefined Security Rules: panorama-list-rules](pan-os-list-rules)
-60. [Query logs in Panorama: panorama-query-logs](pan-os-query-logs)
-61. [Checks the status of a logs query: panorama-check-logs-status](pan-os-check-logs-status)
-62. [Retrieves the data of a logs query: panorama-get-logs](pan-os-get-logs)
-63. [Checks whether a session matches the specified security policy: panorama-security-policy-match](pan-os-security-policy-match)
-64. [Lists the static routes of a virtual router: panorama-list-static-routes](pan-os-list-static-routes)
-65. [Returns the specified static route of a virtual router: panorama-get-static-route](pan-os-get-static-route)
-66. [Adds a static route: panorama-add-static-route](pan-os-add-static-route)
-67. [Deletes a static route: panorama-delete-static-route](pan-os-delete-static-route)
-68. [Show firewall device software version: panorama-show-device-version](pan-os-show-device-version)
-69. [Downloads the latest content update: panorama-download-latest-content-update](pan-os-download-latest-content-update)
-70. [Checks the download status of a content update: panorama-content-update-download-status](pan-os-content-update-download-status)
-71. [Installs the latest content update: panorama-install-latest-content-update](pan-os-install-latest-content-update)
-72. [Gets the installation status of the content update: panorama-content-update-install-status](pan-os-content-update-install-status)
-73. [Checks the PAN-OS software version from the repository: panorama-check-latest-panos-software](pan-os-check-latest-panos-software)
-74. [Downloads the target PAN-OS software version to install on the target device: panorama-download-panos-version](pan-os-download-panos-version)
-75. [Gets the download status of the target PAN-OS software: panorama-download-panos-status](pan-os-download-panos-status)
-76. [Installs the target PAN-OS version on the specified target device: panorama-install-panos-version](pan-os-install-panos-version)
-77. [Gets the installation status of the PAN-OS software: panorama-install-panos-status](pan-os-install-panos-status)
-78. [Reboots the Firewall device: panorama-device-reboot](pan-os-device-reboot)
-79. [Gets location information for an IP address: panorama-show-location-ip](pan-os-show-location-ip)
-80. [Gets information about available PAN-OS licenses and their statuses: panorama-get-licenses](pan-os-get-licenses)
-81. [Gets information for the specified security profile: panorama-get-security-profiles](pan-os-get-security-profiles)
-82. [Apply a security profile to specific rules or rules with a specific tag: panorama-apply-security-profile](pan-os-apply-security-profile)
-83. [Get SSL decryption rules: panorama-get-ssl-decryption-rules](pan-os-get-ssl-decryption-rules)
-84. [Retrieves the Wildfire configuration: panorama-get-wildfire-configuration](pan-os-get-wildfire-configuration)
-85. [Set default categories to block in the URL filtering profile: panorama-url-filtering-block-default-categories](pan-os-url-filtering-block-default-categories)
-86. [Get anti-spyware best practices: panorama-get-anti-spyware-best-practice](pan-os-get-anti-spyware-best-practice)
-87. [Get file-blocking best practices: panorama-get-file-blocking-best-practice](pan-os-get-file-blocking-best-practice)
-88. [Get anti-virus best practices: panorama-get-antivirus-best-practice](pan-os-get-antivirus-best-practice)
-89. [Get vulnerability-protection best practices: panorama-get-vulnerability-protection-best-practice](pan-os-get-vulnerability-protection-best-practice)
-90. [View WildFire best practices: panorama-get-wildfire-best-practice](pan-os-get-wildfire-best-practice)
-91. [View URL Filtering best practices: panorama-get-url-filtering-best-practice](pan-os-get-url-filtering-best-practice)
-92. [Enforces wildfire best practices to upload files to the maximum size, forwards all file types, and updates the schedule: panorama-enforce-wildfire-best-practice](pan-os-enforce-wildfire-best-practice)
-93. [Creates an antivirus best practice profile: panorama-create-antivirus-best-practice-profile](pan-os-create-antivirus-best-practice-profile)
-94. [Creates an Anti-Spyware best practice profile: panorama-create-anti-spyware-best-practice-profile](pan-os-create-anti-spyware-best-practice-profile)
-95. [Creates a vulnerability protection best practice profile: panorama-create-vulnerability-best-practice-profile](pan-os-create-vulnerability-best-practice-profile)
-96. [Creates a URL filtering best practice profile: panorama-create-url-filtering-best-practice-profile](pan-os-create-url-filtering-best-practice-profile)
-97. [Creates a file blocking best practice profile: panorama-create-file-blocking-best-practice-profile](pan-os-create-file-blocking-best-practice-profile)
-98. [Creates a WildFire analysis best practice profile: panorama-create-wildfire-best-practice-profile](pan-os-create-wildfire-best-practice-profile)
-99. [Shows the user ID interface configuration.](pan-os-show-user-id-interfaces-config)
-100. [Shows the zones configuration.](pan-os-show-zones-config)
-101. [Retrieves list of user-ID agents configured in the system.](pan-os-list-configured-user-id-agents)
+30. [Returns a URL category from URL Filtering in the cloud: panorama-get-url-category-from-cloud](#pan-os-get-url-category-from-cloud)
+31. [Returns a URL category from URL Filtering on the host: panorama-get-url-category-from-host](#pan-os-get-url-category-from-host)
+32. [Returns information for a URL filtering rule: panorama-get-url-filter](#pan-os-get-url-filter)
+33. [Creates a URL filtering rule: panorama-create-url-filter](#pan-os-create-url-filter)
+34. [Edit a URL filtering rule: panorama-edit-url-filter](#pan-os-edit-url-filter)
+35. [Deletes a URL filtering rule: panorama-delete-url-filter](#pan-os-delete-url-filter)
+36. [Returns a list of external dynamic lists: panorama-list-edls](#pan-os-list-edls)
+37. [Returns information for an external dynamic list: panorama-get-edl](#pan-os-get-edl)
+38. [Creates an external dynamic list: panorama-create-edl](#pan-os-create-edl)
+39. [Modifies an element of an external dynamic list: panorama-edit-edl](#pan-os-edit-edl)
+40. [Deletes an external dynamic list: panorama-delete-edl](#pan-os-delete-edl)
+41. [Refreshes the specified external dynamic list: panorama-refresh-edl](#pan-os-refresh-edl)
+42. [Creates a policy rule: panorama-create-rule](#pan-os-create-rule)
+43. [Creates a custom block policy rule: panorama-custom-block-rule](#pan-os-custom-block-rule)
+44. [Changes the location of a policy rule: panorama-move-rule](#pan-os-move-rule)
+45. [Edits a policy rule: panorama-edit-rule](#pan-os-edit-rule)
+46. [Deletes a policy rule: panorama-delete-rule](#pan-os-delete-rule)
+47. [Returns a list of applications: panorama-list-applications](#pan-os-list-applications)
+48. [Returns commit status for a configuration: panorama-commit-status](#pan-os-commit-status)
+49. [Returns the push status for a configuration: panorama-push-status](#pan-os-push-status)
+50. [Returns information for a Panorama PCAP file: panorama-get-pcap](#pan-os-get-pcap)
+51. [Returns a list of all PCAP files by PCAP type: panorama-list-pcaps](#pan-os-list-pcaps)
+52. [Registers IP addresses to a tag: panorama-register-ip-tag](#pan-os-register-ip-tag)
+53. [Unregisters IP addresses from a tag: panorama-unregister-ip-tag](#pan-os-unregister-ip-tag)
+54. [Registers Users to a tag: panorama-register-user-tag](#pan-os-register-user-tag)
+55. [Unregisters Users from a tag: panorama-unregister-user-tag](#pan-os-unregister-user-tag)
+56. [Deprecated. Queries traffic logs: panorama-query-traffic-logs](#pan-os-query-traffic-logs)
+57. [Deprecated. Checks the query status of traffic logs: panorama-check-traffic-logs-status](#pan-os-check-traffic-logs-status)
+58. [Deprecated. Retrieves traffic log query data by job id: panorama-get-traffic-logs](#pan-os-get-traffic-logs)
+59. [Returns a list of predefined Security Rules: panorama-list-rules](#pan-os-list-rules)
+60. [Query logs in Panorama: panorama-query-logs](#pan-os-query-logs)
+61. [Checks the status of a logs query: panorama-check-logs-status](#pan-os-check-logs-status)
+62. [Retrieves the data of a logs query: panorama-get-logs](#pan-os-get-logs)
+63. [Checks whether a session matches the specified security policy: panorama-security-policy-match](#pan-os-security-policy-match)
+64. [Lists the static routes of a virtual router: panorama-list-static-routes](#pan-os-list-static-routes)
+65. [Returns the specified static route of a virtual router: panorama-get-static-route](#pan-os-get-static-route)
+66. [Adds a static route: panorama-add-static-route](#pan-os-add-static-route)
+67. [Deletes a static route: panorama-delete-static-route](#pan-os-delete-static-route)
+68. [Show firewall device software version: panorama-show-device-version](#pan-os-show-device-version)
+69. [Downloads the latest content update: panorama-download-latest-content-update](#pan-os-download-latest-content-update)
+70. [Checks the download status of a content update: panorama-content-update-download-status](#pan-os-content-update-download-status)
+71. [Installs the latest content update: panorama-install-latest-content-update](#pan-os-install-latest-content-update)
+72. [Gets the installation status of the content update: panorama-content-update-install-status](#pan-os-content-update-install-status)
+73. [Checks the PAN-OS software version from the repository: panorama-check-latest-panos-software](#pan-os-check-latest-panos-software)
+74. [Downloads the target PAN-OS software version to install on the target device: panorama-download-panos-version](#pan-os-download-panos-version)
+75. [Gets the download status of the target PAN-OS software: panorama-download-panos-status](#pan-os-download-panos-status)
+76. [Installs the target PAN-OS version on the specified target device: panorama-install-panos-version](#pan-os-install-panos-version)
+77. [Gets the installation status of the PAN-OS software: panorama-install-panos-status](#pan-os-install-panos-status)
+78. [Reboots the Firewall device: panorama-device-reboot](#pan-os-device-reboot)
+79. [Gets location information for an IP address: panorama-show-location-ip](#pan-os-show-location-ip)
+80. [Gets information about available PAN-OS licenses and their statuses: panorama-get-licenses](#pan-os-get-licenses)
+81. [Gets information for the specified security profile: panorama-get-security-profiles](#pan-os-get-security-profiles)
+82. [Apply a security profile to specific rules or rules with a specific tag: panorama-apply-security-profile](#pan-os-apply-security-profile)
+83. [Get SSL decryption rules: panorama-get-ssl-decryption-rules](#pan-os-get-ssl-decryption-rules)
+84. [Retrieves the Wildfire configuration: panorama-get-wildfire-configuration](#pan-os-get-wildfire-configuration)
+85. [Set default categories to block in the URL filtering profile: panorama-url-filtering-block-default-categories](#pan-os-url-filtering-block-default-categories)
+86. [Get anti-spyware best practices: panorama-get-anti-spyware-best-practice](#pan-os-get-anti-spyware-best-practice)
+87. [Get file-blocking best practices: panorama-get-file-blocking-best-practice](#pan-os-get-file-blocking-best-practice)
+88. [Get anti-virus best practices: panorama-get-antivirus-best-practice](#pan-os-get-antivirus-best-practice)
+89. [Get vulnerability-protection best practices: panorama-get-vulnerability-protection-best-practice](#pan-os-get-vulnerability-protection-best-practice)
+90. [View WildFire best practices: panorama-get-wildfire-best-practice](#pan-os-get-wildfire-best-practice)
+91. [View URL Filtering best practices: panorama-get-url-filtering-best-practice](#pan-os-get-url-filtering-best-practice)
+92. [Enforces wildfire best practices to upload files to the maximum size, forwards all file types, and updates the schedule: panorama-enforce-wildfire-best-practice](#pan-os-enforce-wildfire-best-practice)
+93. [Creates an antivirus best practice profile: panorama-create-antivirus-best-practice-profile](#pan-os-create-antivirus-best-practice-profile)
+94. [Creates an Anti-Spyware best practice profile: panorama-create-anti-spyware-best-practice-profile](#pan-os-create-anti-spyware-best-practice-profile)
+95. [Creates a vulnerability protection best practice profile: panorama-create-vulnerability-best-practice-profile](#pan-os-create-vulnerability-best-practice-profile)
+96. [Creates a URL filtering best practice profile: panorama-create-url-filtering-best-practice-profile](#pan-os-create-url-filtering-best-practice-profile)
+97. [Creates a file blocking best practice profile: panorama-create-file-blocking-best-practice-profile](#pan-os-create-file-blocking-best-practice-profile)
+98. [Creates a WildFire analysis best practice profile: panorama-create-wildfire-best-practice-profile](#pan-os-create-wildfire-best-practice-profile)
+99. [Shows the user ID interface configuration.](#pan-os-show-user-id-interfaces-config)
+100. [Shows the zones configuration.](#pan-os-show-zones-config)
+101. [Retrieves list of user-ID agents configured in the system.](#pan-os-list-configured-user-id-agents)
+102. [Uploads a content file to Panorama.](#pan-os-upload-content-update-file)
+103. [Installs specific content update file.](#pan-os-install-file-content-update)
+104. [Gets all ARP tables from all firewalls in the topology.](#pan-os-platform-get-arp-tables)
+105. [Pulls all route summary information from the topology.](#pan-os-platform-get-route-summary)
+106. [Pulls all route information from the topology.](#pan-os-platform-get-routes)
+107. [Gets information from all PAN-OS systems in the topology.](#pan-os-platform-get-system-info)
+108. [Gets the operational information of the device groups in the topology.](#pan-os-platform-get-device-groups)
+109. [Gets the operational information of the template stacks in the topology.](#pan-os-platform-get-template-stacks)
 
 
 ### panorama
@@ -4687,7 +4695,7 @@ Installs specific content update file.
 
 ### pan-os-platform-get-arp-tables
 ***
-Gets all arp tables from all firewalls in the topology.
+Gets all ARP tables from all firewalls in the topology.
 
 
 #### Base Command
@@ -4697,25 +4705,25 @@ Gets all arp tables from all firewalls in the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String to filter to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.ShowArp.Summary.hostid | String | ID of PAN-OS host | 
-| PANOS.ShowArp.Summary.max | String | Maximum supported ARP Entries | 
-| PANOS.ShowArp.Summary.total | String | Total current arp entries | 
-| PANOS.ShowArp.Summary.timeout | String | ARP entry timeout | 
-| PANOS.ShowArp.Summary.dp | String | Firewall dataplane associated with Entry | 
-| PANOS.ShowArp.Result.hostid | String | ID of PAN-OS host | 
-| PANOS.ShowArp.Result.interface | String | Network interface learnt ARP entry | 
-| PANOS.ShowArp.Result.ip | String | layer 3 address | 
-| PANOS.ShowArp.Result.mac | String | Layer 2 address | 
-| PANOS.ShowArp.Result.port | String | Network interface matching entry | 
-| PANOS.ShowArp.Result.status | String | ARP Entry status | 
-| PANOS.ShowArp.Result.ttl | String | Time to Live | 
+| PANOS.ShowArp.Summary.hostid | String | ID of the PAN-OS host | 
+| PANOS.ShowArp.Summary.max | String | Maximum number of supported ARP entries. | 
+| PANOS.ShowArp.Summary.total | String | Total number of current ARP entries. | 
+| PANOS.ShowArp.Summary.timeout | String | ARP entry timeout. | 
+| PANOS.ShowArp.Summary.dp | String | Firewall dataplane associated with the entry. | 
+| PANOS.ShowArp.Result.hostid | String | ID of the PAN-OS host. | 
+| PANOS.ShowArp.Result.interface | String | Network interface learned ARP entry. | 
+| PANOS.ShowArp.Result.ip | String | Layer 3 address. | 
+| PANOS.ShowArp.Result.mac | String | Layer 2 address. | 
+| PANOS.ShowArp.Result.port | String | Network interface matching entry. | 
+| PANOS.ShowArp.Result.status | String | ARP entry status. | 
+| PANOS.ShowArp.Result.ttl | String | Time to live. | 
 
 #### Command example
 ```!pan-os-platform-get-arp-tables```
@@ -4831,7 +4839,7 @@ Gets all arp tables from all firewalls in the topology.
 
 ### pan-os-platform-get-route-summary
 ***
-Pulls all route summary information from the topology
+Pulls all route summary information from the topology.
 
 
 #### Base Command
@@ -4841,17 +4849,17 @@ Pulls all route summary information from the topology
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String to filter to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.ShowRouteSummary.Summary.hostid | Number | ID of PAN-OS host | 
-| PANOS.ShowRouteSummary.Summary.total | Number | Total routes | 
-| PANOS.ShowRouteSummary.Summary.limit | Number | Maximum routes for platform | 
-| PANOS.ShowRouteSummary.Summary.active | Number | Active routes in routing table | 
+| PANOS.ShowRouteSummary.Summary.hostid | Number | ID of the PAN-OS host. | 
+| PANOS.ShowRouteSummary.Summary.total | Number | Total number of routes. | 
+| PANOS.ShowRouteSummary.Summary.limit | Number | Maximum number of routes for the platform. | 
+| PANOS.ShowRouteSummary.Summary.active | Number | Active routes in the routing table .| 
 
 #### Command example
 ```!pan-os-platform-get-route-summary```
@@ -4883,7 +4891,7 @@ Pulls all route summary information from the topology
 
 ### pan-os-platform-get-routes
 ***
-Pulls all route summary information from the topology
+Pulls all route information from the topology.
 
 
 #### Base Command
@@ -4893,25 +4901,25 @@ Pulls all route summary information from the topology
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String to filter to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.ShowRoute.Summary.hostid | String | ID of PAN-OS host | 
-| PANOS.ShowRoute.Summary.interface | String | Next hop interface | 
-| PANOS.ShowRoute.Summary.route_count | Number | Total routes seen on virtual router interface | 
-| PANOS.ShowRoute.Result.hostid | String | ID of PAN-OS host | 
-| PANOS.ShowRoute.Result.virtual_router | String | Virtual router this route belongs to | 
-| PANOS.ShowRoute.Result.destination | String | Network destination of route | 
-| PANOS.ShowRoute.Result.nexthop | String | Next hop to destination | 
-| PANOS.ShowRoute.Result.metric | String | Route metric | 
-| PANOS.ShowRoute.Result.flags | String | Route flags | 
-| PANOS.ShowRoute.Result.age | Number | Age of the route | 
-| PANOS.ShowRoute.Result.interface | String | Next hop interface | 
-| PANOS.ShowRoute.Result.route_table | String | Which route table this route belongs to | 
+| PANOS.ShowRoute.Summary.hostid | String | ID of the PAN-OS host. | 
+| PANOS.ShowRoute.Summary.interface | String | Next hop interface. | 
+| PANOS.ShowRoute.Summary.route_count | Number | Total number of routes seen on the virtual router interface. | 
+| PANOS.ShowRoute.Result.hostid | String | ID of the PAN-OS host. | 
+| PANOS.ShowRoute.Result.virtual_router | String | Virtual router this route belongs to. | 
+| PANOS.ShowRoute.Result.destination | String | Network destination of the route. | 
+| PANOS.ShowRoute.Result.nexthop | String | Next hop to destination. | 
+| PANOS.ShowRoute.Result.metric | String | Route metric. | 
+| PANOS.ShowRoute.Result.flags | String | Route flags. | 
+| PANOS.ShowRoute.Result.age | Number | Age of the route. | 
+| PANOS.ShowRoute.Result.interface | String | Next hop interface. | 
+| PANOS.ShowRoute.Result.route_table | String | The route table this route belongs to. | 
 
 #### Command example
 ```!pan-os-platform-get-routes```
@@ -5021,42 +5029,42 @@ Gets information from all PAN-OS systems in the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String to filter to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.ShowSystemInfo.Summary.hostid | String | ID of PAN-OS host | 
-| PANOS.ShowSystemInfo.Summary.ip_address | String | Management IP Address | 
-| PANOS.ShowSystemInfo.Summary.sw_version | String | System software version | 
-| PANOS.ShowSystemInfo.Summary.family | String | Platform family | 
-| PANOS.ShowSystemInfo.Summary.model | String | Platform model | 
-| PANOS.ShowSystemInfo.Summary.uptime | String | Total System uptime | 
-| PANOS.ShowSystemInfo.Summary.hostname | String | System Hostname | 
-| PANOS.ShowSystemInfo.Result.hostid | String | ID of PAN-OS host | 
-| PANOS.ShowSystemInfo.Result.ip_address | String | Management IP Address | 
-| PANOS.ShowSystemInfo.Result.netmask | String | Management Netmask | 
-| PANOS.ShowSystemInfo.Result.mac_address | String | Management MAC address | 
-| PANOS.ShowSystemInfo.Result.uptime | String | Total System uptime | 
-| PANOS.ShowSystemInfo.Result.family | String | Platform family | 
-| PANOS.ShowSystemInfo.Result.model | String | Platform model | 
-| PANOS.ShowSystemInfo.Result.sw_version | String | System software version | 
-| PANOS.ShowSystemInfo.Result.operational_mode | String | Current operational mode | 
-| PANOS.ShowSystemInfo.Result.ipv6_address | String | Management IPv6 address | 
-| PANOS.ShowSystemInfo.Result.default_gateway | String | Management Default Gateway | 
-| PANOS.ShowSystemInfo.Result.public_ip_address | String | Firewall Public IP | 
-| PANOS.ShowSystemInfo.Result.hostname | String | Device hostname | 
-| PANOS.ShowSystemInfo.Result.av_version | String | System anti-virus version | 
-| PANOS.ShowSystemInfo.Result.av_release_date | String | Release date of antivirus content | 
-| PANOS.ShowSystemInfo.Result.app_version | String | App content version | 
-| PANOS.ShowSystemInfo.Result.app_release_date | String | Release date of application content | 
-| PANOS.ShowSystemInfo.Result.threat_version | String | Threat content version | 
-| PANOS.ShowSystemInfo.Result.threat_release_date | String | Release date of threat content | 
-| PANOS.ShowSystemInfo.Result.wildfire_version | String | Wildfire content version | 
-| PANOS.ShowSystemInfo.Result.wildfire_release_date | String | Wildfire release date | 
-| PANOS.ShowSystemInfo.Result.url_filtering_version | String | URL Filtering content version | 
+| PANOS.ShowSystemInfo.Summary.hostid | String | ID of the PAN-OS host. | 
+| PANOS.ShowSystemInfo.Summary.ip_address | String | Management IP address. | 
+| PANOS.ShowSystemInfo.Summary.sw_version | String | System software version. | 
+| PANOS.ShowSystemInfo.Summary.family | String | Platform family. | 
+| PANOS.ShowSystemInfo.Summary.model | String | Platform model. | 
+| PANOS.ShowSystemInfo.Summary.uptime | String | Total system uptime. | 
+| PANOS.ShowSystemInfo.Summary.hostname | String | System hostname. | 
+| PANOS.ShowSystemInfo.Result.hostid | String | ID of the PAN-OS host. | 
+| PANOS.ShowSystemInfo.Result.ip_address | String | Management IP address. | 
+| PANOS.ShowSystemInfo.Result.netmask | String | Management netmask. | 
+| PANOS.ShowSystemInfo.Result.mac_address | String | Management MAC address. | 
+| PANOS.ShowSystemInfo.Result.uptime | String | Total system uptime. | 
+| PANOS.ShowSystemInfo.Result.family | String | Platform family. | 
+| PANOS.ShowSystemInfo.Result.model | String | Platform model. | 
+| PANOS.ShowSystemInfo.Result.sw_version | String | System software version. | 
+| PANOS.ShowSystemInfo.Result.operational_mode | String | Current operational mode. | 
+| PANOS.ShowSystemInfo.Result.ipv6_address | String | Management IPv6 address. | 
+| PANOS.ShowSystemInfo.Result.default_gateway | String | Management default gateway. | 
+| PANOS.ShowSystemInfo.Result.public_ip_address | String | Firewall public IP address. | 
+| PANOS.ShowSystemInfo.Result.hostname | String | Device hostname. | 
+| PANOS.ShowSystemInfo.Result.av_version | String | System anti-virus version. | 
+| PANOS.ShowSystemInfo.Result.av_release_date | String | Release date of the antivirus content, | 
+| PANOS.ShowSystemInfo.Result.app_version | String | App content version, | 
+| PANOS.ShowSystemInfo.Result.app_release_date | String | Release date of the application content. | 
+| PANOS.ShowSystemInfo.Result.threat_version | String | Threat content version. | 
+| PANOS.ShowSystemInfo.Result.threat_release_date | String | Release date of the threat content. | 
+| PANOS.ShowSystemInfo.Result.wildfire_version | String | Wildfire content version. | 
+| PANOS.ShowSystemInfo.Result.wildfire_release_date | String | Wildfire release date. | 
+| PANOS.ShowSystemInfo.Result.url_filtering_version | String | URL filtering content version. | 
 
 #### Command example
 ```!pan-os-platform-get-system-info```
@@ -5161,23 +5169,23 @@ Gets the operational information of the device groups in the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String to filter to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.DeviceGroupOp.hostid | String | ID of PAN-OS host | 
-| PANOS.DeviceGroupOp.serial | String | Serial number of firewall | 
-| PANOS.DeviceGroupOp.connected | String | Whether the firewall is currently connected | 
-| PANOS.DeviceGroupOp.hostname | String | Firewall hostname | 
-| PANOS.DeviceGroupOp.last_commit_all_state_sp | String | Text state of last commit | 
-| PANOS.DeviceGroupOp.name | String | Device group Name | 
+| PANOS.DeviceGroupOp.hostid | String | ID of the PAN-OS host. | 
+| PANOS.DeviceGroupOp.serial | String | Serial number of the firewall. | 
+| PANOS.DeviceGroupOp.connected | String | Whether the firewall is currently connected. | 
+| PANOS.DeviceGroupOp.hostname | String | Firewall hostname. | 
+| PANOS.DeviceGroupOp.last_commit_all_state_sp | String | State of the last commit. | 
+| PANOS.DeviceGroupOp.name | String | Device group name. | 
 
 ### pan-os-platform-get-template-stacks
 ***
-Gets the operational information of the template-stacks in the topology.
+Gets the operational information of the template stacks in the topology.
 
 
 #### Base Command
@@ -5187,19 +5195,19 @@ Gets the operational information of the template-stacks in the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String to filter to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.TemplateStackOp.hostid | String | ID of PAN-OS host | 
-| PANOS.TemplateStackOp.serial | String | Serial number of firewall | 
-| PANOS.TemplateStackOp.connected | String | Whether the firewall is currently connected | 
-| PANOS.TemplateStackOp.hostname | String | Firewall hostname | 
-| PANOS.TemplateStackOp.last_commit_all_state_tpl | String | Text state of last commit | 
-| PANOS.TemplateStackOp.name | String | Template Stack Name | 
+| PANOS.TemplateStackOp.hostid | String | ID of the PAN-OS host. | 
+| PANOS.TemplateStackOp.serial | String | Serial number of the firewall. | 
+| PANOS.TemplateStackOp.connected | String | Whether the firewall is currently connected. | 
+| PANOS.TemplateStackOp.hostname | String | Firewall hostname. | 
+| PANOS.TemplateStackOp.last_commit_all_state_tpl | String | State of last commit. | 
+| PANOS.TemplateStackOp.name | String | Template stack name. | 
 
 #### Command example
 ```!pan-os-platform-get-template-stacks```
