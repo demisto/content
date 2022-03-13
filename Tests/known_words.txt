@@ -12,6 +12,8 @@ Endpoints
 IOC
 deprecated
 EPOFindSystem
+TaegisXDR
+Taegis
 boolean
 xdr
 Darktrace
@@ -106,3 +108,5 @@ fieldSearchValue
 Classifiers
 SentinelOne
 URLs
+hostname
+EDR
