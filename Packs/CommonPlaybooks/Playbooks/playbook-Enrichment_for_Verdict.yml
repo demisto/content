@@ -1,7 +1,7 @@
 id: Enrichment for Verdict
 version: -1
 name: Enrichment for Verdict
-description: description placeholder
+description: This playbook performs enrichment on different IOC types, and returns the information needed to establish the alert's verdict.
 starttaskid: "0"
 tasks:
   "0":
