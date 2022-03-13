@@ -14,8 +14,8 @@ if [ -n "${NIGHTLY}" ]; then
 fi
 
 export XSIAM_CHOSEN_MACHINE_ID=qa2-test-9997333835008
-# todo: add support for $XSIAM_CHOSEN_MACHINE_ID
-python3 ./Tests/configure_and_test_integration_instances.py -u "$USERNAME" -p "$PASSWORD" -c "$CONF_PATH" -s "$SECRET_CONF_PATH" --tests_to_run "$ARTIFACTS_FOLDER/filter_file.txt"  --pack_ids_to_install "$ARTIFACTS_FOLDER/content_packs_to_install.txt" -g "$GIT_SHA1" --ami_env "$1" -n $IS_NIGHTLY --branch "$CI_COMMIT_BRANCH" --build-number "$CI_PIPELINE_ID" -sa "$GCS_MARKET_KEY" --build_object_type "$2" --xsiam_machine "$3" --xsiam_servers_path $XSIAM_SERVERS_PATH
+# todo: add support for $XSIAM_CHOSEN_MACHINE_ID, write "$3" instead
+python3 ./Tests/configure_and_test_integration_instances.py -u "$USERNAME" -p "$PASSWORD" -c "$CONF_PATH" -s "$SECRET_CONF_PATH" --tests_to_run "$ARTIFACTS_FOLDER/filter_file.txt"  --pack_ids_to_install "$ARTIFACTS_FOLDER/content_packs_to_install.txt" -g "$GIT_SHA1" --ami_env "$1" -n $IS_NIGHTLY --branch "$CI_COMMIT_BRANCH" --build-number "$CI_PIPELINE_ID" -sa "$GCS_MARKET_KEY" --build_object_type "$2" --xsiam_machine "$XSIAM_CHOSEN_MACHINE_ID" --xsiam_servers_path $XSIAM_SERVERS_PATH
 if [ -f ./Tests/test_pack.zip ]; then
   cp ./Tests/test_pack.zip "$ARTIFACTS_FOLDER"
 fi
