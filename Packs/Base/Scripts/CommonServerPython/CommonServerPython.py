@@ -3615,7 +3615,7 @@ class Common(object):
             self.dbot_score = dbot_score
 
         def to_context(self):
-            file_context = {'Hashes': []}
+            file_context: dict[str, any] = {'Hashes': []}
 
             if self.name:
                 file_context['Name'] = self.name
@@ -3997,7 +3997,7 @@ class Common(object):
             self.url = url
 
             self.blocked = blocked
-            self.certificates=certificates
+            self.certificates = certificates
             self.community_notes = community_notes
             self.description = description
             self.internal = internal
@@ -4085,7 +4085,7 @@ class Common(object):
                 url_context['Organization'] = self.organization
 
             if self.community_notes:
-                url_context['CommunityNotes'] =self.create_context_table(self.community_notes)
+                url_context['CommunityNotes'] = self.create_context_table(self.community_notes)
 
             if self.publications:
                 url_context['Publications'] = self.create_context_table(self.publications)
@@ -4595,9 +4595,9 @@ class Common(object):
         """
         CONTEXT_PATH = 'AttackPattern(val.value && val.value == obj.value)'
 
-        def __init__(self, stix_id, community_notes=None, external_references=None, kill_chain_phases=None, first_seen_by_source=None, description=None,
-                     operating_system_refs=None, publications=None, mitre_id=None, tags=None,
-                     traffic_light_protocol=None, dbot_score=None):
+        def __init__(self, stix_id, community_notes=None, external_references=None, kill_chain_phases=None,
+                     first_seen_by_source=None, description=None, operating_system_refs=None, publications=None,
+                     mitre_id=None, tags=None, traffic_light_protocol=None, dbot_score=None):
 
             self.community_notes = community_notes
             self.description = description
