@@ -1074,8 +1074,8 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
     return response
 
 
-def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: int = 0,
-                         last_updated_timestamp=None, has_limit=True):
+def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: int = 0, last_updated_timestamp=None,
+                         has_limit=True):
     """ Sends detection request, based on the created_timestamp field. Used for fetch-incidents
     Args:
         last_created_timestamp: last created timestamp of the results will be greater than this value.
@@ -1131,10 +1131,8 @@ def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int 
 
     if filter_arg:
         params['filter'] = filter_arg
-
     elif last_created_timestamp:
         params['filter'] = "start:>'{0}'".format(last_created_timestamp)
-
     elif last_updated_timestamp:
         params['filter'] = "modified_timestamp:>'{0}'".format(last_updated_timestamp)
 
@@ -1849,35 +1847,35 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
     """
     parsed_args = UpdateRemoteSystemArgs(args)
     delta = parsed_args.delta
-    incident_id = parsed_args.remote_incident_id
+    remote_incident_id = parsed_args.remote_incident_id
     demisto.debug(f'Got the following data {parsed_args.data}, and delta {delta}.')
     if delta:
         demisto.debug(f'Got the following delta keys {list(delta.keys())}.')
 
     try:
-        incident_type = find_incident_type(incident_id)
+        incident_type = find_incident_type(remote_incident_id)
         if parsed_args.incident_changed:
             if incident_type == IncidentType.INCIDENT:
-                result = update_remote_incident(delta, parsed_args.inc_status, incident_id)
+                result = update_remote_incident(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f'Incident updated successfully. Result: {result}')
 
             elif incident_type == IncidentType.DETECTION:
-                result = update_remote_detection(delta, parsed_args.inc_status, incident_id)
+                result = update_remote_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f'Detection updated successfully. Result: {result}')
 
             else:
-                raise Exception(f'Executed update-remote-system command with undefined id: {incident_id}')
+                raise Exception(f'Executed update-remote-system command with undefined id: {remote_incident_id}')
 
         else:
-            demisto.debug(f"Skipping updating remote incident or detection {incident_id} as it didn't change.")
+            demisto.debug(f"Skipping updating remote incident or detection {remote_incident_id} as it didn't change.")
 
     except Exception as e:
-        demisto.error(f'Error in CrowdStrike Falcon outgoing mirror for incident or detection {incident_id}. '
+        demisto.error(f'Error in CrowdStrike Falcon outgoing mirror for incident or detection {remote_incident_id}. '
                       f'Error message: {str(e)}')
 
-    return incident_id
+    return remote_incident_id
 
 
 def close_in_cs_falcon(delta: Dict[str, Any]) -> bool:
