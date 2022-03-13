@@ -3734,6 +3734,17 @@ def test_get_detection_for_incident_command(mocker, detections, resources, expec
 @pytest.mark.parametrize('remote_id, close_incident, incident_status, detection_status, mirrored_object, entries',
                          input_data.get_remote_data_command_args)
 def test_get_remote_data_command(mocker, remote_id, close_incident, incident_status, detection_status, mirrored_object, entries):
+    """
+    Given
+        - arguments - id and lastUpdate time set to a lower than incident modification time
+        - a raw update (get_incidents_entities and get_detections_entities results)
+        - the state of the incident/detection in CrowdStrike Falcon
+    When
+        - running get_remote_data_command with changes to make
+    Then
+        - the mirrored_object in the GetRemoteDataResponse contains the modified incident fields
+        - the entries in the GetRemoteDataResponse contain expected entries (an incident closure/reopen entry when needed)
+    """
     from CrowdStrikeFalcon import get_remote_data_command
     incident_entity = input_data.response_incident.copy()
     incident_entity['status'] = incident_status
@@ -3749,6 +3760,14 @@ def test_get_remote_data_command(mocker, remote_id, close_incident, incident_sta
 
 
 def test_find_incident_type():
+    """
+    Given
+        - an incident or detection ID on the remote system
+    When
+        - running get_remote_data_command or update_remote_system_command when we want to know the relevant incident type
+    Then
+        - returns the right incident type
+    """
     from CrowdStrikeFalcon import find_incident_type, IncidentType
     assert find_incident_type(input_data.remote_incident_id) == IncidentType.INCIDENT
     assert find_incident_type(input_data.remote_detection_id) == IncidentType.DETECTION
@@ -3756,6 +3775,14 @@ def test_find_incident_type():
 
 
 def test_get_remote_incident_data(mocker):
+    """
+    Given
+        - an incident ID on the remote system
+    When
+        - running get_remote_data_command with changes to make on an incident
+    Then
+        - returns the relevant incident entity from the remote system with the relevant incoming mirroring fields
+    """
     from CrowdStrikeFalcon import get_remote_incident_data
     incident_entity = input_data.response_incident.copy()
     mocker.patch('CrowdStrikeFalcon.get_incidents_entities', return_value={'resources': [incident_entity.copy()]})
@@ -3767,6 +3794,14 @@ def test_get_remote_incident_data(mocker):
 
 
 def test_get_remote_detection_data(mocker):
+    """
+    Given
+        - a detection ID on the remote system
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
+    """
     from CrowdStrikeFalcon import get_remote_detection_data
     detection_entity = input_data.response_detection.copy()
     mocker.patch('CrowdStrikeFalcon.get_detections_entities', return_value={'resources': [detection_entity.copy()]})
@@ -3781,6 +3816,15 @@ def test_get_remote_detection_data(mocker):
 
 @pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_incident_entries_args)
 def test_set_xsoar_incident_entries(mocker, updated_object, entry_content, close_incident):
+    """
+    Given
+        - the incident status from the remote system
+        - the close_incident parameter that was set when setting the integration
+    When
+        - running get_remote_data_command with changes to make on a incident
+    Then
+        - adds the relevant entry (closure/reopen) to the entries
+    """
     from CrowdStrikeFalcon import set_xsoar_incident_entries
     mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
     entries = []
@@ -3793,6 +3837,15 @@ def test_set_xsoar_incident_entries(mocker, updated_object, entry_content, close
 
 @pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_detection_entries_args)
 def test_set_xsoar_detection_entries(mocker, updated_object, entry_content, close_incident):
+    """
+    Given
+        - the detection status from the remote system
+        - the close_incident parameter that was set when setting the integration
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - adds the relevant entry (closure/reopen) to the entries
+    """
     from CrowdStrikeFalcon import set_xsoar_detection_entries
     mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
     entries = []
@@ -3806,22 +3859,29 @@ def test_set_xsoar_detection_entries(mocker, updated_object, entry_content, clos
 @pytest.mark.parametrize('updated_object, mirrored_data, mirroring_fields, output', input_data.set_updated_object_args)
 def test_set_updated_object(updated_object, mirrored_data, mirroring_fields, output):
     """
-    Given:
-        get-remote-data command runs and determines what the updated object is
-
-    When:
-        get-remote-data command runs when mirroring in
-
-    Then:
-        The updated object is set correctly, also for nested fields
+    Given
+        - an entity from the remote system
+        - the relevant incoming mirroring fields
+    When
+        - get-remote-data command runs when mirroring in and determines what the updated object is
+    Then
+        - the updated object is set correctly, also for nested mirroring fields
     """
     from CrowdStrikeFalcon import set_updated_object
-
     set_updated_object(updated_object, mirrored_data, mirroring_fields)
     assert updated_object == output
 
 
 def test_get_modified_remote_data_command(mocker):
+    """
+    Given
+        - arguments - lastUpdate time
+        - raw incidents and detection (results of get_incidents_ids and get_fetch_detections)
+    When
+        - running get_modified_remote_data_command
+    Then
+        - returns a list of incidents and detections IDs that were modified since the lastUpdate time
+    """
     from CrowdStrikeFalcon import get_modified_remote_data_command
     mock_get_incidents = mocker.patch('CrowdStrikeFalcon.get_incidents_ids',
                                       return_value={'resources': [input_data.remote_incident_id]})
@@ -3836,6 +3896,15 @@ def test_get_modified_remote_data_command(mocker):
 
 @pytest.mark.parametrize('status', ['new', 'in_progress', 'true_positive', 'false_positive', 'ignored', 'closed', 'reopened'])
 def test_update_detection_request_good(mocker, status):
+    """
+    Given
+        - list of detections IDs
+        - status to change for the given detection in the remote system, which is one of the permitted statuses
+    When
+        - running update_remote_system_command
+    Then
+        - the resolve_detection command is called successfully with the right arguments
+    """
     from CrowdStrikeFalcon import update_detection_request
     mock_resolve_detection = mocker.patch('CrowdStrikeFalcon.resolve_detection')
     update_detection_request([input_data.remote_detection_id], status)
@@ -3845,6 +3914,15 @@ def test_update_detection_request_good(mocker, status):
 
 @pytest.mark.parametrize('status', ['other', ''])
 def test_update_detection_request_bad(status):
+    """
+    Given
+        - list of detections IDs
+        - status to change for the given detection in the remote system, which is not one of the permitted statuses
+    When
+        - running update_remote_system_command
+    Then
+        - an exception is raised
+    """
     from CrowdStrikeFalcon import update_detection_request
     with pytest.raises(DemistoException) as de:
         update_detection_request([input_data.remote_detection_id], status)
@@ -3854,6 +3932,15 @@ def test_update_detection_request_bad(status):
 @pytest.mark.parametrize('args, to_mock, call_args, remote_id, prev_tags, close_in_cs_falcon_param',
                          input_data.update_remote_system_command_args)
 def test_update_remote_system_command(mocker, args, to_mock, call_args, remote_id, prev_tags, close_in_cs_falcon_param):
+    """
+    Given
+        - incident or detection changes (one of the mirroring field changed or it was closed in XSOAR)
+    When
+        - outgoing mirroring triggered by a change in the incident/detection
+    Then
+        - the relevant incident/detection is updated with the corresponding fields in the remote system
+        - the returned result corresponds to the incident/detection ID
+    """
     from CrowdStrikeFalcon import update_remote_system_command
     mock_call = mocker.patch(f'CrowdStrikeFalcon.{to_mock}')
     mocker.patch('CrowdStrikeFalcon.get_previous_tags', return_value=prev_tags)
@@ -3866,6 +3953,15 @@ def test_update_remote_system_command(mocker, args, to_mock, call_args, remote_i
 
 @pytest.mark.parametrize('delta, close_in_cs_falcon_param, to_close', input_data.close_in_cs_falcon_args)
 def test_close_in_cs_falcon(mocker, delta, close_in_cs_falcon_param, to_close):
+    """
+    Given
+        - incident or detection changes (one of the mirroring field changed or it was closed in XSOAR)
+        - the close_in_cs_falcon parameter that was set when setting the integration
+    When
+        - outgoing mirroring triggered by a change in the incident/detection
+    Then
+        - returns true if the incident/detection was closed in XSOAR and the close_in_cs_falcon parameter was set to true
+    """
     from CrowdStrikeFalcon import close_in_cs_falcon
     mocker.patch.object(demisto, 'params', return_value={'close_in_cs_falcon': close_in_cs_falcon_param})
     assert close_in_cs_falcon(delta) == to_close
@@ -3874,6 +3970,15 @@ def test_close_in_cs_falcon(mocker, delta, close_in_cs_falcon_param, to_close):
 @pytest.mark.parametrize('delta, inc_status, close_in_cs_falcon, detection_request_status',
                          input_data.update_remote_detection_args)
 def test_update_remote_detection(mocker, delta, inc_status, close_in_cs_falcon, detection_request_status):
+    """
+    Given
+        - detection changes (one of the mirroring field changed or it was closed in XSOAR)
+        - arguments - delta (the change in the relevant fields), XSOAR status and remote detection id
+    When
+        - outgoing mirroring triggered by a change in the detection
+    Then
+        - the relevant detection is updated with the corresponding fields in the remote system
+    """
     from CrowdStrikeFalcon import update_remote_detection
     mocker.patch.object(demisto, 'params', return_value={'close_in_cs_falcon': close_in_cs_falcon})
     mock_update_detection_request = mocker.patch('CrowdStrikeFalcon.update_detection_request')
@@ -3885,6 +3990,15 @@ def test_update_remote_detection(mocker, delta, inc_status, close_in_cs_falcon, 
 
 
 def test_update_remote_incident(mocker):
+    """
+    Given
+        - incident changes (one of the mirroring field changed or it was closed in XSOAR)
+        - arguments - delta (the change in the relevant fields), XSOAR status and remote incident id
+    When
+        - outgoing mirroring triggered by a change in the incident
+    Then
+        - the relevant incident is updated with the corresponding fields in the remote system
+    """
     from CrowdStrikeFalcon import update_remote_incident
     mock_update_tags = mocker.patch('CrowdStrikeFalcon.update_remote_incident_tags')
     mock_update_status = mocker.patch('CrowdStrikeFalcon.update_remote_incident_status')
@@ -3896,6 +4010,15 @@ def test_update_remote_incident(mocker):
 @pytest.mark.parametrize('delta, inc_status, close_in_cs_falcon, resolve_incident_status',
                          input_data.update_remote_incident_status_args)
 def test_update_remote_incident_status(mocker, delta, inc_status, close_in_cs_falcon, resolve_incident_status):
+    """
+    Given
+        - incident status changes
+        - arguments - delta (the change in the relevant fields), XSOAR status and remote incident id
+    When
+        - outgoing mirroring triggered by a change in the incident status
+    Then
+        - the relevant incident is updated with the corresponding status in the remote system
+    """
     from CrowdStrikeFalcon import update_remote_incident_status
     mocker.patch.object(demisto, 'params', return_value={'close_in_cs_falcon': close_in_cs_falcon})
     mock_resolve_incident = mocker.patch('CrowdStrikeFalcon.resolve_incident')
@@ -3907,6 +4030,15 @@ def test_update_remote_incident_status(mocker, delta, inc_status, close_in_cs_fa
 
 
 def test_update_remote_incident_tags(mocker):
+    """
+    Given
+        - incident tags changes
+        - arguments - delta (the change in the relevant fields) and remote incident id
+    When
+        - outgoing mirroring triggered by a change in the incident tags
+    Then
+        - the relevant incident is updated with the corresponding tags (added or removed) in the remote system
+    """
     from CrowdStrikeFalcon import update_remote_incident_tags
     mocker.patch('CrowdStrikeFalcon.get_previous_tags', return_value={'tag_stays', 'old_tag'})
     mock_remote_incident_handle_tags = mocker.patch('CrowdStrikeFalcon.remote_incident_handle_tags')
@@ -3918,6 +4050,14 @@ def test_update_remote_incident_tags(mocker):
 
 
 def test_get_previous_tags(mocker):
+    """
+    Given
+        - incident tags changes
+    When
+        - outgoing mirroring triggered by a change in the incident tags
+    Then
+        - returns the current remote system tags
+    """
     from CrowdStrikeFalcon import get_previous_tags
     incident_response = {'meta': {'query_time': 0.013811475, 'powered_by': 'incident-api',
                                   'trace_id': '7fce39d4-d695-4aac-bdcf-2d9138bea57c'},
@@ -3930,6 +4070,14 @@ def test_get_previous_tags(mocker):
 
 @pytest.mark.parametrize('tags, action_name', input_data.remote_incident_handle_tags_args)
 def test_remote_incident_handle_tags(mocker, tags, action_name):
+    """
+    Given
+        - incident tag changes
+    When
+        - outgoing mirroring triggered by a change in the incident tags
+    Then
+        - sends the right request to the remote system
+    """
     from CrowdStrikeFalcon import remote_incident_handle_tags
     mock_update_incident_request = mocker.patch('CrowdStrikeFalcon.update_incident_request')
     remote_incident_handle_tags(tags, action_name, input_data.remote_incident_id)
@@ -3939,6 +4087,14 @@ def test_remote_incident_handle_tags(mocker, tags, action_name):
 
 
 def test_get_mapping_fields_command():
+    """
+    Given
+        - nothing
+    When
+        - running get_mapping_fields_command
+    Then
+        - the result fits the expected mapping scheme
+    """
     from CrowdStrikeFalcon import get_mapping_fields_command
     result = get_mapping_fields_command()
     assert result.scheme_types_mappings[0].type_name == 'CrowdStrike Falcon Incident'
