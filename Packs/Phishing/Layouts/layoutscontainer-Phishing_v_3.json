@@ -408,10 +408,11 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "emailbody",
-                                "height": 110,
+                                "height": 106,
                                 "id": "10382150-97f0-11e9-b8bd-0b00be54d2d3",
                                 "index": 0,
-                                "startCol": 0
+                                "startCol": 0,
+                                "sectionItemType": "field"
                             }
                         ],
                         "maxW": 3,
@@ -1047,7 +1048,7 @@
         ]
     },
     "group": "incident",
-    "id": "Phishing Incident v3",
+    "id": "Phishing Incident v3_dev",
     "mobile": {
         "sections": [
             {
@@ -1231,18 +1232,18 @@
             }
         ]
     },
-    "name": "Phishing Incident v3",
+    "name": "Phishing Incident v3_dev",
     "quickView": {
         "sections": [
             {
                 "description": "Information about the phishing email that was received.",
                 "fields": [
                     {
-                        "fieldId": "incident_emailfrom",
+                        "fieldId": "incident_reportedemailfrom",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_emailto",
+                        "fieldId": "incident_reportedemailto",
                         "isVisible": true
                     },
                     {
@@ -1250,7 +1251,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_emailsubject",
+                        "fieldId": "incident_reportedemailsubject",
                         "isVisible": true
                     },
                     {
@@ -1348,7 +1349,7 @@
             }
         ]
     },
-    "system": true,
+    "system": false,
     "version": -1,
     "fromVersion": "6.1.0",
     "description": ""
