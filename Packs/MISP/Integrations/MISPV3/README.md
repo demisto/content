@@ -2179,14 +2179,14 @@ Creates a new MISP event.
 | type | Attribute type to be created as part of the new event. For example: "md5", "sha1", "email", "url". Default is other. | Optional | 
 | category | Attribute category to be created as part of the new event. For example: "Other", "Person", "Attribution", "Payload type". Default is External analysis. | Optional | 
 | to_ids | Whether to create the event's attribute with the Intrusion Detection System flag. Possible values: "true" and "false". Possible values are: true, false. Default is true. | Optional | 
-| distribution | Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "All_communities", and "Inherit_event". Possible values are: Your_organization_only, This_community_only, Connected_communities, All_communities, Inherit_event. Default is Your_organization_only. | Optional | 
+| distribution | Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "All_communities", "Sharing_group" and "Inherit_event". Possible values are: Your_organization_only, This_community_only, Connected_communities, All_communities, Sharing_group, Inherit_event. Default is Your_organization_only. | Optional | 
 | comment | Attribute comment to be created as part of the new event. | Optional | 
 | value | Attribute value to be created as part of the new event. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs). | Required | 
 | info | Event name. | Required | 
 | published | Whether to publish the event. Possible values: "false" and "true". Possible values are: false, true. Default is false. | Optional | 
 | threat_level_id | MISP Threat level ID. Possible values: "High", "Medium", "Low", and "Unknown". Possible values are: High, Medium, Low, Unknown. Default is High. | Optional | 
 | analysis | The analysis event level. Possible values: "initial", "ongoing", and "completed". Possible values are: initial, ongoing, completed. Default is initial. | Optional | 
-| sharing_group_id | Sharing group ID. Mandatory when Sharing_group distribution is set. | Optional |
+| sharing_group_id | Sharing group ID. Mandatory when Sharing_group distribution is set. | Optional | 
 
 
 #### Context Output
