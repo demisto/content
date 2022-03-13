@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 8fa20ebf-79a7-4f17-8a4a-c95c541798eb
+    taskid: 1d8fdb38-11e7-4435-8404-99e6a8c56727
     type: regular
     task:
-      id: 8fa20ebf-79a7-4f17-8a4a-c95c541798eb
+      id: 1d8fdb38-11e7-4435-8404-99e6a8c56727
       version: -1
       name: cs-fx-submit-uploaded-file
       script: CrowdStrike Falcon X|||cs-fx-submit-uploaded-file
@@ -101,6 +101,8 @@ tasks:
         simple: malware_test_nightly
       system_date:
         simple: "2020-08-10"
+      system_time:
+        simple: "12:34"
     separatecontext: false
     view: |-
       {
@@ -175,10 +177,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: e47d7cfc-88f7-480e-86fd-b54405092eda
+    taskid: 2dbced4c-780f-4172-8413-cdf26a7de9eb
     type: regular
     task:
-      id: e47d7cfc-88f7-480e-86fd-b54405092eda
+      id: 2dbced4c-780f-4172-8413-cdf26a7de9eb
       version: -1
       name: cs-fx-get-full-report
       script: CrowdStrike Falcon X|||cs-fx-get-full-report
@@ -210,10 +212,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 3087e269-8d44-412c-8b95-d04b6867f718
+    taskid: c3566d0d-0881-4421-84e1-622896496162
     type: condition
     task:
-      id: 3087e269-8d44-412c-8b95-d04b6867f718
+      id: c3566d0d-0881-4421-84e1-622896496162
       version: -1
       name: Verify Outputs
       type: condition
@@ -226,13 +228,6 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.file_name
-            iscontext: true
-          right:
-            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -256,11 +251,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: csfalconx.resource.submitted_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: csfalconx.resource.verdict
             iscontext: true
       - - operator: isNotEmpty
@@ -277,11 +267,6 @@ tasks:
           left:
             value:
               simple: csfalconx.resource.threat_score
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.filetype
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -564,10 +549,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 4a7725b8-b773-470e-8eab-6929cd621463
+    taskid: 32ae567e-6b2b-40bf-83eb-2b2904a06e92
     type: condition
     task:
-      id: 4a7725b8-b773-470e-8eab-6929cd621463
+      id: 32ae567e-6b2b-40bf-83eb-2b2904a06e92
       version: -1
       name: Verify Outputs
       type: condition
@@ -583,18 +568,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: csfalconx.resource.id
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.verdict
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: csfalconx.resource.created_timestamp
             iscontext: true
       - - operator: isNotEmpty
@@ -605,77 +578,17 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: csfalconx.resource.environment_description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.threat_score
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.submit_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.submission_type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.filetype
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.filesize
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: csfalconx.resource.sha256
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: csfalconx.resource.ioc_report_strict_csv_artifact_id
+              simple: csfalconx.resource.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: csfalconx.resource.ioc_report_broad_csv_artifact_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.ioc_report_strict_json_artifact_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.ioc_report_broad_json_artifact_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.ioc_report_strict_stix_artifact_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.ioc_report_broad_stix_artifact_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.ioc_report_strict_maec_artifact_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.ioc_report_broad_maec_artifact_id
+              simple: csfalconx.resource.state
             iscontext: true
     view: |-
       {
@@ -772,10 +685,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 56daf13a-ad2f-4bdd-8464-884d6d5296ef
+    taskid: b887b1ae-cca4-49ba-8d1a-65f9200e131b
     type: regular
     task:
-      id: 56daf13a-ad2f-4bdd-8464-884d6d5296ef
+      id: b887b1ae-cca4-49ba-8d1a-65f9200e131b
       version: -1
       name: cs-fx-find-reports
       script: CrowdStrike Falcon X|||cs-fx-find-reports
@@ -786,12 +699,12 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      filter:
-        simple: "1"
       hashes:
         simple: d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee
       limit:
         simple: "5"
+      offset:
+        simple: "1"
     separatecontext: false
     view: |-
       {
@@ -809,10 +722,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: b0a994b1-9be8-4592-8b17-04a78fb47361
+    taskid: 88e20fb1-5cf3-44aa-86d5-36bcf804db29
     type: condition
     task:
-      id: b0a994b1-9be8-4592-8b17-04a78fb47361
+      id: 88e20fb1-5cf3-44aa-86d5-36bcf804db29
       version: -1
       name: Verify Outputs
       type: condition
@@ -828,8 +741,10 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: csfalconx.resource.id
+              simple: csfalconx.resource.resources
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -881,10 +796,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 7c55b1dc-3854-4237-8da6-3b2876c50fbe
+    taskid: 4da79cb4-beea-42cc-8933-f018f062b654
     type: condition
     task:
-      id: 7c55b1dc-3854-4237-8da6-3b2876c50fbe
+      id: 4da79cb4-beea-42cc-8933-f018f062b654
       version: -1
       name: Verify Outputs
       type: condition
@@ -900,7 +815,7 @@ tasks:
       - - operator: hasLength
           left:
             value:
-              simple: csfalconx.resource.id
+              simple: csfalconx.resource.resources
             iscontext: true
           right:
             value:
@@ -954,10 +869,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: e7ecffe8-3dce-48ce-8ed2-09b2f88b24de
+    taskid: 324adce0-5d3a-40ce-89dc-a4e673a40185
     type: condition
     task:
-      id: e7ecffe8-3dce-48ce-8ed2-09b2f88b24de
+      id: 324adce0-5d3a-40ce-89dc-a4e673a40185
       version: -1
       name: Verify Outputs
       type: condition
@@ -970,13 +885,6 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.id
-            iscontext: true
-          right:
-            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -996,16 +904,6 @@ tasks:
           left:
             value:
               simple: csfalconx.resource.verdict
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: File.MD5
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: File.SHA1
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -1177,19 +1075,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 820252fc-6a9b-4902-87ce-2a165b222bb0
+    taskid: 6acd33ed-6b3f-486e-806b-bc9422df82d4
     type: regular
     task:
-      id: 820252fc-6a9b-4902-87ce-2a165b222bb0
+      id: 6acd33ed-6b3f-486e-806b-bc9422df82d4
       version: -1
       name: cs-fx-download-ioc
       script: CrowdStrike Falcon X|||cs-fx-download-ioc
       type: regular
       iscommand: true
-      brand: ""
+      brand: CrowdStrike Falcon X
     nexttasks:
       '#none#':
       - "32"
+    scriptarguments:
+      id:
+        simple: e968cf9ec879d33bd8050e4f7482787b1a5ae3411ed9856cadc4a4781948c19d
     separatecontext: false
     view: |-
       {
@@ -1498,10 +1399,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 35946d51-9e58-4e6c-8b4b-5eaea91647d1
+    taskid: a4039e2b-28d7-4b7f-88aa-66a07dda2c35
     type: condition
     task:
-      id: 35946d51-9e58-4e6c-8b4b-5eaea91647d1
+      id: a4039e2b-28d7-4b7f-88aa-66a07dda2c35
       version: -1
       name: Verify Outputs
       type: condition
@@ -1517,362 +1418,19 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: csfalconx.resource.submitted_id
+              simple: csfalconx.resource.[0].type
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
-              simple: csfalconx.resource.file_name
+              simple: csfalconx.resource.[0].source
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: csfalconx.resource.tags
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.http_requests.header
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.http_requests.Accept
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.http_requests.host_ip
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.http_requests.host_port
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.http_requests.method
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.http_requests.url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.User-Agent
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.processes.command_line
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.processes.handles.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.processes.handles.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.processes.handles.path
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.processes.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.processes.normalized_path
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.processes.pid
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.processes.sha256
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.architecture
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.classification
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.classification_tags
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.extracted_files.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.extracted_files.file_size
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.extracted_files.sha256
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.extracted_files.md5
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.extracted_files.sha1
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.extracted_files.runtime_process
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.extracted_files.type_tags
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.extracted_files.threat_level_readable
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.extracted_files.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.file_metadata.file_compositions
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.file_metadata.imported_objects
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.file_metadata.file_analysis
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.file_size
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.file_type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.file_type_short
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.packer
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.screenshots_artifact_ids
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.dns_requests.address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.dns_requests.country
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.dns_requests.domain
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.dns_requests.registrar_creation_timestamp
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.dns_requests.registrar_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.dns_requests.registrar_organization
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.contacted_hosts.address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.contacted_hosts.country
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.contacted_hosts.port
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.contacted_hosts.protocol
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.contacted_hosts.associated_runtime.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.contacted_hosts.associated_runtime.pid
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.incidents
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.mitre_attacks.tactic
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.mitre_attacks.technique
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.mitre_attacks.attack_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.mitre_attacks.parent.technique
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.signatures.threat_level_human
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.signatures.category
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.signatures.identifier
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.signatures.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.signatures.relevance
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.signatures.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.signatures.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sandbox.signatures.origin
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.intel.malware_families
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.state
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.created_timestamp
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.sha256
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.environment_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.created_timestamp
+              simple: csfalconx.resource.[0].ioc
             iscontext: true
     view: |-
       {
@@ -1939,5 +1497,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.1.0
-description: ''
+fromversion: 6.0.0
+description: 'Test playbook for CrowdStrikeFalconX'

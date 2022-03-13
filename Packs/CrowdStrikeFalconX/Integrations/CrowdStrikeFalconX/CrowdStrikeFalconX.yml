@@ -928,7 +928,7 @@ script:
     - contextPath: csfalconx.resource.submission_type
       description: Type of submitted artifact, for example file, URL, etc.
       type: String
-    - contextPath: csfalconx.resource.filetype
+    - contextPath: csfalconx.resource.file_type
       description: File type.
       type: String
     - contextPath: csfalconx.resource.file_size
@@ -1258,7 +1258,7 @@ script:
     - contextPath: csfalconx.resource.submission_type
       description: Type of submitted artifact. For example, file, URL, etc.
       type: String
-    - contextPath: csfalconx.resource.filetype
+    - contextPath: csfalconx.resource.file_type
       description: File type.
       type: String
     - contextPath: csfalconx.resource.file_size
@@ -1327,7 +1327,7 @@ script:
     - contextPath: csfalconx.resource.submission_type
       description: Type of submitted artifact. For example, file, URL, etc.
       type: String
-    - contextPath: csfalconx.resource.filetype
+    - contextPath: csfalconx.resource.file_type
       description: File type.
       type: String
     - contextPath: csfalconx.resource.file_size
@@ -1451,7 +1451,7 @@ script:
     execution: false
     name: cs-fx-find-submission-id
     outputs:
-    - contextPath: csfalconx.resource.id
+    - contextPath: csfalconx.resources.resource
       description: 'Set of report IDs that match the search criteria. '
       type: Number
   - arguments:

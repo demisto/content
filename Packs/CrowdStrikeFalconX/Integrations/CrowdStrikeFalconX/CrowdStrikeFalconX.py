@@ -396,7 +396,7 @@ class Client:
         :param filter: optional filter and sort criteria in the form of an FQL query, takes precedence over `hash`.
         :param offset: the offset to start retrieving reports from.
         :param sort: sort order: asc or desc
-        :param hash: sha256 hash of the file. ignored if `filter` is provided.
+        :param hashes: sha256 hashes of the files. ignored if `filter` is provided.
         :return: http response
         """
 
