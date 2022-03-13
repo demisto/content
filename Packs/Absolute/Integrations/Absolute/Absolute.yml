@@ -1,0 +1,235 @@
+category: Endpoint
+commonfields:
+  id: Absolute
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: Secret Key
+  additionalinfo: The Secret Key to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- displaypassword: Token ID
+  additionalinfo: The Token ID to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+display: Absolute
+name: Absolute
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The system unique identifier of the device.
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a list of custom device fields associated with the given device_id, based on the authorization token.
+    execution: false
+    name: absolute-custom-device-field-list
+    outputs:
+    - contextPath: Absolute.CustomDeviceField.DeviceUid
+      description: The system-defined unique identifier of the device.
+      type: String
+    - contextPath: Absolute.CustomDeviceField.ESN
+      description: The unique ESN (Identifier) assigned to the Absolute agent that is installed on a device.
+      type: String
+    - contextPath: Absolute.CustomDeviceField.CDFValues.CDFUid
+      description: The unique identifier of the custom device field.
+      type: String
+    - contextPath: Absolute.CustomDeviceField.CDFValues.FieldKey
+      description: The unique identifier of the custom device field in the Classic version of Absolute.
+      type: String
+    - contextPath: Absolute.CustomDeviceField.CDFValues.FieldName
+      description: The name assigned to the custom device field.
+      type: String
+    - contextPath: Absolute.CustomDeviceField.CDFValues.CategoryCode
+      description: 'The type of custom device field. Possible values are: PREDEFINED, ESNCOLUMN, UDF.'
+      type: String
+    - contextPath: Absolute.CustomDeviceField.CDFValues.FieldValue
+      description: The current value of the custom device field.
+      type: String
+    - contextPath: Absolute.CustomDeviceField.CDFValues.Type
+      description: 'The data type of field value. Possible values are: Text, Date, Dropdown.'
+      type: String
+  - arguments:
+    - default: false
+      description: The system unique identifier of the device.
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    - default: false
+      description: The unique identifier of the custom device field. Please note, in order to get this value, use the *absolute-custom-device-field-list* command.
+      isArray: false
+      name: cdf_uid
+      required: true
+      secret: false
+    - default: false
+      description: The unique identifier of the custom device field in the Classic version of Absolute. Please note, in order to get this value, use the *absolute-custom-device-field-list* command.
+      isArray: false
+      name: field_key
+      required: true
+      secret: false
+    - default: false
+      description: The new value of the custom device field to be set.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates the value of the included custom device fields for the given device_id.
+    execution: false
+    name: absolute-custom-device-field-update
+  - arguments:
+    - default: false
+      description: A comma sparated list of the unique identifiers of devices included in the request. The Recommendation is using up to 10,000 devices per request.
+      isArray: true
+      name: device_ids
+      required: true
+      secret: false
+    - default: false
+      description: The user-defined name for the Freeze request. The name should be a Non-unique string and has 1-250 characters.
+      isArray: false
+      name: request_name
+      required: true
+      secret: false
+    - default: false
+      description: The user-defined, HTML coded message shown on devices when the Freeze is applied. The message should be a Non-unique HTML format and has 1-4000 characters.
+      isArray: false
+      name: html_message
+      required: true
+      secret: false
+    - default: false
+      description: The user-defined name for the Freeze message.
+      isArray: false
+      name: message_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of Freeze. Please note: 1. You can not freeze a device that has been reported Stolen in the Absolute console.
+
+        2. OnDemand: freezes a device on its next connection to the Absolute Monitoring Center, which is typically within 15 minutes. 2.1. Applies to all supported operating systems.
+
+        3. Scheduled: freezes a device on its next connection to the Absolute Monitoring Center on or after a specified date and time. 3.1. Applies to Windows and Mac devices. 3.2. Scheduled freeze date is specified in the scheduled_freeze_date arg. 3.3. Scheduled Freeze requests are only supported on Windows and Mac devices with an active Absolute agent that is regularly connecting to the Absolute Monitoring Center.
+
+        4. Offline: freezes a device if it has been offline for a specified period of time. 4.1. Applies to Windows and Mac devices. 4.2. Offline period is specified in the offline_time_seconds args. 4.3. Offline freeze is not available if your Absolute account has been migrated to Offline Freeze Rules. For more information, see the console Help.'
+      isArray: false
+      name: device_freeze_type
+      predefined:
+      - 'OnDemand'
+      - 'Scheduled'
+      - 'Offline'
+      required: true
+      secret: false
+    - default: false
+      description: 'The date and time (in UTC) when the device should be frozen in ISO 8601 format: YYYY-MM-DDThh:mm:ss.SSSZ. Required if device_freeze_type is Scheduled. For example, 2022-01-01T00:00:00.000Z.'
+      isArray: false
+      name: scheduled_freeze_date
+      required: false
+      secret: falseF
+    - default: false
+      description: 'The length of time (in seconds) that a device can be offline before the device is frozen. Required if device_freeze_type is Offline. Must be between 1200 seconds (20 minutes) and 172800000 seconds (2000 days). Default value is 30 days.'
+      isArray: false
+      defaultValue: 22592000
+      name: offline_time_seconds
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of passcode to unfreeze a device. Please note: 1. UserDefined: manually set the passcode in passcode. You must specify the passcode arg. 2. RandomForEach: a unique passcode is randomly generated for each device. You must specify the passcode_length arg. 3. RandomForAll: : a passcode is randomly generated and is the same for all devices. ou must specify the passcode_length arg.'
+      isArray: false
+      name: passcode_type
+      predefined:
+      - 'UserDefined'
+      - 'RandomForEach'
+      - 'RandomForAll'
+      required: true
+      secret: false
+    - default: false
+      description: 'The passcode used to unfreeze the devices. Required if passcode_type is UserDefined. A valid passcode is a number that has 4-8 characters. For example, 12345678.'
+      isArray: false
+      name: passcode
+      required: false
+      secret: false
+    - default: false
+      description: 'The length of the passcode when it is randomly generated. Required if passcode_type is RandomForEach or RandomForAl. A valid passcode is a number that has 4-8 characters. For example, 8.'
+      isArray: false
+      name: passcode_length
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma separated list of user-entered email addresses that will receive an email notification when the status of the Freeze request changes. The API Supports up to 10 email addresses.'
+      isArray: true
+      name: notification_emails
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new Freeze request for the devices specified in the device_ids arg.
+    execution: false
+    name: absolute-device-freeze-request
+    outputs:
+    - contextPath: Absolute.FreezeRequest.RequestUid
+      description: The system-defined, unique identifier of the Freeze request.
+      type: String
+    - contextPath: Absolute.FreezeRequest.DeviceUids
+      description: An array of the unique devices identifiers that succeeded in creating a Freeze request.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: A comma sparated list of the unique identifiers of devices included in the request. The Recommendation is using up to 10,000 devices per request.
+      isArray: true
+      name: device_ids
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether to remove only a Scheduled Freeze request. Please note: When setting to true: if the Freeze request is a Scheduled Freeze request, the Freeze request is removed. Else, when setting to false, if the Freeze request is not a Scheduled Freeze request, the Freeze request is not removed.'
+      isArray: false
+      name: remove_scheduled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether to remove only an Offline Freeze request. Please note: When setting to true: if the Freeze request is a Offline Freeze request, the Freeze request is removed. Else, when setting to false, if the Freeze request is not a Offline Freeze request, the Freeze request is not removed.'
+      isArray: false
+      name: remove_offline
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Creates a new Remove Freeze request for one or more devices, regardless of their Freeze status. You can submit Remove Freeze requests to perform the following actions: unfreeze frozen devices, remove newly submitted Freeze requests or remove outstanding Scheduled and Offline Freeze requests.'
+    execution: false
+    name: absolute-device-remove-freeze-request
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.8.24399
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
