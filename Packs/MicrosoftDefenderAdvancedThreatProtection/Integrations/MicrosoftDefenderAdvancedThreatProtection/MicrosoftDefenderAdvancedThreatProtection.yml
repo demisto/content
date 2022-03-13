@@ -5303,9 +5303,7 @@ script:
         will be used. "network_connections" - The network connections initiated by
         the host/file to other internal hosts. "smb_connections" - SMB connections.
         "credential_dumping" - Was there a use of credential dumping? If so can we
-        detect the use of the dumped users on other hosts on the network. "network_enumeration"
-        - Enumeration of network shares. "rdp_attempts" - Attempts to RDP to other
-        hosts.
+        detect the use of the dumped users on other hosts on the network. "management_connection" - Management connection attempts to other hosts.
       required: true
       isArray: false
       defaultValue: ""
@@ -5313,10 +5311,14 @@ script:
       - network_connections
       - smb_connections
       - credential_dumping
-      - network_enumeration
-      - rdp_attempts
+      - management_connection
     - name: device_name
       description: Device name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: remote_ip_count
+      description: Threshold for network enumeration in smb_connection
       required: false
       isArray: false
       defaultValue: ""
@@ -5809,7 +5811,7 @@ script:
       description: The query results.
       type: String
   - name: microsoft-atp-advanced-hunting-cover-up
-    description: Cover up investigation. By selecting a “query_purpose”
+    description: Cover up action investigation. By selecting a “query_purpose”
       argument, a designated query template will be used.
     deprecated: false
     arguments:

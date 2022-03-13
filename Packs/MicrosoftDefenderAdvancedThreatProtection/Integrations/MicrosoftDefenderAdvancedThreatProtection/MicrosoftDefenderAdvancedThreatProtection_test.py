@@ -1465,7 +1465,7 @@ class TestHuntingQueryBuilder:
                 query_operation='or',
                 device_name='1'
             )
-            actual = lme.build_rdp_attempts_query()
+            actual = lme.build_management_connection_query()
             assert actual == expected
 
     class TestPersistenceEvidence:

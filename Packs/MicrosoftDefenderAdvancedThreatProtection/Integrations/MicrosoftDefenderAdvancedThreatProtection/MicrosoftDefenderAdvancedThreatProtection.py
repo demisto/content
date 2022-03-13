@@ -146,15 +146,13 @@ class HuntingQueryBuilder:
         NETWORK_CONNECTIONS_QUERY_PREFIX = 'DeviceNetworkEvents\n| where (RemoteIP startswith "172.16" or RemoteIP startswith "192.168" or RemoteIP startswith "10.") and'  # noqa: E501
         SMB_CONNECTIONS_QUERY_PREFIX = 'DeviceNetworkEvents\n| where RemotePort == 445 and InitiatingProcessId !in (0, 4) and'  # noqa: E501
         CREDENTIAL_DUMPING_QUERY_PREFIX = 'DeviceProcessEvents\n| where ((FileName has_any ("procdump.exe", "procdump64.exe") and ProcessCommandLine has "lsass") or (ProcessCommandLine has "lsass.exe" and (ProcessCommandLine has "-accepteula" or ProcessCommandLine contains "-ma")) ) and'  # noqa: E501
-        NETWORK_ENUMERATION_QUERY_PREFIX = 'DeviceNetworkEvents\n| where RemotePort == 445 and InitiatingProcessId !in (0, 4) and'  # noqa: E501
-        RDP_ATTEMPTS_QUERY_PREFIX = 'DeviceNetworkEvents\n| where RemotePort in (22,3389,139,135,23,1433) and'
+        MANAGEMENT_CONNECTION_QUERY_PREFIX = 'DeviceNetworkEvents\n| where RemotePort in (22,3389,139,135,23,1433) and'
 
         """QUERY SUFFIX"""
         NETWORK_CONNECTIONS_QUERY_SUFFIX = '\n| summarize TotalConnections = count() by DeviceName, RemoteIP, RemotePort, InitiatingProcessFileName\n| order by TotalConnections\n| limit {}'  # noqa: E501
-        SMB_CONNECTIONS_QUERY_SUFFIX = '\n| summarize RemoteIPCount=dcount(RemoteIP) by DeviceName, InitiatingProcessFileName, InitiatingProcessId, InitiatingProcessCreationTime\n| limit {}'  # noqa: E501
+        SMB_CONNECTIONS_QUERY_SUFFIX = '\n| summarize RemoteIPCount=dcount(RemoteIP) by DeviceName, InitiatingProcessFileName, InitiatingProcessId, InitiatingProcessCreationTime\n|{} limit {}'  # noqa: E501
         CREDENTIAL_DUMPING_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, ActionType, FileName, ProcessCommandLine, AccountName, InitiatingProcessIntegrityLevel, InitiatingProcessTokenElevation\n| limit {}'  # noqa: E501
-        NETWORK_ENUMERATION_QUERY_SUFFIX = '\n| summarize RemoteIPCount=dcount(RemoteIP) by DeviceName, InitiatingProcessFileName, InitiatingProcessId, InitiatingProcessCreationTime\n| where RemoteIPCount > 1\n| limit {}'  # noqa: E501
-        RDP_ATTEMPTS_QUERY_SUFFIX = '\n| summarize TotalCount=count() by DeviceName,LocalIP,RemoteIP,RemotePort\n| order by TotalCount\n| limit {}'  # noqa: E501
+        MANAGEMENT_CONNECTION_QUERY_SUFFIX = '\n| summarize TotalCount=count() by DeviceName,LocalIP,RemoteIP,RemotePort\n| order by TotalCount\n| limit {}'  # noqa: E501
 
         def __init__(self,
                      limit: str,
@@ -165,6 +163,7 @@ class HuntingQueryBuilder:
                      sha256: Optional[str] = None,
                      md5: Optional[str] = None,
                      device_id: Optional[str] = None,
+                     remote_ip_count: Optional[str] = None,
                      ):
             if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
                 raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
@@ -177,6 +176,7 @@ class HuntingQueryBuilder:
             self._sha256 = HuntingQueryBuilder.get_filter_values(sha256)
             self._md5 = HuntingQueryBuilder.get_filter_values(md5)
             self._device_id = HuntingQueryBuilder.get_filter_values(device_id)
+            self._remote_ip_count = HuntingQueryBuilder.get_filter_values(remote_ip_count)
 
         def build_network_connections_query(self):
             query_dict = assign_params(
@@ -205,9 +205,12 @@ class HuntingQueryBuilder:
                 DeviceName=self._device_name,
                 DeviceId=self._device_id,
             )
+            remote_ip_count_query = '' if not self._remote_ip_count else '| where RemoteIPCount > ' \
+                                                                         f'{self._remote_ip_count}'
+
             query = HuntingQueryBuilder.build_generic_query(
                 query_prefix=self.SMB_CONNECTIONS_QUERY_PREFIX,
-                query_suffix=self.SMB_CONNECTIONS_QUERY_SUFFIX.format(self._limit),
+                query_suffix=self.SMB_CONNECTIONS_QUERY_SUFFIX.format(remote_ip_count_query, self._limit),
                 query_dict=query_dict,
                 query_operation=self._query_operation,
             )
@@ -232,7 +235,7 @@ class HuntingQueryBuilder:
 
             return query
 
-        def build_network_enumeration_query(self):
+        def build_management_connection_query(self):
             query_dict = assign_params(
                 InitiatingProcessFileName=self._file_name,
                 InitiatingProcessSHA1=self._sha1,
@@ -242,26 +245,8 @@ class HuntingQueryBuilder:
                 DeviceId=self._device_id,
             )
             query = HuntingQueryBuilder.build_generic_query(
-                query_prefix=self.NETWORK_ENUMERATION_QUERY_PREFIX,
-                query_suffix=self.NETWORK_ENUMERATION_QUERY_SUFFIX.format(self._limit),
-                query_dict=query_dict,
-                query_operation=self._query_operation,
-            )
-
-            return query
-
-        def build_rdp_attempts_query(self):
-            query_dict = assign_params(
-                InitiatingProcessFileName=self._file_name,
-                InitiatingProcessSHA1=self._sha1,
-                InitiatingProcessSHA256=self._sha256,
-                InitiatingProcessMD5=self._md5,
-                DeviceName=self._device_name,
-                DeviceId=self._device_id,
-            )
-            query = HuntingQueryBuilder.build_generic_query(
-                query_prefix=self.RDP_ATTEMPTS_QUERY_PREFIX,
-                query_suffix=self.RDP_ATTEMPTS_QUERY_SUFFIX.format(self._limit),
+                query_prefix=self.MANAGEMENT_CONNECTION_QUERY_PREFIX,
+                query_suffix=self.MANAGEMENT_CONNECTION_QUERY_SUFFIX.format(self._limit),
                 query_dict=query_dict,
                 query_operation=self._query_operation,
             )
@@ -284,13 +269,13 @@ class HuntingQueryBuilder:
 
         """QUERY SUFFIX"""
         SCHEDULE_JOB_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, InitiatingProcessAccountDomain, InitiatingProcessAccountName, AdditionalFields\n| limit {}'  # noqa: E501
-        REGISTRY_ENTRY_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, RegistryKey, RegistryValueType, PreviousRegistryValueData, RegistryValueName, PreviousRegistryValueData, PreviousRegistryValueName, PreviousRegistryKey, InitiatingProcessFileName\n| limit {}'  # noqa: E501
+        REGISTRY_ENTRY_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, RegistryKey, RegistryValueType, PreviousRegistryValueData, RegistryValueName, PreviousRegistryValueName, PreviousRegistryKey, InitiatingProcessFileName\n| limit {}'  # noqa: E501
         STARTUP_FOLDER_CHANGES_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine InitiatingProcessFileName\n| limit {}'  # noqa: E501
-        NEW_SERVICE_CREATED_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, ActionType, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit {}'  # noqa: E501
+        NEW_SERVICE_CREATED_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit {}'  # noqa: E501
         SERVICE_UPDATED_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, ActionType, RegistryKey, PreviousRegistryKey, RegistryValueName, PreviousRegistryValueName, RegistryValueType, RegistryValueData, PreviousRegistryValueData, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit {}'  # noqa: E501
         FILE_REPLACED_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, ActionType, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit {}'  # noqa: E501
         NEW_USER_QUERY_SUFFIX = '\n| project AccountName,DeviceName,Timestamp,AccountSid,AccountDomain,InitiatingProcessAccountName,InitiatingProcessLogonId\n| limit {}'  # noqa: E501
-        NEW_GROUP_QUERY_SUFFIX = '\n| project AccountName,DeviceName,Timestamp,AccountSid,AccountDomain,InitiatingProcessAccountName,InitiatingProcessLogonId\n| limit {}'  # noqa: E501
+        NEW_GROUP_QUERY_SUFFIX = '\n| project AccountName,DeviceName,Timestamp,AccountSid,AccountDomain,InitiatingProcessAccountName,InitiatingProcessLogonId,AdditionalFields\n| limit {}'  # noqa: E501
         GROUP_USER_CHANGE_QUERY_SUFFIX = '\n| summarize by AccountSid\n| limit {}'
         LOCAL_FIREWALL_CHANGE_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, ActionType, RegistryKey, PreviousRegistryKey, RegistryValueName, PreviousRegistryValueName, RegistryValueType, RegistryValueData, PreviousRegistryValueData, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit {}'  # noqa: E501
         HOST_FILE_CHANGE_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, ActionType, FileName, FolderPath, SHA1, SHA256, MD5, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit {}'  # noqa: E501
@@ -698,7 +683,7 @@ class HuntingQueryBuilder:
         """QUERY PREFIX"""
         EXTERNAL_ADDRESSES_QUERY_PREFIX = 'DeviceNetworkEvents | where (RemoteIP !startswith "172.16" or RemoteIP !startswith "192.168" or RemoteIP !startswith "10.") and'  # noqa: E501
         DNS_QUERY_PREFIX = 'DeviceNetworkEvents | where RemotePort == 53 and'
-        ENCODED_COMMANDS_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in ("powershell.exe","powershell_ise.exe") and ProcessCommandLine contains "-e" and'  # noqa: E501
+        ENCODED_COMMANDS_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in ("powershell.exe","powershell_ise.exe") and ProcessCommandLine contains "-encoded" and'  # noqa: E501
 
         """QUERY SUFFIX"""
         EXTERNAL_ADDRESSES_QUERY_SUFFIX = '\n| summarize TotalConnections = count() by DeviceName, RemoteIP, RemotePort, InitiatingProcessFileName,InitiatingProcessFolderPath | order by TotalConnections\n| limit {}'  # noqa: E501
@@ -842,12 +827,12 @@ class HuntingQueryBuilder:
 
         """QUERY PREFIX"""
         FILE_DELETED_QUERY_PREFIX = 'DeviceFileEvents | where ActionType == "FileDeleted" and'
-        EVENT_LOG_CLEARED_QUERY_PREFIX = 'DeviceProcessEvents | where (ProcessCommandLine has "WEVTUTIL" and ProcessCommandLine has "CL") or (ProcessCommandLine contains "Clear-EventLog") and'  # noqa: E501
+        EVENT_LOG_CLEARED_QUERY_PREFIX = 'DeviceProcessEvents | where (ProcessCommandLine has "WEVTUTIL" and ProcessCommandLine has_any ("CL","clear-log")) or (ProcessCommandLine contains "Clear-EventLog") and'  # noqa: E501
         ACCOUNT_QUERY_PREFIX = 'union Device* | where'
 
         """QUERY SUFFIX"""
         FILE_DELETED_QUERY_SUFFIX = '\n| project Timestamp, DeviceId, DeviceName, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessCommandLine\n| limit {}'  # noqa: E501
-        EVENT_LOG_CLEARED_QUERY_SUFFIX = '\n| summarize LogClearCount = dcount(ProcessCommandLine), ClearedLogList = make_set(ProcessCommandLine) by DeviceId, bin(Timestamp, 5m)\n| limit {}'  # noqa: E501
+        EVENT_LOG_CLEARED_QUERY_SUFFIX = '\n| summarize LogClearCount = dcount(ProcessCommandLine), ClearedLogList = make_set(ProcessCommandLine) by DeviceId,DeviceName, bin(Timestamp, 5m),FileName,InitiatingProcessFileName\n| limit {}'  # noqa: E501
         COMPROMISED_INFORMATION_QUERY_SUFFIX = '\n| project Timestamp, DeviceId, DeviceName, ActionType, FileName, FolderPath, SHA1, SHA256, MD5, InitiatingProcessFileName\n| limit {}'  # noqa: E501
         CONNECTED_DEVICES_QUERY_SUFFIX = '\n| summarize by DeviceName\n| limit {}'
         ACTION_TYPES_QUERY_SUFFIX = '\n| summarize Number_of_actions=count(ActionType) by ActionType,DeviceName | order by Number_of_actions\n| limit {}'  # noqa: E501
@@ -3817,8 +3802,7 @@ def lateral_movement_evidence_command(client, args):
         'network_connections': query_builder.build_network_connections_query,
         'smb_connections': query_builder.build_smb_connections_query,
         'credential_dumping': query_builder.build_credential_dumping_query,
-        'network_enumeration': query_builder.build_network_enumeration_query,
-        'rdp_attempts': query_builder.build_rdp_attempts_query
+        'management_connection': query_builder.build_management_connection_query
     }
     if query_purpose not in query_options:
         raise DemistoException(f'Unsupported query_purpose: {query_purpose}.')
