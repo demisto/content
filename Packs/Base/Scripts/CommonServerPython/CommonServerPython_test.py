@@ -4374,6 +4374,14 @@ class TestExecuteCommandsMultipleResults:
 
     @staticmethod
     def test_sanity(mocker):
+        """
+        Given:
+            - A successful command with a single entry as output.
+        When:
+            - Calling execute_commands_multiple_results.
+        Then:
+            - Assert that only the Contents value is returned.
+        """
         from CommonServerPython import execute_commands_multiple_results, EntryType
         demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
                                                    return_value=[{'Type': EntryType.NOTE,
@@ -4469,6 +4477,7 @@ class TestExecuteCommandsMultipleResults:
             {'Type': EntryType.ERROR, 'Contents': 'error number 1'},
             {'Type': EntryType.NOTE, 'Contents': 'not an error'},
             {'Type': EntryType.ERROR, 'Contents': 'error number 2'},
+            {'Type': EntryType.ERROR, 'Contents': 'Unsupported Command'}  # should ignore this one
         ]
         demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
                                                    return_value=entries)
@@ -4495,6 +4504,14 @@ class TestExecuteCommandsMultipleResults:
 
     @staticmethod
     def test_multiple_commands(mocker):
+        """
+        Given:
+            - List of commands and list of args.
+        When:
+            - Calling execute_commands_multiple_results with multiple commands to get multiple results.
+        Then:
+            - Assert that the results list and the errors list returned as should've been
+        """
         from CommonServerPython import execute_commands_multiple_results
         demisto_execute_mock = mocker.patch.object(demisto,
                                                    'executeCommand',
@@ -4516,6 +4533,14 @@ class TestExecuteCommandsMultipleResults:
 
     @staticmethod
     def test_invalid_args():
+        """
+        Given:
+            - List of commands and list of args which is invalid
+        When:
+            - Calling execute_commands_multiple_results.
+        Then:
+            - Assert that error is given.
+        """
         from CommonServerPython import execute_commands_multiple_results
         with pytest.raises(DemistoException):
             execute_commands_multiple_results(['command'], [{'arg': 'val'}, {'arg': 'val'}])
@@ -4542,22 +4567,28 @@ class TestGetResultsWrapper:
                                            result='Command did not succeeded' if command == 'error-command' else 'Good')
             if command == 'error-command':
                 errors.append(result_wrapper)
-            else:
+            elif command != 'unsupported-command':
                 results.append(result_wrapper)
         return results, errors
 
     @staticmethod
     def test_get_wrapper_results(mocker):
+        """
+        Given:
+            - List of CommandWrappers.
+        When:
+            - Calling get_wrapper_results to give generic results
+        Then:
+            - Assert that the "good" results are returned, and the summary includes the errors.
+            - Assert that the unsupported command is ignored.
+        """
         from CommonServerPython import get_wrapper_results, CommandWrapper, CommandResults
         command_wrappers = [CommandWrapper('my-brand1', 'my-command', {'arg': 'val'}),
                             CommandWrapper('my-brand2', ['command1', 'command2'], [{'arg1': 'val1'}, {'arg2': 'val2'}]),
                             CommandWrapper('my-brand3', 'error-command', {'bad_arg': 'bad_val'}),
-                            CommandWrapper('brand-no-exist', 'command', {'arg': 'val'})]
+                            CommandWrapper('brand-no-exist', 'unsupported-command', {'arg': 'val'})]
         mocker.patch.object(CommonServerPython, 'execute_commands_multiple_results',
                             side_effect=TestGetResultsWrapper.execute_command_mock)
-        mocker.patch.object(CommonServerPython, 'execute_command', return_value=((True, [{'brand': 'my-brand1'},
-                                                                                         {'brand': 'my-brand2'},
-                                                                                         {'brand': 'my-brand3'}])))
         results = get_wrapper_results(command_wrappers)
         assert len(results) == 4  # 1 error (brand3)
         assert all(res == 'Good' for res in results[:-1])
@@ -4584,14 +4615,21 @@ class TestGetResultsWrapper:
 
     @staticmethod
     def test_get_wrapper_results_error(mocker):
-        from CommonServerPython import get_wrapper_results, CommandWrapper, CommandResults
+        """
+        Given:
+            - List of CommandWrappers, which all of them returns errors or ignored
+        When:
+            - Calling get_wrapper_results to give generic results
+        Then:
+            - Assert that error returned.
+        """
+        from CommonServerPython import get_wrapper_results, CommandWrapper
         command_wrappers = [CommandWrapper('my-brand1', 'error-command', {'arg': 'val'}),
                             CommandWrapper('my-brand2', 'error-command', {'bad_arg': 'bad_val'}),
-                            CommandWrapper('brand-no-exist', 'command', {'arg': 'val'})]
+                            CommandWrapper('brand-no-exist', 'unsupported-command', {'arg': 'val'}),
+                            ]
         mocker.patch.object(CommonServerPython, 'execute_commands_multiple_results',
                             side_effect=TestGetResultsWrapper.execute_command_mock)
-        mocker.patch.object(CommonServerPython, 'execute_command', return_value=((True, [{'brand': 'my-brand1'},
-                                                                                         {'brand': 'my-brand2'}])))
         with pytest.raises(DemistoException) as e:
             get_wrapper_results(command_wrappers)
             assert 'Command did not succeeded' in e.value

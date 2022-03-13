@@ -6439,7 +6439,9 @@ def execute_commands_multiple_results(commands, args_lst, extract_contents=True)
             brand_name = res.get('Brand', 'Unknown') if isinstance(res, dict) else 'Unknown'
             module_name = res.get('ModuleName', 'Unknown') if isinstance(res, dict) else 'Unknown'
             if is_error(res):
-                errors.append(ResultWrapper(command, args, brand_name, module_name, get_error(res)))
+                error_msg = get_error(res)
+                if 'Unsupported Command' not in error_msg:   # skip unsupported commands
+                    errors.append(ResultWrapper(command, args, brand_name, module_name, error_msg))
             else:
                 if extract_contents:
                     res = res.get('Contents', {})
@@ -6458,14 +6460,7 @@ def get_wrapper_results(command_wrappers):
     :return: list of results
     """
     full_results, full_errors = [], []
-    all_brands = [command_wrapper.brand for command_wrapper in command_wrappers]
-    valid, instances_results = execute_command('GetInstances', {'brand': ','.join(all_brands)}, fail_on_error=False)
-    if not valid:
-        raise DemistoException('Cant get instances because of {}'.format(str(instances_results)))
-    active_brands = {instance.get('brand') for instance in instances_results}
     for command_wrapper in command_wrappers:
-        if command_wrapper.brand not in active_brands:
-            continue
         results, errors = execute_commands_multiple_results(
             command_wrapper.commands, command_wrapper.args_lst, extract_contents=False)
         full_results.extend(results)
