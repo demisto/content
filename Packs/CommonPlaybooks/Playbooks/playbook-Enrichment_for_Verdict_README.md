@@ -67,4 +67,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Enrichment for Verdict](Insert the link to your image here)
+![Enrichment for Verdict](https://github.com/demisto/content/ffdcb3e5fd7a0d840bd476f458c9afa731cf1f51/Packs/CommonPlaybooks/doc_files/Enrichment_for_Verdict.png)
