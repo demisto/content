@@ -17,12 +17,12 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
     | Incidents fetch query |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
-    | Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from CrowdStrike Falcon to XSOAR\), Outgoing \(from XSOAR to CrowdStrike Falcon\), or Incoming and Outgoing \(from/to XSOAR and CrowdStrike Falcon\). | False |
+    | Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from CrowdStrike Falcon to XSOAR\), Outgoing \(from XSOAR to CrowdStrike Falcon\), or Incoming and Outgoing \(to/from CrowdStrike Falcon and XSOAR\). | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Close Mirrored XSOAR Incident | When selected, closing the CrowdStrike Falcon incident or detection is mirrored in Cortex XSOAR. | False |
-    | Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closing the XSOAR incident is mirrored in CrowdStrike Falcon. | False |
-    | Fetch types | Choose what to fetch - incidents or detections or both | False |
+    | Close Mirrored XSOAR Incident | When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in Cortex XSOAR. | False |
+    | Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closes the XSOAR incident, which is mirrored in CrowdStrike Falcon. | False |
+    | Fetch types | Choose what to fetch - incidents, detections, or both. | False |
 
 4.  Click **Test** to validate the URLs, token, and connection.
 
@@ -43,16 +43,16 @@ To setup the mirroring follow these instructions:
     - Outgoing - Any changes in XSOAR incidents will be reflected in CrowdStrike Falcon incidents (`tags`, `status`) or detections (`status`).
     - Incoming And Outgoing - Changes in XSOAR incidents and CrowdStrike Falcon incidents or detections will be reflected in both directions.
     - None - Turns off incident mirroring.
-7. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding incident or detection is closed on CrowdStrike Falcon side.
+7. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding incident or detection is closed in CrowdStrike Falcon.
 8. Optional: Check the *Close Mirrored CrowdStrike Falcon Incident or Detection* integration parameter to close the CrowdStrike Falcon incident or detection when the corresponding Cortex XSOAR incident is closed.
 
 Newly fetched incidents or detections will be mirrored in the chosen direction.  However, this selection does not affect existing incidents.
 
 **Important Notes**
- - In order to ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and CrowdStrike Falcon.
+ - To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in XSOAR and CrowdStrike Falcon.
  - When *mirroring in* incidents from CrowdStrike Falcon to XSOAR:
    - For the `tags` field, tags can only be added from the remote system.
-   - When enabling *Close Mirrored XSOAR Incident* integration parameter, the field in CrowdStrike Falcon that determines whether the incident was closed is the `status` field.
+   - When enabling the *Close Mirrored XSOAR Incident* integration parameter, the field in CrowdStrike Falcon that determines whether the incident was closed is the `status` field.
 
 ### 1. Search for a device
 
