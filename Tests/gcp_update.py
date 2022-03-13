@@ -20,7 +20,7 @@ def main():
     downloaded_blob2 = blob2.download_as_string()
     logging.info(f'{downloaded_blob2=}')
 
-    blob = bucket.blob('queue')
+    blob = bucket.blob('xsiam-ci-locks/queue')
     blob.delete()
     logging.info('File deleted successfully.')
 
