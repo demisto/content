@@ -132,8 +132,11 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Mandiant Feed Integration.
-display: Mandiant Feed
+description: |-
+  Cortex XSOAR integrates with Mandiant Advantage Threat Intelligence 
+  to bring the power of Mandiant’s front line intelligence into the XSOAR platform, 
+  helping users quickly identify and remediate the most serious threats to their networks.
+display: Mandiant Advantage Feed
 name: FeedMandiant
 script:
   commands:
@@ -188,7 +191,7 @@ script:
     description: Get mandiant indicators.
     execution: false
     name: feed-mandiant-get-indicators
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.1.26972
   feed: true
   isfetch: false
   longRunning: false
