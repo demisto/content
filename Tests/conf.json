@@ -5126,7 +5126,6 @@
         "whois_test": "Issue 25648",
         "Autoextract - Test": "Issue 45293",
         "LogRhythm-Test-Playbook": "Issue 27164",
-        "Azure WAF - Test": "Issue 33741",
         "GSuiteAdmin-Test": "Issue 34784",
         "Microsoft_365_Defender-Test": "Issue 39390",
         "Tanium Threat Response - Request File Download v2 - Test": "Issue 46326",
