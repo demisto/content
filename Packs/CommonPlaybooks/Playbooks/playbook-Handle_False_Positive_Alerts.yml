@@ -769,27 +769,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Account Enrichment - Generic v2.1 - Test
-- Block IP - Generic V3_Test
-- Calculate Severity - Generic v2 - Test
-- Calculate Severity - Standard - Test
-- Test Convert file hash to corresponding hashes
-- Detonate File - Generic Test
-- Detonate File - No Files test
-- Detonate URL - Generic Test
-- Domain Enrichment - Generic v2 - Test
-- Email Address Enrichment - Generic v2.1 - Test
-- Endpoint Enrichment - Generic v2.1 - Test
-- Extract Indicators From File - Generic v2 - Test
-- Field polling test
-- File Enrichment - Generic v2 - Test
-- Generic Polling Test
-- Get endpoint details - Generic - test
-- IP Enrichment - Generic v2 - Test
-- Isolate and unisolate endpoint - test
-- Retrieve File from Endpoint - Generic V2 Test
-- Send Investigation Summary Reports - Test
-- test-domain-indicator
-- URL Enrichment - Generic v2 - Test
-- Wait Until Datetime - Test
+- No tests.
 fromversion: 6.0.0

@@ -56,8 +56,8 @@ tasks:
       - "9"
     scriptarguments:
       query:
-        simple: (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP} or username:${inputs.User}
-          or url:${inputs.URL}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
+        complex:
+          root: inputs.query
     separatecontext: false
     view: |-
       {
@@ -1196,6 +1196,15 @@ inputs:
     before. This will be the threshold to establish whether the Previous Verdict key
     will be marked as False Positive.
   playbookInputQuery:
+- key: query
+  value:
+    simple: (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP} or username:${inputs.User}
+      or url:${inputs.URL}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
+  required: false
+  description: |-
+    A query for the previous alerts search.
+    Use free form query (use Lucene syntax) as filter. All other filters are ignored when this filter is used.
+  playbookInputQuery: null
 - key: CloseReason
   value:
     simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known
@@ -1219,12 +1228,18 @@ inputs:
   description: File MD5 to enrich and give verdict.
   playbookInputQuery:
 - key: FileSHA256
-  value: {}
+  value:
+    complex:
+      root: alert
+      accessor: initiatorsha256
   required: false
   description: File SHA256 to enrich and give verdict.
   playbookInputQuery:
 - key: IP
-  value: {}
+  value:
+    complex:
+      root: alert
+      accessor: hostip
   required: false
   description: IP address to enrich and give verdict.
   playbookInputQuery:
@@ -1244,17 +1259,26 @@ inputs:
     DNS query (True/ False).
   playbookInputQuery:
 - key: URL
-  value: {}
+  value:
+    complex:
+      root: alert
+      accessor: url
   required: false
   description: URL to enrich and give verdict.
   playbookInputQuery:
 - key: User
-  value: {}
+  value:
+    complex:
+      root: alert
+      accessor: username
   required: false
   description: User to enrich and give verdict. (AWS IAM or Active Directory).
   playbookInputQuery:
 - key: Domain
-  value: {}
+  value:
+    complex:
+      root: alert
+      accessor: domainname
   required: false
   description: Domain to enrich and give verdict.
   playbookInputQuery:
@@ -1320,27 +1344,5 @@ outputs:
   description: Domain verdict
   type: unknown
 tests:
-- Account Enrichment - Generic v2.1 - Test
-- Block IP - Generic V3_Test
-- Calculate Severity - Generic v2 - Test
-- Calculate Severity - Standard - Test
-- Test Convert file hash to corresponding hashes
-- Detonate File - Generic Test
-- Detonate File - No Files test
-- Detonate URL - Generic Test
-- Domain Enrichment - Generic v2 - Test
-- Email Address Enrichment - Generic v2.1 - Test
-- Endpoint Enrichment - Generic v2.1 - Test
-- Extract Indicators From File - Generic v2 - Test
-- Field polling test
-- File Enrichment - Generic v2 - Test
-- Generic Polling Test
-- Get endpoint details - Generic - test
-- IP Enrichment - Generic v2 - Test
-- Isolate and unisolate endpoint - test
-- Retrieve File from Endpoint - Generic V2 Test
-- Send Investigation Summary Reports - Test
-- test-domain-indicator
-- URL Enrichment - Generic v2 - Test
-- Wait Until Datetime - Test
+- No tests.
 fromversion: 6.0.0
