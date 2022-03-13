@@ -2069,7 +2069,7 @@ function mergeContextLists(newItems, oldItems, objectKey) {
         return prev;
     };
 
-    oldItemsByKey = oldItems.reduce(toMapByKey, {});
-    newItemsByKey = newItems.reduce(toMapByKey, {});
+    let oldItemsByKey = oldItems.reduce(toMapByKey, {});
+    let newItemsByKey = newItems.reduce(toMapByKey, {});
     return Object.values(Object.assign(oldItemsByKey, newItemsByKey)).filter(e => !e['remove']);
 }

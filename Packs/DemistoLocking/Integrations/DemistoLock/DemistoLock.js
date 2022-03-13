@@ -38,7 +38,7 @@ switch (command) {
         return 'ok';
 
     case 'demisto-lock-get':
-        var lockTimeout = args.timeout || params.timeout;
+        var lockTimeout = args.timeout || params.timeout || 600;
         var lockInfo = 'Locked by incident #' + incidents[0].id + '.';
         lockInfo += (args.info) ? ' Additional info: ' + args.info :'';
 
