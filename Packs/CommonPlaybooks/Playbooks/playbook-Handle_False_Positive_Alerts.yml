@@ -164,6 +164,7 @@ tasks:
       id: efcbcb8a-07f7-491d-8da6-d235296ff517
       version: -1
       name: Check the alert source
+      description: "Check the alert source - XDR Analytics or XDR Agent alerts".
       type: condition
       iscommand: false
       brand: ""
@@ -301,7 +302,8 @@ tasks:
     task:
       id: fcaf7697-272b-44a2-818a-f162cd853de0
       version: -1
-      name: 'Should close alert automatically? '
+      name: Should close alert automatically?
+      description: "Should close alert automatically?"
       type: condition
       iscommand: false
       brand: ""
@@ -409,7 +411,8 @@ tasks:
     task:
       id: 96a66899-9dab-4e68-8ab2-debbc2318d3b
       version: -1
-      name: Check Alert origin
+      name: Check alert origin
+      description: "Check the alert's origin - FW, AWS, etc."
       type: condition
       iscommand: false
       brand: ""

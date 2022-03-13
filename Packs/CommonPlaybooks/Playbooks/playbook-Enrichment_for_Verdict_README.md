@@ -59,7 +59,7 @@ This playbook does not use any integrations.
 | IPVerdict | Specifies whether the IP addresses were found as suspicious. | unknown |
 | URLVerdict | Specifies whether the URLs were found as suspicious. | unknown |
 | FileVerdict | Specifies whether the files were found as suspicious. | unknown |
-| WildFire.Report |  | unknown |
+| WildFire.Report | WildFire report object. | unknown |
 | WildFire.Report.verdict | The verdict of the report. | unknown |
 | WildFire.Verdicts.Verdict | Verdict of the file. | unknown |
 | WildFire.Verdicts.VerdictDescription | Description of the file verdict. | unknown |
@@ -67,4 +67,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Enrichment for Verdict](https://github.com/demisto/content/ffdcb3e5fd7a0d840bd476f458c9afa731cf1f51/Packs/CommonPlaybooks/doc_files/Enrichment_for_Verdict.png)
+![Enrichment for Verdict](https://raw.githubusercontent.com/demisto/content/2d66f3f4c673e252f4f8d44aa944b450b84ee12c/Packs/CommonPlaybooks/doc_files/Enrichment_for_Verdict.png)

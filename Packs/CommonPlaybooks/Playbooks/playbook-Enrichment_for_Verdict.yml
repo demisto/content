@@ -81,6 +81,7 @@ tasks:
       id: 2be9ff23-85bc-41f5-8d82-9efef006b280
       version: -1
       name: Were previous alerts closed as false positive?
+      description: "Were previous alerts closed as false positive?"
       type: condition
       iscommand: false
       brand: ""
@@ -213,6 +214,7 @@ tasks:
       id: c9ed2037-c42e-40a6-8ddc-0f5b5d987851
       version: -1
       name: Was the file found as Benign?
+      description: "Was the file found as Benign?"
       type: condition
       iscommand: false
       brand: ""
@@ -271,6 +273,7 @@ tasks:
       id: 7fa291b2-c819-414f-8aca-c32c27933067
       version: -1
       name: Is there a file?
+      description: "Is there a file?"
       type: condition
       iscommand: false
       brand: ""
@@ -313,6 +316,7 @@ tasks:
       id: 181d741e-2888-469c-8b74-6cd92a33944d
       version: -1
       name: Is there an IP address?
+      description: "Is there an IP address?"
       type: condition
       iscommand: false
       brand: ""
@@ -409,6 +413,7 @@ tasks:
       id: 5c355312-17ae-4388-8a4d-958e0a0c32cd
       version: -1
       name: Was the IP found as Benign?
+      description: "Was the IP found as Benign?"
       type: condition
       iscommand: false
       brand: ""
@@ -490,6 +495,7 @@ tasks:
       id: 68f6108c-7655-454a-819d-ffcb0efd7b77
       version: -1
       name: Is there a URL?
+      description: "Is there a URL?"
       type: condition
       iscommand: false
       brand: ""
@@ -561,6 +567,7 @@ tasks:
       id: 66d504b1-4789-4b82-8293-c4cb7e339d0e
       version: -1
       name: Was the URL found as Benign?
+      description: "Was the URL found as Benign?"
       type: condition
       iscommand: false
       brand: ""
@@ -795,6 +802,7 @@ tasks:
       id: ee170aa5-56b8-4843-8602-5db5aba92d42
       version: -1
       name: Is there a user?
+      description: "Is there a user?"
       type: condition
       iscommand: false
       brand: ""
@@ -1027,6 +1035,7 @@ tasks:
       id: 87e1d72a-5291-4da7-8b9b-577fe93a0583
       version: -1
       name: Is there a domain?
+      description: "Is there a domain?"
       type: condition
       iscommand: false
       brand: ""
@@ -1069,6 +1078,7 @@ tasks:
       id: d545ab1e-c955-4c41-8230-d7b0374aa421
       version: -1
       name: Was the Domain found as Benign?
+      description: "Was the Domain found as Benign?"
       type: condition
       iscommand: false
       brand: ""
@@ -1298,6 +1308,7 @@ outputs:
   description: Specifies whether the files were found as suspicious.
   type: unknown
 - contextPath: WildFire.Report
+  description: WildFire report object.
   type: unknown
 - contextPath: WildFire.Report.verdict
   description: The verdict of the report.

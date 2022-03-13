@@ -35,4 +35,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Handle False Positive Alerts](https://github.com/demisto/content/ffdcb3e5fd7a0d840bd476f458c9afa731cf1f51/Packs/CommonPlaybooks/doc_files/Enrichment_for_Verdict.png)
+![Handle False Positive Alerts](https://raw.githubusercontent.com/demisto/content/2d66f3f4c673e252f4f8d44aa944b450b84ee12c/Packs/CommonPlaybooks/doc_files/Handle_False_Positive_Alerts.png)
