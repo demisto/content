@@ -7331,12 +7331,8 @@ class AntiSpywareProfileBotnetDomainList(CustomVersionedPanObject):
     def _setup(self):
         # xpaths
         self._xpaths.add_profile(value="/lists")
-        params = []
-
-        params.append(
-            VersionedParamPath("packet_capture", path="packet-capture")
-        )
-        params.append(
+        self._params = (
+            VersionedParamPath("packet_capture", path="packet-capture"),
             VersionedParamPath("is_action_sinkhole", path="action/sinkhole")
         )
 
@@ -7349,9 +7345,7 @@ class AntiSpywareProfileBotnetDomains(CustomVersionedPanObject):
     def _setup(self):
         # xpaths
         self._xpaths.add_profile(value="/botnet-domains")
-        params = []
-
-        self._params = tuple(params)
+        self._params = tuple()
 
 
 class AntiSpywareProfileRule(VersionedPanObject):
@@ -7362,35 +7356,17 @@ class AntiSpywareProfileRule(VersionedPanObject):
         # xpaths
         self._xpaths.add_profile(value="/rules")
         # params
-        params = []
-        params.append(
-            VersionedParamPath("severity", vartype="member", path="severity")
-        )
-        params.append(
-            VersionedParamPath("is_reset_both", vartype="exist", path="action/reset-both")
-        )
-        params.append(
-            VersionedParamPath("is_reset_client", vartype="exist", path="action/reset-client")
-        )
-        params.append(
-            VersionedParamPath("is_reset_server", vartype="exist", path="action/reset-server")
-        )
-        params.append(
-            VersionedParamPath("is_alert", vartype="exist", path="action/alert")
-        )
-        params.append(
-            VersionedParamPath("is_default", vartype="exist", path="action/default")
-        )
-        params.append(
-            VersionedParamPath("is_allow", vartype="exist", path="action/allow")
-        )
-        params.append(
-            VersionedParamPath("is_drop", vartype="exist", path="action/drop")
-        )
-        params.append(
+        self._params = (
+            VersionedParamPath("severity", vartype="member", path="severity"),
+            VersionedParamPath("is_reset_both", vartype="exist", path="action/reset-both"),
+            VersionedParamPath("is_reset_client", vartype="exist", path="action/reset-client"),
+            VersionedParamPath("is_reset_server", vartype="exist", path="action/reset-server"),
+            VersionedParamPath("is_alert", vartype="exist", path="action/alert"),
+            VersionedParamPath("is_default", vartype="exist", path="action/default"),
+            VersionedParamPath("is_allow", vartype="exist", path="action/allow"),
+            VersionedParamPath("is_drop", vartype="exist", path="action/drop"),
             VersionedParamPath("is_block_ip", vartype="exist", path="action/block-ip")
         )
-        self._params = tuple(params)
 
 
 class AntiSpywareProfile(CustomVersionedPanObject):
@@ -7408,11 +7384,7 @@ class AntiSpywareProfile(CustomVersionedPanObject):
     def _setup(self):
         # xpaths
         self._xpaths.add_profile(value="/profiles/spyware")
-
-        # params
-        params = []
-
-        self._params = tuple(params)
+        self._params = tuple()
 
 
 class VulnerabilityProfileRule(VersionedPanObject):
@@ -7428,37 +7400,17 @@ class VulnerabilityProfileRule(VersionedPanObject):
     def _setup(self):
         # xpaths
         self._xpaths.add_profile(value="/rules")
-
-        # params
-        params = []
-        params.append(
-            VersionedParamPath("severity", vartype="member", path="severity")
-        )
-        params.append(
-            VersionedParamPath("is_reset_both", vartype="exist", path="action/reset-both")
-        )
-        params.append(
-            VersionedParamPath("is_reset_client", vartype="exist", path="action/reset-client")
-        )
-        params.append(
-            VersionedParamPath("is_reset_server", vartype="exist", path="action/reset-server")
-        )
-        params.append(
-            VersionedParamPath("is_alert", vartype="exist", path="action/alert")
-        )
-        params.append(
-            VersionedParamPath("is_default", vartype="exist", path="action/default")
-        )
-        params.append(
-            VersionedParamPath("is_allow", vartype="exist", path="action/allow")
-        )
-        params.append(
-            VersionedParamPath("is_drop", vartype="exist", path="action/drop")
-        )
-        params.append(
+        self._params = (
+            VersionedParamPath("severity", vartype="member", path="severity"),
+            VersionedParamPath("is_reset_both", vartype="exist", path="action/reset-both"),
+            VersionedParamPath("is_reset_client", vartype="exist", path="action/reset-client"),
+            VersionedParamPath("is_reset_server", vartype="exist", path="action/reset-server"),
+            VersionedParamPath("is_alert", vartype="exist", path="action/alert"),
+            VersionedParamPath("is_default", vartype="exist", path="action/default"),
+            VersionedParamPath("is_allow", vartype="exist", path="action/allow"),
+            VersionedParamPath("is_drop", vartype="exist", path="action/drop"),
             VersionedParamPath("is_block_ip", vartype="exist", path="action/block-ip")
         )
-        self._params = tuple(params)
 
 
 class VulnerabilityProfile(CustomVersionedPanObject):
@@ -7475,11 +7427,7 @@ class VulnerabilityProfile(CustomVersionedPanObject):
     def _setup(self):
         # xpaths
         self._xpaths.add_profile(value="/profiles/vulnerability")
-
-        # params
-        params = []
-
-        self._params = tuple(params)
+        self._params = tuple()
 
 
 class URLFilteringProfile(VersionedPanObject):
@@ -7497,26 +7445,15 @@ class URLFilteringProfile(VersionedPanObject):
     def _setup(self):
         # xpaths
         self._xpaths.add_profile(value="/profiles/url-filtering")
-
         # params
-        params = []
-        params.append(
-            VersionedParamPath("block", vartype="member", path="block")
-        )
-
-        params.append(
-            VersionedParamPath("alert", vartype="member", path="alert")
-        )
-
-        params.append(
+        self._params = (
+            VersionedParamPath("block", vartype="member", path="block"),
+            VersionedParamPath("alert", vartype="member", path="alert"),
             VersionedParamPath("credential_enforce_alert", vartype="member",
-                               path="credential-enforcement/alert")
-        )
-        params.append(
+                               path="credential-enforcement/alert"),
             VersionedParamPath("credential_enforce_block", vartype="member",
                                path="credential-enforcement/block")
         )
-        self._params = tuple(params)
 
 
 def run_op_command(device: Union[Panorama, Firewall], cmd: str, **kwargs) -> Element:
@@ -7564,8 +7501,8 @@ class Topology:
     """
 
     def __init__(self):
-        self.panorama_objects: dict[str, Panorama] = {}
-        self.firewall_objects: dict[str, Firewall] = {}
+        self.panorama_objects: Dict[str, Panorama] = {}
+        self.firewall_objects: Dict[str, Firewall] = {}
         self.ha_pair_serials: dict = {}
         self.ha_active_devices: dict = {}
         self.username: str = ""
@@ -7812,12 +7749,11 @@ class Topology:
         )
 
     def get_all_object_containers(
-            self,
-            device_filter_string: Optional[str] = None,
-            container_name: Optional[str] = None,
-            top_level_devices_only: Optional[bool] = False,
-    ) -> \
-            List[tuple[PanDevice, Union[Panorama, Firewall, DeviceGroup, Template, Vsys]]]:
+        self,
+        device_filter_string: Optional[str] = None,
+        container_name: Optional[str] = None,
+        top_level_devices_only: Optional[bool] = False,
+    ) -> List[Tuple[PanDevice, Union[Panorama, Firewall, DeviceGroup, Template, Vsys]]]:
         """
         Given a device, returns all the possible configuration containers that can contain objects -
         vsys, device-groups, templates and template-stacks.
@@ -7827,10 +7763,9 @@ class Topology:
         # Changed to only refer to active devices, no passives.
         device_retrieval_func = self.active_devices
         if top_level_devices_only:
-            device_retrieval_func = self.active_top_level_devices
+            device_retrieval_func = self.active_top_level_devices  # type: ignore[assignment]
 
         for device in device_retrieval_func(device_filter_string):
-            print(device)
             device_groups = DeviceGroup.refreshall(device)
             for device_group in device_groups:
                 containers.append((device, device_group))
@@ -9068,7 +9003,7 @@ class FirewallCommand:
 
         # Calculate summary as number of routes by network interface and VR
         row: ShowRoutingRouteResultData
-        count_data: dict[str, dict] = {}
+        count_data: Dict[str, dict] = {}
         for row in result_data:
             if not count_data.get(row.hostid):
                 count_data[row.hostid] = defaultdict(int)
@@ -9111,7 +9046,9 @@ def get_arp_tables(topology: Topology, device_filter_string: Optional[str] = Non
     return FirewallCommand.get_arp_table(topology, device_filter_string)
 
 
-def get_route_summaries(topology: Topology, device_filter_string: Optional[str] = None) -> ShowRouteSummaryCommandResult:
+def get_route_summaries(
+    topology: Topology, device_filter_string: Optional[str] = None
+) -> ShowRouteSummaryCommandResult:
     """
     Pulls all route summary information from the topology
     :param topology: `Topology` instance !no-auto-argument
@@ -9147,8 +9084,9 @@ def get_device_groups(topology: Topology, device_filter_string: Optional[str] = 
     return PanoramaCommand.get_device_groups(topology, device_filter_string)
 
 
-def get_template_stacks(topology: Topology, device_filter_string: Optional[str] = None) -> List[
-    TemplateStackInformation]:
+def get_template_stacks(
+    topology: Topology, device_filter_string: Optional[str] = None
+) -> List[TemplateStackInformation]:
     """
     Gets the operational information of the template-stacks in the topology.
     :param topology: `Topology` instance !no-auto-argument
@@ -9213,8 +9151,7 @@ def dataclasses_to_command_results(result: Any, empty_result_message: str = "No 
             }
 
         if result.result_data:
-            outputs["Result"] = [vars(x) for x in result.result_data if
-                                 hasattr(x, "__dict__")]  # type: ignore
+            outputs["Result"] = [vars(x) for x in result.result_data if hasattr(x, "__dict__")]  # type: ignore
 
         title = result._title
         output_prefix = result._output_prefix
@@ -9615,12 +9552,16 @@ def main():
             return_results(dataclasses_to_command_results(command_result, empty_result_message="No ARP entries."))
         elif demisto.command() == 'pan-os-platform-get-route-summary':
             topology = get_topology()
-            command_result  = get_route_summaries(topology, **demisto.args())
-            return_results(dataclasses_to_command_results(command_result , empty_result_message="Empty route summary result."))
+            command_result = get_route_summaries(topology, **demisto.args())
+            return_results(dataclasses_to_command_results(
+                command_result, empty_result_message="Empty route summary result.")
+            )
         elif demisto.command() == 'pan-os-platform-get-routes':
             topology = get_topology()
             command_result = get_routes(topology, **demisto.args())
-            return_results(dataclasses_to_command_results(command_result, empty_result_message="Empty route summary result."))
+            return_results(dataclasses_to_command_results(
+                command_result, empty_result_message="Empty route summary result.")
+            )
         elif demisto.command() == 'pan-os-platform-get-system-info':
             topology = get_topology()
             command_result = get_system_info(topology, **demisto.args())
@@ -9628,11 +9569,15 @@ def main():
         elif demisto.command() == 'pan-os-platform-get-device-groups':
             topology = get_topology()
             command_result = get_device_groups(topology, **demisto.args())
-            return_results(dataclasses_to_command_results(command_result, empty_result_message="No device groups found."))
+            return_results(dataclasses_to_command_results(
+                command_result, empty_result_message="No device groups found.")
+            )
         elif demisto.command() == 'pan-os-platform-get-template-stacks':
             topology = get_topology()
             command_result = get_template_stacks(topology, **demisto.args())
-            return_results(dataclasses_to_command_results(command_result, empty_result_message="No template stacks found."))
+            return_results(dataclasses_to_command_results(
+                command_result, empty_result_message="No template stacks found.")
+            )
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

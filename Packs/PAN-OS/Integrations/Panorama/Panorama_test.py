@@ -1334,7 +1334,6 @@ class TestFirewallCommand:
             for value in result_dataclass.__dict__.values():
                 assert value
 
-
     @patch("Panorama.run_op_command")
     def test_get_routing_summary(self, patched_run_op_command, mock_topology):
         """Given the output XML for show route summary, assert it is parsed into the dataclasses correctly."""
@@ -1350,7 +1349,6 @@ class TestFirewallCommand:
         for result_dataclass in result.summary_data:
             for value in result_dataclass.__dict__.values():
                 assert value
-
 
     @patch("Panorama.run_op_command")
     def test_get_routes(self, patched_run_op_command, mock_topology):
