@@ -1,0 +1,381 @@
+commonfields:
+  id: RSA NetWitness Packets and Logs
+  version: -1
+name: RSA NetWitness Packets and Logs
+display: RSA NetWitness Packets and Logs
+category: Analytics & SIEM
+description: RSA NetWitness Logs and Packets decoders are responsible for the real-time
+  collection of network data. The decode captures data in real time and can normalize
+  and reconstruct data for full session analysis. In addition, the decoder can collect
+  flow and endpoint data.
+configuration:
+- display: Server URL (e.g. http(s)://192.168.0.1)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Appliance Port - Logs(50102) / Packets(50104) / Concentrator (50105) /
+    Broker (50103)
+  name: port
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: username
+  defaultvalue: admin
+  type: 0
+  required: true
+- display: Password
+  name: password
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Validate server certificate
+  name: secure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Expiration time
+  name: expiry
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: netwitness-msearch
+    arguments:
+    - name: sessions
+      description: <string> The session ID ranges to search
+    - name: packets
+      description: <string> The packet ID ranges to search
+    - name: search
+      required: true
+      description: '<string> The search string to use. Example: "select hit, pretext,
+        posttext where keyword=’netwitness’ sp ci ds". sp = Search Packets ci = Case
+        Insensitive ds = Decode Sessions (e.g., convert email attachments before searching).
+        For regular expressions, change “keyword” to “regex” '
+    - name: where
+      description: <string> The where clause used to identify sessions to consider
+        for the search
+    - name: limit
+      description: <uint64> The maximum number of sessions to traverse for this search
+    - name: flags
+      description: <string> Flags to use for search.  This is a comma separated list
+        of one or more of the flag values regex, sp(scan raw packet data), sm(scan
+        all metadata), si(index lookup for all search parametes before scanning meta),
+        ci(case insensitive)
+    - name: concentratorIP
+      description: <string> Use the instance that is mapped to this concentrator IP
+    - name: concentratorPort
+      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and
+        56105 for SSL
+    outputs:
+    - contextPath: NetWitness.SearchHits.hit
+      description: all search hits in netwitness
+    description: Search for pattern matches in many sessions or packets
+  - name: netwitness-search
+    deprecated: true
+    arguments:
+    - name: session
+      required: true
+      description: <uint64> The session id to search
+    - name: size
+      required: true
+      description: <uint32, {range:1 to 1677721}> The max number of entries to return
+    - name: search
+      required: true
+      description: <string> The search string to use
+    - name: concentratorIP
+      description: <string> Use the instance that is mapped to this concentrator address
+    - name: concentratorPort
+      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and
+        56105 for SSL
+    outputs:
+    - contextPath: NetWitness.SearchHits
+      description: all search hits in netwitness
+    description: Searches for matches in session/packet content
+  - name: netwitness-query
+    arguments:
+    - name: id1
+      description: <uint64> The starting meta id (to run the query from most recent
+        to oldest meta, make id1 larger than id2)
+    - name: id2
+      description: <uint64> The ending meta id
+    - name: size
+      description: <uint32> The max number of entries to return, or just stream back
+        all results if zero
+    - name: query
+      description: <string> The query string to use
+    - name: flags
+      description: <string> The flags to use for query.  Can be a number (bitwise
+        mask) or comma separated values like query-log.
+    - name: threshold
+      description: <uint64> Query optimization to stop processing results after the
+        threshold is reached (useful with select aggregate functions).  Zero means
+        no threshold (the default).
+    - name: lastHours
+      description: <uint64> Filter by last hours
+    - name: lastMinutes
+      description: <uint64> Filter by last minutes
+    - name: concentratorIP
+      description: <string> Use the instance that is mapped to this concentrator address
+    - name: concentratorPort
+      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and
+        56105 for SSL
+    outputs:
+    - contextPath: NetWitness.Events.ipSrc
+      description: Source IP
+    - contextPath: NetWitness.Events.aliasIp
+      description: Destination IP
+    - contextPath: NetWitness.Events.aliasHost
+      description: describes hostname or FQDN.
+    - contextPath: NetWitness.Events.ipDst
+      description: IP Destination of the event
+    - contextPath: NetWitness.Events.userSrc
+      description: Source user
+    - contextPath: NetWitness.Events.userDst
+      description: Destination user
+    - contextPath: NetWitness.Events.username
+      description: Field includes any username meta available – both source and destination
+        – as defined by the user. This is an optional field that will only appear
+        if configured by the end user.
+    - contextPath: NetWitness.Events.service
+      description: Field describes the service that created the session (if available)
+    - contextPath: NetWitness.Events.sessionid
+      description: NW Specific field that contains a NW specific ‘serial number’ of
+        the Session. Allows a user to specify a session to retrieve from a Concentrator.
+    - contextPath: NetWitness.Events.deviceType
+      description: Field describes the type of system that generated a log message
+        (ex. SQUID / Windows / rhlinux)
+    - contextPath: NetWitness.Events.direction
+      description: 'Traffic flow direction (e.g. Inbound/outbound) '
+    - contextPath: NetWitness.Events.did
+      description: Specific Decoder a session was captured on
+    - contextPath: NetWitness.Events.ioc
+      description: Endpoint specific meta that describes malware on an endpoint.
+    description: Performs a query against the meta database
+  - name: netwitness-packets
+    arguments:
+    - name: op
+      auto: PREDEFINED
+      predefined:
+      - start
+      - cancel
+      - processed
+      description: <string, {enum-one:start|cancel|processed}> The operation to perform
+        (start, cancel, processed)
+    - name: sessions
+      required: true
+      description: <string> A comma separated list of session ids or session id ranges
+        (#-#) whose packets will be streamed back.
+    - name: packets
+      description: <string> A comma separated list of packet ids or session/packet
+        ids (#&#) that will be streamed back.
+    - name: where
+      description: <string> Where clause which will be evaluated to determine which
+        sessions to stream back
+    - name: time1
+      description: <date-time> A starting time range (UTC) where matching packets
+        will be streamed back ("2010-Apr-20 09:00:00")
+    - name: time2
+      description: <date-time> An ending time range (UTC) where matching packets will
+        be streamed back ("2010-Apr-20 10:00:00")
+    - name: flags
+      description: <uint32> Additional flags as defined by the NwPackets SDK function
+    - name: concentratorIP
+      description: <string> Use the instance that is mapped to this concentrator address
+    - name: concentratorPort
+      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and
+        56105 for SSL
+    - name: render
+      description: <string> The render type - pcap, logs, logs (csv), logs (xml) or
+        logs (json)
+    description: Stream packets back based on the input parameters provided
+  - name: nw-sdk-session
+    arguments:
+    - name: id1
+      required: true
+      description: <uint64> The starting session id
+    - name: id2
+      required: true
+      description: <uint64> The ending session id
+    - name: concentratorIP
+      description: <string> Use the instance that is mapped to this concentrator IP
+    - name: concentratorPort
+      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and
+        56105 for SSL
+    description: Retrieves the meta id range for the session range
+  - name: nw-sdk-content
+    arguments:
+    - name: concentratorIP
+      description: <string> Use the instance that is mapped to this concentrator IP
+    - name: concentratorPort
+      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and
+        56105 for SSL
+    - name: session
+      required: true
+      description: <uint64> The session id that will be returned in the response.
+    - name: renderType
+      auto: PREDEFINED
+      predefined:
+      - text
+      - hex
+      - packets
+      - web
+      - mail
+      - raw
+      - rtp
+      - voip
+      - meta
+      - im
+      - files
+      - pcap
+      - filelist
+      description: '<string> The render type (defined in NwSDK.h) for content or one
+        of the following render types: text, hex, packets, web, mail, raw, rtp, voip,
+        meta, im, files or pcap'
+    - name: maxSize
+      description: <uint64> The maximum size of the session returned (bytes), zero
+        is unlimited. Default is zero.
+    - name: base64
+      description: <binary> If 1, encode the multipart/mixed response as base64. Otherwise
+        binary is the default.
+    - name: flags
+      description: <string> Optional flags for content rendering, see the SDK header
+        file NwContent flags parameter for more info.
+    - name: includeFileTypes
+      description: <string> Semicolon separated list of file extensions that will
+        be extracted (e.g. .ext1;.ext2).
+    - name: excludeFileTypes
+      description: <string> Semicolon separated list of file extensions that will
+        be excluded (e.g. .ext1;.ext2).
+    - name: renameFileTypes
+      description: '<string> Used to rename certain files from one or more extensions
+        to another. For example: renameFileTypes=.download|.octet-stream|.program|.exe;.jpeg|.jpg'
+    - name: fileExt
+      description: <string> Extension of the file (e.g. .zip, .exe etc.)
+    - name: where
+      description: <string> Where clause which will be evaluated to determine which
+        sessions to stream back
+    - name: subdirFileTypes
+      description: <string> Group these files into the specified directory, e.g. documents=.doc;.xls;.pdf;
+        images=.png;.gif;.jpg;.jpeg;
+    - name: maxDirSize
+      description: <uint32> Once the toplevel directory exceeds this size, the oldest
+        files will get cleaned up.
+    - name: renderFlags
+      description: ' <uint32> Bitwise mask to control options, (see NwContentFlags
+        in NwSDK.h)'
+    description: Returns the packet content for a session
+  - name: nw-sdk-summary
+    arguments:
+    - name: flags
+      description: <string> Optional SDK flags.  Can be a number (bitwise mask) or
+        comma separated values like default or ignore-cache.
+    - name: concentratorIP
+      description: <string> Use the instance that is mapped to this concentrator IP
+    - name: concentratorPort
+      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and
+        56105 for SSL
+    description: Retrieves summary information from the databases
+  - name: nw-sdk-values
+    arguments:
+    - name: id1
+      description: <uint64> The starting meta id
+    - name: id2
+      description: <uint64> The ending meta id
+    - name: size
+      description: <uint32, {range:1 to 1677721}> The max number of entries to return,
+        default 100
+      defaultValue: "100"
+    - name: flags
+      description: <string> The flags to use for values.  Can be a number (bitwise
+        mask) or comma separated values like sessions, size, packets, aggregate, sort-total,
+        sort-value, order-ascending, order-descending, ignore-cache, clear-cache,
+        query-log or database-scan.
+    - name: threshold
+      description: <uint64> Query optimization to stop processing large session counts
+    - name: fieldName
+      required: true
+      description: <string> The field to retrieve values for
+    - name: where
+      description: <string> The filter criteria for the values
+    - name: aggregateFunction
+      description: <string, {enum-one:count|sum}> The aggregate operation to be applied
+        where the aggregate flag is set
+    - name: aggregateFieldName
+      description: <string> The meta field to aggregate in the aggregateFunction
+    - name: min
+      description: <string> The lower limit of values to return.  Only values greater
+        than this value will be returned.
+    - name: max
+      description: <string> The upper limit of values to return.  Only values less
+        than this value will be returned.
+    - name: concentratorIP
+      description: <string> Use the instance that is mapped to this concentrator IP
+    - name: concentratorPort
+      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and
+        56105 for SSL
+    outputs:
+    - contextPath: NetWitness.Values.ipSrc
+      description: Source IP
+    - contextPath: NetWitness.Values.aliasIp
+      description: Destination IP
+    - contextPath: NetWitness.Values.aliasHost
+      description: describes hostname or FQDN.
+    - contextPath: NetWitness.Values.ipDst
+      description: IP Destination of the event
+    - contextPath: NetWitness.Values.userSrc
+      description: Source user
+    - contextPath: NetWitness.Values.userDst
+      description: Destination user
+    - contextPath: NetWitness.Values.username
+      description: Field includes any username meta available – both source and destination
+        – as defined by the user. This is an optional field that will only appear
+        if configured by the end user.
+    - contextPath: NetWitness.Values.service
+      description: Field describes the service that created the session (if available)
+    - contextPath: NetWitness.Values.sessionid
+      description: NW Specific field that contains a NW specific ‘serial number’ of
+        the Session. Allows a user to specify a session to retrieve from a Concentrator.
+    - contextPath: NetWitness.Values.deviceType
+      description: Field describes the type of system that generated a log message
+        (ex. SQUID / Windows / rhlinux)
+    - contextPath: NetWitness.Values.direction
+      description: 'Traffic flow direction (e.g. Inbound/outbound) '
+    - contextPath: NetWitness.Values.did
+      description: Specific Decoder a session was captured on
+    - contextPath: NetWitness.Values.ioc
+      description: Endpoint specific meta that describes malware on an endpoint.
+    description: Performs a value count query and returns the matching values for
+      a report
+  - name: nw-database-dump
+    arguments:
+    - name: session
+      required: true
+      description: <uint64> The session id to dump
+    - name: type
+      description: <string, {enum-one:db|nwd}> The dump type
+    - name: source
+      description: <string, {enum-any:s|m|p}> The types of data to dump, default is
+        m
+      defaultValue: m
+    - name: verbose
+      description: <bool> If true (default is false), dumps more information
+    - name: file
+      description: <string> Optional filename to use for NWD type, otherwise filename
+        is assumed to be _sessionid_.nwd
+    - name: concentratorIP
+      description: <string> Use the instance that is mapped to this concentrator IP
+    - name: concentratorPort
+      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and
+        56105 for SSL
+    description: Dumps information out of the database in nwd formatted files
+fromversion: 5.0.0

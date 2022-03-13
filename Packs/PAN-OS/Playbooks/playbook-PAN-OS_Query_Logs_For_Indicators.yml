@@ -108,7 +108,7 @@ tasks:
       version: -1
       name: Panorama query traffic logs
       description: Query logs.
-      script: '|||panorama-query-logs'
+      script: '|||pan-os-query-logs'
       type: regular
       iscommand: true
       brand: ""
@@ -169,7 +169,7 @@ tasks:
       PollingCommandArgName:
         simple: job_id
       PollingCommandName:
-        simple: panorama-check-logs-status
+        simple: pan-os-check-logs-status
       Timeout:
         simple: "10"
       dt:
@@ -205,7 +205,7 @@ tasks:
       description: Retrieves log query data by job ID.
       tags:
       - PanoramaResults
-      script: '|||panorama-get-logs'
+      script: '|||pan-os-get-logs'
       type: regular
       iscommand: true
       brand: ""
@@ -277,7 +277,7 @@ tasks:
       version: -1
       name: Panorama Check Log Status
       description: Checks the status of a log query.
-      script: '|||panorama-check-logs-status'
+      script: '|||pan-os-check-logs-status'
       type: regular
       iscommand: true
       brand: ""
@@ -364,7 +364,7 @@ tasks:
       version: -1
       name: Panorama query threat logs
       description: Query logs
-      script: '|||panorama-query-logs'
+      script: '|||pan-os-query-logs'
       type: regular
       iscommand: true
       brand: ""
@@ -475,7 +475,7 @@ tasks:
       version: -1
       name: Panorama query wildfire logs
       description: Query logs.
-      script: '|||panorama-query-logs'
+      script: '|||pan-os-query-logs'
       type: regular
       iscommand: true
       brand: ""
@@ -512,7 +512,7 @@ tasks:
       version: -1
       name: Panorama query data logs
       description: Query logs.
-      script: '|||panorama-query-logs'
+      script: '|||pan-os-query-logs'
       type: regular
       iscommand: true
       brand: ""
@@ -549,7 +549,7 @@ tasks:
       version: -1
       name: Panorama query url logs
       description: Query logs
-      script: '|||panorama-query-logs'
+      script: '|||pan-os-query-logs'
       type: regular
       iscommand: true
       brand: ""
@@ -656,7 +656,7 @@ tasks:
       version: -1
       name: Panorama query wildfire logs
       description: Query logs
-      script: '|||panorama-query-logs'
+      script: '|||pan-os-query-logs'
       type: regular
       iscommand: true
       brand: ""
@@ -765,7 +765,7 @@ tasks:
       version: -1
       name: Panorama query threat logs
       description: Query logs
-      script: '|||panorama-query-logs'
+      script: '|||pan-os-query-logs'
       type: regular
       iscommand: true
       brand: ""
@@ -802,7 +802,7 @@ tasks:
       version: -1
       name: Panorama query data logs
       description: Query logs.
-      script: '|||panorama-query-logs'
+      script: '|||pan-os-query-logs'
       type: regular
       iscommand: true
       brand: ""
@@ -839,7 +839,7 @@ tasks:
       version: -1
       name: Panorama query url logs
       description: Query logs.
-      script: '|||panorama-query-logs'
+      script: '|||pan-os-query-logs'
       type: regular
       iscommand: true
       brand: ""

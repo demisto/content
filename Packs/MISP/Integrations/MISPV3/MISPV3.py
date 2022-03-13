@@ -1105,8 +1105,9 @@ def add_tag(demisto_args: dict, is_attribute=False):
     """
     uuid = demisto_args.get('uuid')
     tag = demisto_args.get('tag')
+    is_local_tag = argToBoolean(demisto_args.get('is_local', False))
     try:
-        PYMISP.tag(uuid, tag)  # add the tag
+        PYMISP.tag(uuid, tag, local=is_local_tag)  # add the tag
     except PyMISPError:
         raise DemistoException("Adding the required tag was failed. Please make sure the UUID exists.")
     if is_attribute:
@@ -1446,6 +1447,33 @@ def update_attribute_command(demisto_args: dict) -> CommandResults:
     )
 
 
+def delete_attribute_command(demisto_args: dict) -> CommandResults:
+    """
+    Gets an attribute id and deletes it.
+    """
+    attribute_id = demisto_args.get('attribute_id')
+    response = PYMISP.delete_attribute(attribute_id)
+    if 'errors' in response:
+        raise DemistoException(f'Attribute ID: {attribute_id} has not found in MISP: \nError message: {response}')
+    else:
+        human_readable = f'Attribute {attribute_id} has been deleted'
+        return CommandResults(readable_output=human_readable, raw_response=response)
+
+
+def publish_event_command(demisto_args: dict) -> CommandResults:
+    """
+    Gets an event id and publishes it.
+    """
+    event_id = demisto_args.get('event_id')
+    alert = argToBoolean(demisto_args.get('alert', False))
+    response = PYMISP.publish(event_id, alert=alert)
+    if 'errors' in response:
+        raise DemistoException(f'Event ID: {event_id} has not found in MISP: \nError message: {response}')
+    else:
+        human_readable = f'Event {event_id} has been published'
+        return CommandResults(readable_output=human_readable, raw_response=response)
+
+
 def main():
     params = demisto.params()
     malicious_tag_ids = argToList(params.get('malicious_tag_ids'))
@@ -1519,6 +1547,10 @@ def main():
             return_results(add_generic_object_command(args))
         elif command == 'misp-update-attribute':
             return_results(update_attribute_command(args))
+        elif command == 'misp-delete-attribute':
+            return_results(delete_attribute_command(args))
+        elif command == 'misp-publish-event':
+            return_results(publish_event_command(args))
     except PyMISPError as e:
         return_error(e.message)
     except Exception as e:
