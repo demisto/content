@@ -164,7 +164,7 @@ tasks:
       id: efcbcb8a-07f7-491d-8da6-d235296ff517
       version: -1
       name: Check the alert source
-      description: "Check the alert source - XDR Analytics or XDR Agent alerts".
+      description: "Check the alert source - XDR Analytics or XDR Agent alerts."
       type: condition
       iscommand: false
       brand: ""
