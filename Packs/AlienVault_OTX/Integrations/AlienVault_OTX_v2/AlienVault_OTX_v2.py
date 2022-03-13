@@ -361,10 +361,15 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
                 'Reputation': raw_response.get('reputation'),
                 'IP': ip_
             }
+            
+            human_readable_context = {
+                'Address': ip_object.to_context().get('IP(val.Address && val.Address == obj.Address)').get('Address'),
+                'Geo': ip_object.to_context().get('IP(val.Address && val.Address == obj.Address)').get('Geo')
+            }
 
             human_readable = tableToMarkdown(
                 name=title,
-                t=ip_object.to_context().get('IP(val.Address && val.Address == obj.Address)'))
+                t= human_readable_context)
 
             command_results.append(CommandResults(
                 readable_output=human_readable,
