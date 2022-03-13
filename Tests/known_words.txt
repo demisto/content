@@ -12,6 +12,8 @@ Endpoints
 IOC
 deprecated
 EPOFindSystem
+TaegisXDR
+Taegis
 boolean
 xdr
 Darktrace
