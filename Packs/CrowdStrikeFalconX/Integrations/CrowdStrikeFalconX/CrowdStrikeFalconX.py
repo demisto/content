@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Tuple
 
 import urllib3
 
@@ -16,7 +16,7 @@ class RawCommandResults:
     indicator: Optional[Common.File]
 
 
-DBOT_SCORE_DICT: dict[str, int] = {'malicious': Common.DBotScore.BAD,
+DBOT_SCORE_DICT: Dict[str, int] = {'malicious': Common.DBotScore.BAD,
                                    'suspicious': Common.DBotScore.SUSPICIOUS,
                                    'no specific threat': Common.DBotScore.GOOD}
 OUTPUTS_PREFIX = 'csfalconx.resource'
@@ -389,7 +389,7 @@ class Client:
             filter: str = "",
             offset: str = "",
             sort: str = "",
-            hashes: Optional[list[str]] = None,
+            hashes: Optional[List[str]] = None,
     ) -> dict:
         """Creating the needed arguments for the http request
         :param limit: maximum number of report IDs to return
@@ -461,14 +461,14 @@ def filter_dictionary(dictionary: dict, fields_to_keep: Optional[tuple], sort_by
     return filtered
 
 
-def file_command(client: Client, **args: dict) -> list[CommandResults]:
+def file_command(client: Client, **args: dict) -> List[CommandResults]:
     file_hashes = argToList(args.get('file', ''))
     report_ids = client.find_sandbox_reports(hashes=file_hashes).get('resources', [])
 
     resources_fields = ('verdict',)
     sandbox_fields = ('filetype', 'file_size', 'sha256', 'threat_score')
 
-    report_to_results: dict[str, RawCommandResults] = {}
+    report_to_results: Dict[str, RawCommandResults] = {}
     for report_id in report_ids:
         response = client.get_full_report(report_id)
         report_to_results[report_id] = parse_outputs(response, reliability=client.reliability,
@@ -489,7 +489,7 @@ def file_command(client: Client, **args: dict) -> list[CommandResults]:
     return command_results
 
 
-def parse_file_results(report_to_results: dict[str, RawCommandResults]) -> list[CommandResults]:
+def parse_file_results(report_to_results: Dict[str, RawCommandResults]) -> List[CommandResults]:
     """
     File results may be returned from multiple reports and include various data.
     1. The output used uses the highest verdict and threat score.
@@ -502,8 +502,8 @@ def parse_file_results(report_to_results: dict[str, RawCommandResults]) -> list[
     # Only one output per SHA256
     results = tuple(report_to_results.values())
 
-    max_indicators: dict[str, Common.File] = find_suitable_hash_indicator(results)
-    max_outputs: dict[str, dict] = find_suitable_hash_output(results)
+    max_indicators: Dict[str, Common.File] = find_suitable_hash_indicator(results)  # type:ignore[arg-type]
+    max_outputs: Dict[str, dict] = find_suitable_hash_output(results)  # type:ignore[arg-type]
 
     added_hashes = set()
 
@@ -545,13 +545,13 @@ def parse_file_results(report_to_results: dict[str, RawCommandResults]) -> list[
     return command_results
 
 
-def find_suitable_hash_output(raw_results: tuple[RawCommandResults]) -> dict[str, dict]:
+def find_suitable_hash_output(raw_results: Tuple[RawCommandResults]) -> Dict[str, dict]:
     """
     Aggregates data fields from various outputs, to create a single output per SHA256.
     :param raw_results: result that may include multiple outputs for the same SHA256 value.
     :return: mapping of SHA256 -> output
     """
-    max_outputs: dict[str, dict] = {}
+    max_outputs: Dict[str, dict] = {}
 
     for result in filter(None, raw_results):  # filters out None results
         if not (output := result.output):
@@ -592,7 +592,7 @@ def find_suitable_hash_output(raw_results: tuple[RawCommandResults]) -> dict[str
 def parse_outputs(
         response: dict,
         reliability: str,
-        meta_fields: Optional[tuple[str, ...]] = None,
+        meta_fields: Optional[tuple] = None,
         quota_fields: Optional[tuple] = None,
         resources_fields: Optional[tuple] = None,
         sandbox_fields: Optional[tuple] = None,
@@ -611,21 +611,21 @@ def parse_outputs(
     :param sandbox_fields: the wanted params that appear in the sandbox section
     :param extra_sandbox_fields: the wanted params that appear in the extra sandbox section
     """
-    output: dict[str, Any] = dict()
+    output: Dict[str, Any] = dict()
     indicator: Optional[Common.File] = None
 
     if api_res_meta := response.get("meta", dict()):
-        output |= filter_dictionary(api_res_meta, meta_fields)
-        output |= filter_dictionary(api_res_meta.get("quota", {}), quota_fields)
+        output.update(filter_dictionary(api_res_meta, meta_fields))
+        output.update(filter_dictionary(api_res_meta.get("quota", {}), quota_fields))
 
     if resources_list := response.get("resources"):
-        # depends on the command, the resources_list section can be a list[str] or list with a single dictionary
+        # depends on the command, the resources_list section can be a List[str] or list with a single dictionary
         if isinstance(resources_list[0], dict):
             resources = resources_list[0]
             resources_group_outputs = filter_dictionary(resources, resources_fields)
 
             if sandbox := resources.get("sandbox", [{}])[0]:  # list of single dict
-                output |= filter_dictionary(sandbox, sandbox_fields)
+                output.update(filter_dictionary(sandbox, sandbox_fields))
                 indicator = parse_indicator(sandbox, reliability)
 
                 if extra_sandbox_group_outputs := filter_dictionary(sandbox, extra_sandbox_fields):
@@ -633,10 +633,10 @@ def parse_outputs(
                         process.pop('registry', None)
 
                     resources_group_outputs['sandbox'] = extra_sandbox_group_outputs
-                    output |= extra_sandbox_group_outputs
+                    output.update(extra_sandbox_group_outputs)
         else:  # the resources section is a list of strings
             resources_group_outputs = {"resources": resources_list}
-        output |= resources_group_outputs
+        output.update(resources_group_outputs)
     return RawCommandResults(response, output, indicator)
 
 
@@ -650,11 +650,9 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
                                 reliability=reliability)
 
         info = {item['id']: item['value'] for item in sandbox.get('version_info', [])}
-
+        relationships: Optional[List[EntityRelationship]] = None
         if sandbox.get('submission_type', '') in ('file_url', 'file'):
             relationships = parse_indicator_relationships(sandbox, indicator_value=sha256, reliability=reliability)
-        else:
-            relationships = None
         signature: Optional[Common.FileSignature] = Common.FileSignature(authentihash='',  # N/A in data
                                                                          copyright=info.get('LegalCopyright', ''),
                                                                          description=info.get('FileDescription', ''),
@@ -677,7 +675,7 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
         )
 
 
-def parse_indicator_relationships(sandbox: dict, indicator_value: str, reliability: str) -> list[EntityRelationship]:
+def parse_indicator_relationships(sandbox: dict, indicator_value: str, reliability: str) -> List[EntityRelationship]:
     relationships = []
 
     def _create_relationship(relationship_name: str, entity_b: str, entity_b_type: str) -> EntityRelationship:
@@ -867,14 +865,14 @@ def get_full_report_command(
         client: Client,
         ids: str,  # argToList is called inside
         extended_data: str = '',
-) -> tuple[list[CommandResults], bool]:
+) -> Tuple[List[CommandResults], bool]:
     """Get a full version of a sandbox report.
     :param client: the client object with an access token
     :param ids: ids of a submitted malware samples.
     :param extended_data: Whether to return extended data which includes mitre attacks and signature information.
     :return: list of CommandResults, and a boolean marking at least one of them has `resources` (used for polling)
     """
-    results: list[RawCommandResults] = []
+    results: List[RawCommandResults] = []
     is_command_finished: bool = False
 
     resources_fields = ('id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
@@ -904,7 +902,7 @@ def get_full_report_command(
             is_command_finished = True  # flag used when commands
 
         if extended_data == 'true':
-            extra_sandbox_fields += ("mitre_attacks", "signatures")
+            extra_sandbox_fields = extra_sandbox_fields + ("mitre_attacks", "signatures")  # type:ignore[assignment]
 
         result = parse_outputs(response, reliability=client.reliability,
                                resources_fields=resources_fields, sandbox_fields=sandbox_fields,
@@ -945,13 +943,13 @@ def get_full_report_command(
     return command_results, is_command_finished
 
 
-def find_suitable_hash_indicator(results: tuple[RawCommandResults]) -> dict[str, Common.File]:
+def find_suitable_hash_indicator(results: Tuple[RawCommandResults]) -> Dict[str, Common.File]:
     """
     Returns the indicator with the highest dbot_score for every hash.
     :param results: raw results from a command
     :return: dict mapping a SHA256 to the indicator with the highest DBotScore
     """
-    max_indicators: dict[str, Common.File] = {}  # SHA256 to indicator with maximal DBotScore
+    max_indicators: Dict[str, Common.File] = {}  # SHA256 to indicator with maximal DBotScore
 
     for indicator in filter(None, (result.indicator for result in results)):
         if sha256 := indicator.sha256:
@@ -966,7 +964,7 @@ def find_suitable_hash_indicator(results: tuple[RawCommandResults]) -> dict[str,
 def get_report_summary_command(
         client: Client,
         ids: str,  # argToList is called inside
-) -> list[CommandResults]:
+) -> List[CommandResults]:
     """Get a short summary version of a sandbox report.
     :param client: the client object with an access token
     :param ids: ids of a submitted malware samples.
@@ -1012,7 +1010,7 @@ def get_report_summary_command(
 def get_analysis_status_command(
         client: Client,
         ids: str,  # argsToList called inside
-) -> list[CommandResults]:
+) -> List[CommandResults]:
     """Check the status of a sandbox analysis.
     :param client: the client object with an access token
     :param ids: ids of a submitted malware samples.
@@ -1036,7 +1034,7 @@ def get_analysis_status_command(
                            # not returning indicator
                            )
         )
-        return results
+    return results
 
 
 def download_ioc_command(
@@ -1069,7 +1067,7 @@ def download_ioc_command(
 
 def check_quota_status_command(
         client: Client
-) -> list[CommandResults]:
+) -> List[CommandResults]:
     """Search endpoint contains File Hash.
     :param client: the client object with an access token
     :return: Demisto outputs when entry_context and responses are lists
@@ -1182,7 +1180,7 @@ def arrange_args_for_upload_func(args: dict) -> Any:
 
 
 def run_polling_command(client, args: dict, cmd: str, upload_function: Callable, results_function: Callable,
-                        item_type) -> Union[CommandResults, list[CommandResults]]:
+                        item_type) -> Union[CommandResults, List[CommandResults]]:
     """
     This function is generically handling the polling flow. In the polling flow, there is always an initial call that
     starts the uploading to the API (referred here as the 'upload' function) and another call that retrieves the status
@@ -1305,7 +1303,7 @@ def main():
             'cs-fx-submit-uploaded-file': submit_uploaded_file_polling_command,
             'cs-fx-submit-url': submit_uploaded_url_polling_command
         }
-        commands: dict[str, Callable] = {
+        commands: Dict[str, Callable] = {
             'test-module': test_module,
             'cs-fx-upload-file': upload_file_command,
             'cs-fx-submit-uploaded-file': send_uploaded_file_to_sandbox_analysis_command,
