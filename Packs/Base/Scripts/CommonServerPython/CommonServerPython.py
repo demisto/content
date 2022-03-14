@@ -6399,8 +6399,14 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
     if exit:
         sys.exit(0)
 
-class CommandWrapper:
+class ConcurrentCommandRunner:
+    """
+    Class for executing multiple commands and save the results of each command.
+    """
     class CommandExecuter:
+        """
+        Class for the needed data to execute a command.
+        """
         def __init__(self, commands, args_lst, brand=None, instance=None):
             """
 
@@ -6428,7 +6434,22 @@ class CommandWrapper:
                     args.update({'using': instance})
 
     class ResultWrapper:
+        """
+        Class for the result of the command.
+        """
         def __init__(self, command, args, brand, instance, result):
+            """
+            :param command: command that was run.
+            :type command ``str``
+            :param args: args that was run.
+            :type args: ``dict``
+            :param brand: The brand that was used.
+            :type brand: ``str``
+            :param instance: The instance that was used.
+            :type instance: ``str``
+            :param result: The result of the command.
+            :type result: ``str``
+            """
             self.command = command
             self.args = args
             self.brand = brand
@@ -6468,7 +6489,7 @@ class CommandWrapper:
                 demisto.debug(str(e))
         return results, errors
 
-    @static staticmethod
+    @staticmethod
     def get_wrapper_results(command_wrappers):
         """
         Given a list of command_wrappers, return a list of results (to pass to return_results).
@@ -6479,11 +6500,11 @@ class CommandWrapper:
         """
         full_results, full_errors = [], []
         for command_wrapper in command_wrappers:
-            results, errors = execute_commands_multiple_results(command_wrapper, extract_contents=False)
+            results, errors = ConcurrentCommandRunner.execute_commands_multiple_results(command_wrapper, extract_contents=False)
             full_results.extend(results)
             full_errors.extend(errors)
 
-        summary_md = get_wrapper_results_summary(full_results, full_errors)
+        summary_md = ConcurrentCommandRunner.get_wrapper_results_summary(full_results, full_errors)
         command_results = [res.result for res in full_results]
         if not command_results and full_errors:  # no results were given but there are errors
             errors = ["{instance}: {msg}".format(instance=err.instance, msg=err.result) for err in full_errors]
