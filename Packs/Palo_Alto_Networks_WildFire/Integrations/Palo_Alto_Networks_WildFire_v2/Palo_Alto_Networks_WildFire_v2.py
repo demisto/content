@@ -769,8 +769,7 @@ def parse_wildfire_object(report: dict, keys: List[tuple]) -> Union[dict, None]:
 
     outputs = {}
     for key in keys:
-        if key[0] in report and report[key[0]]:
-            item_value = report[key[0]]
+        if item_value := report.get(key[0]):
             outputs[key[1]] = item_value
     return outputs if outputs else None
 
@@ -857,19 +856,23 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                             network_dns.append(network_dns_dict)
 
             if 'url' in report["network"]:
-                url = ''
-                if '@host' in report["network"]["url"]:
-                    url = report["network"]["url"]["@host"]
-                if '@uri' in report["network"]["url"]:
-                    url += report["network"]["url"]["@uri"]
-                if url:
-                    feed_related_indicators.append({'value': url, 'type': 'URL'})
-                    relationships.extend(create_relationship('related-to', (file_hash, url.rstrip('/')), ('file', 'url')))
-                if extended_data:
-                    if network_url_dict := parse_wildfire_object(report=report["network"]['url'],
-                                                                 keys=[('@host', 'Host'), ('@uri', 'URI'),
-                                                                       ('@method', 'Method'), ('@user_agent', 'UserAgent')]):
-                        network_url.append(network_url_dict)
+                url_objects = report['network']['url']
+                if not isinstance(url_objects, list):
+                    url_objects = [url_objects]
+                for url_obj in url_objects:
+                    url = ''
+                    if '@host' in url_obj and url_obj['@host']:
+                        url = url_obj["@host"]
+                    if '@uri' in url_obj and url_obj['@uri']:
+                        url += url_obj['@uri']
+                    if url:
+                        feed_related_indicators.append({'value': url, 'type': 'URL'})
+                        relationships.extend(create_relationship('related-to', (file_hash, url.rstrip('/')), ('file', 'url')))
+                    if extended_data:
+                        if network_url_dict := parse_wildfire_object(report=url_obj,
+                                                                    keys=[('@host', 'Host'), ('@uri', 'URI'),
+                                                                        ('@method', 'Method'), ('@user_agent', 'UserAgent')]):
+                            network_url.append(network_url_dict)
 
         if 'evidence' in report and report["evidence"]:
             if 'file' in report["evidence"]:
