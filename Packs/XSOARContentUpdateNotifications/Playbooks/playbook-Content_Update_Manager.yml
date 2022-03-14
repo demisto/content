@@ -875,6 +875,9 @@ tasks:
       channel:
         complex:
           root: inputs.slackchannel
+      channel_id:
+        complex:
+          root: inputs.slackchannelid
       ignoreAddURL:
         simple: "true"
       message:
@@ -1287,6 +1290,11 @@ tasks:
             value:
               complex:
                 root: inputs.slackchannel
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.slackchannelid
             iscontext: true
     view: |-
       {
@@ -2475,6 +2483,15 @@ inputs:
   description: "Provides a Slack channel for the new content notifications. Note:\
     \ You must have an installed and configured Slack integration. Also, make sure\
     \ the Cortex XSOAR application has access to this channel."
+  playbookInputQuery:
+- key: slackchannelid
+  value:
+    complex:
+      root: incident
+      accessor: contentnotificationslackchannelid
+  required: false
+  description: "Provides a Slack channel ID for the new content notifications. Note:\
+    \ You must have an installed and configured Slack integration."
   playbookInputQuery:
 - key: packs
   value:
