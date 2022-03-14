@@ -117,7 +117,8 @@ def test_copy_to_command_valid(mocker):
     - Cortex XSOAR arguments
 
     When:
-    - Calling the copy-to command.
+    - Calling the copy-to command with the entry_id argument.
+    - Calling the copy-to command with both the entry_id and entry argument.
 
     Then:
     - Ensure expected readable output is returned upon successful copy.
@@ -125,9 +126,14 @@ def test_copy_to_command_valid(mocker):
     from RemoteAccessv2 import copy_to_command
     from paramiko import SSHClient
     mock_client: SSHClient = SSHClient()
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test', 'name': 'file-name.txt'})
     mocker.patch('RemoteAccessv2.perform_copy_command', return_value='')
     results: CommandResults = copy_to_command(mock_client, {'entry_id': 123})
     assert results.readable_output == '### The file corresponding to entry ID: 123 was copied to remote host.'
+
+    # When both entry and entry_id are given, validate that entry_id is used
+    results: CommandResults = copy_to_command(mock_client, {'entry': 123, 'entry_id': 456})
+    assert results.readable_output == '### The file corresponding to entry ID: 456 was copied to remote host.'
 
 
 def test_copy_to_command_invalid_entry_id(mocker):
@@ -149,6 +155,25 @@ def test_copy_to_command_invalid_entry_id(mocker):
     with pytest.raises(DemistoException,
                        match='Could not find given entry ID path. Please assure given entry ID is correct.'):
         copy_to_command(mock_client, {'entry_id': 123})
+
+
+def test_copy_to_command_invalid_arguments(mocker):
+    """
+    Given:
+    - Cortex XSOAR arguments
+
+    When:
+    - Calling the copy-to command with both dest-dir and destination_path arguments.
+
+    Then:
+    - Ensure DemistoException is thrown with expected error message.
+    """
+    from RemoteAccessv2 import copy_to_command
+    from paramiko import SSHClient
+    mock_client: SSHClient = SSHClient()
+    with pytest.raises(DemistoException,
+                       match='Please provide at most one of "dest-dir" argument or "destination_path", not both.'):
+        copy_to_command(mock_client, {'entry_id': 123, 'dest-dir': 'A', 'destination_path': 'B/file.txt'})
 
 
 @pytest.mark.parametrize('file_name, expected_file_name', ([None, 'mock_path.txt'], ['Name', 'Name']))
