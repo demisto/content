@@ -1,4 +1,4 @@
-This playbook handles all the eradication actions available with XSIAM, including the following tasks:
+This playbook handles all the eradication actions available with Cortex XSIAM, including the following tasks:
 * Reset user password
 * Delete file
 * Kill process (currently, the playbook supports terminating a process by name)
