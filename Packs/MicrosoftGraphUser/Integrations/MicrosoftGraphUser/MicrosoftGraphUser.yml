@@ -604,7 +604,7 @@ script:
       Permission: Directory.AccessAsUser.All(Delegated)
     execution: false
     name: msgraph-user-session-revoke
-  dockerimage: demisto/crypto:1.0.0.24380
+  dockerimage: demisto/crypto:1.0.0.27243
   feed: false
   isfetch: false
   longRunning: false

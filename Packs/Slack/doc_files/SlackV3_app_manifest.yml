@@ -36,6 +36,7 @@ oauth_config:
       - mpim:history
       - mpim:read
       - mpim:write
+      - pins:write
       - users:read
       - users:read.email
       - commands
@@ -51,6 +52,7 @@ settings:
       - message.groups
       - message.im
       - message.mpim
+      - channel_created
   interactivity:
     is_enabled: true
   org_deploy_enabled: false

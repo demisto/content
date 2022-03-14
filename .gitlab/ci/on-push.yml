@@ -32,6 +32,8 @@ trigger-private-build:
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
 run-unittests-and-lint:
+  tags:
+    - gce-europe-west4
   extends:
     - .run-unittests-and-lint
   rules:
@@ -59,6 +61,7 @@ create-instances:
     policy: pull-push
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    KUBERNETES_CPU_REQUEST: 1000m
   needs: []
   stage: create-instances
   script:
@@ -118,6 +121,7 @@ prepare-testing-bucket-mpv2:
     policy: pull-push
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    KUBERNETES_CPU_REQUEST: 1000m
   needs: []
   stage: create-instances
   script:
@@ -255,3 +259,4 @@ slack-notify-nightly-build:
     # Passes the environment variable from the parent pipeline to the child which can be useful for cases
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
+    SLACK_JOB: 'true'

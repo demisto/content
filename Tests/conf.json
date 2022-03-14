@@ -116,6 +116,16 @@
             "playbookID": "FireEyeNX-Test"
         },
         {
+            "integrations": "FireEyeHX v2",
+            "playbookID": "FireEyeHX_v2",
+            "fromversion": "6.2.0",
+            "timeout": 1200
+        },
+        {
+            "integrations": "FireEyeHX v2",
+            "playbookID": "FireEyeHXv2_without_polling"
+        },
+        {
             "integrations": "EmailRepIO",
             "playbookID": "TestEmailRepIOPlaybook",
             "fromversion": "5.0.0"
@@ -2942,11 +2952,13 @@
         },
         {
             "integrations": "EWSO365",
+            "instance_names": "ewso365_dev_team",
             "playbookID": "EWS_O365_test",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "EWSO365",
+            "instance_names": "ewso365_dev_team",
             "playbookID": "EWS_O365_send_mail_test",
             "fromversion": "5.0.0"
         },
@@ -3327,7 +3339,7 @@
             "integrations": "RSA Archer v2",
             "playbookID": "Archer v2 - Test",
             "fromversion": "5.0.0",
-            "timeout": 600
+            "timeout": 1500
         },
         {
             "integrations": "WootCloud",
@@ -4555,7 +4567,7 @@
         },
         {
             "integrations": "CrowdStrike Falcon Sandbox V2",
-            "playbookID": "CrowdstrikeFalconSandboxV2 Test",
+            "playbookID": "CrowdstrikeFalconSandbox2 Test",
             "timeout": 500,
             "nightly": true
         },
@@ -4983,6 +4995,21 @@
         {
             "playbookID": "TAXII2 Performance Test - Concurrency",
             "fromversion": "6.1.0"
+        },
+        {
+            "playbookID": "HttpV2-test",
+            "fromversion": "6.5.0",
+            "scripts": [
+                "HttpV2"
+            ]
+        },
+        {
+            "integrations": [
+                "GoogleSheets",
+                "GoogleDrive"
+            ],
+            "playbookID": "GoogleSheets-Test",
+            "fromversion": "6.1.0"
         }
     ],
     "skipped_tests": {
@@ -5071,7 +5098,6 @@
         "AutoFocusTagsFeed-test": "shares API quota with the other test",
         "Carbon Black Edr - Test": "Jira ticket XDR-43185",
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
-        "Kaspersky Security Center - Test": "Issue 36487",
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
         "RemoteAccessTest": "Issue 44245",
         "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",
@@ -5100,7 +5126,6 @@
         "whois_test": "Issue 25648",
         "Autoextract - Test": "Issue 45293",
         "LogRhythm-Test-Playbook": "Issue 27164",
-        "Azure WAF - Test": "Issue 33741",
         "GSuiteAdmin-Test": "Issue 34784",
         "Microsoft_365_Defender-Test": "Issue 39390",
         "Tanium Threat Response - Request File Download v2 - Test": "Issue 46326",
@@ -5108,9 +5133,17 @@
         "EWS_O365_send_mail_test": "Issue 44200",
         "Phishing Investigation - Generic v2 - Campaign Test": "Issue 44740",
         "Cisco Umbrella Test": "Issue 24338",
-        "Archer v2 - Test": "Issue 31653",
-        "Azure NSG - Test": "Issue 33217",
-        "Unit42 Intel Objects Feed - Test": "Issue 44100"
+        "Unit42 Intel Objects Feed - Test": "Issue 44100",
+        "Fetch Indicators Test": "Issue 45490",
+        "FormattedDateToEpochTest": "Issue 26724",
+        "CrowdstrikeFalconSandbox2 Test": "Issue 46845",
+        "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)": "Issue 44543",
+        "CarbonBlackLiveResponseCloud-Test": "Issue 39282",
+        "Panorama Best Practise - Test": "Issue 43826",
+        "JsonToTable - Test Playbook": "Issue 44302",
+        "Recorded Future Test": "Issue 26741",
+        "Git_Integration-Test": "Issue 37800",
+        "RecordedFutureFeed - Test": "Issue 43923"
     },
     "skipped_integrations": {
         
@@ -5450,6 +5483,9 @@
             },
             "demisto/py3-tools": {
                 "memory_threshold": 105
+            },
+            "demisto/googleapi-python3": {
+                "memory_threshold": 200
             }
         }
     }
