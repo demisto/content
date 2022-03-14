@@ -295,7 +295,7 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
 
     indicators: List[Dict] = []
     for obj in res.get('data', []):
-        if obj.get('object') == 'indicator':
+        if 'id' in obj:
             # Search for detailed information about the indicator
             url_suffix = f'/indicators/{obj.get("id")}?with=attributes,sources,score,type'
             res = tq_request('GET', url_suffix)
