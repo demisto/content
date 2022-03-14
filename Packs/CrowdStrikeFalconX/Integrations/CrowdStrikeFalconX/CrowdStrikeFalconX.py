@@ -1113,10 +1113,13 @@ def find_sandbox_reports_command(
         for single_hash in argToList(hashes):
             response = client.find_sandbox_reports(limit, filter, offset, sort, hashes=single_hash)
             raw_result = parse_outputs(response, reliability=client.reliability, resources_fields=('id',))
-
             if report_ids := (raw_result.output or {}).get('resources', []):
                 found_reports.append({'sha256': single_hash, 'reportIds': report_ids})
                 all_report_ids.extend(report_ids)
+
+                total_count = response.get('meta', {}).get('pagination', {}).get('total', 0)
+                if total_count > len(report_ids):
+                    demisto.info(f'Warning: there are {total_count} results, but only {len(report_ids)} were fetched.')
 
         outputs = {
             'resources': all_report_ids,
