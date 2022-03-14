@@ -1,12 +1,11 @@
-This playbook handles all the containment actions available with XSIAM.
-The following tasks are used to contain incidents:
+This playbook handles all the incident containment actions available with XSIAM, including the following tasks:
 * Isolate endpoint
 * Disable account
 * Quarantine file
 * Block indicators (currently, the playbook supports only hashes)
 * Clear user session (currently, the playbook supports only Okta)
 
-**Note:** The playbook inputs enable manipulating the execution flow, read the input descriptions for details.
+**Note:** The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -46,7 +45,7 @@ Okta v2
 | FileHash | The file hash to block. |  | Optional |
 | FilePath | The path of the file to block. |  | Optional |
 | IAMUserDomain | The Okta IAM user domain. The domain is appended to the username. For example, username@IAMUserDomain. | @demisto.com | Optional |
-| FileRemediation | Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. <br/>For example, Choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and executes only file quarantine and vice versa. | Quarantine | Optional |
+| FileRemediation | Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. <br/>For example, Choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and executes only file quarantine. | Quarantine | Optional |
 
 ## Playbook Outputs
 ---
@@ -54,4 +53,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Containment Plan](https://raw.githubusercontent.com/demisto/content/bd08dccb90f9847f6105c15345a4ca54017440e1/Packs/CommonPlaybooks/doc_files/Containment_Plan.png)
+![Containment Plan](https://raw.githubusercontent.com/demisto/content/f3d7d9140f4d82efde1704ed92b8de3176c35b2e/Packs/CommonPlaybooks/doc_files/Containment_Plan.png)
