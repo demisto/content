@@ -573,7 +573,7 @@ tasks:
       - "64"
     scriptarguments:
       brandname:
-        simple: Okta
+        simple: Okta v2
     results:
     - brandInstances
     separatecontext: false
@@ -728,13 +728,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 5314943a-ff39-40e8-8a5a-bcc7f29c449d
+    taskid: 197c6050-72e0-403a-8bc3-b6ea0983cccb
     type: condition
     task:
-      id: 5314943a-ff39-40e8-8a5a-bcc7f29c449d
+      id: 197c6050-72e0-403a-8bc3-b6ea0983cccb
       version: -1
       name: Should clear user sessions?
-      description: Whether to clear Okta user sessions automatically, manually, or not at all.
+      description: Asks which user sessions should be cleared. If no value is selected, the following tasks will be ignored.
       type: condition
       iscommand: false
       brand: ""
@@ -901,13 +901,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: eec91fe8-26f0-491d-8502-8badd140c67a
+    taskid: c13243c5-c515-4ea6-88bd-472694793d22
     type: collection
     task:
-      id: eec91fe8-26f0-491d-8502-8badd140c67a
+      id: c13243c5-c515-4ea6-88bd-472694793d22
       version: -1
       name: Manual endpoint isolation
-      description: Checks whether the values provided in arguments are equal. If either of the arguments is missing, no is returned.
+      description: Asks which endpoint should be isolated. If no value is selected, the following tasks will be ignored.
       type: collection
       iscommand: false
       brand: ""
@@ -1077,7 +1077,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "101"
+      - "102"
     scriptarguments:
       hash_list:
         complex:
@@ -1099,13 +1099,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: bc181906-8aee-427b-8218-1d7c2e49e1ed
+    taskid: 121a06ba-35b9-4ae0-8d66-5b1a36d515d5
     type: collection
     task:
-      id: bc181906-8aee-427b-8218-1d7c2e49e1ed
+      id: 121a06ba-35b9-4ae0-8d66-5b1a36d515d5
       version: -1
       name: Choose indicators to block
-      description: Checks whether the values provided in arguments are equal. If either of the arguments is missing, no is returned.
+      description: Asks which indicators should be blocked. If no value is selected, the following tasks will be ignored.
       type: collection
       iscommand: false
       brand: ""
@@ -1212,7 +1212,7 @@ tasks:
       All:
       - "77"
       IP or Domain:
-      - "101"
+      - "102"
     separatecontext: false
     conditions:
     - label: All
@@ -1409,10 +1409,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 8ff82b8d-680e-4a67-8eb6-f3adaade1ee5
+    taskid: 312b0b1e-7fb4-41d2-801b-62f21a952bba
     type: collection
     task:
-      id: 8ff82b8d-680e-4a67-8eb6-f3adaade1ee5
+      id: 312b0b1e-7fb4-41d2-801b-62f21a952bba
       version: -1
       name: Choose user to to execute clean session
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
@@ -1630,10 +1630,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 18ceb774-7987-42be-8508-66e97eb255b1
+    taskid: 2a30594a-78be-440f-8c28-55172de55ee2
     type: regular
     task:
-      id: 18ceb774-7987-42be-8508-66e97eb255b1
+      id: 2a30594a-78be-440f-8c28-55172de55ee2
       version: -1
       name: Get Okta user ID
       description: Fetches information for a single user. You must enter one or more parameters for the command to run.
@@ -1671,13 +1671,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: 672705cb-86a1-4284-879e-76c69f87741f
+    taskid: 2d5d1305-428e-4bbb-8216-ab28390cc8cb
     type: collection
     task:
-      id: 672705cb-86a1-4284-879e-76c69f87741f
+      id: 2d5d1305-428e-4bbb-8216-ab28390cc8cb
       version: -1
       name: Choose files to quarantine
-      description: Checks whether the values provided in arguments are equal. If either of the arguments is missing, no is returned.
+      description: Asks which file should be quarantined. If no value is selected, the following tasks will be ignored.
       type: collection
       iscommand: false
       brand: ""
@@ -1903,13 +1903,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: 1e53fb18-e3af-4d37-8de3-17995d6670e9
+    taskid: f0246d0e-b8f9-44b8-87fc-b7e184f37ee9
     type: collection
     task:
-      id: 1e53fb18-e3af-4d37-8de3-17995d6670e9
+      id: f0246d0e-b8f9-44b8-87fc-b7e184f37ee9
       version: -1
       name: Choose users to disable
-      description: Checks whether the values provided in arguments are equal. If either of the arguments is missing, no is returned.
+      description: Asks which user should be disabled. If no value is selected, the following tasks will be ignored.
       type: collection
       iscommand: false
       brand: ""
@@ -2412,10 +2412,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "100":
     id: "100"
-    taskid: de2e1a27-7b53-4136-8e24-5c5487ddbabe
+    taskid: 68bcdc76-840b-4cf8-8eb6-0092768a87a4
     type: playbook
     task:
-      id: de2e1a27-7b53-4136-8e24-5c5487ddbabe
+      id: 68bcdc76-840b-4cf8-8eb6-0092768a87a4
       version: -1
       name: Block Indicators - Generic v2
       description: |+
@@ -2436,6 +2436,12 @@ tasks:
       '#none#':
       - "54"
     scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
       DomainToBlock:
         complex:
           root: inputs.Domain
@@ -2444,6 +2450,38 @@ tasks:
           root: inputs.IP
           transformers:
           - operator: uniq
+      MD5:
+        complex:
+          root: inputs.FileHash
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+      SHA256:
+        complex:
+          root: inputs.FileHash
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+      URL:
+        complex:
+          root: inputs.URL
+      URLListName:
+        simple: Demisto Remediation - URL EDL
+      Username:
+        complex:
+          root: inputs.Username
     separatecontext: true
     loop:
       iscommand: false
@@ -2464,12 +2502,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "101":
-    id: "101"
-    taskid: bdd30230-356a-4b06-850e-7cb2a647d5b4
+  "102":
+    id: "102"
+    taskid: 3a7f262b-bb45-42b4-825f-92e697038488
     type: playbook
     task:
-      id: bdd30230-356a-4b06-850e-7cb2a647d5b4
+      id: 3a7f262b-bb45-42b4-825f-92e697038488
       version: -1
       name: Block Indicators - Generic v2
       description: |+
@@ -2490,38 +2528,52 @@ tasks:
       '#none#':
       - "54"
     scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
       DomainToBlock:
         complex:
           root: inputs.Domain
-          filters:
-          - - operator: in
-              left:
-                value:
-                  simple: inputs.Domain
-                iscontext: true
-              right:
-                value:
-                  simple: Block Indicators.Answers.1
-                iscontext: true
-              ignorecase: true
-          transformers:
-          - operator: uniq
       IP:
         complex:
           root: inputs.IP
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: inputs.FileHash
           filters:
-          - - operator: in
+          - - operator: stringHasLength
               left:
                 value:
-                  simple: inputs.IP
+                  simple: inputs.FileHash
                 iscontext: true
               right:
                 value:
-                  simple: Block Indicators.Answers.1
+                  simple: "32"
+      SHA256:
+        complex:
+          root: inputs.FileHash
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.FileHash
                 iscontext: true
-              ignorecase: true
-          transformers:
-          - operator: uniq
+              right:
+                value:
+                  simple: "64"
+      URL:
+        complex:
+          root: inputs.URL
+      URLListName:
+        simple: Demisto Remediation - URL EDL
+      Username:
+        complex:
+          root: inputs.Username
     separatecontext: true
     loop:
       iscommand: false
@@ -2563,7 +2615,7 @@ view: |-
       "67_90_Manual": 0.59,
       "71_57_No": 0.13,
       "71_72_Manual": 0.62,
-      "76_101_IP or Domain": 0.89,
+      "76_102_IP or Domain": 0.89,
       "76_54_#default#": 0.22,
       "76_77_All": 0.41,
       "79_62_#default#": 0.3,
@@ -2653,17 +2705,22 @@ inputs:
   required: false
   description: The domain indicators.
   playbookInputQuery:
-- key: IAMUserDomain
-  value:
-    simple: '@demisto.com'
+- key: URL
+  value: {}
   required: false
-  description: The Okta IAM users domain. The domain is appended to the username. For example, username@IAMUserDomain.
+  description: The URL indicator.
   playbookInputQuery:
 - key: FileRemediation
   value:
     simple: Quarantine
   required: false
   description: "Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. \nFor example, choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and will execute only file quarantine."
+  playbookInputQuery:
+- key: IAMUserDomain
+  value:
+    simple: '@demisto.com'
+  required: false
+  description: The Okta IAM users domain. The domain will be appended to the username. e.g. username@IAMUserDomain.
   playbookInputQuery:
 outputs: []
 tests:

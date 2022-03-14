@@ -345,13 +345,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 7aac360c-0dea-4861-8962-e927ee00be1b
+    taskid: 5f28252e-fa6f-4a56-8c51-9e9a4ab3a7e2
     type: collection
     task:
-      id: 7aac360c-0dea-4861-8962-e927ee00be1b
+      id: 5f28252e-fa6f-4a56-8c51-9e9a4ab3a7e2
       version: -1
       name: Choose files to delete
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Asks which file should be deleted. If no value is selected, the following tasks will be ignored.
       type: collection
       iscommand: false
       brand: ""
@@ -582,13 +582,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 1e5fe784-69c6-48c4-86af-d9775b783719
+    taskid: 7cca3827-f138-4eff-8c99-b20f4a62d6db
     type: collection
     task:
-      id: 1e5fe784-69c6-48c4-86af-d9775b783719
+      id: 7cca3827-f138-4eff-8c99-b20f4a62d6db
       version: -1
       name: Choose processes to terminate
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Asks which process should be terminated. If no value is selected, the following tasks will be ignored.
       type: collection
       iscommand: false
       brand: ""
@@ -655,13 +655,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: b73eddb2-b118-4f04-82a7-af4a12dcffd3
+    taskid: d914e93f-9869-49b4-8c60-0fc48799d369
     type: collection
     task:
-      id: b73eddb2-b118-4f04-82a7-af4a12dcffd3
+      id: d914e93f-9869-49b4-8c60-0fc48799d369
       version: -1
       name: Choose users to reset password
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Asks which user's password should be reset. If no value is selected, the following tasks will be ignored.
       type: collection
       iscommand: false
       brand: ""
