@@ -1,9 +1,8 @@
-This playbook handles all the recovery actions available with XSIAM.
-The playbook allows to recover  from the incident with one of the following tasks:
+This playbook handles all the recovery actions available with XSIAM, including the following tasks:
 * Unisolate endpoint
 * Restore quarantined file
 
-The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+**Note:** The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -26,8 +25,8 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| unIsolateEndpoint | Boolean. Set to 'true' if you want to cancel the endpoint isolation. | true | Optional |
-| releaseFile | Boolean. Set to 'true' if you want to release the quarantined file. | false | Optional |
+| unIsolateEndpoint | Set to True to cancel the endpoint isolation. | True | Optional |
+| releaseFile | Set to True to release the quarantined file. | False | Optional |
 | endpointID | The endpoint ID. |  | Optional |
 | FileHash | The file hash. |  | Optional |
 
