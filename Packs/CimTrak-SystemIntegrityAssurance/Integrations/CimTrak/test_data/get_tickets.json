@@ -49,6 +49,8 @@
         "errorDescription": "",
         "results": [
             {
+                "id": 126,
+                "ticketNumber": "CT-00000126",
                 "sentiment": null,
                 "sentimenttypeid": null,
                 "title": "Test",
@@ -73,8 +75,7 @@
                 "externalTicketType": null,
                 "tasks": null,
                 "comments": null,
-                "events": null,
-                "taskId": 126
+                "events": null
             }
         ]
     }

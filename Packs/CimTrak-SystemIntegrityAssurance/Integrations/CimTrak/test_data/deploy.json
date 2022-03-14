@@ -6,16 +6,16 @@
             "url": "https://test.com/CimTrakRestAPI/v1/Client.deploy",
             "reply": {
                 "results": [],
-                "status": "failed",
-                "errorCode": "S_CMDERR_0000000019",
-                "errorDescription": "Unable to find Agent",
+                "status": "success",
+                "errorCode": "",
+                "errorDescription": "",
                 "errorDetails": []
             }
         }
     ],
     "response": {
-        "status": "failed",
-        "errorCode": "S_CMDERR_0000000019",
-        "errorDescription": "Unable to find Agent"
+        "status": "success",
+        "errorCode": "",
+        "errorDescription": ""
     }
 }

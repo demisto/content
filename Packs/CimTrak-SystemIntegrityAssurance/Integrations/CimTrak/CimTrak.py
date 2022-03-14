@@ -1268,7 +1268,7 @@ class CimTrak:
         else:
             ret_data: Dict[str, Any] = {}
             ret_results: List[Dict[str, Any]] = []
-            ret_data['status'] = 'Success'
+            ret_data['status'] = 'success'
             ret_data['errorCode'] = ''
             ret_data['errorDescription'] = ''
             ret_data['results'] = ret_results
@@ -1285,7 +1285,7 @@ class CimTrak:
                 self.force_sync(object["objectId"])
         ret_data: Dict[str, Any] = {}
         ret_results: List[Dict[str, Any]] = []
-        ret_data['status'] = 'Success'
+        ret_data['status'] = 'success'
         ret_data['errorCode'] = ''
         ret_data['errorDescription'] = ''
         ret_data['results'] = ret_results
@@ -1360,7 +1360,7 @@ class CimTrak:
         for object in results:
             if object['name'] == agent_name:
                 ret_results.append(object)
-        ret_data['status'] = 'Success'
+        ret_data['status'] = 'success'
         ret_data['errorCode'] = ''
         ret_data['errorDescription'] = ''
         ret_data['results'] = ret_results
@@ -1383,7 +1383,7 @@ class CimTrak:
                 results_object = request_response_object["results"]
                 for result_object in results_object:
                     ret_results.append(result_object)
-        ret_data['status'] = 'Success'
+        ret_data['status'] = 'success'
         ret_data['errorCode'] = ''
         ret_data['errorDescription'] = ''
         ret_data['results'] = ret_results
