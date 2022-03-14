@@ -13,3 +13,4 @@ For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.
 
 ![playbook.png](https://raw.githubusercontent.com/demisto/content/master/Packs/ContentManagement/docs-files/playbook.png)
 
+[![Cortex XSOAR CI/CD](https://www.youtube.com/watch?v=Wk1g43cgo98/0.jpg)](https://www.youtube.com/watch?v=Wk1g43cgo98)
