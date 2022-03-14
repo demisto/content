@@ -1,4 +1,4 @@
-This playbook handles all the recovery actions available with XSIAM, including the following tasks:
+This playbook handles all the recovery actions available with Cortex XSIAM, including the following tasks:
 * Unisolate endpoint
 * Restore quarantined file
 
