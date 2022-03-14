@@ -22,7 +22,8 @@ class AzureFirewallClient:
             auth_id=client_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
             grant_type=DEVICE_CODE,
-            base_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Network',
+            base_url=f'https://management.azure.com/subscriptions/{subscription_id}'
+                     f'/resourceGroups/{resource_group}/providers/Microsoft.Network',
             verify=verify,
             proxy=proxy,
             scope='https://management.azure.com/user_impersonation offline_access user.read')
@@ -44,9 +45,11 @@ class AzureFirewallClient:
 
             return response
         if resource == "resource_group":
-            full_url = f'https://management.azure.com/subscriptions/{self.subscription_id}/resourceGroups/{self.resource_group}/providers/Microsoft.Network/azureFirewalls'
+            full_url = f'https://management.azure.com/subscriptions/{self.subscription_id}' \
+                       f'/resourceGroups/{self.resource_group}/providers/Microsoft.Network/azureFirewalls'
         else:
-            full_url = f'https://management.azure.com/subscriptions/{self.subscription_id}/providers/Microsoft.Network/azureFirewalls'
+            full_url = f'https://management.azure.com/subscriptions/{self.subscription_id}' \
+                       f'/providers/Microsoft.Network/azureFirewalls'
 
         response = self.ms_client.http_request('GET', full_url=full_url, params=self.default_params, resp_type="json",
                                                timeout=100)
@@ -114,8 +117,7 @@ class AzureFirewallClient:
             "properties": {
                 "threatIntelMode": threat_intelligence_mode,
                 "threatIntelWhitelist": {
-                    "ipAddresses": ip_address
-                    ,
+                    "ipAddresses": ip_address,
                     "fqdns": domain_address
                 },
                 "snat": {
@@ -210,9 +212,11 @@ class AzureFirewallClient:
             return response
 
         if resource == "resource_group":
-            full_url = f'https://management.azure.com/subscriptions/{self.subscription_id}/resourceGroups/{self.resource_group}/providers/Microsoft.Network/firewallPolicies'
+            full_url = f'https://management.azure.com/subscriptions/{self.subscription_id}' \
+                       f'/resourceGroups/{self.resource_group}/providers/Microsoft.Network/firewallPolicies'
         else:
-            full_url = f'https://management.azure.com/subscriptions/{self.subscription_id}/providers/Microsoft.Network/firewallPolicies'
+            full_url = f'https://management.azure.com/subscriptions/{self.subscription_id}' \
+                       f'/providers/Microsoft.Network/firewallPolicies'
 
         response = self.ms_client.http_request('GET', full_url=full_url, params=self.default_params, resp_type="json",
                                                timeout=100)
@@ -361,7 +365,8 @@ class AzureFirewallClient:
             response = self.ms_client.http_request('GET', full_url=full_url, resp_type="json", timeout=100)
             return response
 
-        full_url = f'https://management.azure.com/subscriptions/{self.subscription_id}/providers/Microsoft.Network/locations/{location}/serviceTagDetails'
+        full_url = f'https://management.azure.com/subscriptions/{self.subscription_id}' \
+                   f'/providers/Microsoft.Network/locations/{location}/serviceTagDetails'
 
         response = self.ms_client.http_request('GET', full_url=full_url, resp_type="json", params=self.default_params)
 
@@ -411,7 +416,8 @@ class AzureFirewallClient:
             return response
 
         if resource == "resource_group":
-            full_url = f'https://management.azure.com/subscriptions/{self.subscription_id}/resourceGroups/{self.resource_group}/providers/Microsoft.Network/ipGroups'
+            full_url = f'https://management.azure.com/subscriptions/{self.subscription_id}' \
+                       f'/resourceGroups/{self.resource_group}/providers/Microsoft.Network/ipGroups'
         else:
             full_url = f'https://management.azure.com/subscriptions/{self.subscription_id}/providers/Microsoft.Network/ipGroups'
 
@@ -756,7 +762,7 @@ def generate_rule_collection_output(rule_collection_response: dict, readable_hea
 
     else:  # Policy collection
         for collection in outputs:
-            collection_action, collection_priority, collection_ = None, None, None
+            collection_action, collection_priority, collection_name = None, None, None
 
             collection_data = dict_safe_get(collection, ["properties", "ruleCollections"])
             if collection_data and isinstance(collection_data, list):
@@ -919,8 +925,8 @@ def azure_firewall_rules_collection_list_command(client: AzureFirewallClient, ar
                 response = client.azure_firewall_policy_rule_collection_list_request(policy_name=policy,
                                                                                      next_link=response.get('nextLink'))
 
-        filtered_rules = filter_policy_rules_collection(total_response.get('value'), rule_type)[
-                         start_offset: end_offset]
+        filtered_rules = filter_policy_rules_collection(total_response.get('value'),
+                                                        rule_type)[start_offset: end_offset]
 
     return generate_rule_collection_output(rule_collection_response=response,
                                            readable_header=readable_message, outputs=filtered_rules,
@@ -1405,7 +1411,8 @@ def azure_firewall_policy_attach_command(client: AzureFirewallClient, args: Dict
 
             else:
                 command_results_list.append(generate_firewall_command_output(response,
-                                                                             readable_header=f'Successfully Updated Firewall "{firewall}"'))
+                                                                             readable_header=f'Successfully Updated Firewall '
+                                                                                             f'"{firewall}"'))
 
         except Exception as exception:
             error = CommandResults(
@@ -1458,7 +1465,8 @@ def azure_firewall_policy_remove_command(client: AzureFirewallClient, args: Dict
 
             else:
                 command_results_list.append(generate_firewall_command_output(response,
-                                                                             readable_header=f'Successfully Updated Firewall "{firewall}"'))
+                                                                             readable_header=f'Successfully Updated Firewall '
+                                                                                             f'"{firewall}"'))
 
         except Exception as exception:
             error = CommandResults(
@@ -1631,7 +1639,8 @@ def remove_rule_from_collection(client: AzureFirewallClient, collection_name: st
 
         else:
             command_results_list.append(generate_firewall_command_output(response,
-                                                                         readable_header=f'Successfully Updated Firewall "{firewall_name}"'))
+                                                                         readable_header=f'Successfully Updated Firewall '
+                                                                                         f'"{firewall_name}"'))
 
     else:
         if not policy:
@@ -2698,7 +2707,7 @@ def azure_firewall_ip_group_delete_command(client: AzureFirewallClient, args: Di
 
 # --Authorization Commands--
 
-def start_auth(client) -> CommandResults:
+def start_auth(client: AzureFirewallClient) -> CommandResults:
     """
     Start the authorization process.
     Args:
@@ -2712,7 +2721,7 @@ def start_auth(client) -> CommandResults:
     return CommandResults(readable_output=result)
 
 
-def complete_auth(client) -> str:
+def complete_auth(client: AzureFirewallClient) -> str:
     """
     Complete authorization process.
     Args:
@@ -2726,7 +2735,7 @@ def complete_auth(client) -> str:
     return 'Authorization completed successfully.'
 
 
-def test_connection(client) -> str:
+def test_connection(client: AzureFirewallClient) -> str:
     """
     Test connectivity to Azure.
     Args:

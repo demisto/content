@@ -3,11 +3,11 @@ import copy
 import pytest
 from unittest.mock import Mock
 from CommonServerPython import *
-import demistomock
 
 SUBSCRIPTION_ID = "sub_id"
 RESOURCE_GROUP_NAME = "group_name"
-BASE_URL = f'https://management.azure.com/subscriptions/{SUBSCRIPTION_ID}/resourceGroups/{RESOURCE_GROUP_NAME}/providers/Microsoft.Network'
+BASE_URL = f'https://management.azure.com/subscriptions/{SUBSCRIPTION_ID}' \
+           f'/resourceGroups/{RESOURCE_GROUP_NAME}/providers/Microsoft.Network'
 CLIENT_ID = "XXXX"
 
 ScheduledCommand.raise_error_if_not_supported = Mock()
@@ -1195,7 +1195,7 @@ def test_azure_firewall_network_rule_remove_command_for_policy(requests_mock):
 
     assert result[0].outputs is None
     assert result[0].outputs_prefix is None
-    assert result[0].readable_output == f'Rule not-exists-rule is not exists.'
+    assert result[0].readable_output == 'Rule not-exists-rule is not exists.'
     assert result[1].outputs[0].get("name") == policy_name
     assert result[1].outputs_prefix == 'AzureFirewall.Policy'
 
@@ -1287,7 +1287,7 @@ def test_azure_firewall_network_rule_update_command_for_firewall(requests_mock):
     assert result.outputs[0].get('name') == firewall_name
 
 
-def test_azure_firewall_list_command(requests_mock):
+def test_azure_firewall_service_tag_list_command(requests_mock):
     """
     Scenario: Retrieve service tags information.
     Given:
@@ -1305,7 +1305,8 @@ def test_azure_firewall_list_command(requests_mock):
     client = get_client_mock()
 
     location = "eastus"
-    url = f'https://management.azure.com/subscriptions/{SUBSCRIPTION_ID}/providers/Microsoft.Network/locations/{location}/serviceTagDetails'
+    url = f'https://management.azure.com/subscriptions/{SUBSCRIPTION_ID}/providers' \
+          f'/Microsoft.Network/locations/{location}/serviceTagDetails'
 
     mock_response = json.loads(load_mock_response('test_data/network_rule/service_tag_list.json'))
     requests_mock.get(url, json=mock_response)
