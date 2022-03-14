@@ -173,13 +173,16 @@ def test_fetch_all_incidents(mocker):
     last_run = {
         'latest_detection_found': '2021-07-10T11:02:54Z'
     }
-    last_fetch, last_fetch_datetime = get_last_fetch_time(last_run, {})
-    incidents, last_item_time = detections_to_incidents(
-        test_incidents.get('value', []), last_fetch_datetime=last_fetch_datetime)
+    last_fetch = get_last_fetch_time(last_run, {})
+    detections = test_incidents.get('value', [])
+    incidents, last_item_time, last_incident_id = detections_to_incidents(detections, last_fetch, '123456')
     assert len(incidents) == 10
     assert incidents[0].get(
         'name') == 'Azure AD: 17 newCountry adminDismissedAllRiskForUser'
-    assert last_item_time == dateparser.parse('2021-07-17T14:11:57Z').replace(tzinfo=None)
+    assert last_item_time == '2021-07-17T14:11:57Z'
+    assert detections[-1].get('id') == last_incident_id
+    assert incidents[-1].get('name') == f'Azure AD: {last_incident_id} newCountrygit pull adminDismissedAllRiskForUser'
+    assert f'"id": "{last_incident_id}"' in incidents[-1].get('rawJSON')
 
 
 def test_fetch_new_incidents(mocker):
@@ -196,13 +199,16 @@ def test_fetch_new_incidents(mocker):
     last_run = {
         'latest_detection_found': '2021-07-20T11:02:54Z'
     }
-    last_fetch, last_fetch_datetime = get_last_fetch_time(last_run, {})
-    incidents, last_item_time = detections_to_incidents(
-        test_incidents.get('value', []), last_fetch_datetime=last_fetch_datetime)
+    last_fetch = get_last_fetch_time(last_run, {})
+    detections = test_incidents.get('value', [])
+    incidents, last_item_time, last_incident_id = detections_to_incidents(detections, last_fetch, '123465')
     assert len(incidents) == 10
     assert incidents[0].get(
         'name') == 'Azure AD: 17 newCountry adminDismissedAllRiskForUser'
-    assert last_item_time == dateparser.parse('2021-07-20T11:02:54Z').replace(tzinfo=None)
+    assert last_item_time == '2021-07-20T11:02:54Z'
+    assert detections[-1].get('id') == last_incident_id
+    assert incidents[-1].get('name') == f'Azure AD: {last_incident_id} newCountrygit pull adminDismissedAllRiskForUser'
+    assert f'"id": "{last_incident_id}"' in incidents[-1].get('rawJSON')
 
 
 # set time to 2021-07-29 11:10:00
