@@ -6478,13 +6478,13 @@ class ConcurrentCommandRunner:
                     brand_name = res.get('Brand', 'Unknown') if isinstance(res, dict) else 'Unknown'
                     module_name = res.get('ModuleName', 'Unknown') if isinstance(res, dict) else 'Unknown'
                     if is_error(res):
-                        errors.append(ResultWrapper(command, args, brand_name, module_name, get_error(res)))
+                        errors.append(ConcurrentCommandRunner.ResultWrapper(command, args, brand_name, module_name, get_error(res)))
                     else:
                         if extract_contents:
                             res = res.get('Contents', {})
                         if res is None:
                             res = {}
-                        results.append(ResultWrapper(command, args, brand_name, module_name, res))
+                        results.append(ConcurrentCommandRunner.ResultWrapper(command, args, brand_name, module_name, res))
             except ValueError as e:
                 demisto.debug(str(e))
         return results, errors
