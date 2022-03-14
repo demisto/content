@@ -6402,10 +6402,16 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
 class ConcurrentCommandRunner:
     """
     Class for executing multiple commands and save the results of each command.
+
+    :return: None
+    :rtype: ``None``
     """
     class CommandExecuter:
         """
         Class for the needed data to execute a command.
+
+        :return: None
+        :rtype: ``None``
         """
         def __init__(self, commands, args_lst, brand=None, instance=None):
             """
@@ -6436,6 +6442,9 @@ class ConcurrentCommandRunner:
     class ResultWrapper:
         """
         Class for the result of the command.
+
+        :return: None
+        :rtype: ``None``
         """
         def __init__(self, command, args, brand, instance, result):
             """
