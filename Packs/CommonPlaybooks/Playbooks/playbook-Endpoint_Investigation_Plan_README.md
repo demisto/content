@@ -1,12 +1,11 @@
-This playbook handles all the endpoint investigation actions available with XSIAM.  
-The following tasks are used to investigate and hunt for more information:
+This playbook handles all the endpoint investigation actions available with XSIAM, including the following tasks:  
 * Pre-defined MITRE Tactics
 * Host fields (Host ID)
 * Attacker fields (Attacker IP, External host)
 * MITRE techniques
 * File hash (currently, the playbook supports only SHA256)
 
-**Note:** The playbook inputs enable manipulating the execution flow, read the input descriptions for details.
+**Note:** The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -48,7 +47,7 @@ This playbook does not use any commands.
 | attackerExternalHost | The external host used by the attacker. The **HuntAttacker** inputs should also be set to True. |  | Optional |
 | mitreTechniqueID | A MITRE technique identifier. The **HuntByTechnique** inputs should also be set to True. |  | Optional |
 | FileSHA256 | The file SHA256. The **HuntByFile** inputs should also be set to True. |  | Optional |
-| timeRange | A time range to execute the hunting over.<br/>The input should be in the following format:<br/>\* 1 day ago<br/>\* 2 minutes ago<br/>\* 4 hours ago<br/>\* 8 days ago<br/>etc. | 24 hours ago | Optional |
+| timeRange | A time range to execute the hunting in.<br/>The input should be in the following format:<br/>\* 1 day ago<br/>\* 2 minutes ago<br/>\* 4 hours ago<br/>\* 8 days ago<br/>etc. | 24 hours ago | Optional |
 
 ## Playbook Outputs
 ---
