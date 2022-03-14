@@ -260,12 +260,16 @@ def build_context_indicator_no_results_status(indicator: str, indicator_type: st
             indicator_ = Common.File(sha256=indicator, dbot_score=dbot_score)
         if md5Regex.match(indicator):
             indicator_ = Common.File(md5=indicator, dbot_score=dbot_score)
+    
     elif indicator_type == 'ip':
         indicator_ = Common.IP(ip=indicator, dbot_score=dbot_score)
+    
     elif indicator_type == 'domain':
         indicator_ = Common.Domain(domain=indicator, dbot_score=dbot_score)
+    
     elif indicator_type == 'url':
         indicator_ = Common.URL(url=indicator, dbot_score=dbot_score)
+    
     return CommandResults(readable_output=message, indicator=indicator_)
 
 

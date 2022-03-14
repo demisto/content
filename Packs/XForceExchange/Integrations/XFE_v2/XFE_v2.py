@@ -90,10 +90,13 @@ def build_context_indicator_no_results_status(indicator: str, indicator_type: st
             indicator_ = Common.File(sha256=indicator, dbot_score=dbot_score)
         if md5Regex.match(indicator):
             indicator_ = Common.File(md5=indicator, dbot_score=dbot_score)
+    
     elif indicator_type == 'ip':
         indicator_ = Common.IP(ip=indicator, dbot_score=dbot_score)
+    
     elif indicator_type == 'domain':
         indicator_ = Common.Domain(domain=indicator, dbot_score=dbot_score)
+    
     elif indicator_type == 'url':
         indicator_ = Common.URL(url=indicator, dbot_score=dbot_score)
 
@@ -443,7 +446,7 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
                                                                                  reliability=client.reliability))
                 continue
             else:
-                raise
+                raise ValueError(err)
 
         scores = {'high': 3, 'medium': 2, 'low': 1}
         dbot_score = Common.DBotScore(indicator=file_hash, indicator_type=DBotScoreType.FILE,
