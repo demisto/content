@@ -1,8 +1,6 @@
-id: Phishing - Generic v3 test
+id: Phishing - Generic v3
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
-name: Phishing - Generic v3 test
+name: Phishing - Generic v3
 description: "This playbook investigates and remediates a potential phishing incident. It engages with the user that triggered the incident while investigating the incident itself.\nNote: Final remediation tasks are always decided by a human analyst. "
 starttaskid: "0"
 tasks:
@@ -404,9 +402,6 @@ tasks:
         complex:
           root: incident
           accessor: emailcc
-      EmailFileToExtract:
-        complex:
-          root: inputs.EmailFileToExtract
       EmailFormat:
         complex:
           root: incident
@@ -437,6 +432,13 @@ tasks:
       GetOriginalEmail:
         complex:
           root: inputs.GetOriginalEmail
+      UserID:
+        complex:
+          root: incident
+          accessor: reporteremailaddress
+      EmailFileToExtract:
+        complex:
+          root: inputs.EmailFileToExtract
       MessageID:
         complex:
           root: incident
@@ -445,10 +447,6 @@ tasks:
         complex:
           root: incident
           accessor: emailsubject
-      UserID:
-        complex:
-          root: incident
-          accessor: reporteremailaddress
     separatecontext: true
     view: |-
       {
@@ -544,8 +542,6 @@ tasks:
       SearchAndDeleteIntegration:
         complex:
           root: inputs.SearchAndDeleteIntegration
-      SearchThisWeek:
-        simple: "true"
       Subject:
         complex:
           root: incident
@@ -554,6 +550,8 @@ tasks:
         complex:
           root: incident
           accessor: emailto
+      SearchThisWeek:
+        simple: "true"
     separatecontext: true
     loop:
       iscommand: false
@@ -937,9 +935,9 @@ tasks:
       Email:
         complex:
           root: incident
-          accessor: reporteremailaddress
           transformers:
           - operator: uniq
+          accessor: reporteremailaddress
       InternalDomains:
         complex:
           root: inputs.InternalDomains
@@ -2033,7 +2031,7 @@ tasks:
       id: 374e403a-75c8-456c-8ebf-e76f33c3d501
       version: -1
       name: Check Microsoft's Headers?
-      description: Whether to check Microsoft's proprietary email headers.
+      description: "Whether to check Microsoft's proprietary email headers."
       type: condition
       iscommand: false
       brand: ""
@@ -2149,7 +2147,7 @@ tasks:
       id: 80e1c4c2-b760-493f-8038-a5e7f9201cb2
       version: -1
       name: Detonate URL?
-      description: Whether to detonate URLs in supported sandboxes.
+      description: "Whether to detonate URLs in supported sandboxes."
       type: condition
       iscommand: false
       brand: ""
@@ -2194,10 +2192,10 @@ tasks:
       version: -1
       name: Predict Phishing URLs
       description: Predicts phishing URLs using a pre-trained model.
-      scriptName: DBotPredictURLPhishing
       type: regular
       iscommand: false
       brand: ""
+      scriptName: DBotPredictURLPhishing
     nexttasks:
       '#none#':
       - "84"
@@ -2612,26 +2610,16 @@ tasks:
       id: eb6d4a67-11c9-4fb1-825e-aeb5ad70dc57
       version: -1
       name: Check if original email was retrieved
+      description: ""
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "43"
       "yes":
       - "28"
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: reportedemailfrom
-            iscontext: true
     view: |-
       {
         "position": {
@@ -2646,7 +2634,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: reportedemailfrom
+            iscontext: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -2825,3 +2822,6 @@ outputs: []
 tests:
 - Phishing v2 - Test - Incident Starter
 fromversion: 6.1.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
