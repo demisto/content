@@ -596,15 +596,6 @@ def results(results):
 
     Args:
       results (Union[list, dict]): The entry object or array of entry objects to output
-      For example: results = {
-        'Type' : entryTypes['note'],
-        'Contents': data,
-        'ContentsFormat' : formats['json'],
-        'HumanReadable': md,
-        'ReadableContentsFormat' : formats['markdown'],
-        'EntryContext' : context,
-        'Tags' : ['tag1', 'tag2']
-      }
 
     Returns:
       None: No data returned
