@@ -1135,7 +1135,7 @@ def delete_items(client: EWSClient, item_ids, delete_type, target_mailbox=None):
     """
     deleted_items = []
     item_ids = argToList(item_ids)
-    items = client.get_items_from_mailbox(target_mailbox, item_ids)
+    items = client.get_items_from_mailxbox(target_mailbox, item_ids)
     delete_type = delete_type.lower()
 
     for item in items:
