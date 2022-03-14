@@ -3200,3 +3200,8 @@ OAUTH_PARAMS = {
     'client_secret': 'client_secret',
     'use_oauth': True
 }
+
+RESPONSE_GENERIC_TICKET = {
+    'sys_created_by': 'svc.SecOps_SplunkPhantom',
+    'sys_class_name': 'sn_si_incident'
+}
