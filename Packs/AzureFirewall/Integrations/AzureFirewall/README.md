@@ -1,6 +1,6 @@
 ## Azure Firewall
 Azure Firewall is a cloud-native and intelligent network firewall security service that provides breed threat protection for cloud workloads running in Azure. It's a fully stateful, firewall as a service with built-in high availability and unrestricted cloud scalability.
-This integration was integrated and tested with version xx of Azure Firewall
+This integration was integrated and tested with version 2021-03-01 of Azure Firewall
 
 ## Configure Azure Firewall on Cortex XSOAR
 
