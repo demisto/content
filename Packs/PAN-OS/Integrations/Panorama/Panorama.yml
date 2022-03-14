@@ -7105,8 +7105,8 @@ script:
       description: System anti-virus version.
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.av_release_date
-       description: Release date of the antivirus content.
-       type: String     
+      description: Release date of the antivirus content.
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.app_version
       description: App content version.
       type: String
