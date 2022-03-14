@@ -51,8 +51,8 @@
                                 "autoExcludeMinutes": 60,
                                 "comparisonMethod": 2,
                                 "detectionType": 1,
-                                "generationId": 241,
-                                "objectSettingId": 350,
+                                "generationId": 252,
+                                "objectSettingId": 365,
                                 "objectSettingType": 1,
                                 "pollInterval": 120,
                                 "file": "",
@@ -75,8 +75,8 @@
                                 "followSymbolicLinks": false,
                                 "maxRecurseDepth": 255,
                                 "objectSettingsCustom": {
-                                    "lastSyncEnd": "1647042699",
-                                    "lastSyncStart": "1647042699"
+                                    "lastSyncEnd": "1647112275",
+                                    "lastSyncStart": "1647112275"
                                 },
                                 "excludeArray": []
                             }
@@ -138,8 +138,8 @@
                         "autoExcludeMinutes": 60,
                         "comparisonMethod": 2,
                         "detectionType": 1,
-                        "generationId": 241,
-                        "objectSettingId": 350,
+                        "generationId": 252,
+                        "objectSettingId": 365,
                         "objectSettingType": 1,
                         "pollInterval": 120,
                         "file": "",
@@ -162,8 +162,8 @@
                         "followSymbolicLinks": false,
                         "maxRecurseDepth": 255,
                         "objectSettingsCustom": {
-                            "lastSyncEnd": "1647042699",
-                            "lastSyncStart": "1647042699"
+                            "lastSyncEnd": "1647112275",
+                            "lastSyncStart": "1647112275"
                         },
                         "excludeArray": []
                     }

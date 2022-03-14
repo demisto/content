@@ -5,8 +5,12 @@
         {
             "url": "https://test.com/CimTrakRestAPI/v1/Client.viewFile",
             "reply": {
-                "results": [],
-                "status": "failed",
+                "results": [
+                    {
+                        "contents": "c2Rmc2Rmc2RoZWxsbw=="
+                    }
+                ],
+                "status": "success",
                 "errorCode": "",
                 "errorDescription": "",
                 "errorDetails": []
@@ -14,7 +18,12 @@
         }
     ],
     "response": {
-        "status": "failed",
+        "results": [
+            {
+                "contents": "c2Rmc2Rmc2RoZWxsbw=="
+            }
+        ],
+        "status": "success",
         "errorCode": "",
         "errorDescription": ""
     }
