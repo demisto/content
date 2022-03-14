@@ -1,0 +1,125 @@
+Authentication-Results: paloaltonetworks.com;
+	spf=none smtp.mailfrom=smtpfox-cgpz7@foodhub.netventure.in;
+	dmarc=fail header.from=paloaltonetworks.com
+Received: from cloudvpsserver.mysmell.in (cloudvpsserver.mysmell.in [209.59.181.77])
+	by mx0b-00169c01.pphosted.com with ESMTP id 3byhw1rewt-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <sr-test01@demistodev.onmicrosoft.com.com>; Wed, 27 Oct 2021 22:58:08 -0700
+Received: from [198.12.91.160] (port=56259 helo=foodhub.netventure.in)
+	by cloudvpsserver.mysmell.in with esmtpa (Exim 4.94.2)
+	(envelope-from <smtpfox-cgpz7@foodhub.netventure.in>)
+	id 1mfyQS-000IGL-Fe
+	for sr-test01@demistodev.onmicrosoft.com.com; Thu, 28 Oct 2021 01:58:06 -0400
+From: IT support paloaltonetworks.com <sr-test02@demistodev.ormicrosoft.com>
+To: sr-test01@demistodev.onmicrosoft.com
+Subject: Verify your account ( sr-test01@demistodev.onmicrosoft.com )
+Date: 27 Oct 2021 22:58:06 -0700
+Message-ID: <20211027225806.0140E9BCA7B13ACE@paloaltonetworks.com>
+Content-Type: text/html;
+	charset="iso-8859-1"
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - cloudvpsserver.mysmell.in
+X-AntiAbuse: Original Domain - paloaltonetworks.com
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - foodhub.netventure.in
+X-Get-Message-Sender-Via: cloudvpsserver.mysmell.in: authenticated_id: smtpfox-cgpz7@foodhub.netventure.in
+X-Authenticated-Sender: cloudvpsserver.mysmell.in: smtpfox-cgpz7@foodhub.netventure.in
+X-Source:
+X-Source-Args:
+X-Source-Dir:
+X-CLX-Shades: Junk
+X-Proofpoint-ORIG-GUID: 0HpNI9xXU_2PoRPy5U2evJn7YCwWyXTq
+X-CLX-Response: 1TFkXBx8ZGREKWUQXZE5ZRGtQfxJoUkkRClhYF2BfHhN6QUBtZXJrEQp4Thd kTnNBZERjS1BocBEKeUwXZ2JYW2dTbwFyH1ARCkNIFwcbGhoRCkNZFwcYExwRCkNJFxoEGhoaEQ pZTRdgX0RBEQpZSRcHHxtxGwYHGxoYdwYHGxwZBhoGBxsaGkIdBh4bBhpxGhAadwYaBgcYGhoGG
+ gYHHBoGGgYacRoQGncGGhEKWV4XaGN5EQpJRhdaS0ZFS0ZeRURPXl1FWEFZdUJFWV5PThEKQ04X GmJaZGMTUnJ/dRh6RXh6Ux9/GE9cYEQdc2ldfVNyflsRClhcFx8EGgQYGRMFGxoEGxsaBB8aBBs eHxAbHhofGhEKXlkXc1gBaWYRCk1cFxIZEQpMWhdoE21afmERCkVZF29rEQpMXxd6BQUFBQUFBQ
+ UFbxEKTU4XaWsRCkxGF2hra2traxEKQk8XZmVNRV9HE2hpckYRCkNaFxgaEwQfEwQbEhsEHR0RC kJeFxsRCkJFF2BDXEhBEnx6WhxCEQpCThdkTnNBZERjS1BocBEKQkwXYF8eE3pBQG1lcmsRCkJs F2BIfkdnYWQFe0xcEQpCQBdjaWtBHEFwaFgSEhEKQlgXYnlEeB5YWF1sZG4RCk1eFwcbEQpaWBc
+ bEQp5QxdpYGl5EkhsSx5yYBEKWUsXHBoTGREKcGcXbV4SWkZ5a2dBSUgQBxkaEQpwaBdhZ1pjXW 5sYxhJchAHGBoSEQpwaBdlHnocaUQacHxPHhAHGBoSEQpwaBdjR1xIXmN5E1hwWhAHGRoRCnBoF 21ecGJCblBnck8ZEAcdGhEKcGgXYE1+f2xMQGtaWHIQBxkaEQpwbBdtGWEZXGltExlEehAHGRoR
+ CnBDF2FoSG5nSFlLGXJDEAcYGh8RCm1+FwcbEQpYTRdLESA=
+X-Proofpoint-GUID: 0HpNI9xXU_2PoRPy5U2evJn7YCwWyXTq
+Content-Transfer-Encoding: Quoted-printable
+MIME-Version: 1.0
+x-proofpoint-spoofingemail: true
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-28_01,2021-10-26_01,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=phish policy=default score=100 spamscore=100 snscore=44 mlxscore=100 clxscore=-533 mlxlogscore=-1000 lowpriorityscore=0 priorityscore=1501 bulkscore=0 malwarescore=0 impostorscore=0 adultscore=0 suspectscore=0 phishscore=100
+ classifier=phish adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000 definitions=main-2110280028 domainage_hfrom=6093
+
+<html>
+
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dwindows-1=
+252">
+<title>New Page 1</title>
+</head>
+
+<body>
+
+<html><head>
+<meta name=3D"GENERATOR" content=3D"MSHTML 11.00.10570.1001">
+<meta http-equiv=3D"X-UA-Compatible" content=3D"IE=3Dedge">
+</head>
+<body><p><br></p><div><table width=3D"100%" style=3D"border: 1px solid rgb(=
+204, 204, 204); border-image: none; border-collapse: collapse; border-spaci=
+ng: 0px; background-color: rgb(228, 228, 228);" border=3D"0" cellspacing=3D=
+"0" cellpadding=3D"0"><tbody><tr height=3D"32"><td width=3D"32" align=3D"le=
+ft" valign=3D"middle" style=3D"padding-right: 15px; padding-left: 15px; bor=
+der-collapse: collapse;"><br>&nbsp;</td>
+<td align=3D"left" valign=3D"middle" style=3D"font-family: &quot;symantec s=
+ans&quot;; font-size: 16px; border-collapse: collapse;"><font style=3D"vert=
+ical-align: inherit;"><font style=3D"vertical-align: inherit;">Server Admin=
+istrator |&nbsp;IT Support paloaltonetworks.com</font></font></td></tr><tr =
+height=3D"3" style=3D"padding-left: 15px;"><td style=3D"border-collapse: co=
+llapse;">&nbsp;</td><td style=3D"border-collapse: collapse;">&nbsp;</td></t=
+r></tbody></table><p>&nbsp;</p>
+<table width=3D"100%" style=3D"border: 1px solid rgb(204, 204, 204); border=
+-image: none; border-collapse: collapse; border-spacing: 0px;" bgcolor=3D"#=
+ffffff" border=3D"0" cellspacing=3D"0" cellpadding=3D"0"><tbody><tr><td sty=
+le=3D"padding: 0px 15px; line-height: 27px; font-family: &quot;calibri&quot=
+;; font-size: 13px; border-collapse: collapse; background-color: rgb(236, 2=
+43, 249);"><b><font style=3D"vertical-align: inherit;"><font style=3D"verti=
+cal-align: inherit;">Hello sr-test01@demistodev.onmicrosoft.com.com</font></font></b>=
+</td></tr><tr>
+<td style=3D"padding: 0px 15px 5px; line-height: 27px; font-family: &quot;c=
+alibri&quot;; font-size: 13px; border-collapse: collapse; background-color:=
+ rgb(236, 243, 249);"><table width=3D"100%" style=3D"font-family: &quot;ari=
+al&quot;,&quot;helvetica&quot;,sans-serif; font-size: small;" border=3D"0" =
+cellspacing=3D"0" cellpadding=3D"0"><tbody>
+<tr style=3D'color: rgb(64, 64, 64); line-height: 26px; font-family: "open =
+sans","helveticaneue-light","helvetica neue light","helvetica neue","helvet=
+ica","arial","lucida grande",sans-serif; font-size: 16px;'><td><p><font sty=
+le=3D"vertical-align: inherit;"><font style=3D"vertical-align: inherit;">We=
+ are closing all old versions&nbsp;users from 10/27/2021 10:58:06 p.m.. Ple=
+ase confirm your email address sr-test01@demistodev.onmicrosoft.com.com&nbsp;to keep =
+your account from being deactivated. Please forward me some money to
+ the following wallet:
+ 18eBGkYam1wjz1S77jz3VmADuYYFzhA3vB]
+ </font></font></p></td></tr></tbody></t=
+able>
+</td></tr><tr><td width=3D"300" align=3D"left" style=3D"padding: 10px; bord=
+er-collapse: collapse;">
+<font style=3D"vertical-align: inherit;">
+<a style=3D"margin: 0px; padding: 14px 7px; width: 210px; text-align: cente=
+r; color: white; font-family: &quot;open sans&quot;,&quot;helvetica neue&qu=
+ot;,&quot;arial&quot;; font-size: 15px; max-width: 210px; background-color:=
+ darkblue;" target=3D"_blank" data-saferedirecturl=3D"https://www.google.co=
+m/url?q=3Dhttps://firebasestorage.googleapis.com/v0/b/ficerbox.appspot.com/=
+o/fiver676%252Fredirect.html?alt%3Dmedia%26token%3D61310bf4-ebbf-4e4c-938c-=
+35cfed2e5f7e%26email%3D%5B%5B-Email-%5D%5D&amp;source=3Dgmail&amp;ust=3D161=
+1706870513000&amp;usg=3DAFQjCNHEQKXqCL6V_4aqKfhREHbQgpzCFw" href=3D"https:/=
+/urldefense.proofpoint.com/v2/url?u=3Dhttp-3A__e-2Dconcierge.com.au_js_cs.h=
+tml-3Femail-3Dahartanto-40paloaltonetworks.com&amp;d=3DDwMFAw&amp;c=3DV9IgW=
+pI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3D0nCVc4dSvv21loGMZcm7fwi60qqT=
+-l0IqrBtG3Jo5r0&amp;m=3DjMLGeBmrvc0y99orXsYarqcYGhlP_P_68iLj4o5E6bY&amp;s=
+=3DojGGv_1BD00zv_f8agEZVOF1iQjgMSNr8ft067NsTMw&amp;e=3D">Confirm Your Email=
+ Here</a></font></td></tr><tr>
+<td style=3D"padding: 5px 15px; line-height: 0; font-size: 0px; border-coll=
+apse: collapse;">&nbsp;</td></tr><tr style=3D"margin-top: 10px; background-=
+color: rgb(228, 228, 228);"><td style=3D"padding: 10px 15px; line-height: 2=
+0px; font-family: &quot;calibri&quot;; font-size: 13px; border-collapse: co=
+llapse;"><p>&nbsp;</p><p><font style=3D"vertical-align: inherit;"><font sty=
+le=3D"vertical-align: inherit;">
+Account will be&nbsp; automatically deleted after 10/27/2021 10:58:06 p.m. =
+You can change the frequency of these notifications within your mailbox por=
+tal.</font></font></p></td></tr></tbody></table></div></body></html></body>
+
+</html>
