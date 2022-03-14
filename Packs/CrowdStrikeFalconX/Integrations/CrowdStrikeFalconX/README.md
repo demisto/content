@@ -522,7 +522,7 @@ Gets a full version of a sandbox report.
             {
                 "EntityA": "d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee",
                 "EntityAType": "File",
-                "EntityB": "195.74.38.63",
+                "EntityB": "11.11.11.11",
                 "EntityBType": "IP",
                 "Relationship": "communicates-with"
             },
@@ -536,7 +536,7 @@ Gets a full version of a sandbox report.
             {
                 "EntityA": "d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee",
                 "EntityAType": "File",
-                "EntityB": "80.247.175.21",
+                "EntityB": "10.10.10.10",
                 "EntityBType": "IP",
                 "Relationship": "communicates-with"
             },
@@ -557,21 +557,21 @@ Gets a full version of a sandbox report.
             {
                 "EntityA": "d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee",
                 "EntityAType": "File",
-                "EntityB": "195.74.38.63",
+                "EntityB": "11.11.11.11",
                 "EntityBType": "IP",
                 "Relationship": "communicates-with"
             },
             {
                 "EntityA": "d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee",
                 "EntityAType": "File",
-                "EntityB": "195.74.38.63",
+                "EntityB": "11.11.11.11",
                 "EntityBType": "IP",
                 "Relationship": "communicates-with"
             },
             {
                 "EntityA": "d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee",
                 "EntityAType": "File",
-                "EntityB": "80.247.175.21",
+                "EntityB": "10.10.10.10",
                 "EntityBType": "IP",
                 "Relationship": "communicates-with"
             }
@@ -593,7 +593,7 @@ Gets a full version of a sandbox report.
             ],
             "contacted_hosts": [
                 {
-                    "address": "195.74.38.63",
+                    "address": "11.11.11.11",
                     "associated_runtime": [
                         {
                             "name": "powershell.exe",
@@ -605,7 +605,7 @@ Gets a full version of a sandbox report.
                     "protocol": "TCP"
                 },
                 {
-                    "address": "195.74.38.63",
+                    "address": "11.11.11.11",
                     "associated_runtime": [
                         {
                             "name": "powershell.exe",
@@ -617,7 +617,7 @@ Gets a full version of a sandbox report.
                     "protocol": "TCP"
                 },
                 {
-                    "address": "80.247.175.21",
+                    "address": "10.10.10.10",
                     "associated_runtime": [
                         {
                             "name": "powershell.exe",
@@ -640,12 +640,12 @@ Gets a full version of a sandbox report.
                     "domain": "haoqunkong.com"
                 },
                 {
-                    "address": "195.74.38.63",
+                    "address": "11.11.11.11",
                     "country": "Sweden",
                     "domain": "holfve.se"
                 },
                 {
-                    "address": "80.247.175.21",
+                    "address": "10.10.10.10",
                     "country": "Netherlands",
                     "domain": "www.cfm.nl"
                 },
@@ -776,7 +776,7 @@ Gets a full version of a sandbox report.
                 {
                     "header": "GET /images/1ckw5mj49w_2k11px_d/ HTTP/1.1\nHost: holfve.se\nConnection: Keep-Alive",
                     "host": "holfve.se",
-                    "host_ip": "195.74.38.63",
+                    "host_ip": "11.11.11.11",
                     "host_port": 80,
                     "method": "GET",
                     "url": "/images/1ckw5mj49w_2k11px_d/"
@@ -784,7 +784,7 @@ Gets a full version of a sandbox report.
                 {
                     "header": "GET /_backup/yfhrmh6u0heidnwruwha2t4mjz6p_yxhyu390i6_q93hkh3ddm/ HTTP/1.1\nHost: www.cfm.nl\nConnection: Keep-Alive",
                     "host": "www.cfm.nl",
-                    "host_ip": "80.247.175.21",
+                    "host_ip": "10.10.10.10",
                     "host_port": 80,
                     "method": "GET",
                     "url": "/_backup/yfhrmh6u0heidnwruwha2t4mjz6p_yxhyu390i6_q93hkh3ddm/"
@@ -1024,7 +1024,7 @@ Gets a full version of a sandbox report.
                 ],
                 "contacted_hosts": [
                     {
-                        "address": "195.74.38.63",
+                        "address": "11.11.11.11",
                         "associated_runtime": [
                             {
                                 "name": "powershell.exe",
@@ -1036,7 +1036,7 @@ Gets a full version of a sandbox report.
                         "protocol": "TCP"
                     },
                     {
-                        "address": "195.74.38.63",
+                        "address": "11.11.11.11",
                         "associated_runtime": [
                             {
                                 "name": "powershell.exe",
@@ -1048,7 +1048,7 @@ Gets a full version of a sandbox report.
                         "protocol": "TCP"
                     },
                     {
-                        "address": "80.247.175.21",
+                        "address": "10.10.10.10",
                         "associated_runtime": [
                             {
                                 "name": "powershell.exe",
@@ -1070,12 +1070,12 @@ Gets a full version of a sandbox report.
                         "domain": "haoqunkong.com"
                     },
                     {
-                        "address": "195.74.38.63",
+                        "address": "11.11.11.11",
                         "country": "Sweden",
                         "domain": "holfve.se"
                     },
                     {
-                        "address": "80.247.175.21",
+                        "address": "10.10.10.10",
                         "country": "Netherlands",
                         "domain": "www.cfm.nl"
                     },
@@ -1204,7 +1204,7 @@ Gets a full version of a sandbox report.
                     {
                         "header": "GET /images/1ckw5mj49w_2k11px_d/ HTTP/1.1\nHost: holfve.se\nConnection: Keep-Alive",
                         "host": "holfve.se",
-                        "host_ip": "195.74.38.63",
+                        "host_ip": "11.11.11.11",
                         "host_port": 80,
                         "method": "GET",
                         "url": "/images/1ckw5mj49w_2k11px_d/"
@@ -1212,7 +1212,7 @@ Gets a full version of a sandbox report.
                     {
                         "header": "GET /_backup/yfhrmh6u0heidnwruwha2t4mjz6p_yxhyu390i6_q93hkh3ddm/ HTTP/1.1\nHost: www.cfm.nl\nConnection: Keep-Alive",
                         "host": "www.cfm.nl",
-                        "host_ip": "80.247.175.21",
+                        "host_ip": "10.10.10.10",
                         "host_port": 80,
                         "method": "GET",
                         "url": "/_backup/yfhrmh6u0heidnwruwha2t4mjz6p_yxhyu390i6_q93hkh3ddm/"
