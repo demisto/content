@@ -780,7 +780,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: ID of the user to add to the team. Can be retrieved by running
+      description: Email address or ID of the user to add to the team. The ID can be retrieved by running
         the microsoft-teams-members-list command.
       isArray: false
       name: user_id

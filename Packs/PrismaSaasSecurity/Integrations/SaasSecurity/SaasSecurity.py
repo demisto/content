@@ -429,8 +429,16 @@ def fetch_incidents(client: Client, first_fetch_time, fetch_limit, fetch_state, 
     current_fetch = last_fetch
     results = client.get_incidents(limit=fetch_limit, from_time=last_fetch, state=fetch_state, severity=fetch_severity,
                                    status=fetch_status, app_ids=fetch_app_ids).get('resources', [])
+
+    last_fetch_datetime = datetime.strptime(last_fetch, SAAS_SECURITY_DATE_FORMAT)
     incidents = list()
     for inc in results:
+
+        # We fetch the incidents by the "updated-at" field,
+        # So we need to filter the incidents created before the last_fetch
+        date_created = inc.get('created_at')
+        if datetime.strptime(date_created, SAAS_SECURITY_DATE_FORMAT) < last_fetch_datetime:
+            continue
 
         inc['mirror_direction'] = mirror_direction
         inc['mirror_instance'] = integration_instance
