@@ -10,24 +10,12 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-SINGLE_INCIDENTS_MOCK_RESPONSE = util_load_json(
-    '/Users/bachen/dev/demisto/content/Packs/SymantecDLP/Integrations/SymantecDLPV2/test_data/'
-    'fetch_single_incident.json')
-MULTIPLE_INCIDENTS_MOCK_RESPONSE = util_load_json(
-    '/Users/bachen/dev/demisto/content/Packs/SymantecDLP/Integrations/SymantecDLPV2/test_data/'
-    'fetch_multiple_incident.json')
-FIRST_STATIC_ATT_MOCK_RESPONSE = util_load_json(
-    '/Users/bachen/dev/demisto/content/Packs/SymantecDLP/Integrations/SymantecDLPV2/test_data/'
-    'incident_static_attributes_first.json')
-FIRST_EDITABLE_ATT_MOCK_RESPONSE = util_load_json(
-    '/Users/bachen/dev/demisto/content/Packs/SymantecDLP/Integrations/SymantecDLPV2/test_data/'
-    'incident_editable_attributes_first.json')
-SECOND_STATIC_ATT_MOCK_RESPONSE = util_load_json(
-    '/Users/bachen/dev/demisto/content/Packs/SymantecDLP/Integrations/SymantecDLPV2/test_data/'
-    'incident_static_attributes_second.json')
-SECOND_EDITABLE_ATT_MOCK_RESPONSE = util_load_json(
-    '/Users/bachen/dev/demisto/content/Packs/SymantecDLP/Integrations/SymantecDLPV2/test_data/'
-    'incident_editable_attributes_second.json')
+SINGLE_INCIDENTS_MOCK_RESPONSE = util_load_json('test_data/fetch_single_incident.json')
+MULTIPLE_INCIDENTS_MOCK_RESPONSE = util_load_json('test_data/fetch_multiple_incident.json')
+FIRST_STATIC_ATT_MOCK_RESPONSE = util_load_json('test_data/incident_static_attributes_first.json')
+FIRST_EDITABLE_ATT_MOCK_RESPONSE = util_load_json('test_data/incident_editable_attributes_first.json')
+SECOND_STATIC_ATT_MOCK_RESPONSE = util_load_json('test_data/incident_static_attributes_second.json')
+SECOND_EDITABLE_ATT_MOCK_RESPONSE = util_load_json('test_data/incident_editable_attributes_second.json')
 
 FIRST_INCIDENT_DETAILS = json.dumps({"ID": 3620, "creationDate": "2022-03-06T15:23:53.245", "policyId": 2,
                                      "severityId": "High",

@@ -203,7 +203,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def create_filter_dict(filter_type: str, filter_by: str, filter_value: List[Any], operator: str):
+def create_filter_dict(filter_type: str, filter_by: str, filter_value: List[Any], operator: str) -> Dict[str, Any]:
     """Creates a dictionary with the filter for the list-incidents request.
 
     :param filter_type: The filter type.
@@ -286,7 +286,7 @@ def get_readable_output_incident_details(incidents_list: List[dict]):
     return readable_output
 
 
-def pagination(incidents_list: List, limit: Optional[int], page: Optional[int]):
+def pagination(incidents_list: List, limit: int, page: int):
     """
     :param incidents_list: The incidents_list from the API.
     :param limit: Maximum number of objects to retrieve.
@@ -434,7 +434,7 @@ def get_details_unauthorized_incident(incident_data):
 
 def get_details_for_specific_type(incident_type, incident_info_map_static):
     if incident_type == 'NETWORK':
-        additional_info: dict = assign_params(**{
+        additional_info = assign_params(**{
             'messageSubject': incident_info_map_static.get('messageSubject'),
             'networkSenderPort': incident_info_map_static.get('networkSenderPort'),
             'recipientInfo': {
@@ -445,7 +445,7 @@ def get_details_for_specific_type(incident_type, incident_info_map_static):
         })
 
     elif incident_type == 'DISCOVER':
-        additional_info: dict = assign_params(**{
+        additional_info = assign_params(**{
             'discoverName': incident_info_map_static.get('discoverName'),
             'discoverRepositoryLocation': incident_info_map_static.get('discoverRepositoryLocation'),
             'fileModifiedBy': incident_info_map_static.get('fileModifiedBy'),
@@ -459,7 +459,7 @@ def get_details_for_specific_type(incident_type, incident_info_map_static):
 
         })
     elif incident_type == 'ENDPOINT':
-        additional_info: dict = assign_params(**{
+        additional_info = assign_params(**{
             'domainUserName': incident_info_map_static.get('domainUserName'),
             'endpointApplicationName': incident_info_map_static.get('endpointApplicationName'),
             'endpointDeviceInstanceId': incident_info_map_static.get('endpointDeviceInstanceId'),
@@ -514,7 +514,7 @@ def get_context_incident_history(incident_history_list: List[dict]):
     return history_context
 
 
-def create_update_body(incident_id: Optional(int), data_owner_email: str, data_owner_name: str, note: str,
+def create_update_body(incident_id: int, data_owner_email: str, data_owner_name: str, note: str,
                        incident_status_id: str, remediation_status_name: str, remediation_location: str, severity: str,
                        custom_attributes: List[str]):
     data: Dict[str, Any] = {
@@ -619,7 +619,8 @@ def list_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResul
     incident_types_dlp = [INCIDENT_TYPE_MAPPING[incident_type] for incident_type in incident_types]
     limit = arg_to_number(args.get('limit', 50))
     page = arg_to_number(args.get('page', 1))
-    page = 1 if page <= 0 else page
+    if page <= 0:
+        page = 1
 
     incidents_result = client.get_incidents_request(creation_date, status_ids, severities_dlp, incident_types_dlp,
                                                     limit * page)
@@ -654,8 +655,11 @@ def update_incident_command(client: Client, args: Dict[str, Any]) -> CommandResu
         severity = UPDATE_INCIDENT_SEVERITY_MAPPING[severity]
     custom_attributes = argToList(args.get('custom_attributes', ''))
 
-    update_body = create_update_body(incident_id, data_owner_email, data_owner_name, note, incident_status_id,
-                                     remediation_status_name, remediation_location, severity, custom_attributes)
+    update_body = create_update_body(incident_id=incident_id, data_owner_email=data_owner_email,
+                                     data_owner_name=data_owner_name, note=note, incident_status_id=incident_status_id,
+                                     remediation_status_name=remediation_status_name,
+                                     remediation_location=remediation_location, severity=severity,
+                                     custom_attributes=custom_attributes)
     client.update_incident_request(update_body)
     return CommandResults(
         readable_output=f"Symantec DLP incident {incident_id} was updated"
