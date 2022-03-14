@@ -29,7 +29,7 @@ subtype: python3
 runonce: false
 dockerimage: demisto/python3:3.10.1.26972
 runas: DBotWeakRole
-fromversion: 5.5.0
-comment: ''
+fromversion: 6.0.0
+comment: 'Joining values by index from 2 list according to a given format.'
 tests:
 - No tests (auto formatted)

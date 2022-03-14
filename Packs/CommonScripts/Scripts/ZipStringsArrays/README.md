@@ -1,4 +1,4 @@
-
+Joining values by index from 2 list according to a given format.
 
 ## Script Data
 ---
@@ -6,6 +6,7 @@
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---
