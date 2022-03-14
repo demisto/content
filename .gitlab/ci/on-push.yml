@@ -285,11 +285,12 @@ slack-notify-nightly-build:
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
     - echo "Auth done successfully"
 # todo: uncomment
-#    - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
+    - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
 
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$BUILD_OBJECT_TYPE" "$XSIAM_CHOSEN_MACHINE_ID"|| EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json # todo: check if meyotar
 
+      # todo: add support for run_tests
 #    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
 #    - |
 #      if [[ -f ./Tests/failed_tests.txt ]]; then
@@ -299,39 +300,38 @@ slack-notify-nightly-build:
 #      if [[ -f ./Tests/succeeded_tests.txt ]]; then
 #        cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
 #      fi
-      # todo: add support for run_tests
 #
 #      # todo: write script that destroy instanses
 #      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
     - exit $EXIT_CODE
 # todo: uncomment
-#  after_script:
-#    - echo "Job finished, removing lock file"
-#    - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-$CI_PIPELINE_ID"
-#    - echo "Finished removing lock file"
+  after_script:
+    - echo "Job finished, removing lock file"
+    - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-$CI_PIPELINE_ID"
+    - echo "Finished removing lock file"
 
 
-create_gcp_folders:
-  tags:
-    - gke
-    - us-west1
-  extends:
-    - .default-job-settings
-    - .push-rule
-  variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
-    GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
-  needs: []
-  stage: run-instances
-  script:
-    - EXIT_CODE=0
-    - echo "Authing to GCP"
-#    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
-#    - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/queue-lock-2552972"
-    - echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> $BASH_ENV
-    - source $BASH_ENV
-    - python3 ./Tests/gcp_update.py
-    - exit $EXIT_CODE
+#create_gcp_folders:
+#  tags:
+#    - gke
+#    - us-west1
+#  extends:
+#    - .default-job-settings
+#    - .push-rule
+#  variables:
+#    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+#    GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
+#  needs: []
+#  stage: run-instances
+#  script:
+#    - EXIT_CODE=0
+#    - echo "Authing to GCP"
+##    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+##    - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/queue-lock-2552972"
+#    - echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> $BASH_ENV
+#    - source $BASH_ENV
+#    - python3 ./Tests/gcp_update.py
+#    - exit $EXIT_CODE
 
 
 xsiam_server_3_2:
