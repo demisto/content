@@ -1,0 +1,576 @@
+id: 1ce16163-cad4-4400-8172-4a4d09bd20d0
+version: 45
+vcShouldKeepItemLegacyProdMachine: false
+name: Digital Shadows - CVE Alert Intelligence and Reputation (Automated)
+description: Provides intelligence and reputation outputs to the Client based on the most recent CVE alert reported on their infrastructure by Digital Shadows SearchLight
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 98ce3737-fcbb-469f-80d8-c400eb2dbbb0
+    type: start
+    task:
+      id: 98ce3737-fcbb-469f-80d8-c400eb2dbbb0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6313287c-5962-47ce-8184-316bedb1e939
+    type: regular
+    task:
+      id: 6313287c-5962-47ce-8184-316bedb1e939
+      version: -1
+      name: ds-search - INTELLIGENCE UPDATES (last 12 months)
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      extend-context:
+        simple: Intel Description=content.entity.description::Source=content.entity.entitySummary.source
+      filter_dateRange:
+        simple: P365D
+      filter_types:
+        simple: INTEL_INCIDENT
+      query:
+        simple: ${DigitalShadows.Vulnerabilities.CveId}
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 9acdde3a-a326-4945-8270-eca703533de6
+    type: regular
+    task:
+      id: 9acdde3a-a326-4945-8270-eca703533de6
+      version: -1
+      name: ds-search - INTELLIGENCE PROFILES (last 12 months)
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      extend-context:
+        simple: Profile Name=content.entity.primaryTag.name::Profile Description=content.entity.threatLevel.reason::Risk
+          Assessment=content.entity.threatLevel.type
+      filter_dateRange:
+        simple: P365D
+      query:
+        simple: ${DigitalShadows.Vulnerabilities.CveId} AND (type=[Actors] OR type=[Campaigns]
+          OR type=[Criminal locations] OR type=[TTPs])
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: bb7a680d-045c-4069-82ba-378348943cfd
+    type: regular
+    task:
+      id: bb7a680d-045c-4069-82ba-378348943cfd
+      version: -1
+      name: ds-search - EXPLOITATION MENTIONS
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      extend-context:
+        simple: Exploitation Mentions=total
+      ignore-outputs:
+        simple: "false"
+      query:
+        simple: ${DigitalShadows.Vulnerabilities.CveId} AND ((tag=[Vulnerability exploited]
+          AND type=[Intelligence updates]) OR (CVE AND source=[alienvault otx]))
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 35e53f09-faf7-48e3-8e3c-2ee294f04479
+    type: regular
+    task:
+      id: 35e53f09-faf7-48e3-8e3c-2ee294f04479
+      version: -1
+      name: ds-search - VULNERABILITIES (all time)
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      extend-context:
+        simple: CVSS 3.0 Score=content.entity.cvss3Score.baseScore::Description=content.entity.description::Related
+          CPEs=content.entity.relatedCPEs::Existing Exploits=content.entity.title
+      filter_types:
+        simple: VULNERABILITY_EXPLOIT
+      query:
+        simple: ${DigitalShadows.Vulnerabilities.CveId}
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 4f46dfc7-d7e5-4042-85ba-6edea9d520ff
+    type: regular
+    task:
+      id: 4f46dfc7-d7e5-4042-85ba-6edea9d520ff
+      version: -1
+      name: ds-search - MALICIOUS MENTIONS (last 12 months)
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      extend-context:
+        simple: Mentions on Malicious Sources=total
+      filter_dateRange:
+        simple: P365D
+      ignore-outputs:
+        simple: "false"
+      query:
+        simple: ${DigitalShadows.Vulnerabilities.CveId} AND (type=[Dark web pages]
+          OR type=[Chat messages] OR type=[Forum posts] OR type=[Marketplace listings]
+          OR type=[Pastes])
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 7e16b558-3710-4f2d-8fd9-55e5849f0613
+    type: regular
+    task:
+      id: 7e16b558-3710-4f2d-8fd9-55e5849f0613
+      version: -1
+      name: ds-find-vulnerabilities - SET TO 1 RESULT
+      description: Find vulnerabilities
+      script: Digital Shadows|||ds-find-vulnerabilities
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "2"
+      - "1"
+      - "4"
+      - "3"
+      - "5"
+      - "8"
+    scriptarguments:
+      pagination_containingId:
+        simple: ${inputs.Incident ID}
+      pagination_size:
+        simple: "1"
+      sort_direction:
+        simple: DESCENDING
+      sort_property:
+        simple: published
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 9b234e67-1394-4a3e-8e4c-a8187ac5703f
+    type: regular
+    task:
+      id: 9b234e67-1394-4a3e-8e4c-a8187ac5703f
+      version: -1
+      name: ds-search - MITRE TECHNIQUES (last 12 months)
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      extend-context:
+        simple: MITRE Name=content.entity.primaryTag.name
+      filter_dateRange:
+        simple: P365D
+      query:
+        simple: ${DigitalShadows.Vulnerabilities.CveId} AND type=[Techniques]
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 2b910a95-a010-453a-8f47-e2a78369b1db
+    type: regular
+    task:
+      id: 2b910a95-a010-453a-8f47-e2a78369b1db
+      version: -1
+      name: AddEvidence - INTELLIGENCE PROFILES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Profiles linked to this CVE
+      description:
+        simple: ${Profile Name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: e3fb7910-7003-4e6c-826a-72b74e3a72cc
+    type: regular
+    task:
+      id: e3fb7910-7003-4e6c-826a-72b74e3a72cc
+      version: -1
+      name: AddEvidence - MITRE TECHNIQUES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: MITRE Techniques linked to this CVE
+      description:
+        simple: ${MITRE Name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 2d42cecf-7d91-44af-8b21-efb07f0c84a3
+    type: regular
+    task:
+      id: 2d42cecf-7d91-44af-8b21-efb07f0c84a3
+      version: -1
+      name: AddEvidence - INTELLIGENCE UPDATES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Intelligence Updates linked to this CVE
+      description:
+        simple: ${Intel Description}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 68852a2e-d57a-4350-817c-a8d0251f9b48
+    type: regular
+    task:
+      id: 68852a2e-d57a-4350-817c-a8d0251f9b48
+      version: -1
+      name: AddEvidence - CVSS Score
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: CVSS 3.0 Score of this CVE
+      description:
+        simple: ${CVSS 3.0 Score}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: fca6db36-61d8-4b8a-8cea-707d6f79cb21
+    type: regular
+    task:
+      id: fca6db36-61d8-4b8a-8cea-707d6f79cb21
+      version: -1
+      name: AddEvidence - LAST 12 MONTHS SUSPICIOUS MENTION
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Malicious Score of this CVE
+      description:
+        simple: ${Mentions on Malicious Sources}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 77269038-2190-412c-82c5-712ea4810b33
+    type: regular
+    task:
+      id: 77269038-2190-412c-82c5-712ea4810b33
+      version: -1
+      name: AddEvidence - TOTAL EXPLOITATION MENTIONS
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Total Exploitation Mentions of this CVE
+      description:
+        simple: ${Exploitation Mentions}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 2530,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Incident ID
+  value:
+    complex:
+      root: incident
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.labels/subType
+            iscontext: true
+          right:
+            value:
+              simple: CVE
+      transformers:
+      - operator: getField
+        args:
+          field:
+            value:
+              simple: labels
+      - operator: getField
+        args:
+          field:
+            value:
+              simple: id
+  required: true
+  description: ""
+  playbookInputQuery: null
+outputs: []
+sourceplaybookid: 717dd5bf-3626-47cb-8c88-2415bd2d2ef1
