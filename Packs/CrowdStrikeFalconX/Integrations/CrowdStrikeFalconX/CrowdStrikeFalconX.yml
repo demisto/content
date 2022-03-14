@@ -1414,8 +1414,14 @@ script:
     execution: false
     name: cs-fx-find-reports
     outputs:
-    - contextPath: csfalconx.resource.id
-      description: 'Set of report IDs that match the search criteria. '
+    - contextPath: csfalconx.resource.resources
+      description: Set of report IDs that match the search criteria.
+      type: Number
+    - contextPath: csfalconx.resource.FindReport.sha256
+      description: queried SHA256 value (when applicable).
+      type: Number
+    - contextPath: csfalconx.resource.FindReport.foundIds
+      description: Set of report ids that match this queried SHA256 value.
       type: Number
   - arguments:
     - default: false

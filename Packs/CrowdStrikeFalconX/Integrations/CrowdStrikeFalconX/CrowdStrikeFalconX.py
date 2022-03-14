@@ -407,7 +407,8 @@ class Client:
             "sort": sort,
         }
         if hashes and not filter:
-            params['filter'] = ",".join(f'sandbox.sha256:"{sha256}"' for sha256 in hashes)
+            params['filter'] = ",".join(f'sandbox.sha256:"{sha256}"' for sha256 in argToList(hashes))
+            # argToList is called on purpose, as this method is also used in find-reports
 
         return self._http_request("Get", "/falconx/queries/reports/v1", params=params)
 
@@ -1102,18 +1103,50 @@ def find_sandbox_reports_command(
     :param filter: optional filter and sort criteria in the form of an FQL query. takes precedence over filter.
     :param offset: the offset to start retrieving reports from.
     :param sort: sort order: asc or desc
-    :param hash: sha256 hash to search for, overridden by filter.
+    :param hashes: sha256 hashes to search for, overridden by filter.
     :return: Demisto outputs when entry_context and responses are lists
     """
-    response = client.find_sandbox_reports(limit, filter, offset, sort, hashes=argToList(hashes))
-    result = parse_outputs(response, reliability=client.reliability, resources_fields=('id',))
-    return CommandResults(
-        outputs_key_field='id',
-        outputs_prefix=OUTPUTS_PREFIX,
-        outputs=result.output,
-        readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
-        raw_response=response,
-    )
+    if hashes and not filter:
+        found_reports = []
+        all_report_ids = []
+        raw_results: List[RawCommandResults] = []
+
+        for single_hash in argToList(hashes):
+            response = client.find_sandbox_reports(limit, filter, offset, sort, hashes=single_hash)
+            raw_result = parse_outputs(response, reliability=client.reliability, resources_fields=('id',))
+
+            if report_ids := (raw_result.output or {}).get('resources', []):
+                found_reports.append({'sha256': single_hash, 'reportIds': report_ids})
+                all_report_ids.extend(report_ids)
+
+        outputs = {
+            'resource': all_report_ids,
+            'FindReport': found_reports,
+        }
+
+        readable_output = tableToMarkdown("CrowdStrike Falcon X response:", {'resource': all_report_ids}) \
+            if all_report_ids else f'No reports found for hashes {hashes}.'
+        return CommandResults(
+            outputs_key_field='id',
+            outputs_prefix=OUTPUTS_PREFIX,
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=raw_results,
+        )
+
+    else:
+        if filter:
+            demisto.info('Both the hashes and filter arguments were provided to the find-reports command. '
+                         'Hashes are ignored in this case.')
+        response = client.find_sandbox_reports(limit, filter, offset, sort, hashes=None)
+        result = parse_outputs(response, reliability=client.reliability, resources_fields=('id',))
+        return CommandResults(
+            outputs_key_field='id',
+            outputs_prefix=OUTPUTS_PREFIX,
+            outputs=result.output,
+            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+            raw_response=result.response,
+        )
 
 
 def find_submission_id_command(
@@ -1325,7 +1358,8 @@ def main():
                 remove_polling_related_args(args)
                 return_results(commands[command](client, **args))
         elif command == 'cs-fx-get-full-report':
-            command_results, _ = get_full_report_command(client, **args)  # 2nd returned value is a flag for polling
+            # 2nd returned value is a flag for polling
+            command_results, _ = get_full_report_command(client, **args)  # pylint: disable=E1123
             return_results(command_results)
         elif command in commands:
             return_results(commands[command](client, **args))
@@ -1336,7 +1370,4 @@ def main():
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
-    main()
-
-if __name__ == '__main__':  # todo remove
     main()

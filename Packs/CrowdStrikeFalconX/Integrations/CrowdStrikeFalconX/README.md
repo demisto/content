@@ -1707,7 +1707,9 @@ Finds sandbox reports by providing an FQL filter and paging details.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.id | Number | Set of report IDs that match the search criteria.  | 
+| csfalconx.resource.resources | List | Set of report IDs that match the search criteria.  |
+| csfalconx.resource.FindReport.sha256 | String | queried SHA256 value (when applicable). |
+| csfalconx.resource.FindReport.foundIds | Set | Set of report ids that match this queried SHA256 value. |
 
 
 #### Command Example
@@ -1818,7 +1820,7 @@ Gets reputation info for one or more files, by their sha256 hash.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.id | Number | Set of report IDs that match the search criteria.  | 
+| csfalconx.resource.id | Set | Set of report IDs that match the search criteria.  |
 | csfalconx.resource.file_size | Number | The file size. | 
 | csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. | 
 | csfalconx.resource.threat_score | Number | Score of the threat. | 
