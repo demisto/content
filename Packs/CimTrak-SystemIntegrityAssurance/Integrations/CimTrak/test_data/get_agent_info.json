@@ -55,39 +55,39 @@
                             "perfStat": 60,
                             "alternateSystemId": "test"
                         },
-                        "state": {
-                            "cimTrakVersion": "4.2.0.0",
-                            "osVersion": "Windows 10 Version 10.0.19043 x64",
-                            "agentIp": "127.0.0.1",
-                            "build": 18029,
-                            "agentConnected": true,
-                            "cimTrakAgentRunningDate": "2022-03-08 18:55:58",
-                            "osRunningDate": "2022-02-10 00:22:37",
-                            "connectTime": "2022-03-08 18:56:07.59057",
-                            "pathDelimiter": "\\",
-                            "realtimeEnabled": true,
-                            "components": [
-                                {
-                                    "name": "ctagent",
-                                    "displayName": "CimTrak Agent",
-                                    "version": "4.2.0.0 Build 18029",
-                                    "enabled": true
-                                },
-                                {
-                                    "name": "ctlogmonitor",
-                                    "displayName": "Log Monitor",
-                                    "version": "4.2.0.0 Build 18029",
-                                    "enabled": true
-                                },
-                                {
-                                    "name": "ctcompliance",
-                                    "displayName": "CimTrak Compliance Module",
-                                    "version": "4.2.0.0 Build 18029",
-                                    "enabled": true
-                                }
-                            ],
-                            "disconnectTime": "2022-01-25 12:22:51"
-                        }
+                      "state": {
+                        "cimTrakVersion": "Build 18029",
+                        "osVersion": "Windows 10 Version 10.0.19043 x64",
+                        "agentIp": "127.0.0.1",
+                        "build": 18029,
+                        "agentConnected": true,
+                        "cimTrakAgentRunningDate": "2022-03-08 18:55:58",
+                        "osRunningDate": "2022-02-10 00:22:37",
+                        "connectTime": "2022-03-08 18:56:07.59057",
+                        "pathDelimiter": "\\",
+                        "realtimeEnabled": true,
+                        "components": [
+                          {
+                            "name": "ctagent",
+                            "displayName": "CimTrak Agent",
+                            "version": "Build 18029",
+                            "enabled": true
+                          },
+                          {
+                            "name": "ctlogmonitor",
+                            "displayName": "Log Monitor",
+                            "version": "Build 18029",
+                            "enabled": true
+                          },
+                          {
+                            "name": "ctcompliance",
+                            "displayName": "CimTrak Compliance Module",
+                            "version": "Build 18029",
+                            "enabled": true
+                          }
+                        ],
+                        "disconnectTime": "2022-01-25 12:22:51"
+                      }
                     }
                 ],
                 "status": "success",
@@ -148,39 +148,39 @@
                     "perfStat": 60,
                     "alternateSystemId": "test"
                 },
-                "state": {
-                    "cimTrakVersion": "4.2.0.0",
-                    "osVersion": "Windows 10 Version 10.0.19043 x64",
-                    "agentIp": "127.0.0.1",
-                    "build": 18029,
-                    "agentConnected": true,
-                    "cimTrakAgentRunningDate": "2022-03-08 18:55:58",
-                    "osRunningDate": "2022-02-10 00:22:37",
-                    "connectTime": "2022-03-08 18:56:07.59057",
-                    "pathDelimiter": "\\",
-                    "realtimeEnabled": true,
-                    "components": [
-                        {
-                            "name": "ctagent",
-                            "displayName": "CimTrak Agent",
-                            "version": "4.2.0.0 Build 18029",
-                            "enabled": true
-                        },
-                        {
-                            "name": "ctlogmonitor",
-                            "displayName": "Log Monitor",
-                            "version": "4.2.0.0 Build 18029",
-                            "enabled": true
-                        },
-                        {
-                            "name": "ctcompliance",
-                            "displayName": "CimTrak Compliance Module",
-                            "version": "4.2.0.0 Build 18029",
-                            "enabled": true
-                        }
-                    ],
-                    "disconnectTime": "2022-01-25 12:22:51"
-                }
+              "state": {
+                "cimTrakVersion": "Build 18029",
+                "osVersion": "Windows 10 Version 10.0.19043 x64",
+                "agentIp": "127.0.0.1",
+                "build": 18029,
+                "agentConnected": true,
+                "cimTrakAgentRunningDate": "2022-03-08 18:55:58",
+                "osRunningDate": "2022-02-10 00:22:37",
+                "connectTime": "2022-03-08 18:56:07.59057",
+                "pathDelimiter": "\\",
+                "realtimeEnabled": true,
+                "components": [
+                  {
+                    "name": "ctagent",
+                    "displayName": "CimTrak Agent",
+                    "version": "Build 18029",
+                    "enabled": true
+                  },
+                  {
+                    "name": "ctlogmonitor",
+                    "displayName": "Log Monitor",
+                    "version": "Build 18029",
+                    "enabled": true
+                  },
+                  {
+                    "name": "ctcompliance",
+                    "displayName": "CimTrak Compliance Module",
+                    "version": "Build 18029",
+                    "enabled": true
+                  }
+                ],
+                "disconnectTime": "2022-01-25 12:22:51"
+              }
             }
         ],
         "status": "success",

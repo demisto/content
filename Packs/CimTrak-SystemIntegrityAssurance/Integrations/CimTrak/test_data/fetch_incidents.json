@@ -98,7 +98,7 @@
               "alternateSystemId": "test"
             },
             "state": {
-              "cimTrakVersion": "4.2.0.0",
+              "cimTrakVersion": "Build 18029",
               "osVersion": "Windows 10 Version 10.0.19043 x64",
               "agentIp": "127.0.0.1",
               "build": 18029,
@@ -112,19 +112,19 @@
                 {
                   "name": "ctagent",
                   "displayName": "CimTrak Agent",
-                  "version": "4.2.0.0 Build 18029",
+                  "version": "Build 18029",
                   "enabled": true
                 },
                 {
                   "name": "ctlogmonitor",
                   "displayName": "Log Monitor",
-                  "version": "4.2.0.0 Build 18029",
+                  "version": "Build 18029",
                   "enabled": true
                 },
                 {
                   "name": "ctcompliance",
                   "displayName": "CimTrak Compliance Module",
-                  "version": "4.2.0.0 Build 18029",
+                  "version": "Build 18029",
                   "enabled": true
                 }
               ],
