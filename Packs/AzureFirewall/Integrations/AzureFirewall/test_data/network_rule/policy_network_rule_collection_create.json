@@ -1,0 +1,46 @@
+{
+  "properties": {
+    "priority": 109,
+    "ruleCollections": [
+      {
+        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+        "action": {
+          "type": "Allow"
+        },
+        "rules": [
+          {
+            "ruleType": "NetworkRule",
+            "name": "my-ip-rule",
+            "description": "my-poc-collection",
+            "ipProtocols": [
+              "UDP",
+              "TCP"
+            ],
+            "sourceAddresses": [
+              "192.168.50.32",
+              "192.168.50.31"
+            ],
+            "sourceIpGroups": [],
+            "destinationAddresses": [
+              "192.168.30.82",
+              "192.154.20.12"
+            ],
+            "destinationIpGroups": [],
+            "destinationFqdns": [],
+            "destinationPorts": [
+              "8080"
+            ]
+          }
+        ],
+        "name": "xsoar-collection",
+        "priority": 109
+      }
+    ],
+    "provisioningState": "Succeeded"
+  },
+  "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-policy/ruleCollectionGroups/xsoar-collection",
+  "name": "xsoar-collection",
+  "type": "Microsoft.Network/FirewallPolicies/RuleCollectionGroups",
+  "etag": "4d610489-9de8-4488-a4e8-0f0d31187a10",
+  "location": "westeurope"
+}

@@ -1,0 +1,23 @@
+{
+  "name": "xsoar-firewall",
+  "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/xsoar-firewall",
+  "etag": "W/d87d246e-c05f-4d2c-b417-12e02daaa4ea",
+  "type": "Microsoft.Network/azureFirewalls",
+  "location": "eastus",
+  "properties": {
+    "provisioningState": "Succeeded",
+    "sku": {
+      "name": "AZFW_VNet",
+      "tier": "Standard"
+    },
+    "threatIntelMode": "Off",
+    "additionalProperties": {},
+    "ipConfigurations": [],
+    "networkRuleCollections": [],
+    "applicationRuleCollections": [],
+    "natRuleCollections": [],
+    "firewallPolicy": {
+      "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar-platform-policy"
+    }
+  }
+}
