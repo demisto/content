@@ -70,71 +70,71 @@ script:
     outputs:
     - contextPath: FireEyeHX.Hosts._id
       description: FireEye HX Agent ID.
-      type: Unknown
+      type: String
     - contextPath: FireEyeHX.Hosts.agent_version
       description: The version of the agent.
-      type: Unknown
+      type: String
     - contextPath: FireEyeHX.Hosts.excluded_from_containment
       description: Determines whether the host is excluded from containment.
-      type: Unknown
+      type: Boolean
     - contextPath: FireEyeHX.Hosts.containment_missing_software
       description: Whether there is containment missing software.
-      type: Unknown
+      type: Boolean
     - contextPath: FireEyeHX.Hosts.containment_queued
       description: Determines whether the host is queued for containment.
-      type: Unknown
+      type: Boolean
     - contextPath: FireEyeHX.Hosts.containment_state
       description: The containment state of the host. Possible values normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu
-      type: Unknown
+      type: String
     - contextPath: FireEyeHX.Hosts.stats.alerting_conditions
       description: The number of conditions that have alerted for the host.
-      type: Unknown
+      type: Number
     - contextPath: FireEyeHX.Hosts.stats.alerts
       description: The total number of alerts, including exploit-detection alerts.
-      type: Unknown
+      type: Number
     - contextPath: FireEyeHX.Hosts.stats.exploit_blocks
       description: The number of blocked exploits on the host.
-      type: Unknown
+      type: Number
     - contextPath: FireEyeHX.Hosts.stats.malware_alerts
       description: The number of malware alerts associated with the host.
-      type: Unknown
+      type: Number
     - contextPath: FireEyeHX.Hosts.hostname
       description: The name of the host.
-      type: Unknown
+      type: String
     - contextPath: FireEyeHX.Hosts.domain
       description: The name of the domain.
-      type: Unknown
+      type: String
     - contextPath: FireEyeHX.Hosts.timezone
       description: The time zone of the host.
-      type: Unknown
+      type: String
     - contextPath: FireEyeHX.Hosts.primary_ip_address
       description: The IP address of the host.
-      type: Unknown
+      type: String
     - contextPath: FireEyeHX.Hosts.last_poll_timestamp
       description: The timestamp of the last system poll preformed on the host.
-      type: Unknown
+      type: String
     - contextPath: FireEyeHX.Hosts.initial_agent_checkin
       description: The timestamp of the initial agent check-in.
-      type: Unknown
+      type: String
     - contextPath: FireEyeHX.Hosts.last_alert_timestamp
       description: The time stamp of the last alert for the host.
-      type: Unknown
+      type: String
     - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
       description: The time when the last exploit was blocked on the host. The value is
         null if no exploits have been blocked.
-      type: Unknown
+      type: String
     - contextPath: FireEyeHX.Hosts.os.product_name
       description: The operating system of the host.
-      type: Unknown
+      type: String
     - contextPath: FireEyeHX.Hosts.os.bitness
       description: The bitness of the operating system.
-      type: Unknown
+      type: String
     - contextPath: FireEyeHX.Hosts.os.platform
       description: The family of operating systems. Valid values are win, osx, and linux.
-      type: Unknown
+      type: String
     - contextPath: FireEyeHX.Hosts.primary_mac
       description: The MAC address of the host.
-      type: Unknown
+      type: String
   - arguments:
     - description: Specifies which record to start with in the response. Default
         is 0.
