@@ -99,44 +99,61 @@ def test_module(client: Client) -> str:
 ''' INCIDENT '''
 
 
-def fetch_incidents():
+def fetch_incidents(client: Client):
+
     max_results = arg_to_number(arg=demisto.params().get('max_fetch'), arg_name='max_fetch', required=False)
 
 
-    first_fetch_time = arg_to_datetime(demisto.params.get('first_fetch')).isoformat()
+    first_fetch_time = arg_to_datetime(demisto.params().get('first_fetch')).isoformat()
+
 
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('last_fetch', first_fetch_time)
 
 
-    severity = "high"
-
     incidentsList=[]
-    incidentsResult = [{"NAME":"A", "AA":"1"},{"NAME":"C", "AA":"2"}]
-    incidentsResult = client.correlation_alerts()
+    alert_response = client.correlation_alerts()
+    incident_data = alert_response['Data']
 
-    for inc in incidentsResult:
-        '''
-        if last_fetch:
-            if incident_created_time <= last_fetch:
-                continue
-        '''
-        # If no name is present it will throw an exception
-        incident_name = inc['NAME']
+    for inc in incident_data:
+
+
+        if len(incidentsList) > max_results:
+            break
+
+        incident_name = inc['CorrelationAlert']['NAME']
+        time_stamp = inc['CorrelationAlert']['CREATEDATE']+"Z"
+
+
+
+        severityLvl = int(inc['CorrelationAlert']['RISK'])
+        if severityLvl >=0 and severityLvl <= 5:
+            severity = 1
+        elif severityLvl > 5 and severityLvl <= 7:
+            severity = 2
+        elif severityLvl > 7 and severityLvl <= 9:
+            severity = 3
+        elif severityLvl > 9 and severityLvl <= 10:
+            severity = 4
+        else:
+            severity = 0
+
+        # "log" column is stringfyed 'Log' data.
+        inc['Log'].pop("log")
+
+        incidentObject = {**inc['Log'], **inc['CorrelationAlert']}
 
         incident = {
             'name': incident_name,
-            'occurred': '2019-10-23T10:00:00Z',
-            'rawJSON': json.dumps(inc),
-            #'type': 'Crpyotsim CorrelationAlert',
-            'severity': severity,
+            'occurred': time_stamp,
+            'rawJSON': json.dumps(incidentObject),
+            "severity": severity,
+            'type': 'Crpyotsim CorrelationAlert'
         }
 
         incidentsList.append(incident)
 
-        # Update last run and add incident if the incident is newer than last fetch
-        #if incident_created_time > latest_created_time:
-        #    latest_created_time = incident_created_time
+
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': last_fetch}
