@@ -20,37 +20,37 @@ from typing import Any, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 
+
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with io.open(path, mode="r", encoding="utf-8") as f:
         return json.loads(f.read())
+
 
 def test_cimtrak(requests_mock):
     import glob
     from CimTrak import Client
     import CimTrak
-    
+
     for file in glob.glob("test_data/*.json"):
-         #print("Testing " + file)
-         test_json = util_load_json(file)
-         for post in test_json['posts']:         
-             requests_mock.post(post['url'],json=post['reply'])
-         
-         pre_script = "from CimTrak import Client\n"
-         pre_script += "import CimTrak\n"
-         pre_script += "client = Client(\n"
-         pre_script += "    base_url='https://test.com/',\n"
-         pre_script += "    verify=False,\n"
-         pre_script += "    headers={\n"
-         pre_script += "        'Authentication': 'Bearer some_api_key'\n"
-         pre_script += "    }\n"
-         pre_script += ")\n"
-         
-         exec(pre_script + test_json['execute'], globals())
-         dict_expected_result = test_json['response']
-         dict_actual_result = response
+        # print("Testing " + file)
+        test_json = util_load_json(file)
+        for post in test_json["posts"]:
+            requests_mock.post(post["url"], json=post["reply"])
+        pre_script = "from CimTrak import Client\n"
+        pre_script += "import CimTrak\n"
+        pre_script += "client = Client(\n"
+        pre_script += "    base_url='https://test.com/',\n"
+        pre_script += "    verify=False,\n"
+        pre_script += "    headers={\n"
+        pre_script += "        'Authentication': 'Bearer some_api_key'\n"
+        pre_script += "    }\n"
+        pre_script += ")\n"
 
-         #print("Actual:" + str(dict_actual_result))
-         #print("Expected:" + str(dict_expected_result))
+        exec(pre_script + test_json["execute"], globals())
+        dict_expected_result = test_json["response"]
+        dict_actual_result = response
 
-         assert dict_actual_result == dict_expected_result
-         
+        # print("Actual:" + str(dict_actual_result))
+        # print("Expected:" + str(dict_expected_result))
+
+        assert dict_actual_result == dict_expected_result
