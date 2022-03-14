@@ -6459,7 +6459,7 @@ class ConcurrentCommandRunner:
     @staticmethod
     def execute_commands_multiple_results(command_executer, extract_contents=True):
         """
-        Runs the `demisto.executeCommand()` and check for all the results returned from the command.
+        Runs the `demisto.executeCommand()` and gets all the results, including the errors, returned from the command.
 
         :type command_executer: ``CommandExecuter``
         :param command_executer: The commands to run. (required)
