@@ -1,7 +1,3 @@
-For full integration documentation, see our [reference docs](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-user).
-
-The commands: ***msgraph-user-terminate-session***, ***msgraph-user-change-password*** are only supported in a self-deployed application configuration.
-
 
 ## Authorize Cortex XSOAR for Azure Active Directory Users
 
@@ -13,17 +9,27 @@ You need to grant Cortex XSOAR authorization to access Azure Active Directory Us
 
 ## Authorize Cortex XSOAR for Azure Active Directory Users (self-deployed configuration)
 
-Follow these steps for a self-deployed configuration.
+There are two different authentication methods for self-deployed configuration: [client credentials flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow) and the [authorization code flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow).
+We recommend using the client credentials one.
 
-1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
-2. Make sure the following permissions are granted for the app registration:
+In order to use the ***msgraph-user-change-password*** command, you must configure with authorization code flow.
+
+Note: when using the authorization code flow, make sure the user you authenticate with has the right roles in Azure AD in order to use the command.
+
+###Self deployed configuration with client credentials flow
+1. Enter your client ID in the ***ID*** parameter field.
+2. Enter your client secret in the ***Key*** parameter field.
+3. Enter your tenant ID in the ***Token*** parameter field.
+   
+###Self deployed configuration with authorization code flow
+1. Make sure the following permissions are granted for the app registration:
    -  API/Permission name `Directory.AccessAsUser.All` of type `Delegated`
-3. Copy the following URL and replace the ***TENANT_ID***, ***CLIENT_ID*** and ***REDIRECT_URI*** with your own client ID and redirect URI, accordingly.
+2. Copy the following URL and replace the ***TENANT_ID***, ***CLIENT_ID*** and ***REDIRECT_URI*** with your own client ID and redirect URI, accordingly.
 ```https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=code&scope=offline_access%20directory.accessasuser.all&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI```
-4. Enter the link and you will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. You will be automatically redirected to a link with the following structure:
+3. Enter the link and you will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
-5. Copy the ***AUTH_CODE*** (without the “code=” prefix) and paste it in your instance configuration under the **Authorization code** parameter.
-6. Enter your client ID in the ***ID*** parameter field.
-7. Enter your client secret in the ***Key*** parameter field.
-8. Enter your tenant ID in the ***Token*** parameter field.
-9. Enter your redirect URI in the ***Redirect URI*** parameter field.
+4. Copy the ***AUTH_CODE*** (without the “code=” prefix) and paste it in your instance configuration under the **Authorization code** parameter.
+5. Enter your client ID in the ***ID*** parameter field.
+6. Enter your client secret in the ***Key*** parameter field.
+7. Enter your tenant ID in the ***Token*** parameter field.
+8. Enter your redirect URI in the ***Redirect URI*** parameter field.
