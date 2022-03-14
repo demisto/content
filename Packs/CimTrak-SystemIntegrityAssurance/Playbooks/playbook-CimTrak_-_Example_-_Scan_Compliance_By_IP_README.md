@@ -13,9 +13,9 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any scripts.
 
 ### Commands
+* get-agent-object-by-ip
 * compliance-scan-with-summary
 * get-objects
-* get-agent-object-by-ip
 
 ## Playbook Inputs
 ---

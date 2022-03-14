@@ -14,11 +14,11 @@ This playbook does not use any scripts.
 
 ### Commands
 * compliance-scan-with-summary
+* get-objects
 * add-hash-allow-list
 * add-hash-deny-list
-* get-objects
-* promote-authoritative-baseline-files
 * file-analysis-by-objectdetail-id
+* promote-authoritative-baseline-files
 
 ## Playbook Inputs
 ---
