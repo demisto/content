@@ -249,6 +249,6 @@ do
 done
 
 export XSIAM_CHOSEN_MACHINE_ID=`cat ChosenMachine`	# ChosenMachine it is the file with free machine. machine name will be written there.
-echo "xsiam chosen machine id: $XSIAM_CHOSEN_MACHINE_ID"
-
+# export vars to file
+echo -e "export XSIAM_CHOSEN_MACHINE_ID=$XSIAM_CHOSEN_MACHINE_ID" >>  XSIAMEnvVariables
 
