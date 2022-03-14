@@ -224,7 +224,8 @@ references:
         echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
         mkdir ./unit-tests
-        demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
+        pip3 install git+https://github.com/demisto/demisto-sdk.git@eli/adding_build_logs#egg=demisto-sdk
+        demisto-sdk lint -p 10 -a
 
   generate_coverage_reports: &generate_coverage_reports
     run:
