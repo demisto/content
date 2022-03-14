@@ -690,7 +690,9 @@ class XSIAMBuild(Build):
 
     @staticmethod
     def get_xsiam_configuration(xsiam_machine, xsiam_servers):
+        logging.info(f'{xsiam_machine=}')
         conf = xsiam_servers.get(xsiam_machine)
+        logging.info(f'{conf}')
         return conf.get('api_key'), conf.get('demisto_version'), conf.get('base_url'), conf.get('x-xdr-auth-id')
 
     def configure_servers_and_restart(self):

@@ -249,5 +249,6 @@ do
 done
 
 export XSIAM_CHOSEN_MACHINE_ID=`cat ChosenMachine`	# ChosenMachine it is the file with free machine. machine name will be written there.
+echo "xsiam chosen machine id: $XSIAM_CHOSEN_MACHINE_ID"
 
 

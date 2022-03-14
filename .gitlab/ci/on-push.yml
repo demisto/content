@@ -286,6 +286,7 @@ slack-notify-nightly-build:
     - echo "Auth done successfully"
 # todo: uncomment
     - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
+    - echo "xsiam chosen machine id $XSIAM_CHOSEN_MACHINE_ID"
 
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$BUILD_OBJECT_TYPE" "$XSIAM_CHOSEN_MACHINE_ID"|| EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json # todo: check if meyotar
