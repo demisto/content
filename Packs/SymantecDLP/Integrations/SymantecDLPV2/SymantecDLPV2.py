@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 import dateparser
-from dateutil import parser
 
 import requests
 import traceback
@@ -87,8 +86,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
     def get_incidents_request(self, creation_date: str = None, status_id: List[str] = None, severity: List[int] = None,
-                              incident_type: List[str] = None, limit: int = MAX_PAGE_SIZE, order_by: str = None) \
-            -> Dict[str, str]:
+                              incident_type: List[str] = None, limit: int = MAX_PAGE_SIZE, order_by: str = None):
         """Returns incidents list
         in the input (dummy).
 
@@ -178,7 +176,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_incident_history_request(self, incident_id: int) -> List[dict]:
+    def get_incident_history_request(self, incident_id: Optional[int]) -> List[dict]:
         """Returns incident history
 
         :param incident_id: The incident ID.
@@ -205,7 +203,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def create_filter_dict(filter_type: str, filter_by: str, filter_value: List[int], operator: str):
+def create_filter_dict(filter_type: str, filter_by: str, filter_value: List[Any], operator: str):
     """Creates a dictionary with the filter for the list-incidents request.
 
     :param filter_type: The filter type.
@@ -218,7 +216,7 @@ def create_filter_dict(filter_type: str, filter_by: str, filter_value: List[int]
             "operandTwoValues": filter_value, "operator": operator}
 
 
-def get_severity_name_by_id(severity: int):
+def get_severity_name_by_id(severity: Optional[int]):
     """Returns the name of the severity according to the given severity ID
 
     :param severity: The severity ID.
@@ -242,7 +240,7 @@ def get_readable_output_incidents_list(incidents_list: List[dict]):
     for incident in incidents_list:
         readable_output.append(assign_params(**{
             'ID': incident.get('incidentId'),
-            'Severity': get_severity_name_by_id(incident.get('severityId')),
+            'Severity': get_severity_name_by_id(arg_to_number(incident.get('severityId'))),
             'Status': incident.get('incidentStatusId'),
             'Incident Type': incident.get('messageSource'),
             'Creation Date': incident.get('creationDate'),
@@ -270,7 +268,7 @@ def get_readable_output_incident_details(incidents_list: List[dict]):
     for incident in incidents_list:
         readable_output.append(assign_params(**{
             'ID': incident.get('incidentId'),
-            'Severity': get_severity_name_by_id(incident.get('severityId')),
+            'Severity': get_severity_name_by_id(arg_to_number(incident.get('severityId'))),
             'Incident Type': incident.get('messageSource'),
             'Creation Date': incident.get('creationDate'),
             'Detection Date': incident.get('detectionDate'),
@@ -288,7 +286,7 @@ def get_readable_output_incident_details(incidents_list: List[dict]):
     return readable_output
 
 
-def pagination(incidents_list: List, limit: int, page: int):
+def pagination(incidents_list: List, limit: Optional[int], page: Optional[int]):
     """
     :param incidents_list: The incidents_list from the API.
     :param limit: Maximum number of objects to retrieve.
@@ -386,14 +384,14 @@ def get_common_incident_details(static_attributes: dict, editable_attributes: di
     :param isfetch: Check if this function was called by the fetch-incidents command.
     :return: the parsed dict
     """
-    incident_info_map_editable = editable_attributes.get('infoMap')
-    incident_info_map_static = static_attributes.get('infoMap')
+    incident_info_map_editable = editable_attributes.get('infoMap', {})
+    incident_info_map_static = static_attributes.get('infoMap', {})
     incident_custom_attribute_groups = editable_attributes.get('customAttributeGroups', [])
     incident_details: dict = assign_params(**{
         'ID': static_attributes.get('incidentId'),
         'creationDate': incident_info_map_static.get('creationDate'),
         'policyId': incident_info_map_static.get('policyId'),
-        'severityId': get_severity_name_by_id(incident_info_map_editable.get('severityId')),
+        'severityId': get_severity_name_by_id(arg_to_number(incident_info_map_editable.get('severityId'))),
         'incidentStatusId': incident_info_map_editable.get('incidentStatusId'),
         'detectionDate': incident_info_map_static.get('detectionDate'),
         'senderIPAddress': incident_info_map_static.get('senderIPAddress'),
@@ -421,7 +419,7 @@ def get_details_unauthorized_incident(incident_data):
         'ID': incident_data.get('incidentId'),
         'creationDate': incident_data.get('creationDate'),
         'policyId': incident_data.get('policyId'),
-        'severityId': get_severity_name_by_id(incident_data.get('severityId')),
+        'severityId': get_severity_name_by_id(arg_to_number(incident_data.get('severityId'))),
         'incidentStatusId': incident_data.get('incidentStatusId'),
         'detectionDate': incident_data.get('detectionDate'),
         'policyVersion': incident_data.get('policyVersion'),
@@ -516,10 +514,10 @@ def get_context_incident_history(incident_history_list: List[dict]):
     return history_context
 
 
-def create_update_body(incident_id: int, data_owner_email: str, data_owner_name: str, note: str,
+def create_update_body(incident_id: Optional(int), data_owner_email: str, data_owner_name: str, note: str,
                        incident_status_id: str, remediation_status_name: str, remediation_location: str, severity: str,
                        custom_attributes: List[str]):
-    data = {
+    data: Dict[str, Any] = {
         "incidentIds": [incident_id],
     }
     if data_owner_email:
@@ -698,6 +696,8 @@ def get_incident_details_command(client: Client, args: Dict[str, Any]) -> Comman
     except DemistoException as e:
         if '401' in str(e.res):
             return_error(f"Error {e.res}: Incident access not authorized or the incident does not exist.")
+        else:
+            return_error(f"Error {e.res}")
 
 
 def list_incident_status_command(client: Client) -> CommandResults:
@@ -752,8 +752,8 @@ def get_list_remediation_status(client: Client) -> CommandResults:
     )
 
 
-def is_incident_already_fetched_in_previous_fetch(last_update_time, incident_creation_time, last_incident_id
-                                                  , incident_id):
+def is_incident_already_fetched_in_previous_fetch(last_update_time, incident_creation_time, last_incident_id,
+                                                  incident_id):
     """
     Checks if the incident was already fetched
     :param last_update_time: last_update_time from last_run
@@ -803,16 +803,16 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
     incidents_data_list = incidents_data_list.get('incidents', [])
     if incidents_data_list:
 
-        for incident in incidents_data_list:
-            incident_id = incident.get('incidentId')
-            incident_creation_time = (dateparser.parse(incident.get('creationDate', ''))).strftime(
+        for incident_data in incidents_data_list:
+            incident_id = incident_data.get('incidentId')
+            incident_creation_time = (dateparser.parse(incident_data.get('creationDate', ''))).strftime(
                 '%Y-%m-%dT%H:%M:%SZ')
             if is_incident_already_fetched_in_previous_fetch(last_update_time, incident_creation_time, last_incident_id,
                                                              incident_id):
                 # Skipping last incident from last cycle if fetched again
                 continue
 
-            incident_details = get_incident_details_fetch(client, incident)
+            incident_details = get_incident_details_fetch(client, incident_data)
             incident: dict = {
                 'rawJSON': json.dumps(incident_details),
                 'name': f'Symantec DLP Incident ID {incident_id}',

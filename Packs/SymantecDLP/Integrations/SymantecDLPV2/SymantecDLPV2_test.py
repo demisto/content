@@ -100,11 +100,11 @@ def test_parse_custom_attribute():
         }
     ]
     args_all = {'custom_attributes': 'all'}
-    custom_attribute_all_list_output = [
-        {'Index': 1, 'Name': 'cn'},
-        {'Index': 2, 'Name': 'Resolution'},
-        {'Index': 3, 'Name': 'First Name', 'Value': 'Admin'}
-    ]
+    custom_attribute_all_list_output = [{'customAttribute': [{'index': 1, 'name': 'cn'}],
+                                         'name': 'Default Attribute Group'},
+                                        {'customAttribute': [{'index': 2, 'name': 'Resolution'},
+                                                             {'index': 3, 'name': 'First Name', 'value': 'Admin'}],
+                                         'name': 'Predefined'}]
     assert custom_attribute_all_list_output == parse_custom_attribute(custom_attribute_group_list, args_all)
     args_none = {'custom_attributes': 'none'}
     assert [] == parse_custom_attribute(custom_attribute_group_list, args_none)
@@ -198,11 +198,11 @@ def test_fetch_incidents__single(requests_mock):
          "endpointMachineIpAddress": "1.1.1.1", "policyName": "Network Test policy", "policyVersion": 4,
          "messageSource": "NETWORK", "messageType": "HTTP",
          "detectionServerName": "Detection - Network monitor",
-         "policyGroupName": "policy_group.default.name", "matchCount": 3, "customAttributeGroup": [
-            {"name": "custom_attribute_group.default",
-             "customAttribute": [{"name": "Custom Attribue1", "index": 1}, {"name": "cust2", "index": 2},
-                                 {"name": "bla", "index": 3}]},
-            {"name": "att group2", "customAttribute": [{"name": "kjv", "index": 4}]}],
+         "policyGroupName": "policy_group.default.name", "matchCount": 3, "customAttributeGroup":
+             [{"name": "custom_attribute_group.default", "customAttribute": [{"name": "Custom Attribue1", "index": 1},
+                                                                             {"name": "cust2", "index": 2},
+                                                                             {"name": "bla", "index": 3}]},
+              {"name": "att group2", "customAttribute": [{"name": "kjv", "index": 4}]}],
          "messageSubject": "HTTP incident", "networkSenderPort": 59637,
          "recipientInfo": {"recipientDomain": "2.2.2.254", "recipientPort": 80,
                            "recipientUrl": "http://2.2.2.254/latest/api/token"}})
