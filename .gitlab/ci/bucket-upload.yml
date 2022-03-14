@@ -32,10 +32,8 @@
 
 run-validations-upload-flow:
   extends:
-    - echo "Before run-validations"
     - .run-validations
     - .bucket-upload-rule
-    - echo "After run-validations"
 
 
 run-unittests-and-lint-upload-flow:
