@@ -1,81 +1,85 @@
+category: Database
 commonfields:
   id: Google BigQuery
   version: -1
-name: Google BigQuery
-display: Google BigQuery
-category: Database
-description: Integration for Google BigQuery, a data warehouse for querying and analyzing large databases. In all commands, for any argument not specified, the BigQuery default value for that argument will be applied.
 configuration:
-- display: Google service account JSON (a credentials JSON generated from Google API Manager or from GCP console)
+- display: Google service account JSON (a credentials JSON generated from Google API
+    Manager or from GCP console)
   name: google_service_creds
-  defaultvalue: ""
-  type: 4
   required: true
+  type: 4
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- additionalinfo: Column Name containing the identifier e.g. id
+  display: Column Key Identifier
+  name: identifierKey
+  required: false
+  type: 0
+- display: Column Name holding the created date values e.g. created
+  name: createdKey
+  required: false
+  type: 0
+- additionalinfo: Column Name holding the last modified date values e.g. last_modified_date
+  display: Last Modified Date (Column Name)
+  name: lastmodifiedKey
+  required: false
+  type: 0
+- display: Query to fetch incidents
+  name: querytoRun
+  required: false
+  type: 0
+- additionalinfo: Optional - only for mirror incoming - not required for fetching
+  display: Sync Table Name (for mirroring)
+  name: sync_table
+  required: false
+  type: 0
+- additionalinfo: The First Fetch Time e.g. 1 hour, 3 days
+  display: First Fetch Time
+  name: firstFetchTime
+  required: false
+  type: 0
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: Integration for Google BigQuery, a data warehouse for querying and analyzing
+  large databases. In all commands, for any argument not specified, the BigQuery default
+  value for that argument will be applied.
+display: Google BigQuery
+name: Google BigQuery
 script:
-  script: ''
-  type: python
   commands:
-  - name: bigquery-query
-    arguments:
-    - name: query
+  - arguments:
+    - description: The remote incident ID
+      name: id
       required: true
-      description: A query string (in BigQuery query syntax). For more information about the standard syntax, see the BigQuery documentation - https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax.
-    - name: location
-      description: The geographic location where the job should run. Required for locations other than US and EU.
-    - name: allow_large_results
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
-      description: Allow query results tables larger than 128 MB compressed (legacy SQL only)
-    - name: default_dataset
-      description: A string of the fully-qualified dataset ID in standard SQL format. The value must include a project ID and dataset ID, separated by periods.
-    - name: destination_table
-      description: The table to which the results are written. Default value is "None".
-    - name: kms_key_name
-      description: Custom encryption configuration for the destination table.
-    - name: dry_run
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
-      description: If "true," BigQuery doesn't run the job. Instead, if the query is valid, BigQuery returns statistics about the job, such as how many bytes would be processed. If the query is invalid, an error is returned. The default value is "false".
-    - name: priority
-      auto: PREDEFINED
-      predefined:
-      - BATCH
-      - INTERACTIVE
-      description: Priority of the query (“INTERACTIVE” or “BATCH”). A query set as INTERACTIVE will be run on-demand, at the next possible time. A query set as BATCH will start as soon as idle resources are available, and changed to INTERACTIVE priority if it wasn’t started within 24 hours. The default value is “INTERACTIVE”.
-    - name: use_query_cache
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
-      description: Whether to look for the query results in the cache.
-    - name: use_legacy_sql
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
-      description: Whether to use legacy SQL syntax.
-    - name: job_id
-      description: The ID of the job. The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), or dashes (-). The maximum length is 1,024 characters.
-    - name: write_disposition
-      auto: PREDEFINED
-      predefined:
-      - WRITE_EMPTY
-      - WRITE_TRUNCATE
-      - WRITE_APPEND
-      description: Specifies the action that occurs if the destination table already exists.
-    outputs:
-    - contextPath: BigQuery.Query
-      description: The query performed.
-      type: String
-    - contextPath: BigQuery.Row
-      description: The table rows the given query returned.
-      type: Unknown
-    description: Performs a query on BigQuery.
+    - defaultValue: '0'
+      description: UTC timestamp in seconds. The incident is only updated if it was
+        modified after the last update time.
+      name: lastUpdate
+    description: Gets remote data from a remote incident. This method is only used
+      for debugging purposes and will not update the current incident.
+    name: get-remote-data
+  - arguments: []
+    description: Available from Cortex XSOAR version 6.1.0. This command queries for
+      incidents that were modified since the last update. This method is only used
+      for debugging purposes.
+    name: get-modified-remote-data
   dockerimage: demisto/bigquery:1.0.0.27342
-  subtype: python3
+  isFetchSamples: true
+  isfetch: true
+  isremotesyncin: true
   runonce: false
+  script: ''
+  subtype: python3
+  type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

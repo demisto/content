@@ -1,14 +1,15 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 """ IMPORTS """
 
-import os
 import json
-import requests
-from google.cloud import bigquery
-from datetime import date
+import os
+from datetime import date, datetime
 
+import requests
+from dateparser import parse
+from google.cloud import bigquery
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -19,6 +20,8 @@ requests.packages.urllib3.disable_warnings()
 TEST_QUERY = ('SELECT name FROM `bigquery-public-data.usa_names.usa_1910_2013` '
               'WHERE state = "TX" '
               'LIMIT 10')
+
+FETCH_QUERY = demisto.params()['querytoRun']
 
 
 ''' HELPER FUNCTIONS '''
@@ -107,6 +110,9 @@ def convert_to_string_if_datetime(object_that_may_be_datetime):
         return object_that_may_be_datetime
 
 
+''' XDR SYNC FUNCTIONS '''
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -126,11 +132,11 @@ def query(query_string, project_id, location, allow_large_results, default_datas
         return query_job
 
 
-def query_command():
-    args = demisto.args()
+def query_command(args):
     query_to_run = args['query']
     project_id = args.get('project_id', None)
     location = args.get('location', None)
+    incidentObj = args.get('incident', False)
     allow_large_results = args.get('allow_large_results', None)
     default_dataset = args.get('default_dataset', None)
     destination_table = args.get('destination_table', None)
@@ -156,7 +162,7 @@ def query_command():
     else:
 
         for row in query_results:
-            row_context = {underscoreToCamelCase(k): convert_to_string_if_datetime(v) for k, v in row.items()}
+            row_context = {k: convert_to_string_if_datetime(v) for k, v in row.items()}
             rows_contexts.append(row_context)
 
         if rows_contexts:
@@ -167,12 +173,80 @@ def query_command():
             }
             title = 'BigQuery Query Results'
             human_readable = tableToMarkdown(title, rows_contexts, removeNull=True)
+    if incidentObj is False:
+        return rows_contexts
+    else:
+        incidents = []
+        for index, row in enumerate(rows_contexts):
+            incident = {
+                'name': f'Query Result #{index}',
+                'occurred': datetime.now().isoformat().split(".")[0] + "Z",
+                'rawJSON': json.dumps(row)
+            }
+            incidents.append(incident)
+        return incidents
 
-    return_outputs(
-        readable_output=human_readable,
-        outputs=context,
-        raw_response=rows_contexts
-    )
+
+def get_data(remote_incident_id, last_update):
+    identifierKey = demisto.params()['identifierKey']
+    syncTable = demisto.params()['sync_table']
+    lastmodifiedKey = demisto.params()['lastmodifiedKey']
+    record_modified_date = last_update.split(".")[0].replace("T", " ")
+    return query_command({'query': FETCH_QUERY + f" AND CAST({identifierKey} AS STRING)='{remote_incident_id}' AND TIMESTAMP({lastmodifiedKey}) > TIMESTAMP('{record_modified_date}') LIMIT 1", 'incident': False})[0]
+
+
+def get_modified_remote_data_command(args):
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update
+    last_update_bq = last_update.split(".")[0].replace("T", " ")
+    modified_records_ids = []
+    identifierKey = demisto.params()['identifierKey']
+    syncTable = demisto.params()['sync_table']
+    lastmodifiedKey = demisto.params()['lastmodifiedKey']
+    demisto.debug(f'Google BigQuery : * START * Performing get-modified-remote-data command. Last update is: {last_update}')
+    qres = query_command(
+        {'query': f"SELECT DISTINCT {identifierKey} FROM `{syncTable}` WHERE TIMESTAMP({lastmodifiedKey}) > TIMESTAMP({last_update_bq})", 'incident': False})
+    for item in qres:
+        modified_records_ids.append(item[f'{identifierKey}'])
+    demisto.debug(
+        f"Google BigQuery : * END * Performing get-modified-remote-data command. Results: {','.join(modified_records_ids)}")
+    return GetModifiedRemoteDataResponse(modified_records_ids)
+
+
+def get_remote_data_command(args):
+    parsed_args = GetRemoteDataArgs(args)
+    try:
+        new_incident_data: Dict = get_data(parsed_args.remote_incident_id, parsed_args.last_update)
+        remote_incident_id = new_incident_data[demisto.params()['identifierKey']]
+        new_incident_data['id'] = remote_incident_id
+        new_incident_data['in_mirror_error'] = ''
+        return GetRemoteDataResponse(mirrored_object=new_incident_data, entries=[])
+    except Exception as e:
+
+        if new_incident_data:
+            new_incident_data['in_mirror_error'] = str(e)
+        else:
+            new_incident_data = {
+                'id': parsed_args.remote_incident_id,
+                'in_mirror_error': str(e)
+            }
+        return GetRemoteDataResponse(
+            mirrored_object=new_incident_data,
+            entries=[]
+        )
+
+
+def fetch_incidents():
+    identifierKey = demisto.params()['identifierKey']
+    last_run = demisto.getLastRun()
+    createdKey = demisto.params()['createdKey']
+    first_fetch_time = demisto.params().get('firstFetchTime', '3 days').strip()
+    demisto.debug(f'last_run: {last_run}' if last_run else 'last_run is empty')
+    lastCreatedTime = last_run.get("lastFetch", parse(f'{first_fetch_time} UTC').isoformat().split("+")[0]).split(".")[0]
+    newFetchTime = datetime.now().isoformat().split(".")[0]
+    query = query_command({'query': FETCH_QUERY + f" AND {createdKey} > '{lastCreatedTime}'", 'incident': True})
+    nextrun = {'lastFetch': newFetchTime}
+    return nextrun, query, lastCreatedTime
 
 
 def test_module():
@@ -181,11 +255,9 @@ def test_module():
     """
     try:
         bigquery_client = start_and_return_bigquery_client(demisto.params()['google_service_creds'])
-        query_job = bigquery_client.query(TEST_QUERY)
+        query_job = bigquery_client.query(f'{FETCH_QUERY} LIMIT 1')
         query_results = query_job.result()
-        results_rows_iterator = iter(query_results)
-        next(results_rows_iterator)
-        demisto.results("ok")
+        demisto.results('ok')
     except Exception as ex:
         return_error("Authentication error: credentials JSON provided is invalid.\n Exception recieved:"
                      "{}".format(ex))
@@ -200,6 +272,17 @@ try:
         test_module()
     elif demisto.command() == 'bigquery-query':
         query_command()
+    elif demisto.command() == 'get-remote-data':
+        return_results(get_remote_data_command(demisto.args()))
+    elif demisto.command() == 'get-modified-remote-data':
+        return_results(get_modified_remote_data_command(demisto.args()))
+    elif demisto.command() == 'fetch-incidents':
+        # Set and define the fetch incidents command to run after activated via integration settings.
+        next_run, incidents, lastFetchTime = fetch_incidents()
+        if len(incidents) == 0:
+            next_run = {'lastFetch': lastFetchTime}
+        demisto.setLastRun(next_run)
+        demisto.incidents(incidents)
 
 
 except Exception as e:
