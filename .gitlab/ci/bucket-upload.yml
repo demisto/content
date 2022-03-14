@@ -33,8 +33,10 @@
 run-validations-upload-flow:
   extends:
     - .run-validations
-    - .bucket-upload-rule
-
+#    - .bucket-upload-rule
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+    - if: '$BUCKET_UPLOAD == "true"'
 
 run-unittests-and-lint-upload-flow:
   extends:
