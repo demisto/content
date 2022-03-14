@@ -3,9 +3,9 @@
     "firewalls": [],
     "firewallPolicies": [],
     "ipAddresses": [
-      "1.1.1.1",
-      "2.2.2.2",
-      "192.156.20.45"
+      "189.160.40.11",
+      "189.160.40.11",
+      "189.160.40.11"
     ],
     "provisioningState": "Succeeded"
   },
