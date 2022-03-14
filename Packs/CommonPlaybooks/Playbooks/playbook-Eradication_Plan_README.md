@@ -1,10 +1,9 @@
-This playbook handles all the eradication actions available with XSIAM.
-The following tasks are used to eradicate the incident:
+This playbook handles all the eradication actions available with XSIAM, including the following tasks:
 * Reset user password
 * Delete file
 * Kill process (currently, the playbook supports terminating a process by name)
 
-**Note:** The playbook inputs enable manipulating the execution flow, read the input descriptions for details.
+**Note:** The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
 
 
 ## Dependencies
