@@ -102,24 +102,24 @@ def test_parse_custom_attribute():
                                         ' For example: custom_value=ca1,ca2,ca3'):
         parse_custom_attribute(custom_attribute_group_list, args_custom)
     args_custom['custom_data'] = 'cn, First Name, bbb'
-    custom_attribute_custom_list_output = [
-        {'Index': 1, 'Name': 'cn'},
-        {'Index': 3, 'Name': 'First Name', 'Value': 'Admin'}
-    ]
+    custom_attribute_custom_list_output = [{'customAttribute': {'index': 1, 'name': 'cn'},
+                                            'name': 'Default Attribute Group'},
+                                           {'customAttribute': {'index': 3, 'name': 'First Name', 'value': 'Admin'},
+                                            'name': 'Predefined'}]
     assert custom_attribute_custom_list_output == parse_custom_attribute(custom_attribute_group_list, args_custom)
     args_custom['custom_data'] = 'aaa'
     assert [] == parse_custom_attribute(custom_attribute_group_list, args_custom)
-    args_group = {'custom_attributes': 'custom attributes group name'}
+    args_group = {'custom_attributes': 'custom attribute group name'}
     with raises(DemistoException, match='When choosing the group value for custom_attributes argument -'
                                         ' the custom_data list must be filled with group names.'
                                         ' For example: custom_value=g1,g2,g3'):
         parse_custom_attribute(custom_attribute_group_list, args_group)
     args_group['custom_data'] = 'Default Attribute Group, Predefined, uuu'
-    custom_attribute_group_list_output = [
-        {'Index': 1, 'Name': 'cn'},
-        {'Index': 2, 'Name': 'Resolution'},
-        {'Index': 3, 'Name': 'First Name', 'Value': 'Admin'}
-    ]
+    custom_attribute_group_list_output = [{'customAttribute': [{'index': 1, 'name': 'cn'}],
+                                           'name': 'Default Attribute Group'},
+                                          {'customAttribute': [{'index': 2, 'name': 'Resolution'},
+                                                               {'index': 3, 'name': 'First Name', 'value': 'Admin'}],
+                                           'name': 'Predefined'}]
     assert custom_attribute_group_list_output == parse_custom_attribute(custom_attribute_group_list, args_group)
 
 
@@ -159,8 +159,8 @@ def test_get_severity_name_by_id(severity, expected_result):
 
 @freeze_time("2022-03-04T13:34:14Z")
 @pytest.mark.parametrize('creation_date,expected_result', [
-    ('2 days', "2022-03-02T15:34:14Z"),
-    ("2022-03-02T15:34:14Z", "2022-03-02T15:34:14Z")])
+    ('2 days', "2022-03-02T13:34:14Z"),
+    ("2022-03-02T13:34:14Z", "2022-03-02T13:34:14Z")])
 def test_parse_creation_date(creation_date, expected_result):
     """
     Given
