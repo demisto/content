@@ -964,30 +964,29 @@ Retrieves the list of job events.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AnsibleAWX.JobEvents.id | Number | Database ID for this job event. | 
-| AnsibleAWX.JobEvents.type | String | Data type for this job event. | 
-| AnsibleAWX.JobEvents.url | String | URL for this job event. | 
-| AnsibleAWX.JobEvents.created | Date | Timestamp indicating when this job event was created. | 
-| AnsibleAWX.JobEvents.modified | Date | Timestamp indicating when this job event was last modified. | 
-| AnsibleAWX.JobEvents.job | Number | Job ID. | 
+| **Path** | **Type** | **Description**                                                                                           |
+| --- | --- |-----------------------------------------------------------------------------------------------------------|
+| AnsibleAWX.JobEvents.id | Number | Database ID for this job event.                                                                           | 
+| AnsibleAWX.JobEvents.type | String | Data type for this job event.                                                                             | 
+| AnsibleAWX.JobEvents.url | String | URL for this job event.                                                                                   | 
+| AnsibleAWX.JobEvents.created | Date | Timestamp indicating when this job event was created.                                                     | 
+| AnsibleAWX.JobEvents.modified | Date | Timestamp indicating when this job event was last modified.                                               | 
+| AnsibleAWX.JobEvents.job | Number | Job ID.                                                                                                   | 
 | AnsibleAWX.JobEvents.event | String | The specific event. For example, runner_on_failed \(Host Failed\), runner_on_start \(Host Started\), etc. | 
-| AnsibleAWX.JobEvents.counter | Number | Job event counter. | 
-| AnsibleAWX.JobEvents.event_display | String | Event display. For example, Playbook Started. | 
-| AnsibleAWX.JobEvents.event_level | Number | The event level. | 
-| AnsibleAWX.JobEvents.failed | Boolean | Whether the job failed. | 
-| AnsibleAWX.JobEvents.changed | Boolean | Whether the job changed. | 
-| AnsibleAWX.JobEvents.uuid | String | UUID of the job event. | 
-| AnsibleAWX.JobEvents.parent_uuid | String | Parent UUID. | 
-| AnsibleAWX.JobEvents.host | Number | Host ID associated with the event. | 
-| AnsibleAWX.JobEvents.host_name | String | Host name associated with the event. | 
-| AnsibleAWX.JobEvents.playbook | String | Playbook name of this job. | 
-| AnsibleAWX.JobEvents.task | String | Task name. | 
-| AnsibleAWX.JobEvents.stdout | String | Standard output of the job. | 
-| AnsibleAWX.JobEvents.start_line | Number | Starting line number of the execution. | 
-| AnsibleAWX.JobEvents.end_line | Number | Ending line number of the execution. | 
-
+| AnsibleAWX.JobEvents.counter | Number | Job event counter.                                                                                        | 
+| AnsibleAWX.JobEvents.event_display | String | Event display. For example, Playbook Started.                                                             | 
+| AnsibleAWX.JobEvents.event_level | Number | The event level.                                                                                          | 
+| AnsibleAWX.JobEvents.failed | Boolean | Whether the job failed.                                                                                   | 
+| AnsibleAWX.JobEvents.changed | Boolean | Whether the job changed.                                                                                  | 
+| AnsibleAWX.JobEvents.uuid | String | UUID of the job event.                                                                                    | 
+| AnsibleAWX.JobEvents.parent_uuid | String | Parent UUID.                                                                                              | 
+| AnsibleAWX.JobEvents.host | Number | Host ID associated with the event.                                                                        | 
+| AnsibleAWX.JobEvents.host_name | String | Host name associated with the event.                                                                      | 
+| AnsibleAWX.JobEvents.playbook | String | Playbook name of this job.                                                                                | 
+| AnsibleAWX.JobEvents.task | String | Task name.                                                                                                | 
+| AnsibleAWX.JobEvents.stdout | String | Standard output of the job.                                                                               | 
+| AnsibleAWX.JobEvents.start_line | Number | Starting line number of the execution.                                                                    | 
+| AnsibleAWX.JobEvents.end_line | Number | Ending line number of the execution.                                                                      |
 
 #### Command Example
 ```!ansible-tower-job-events-list```
@@ -1498,6 +1497,7 @@ Retrieves the list of job events of specific job.
 | AnsibleAWX.JobEvents.stdout | String | Standard output of the job. | 
 | AnsibleAWX.JobEvents.start_line | Number | Starting line number of the execution. | 
 | AnsibleAWX.JobEvents.end_line | Number | Ending line number of the execution. | 
+| AnsibleAWX.JobEvents.event_data | String | Job's raw event data.                                                                                     | 
 
 #### Command Example
 ```!ansible-tower-job-events-list-by-id job_id=69```
