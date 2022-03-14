@@ -300,7 +300,6 @@ def test_azure_firewall_rules_get_command_for_firewall(requests_mock):
                              rule_name=rule_name)
     result = azure_firewall_rule_get_command(client, command_arguments)
 
-    print(result.outputs)
     assert result.outputs_key_field == 'name'
     assert result.outputs_prefix == 'AzureFirewall.Rule'
     assert result.outputs.get('name') == rule_name
@@ -334,7 +333,7 @@ def test_azure_firewall_rule_get_command_for_policy(requests_mock):
 
     command_arguments = dict(policy=policy_name, collection_name=collection_name, rule_name=rule_name)
     result = azure_firewall_rule_get_command(client, command_arguments)
-    print(result.outputs)
+
     assert result.outputs_key_field == 'name'
     assert result.outputs_prefix == 'AzureFirewall.Rule'
     assert result.outputs.get('name') == "my-app-rule-1"
