@@ -870,8 +870,8 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                         relationships.extend(create_relationship('related-to', (file_hash, url.rstrip('/')), ('file', 'url')))
                     if extended_data:
                         if network_url_dict := parse_wildfire_object(report=url_obj,
-                                                                    keys=[('@host', 'Host'), ('@uri', 'URI'),
-                                                                        ('@method', 'Method'), ('@user_agent', 'UserAgent')]):
+                                                                     keys=[('@host', 'Host'), ('@uri', 'URI'),
+                                                                           ('@method', 'Method'), ('@user_agent', 'UserAgent')]):
                             network_url.append(network_url_dict)
 
         if 'evidence' in report and report["evidence"]:
