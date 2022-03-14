@@ -13,19 +13,19 @@
               {
                 "ruleType": "NatRule",
                 "name": "my-nat-rule-1",
-                "translatedAddress": "192.168.30.81",
+                "translatedAddress": "189.160.40.11",
                 "translatedPort": "8081",
                 "ipProtocols": [
                   "TCP",
                   "UDP"
                 ],
                 "sourceAddresses": [
-                  "192.168.30.82"
+                  "189.160.40.11"
                 ],
                 "sourceIpGroups": [
                 ],
                 "destinationAddresses": [
-                  "20.120.115.3"
+                  "189.160.40.11"
                 ],
                 "destinationPorts": [
                   "8080"
@@ -62,12 +62,12 @@
                   "UDP"
                 ],
                 "sourceAddresses": [
-                  "192.168.30.82"
+                  "189.160.40.11"
                 ],
                 "sourceIpGroups": [
                 ],
                 "destinationAddresses": [
-                  "192.168.30.82"
+                  "189.160.40.11"
                 ],
                 "destinationIpGroups": [
                 ],

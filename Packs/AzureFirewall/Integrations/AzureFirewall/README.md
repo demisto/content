@@ -1,5 +1,5 @@
 Azure Firewall is a cloud-native and intelligent network firewall security service that provides breed threat protection for cloud workloads running in Azure. It's a fully stateful, firewall as a service with built-in high availability and unrestricted cloud scalability.
-This integration was integrated and tested with version 2021-03-01 of Azure Firewall
+This integration was integrated and tested with version xx of Azure Firewall
 
 ## Configure Azure Firewall on Cortex XSOAR
 
@@ -125,7 +125,7 @@ List azure firewalls in resource group or subscription.
                         "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip/azureFirewallIpConfigurations/test-ip",
                         "name": "test-ip",
                         "properties": {
-                            "privateIPAddress": "10.0.0.4",
+                            "privateIPAddress": "189.160.40.11",
                             "privateIPAllocationMethod": "Dynamic",
                             "provisioningState": "Succeeded",
                             "publicIPAddress": {
@@ -161,7 +161,7 @@ List azure firewalls in resource group or subscription.
 > Showing page 1 out others that may exist.
 >|Name|Id|Location|Subnet|Threat Intel Mode|Private Ip Address|Provisioning State|
 >|---|---|---|---|---|---|---|
->| test-ip | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip | eastus | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/test-v-n/subnets/AzureFirewallSubnet | Alert | 10.0.0.4 | Succeeded |
+>| test-ip | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip | eastus | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/test-v-n/subnets/AzureFirewallSubnet | Alert | 189.160.40.11 | Succeeded |
 
 
 ### azure-firewall-get
@@ -210,7 +210,7 @@ Retrieve azure firewall information.
                         "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip/azureFirewallIpConfigurations/test-ip",
                         "name": "test-ip",
                         "properties": {
-                            "privateIPAddress": "10.0.0.4",
+                            "privateIPAddress": "189.160.40.11",
                             "privateIPAllocationMethod": "Dynamic",
                             "provisioningState": "Succeeded",
                             "publicIPAddress": {
@@ -244,7 +244,7 @@ Retrieve azure firewall information.
 >### Firewall test-ip information:
 >|Name|Id|Location|Subnet|Threat Intel Mode|Private Ip Address|Provisioning State|
 >|---|---|---|---|---|---|---|
->| test-ip | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip | eastus | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/test-v-n/subnets/AzureFirewallSubnet | Alert | 10.0.0.4 | Succeeded |
+>| test-ip | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip | eastus | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/test-v-n/subnets/AzureFirewallSubnet | Alert | 189.160.40.11 | Succeeded |
 
 
 ### azure-firewall-rule-collection-list
@@ -298,8 +298,8 @@ List collection rules in firewall or in policy. One of the arguments 'firewall_n
                             {
                                 "description": "test-playbook-collection",
                                 "destinationAddresses": [
-                                    "192.168.30.82",
-                                    "192.154.20.12"
+                                    "189.160.40.11",
+                                    "189.160.40.11"
                                 ],
                                 "destinationFqdns": [],
                                 "destinationIpGroups": [],
@@ -313,8 +313,8 @@ List collection rules in firewall or in policy. One of the arguments 'firewall_n
                                 "name": "playbook-rule",
                                 "ruleType": "NetworkRule",
                                 "sourceAddresses": [
-                                    "192.168.50.32",
-                                    "192.168.50.31"
+                                    "189.160.40.11",
+                                    "189.160.40.11"
                                 ],
                                 "sourceIpGroups": []
                             }
@@ -373,8 +373,8 @@ List rules in firewall or in policy. One of the arguments 'firewall_name' or 'po
         "Rule": {
             "description": "test-playbook-collection",
             "destinationAddresses": [
-                "192.168.30.82",
-                "192.154.20.12"
+                "189.160.40.11",
+                "189.160.40.11"
             ],
             "destinationFqdns": [],
             "destinationIpGroups": [],
@@ -388,8 +388,8 @@ List rules in firewall or in policy. One of the arguments 'firewall_name' or 'po
             "name": "playbook-rule",
             "ruleType": "NetworkRule",
             "sourceAddresses": [
-                "192.168.50.32",
-                "192.168.50.31"
+                "189.160.40.11",
+                "189.160.40.11"
             ],
             "sourceIpGroups": []
         }
@@ -441,8 +441,8 @@ Retrieve rule information. One of the arguments 'firewall_name' or 'policy'  mus
         "Rule": {
             "description": "test-playbook-collection",
             "destinationAddresses": [
-                "192.168.30.82",
-                "192.154.20.12"
+                "189.160.40.11",
+                "189.160.40.11"
             ],
             "destinationFqdns": [],
             "destinationIpGroups": [],
@@ -455,8 +455,8 @@ Retrieve rule information. One of the arguments 'firewall_name' or 'policy'  mus
             "name": "new-playbook-rule",
             "ruleType": "NetworkRule",
             "sourceAddresses": [
-                "192.168.50.32",
-                "192.168.50.31"
+                "189.160.40.11",
+                "189.160.40.11"
             ],
             "sourceIpGroups": []
         }
@@ -810,7 +810,7 @@ Attach policy to firewall. The policy and firewall have to belong to the same ti
                         "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip/azureFirewallIpConfigurations/test-ip",
                         "name": "test-ip",
                         "properties": {
-                            "privateIPAddress": "10.0.0.4",
+                            "privateIPAddress": "189.160.40.11",
                             "privateIPAllocationMethod": "Dynamic",
                             "provisioningState": "Succeeded",
                             "publicIPAddress": {
@@ -844,7 +844,7 @@ Attach policy to firewall. The policy and firewall have to belong to the same ti
 >### Successfully Updated Firewall "test-ip"
 >|Name|Id|Location|Subnet|Threat Intel Mode|Private Ip Address|Provisioning State|
 >|---|---|---|---|---|---|---|
->| test-ip | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip | eastus | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/test-v-n/subnets/AzureFirewallSubnet | Alert | 10.0.0.4 | Updating |
+>| test-ip | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip | eastus | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/test-v-n/subnets/AzureFirewallSubnet | Alert | 189.160.40.11 | Updating |
 
 
 ### azure-firewall-policy-detach
@@ -892,7 +892,7 @@ Remove policy from firewall. This command will detach between policy and firewal
                         "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip/azureFirewallIpConfigurations/test-ip",
                         "name": "test-ip",
                         "properties": {
-                            "privateIPAddress": "10.0.0.4",
+                            "privateIPAddress": "189.160.40.11",
                             "privateIPAllocationMethod": "Dynamic",
                             "provisioningState": "Succeeded",
                             "publicIPAddress": {
@@ -926,7 +926,7 @@ Remove policy from firewall. This command will detach between policy and firewal
 >### Successfully Updated Firewall "test-ip"
 >|Name|Id|Location|Subnet|Threat Intel Mode|Private Ip Address|Provisioning State|
 >|---|---|---|---|---|---|---|
->| test-ip | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip | eastus | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/test-v-n/subnets/AzureFirewallSubnet | Alert | 10.0.0.4 | Updating |
+>| test-ip | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/test-ip | eastus | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/test-v-n/subnets/AzureFirewallSubnet | Alert | 189.160.40.11 | Updating |
 
 
 ### azure-firewall-network-rule-collection-create
@@ -963,7 +963,7 @@ Create network rule collection in firewall or policy. The command will return fi
 
 There is no context output for this command.
 #### Command example
-```!azure-firewall-network-rule-collection-create policy=xsoar-policy collection_name=playbook-collection collection_priority=105 action=Allow rule_name=playbook-rule description=test-playbook-collection protocols=UDP,TCP source_type=ip_address source_ips=192.168.50.32,192.168.50.31 destination_type=ip_address destinations=192.168.30.82,192.154.20.12 destination_ports=8080 interval=10 timeout=600```
+```!azure-firewall-network-rule-collection-create policy=xsoar-policy collection_name=playbook-collection collection_priority=105 action=Allow rule_name=playbook-rule description=test-playbook-collection protocols=UDP,TCP source_type=ip_address source_ips=189.160.40.11,189.160.40.11 destination_type=ip_address destinations=189.160.40.11,189.160.40.11 destination_ports=8080 interval=10 timeout=600```
 #### Context Example
 ```json
 {
@@ -1100,7 +1100,7 @@ Create network rule in firewall or policy rule collection. One of the arguments 
 
 There is no context output for this command.
 #### Command example
-```!azure-firewall-network-rule-create policy=xsoar-policy collection_name=playbook-collection rule_name=new-playbook-rule description=test-playbook-collection protocols=UDP,TCP source_type=ip_address source_ips=192.168.50.32,192.168.50.31 destination_type=ip_address destinations=192.168.30.82,192.154.20.12 destination_ports=8080 interval=10 timeout=600```
+```!azure-firewall-network-rule-create policy=xsoar-policy collection_name=playbook-collection rule_name=new-playbook-rule description=test-playbook-collection protocols=UDP,TCP source_type=ip_address source_ips=189.160.40.11,189.160.40.11 destination_type=ip_address destinations=189.160.40.11,189.160.40.11 destination_ports=8080 interval=10 timeout=600```
 #### Context Example
 ```json
 {
@@ -1436,7 +1436,7 @@ Create IP group.
 | AzureFirewall.IPGroup.properties.ipAddresses | String | List of IP addresses or IP address prefixes in the IP groups resource. | 
 
 #### Command example
-```!azure-firewall-ip-group-create ip_group_name=xsoar-ip-group ips=192.168.30.12 location=eastus interval=10 timeout=600```
+```!azure-firewall-ip-group-create ip_group_name=xsoar-ip-group ips=189.160.40.11 location=eastus interval=10 timeout=600```
 #### Context Example
 ```json
 {
@@ -1450,7 +1450,7 @@ Create IP group.
                 "firewallPolicies": [],
                 "firewalls": [],
                 "ipAddresses": [
-                    "192.168.30.12"
+                    "189.160.40.11"
                 ],
                 "provisioningState": "Updating"
             },
@@ -1465,7 +1465,7 @@ Create IP group.
 >### Successfully Created IP Group "xsoar-ip-group"
 >|Name|Id|Ip Addresses|Firewalls|Firewall Policies|Provisioning State|
 >|---|---|---|---|---|---|
->| xsoar-ip-group | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group | 192.168.30.12 |  |  | Updating |
+>| xsoar-ip-group | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group | 189.160.40.11 |  |  | Updating |
 
 
 ### azure-firewall-ip-group-update
@@ -1496,7 +1496,7 @@ Update IP group. Add or remove IPs from the group.
 | AzureFirewall.IPGroup.properties.ipAddresses | String | List of IP addresses or IP address prefixes in the IP groups resource. | 
 
 #### Command example
-```!azure-firewall-ip-group-update ip_group_name=xsoar-ip-group ips_to_add=192.168.45.12,192.165.22.47 ips_to_remove=192.168.30.12,1.1.1 interval=10 timeout=600```
+```!azure-firewall-ip-group-update ip_group_name=xsoar-ip-group ips_to_add=189.160.40.11,189.160.40.11 ips_to_remove=189.160.40.11,1.1.1 interval=10 timeout=600```
 #### Context Example
 ```json
 {
@@ -1510,8 +1510,8 @@ Update IP group. Add or remove IPs from the group.
                 "firewallPolicies": [],
                 "firewalls": [],
                 "ipAddresses": [
-                    "192.168.45.12",
-                    "192.165.22.47"
+                    "189.160.40.11",
+                    "189.160.40.11"
                 ],
                 "provisioningState": "Updating"
             },
@@ -1526,7 +1526,7 @@ Update IP group. Add or remove IPs from the group.
 >### xsoar-ip-group IP Group Information:
 >|Name|Id|Ip Addresses|Firewalls|Firewall Policies|Provisioning State|
 >|---|---|---|---|---|---|
->| xsoar-ip-group | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group | 192.168.45.12,<br/>192.165.22.47 |  |  | Updating |
+>| xsoar-ip-group | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group | 189.160.40.11,<br/>189.160.40.11 |  |  | Updating |
 
 
 ### azure-firewall-ip-group-list
@@ -1569,7 +1569,7 @@ List IP groups in resource group or subscription.
                 "firewallPolicies": [],
                 "firewalls": [],
                 "ipAddresses": [
-                    "192.168.30.12"
+                    "189.160.40.11"
                 ],
                 "provisioningState": "Succeeded"
             },
@@ -1586,7 +1586,7 @@ List IP groups in resource group or subscription.
 > Showing page 1 out others that may exist.
 >|Name|Id|Ip Addresses|Firewalls|Firewall Policies|Provisioning State|
 >|---|---|---|---|---|---|
->| xsoar-ip-group | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group | 192.168.30.12 |  |  | Succeeded |
+>| xsoar-ip-group | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group | 189.160.40.11 |  |  | Succeeded |
 
 
 ### azure-firewall-ip-group-get
@@ -1630,7 +1630,7 @@ Retrieve IP group information.
                 "firewallPolicies": [],
                 "firewalls": [],
                 "ipAddresses": [
-                    "192.168.30.12"
+                    "189.160.40.11"
                 ],
                 "provisioningState": "Succeeded"
             },
@@ -1638,7 +1638,7 @@ Retrieve IP group information.
         }
     },
     "IP": {
-        "Address": "192.168.30.12"
+        "Address": "189.160.40.11"
     }
 }
 ```
@@ -1648,7 +1648,7 @@ Retrieve IP group information.
 >### xsoar-ip-group IP Group Information:
 >|Name|Id|Ip Addresses|Firewalls|Firewall Policies|Provisioning State|
 >|---|---|---|---|---|---|
->| xsoar-ip-group | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group | 192.168.30.12 |  |  | Succeeded |
+>| xsoar-ip-group | /subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group | 189.160.40.11 |  |  | Succeeded |
 
 
 ### azure-firewall-ip-group-delete

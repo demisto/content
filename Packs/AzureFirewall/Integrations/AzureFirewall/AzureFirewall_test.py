@@ -402,7 +402,7 @@ def test_azure_firewall_policy_update_command(requests_mock):
     command_arguments = {
         'base_policy_id': '/firewallPolicies/my-policy',
         'domains': 'microsoft.com', 'enable_proxy': 'True',
-        'ips': '192.165.30.81', 'policy_name': policy_name, 'threat_intelligence_mode': 'Alert'}
+        'ips': '189.160.40.11', 'policy_name': policy_name, 'threat_intelligence_mode': 'Alert'}
 
     result = azure_firewall_policy_update_command(client, command_arguments)
 
@@ -601,7 +601,7 @@ def test_azure_firewall_ip_group_create_command(requests_mock):
     mock_response = json.loads(load_mock_response('test_data/ip_group/ip_group_create.json'))
     requests_mock.put(url, json=mock_response)
 
-    command_arguments = {'ip_group_name': ip_group_name, 'location': 'eastus', 'ips': '192.168.30.12,192.156.20.45'}
+    command_arguments = {'ip_group_name': ip_group_name, 'location': 'eastus', 'ips': '189.160.40.11,189.160.40.11'}
     result = azure_firewall_ip_group_create_command(client, command_arguments)
 
     assert len(result.outputs) == 1
@@ -636,9 +636,9 @@ def test_azure_firewall_ip_group_update_command(requests_mock):
     mock_response = json.loads(load_mock_response('test_data/ip_group/ip_group_update.json'))
     requests_mock.put(url, json=mock_response)
 
-    ips_to_add = '1.1.1.1,2.2.2.2'
+    ips_to_add = '189.160.40.11,189.160.40.11'
 
-    ips_to_remove = '5.5.5.5'
+    ips_to_remove = '189.160.40.11'
 
     command_arguments = {'ip_group_name': ip_group_name, 'ips_to_add': ips_to_add, 'ips_to_remove': ips_to_remove}
     result = azure_firewall_ip_group_update_command(client, command_arguments)
@@ -773,9 +773,9 @@ def test_azure_firewall_network_rule_collection_create_command_for_firewall(requ
     command_arguments = {'action': 'Allow', 'collection_name': 'my-collection', 'collection_priority': '105',
                          'description': 'my-poc-collection', 'destination_ports': '8080',
                          'destination_type': 'ip_address',
-                         'destinations': '192.168.30.82,192.154.20.12', 'firewall_name': firewall_name,
+                         'destinations': '189.160.40.11,189.160.40.11', 'firewall_name': firewall_name,
                          'protocols': 'UDP,TCP',
-                         'rule_name': 'my-ip-rule', 'source_ips': '192.168.50.32,192.168.50.31',
+                         'rule_name': 'my-ip-rule', 'source_ips': '189.160.40.11,189.160.40.11',
                          'source_type': 'ip_address'}
 
     result = azure_firewall_network_rule_collection_create_command(client, command_arguments)
@@ -817,9 +817,9 @@ def test_azure_firewall_network_rule_collection_create_command_for_policy(reques
 
     command_arguments = {'action': 'Allow', 'collection_name': collection_name, 'collection_priority': '109',
                          'description': 'my-poc-collection', 'destination_ports': '8080',
-                         'destination_type': 'ip_address', 'destinations': '192.168.30.82,192.154.20.12',
+                         'destination_type': 'ip_address', 'destinations': '189.160.40.11,189.160.40.11',
                          'policy': policy_name, 'protocols': 'UDP,TCP', 'rule_name': 'my-ip-rule',
-                         'source_ips': '192.168.50.32,192.168.50.31', 'source_type': 'ip_address'}
+                         'source_ips': '189.160.40.11,189.160.40.11', 'source_type': 'ip_address'}
 
     result = azure_firewall_network_rule_collection_create_command(client, command_arguments)
 
@@ -848,7 +848,7 @@ def test_azure_firewall_network_rule_collection_create_command_invalid_arguments
     command_arguments = {'action': 'Allow', 'collection_priority': '105',
                          'description': 'my-poc-collection', 'destination_ports': '8080',
                          'destination_type': 'ip_address', 'firewall_name': firewall_name,
-                         'protocols': 'UDP,TCP', 'source_ips': '192.168.50.32,192.168.50.31',
+                         'protocols': 'UDP,TCP', 'source_ips': '189.160.40.11,189.160.40.11',
                          'source_type': 'ip_address'}
 
     with pytest.raises(Exception):
@@ -909,9 +909,9 @@ def test_azure_firewall_network_rule_create_command_for_firewall(requests_mock):
     command_arguments = {'collection_name': 'my-network-rule-collection',
                          'description': 'my-poc-collection', 'destination_ports': '8080',
                          'destination_type': 'ip_address',
-                         'destinations': '192.168.30.82,192.154.20.12', 'firewall_name': firewall_name,
+                         'destinations': '189.160.40.11,189.160.40.11', 'firewall_name': firewall_name,
                          'protocols': 'UDP,TCP',
-                         'rule_name': 'my-ip-rule', 'source_ips': '192.168.50.32,192.168.50.31',
+                         'rule_name': 'my-ip-rule', 'source_ips': '189.160.40.11,189.160.40.11',
                          'source_type': 'ip_address'}
 
     result = azure_firewall_network_rule_create_command(client, command_arguments)
@@ -955,9 +955,9 @@ def test_azure_firewall_network_rule_create_command_for_policy(requests_mock):
 
     command_arguments = {'collection_name': collection_name,
                          'description': 'my-poc-collection', 'destination_ports': '8080',
-                         'destination_type': 'ip_address', 'destinations': '192.168.30.82,192.154.20.12',
+                         'destination_type': 'ip_address', 'destinations': '189.160.40.11,189.160.40.11',
                          'policy': policy_name, 'protocols': 'UDP,TCP', 'rule_name': 'my-rule',
-                         'source_ips': '192.168.50.32,192.168.50.31', 'source_type': 'ip_address'}
+                         'source_ips': '189.160.40.11,189.160.40.11', 'source_type': 'ip_address'}
 
     result = azure_firewall_network_rule_create_command(client, command_arguments)
 
@@ -1235,9 +1235,9 @@ def test_azure_firewall_network_rule_update_command_policy(requests_mock):
 
     command_arguments = {'collection_name': collection_name, 'description': 'new-description',
                          'destination_ports': '8085',
-                         'destination_type': 'ip_address', 'destinations': '192.154.20.14', 'new_rule_name': 'new-name',
+                         'destination_type': 'ip_address', 'destinations': '189.160.40.11', 'new_rule_name': 'new-name',
                          'policy': policy_name, 'protocols': 'UDP', 'rule_name': 'my-ip-rule',
-                         'source_ips': '192.165.21.24',
+                         'source_ips': '189.160.40.11',
                          'source_type': 'ip_address'}
 
     result = azure_firewall_network_rule_update_command(client, command_arguments)
@@ -1276,9 +1276,9 @@ def test_azure_firewall_network_rule_update_command_for_firewall(requests_mock):
 
     command_arguments = {'collection_name': collection_name, 'description': 'new-description',
                          'destination_ports': '8085', 'firewall_name': firewall_name,
-                         'destination_type': 'ip_address', 'destinations': '192.154.20.14', 'new_rule_name': 'new-name',
+                         'destination_type': 'ip_address', 'destinations': '189.160.40.11', 'new_rule_name': 'new-name',
                          'protocols': 'UDP', 'rule_name': 'my-network-rule',
-                         'source_ips': '192.165.21.24',
+                         'source_ips': '189.160.40.11',
                          'source_type': 'ip_address'}
 
     result = azure_firewall_network_rule_update_command(client, command_arguments)

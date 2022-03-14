@@ -17,13 +17,13 @@
               "TCP"
             ],
             "sourceAddresses": [
-              "192.168.50.32",
-              "192.168.50.31"
+              "189.160.40.11",
+              "189.160.40.11"
             ],
             "sourceIpGroups": [],
             "destinationAddresses": [
-              "192.168.30.82",
-              "192.154.20.12"
+              "189.160.40.11",
+              "189.160.40.11"
             ],
             "destinationIpGroups": [],
             "destinationFqdns": [],

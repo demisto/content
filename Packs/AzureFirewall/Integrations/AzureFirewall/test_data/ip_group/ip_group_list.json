@@ -1,24 +1,17 @@
 {
-  "value": [
-    {
-      "properties": {
-        "firewalls": [
-          {
-            "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/my-rules-fw"
-          }
-        ],
-        "firewallPolicies": [],
-        "ipAddresses": [
-          "192.168.30.12",
-          "192.156.20.45"
-        ],
-        "provisioningState": "Succeeded"
-      },
-      "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group",
-      "name": "xsoar-ip-group",
-      "type": "Microsoft.Network/IpGroups",
-      "etag": "4e743f13-dbe7-4477-82f6-c4b1f6443a66",
-      "location": "eastus"
-    }
-  ]
+  "properties": {
+    "firewalls": [],
+    "firewallPolicies": [],
+    "ipAddresses": [
+      "189.160.40.11",
+      "189.160.40.11",
+      "189.160.40.11"
+    ],
+    "provisioningState": "Succeeded"
+  },
+  "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/ipGroups/xsoar-ip-group",
+  "name": "xsoar-ip-group",
+  "type": "Microsoft.Network/IpGroups",
+  "etag": "dbb41d06-7190-4406-92d9-242e713f424f",
+  "location": "eastus"
 }

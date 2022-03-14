@@ -21,7 +21,7 @@
         "type": "Microsoft.Network/azureFirewalls/azureFirewallIpConfigurations",
         "properties": {
           "provisioningState": "Succeeded",
-          "privateIPAddress": "10.1.0.4",
+          "privateIPAddress": "189.160.40.11",
           "privateIPAllocationMethod": "Dynamic",
           "publicIPAddress": {
             "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/publicIPAddresses/my-public-ip"
@@ -52,12 +52,12 @@
                 "TCP"
               ],
               "sourceAddresses": [
-                "192.168.50.32",
-                "192.168.50.31"
+                "189.160.40.11",
+                "189.160.40.11"
               ],
               "destinationAddresses": [
-                "192.168.30.82",
-                "192.154.20.12"
+                "189.160.40.11",
+                "189.160.40.11"
               ],
               "sourceIpGroups": [],
               "destinationIpGroups": [],
@@ -92,7 +92,7 @@
                 "Any"
               ],
               "sourceAddresses": [
-                "192.168.50.12"
+                "189.160.40.11"
               ],
               "destinationAddresses": [
                 "ServiceFabric",
@@ -112,7 +112,7 @@
                 "Any"
               ],
               "sourceAddresses": [
-                "192.168.50.12"
+                "189.160.40.11"
               ],
               "destinationAddresses": [],
               "sourceIpGroups": [],
@@ -148,12 +148,12 @@
                 "TCP"
               ],
               "sourceAddresses": [
-                "192.168.50.32",
-                "192.168.50.31"
+                "189.160.40.11",
+                "189.160.40.11"
               ],
               "destinationAddresses": [
-                "192.168.30.82",
-                "192.154.20.12"
+                "189.160.40.11",
+                "189.160.40.11"
               ],
               "sourceIpGroups": [],
               "destinationIpGroups": [],

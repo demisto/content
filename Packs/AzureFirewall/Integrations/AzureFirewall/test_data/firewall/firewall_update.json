@@ -21,7 +21,7 @@
         "type": "Microsoft.Network/azureFirewalls/azureFirewallIpConfigurations",
         "properties": {
           "provisioningState": "Succeeded",
-          "privateIPAddress": "10.0.0.4",
+          "privateIPAddress": "189.160.40.11",
           "privateIPAllocationMethod": "Dynamic",
           "publicIPAddress": {
             "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/publicIPAddresses/my-rules-public-ip"
@@ -51,7 +51,7 @@
                 "UDP"
               ],
               "sourceAddresses": [
-                "192.168.30.82"
+                "189.160.40.11"
               ],
               "destinationAddresses": [
                 "*"
@@ -155,14 +155,14 @@
               "protocols": [
                 "TCP"
               ],
-              "translatedAddress": "192.161.50.21",
+              "translatedAddress": "189.160.40.11",
               "translatedPort": "8081",
               "sourceAddresses": [
-                "192.168.30.82"
+                "189.160.40.11"
               ],
               "sourceIpGroups": [],
               "destinationAddresses": [
-                "20.120.112.98"
+                "189.160.40.11"
               ],
               "destinationPorts": [
                 "8080"

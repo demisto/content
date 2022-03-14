@@ -23,7 +23,7 @@
             "type": "Microsoft.Network/azureFirewalls/azureFirewallIpConfigurations",
             "properties": {
               "provisioningState": "Succeeded",
-              "privateIPAddress": "10.0.0.4",
+              "privateIPAddress": "189.160.40.11",
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
                 "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/publicIPAddresses/my-new-public-up"

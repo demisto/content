@@ -3,8 +3,8 @@
     "firewalls": [],
     "firewallPolicies": [],
     "ipAddresses": [
-      "192.168.30.12",
-      "192.156.20.45"
+      "189.160.40.11",
+      "189.160.40.11"
     ],
     "provisioningState": "Succeeded"
   },
