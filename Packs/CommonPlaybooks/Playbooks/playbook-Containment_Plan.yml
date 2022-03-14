@@ -2,15 +2,14 @@ id: Containment Plan
 version: -1
 name: Containment Plan
 description: |-
-  This playbook handles all the containment actions available with XSIAM.
-  The playbook allows to contain the incident with one of the following tasks:
+  This playbook handles all the containment actions available with Cortex XSIAM, including:  
   * Isolate endpoint
   * Disable account
   * Quarantine file
   * Block indicators
   * Clear user session (currently, the playbook supports only Okta)
 
-  The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+**Note:** The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
 starttaskid: "0"
 tasks:
   "0":
@@ -114,7 +113,7 @@ tasks:
       id: 7aeac4ae-aa00-4ab6-82f1-9c7927984fad
       version: -1
       name: Should isolate endpoint?
-      description: Whether to isolate the endpoint or not.
+      description: Whether to isolate the endpoint.
       type: condition
       iscommand: false
       brand: ""
@@ -562,7 +561,7 @@ tasks:
       id: f8ecacaf-8730-4a7e-8488-b2bcbe146837
       version: -1
       name: Is Okta enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -601,7 +600,7 @@ tasks:
       version: -1
       name: Auto clear user sessions
       description: |-
-        Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+        Removes all active identity provider sessions. This forces the user to authenticate on the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
         For more information and examples:
         https://developer.okta.com/docs/reference/api/users/#user-sessions
       script: '|||okta-clear-user-sessions'
@@ -666,7 +665,7 @@ tasks:
       id: 2f73eee6-e877-4c46-865c-4c90b06283f2
       version: -1
       name: Should block indicators?
-      description: Whether to block the indicators automatically, manually or not at all.
+      description: Whether to block the indicators automatically, manually, or not at all.
       type: condition
       iscommand: false
       brand: ""
@@ -735,7 +734,7 @@ tasks:
       id: 5314943a-ff39-40e8-8a5a-bcc7f29c449d
       version: -1
       name: Should clear user sessions?
-      description: Whether to clear Okta user sessions automatically, manually or not at all.
+      description: Whether to clear Okta user sessions automatically, manually, or not at all.
       type: condition
       iscommand: false
       brand: ""
@@ -804,7 +803,7 @@ tasks:
       id: e2c69b99-1d07-42f8-8716-c05c14f2ac0a
       version: -1
       name: Should disable user?
-      description: Whether to disable the account automatically, manually or not at all.
+      description: Whether to disable the account automatically, manually, or not at all.
       type: condition
       iscommand: false
       brand: ""
@@ -908,7 +907,7 @@ tasks:
       id: eec91fe8-26f0-491d-8502-8badd140c67a
       version: -1
       name: Manual endpoint isolation
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Checks whether the values provided in arguments are equal. If either of the arguments is missing, no is returned.
       type: collection
       iscommand: false
       brand: ""
@@ -1106,7 +1105,7 @@ tasks:
       id: bc181906-8aee-427b-8218-1d7c2e49e1ed
       version: -1
       name: Choose indicators to block
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Checks whether the values provided in arguments are equal. If either of the arguments is missing, no is returned.
       type: collection
       iscommand: false
       brand: ""
@@ -1678,7 +1677,7 @@ tasks:
       id: 672705cb-86a1-4284-879e-76c69f87741f
       version: -1
       name: Choose files to quarantine
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Checks whether the values provided in arguments are equal. If either of the arguments is missing, no is returned.
       type: collection
       iscommand: false
       brand: ""
@@ -1910,7 +1909,7 @@ tasks:
       id: 1e53fb18-e3af-4d37-8de3-17995d6670e9
       version: -1
       name: Choose users to disable
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Checks whether the values provided in arguments are equal. If either of the arguments is missing, no is returned.
       type: collection
       iscommand: false
       brand: ""
@@ -2113,7 +2112,7 @@ tasks:
       id: 7afd5f31-21a5-4dd6-8446-2985bb2a51f3
       version: -1
       name: Get endpoint info
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields is concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoints from the start of the result set (start by counting from 0).
       script: '|||core-get-endpoints'
       type: regular
       iscommand: true
@@ -2604,25 +2603,25 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Boolean. Set to 'true' if you want to disable the user account.
+  description: Set to 'True' to disable the user account.
   playbookInputQuery:
 - key: BlockIndicators
   value:
     simple: "True"
   required: false
-  description: Boolean. Set to 'true' if you want to block the indicators.
+  description: Set to 'True' to block the indicators.
   playbookInputQuery:
 - key: FileContainment
   value:
     simple: "True"
   required: false
-  description: Boolean. Set to 'true' if you want to quarantine the identified file.
+  description: Set to 'True' to quarantine the identified file.
   playbookInputQuery:
 - key: ClearUserSessions
   value:
     simple: "True"
   required: false
-  description: Boolean. Set to 'true' if you want to clear the user active Okta sessions.
+  description: Set to 'True' to clear the user active Okta sessions.
   playbookInputQuery:
 - key: EndpointID
   value: {}
@@ -2647,24 +2646,24 @@ inputs:
 - key: IP
   value: {}
   required: false
-  description: IP indicators.
+  description: The IP indicators.
   playbookInputQuery:
 - key: Domain
   value: {}
   required: false
-  description: Domain indicators.
+  description: The domain indicators.
   playbookInputQuery:
 - key: IAMUserDomain
   value:
     simple: '@demisto.com'
   required: false
-  description: The Okta IAM users domain. The domain will be appended to the username. e.g. username@IAMUserDomain.
+  description: The Okta IAM users domain. The domain is appended to the username. For example, username@IAMUserDomain.
   playbookInputQuery:
 - key: FileRemediation
   value:
     simple: Quarantine
   required: false
-  description: "Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. \ne.g. Choosing 'Quarantine' will ignore the 'Delete file' task under the eradication playbook and will execute only file quarantine and vice versa."
+  description: "Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. \nFor example, choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and will execute only file quarantine."
   playbookInputQuery:
 outputs: []
 tests:
