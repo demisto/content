@@ -510,8 +510,7 @@ def parse_file_results(report_to_results: Dict[str, RawCommandResults]) -> List[
 
     for report_id, result in report_to_results.items():
         if result.output:
-            sha256 = result.output.get('sha256')
-            if not sha256:  # todo what values can we have here? odd edge case
+            if not (sha256 := result.output.get('sha256')):
                 demisto.debug(f'unexpected result for {report_id=}: '
                               f'output is not empty but SHA256 could not be found.\n\n'
                               f'{result.output=}\n'
@@ -1120,7 +1119,7 @@ def find_sandbox_reports_command(
                 all_report_ids.extend(report_ids)
 
         outputs = {
-            'resource': all_report_ids,
+            'resources': all_report_ids,
             'FindReport': found_reports,
         }
 
