@@ -44,8 +44,6 @@ run-unittests-and-lint:
 run-validations:
   extends:
     - .run-validations
-  rules:
-    - if: '$NIGHTLY'
 
 
 create-instances:
