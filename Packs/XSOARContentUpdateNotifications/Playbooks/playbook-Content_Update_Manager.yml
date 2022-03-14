@@ -2490,7 +2490,7 @@ inputs:
       root: incident
       accessor: contentnotificationslackchannelid
   required: false
-  description: "Provides a Slack username for the new content notifications. Note:\
+  description: "Provides a Slack channel ID for the new content notifications. Note:\
     \ You must have an installed and configured Slack integration."
   playbookInputQuery:
 - key: packs
