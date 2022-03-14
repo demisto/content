@@ -464,7 +464,7 @@ def filter_dictionary(dictionary: dict, fields_to_keep: Optional[tuple], sort_by
 
 def file_command(client: Client, **args: dict) -> List[CommandResults]:
     file_hashes = argToList(args.get('file', ''))
-    report_ids = client.find_sandbox_reports(hashes=file_hashes).get('resources', [])
+    report_ids = client.find_sandbox_reports(hashes=file_hashes, limit=250).get('resources', [])
 
     resources_fields = ('verdict',)
     sandbox_fields = ('filetype', 'file_size', 'sha256', 'threat_score')
@@ -1119,7 +1119,7 @@ def find_sandbox_reports_command(
 
                 total_count = response.get('meta', {}).get('pagination', {}).get('total', 0)
                 if total_count > len(report_ids):
-                    demisto.info(f'Warning: there are {total_count} results, but only {len(report_ids)} were fetched.')
+                    demisto.info(f'Warning: there are {total_count} reports, but only {len(report_ids)} were fetched.')
 
         outputs = {
             'resources': all_report_ids,
