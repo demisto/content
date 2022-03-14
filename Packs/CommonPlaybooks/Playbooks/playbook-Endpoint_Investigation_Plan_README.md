@@ -1,4 +1,4 @@
-This playbook handles all the endpoint investigation actions available with XSIAM, including the following tasks:  
+This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:  
 * Pre-defined MITRE Tactics
 * Host fields (Host ID)
 * Attacker fields (Attacker IP, External host)
