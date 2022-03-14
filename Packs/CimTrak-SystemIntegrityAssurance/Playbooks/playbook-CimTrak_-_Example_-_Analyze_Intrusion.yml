@@ -1,12 +1,8 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 25043b93-4265-49a0-8858-04aed0ec4edd
     propagationLabels:
     - all
-    toServerVersion: ""
-id: c526be83-711d-4212-8b5a-e618470f1958
+id: CimTrak - Example - Analyze Intrusion
 inputs:
 - description: ""
   key: ""
@@ -19,18 +15,18 @@ inputs:
         byfrom: ""
         byto: ""
         field: ""
-        fromvalue: null
-        tovalue: null
+        fromvalue:
+        tovalue:
       todate: "0001-01-01T00:00:00Z"
     query: ""
     queryEntity: indicators
-    results: null
+    results:
     runFromLastJobTime: true
   required: false
   value: {}
 - description: ""
   key: lObjectDetailID
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     complex:
@@ -38,7 +34,7 @@ inputs:
       root: ${incident.labels
 - description: ""
   key: lParentID
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: ${incident.labels.parentId}
@@ -64,6 +60,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: ef9587ba-8e1a-4ccb-8a97-f33ad91da0b6
     timertriggers: []
     type: start
@@ -188,9 +185,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Gets a value and return it. This is to be used in playbook conditional
-        tasks - get a value from incident field, label or context, and act accordingly.
-        \nIf an array is returned. the first value will be the decision making value."
+      description: "Gets a value and return it. This is to be used in playbook conditional tasks - get a value from incident field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
       id: 3cac13ac-04dc-4b34-8c02-10f286d3d0e1
       iscommand: false
       name: Check if file is malicious
@@ -506,11 +501,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Review the incident to determine if the account activity is malicious.\n\nIf
-        malicious, consider the following:\n* Quarantine the account/ endpoint \n*
-        Revoke the account password\n* Query the account/ IPs logs in the SIEM\n*
-        Block the external IPs in the firewall/ proxy\n* Check the account's privileges
-        and change if needed"
+      description: "Review the incident to determine if the account activity is malicious.\n\nIf malicious, consider the following:\n* Quarantine the account/ endpoint \n* Revoke the account password\n* Query the account/ IPs logs in the SIEM\n* Block the external IPs in the firewall/ proxy\n* Check the account's privileges and change if needed"
       id: a762c9b2-95c6-459a-8fe0-398d9721ce0b
       iscommand: false
       name: Manually remediate  the incident
@@ -610,3 +601,7 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: Example on how to handle intrusion from CimTrak
