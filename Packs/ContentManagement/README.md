@@ -11,6 +11,8 @@ As part of this pack, you will also get out-of-the-box incident type, fields and
 
 For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/content-management)
 
+[![Cortex XSOAR CI/CD](https://www.youtube.com/watch?v=Wk1g43cgo98/0.jpg)](https://www.youtube.com/watch?v=Wk1g43cgo98)
+
 ![playbook.png](https://raw.githubusercontent.com/demisto/content/master/Packs/ContentManagement/docs-files/playbook.png)
 
-[![Cortex XSOAR CI/CD](https://www.youtube.com/watch?v=Wk1g43cgo98/0.jpg)](https://www.youtube.com/watch?v=Wk1g43cgo98)
+
