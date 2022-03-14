@@ -161,8 +161,7 @@ def test_fetch_incidents(mocker, client, requests_mock, demisto_mocker, last_run
         assert incidents[1]['occurred'] == '2021-08-03T20:25:15Z'
         assert incidents_for_fetch == incidents
     else:
-        assert len(incidents) == 0
-        assert incidents == []
+        assert not incidents
 
 
 def test_get_incidents_command(client, requests_mock):
