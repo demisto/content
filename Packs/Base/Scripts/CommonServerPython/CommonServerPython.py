@@ -6448,7 +6448,7 @@ class ConcurrentCommandRunner:
             :param instance: The instance that was used.
             :type instance: ``str``
             :param result: The result of the command.
-            :type result: ``str``
+            :type result: ``object``
             """
             self.command = command
             self.args = args
