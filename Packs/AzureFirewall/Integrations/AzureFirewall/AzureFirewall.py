@@ -2746,7 +2746,7 @@ def test_connection(client: AzureFirewallClient) -> str:
 
     """
     try:
-        print(client.ms_client.get_access_token())
+        client.ms_client.get_access_token()
     except Exception as err:
         return f'Authorization Error: \n{err}'
     return 'Success!'
