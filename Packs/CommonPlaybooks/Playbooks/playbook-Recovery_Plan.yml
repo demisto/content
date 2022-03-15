@@ -2,12 +2,11 @@ id: Recovery Plan
 version: -1
 name: Recovery Plan
 description: |-
-  This playbook handles all the recovery actions available with XSIAM.
-  The playbook allows to recover  from the incident with one of the following tasks:
+  This playbook handles all the recovery actions available with Cortex XSIAM, including the following tasks:
   * Unisolate endpoint
   * Restore quarantined file
 
-  The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+  Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
 starttaskid: "0"
 tasks:
   "0":
@@ -48,7 +47,7 @@ tasks:
       id: 82bb4625-493c-4e79-8ba2-9ded7a609000
       version: -1
       name: Should unisolate the endpoint?
-      description: Whether to unisolate the endpoint or not.
+      description: Whether to unisolate the endpoint.
       type: condition
       iscommand: false
       brand: ""
@@ -155,7 +154,7 @@ tasks:
       id: 1f8e95ae-1cf7-44c0-896b-576fb895a635
       version: -1
       name: Should restore the quarantined file?
-      description: Whether to restore the quarantined file or not.
+      description: Whether to restore the quarantined file.
       type: condition
       iscommand: false
       brand: ""
@@ -252,13 +251,13 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: Boolean. Set to 'true' if you want to cancel the endpoint isolation.
+  description: Set to True to cancel the endpoint isolation.
   playbookInputQuery:
 - key: releaseFile
   value:
     simple: "false"
   required: false
-  description: Boolean. Set to 'true' if you want to release the quarantined file.
+  description: Set to True to release the quarantined file.
   playbookInputQuery:
 - key: endpointID
   value: {}
