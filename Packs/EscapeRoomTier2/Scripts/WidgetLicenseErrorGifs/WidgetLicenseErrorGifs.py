@@ -28,11 +28,13 @@ INVALID_LICENSE_GIFS = [
 ]
 
 SUCCESS_GIFS = [
-    'https://media.giphy.com/media/a0h7sAqON67nO/giphy.gif',
-    'https://media.giphy.com/media/XreQmk7ETCak0/giphy.gif',
-    'https://media.giphy.com/media/gd0Dqg6rYhttBVCZqd/giphy.gif',
+    # 'https://media.giphy.com/media/a0h7sAqON67nO/giphy.gif',
+    # 'https://media.giphy.com/media/XreQmk7ETCak0/giphy.gif',
+    # 'https://media.giphy.com/media/gd0Dqg6rYhttBVCZqd/giphy.gif',
+    # 'https://media.giphy.com/media/Q81NcsY6YxK7jxnr4v/giphy.gif',
+    'https://media.giphy.com/media/MCZ39lz83o5lC/giphy.gif',
+    'https://media.giphy.com/media/fvlGGxUci1BiJuBET9/giphy.gif',
     'https://media.giphy.com/media/Wq3gAYYuERDSU9DAbT/giphy.gif',
-    'https://media.giphy.com/media/Q81NcsY6YxK7jxnr4v/giphy.gif',
 ]
 
 

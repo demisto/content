@@ -14,12 +14,11 @@ from CommonServerPython import *
 def create_bar_widget() -> BarColumnPieWidget:
     widget = BarColumnPieWidget()
     random_ranges = {
-        'Yaakovi': {'start': 10, 'stop': 25},
-        'Kozakish': {'start': 0, 'stop': 5},
-        'Itay': {'start': 5, 'stop': 15},
-        'Andrew': {'start': 0, 'stop': 5},
-        'Hod': {'start': 0, 'stop': 10},
+        'Eli': {'start': 10, 'stop': 25},
+        'Itay': {'start': 5, 'stop': 10},
+        'Jochman': {'start': 0, 'stop': 5},
         'Shahaf': {'start': 0, 'stop': 5},
+        'Yaakovi': {'start': 5, 'stop': 15},
     }
 
     for user, random_range in random_ranges.items():

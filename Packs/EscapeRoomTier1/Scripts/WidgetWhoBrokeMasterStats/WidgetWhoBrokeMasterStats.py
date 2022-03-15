@@ -15,12 +15,10 @@ def create_bar_widget() -> BarColumnPieWidget:
     widget = BarColumnPieWidget()
     random_ranges = {
         'Jochman': {'start': 5, 'stop': 15},
-        'Freund': {'start': 5, 'stop': 15},
-        'Kozakish': {'start': 0, 'stop': 3},
-        'Barchen': {'start': 0, 'stop': 5},
+        'Chanoch': {'start': 5, 'stop': 15},
+        'Yarden': {'start': 0, 'stop': 5},
         'Keller': {'start': 10, 'stop': 15},
         'David': {'start': 0, 'stop': 10},
-        'Andrew': {'start': 0, 'stop': 10},
     }
 
     for user, random_range in random_ranges.items():

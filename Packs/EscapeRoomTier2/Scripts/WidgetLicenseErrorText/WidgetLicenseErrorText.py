@@ -23,7 +23,7 @@ INVALID_LICENSE_HINT = '''
 #### Looks like we run out of money and lost our XSOAR license.
 
 #### Don't be alarmed, we can handle it together.
-#### goto the [secret place](https://portal.demisto.works/acc_Content#/WarRoom/61676/6qcPiZNxSocCNBfUfnFzVj@61676)
+#### goto the [secret place](#Custom/caseinfoid/{incident_id})
 '''
 
 SUCCESS_MESSAGE = '''
@@ -87,6 +87,14 @@ def create_starting_incident():
     })
 
 
+def get_incident_with_license():
+    res = execute_command('getIncidents', args={'name': 'Get Your License Here', 'raw-response': 'true'})
+    if res['total'] != 1:
+        return '404'
+
+    return res['data'][0]['id']
+
+
 def v_for_vendetta(time_from: datetime, time_to: datetime):
     validate = [t.day == 5 and t.month == 11 for t in (time_from, time_to)]
 
@@ -130,7 +138,8 @@ def main():
             text = WRONG_DATE_RANGE_HINT
         elif not is_valid_license():
         # elif not is_valid_license_temp(from_times, to_times):
-            text = INVALID_LICENSE_HINT
+            incident_id = get_incident_with_license()
+            text = INVALID_LICENSE_HINT.format(incident_id=incident_id)
         else:
             create_starting_incident()
             text = SUCCESS_MESSAGE

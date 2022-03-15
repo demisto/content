@@ -13,10 +13,11 @@ from CommonServerPython import *
 def create_bar_widget() -> BarColumnPieWidget:
     widget = BarColumnPieWidget()
     name_count_mapping = {
-        'Gal': 2,
-        'Bar': 4,
-        'Guy': 3,
-        'Rony': 0,
+        'Bar': 2,
+        'Cactus': 0,
+        'Dan': 2,
+        'Guy': 2,
+        'Yuval': 3,
     }
 
     for name, count in name_count_mapping.items():
