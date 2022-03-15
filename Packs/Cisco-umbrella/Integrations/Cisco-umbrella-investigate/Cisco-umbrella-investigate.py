@@ -867,6 +867,7 @@ def get_domain_command():
                                                      'Type': 'domain',
                                                      'Vendor': 'Cisco Umbrella Investigate',
                                                      'Score': 0,
+                                                     'Message': 'No results found',
                                                      'Reliability': reliability}
 
                 results.append({

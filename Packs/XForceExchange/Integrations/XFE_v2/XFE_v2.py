@@ -82,7 +82,7 @@ def build_context_indicator_no_results_status(indicator: str, indicator_type: st
                                   indicator_type=indicator_map[indicator_type],
                                   integration_name=integration_name,
                                   reliability=reliability)
-    indicator_ = None
+    indicator_: Any = None
     if indicator_type == 'file':
         if sha1Regex.match(indicator):
             indicator_ = Common.File(sha1=indicator, dbot_score=dbot_score)
@@ -90,19 +90,18 @@ def build_context_indicator_no_results_status(indicator: str, indicator_type: st
             indicator_ = Common.File(sha256=indicator, dbot_score=dbot_score)
         if md5Regex.match(indicator):
             indicator_ = Common.File(md5=indicator, dbot_score=dbot_score)
-    
+
     elif indicator_type == 'ip':
         indicator_ = Common.IP(ip=indicator, dbot_score=dbot_score)
-    
+
     elif indicator_type == 'domain':
         indicator_ = Common.Domain(domain=indicator, dbot_score=dbot_score)
-    
+
     elif indicator_type == 'url':
         indicator_ = Common.URL(url=indicator, dbot_score=dbot_score)
-
     return CommandResults(readable_output=message, indicator=indicator_)
 
-    
+
 def calculate_score(score: int, threshold: int) -> int:
     """
     Calculates and converts X-Force Exchange score into Demisto score.
@@ -263,7 +262,9 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
                 'Indicator': domain,
                 'Type': 'domain',
                 'Vendor': 'XFE',
-                'Score': 0
+                'Score': 0,
+                'Message': 'No results found',
+                'Reliability': client.reliability
             })
             continue
         outputs = {'Name': report['url']}
@@ -323,7 +324,12 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         if report == "Not Found":
             markdown += f'URL: {url} not found\n'
             context[outputPaths['url']].append({'Data': url})
-            context[DBOT_SCORE_KEY].append({'Indicator': url, 'Type': 'url', 'Vendor': 'XFE', 'Score': 0})
+            context[DBOT_SCORE_KEY].append({'Indicator': url,
+                                            'Type': 'url',
+                                            'Vendor': 'XFE',
+                                            'Score': 0,
+                                            'Reliability': client.reliability,
+                                            'Message': 'No results found'})
             continue
         outputs = {'Data': report['url']}
         dbot_score = {'Indicator': report['url'], 'Type': 'url', 'Vendor': 'XFE',

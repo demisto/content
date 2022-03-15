@@ -102,7 +102,7 @@ def build_context_indicator_no_results_status(indicator: str, indicator_type: st
                                   indicator_type=indicator_map[indicator_type],
                                   integration_name=integration_name,
                                   reliability=reliability)
-    indicator_ = None
+    indicator_: Any = None
     if indicator_type == 'file':
         if sha1Regex.match(indicator):
             indicator_ = Common.File(sha1=indicator, dbot_score=dbot_score)
