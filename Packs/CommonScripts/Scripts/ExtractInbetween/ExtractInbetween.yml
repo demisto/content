@@ -1,0 +1,28 @@
+commonfields:
+  id: ExtractInbetween
+  version: -1
+name: ExtractInbetween
+script: ''
+type: python
+tags:
+- transformer
+- general
+comment: Extract a value from between two other values.
+enabled: true
+args:
+- name: value
+  default: true
+  description: The value from which to extract the data from.
+- name: start
+  required: true
+  description: The starting value.
+- name: end
+  description: The ending value.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.1.26972
+runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
