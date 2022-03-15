@@ -6399,14 +6399,14 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
     if exit:
         sys.exit(0)
 
-class ConcurrentCommandRunner:
+class CommandRunner:
     """
     Class for executing multiple commands and save the results of each command.
 
     :return: None
     :rtype: ``None``
     """
-    class CommandExecuter:
+    class Command:
         """
         Class for the needed data to execute a command.
 
@@ -6428,8 +6428,7 @@ class ConcurrentCommandRunner:
             if isinstance(commands, str) and isinstance(args_lst, dict):
                 commands = [commands]
                 args_lst = [args_lst]
-            if not isinstance(commands, list) or not isinstance(args_lst, list) or len(commands) != len(args_lst):
-                raise DemistoException('commands and arg_lst arguments given are not valid')
+            self._is_valid(commands, args_lst)
             self.commands = commands
             self.args_lst = args_lst
             if brand:
@@ -6439,7 +6438,19 @@ class ConcurrentCommandRunner:
                 for args in self.args_lst:
                     args.update({'using': instance})
 
-    class ResultWrapper:
+        @staticmethod
+        def _is_valid(commands, args_lst):
+            """
+            Error handling of the given arguments
+            :param commands: list of commands
+            :param args_lst: list of args
+            :return:
+            """
+            if not isinstance(commands, list) or not isinstance(args_lst, list) or len(commands) != len(args_lst):
+                raise DemistoException('commands and arg_lst arguments given are not valid')
+
+
+    class Result:
         """
         Class for the result of the command.
 
@@ -6466,12 +6477,12 @@ class ConcurrentCommandRunner:
             self.result = result
 
     @staticmethod
-    def execute_commands_multiple_results(command_executer, extract_contents=True):
+    def execute_commands(command, extract_contents=True):
         """
         Runs the `demisto.executeCommand()` and gets all the results, including the errors, returned from the command.
 
-        :type command_executer: ``CommandExecuter``
-        :param command_executer: The commands to run. (required)
+        :type command: ``Command``
+        :param command: The commands to run. (required)
 
         :type extract_contents: ``bool``
         :param extract_contents: Whether to extract Contents part of the results. Default is True.
@@ -6480,40 +6491,40 @@ class ConcurrentCommandRunner:
         :rtype: ``Tuple[List[ResultWrapper], List[ResultWrapper]]``
         """
         results, errors = [], []
-        for command, args in zip(command_executer.commands, command_executer.args_lst):
+        for command, args in zip(command.commands, command.args_lst):
             try:
                 execute_command_results = demisto.executeCommand(command, args)
                 for res in execute_command_results:
                     brand_name = res.get('Brand', 'Unknown') if isinstance(res, dict) else 'Unknown'
                     module_name = res.get('ModuleName', 'Unknown') if isinstance(res, dict) else 'Unknown'
                     if is_error(res):
-                        errors.append(ConcurrentCommandRunner.ResultWrapper(command, args, brand_name, module_name, get_error(res)))
+                        errors.append(CommandRunner.Result(command, args, brand_name, module_name, get_error(res)))
                     else:
                         if extract_contents:
                             res = res.get('Contents', {})
                         if res is None:
                             res = {}
-                        results.append(ConcurrentCommandRunner.ResultWrapper(command, args, brand_name, module_name, res))
+                        results.append(CommandRunner.Result(command, args, brand_name, module_name, res))
             except ValueError as e:
                 demisto.debug(str(e))
         return results, errors
 
     @staticmethod
-    def get_wrapper_results(command_wrappers):
+    def run_commands(commands):
         """
-        Given a list of command_wrappers, return a list of results (to pass to return_results).
+        Given a list of commands, return a list of results (to pass to return_results).
 
-        :param command_wrappers: A list of
-        :type command_wrappers: ``List[CommandExecuter]``
+        :param commands: A list of
+        :type commands: ``List[Command]``
         :return: list of results
         """
         full_results, full_errors = [], []
-        for command_wrapper in command_wrappers:
-            results, errors = ConcurrentCommandRunner.execute_commands_multiple_results(command_wrapper, extract_contents=False)
+        for command in commands:
+            results, errors = CommandRunner.execute_commands(command, extract_contents=False)
             full_results.extend(results)
             full_errors.extend(errors)
 
-        summary_md = ConcurrentCommandRunner.get_wrapper_results_summary(full_results, full_errors)
+        summary_md = CommandRunner.get_results_summary(full_results, full_errors)
         command_results = [res.result for res in full_results]
         if not command_results and full_errors:  # no results were given but there are errors
             errors = ["{instance}: {msg}".format(instance=err.instance, msg=err.result) for err in full_errors]
@@ -6523,7 +6534,13 @@ class ConcurrentCommandRunner:
         return command_results
 
     @staticmethod
-    def get_wrapper_results_summary(results, errors):
+    def get_results_summary(results, errors):
+        """
+        Get a Human Readable result for all the results of the commands.
+        :param results: list of returned results
+        :param errors: list of returned errors
+        :return: `CommandResults` of HumanReadable that summarizes the results and errors.
+        """
         results_summary_table = []
         headers = ['Instance', 'Command', 'Result', 'Comment']
         for res in results:

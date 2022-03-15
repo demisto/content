@@ -4382,14 +4382,14 @@ class TestExecuteCommandsMultipleResults:
         Then:
             - Assert that only the Contents value is returned.
         """
-        from CommonServerPython import ConcurrentCommandRunner, EntryType
+        from CommonServerPython import CommandRunner, EntryType
         demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
                                                    return_value=[{'Type': EntryType.NOTE,
                                                                   'ModuleName': 'module',
                                                                   'Brand': 'brand',
                                                                   'Contents': {'hello': 'world'}}])
-        command_executer = ConcurrentCommandRunner.CommandExecuter(commands='command', args_lst={'arg1': 'value'})
-        results, errors = ConcurrentCommandRunner.execute_commands_multiple_results(command_executer)
+        command_executer = CommandRunner.Command(commands='command', args_lst={'arg1': 'value'})
+        results, errors = CommandRunner.execute_commands(command_executer)
         execute_command_args = demisto_execute_mock.call_args_list[0][0]
         assert demisto_execute_mock.call_count == 1
         assert execute_command_args[0] == 'command'
@@ -4412,7 +4412,7 @@ class TestExecuteCommandsMultipleResults:
         Then:
             - Assert that the "Contents" values of all entries are returned.
         """
-        from CommonServerPython import ConcurrentCommandRunner, EntryType
+        from CommonServerPython import CommandRunner, EntryType
         entries = [
             {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
             {'Type': EntryType.NOTE, 'Context': 'no contents here'},
@@ -4421,8 +4421,8 @@ class TestExecuteCommandsMultipleResults:
         ]
         demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
                                                    return_value=entries)
-        command_executer = ConcurrentCommandRunner.CommandExecuter(commands='command', args_lst={'arg1': 'value'})
-        results, errors = ConcurrentCommandRunner.execute_commands_multiple_results(command_executer)
+        command_executer = CommandRunner.Command(commands='command', args_lst={'arg1': 'value'})
+        results, errors = CommandRunner.execute_commands(command_executer)
         assert demisto_execute_mock.call_count == 1
         assert isinstance(results, list)
         assert isinstance(errors, list)
@@ -4443,7 +4443,7 @@ class TestExecuteCommandsMultipleResults:
         Then:
             - Assert that the entire entries are returned.
         """
-        from CommonServerPython import EntryType, ConcurrentCommandRunner
+        from CommonServerPython import EntryType, CommandRunner
         entries = [
             {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
             {'Type': EntryType.NOTE, 'Context': 'no contents here'},
@@ -4452,8 +4452,8 @@ class TestExecuteCommandsMultipleResults:
         ]
         demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
                                                    return_value=entries)
-        command_executer = ConcurrentCommandRunner.CommandExecuter(commands='command', args_lst={'arg1': 'value'})
-        results, errors = ConcurrentCommandRunner.execute_commands_multiple_results(command_executer, extract_contents=False)
+        command_executer = CommandRunner.Command(commands='command', args_lst={'arg1': 'value'})
+        results, errors = CommandRunner.execute_commands(command_executer, extract_contents=False)
         assert demisto_execute_mock.call_count == 1
         assert isinstance(results, list)
         assert isinstance(errors, list)
@@ -4475,7 +4475,7 @@ class TestExecuteCommandsMultipleResults:
         Then:
             - Assert that the results list and the errors list returned as should've been
         """
-        from CommonServerPython import ConcurrentCommandRunner, EntryType
+        from CommonServerPython import CommandRunner, EntryType
         entries = [
             {'Type': EntryType.ERROR, 'Contents': 'error number 1'},
             {'Type': EntryType.NOTE, 'Contents': 'not an error'},
@@ -4488,10 +4488,10 @@ class TestExecuteCommandsMultipleResults:
             return entries
         demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
                                                    side_effect=execute_command_mock)
-        command_executer = ConcurrentCommandRunner.CommandExecuter(commands=['command', 'unsupported'],
-                                                                   args_lst=[{'arg1': 'value'}, {}])
+        command_executer = CommandRunner.Command(commands=['command', 'unsupported'],
+                                                 args_lst=[{'arg1': 'value'}, {}])
 
-        results, errors = ConcurrentCommandRunner.execute_commands_multiple_results(command_executer)
+        results, errors = CommandRunner.execute_commands(command_executer)
 
         # validate that errors were found and the unsupported is ignored
         assert demisto_execute_mock.call_count == 2
@@ -4522,15 +4522,15 @@ class TestExecuteCommandsMultipleResults:
         Then:
             - Assert that the results list and the errors list returned as should've been
         """
-        from CommonServerPython import ConcurrentCommandRunner
+        from CommonServerPython import CommandRunner
         demisto_execute_mock = mocker.patch.object(demisto,
                                                    'executeCommand',
                                                    side_effect=TestExecuteCommandsMultipleResults.get_result_for_multiple_commands_helper)
-        command_executer = ConcurrentCommandRunner.CommandExecuter(commands=['command1', 'command2'],
-                                                                   args_lst=[{'arg1': 'value1'},
+        command_executer = CommandRunner.Command(commands=['command1', 'command2'],
+                                                 args_lst=[{'arg1': 'value1'},
                                                                     {'arg2': 'value2'}])
 
-        results, errors = ConcurrentCommandRunner.execute_commands_multiple_results(command_executer)
+        results, errors = CommandRunner.execute_commands(command_executer)
         assert demisto_execute_mock.call_count == 2
         assert isinstance(results, list)
         assert isinstance(errors, list)
@@ -4553,15 +4553,15 @@ class TestExecuteCommandsMultipleResults:
         Then:
             - Assert that error is given.
         """
-        from CommonServerPython import ConcurrentCommandRunner
+        from CommonServerPython import CommandRunner
         with pytest.raises(DemistoException):
-            ConcurrentCommandRunner.execute_commands_multiple_results(
-                ConcurrentCommandRunner.CommandExecuter(commands=['command'],
-                                                        args_lst=[{'arg': 'val'}, {'arg': 'val'}]))
+            CommandRunner.execute_commands(
+                CommandRunner.Command(commands=['command'],
+                                      args_lst=[{'arg': 'val'}, {'arg': 'val'}]))
         with pytest.raises(DemistoException):
-            ConcurrentCommandRunner.execute_commands_multiple_results(
-                ConcurrentCommandRunner.CommandExecuter(commands=['command', 'command1'],
-                                                        args_lst=[{'arg': 'val'}]))
+            CommandRunner.execute_commands(
+                CommandRunner.Command(commands=['command', 'command1'],
+                                      args_lst=[{'arg': 'val'}]))
 
     @staticmethod
     def test_using_brand_instance(mocker):
@@ -4573,13 +4573,13 @@ class TestExecuteCommandsMultipleResults:
         Then:
             - Assert that the `demisto.executeCommand` runned with `using` and `using-brand`.
         """
-        from CommonServerPython import ConcurrentCommandRunner
-        executer_with_brand = ConcurrentCommandRunner.CommandExecuter(brand='my brand',
-                                                                      instance='my instance',
-                                                                      commands='command',
-                                                                      args_lst={'arg': 'val'})
+        from CommonServerPython import CommandRunner
+        executer_with_brand = CommandRunner.Command(brand='my brand',
+                                                    instance='my instance',
+                                                    commands='command',
+                                                    args_lst={'arg': 'val'})
         demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand')
-        ConcurrentCommandRunner.execute_commands_multiple_results(executer_with_brand)
+        CommandRunner.execute_commands(executer_with_brand)
         assert demisto_execute_mock.called
         args_for_execute_command = demisto_execute_mock.call_args_list[0][0][1]
         assert 'using-brand' in args_for_execute_command
@@ -4593,16 +4593,16 @@ class TestGetResultsWrapper:
 
     @staticmethod
     def execute_command_mock(command_executer, extract_contents):
-        from CommonServerPython import ConcurrentCommandRunner
+        from CommonServerPython import CommandRunner
         TestGetResultsWrapper.NUM_EXECUTE_COMMAND_CALLED += 1
         results, errors = [], []
 
         for command, args in zip(command_executer.commands, command_executer.args_lst):
-            result_wrapper = ConcurrentCommandRunner.ResultWrapper(command=command,
-                                                                   args=args,
-                                                                   brand='my-brand{}'.format(TestGetResultsWrapper.NUM_EXECUTE_COMMAND_CALLED),
-                                                                   instance='instance',
-                                                                   result='Command did not succeeded' if command == 'error-command' else 'Good')
+            result_wrapper = CommandRunner.Result(command=command,
+                                                  args=args,
+                                                  brand='my-brand{}'.format(TestGetResultsWrapper.NUM_EXECUTE_COMMAND_CALLED),
+                                                  instance='instance',
+                                                  result='Command did not succeeded' if command == 'error-command' else 'Good')
             if command == 'error-command':
                 errors.append(result_wrapper)
             elif command != 'unsupported-command':
@@ -4620,14 +4620,14 @@ class TestGetResultsWrapper:
             - Assert that the "good" results are returned, and the summary includes the errors.
             - Assert that the unsupported command is ignored.
         """
-        from CommonServerPython import ConcurrentCommandRunner, CommandResults
-        command_wrappers = [ConcurrentCommandRunner.CommandExecuter(brand='my-brand1', commands='my-command', args_lst={'arg': 'val'}),
-                            ConcurrentCommandRunner.CommandExecuter(brand='my-brand2', commands=['command1', 'command2'], args_lst=[{'arg1': 'val1'}, {'arg2': 'val2'}]),
-                            ConcurrentCommandRunner.CommandExecuter(brand='my-brand3', commands='error-command', args_lst={'bad_arg': 'bad_val'}),
-                            ConcurrentCommandRunner.CommandExecuter(brand='brand-no-exist', commands='unsupported-command', args_lst={'arg': 'val'})]
-        mocker.patch.object(ConcurrentCommandRunner, 'execute_commands_multiple_results',
+        from CommonServerPython import CommandRunner, CommandResults
+        command_wrappers = [CommandRunner.Command(brand='my-brand1', commands='my-command', args_lst={'arg': 'val'}),
+                            CommandRunner.Command(brand='my-brand2', commands=['command1', 'command2'], args_lst=[{'arg1': 'val1'}, {'arg2': 'val2'}]),
+                            CommandRunner.Command(brand='my-brand3', commands='error-command', args_lst={'bad_arg': 'bad_val'}),
+                            CommandRunner.Command(brand='brand-no-exist', commands='unsupported-command', args_lst={'arg': 'val'})]
+        mocker.patch.object(CommandRunner, 'execute_commands_multiple_results',
                             side_effect=TestGetResultsWrapper.execute_command_mock)
-        results = ConcurrentCommandRunner.get_wrapper_results(command_wrappers)
+        results = CommandRunner.run_commands(command_wrappers)
         assert len(results) == 4  # 1 error (brand3)
         assert all(res == 'Good' for res in results[:-1])
         assert isinstance(results[-1], CommandResults)
@@ -4661,21 +4661,21 @@ class TestGetResultsWrapper:
         Then:
             - Assert that error returned.
         """
-        from CommonServerPython import ConcurrentCommandRunner
-        command_wrappers = [ConcurrentCommandRunner.CommandExecuter(brand='my-brand1',
-                                                                    commands='error-command',
-                                                                    args_lst={'arg': 'val'}),
-                            ConcurrentCommandRunner.CommandExecuter(brand='my-brand2',
-                                                                    commands='error-command',
-                                                                    args_lst={'bad_arg': 'bad_val'}),
-                            ConcurrentCommandRunner.CommandExecuter(brand='brand-no-exist',
-                                                                    commands='unsupported-command',
-                                                                    args_lst={'arg': 'val'}),
+        from CommonServerPython import CommandRunner
+        command_wrappers = [CommandRunner.Command(brand='my-brand1',
+                                                  commands='error-command',
+                                                  args_lst={'arg': 'val'}),
+                            CommandRunner.Command(brand='my-brand2',
+                                                  commands='error-command',
+                                                  args_lst={'bad_arg': 'bad_val'}),
+                            CommandRunner.Command(brand='brand-no-exist',
+                                                  commands='unsupported-command',
+                                                  args_lst={'arg': 'val'}),
                             ]
-        mocker.patch.object(ConcurrentCommandRunner, 'execute_commands_multiple_results',
+        mocker.patch.object(CommandRunner, 'execute_commands_multiple_results',
                             side_effect=TestGetResultsWrapper.execute_command_mock)
         with pytest.raises(DemistoException) as e:
-            ConcurrentCommandRunner.get_wrapper_results(command_wrappers)
+            CommandRunner.run_commands(command_wrappers)
             assert 'Command did not succeeded' in e.value
             assert 'Script failed. The following errors were encountered:' in e.value
 
