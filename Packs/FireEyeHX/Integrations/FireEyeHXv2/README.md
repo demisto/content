@@ -47,28 +47,28 @@ Get information on a host associated with an agent.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.Hosts._id | Unknown | FireEye HX Agent ID. | 
-| FireEyeHX.Hosts.agent_version | Unknown | The agent version. | 
-| FireEyeHX.Hosts.excluded_from_containment | Unknown | Determines whether the host is excluded from containment. | 
-| FireEyeHX.Hosts.containment_missing_software | Unknown | Boolean value to indicate for containment missing software. | 
-| FireEyeHX.Hosts.containment_queued | Unknown | Determines whether the host is queued for containment. | 
-| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu | 
-| FireEyeHX.Hosts.stats.alerting_conditions | Unknown | The number of conditions that have alerted for the host. | 
-| FireEyeHX.Hosts.stats.alerts | Unknown | Total number of alerts, including exploit-detection alerts. | 
-| FireEyeHX.Hosts.stats.exploit_blocks | Unknown | The number of blocked exploits on the host. | 
-| FireEyeHX.Hosts.stats.malware_alerts | Unknown | The number of malware alerts associated with the host. | 
-| FireEyeHX.Hosts.hostname | Unknown | The host name. | 
-| FireEyeHX.Hosts.domain | Unknown | Domain name. | 
-| FireEyeHX.Hosts.timezone | Unknown | Host time zone. | 
-| FireEyeHX.Hosts.primary_ip_address | Unknown | The host IP address. | 
-| FireEyeHX.Hosts.last_poll_timestamp | Unknown | The timestamp of the last system poll preformed on the host. | 
-| FireEyeHX.Hosts.initial_agent_checkin | Unknown | Timestamp of the initial agent check-in. | 
-| FireEyeHX.Hosts.last_alert_timestamp | Unknown | The time stamp of the last alert for the host. | 
-| FireEyeHX.Hosts.last_exploit_block_timestamp | Unknown | Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked. | 
-| FireEyeHX.Hosts.os.product_name | Unknown | Specific operating system | 
-| FireEyeHX.Hosts.os.bitness | Unknown | OS Bitness. | 
-| FireEyeHX.Hosts.os.platform | Unknown | Family of operating systems. Valid values are win, osx, and linux. | 
-| FireEyeHX.Hosts.primary_mac | Unknown | The host MAC address. | 
+| FireEyeHX.Hosts._id | String | FireEye HX Agent ID. | 
+| FireEyeHX.Hosts.agent_version | String | The version of the agent. | 
+| FireEyeHX.Hosts.excluded_from_containment | Boolean | Determines whether the host is excluded from containment. | 
+| FireEyeHX.Hosts.containment_missing_software | Boolean | Whether there is containment missing software. | 
+| FireEyeHX.Hosts.containment_queued | Boolean | Determines whether the host is queued for containment. | 
+| FireEyeHX.Hosts.containment_state | String | The containment state of the host. Possible values normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu | 
+| FireEyeHX.Hosts.stats.alerting_conditions | Number | The number of conditions that have alerted for the host. | 
+| FireEyeHX.Hosts.stats.alerts | Number | The total number of alerts, including exploit-detection alerts. | 
+| FireEyeHX.Hosts.stats.exploit_blocks | Number | The number of blocked exploits on the host. | 
+| FireEyeHX.Hosts.stats.malware_alerts | Number | The number of malware alerts associated with the host. | 
+| FireEyeHX.Hosts.hostname | String | The name of the host. | 
+| FireEyeHX.Hosts.domain | String | The name of the domain. | 
+| FireEyeHX.Hosts.timezone | String | The time zone of the host. | 
+| FireEyeHX.Hosts.primary_ip_address | String | The IP address of the host. | 
+| FireEyeHX.Hosts.last_poll_timestamp | String | The timestamp of the last system poll preformed on the host. | 
+| FireEyeHX.Hosts.initial_agent_checkin | String | The timestamp of the initial agent check-in. | 
+| FireEyeHX.Hosts.last_alert_timestamp | String | The time stamp of the last alert for the host. | 
+| FireEyeHX.Hosts.last_exploit_block_timestamp | String | The time when the last exploit was blocked on the host. The value is null if no exploits have been blocked. | 
+| FireEyeHX.Hosts.os.product_name | String | The operating system of the host. | 
+| FireEyeHX.Hosts.os.bitness | String | The bitness of the operating system. | 
+| FireEyeHX.Hosts.os.platform | String | The family of operating systems. Valid values are win, osx, and linux. | 
+| FireEyeHX.Hosts.primary_mac | String | The MAC address of the host. | 
 
 #### Command example
 ```!fireeye-hx-get-host-information hostName=XXX```
@@ -159,28 +159,28 @@ Get information on all hosts.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.Hosts._id | Unknown | FireEye HX Agent ID. | 
-| FireEyeHX.Hosts.agent_version | Unknown | The agent version. | 
-| FireEyeHX.Hosts.excluded_from_containment | Unknown | Determines whether the host is excluded from containment. | 
-| FireEyeHX.Hosts.containment_missing_software | Unknown | Boolean value to indicate for containment missing software. | 
-| FireEyeHX.Hosts.containment_queued | Unknown | Determines whether the host is queued for containment. | 
-| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu | 
-| FireEyeHX.Hosts.stats.alerting_conditions | Unknown | The number of conditions that have alerted for the host. | 
-| FireEyeHX.Hosts.stats.alerts | Unknown | Total number of alerts, including exploit-detection alerts. | 
-| FireEyeHX.Hosts.stats.exploit_blocks | Unknown | The number of blocked exploits on the host. | 
-| FireEyeHX.Hosts.stats.malware_alerts | Unknown | The number of malware alerts associated with the host. | 
-| FireEyeHX.Hosts.hostname | Unknown | The host name. | 
-| FireEyeHX.Hosts.domain | Unknown | Domain name. | 
-| FireEyeHX.Hosts.timezone | Unknown | Host time zone. | 
-| FireEyeHX.Hosts.primary_ip_address | Unknown | The host IP address. | 
-| FireEyeHX.Hosts.last_poll_timestamp | Unknown | The timestamp of the last system poll preformed on the host. | 
-| FireEyeHX.Hosts.initial_agent_checkin | Unknown | Timestamp of the initial agent check-in. | 
-| FireEyeHX.Hosts.last_alert_timestamp | Unknown | The time stamp of the last alert for the host. | 
-| FireEyeHX.Hosts.last_exploit_block_timestamp | Unknown | Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked. | 
-| FireEyeHX.Hosts.os.product_name | Unknown | Specific operating system | 
-| FireEyeHX.Hosts.os.bitness | Unknown | OS Bitness. | 
-| FireEyeHX.Hosts.os.platform | Unknown | Family of operating systems. Valid values are win, osx, and linux. | 
-| FireEyeHX.Hosts.primary_mac | Unknown | The host MAC address. | 
+| FireEyeHX.Hosts._id | String | FireEye HX Agent ID. | 
+| FireEyeHX.Hosts.agent_version | String | The version of the agent. | 
+| FireEyeHX.Hosts.excluded_from_containment | Boolean | Determines whether the host is excluded from containment. | 
+| FireEyeHX.Hosts.containment_missing_software | Boolean | Whether there is containment missing software. | 
+| FireEyeHX.Hosts.containment_queued | Boolean | Determines whether the host is queued for containment. | 
+| FireEyeHX.Hosts.containment_state | String | The containment state of the host. Possible values normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu | 
+| FireEyeHX.Hosts.stats.alerting_conditions | Number | The number of conditions that have been alerted for the host. | 
+| FireEyeHX.Hosts.stats.alerts | Number | Total number of alerts, including exploit-detection alerts. | 
+| FireEyeHX.Hosts.stats.exploit_blocks | Number | The number of blocked exploits on the host. | 
+| FireEyeHX.Hosts.stats.malware_alerts | Number | The number of malware alerts associated with the host. | 
+| FireEyeHX.Hosts.hostname | String | The name of the host. | 
+| FireEyeHX.Hosts.domain | String | The name of the domain. | 
+| FireEyeHX.Hosts.timezone | String | The time zone of the host. | 
+| FireEyeHX.Hosts.primary_ip_address | String | The IP address of the host. | 
+| FireEyeHX.Hosts.last_poll_timestamp | String | The timestamp of the last system poll preformed on the host. | 
+| FireEyeHX.Hosts.initial_agent_checkin | String | The timestamp of the initial agent check-in. | 
+| FireEyeHX.Hosts.last_alert_timestamp | String | The time stamp of the last alert for the host. | 
+| FireEyeHX.Hosts.last_exploit_block_timestamp | String | The time when the last exploit was blocked on the host. The value is null if no exploits have been blocked. | 
+| FireEyeHX.Hosts.os.product_name | String | The operating system of the host. | 
+| FireEyeHX.Hosts.os.bitness | String | The bitness of the operating system. | 
+| FireEyeHX.Hosts.os.platform | String | The family of operating systems. Valid values are win, osx, and linux. | 
+| FireEyeHX.Hosts.primary_mac | String | The host MAC address. | 
 
 #### Command example
 ```!fireeye-hx-get-all-hosts-information limit=1```
@@ -234,28 +234,28 @@ Apply containment for a specific host, so that it no longer has access to other 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.Hosts._id | Unknown | FireEye HX Agent ID. | 
-| FireEyeHX.Hosts.agent_version | Unknown | The agent version. | 
-| FireEyeHX.Hosts.excluded_from_containment | Unknown | Determines whether the host is excluded from containment. | 
-| FireEyeHX.Hosts.containment_missing_software | Unknown | Boolean value to indicate for containment missing software. | 
-| FireEyeHX.Hosts.containment_queued | Unknown | Determines whether the host is queued for containment. | 
-| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu | 
-| FireEyeHX.Hosts.stats.alerting_conditions | Unknown | The number of conditions that have alerted for the host. | 
-| FireEyeHX.Hosts.stats.alerts | Unknown | Total number of alerts, including exploit-detection alerts. | 
-| FireEyeHX.Hosts.stats.exploit_blocks | Unknown | The number of blocked exploits on the host. | 
-| FireEyeHX.Hosts.stats.malware_alerts | Unknown | The number of malware alerts associated with the host. | 
-| FireEyeHX.Hosts.hostname | Unknown | The host name. | 
-| FireEyeHX.Hosts.domain | Unknown | Domain name. | 
-| FireEyeHX.Hosts.timezone | Unknown | Host time zone. | 
-| FireEyeHX.Hosts.primary_ip_address | Unknown | The host IP address. | 
-| FireEyeHX.Hosts.last_poll_timestamp | Unknown | The timestamp of the last system poll preformed on the host. | 
-| FireEyeHX.Hosts.initial_agent_checkin | Unknown | Timestamp of the initial agent check-in. | 
-| FireEyeHX.Hosts.last_alert_timestamp | Unknown | The time stamp of the last alert for the host. | 
-| FireEyeHX.Hosts.last_exploit_block_timestamp | Unknown | Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked. | 
-| FireEyeHX.Hosts.os.product_name | Unknown | Specific operating system | 
-| FireEyeHX.Hosts.os.bitness | Unknown | OS Bitness. | 
-| FireEyeHX.Hosts.os.platform | Unknown | Family of operating systems. Valid values are win, osx, and linux. | 
-| FireEyeHX.Hosts.primary_mac | Unknown | The host MAC address. | 
+| FireEyeHX.Hosts._id | String | The ID of the FireEye HX Agent. | 
+| FireEyeHX.Hosts.agent_version | String | The version of the agent. | 
+| FireEyeHX.Hosts.excluded_from_containment | Boolean | Determines whether the host is excluded from containment. | 
+| FireEyeHX.Hosts.containment_missing_software | Boolean | Whether there is containment missing software. | 
+| FireEyeHX.Hosts.containment_queued | Boolean | Determines whether the host is queued for containment. | 
+| FireEyeHX.Hosts.containment_state | String | The containment state of the host. Possible values normal,contain,contain_fail,containing,contained,uncontain,uncontaining,wtfc,wtfu | 
+| FireEyeHX.Hosts.stats.alerting_conditions | Number | The number of conditions that have been alerted for the host. | 
+| FireEyeHX.Hosts.stats.alerts | Number | Total number of alerts, including exploit-detection alerts. | 
+| FireEyeHX.Hosts.stats.exploit_blocks | Number | The number of blocked exploits on the host. | 
+| FireEyeHX.Hosts.stats.malware_alerts | Number | The number of malware alerts associated with the host. | 
+| FireEyeHX.Hosts.hostname | String | The name of the host. | 
+| FireEyeHX.Hosts.domain | String | The name of the domain. | 
+| FireEyeHX.Hosts.timezone | String | The time zone of the host. | 
+| FireEyeHX.Hosts.primary_ip_address | String | The IP address of the host. | 
+| FireEyeHX.Hosts.last_poll_timestamp | String | The timestamp of the last system poll preformed on the host. | 
+| FireEyeHX.Hosts.initial_agent_checkin | String | The timestamp of the initial agent check-in. | 
+| FireEyeHX.Hosts.last_alert_timestamp | String | The time stamp of the last alert for the host. | 
+| FireEyeHX.Hosts.last_exploit_block_timestamp | String | The time when the last exploit was blocked on the host. The value is null if no exploits have been blocked. | 
+| FireEyeHX.Hosts.os.product_name | String | The operating system of the host. | 
+| FireEyeHX.Hosts.os.bitness | String | The bitness of the operating system. | 
+| FireEyeHX.Hosts.os.platform | String | The family of operating systems. Valid values are win, osx, and linux. | 
+| FireEyeHX.Hosts.primary_mac | String | The host MAC address. | 
 
 #### Command example
 ```!fireeye-hx-host-containment hostName=XXX```
@@ -470,20 +470,20 @@ Get a list of all policy.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.Policy._id | Unknown | Unique policy ID | 
-| FireEyeHX.Policy.name | Unknown | The name of the policy | 
-| FireEyeHX.Policy.description | Unknown | Description of the policy | 
-| FireEyeHX.Policy.policy_type_id | Unknown | Unique policy type ID | 
-| FireEyeHX.Policy.priority | Unknown | The priority order of the policy | 
-| FireEyeHX.Policy.enabled | Unknown | The policy is enabled ("true") or disabled ("false") | 
-| FireEyeHX.Policy.default | Unknown | True if it is the default policy. There can only be one policy marked as default | 
-| FireEyeHX.Policy.migrated | Unknown | True if it is a migrated policy | 
-| FireEyeHX.Policy.created_by | Unknown | The user who created the policy | 
-| FireEyeHX.Policy.created_at | Unknown | Time the policy was first created | 
-| FireEyeHX.Policy.updated_at | Unknown | Time the policy was last updated | 
-| FireEyeHX.Policy.categories | Unknown | Collection of categories the policy is associated with | 
-| FireEyeHX.Policy.display_created_at | Unknown | Time since the display was first created | 
-| FireEyeHX.Policy.display_updated_at | Unknown | Time since the display was last updated | 
+| FireEyeHX.Policy._id | String | The ID of the unique policy. | 
+| FireEyeHX.Policy.name | String | The name of the policy. | 
+| FireEyeHX.Policy.description | String | The description of the policy. | 
+| FireEyeHX.Policy.policy_type_id | String | The ID of the unique policy type. | 
+| FireEyeHX.Policy.priority | Number | The priority order of the policy. | 
+| FireEyeHX.Policy.enabled | Boolean | Whether the policy is enabled \("true"\) or disabled \("false"\). | 
+| FireEyeHX.Policy.default | Boolean | Whether it is the default policy \(true\). There can only be one policy marked as default. | 
+| FireEyeHX.Policy.migrated | Boolean | Whether it is a migrated policy \(true\). | 
+| FireEyeHX.Policy.created_by | String | The user who created the policy. | 
+| FireEyeHX.Policy.created_at | String | The time the policy was first created. | 
+| FireEyeHX.Policy.updated_at | String | The time the policy was last updated. | 
+| FireEyeHX.Policy.categories | Unknown | The collection of categories the policy is associated with. | 
+| FireEyeHX.Policy.display_created_at | String | The time since the display was first created. | 
+| FireEyeHX.Policy.display_updated_at | String | The time since the display was last updated. | 
 
 #### Command example
 ```!fireeye-hx-list-policy limit=2 policyName=Test```
@@ -540,8 +540,8 @@ Get a list of all policies for all host sets.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.HostSets.Policy.policy_id | Unknown | Unique policy ID | 
-| FireEyeHX.HostSets.Policy.persist_id | Unknown | The host set ID | 
+| FireEyeHX.HostSets.Policy.policy_id | String | The ID of the unique policy. | 
+| FireEyeHX.HostSets.Policy.persist_id | Number | The ID of the host set. | 
 
 #### Command example
 ```!fireeye-hx-list-host-set-policy limit=1```
@@ -605,19 +605,19 @@ Fetches all containment states across known hosts.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.Hosts._id | Unknown |   | 
-| FireEyeHX.Hosts.last_sysinfo | Unknown |   | 
-| FireEyeHX.Hosts.requested_by_actor | Unknown |   | 
-| FireEyeHX.Hosts.requested_on | Unknown |   | 
-| FireEyeHX.Hosts.contained_by_actor | Unknown |   | 
-| FireEyeHX.Hosts.contained_on | Unknown |   | 
-| FireEyeHX.Hosts.queued | Unknown |   | 
-| FireEyeHX.Hosts.excluded | Unknown |   | 
-| FireEyeHX.Hosts.missing_software | Unknown |   | 
-| FireEyeHX.Hosts.reported_clone | Unknown |   | 
-| FireEyeHX.Hosts.state | Unknown |   | 
-| FireEyeHX.Hosts.state_update_time | Unknown |   | 
-| FireEyeHX.Hosts.url | Unknown |   | 
+| FireEyeHX.Hosts._id | String |   | 
+| FireEyeHX.Hosts.last_sysinfo | String |   | 
+| FireEyeHX.Hosts.requested_by_actor | String |   | 
+| FireEyeHX.Hosts.requested_on | String |   | 
+| FireEyeHX.Hosts.contained_by_actor | String |   | 
+| FireEyeHX.Hosts.contained_on | String |   | 
+| FireEyeHX.Hosts.queued | Boolean |   | 
+| FireEyeHX.Hosts.excluded | Boolean |   | 
+| FireEyeHX.Hosts.missing_software | Boolean |   | 
+| FireEyeHX.Hosts.reported_clone | Boolean |   | 
+| FireEyeHX.Hosts.state | String |   | 
+| FireEyeHX.Hosts.state_update_time | String |   | 
+| FireEyeHX.Hosts.url | String |   | 
 
 #### Command example
 ```!fireeye-hx-list-containment limit=2```
@@ -695,30 +695,30 @@ Fetches all enterprise searches.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.Search._id | Unknown | Unique search ID | 
-| FireEyeHX.Search.state | Unknown | The state of the search whether it stopped or running | 
-| FireEyeHX.Search.scripts | Unknown | A list of reference objects for the scripts utilized in this search | 
-| FireEyeHX.Search.update_time | Unknown | Time the search was updated last | 
-| FireEyeHX.Search.create_time | Unknown | Time the search was created | 
-| FireEyeHX.Search.scripts.platform | Unknown | Platform this script is used for | 
-| FireEyeHX.Search.update_actor | Unknown | Actor who last updated the search | 
-| FireEyeHX.Search.create_actor | Unknown | Actor who created the search | 
-| FireEyeHX.Search.error | Unknown | Collection of errors per agents for the search | 
-| FireEyeHX.Search._revision | Unknown | ETag that can be used for concurrency checking | 
-| FireEyeHX.Search.input_type | Unknown | The input method that was used to start the search | 
-| FireEyeHX.Search.url | Unknown | URI to retrieve data for this record | 
-| FireEyeHX.Search.host_set | Unknown | Host Set infomaition | 
+| FireEyeHX.Search._id | Number | The ID of the unique search. | 
+| FireEyeHX.Search.state | String | The state of the search whether it stopped or running. | 
+| FireEyeHX.Search.scripts | Unknown | A list of reference objects for the scripts utilized in this search. | 
+| FireEyeHX.Search.update_time | String | The time the search was updated last. | 
+| FireEyeHX.Search.create_time | String | The time the search was created. | 
+| FireEyeHX.Search.scripts.platform | Unknown | The platform this script is used for. | 
+| FireEyeHX.Search.update_actor | Unknown | The actor who last updated the search. | 
+| FireEyeHX.Search.create_actor | Unknown | The actor who created the search. | 
+| FireEyeHX.Search.error | Unknown | Collection of errors per agents for the search. | 
+| FireEyeHX.Search._revision | String | The ETag that can be used for concurrency checking. | 
+| FireEyeHX.Search.input_type | String | The input method that was used to start the search. | 
+| FireEyeHX.Search.url | String | The URI to retrieve data for this record. | 
+| FireEyeHX.Search.host_set | Unknown | The Host Set information. | 
 | FireEyeHX.Search.stats | Unknown |  | 
-| FireEyeHX.Search.stats.hosts | Unknown | Number of hosts running this operation | 
-| FireEyeHX.Search.stats.skipped_hosts | Unknown | Number of hosts that were skipped | 
-| FireEyeHX.Search.stats.search_state | Unknown | Number of search in different states | 
-| FireEyeHX.Search.stats.search_issues | Unknown | Issues encountered for searches | 
+| FireEyeHX.Search.stats.hosts | Number | The number of hosts running this operation. | 
+| FireEyeHX.Search.stats.skipped_hosts | Number | The number of hosts that were skipped. | 
+| FireEyeHX.Search.stats.search_state | Unknown | The number of search in different states. | 
+| FireEyeHX.Search.stats.search_issues | Unknown | The issues encountered for searches. | 
 | FireEyeHX.Search.settings.query_terms.terms | Unknown |  | 
 | FireEyeHX.Search.stats.hosts.settings.query_terms.exhaustive_terms | Unknown |  | 
-| FireEyeHX.Search.stats.settings.search_type | Unknown | The type of search. | 
-| FireEyeHX.Search.stats.settings.exhaustive | Unknown | Whether a search is exhaustive or not | 
-| FireEyeHX.Search.stats.settings.mode | Unknown | Whether a search is HOST type or GRID type | 
-| FireEyeHX.Search.stats.settings.displayname | Unknown | Name of the search | 
+| FireEyeHX.Search.stats.settings.search_type | String | The type of search. | 
+| FireEyeHX.Search.stats.settings.exhaustive | String | Whether a search is exhaustive. | 
+| FireEyeHX.Search.stats.settings.mode | String | Whether a search is a HOST type or GRID type. | 
+| FireEyeHX.Search.stats.settings.displayname | String | The name of the search. | 
 
 #### Command example
 ```!fireeye-hx-search-list limit=1```
@@ -826,30 +826,30 @@ Stops a specific running search.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.Search._id | Unknown | Unique search ID | 
-| FireEyeHX.Search.state | Unknown | The state of the search whether it stopped or running | 
-| FireEyeHX.Search.scripts | Unknown | A list of reference objects for the scripts utilized in this search | 
-| FireEyeHX.Search.update_time | Unknown | Time the search was updated last | 
-| FireEyeHX.Search.create_time | Unknown | Time the search was created | 
-| FireEyeHX.Search.scripts.platform | Unknown | Platform this script is used for | 
-| FireEyeHX.Search.update_actor | Unknown | Actor who last updated the search | 
-| FireEyeHX.Search.create_actor | Unknown | Actor who created the search | 
-| FireEyeHX.Search.error | Unknown | Collection of errors per agents for the search | 
-| FireEyeHX.Search._revision | Unknown | ETag that can be used for concurrency checking | 
-| FireEyeHX.Search.input_type | Unknown | The input method that was used to start the search | 
-| FireEyeHX.Search.url | Unknown | URI to retrieve data for this record | 
-| FireEyeHX.Search.host_set | Unknown | Host Set informaition | 
+| FireEyeHX.Search._id | Number | The ID of the unique search. | 
+| FireEyeHX.Search.state | String | The state of the search whether it stopped or running. | 
+| FireEyeHX.Search.scripts | Unknown | A list of reference objects for the scripts utilized in this search. | 
+| FireEyeHX.Search.update_time | String | The time the search was updated last. | 
+| FireEyeHX.Search.create_time | String | The time the search was created. | 
+| FireEyeHX.Search.scripts.platform | Unknown | The platform this script is used for. | 
+| FireEyeHX.Search.update_actor | Unknown | The actor who last updated the search. | 
+| FireEyeHX.Search.create_actor | Unknown | The actor who created the search. | 
+| FireEyeHX.Search.error | Unknown | Collection of errors per agents for the search. | 
+| FireEyeHX.Search._revision | String | The ETag that can be used for concurrency checking. | 
+| FireEyeHX.Search.input_type | String | The input method that was used to start the search. | 
+| FireEyeHX.Search.url | String | The URI to retrieve data for this record. | 
+| FireEyeHX.Search.host_set | Unknown | The Host Set information. | 
 | FireEyeHX.Search.stats | Unknown |  | 
-| FireEyeHX.Search.stats.hosts | Unknown | Number of hosts running this operation | 
-| FireEyeHX.Search.stats.skipped_hosts | Unknown | Number of hosts that were skipped | 
-| FireEyeHX.Search.stats.search_state | Unknown | Number of search in different states | 
-| FireEyeHX.Search.stats.search_issues | Unknown | Issues encountered for searches | 
+| FireEyeHX.Search.stats.hosts | Number | The number of hosts running this operation. | 
+| FireEyeHX.Search.stats.skipped_hosts | Number | The number of hosts that were skipped. | 
+| FireEyeHX.Search.stats.search_state | Unknown | The number of search in different states. | 
+| FireEyeHX.Search.stats.search_issues | Unknown | The issues encountered for searches. | 
 | FireEyeHX.Search.settings.query_terms.terms | Unknown |  | 
 | FireEyeHX.Search.stats.hosts.settings.query_terms.exhaustive_terms | Unknown |  | 
-| FireEyeHX.Search.stats.settings.search_type | Unknown | The type of search. | 
-| FireEyeHX.Search.stats.settings.exhaustive | Unknown | Whether a search is exhaustive or not | 
-| FireEyeHX.Search.stats.settings.mode | Unknown | Whether a search is HOST type or GRID type | 
-| FireEyeHX.Search.stats.settings.displayname | Unknown | Name of the search | 
+| FireEyeHX.Search.stats.settings.search_type | String | The type of search. | 
+| FireEyeHX.Search.stats.settings.exhaustive | String | Whether a search is exhaustive. | 
+| FireEyeHX.Search.stats.settings.mode | String | Whether a search is a HOST type or GRID type. | 
+| FireEyeHX.Search.stats.settings.displayname | String | The name of the search. | 
 
 #### Command example
 ```!fireeye-hx-search-stop searchId=141```
@@ -955,12 +955,12 @@ Fetches the result for a specific enterprise search.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.Search.host._id | Unknown | Unique agent ID | 
-| FireEyeHX.Search.host.url | Unknown | URI to retrieve data for this record | 
-| FireEyeHX.Search.host.hostname | Unknown | Name of the host | 
-| FireEyeHX.Search.results._id | Unknown | Unique ID | 
-| FireEyeHX.Search.results.type | Unknown | Type of the search result data | 
-| FireEyeHX.Search.results.data | Unknown | Object containing data relating to the search result for the host | 
+| FireEyeHX.Search.host._id | String | The ID of the unique agent. | 
+| FireEyeHX.Search.host.url | String | The URI to retrieve data for this record. | 
+| FireEyeHX.Search.host.hostname | String | The name of the host. | 
+| FireEyeHX.Search.results._id | Number | The unique ID. | 
+| FireEyeHX.Search.results.type | String | The type of the search result data. | 
+| FireEyeHX.Search.results.data | Unknown | The object containing data relating to the search result for the host. | 
 
 #### Command example
 ```!fireeye-hx-search-result-get searchId=141```
@@ -1247,20 +1247,20 @@ Get details of a specific alert.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.Alerts._id | Unknown | FireEye alert ID. | 
-| FireEyeHX.Alerts.agent._id | Unknown | FireEye agent ID. | 
-| FireEyeHX.Alerts.agent.containment_state | Unknown | Host containment state. | 
-| FireEyeHX.Alerts.condition._id | Unknown | The condition unique ID. | 
-| FireEyeHX.Alerts.event_at | Unknown | Time when the event occoured. | 
-| FireEyeHX.Alerts.matched_at | Unknown | Time when the event was matched. | 
-| FireEyeHX.Alerts.reported_at | Unknown | Time when the event was reported. | 
-| FireEyeHX.Alerts.source | Unknown | Source of alert. | 
-| FireEyeHX.Alerts.matched_source_alerts._id | Unknown | Source alert ID. | 
-| FireEyeHX.Alerts.matched_source_alerts.appliance_id | Unknown | Appliance ID | 
-| FireEyeHX.Alerts.matched_source_alerts.meta | Unknown | Source alert meta. | 
-| FireEyeHX.Alerts.matched_source_alerts.indicator_id | Unknown | Indicator ID. | 
-| FireEyeHX.Alerts.resolution | Unknown | Alert resulotion. | 
-| FireEyeHX.Alerts.event_type | Unknown | Event type. | 
+| FireEyeHX.Alerts._id | Number | The ID of the FireEye alert. | 
+| FireEyeHX.Alerts.agent._id | Unknown | The ID of the FireEye agent. | 
+| FireEyeHX.Alerts.agent.containment_state | Unknown | The containment state of the agent. | 
+| FireEyeHX.Alerts.condition._id | String | The unique ID of the condition. | 
+| FireEyeHX.Alerts.event_at | String | The time when the event occurred. | 
+| FireEyeHX.Alerts.matched_at | String | The time when the event was matched. | 
+| FireEyeHX.Alerts.reported_at | String | The time when the event was reported. | 
+| FireEyeHX.Alerts.source | String | The source of the alert. | 
+| FireEyeHX.Alerts.matched_source_alerts._id | Unknown | The ID of the source alert. | 
+| FireEyeHX.Alerts.matched_source_alerts.appliance_id | Unknown | The ID of the Appliance. | 
+| FireEyeHX.Alerts.matched_source_alerts.meta | Unknown | The source alert meta. | 
+| FireEyeHX.Alerts.matched_source_alerts.indicator_id | Unknown | The ID of the indicator. | 
+| FireEyeHX.Alerts.resolution | String | The Alert resolution. | 
+| FireEyeHX.Alerts.event_type | String | The type of the event. | 
 
 #### Command example
 ```!fireeye-hx-get-alert alertId=8```
@@ -1400,17 +1400,17 @@ Get a list of indicators.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.Indicators._id | Unknown | FireEye unique indicator ID. | 
-| FireEyeHX.Indicators.name | Unknown | The indicator name as displayed in the UI. | 
-| FireEyeHX.Indicators.description | Unknown | Indicator description. | 
-| FireEyeHX.Indicators.category.name | Unknown | Catagory name. | 
-| FireEyeHX.Indicators.created_by | Unknown | The "Created By" field as displayed in UI | 
-| FireEyeHX.Indicators.active_since | Unknown | Date indicator became active. | 
-| FireEyeHX.Indicators.stats.source_alerts | Unknown | Total number of source alerts associated with this indicator. | 
-| FireEyeHX.Indicators.stats.alerted_agents | Unknown | Total number of agents with HX alerts associated with this indicator. | 
-| FireEyeHX.Indicators.platforms | Unknown | List of families of operating systems. | 
-| FireEyeHX.Indicators.uri_name | String | URI formatted name of the indicator. | 
-| FireEyeHX.Indicators.category.uri_name | String | URI name of the category. | 
+| FireEyeHX.Indicators._id | String | FireEye unique indicator ID. | 
+| FireEyeHX.Indicators.name | String | The indicator name as displayed in the UI. | 
+| FireEyeHX.Indicators.description | String | The description of the indicator. | 
+| FireEyeHX.Indicators.category.name | String | The Category name. | 
+| FireEyeHX.Indicators.created_by | String | The "Created By" field as displayed in UI. | 
+| FireEyeHX.Indicators.active_since | String | The date the indicator became active. | 
+| FireEyeHX.Indicators.stats.source_alerts | Unknown | The total number of source alerts associated with this indicator. | 
+| FireEyeHX.Indicators.stats.alerted_agents | Unknown | The total number of agents with HX alerts associated with this indicator. | 
+| FireEyeHX.Indicators.platforms | Unknown | The list of families of operating systems. | 
+| FireEyeHX.Indicators.uri_name | String | The URI formatted name of the indicator. | 
+| FireEyeHX.Indicators.category.uri_name | String | The URI name of the category. | 
 
 #### Command example
 ```!fireeye-hx-get-indicators limit=2```
@@ -1531,17 +1531,17 @@ Get a specific indicator details.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.Indicators._id | Unknown | FireEye unique indicator ID. | 
-| FireEyeHX.Indicators.name | Unknown | The indicator name as displayed in the UI. | 
-| FireEyeHX.Indicators.description | Unknown | Indicator description. | 
-| FireEyeHX.Indicators.category.name | Unknown | Catagory name. | 
-| FireEyeHX.Indicators.created_by | Unknown | The "Created By" field as displayed in UI | 
-| FireEyeHX.Indicators.active_since | Unknown | Date indicator became active. | 
-| FireEyeHX.Indicators.stats.source_alerts | Unknown | Total number of source alerts associated with this indicator. | 
-| FireEyeHX.Indicators.stats.alerted_agents | Unknown | Total number of agents with HX alerts associated with this indicator. | 
-| FireEyeHX.Indicators.platforms | Unknown | List of families of operating systems. | 
-| FireEyeHX.Conditions._id | Unknown | FireEye unique condition ID. | 
-| FireEyeHX.Conditions.event_type | Unknown | Event type. | 
+| FireEyeHX.Indicators._id | String | FireEye unique indicator ID. | 
+| FireEyeHX.Indicators.name | String | The indicator name as displayed in the UI. | 
+| FireEyeHX.Indicators.description | String | Indicator description. | 
+| FireEyeHX.Indicators.category.name | String | The name of the category. | 
+| FireEyeHX.Indicators.created_by | String | The "Created By" field as displayed in UI. | 
+| FireEyeHX.Indicators.active_since | String | The date the indicator became active. | 
+| FireEyeHX.Indicators.stats.source_alerts | Unknown | The total number of source alerts associated with this indicator. | 
+| FireEyeHX.Indicators.stats.alerted_agents | Unknown | The total number of agents with HX alerts associated with this indicator. | 
+| FireEyeHX.Indicators.platforms | Unknown | The list of families of operating systems. | 
+| FireEyeHX.Conditions._id | Unknown | The ID of the FireEye unique condition. | 
+| FireEyeHX.Conditions.event_type | Unknown | The type of the event. | 
 | FireEyeHX.Conditions.enabled | Unknown | Indicates whether the condition is enabled. | 
 
 #### Command example
@@ -1842,11 +1842,11 @@ Start a data acquisition process to gather artifacts from the system disk and me
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.Acquisitions.Data._id | Unknown | The acquisition unique ID. | 
-| FireEyeHX.Acquisitions.Data.state | Unknown | The acquisition state. | 
-| FireEyeHX.Acquisitions.Data.md5 | Unknown | File md5. | 
-| FireEyeHX.Acquisitions.Data.finish_time | Unknown | Time when the acquisition was finished. | 
-| FireEyeHX.Acquisitions.Data.host._id | unknown | Agent ID | 
+| FireEyeHX.Acquisitions.Data._id | Number | The unique ID of the acquisition. | 
+| FireEyeHX.Acquisitions.Data.state | String | The state of the acquisition. | 
+| FireEyeHX.Acquisitions.Data.md5 | String | The MD5 of the file. | 
+| FireEyeHX.Acquisitions.Data.finish_time | String | The time when the acquisition finished. | 
+| FireEyeHX.Acquisitions.Data.host._id | unknown | The ID of the agent. | 
 
 #### Command example
 ```!fireeye-hx-data-acquisition hostName=XXX defaultSystemScript=osx```
@@ -1888,20 +1888,20 @@ Get a list of alerts, use the different arguments to filter the results returned
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.Alerts._id | Unknown | FireEye alert ID. | 
-| FireEyeHX.Alerts.agent._id | Unknown | FireEye agent ID. | 
-| FireEyeHX.Alerts.agent.containment_state | Unknown | Host containment state. | 
-| FireEyeHX.Alerts.condition._id | Unknown | The condition unique ID. | 
-| FireEyeHX.Alerts.event_at | Unknown | Time when the event occoured. | 
-| FireEyeHX.Alerts.matched_at | Unknown | Time when the event was matched. | 
-| FireEyeHX.Alerts.reported_at | Unknown | Time when the event was reported. | 
-| FireEyeHX.Alerts.source | Unknown | Source of alert. | 
-| FireEyeHX.Alerts.matched_source_alerts._id | Unknown | Source alert ID. | 
-| FireEyeHX.Alerts.matched_source_alerts.appliance_id | Unknown | Appliance ID | 
-| FireEyeHX.Alerts.matched_source_alerts.meta | Unknown | Source alert meta. | 
-| FireEyeHX.Alerts.matched_source_alerts.indicator_id | Unknown | Indicator ID. | 
-| FireEyeHX.Alerts.resolution | Unknown | Alert resulotion. | 
-| FireEyeHX.Alerts.event_type | Unknown | Event type. | 
+| FireEyeHX.Alerts._id | Number | The ID of the FireEye alert. | 
+| FireEyeHX.Alerts.agent._id | Unknown | The ID of the FireEye agent. | 
+| FireEyeHX.Alerts.agent.containment_state | Unknown | The state of the agent containment. | 
+| FireEyeHX.Alerts.condition._id | String | The unique ID of the alert. | 
+| FireEyeHX.Alerts.event_at | String | The time when the event occurred. | 
+| FireEyeHX.Alerts.matched_at | String | The time when the event was matched. | 
+| FireEyeHX.Alerts.reported_at | String | The time when the event was reported. | 
+| FireEyeHX.Alerts.source | String | The source of the alert. | 
+| FireEyeHX.Alerts.matched_source_alerts._id | Unknown | The ID of the source alert. | 
+| FireEyeHX.Alerts.matched_source_alerts.appliance_id | Unknown | The ID of the appliance. | 
+| FireEyeHX.Alerts.matched_source_alerts.meta | Unknown | The source alert meta. | 
+| FireEyeHX.Alerts.matched_source_alerts.indicator_id | Unknown | The ID of the indicator. | 
+| FireEyeHX.Alerts.resolution | String | The alert resolution. | 
+| FireEyeHX.Alerts.event_type | String | The type of the event. | 
 
 #### Command example
 ```!fireeye-hx-get-alerts limit=2 sort=alertId```
@@ -2087,12 +2087,12 @@ Aquire a specific file as a password protected zip file. The password for unlock
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.Acquisitions.Files._id | Unknown | The acquisition unique ID. | 
-| FireEyeHX.Acquisitions.Files.state | Unknown | The acquisition state. | 
-| FireEyeHX.Acquisitions.Files.md5 | Unknown | File md5. | 
-| FireEyeHX.Acquisitions.Files.req_filename | Unknown | The file name. | 
-| FireEyeHX.Acquisitions.Files.req_path | Unknown | The file path. | 
-| FireEyeHX.Acquisitions.Files.host._id | Unknown | FireEye HX agent ID. | 
+| FireEyeHX.Acquisitions.Files._id | Number | The acquisition unique ID. | 
+| FireEyeHX.Acquisitions.Files.state | String | The acquisition state. | 
+| FireEyeHX.Acquisitions.Files.md5 | String | The MD5 of the file. | 
+| FireEyeHX.Acquisitions.Files.req_filename | String | The name of the file. | 
+| FireEyeHX.Acquisitions.Files.req_path | String | The path of the file. | 
+| FireEyeHX.Acquisitions.Files.host._id | String | The ID of the FireEye HX agent. | 
 
 ### fireeye-hx-create-indicator
 ***
