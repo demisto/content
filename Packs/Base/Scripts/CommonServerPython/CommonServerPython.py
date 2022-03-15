@@ -9207,7 +9207,7 @@ def get_updated_last_run_object(last_run, incidents, fetch_limit, look_back, sta
     :return: The updated LastRun object
     :rtype: ``Dict``
     """
-    
+
     if len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
