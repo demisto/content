@@ -19,14 +19,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: b84a840f-f29a-44ad-83f9-a5fc0420b6f3
-    propagationLabels: []
-    toServerVersion: ""
 description: This integration uses DeepL (https://www.deepl.com/) to translate text
   or files
 display: DeepL
@@ -157,6 +149,7 @@ script:
       name: non_splitting_tags
       type: textArea
     - name: outline_detection
+      description: ""
       type: textArea
     - description: Comma-separated list of XML tags which always cause splits.
       name: splitting_tags
@@ -340,3 +333,6 @@ script:
   script: ''
   subtype: python3
   type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
