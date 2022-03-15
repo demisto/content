@@ -1,7 +1,4 @@
-import json
-import io
 import base64
-from wsgiref import headers
 import Cryptosim
 from Cryptosim import Client, correlation_alerts_command, correlations_command
 
@@ -28,7 +25,7 @@ def test_correlations_command(requests_mock):
         "Content-Type": "application/json",
         'Authorization': authValue
     }
-    client = Client(base_url="https://test.com",verify=False,headers=headers, proxy=False)
+    client = Client(base_url="https://test.com", verify=False, headers=headers, proxy=False)
 
     results = correlations_command(client)
     assert results.outputs.keys() == ['StatusCode', 'Data', 'OutParameters']
@@ -47,11 +44,7 @@ def test_correlation_alerts_command(requests_mock):
 
     requests_mock.get("https://test.com/api/service/correlationalerts",
                         json=mock_response)
-    client = Client(
-        base_url="https://test.com",
-        verify=False,
-        auth=("test", "test"),
-        proxy=False)
+    client = Client(base_url="https://test.com", verify=False, auth=("test", "test"), proxy=False)
 
     args = {
         'startDate': '2022-01-20T12:00:00',

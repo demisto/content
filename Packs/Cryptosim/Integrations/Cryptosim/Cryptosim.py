@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
-import demistomock as demisto
+from CommonServerPython import *
+from COmmonServerUserPython import *
 import traceback
 import json
 import base64
