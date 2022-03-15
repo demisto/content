@@ -6439,6 +6439,11 @@ class TestFetchWithLookBack:
         Then:
         - Ensure the return incidents and LastRun object as expected
         """
+        if sys.version_info.major == 2:
+            # skip for python 2 - date
+            assert True
+            return
+
         self.LAST_RUN = {}
 
         mocker.patch.object(demisto, 'params', return_value=params)
@@ -6491,6 +6496,11 @@ class TestFetchWithLookBack:
         Then:
         - Ensure the return incidents and LastRun object as expected
         """
+        if sys.version_info.major == 2:
+            # skip for python 2 - date
+            assert True
+            return
+
         self.LAST_RUN = {}
         incidents = self.INCIDENTS[:]
 
