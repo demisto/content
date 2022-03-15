@@ -1589,6 +1589,25 @@ script:
       required: true
     description: Delete data acquisition.
     name: fireeye-hx-delete-data-acquisition
+  - arguments:
+    - description: The indicator category.
+      name: category
+      required: true
+    - description: The indicator name. The name of the indicator. Use the `uri_name` value.
+      name: indicator_name
+      required: true
+    - description: The condition type.
+      name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - 'presence'
+        - 'execution'
+    - description: The condition ID. It is part of the response when you request a list of all conditions known to the HX Series appliance.
+      name: condition_id
+      required: true
+    description: Delete an indicator condiction.
+    name: fireeye-hx-delete-indicator-condition
   isfetch: true
   runonce: false
   script: "-"

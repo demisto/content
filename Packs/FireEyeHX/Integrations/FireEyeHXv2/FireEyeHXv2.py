@@ -1032,6 +1032,13 @@ class Client(BaseClient):
             data=body
         )
 
+    def delete_condition(self, indicator_name: str, category: str, condition_type: str, condition_id: str):
+        return self._http_request(
+            method="DELETE",
+            url_suffix=f"/indicators/{category}/{indicator_name}/conditions/{condition_type}/{condition_id}",
+            ok_codes=(204,)
+        )
+
     def new_indicator_request(self, category):
         """
         Create a new indicator
@@ -2353,6 +2360,29 @@ def append_conditions_command(client: Client, args: Dict[str, Any]) -> CommandRe
         outputs_prefix="FireEyeHX.Conditions",
         outputs=response,
         readable_output=md
+    )
+
+
+def delete_condition_command(client: Client, args: Dict[str, str]) -> CommandResults:
+    # XSOAR yml makes sure the args exist
+    indicator_name = args['indicator_name']
+    category = args['category']
+    condition_type = args['type']
+    condition_id = args['condition_id']
+
+    human_readable_args = f'{indicator_name=}, {category=}, {condition_type=}, {condition_id=}'
+
+    try:
+        response = client.delete_condition(indicator_name, category, condition_type, condition_id)
+        human_readable = f'Successfully deleted {human_readable_args}'
+    except DemistoException as e:  # invalid http status code
+        response = e.res
+        human_readable = f'Failed deleting {human_readable_args}. {str(e)}'
+
+    return CommandResults(
+        outputs_prefix='FireEyeHX.IndicatorCondition',
+        outputs=response,
+        readable_output=human_readable
     )
 
 
