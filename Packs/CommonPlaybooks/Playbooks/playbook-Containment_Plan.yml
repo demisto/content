@@ -1415,7 +1415,7 @@ tasks:
       id: 312b0b1e-7fb4-41d2-801b-62f21a952bba
       version: -1
       name: Choose user to to execute clean session
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Asks which user's sessions should be cleared. If no value is selected, the following tasks will be ignored.
       type: collection
       iscommand: false
       brand: ""
