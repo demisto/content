@@ -6417,7 +6417,7 @@ class ConcurrentCommandRunner:
             """
 
             :param commands: The commands list or a single command
-            :type commands: List[str] + str
+            :type commands: Union[str, List[str]]
             :param args_lst: The args list or a single args
             :type args_lst: List[Dict] + Dict
             :param brand: The brand to use
