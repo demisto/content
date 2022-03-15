@@ -661,6 +661,7 @@ def get_folder_by_path(account, path, is_public=False):
         folder_result = account.inbox.parent  # Top of Information Store
     path = path.replace("/", "\\")
     path = path.split('\\')
+    demisto.debug('This is the folder results children: {}'.format(folder_result))
     for sub_folder_name in path:
         folder_filter_by_name = [x for x in folder_result.children if x.name.lower() == sub_folder_name.lower()]
         if len(folder_filter_by_name) == 0:
@@ -886,7 +887,7 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
 def get_last_run():
     demisto.debug('get last run called')
     last_run = demisto.getLastRun()
-    demisto.debug(f'This is the start last run: {last_run}')
+    demisto.debug('This is the start last run: {}'.format(last_run))
     if not last_run or last_run.get(LAST_RUN_FOLDER) != FOLDER_NAME:
         last_run = {
             LAST_RUN_TIME: None,
@@ -900,32 +901,32 @@ def get_last_run():
     if last_run.get(LAST_RUN_IDS) is None:
         last_run[LAST_RUN_IDS] = []
 
-    demisto.debug(f'This is the finally last run: {last_run}')
+    demisto.debug('This is the finally last run: {}'.format(last_run))
 
     return last_run
 
 
 def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude_ids=None):
-    demisto.debug(f'fetch_last_emails is called')
-    demisto.debug(f'This is the function parameters: {account, folder_name, since_datetime, exclude_ids}')
+    demisto.debug('fetch_last_emails is called')
+    demisto.debug('This is the function parameters: {} {} {} {}'.format(account, folder_name, since_datetime, exclude_ids))
     qs = get_folder_by_path(account, folder_name, is_public=IS_PUBLIC_FOLDER)
-    demisto.debug(f'This is the qs: {qs}')
+    demisto.debug('This is the qs: {}'.format(qs))
     if since_datetime:
         qs = qs.filter(datetime_received__gte=since_datetime)
-        demisto.debug(f'This is the qs after filtering1: {qs}')
+        demisto.debug('This is the qs after filtering1: {}'.format(qs))
     else:
-        demisto.debug(f'This is the FETCH_ALL_HISTORY: {FETCH_ALL_HISTORY}')
+        demisto.debug('This is the FETCH_ALL_HISTORY: {}'.format(FETCH_ALL_HISTORY))
         if not FETCH_ALL_HISTORY:
             tz = EWSTimeZone.timezone('UTC')
             first_fetch_datetime = dateparser.parse(FETCH_TIME)
             first_fetch_ews_datetime = EWSDateTime.from_datetime(tz.localize(first_fetch_datetime))
-            demisto.debug(f'This is the first_fetch_ews_datetime: {first_fetch_ews_datetime}')
+            demisto.debug('This is the first_fetch_ews_datetime: {}'.format(first_fetch_ews_datetime))
             qs = qs.filter(datetime_received__gte=first_fetch_ews_datetime)
-            demisto.debug(f'This is the qs after filtering2: {qs}')
+            demisto.debug('This is the qs after filtering2: {}'.format(qs))
     qs = qs.filter().only(*map(lambda x: x.name, Message.FIELDS))
-    demisto.debug(f'This is the qs after filtering3: {qs}')
+    demisto.debug('This is the qs after filtering3: {}'.format(qs))
     qs = qs.filter().order_by('datetime_received')
-    demisto.debug(f'This is the qs after ordering: {qs}, And this is the len: {len(qs)}')
+    demisto.debug('This is the qs after ordering: {}, And this is the len: {}'.format(qs, len(qs)))
     result = []
     exclude_ids = exclude_ids if exclude_ids else set()
     demisto.debug('Exclude ID list: {}'.format(exclude_ids))
@@ -941,6 +942,7 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
                 'Got an error when pulling incidents. You might be using the wrong exchange version.'
             ), exc)
     demisto.debug('EWS V2 - Got total of {} from ews query. '.format(len(result)))
+    demisto.debug('EWS V2 - Got the following incidents of {} from ews query. '.format(result))
     return result
 
 
@@ -1252,9 +1254,9 @@ def parse_incident_from_item(item, is_fetch):
 def fetch_emails_as_incidents(account_email, folder_name):
     demisto.debug('Fetch incidents is called')
     last_run = get_last_run()
-    demisto.debug(f'This is the last run: {last_run}')
+    demisto.debug('This is the last run: {}'.format(last_run))
     excluded_ids = set(last_run.get(LAST_RUN_IDS, []))
-    demisto.debug(f'This is the excluded ids: {excluded_ids}')
+    demisto.debug('This is the excluded ids: {}'.format(excluded_ids))
 
     try:
         account = get_account(account_email)
@@ -1265,12 +1267,15 @@ def fetch_emails_as_incidents(account_email, folder_name):
         current_fetch_ids = set()
 
         for item in last_emails:
+            demisto.debug('This is the incidents {}, and this is the current fetch ids {}'.format(incidents, current_fetch_ids))
             if item.message_id:
                 current_fetch_ids.add(item.message_id)
                 incident = parse_incident_from_item(item, True)
                 if incident:
+                    demisto.debug('This is the incident'.format(incident))
                     incidents.append(incident)
-
+                demisto.debug('This is the len incident'.format(len(incidents)))
+                demisto.debug('This is the max fetch'.format(MAX_FETCH))
                 if len(incidents) >= MAX_FETCH:
                     break
 
@@ -1306,7 +1311,8 @@ def fetch_emails_as_incidents(account_email, folder_name):
         demisto.setLastRun(new_last_run)
         return incidents
 
-    except RateLimitError:
+    except RateLimitError as e:
+        demisto.debug('This is the error message'.format(e.message))
         if LAST_RUN_TIME in last_run:
             last_run[LAST_RUN_TIME] = last_run[LAST_RUN_TIME].ewsformat()
         if ERROR_COUNTER not in last_run:
@@ -2106,7 +2112,7 @@ def encode_and_submit_results(obj):
 
 
 def sub_main():
-    demisto.debug(f'This is the params: {demisto.params()}')
+    demisto.debug('This is the params: {}'.format(demisto.params()))
     global EWS_SERVER, USERNAME, ACCOUNT_EMAIL, PASSWORD
     global config, credentials
     EWS_SERVER = demisto.params()['ewsServer']
