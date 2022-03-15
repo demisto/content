@@ -551,15 +551,16 @@ class HuntingQueryBuilder:
         """QUERY PREFIX"""
         GENERIC_PROCESS_DETAILS_QUERY_PREFIX = 'DeviceProcessEvents | where'
         BECAONING_QUERY_PREFIX = 'DeviceNetworkEvents | where'
-        POWERSHELL_EXECUTION_PROCESS_KNOWN_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in~ ("powershell.exe", "powershell_ise.exe",".ps") and'  # noqa: E501
-        POWERSHELL_EXECUTION_PROCESS_UNKNOWN_QUERY = 'DeviceProcessEvents | where FileName in~ ("powershell.exe", "powershell_ise.exe",".ps") and ( InitiatingProcessFileName != "SenerIR.exe" and InitiatingProcessParentFileName != "MsSense.exe" and InitiatingProcessSignatureStatus == "Valid" ) and (InitiatingProcessFileName != "CompatTelRunner.exe" and InitiatingProcessParentFileName != "CompatTelRunner.exe" and InitiatingProcessSignatureStatus == "Valid") | summarize by InitiatingProcessFolderPath,InitiatingProcessFileName,InitiatingProcessParentFileName,InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessVersionInfoProductName,InitiatingProcessCommandLine,InitiatingProcessSignerType,InitiatingProcessSignatureStatus'  # noqa: E501
+        POWERSHELL_EXECUTION_PROCESS_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in~ ("powershell.exe", "powershell_ise.exe",".ps") and'  # noqa: E501
+        POWERSHELL_EXECUTION_PROCESS_UNSIGNED_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in~ ("powershell.exe", "powershell_ise.exe",".ps") and ( InitiatingProcessFileName != "SenerIR.exe" and InitiatingProcessParentFileName != "MsSense.exe" and InitiatingProcessSignatureStatus != "Valid" ) and (InitiatingProcessFileName != "CompatTelRunner.exe" and InitiatingProcessParentFileName != "CompatTelRunner.exe")'  # noqa: E501
 
         """QUERY SUFFIX"""
         PARENT_PROCESS_QUERY_SUFFIX = '\n| project Timestamp, DeviceId, DeviceName, ActionType, ProcessId, ProcessCommandLine, ProcessCreationTime, AccountSid, AccountName, AccountDomain,InitiatingProcessAccountDomain, InitiatingProcessAccountDomain, InitiatingProcessAccountName, InitiatingProcessAccountSid, InitiatingProcessAccountSid, InitiatingProcessAccountUpn, InitiatingProcessAccountObjectId, InitiatingProcessLogonId, InitiatingProcessIntegrityLevel, InitiatingProcessTokenElevation, InitiatingProcessSHA1, InitiatingProcessSHA256, InitiatingProcessMD5, InitiatingProcessFileName, InitiatingProcessFileSize, InitiatingProcessVersionInfoCompanyName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoProductVersion, InitiatingProcessVersionInfoInternalFileName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessVersionInfoFileDescription, InitiatingProcessId, InitiatingProcessCommandLine, InitiatingProcessCreationTime, InitiatingProcessFolderPath, InitiatingProcessAccountDomain, InitiatingProcessAccountName, InitiatingProcessAccountSid\n| limit {}'  # noqa: E501
         GRANDPARENT_PROCESS_QUERY_SUFFIX = '\n| project Timestamp, DeviceId, DeviceName, ActionType, ProcessId, ProcessCommandLine, ProcessIntegrityLevel, ProcessCreationTime, AccountSid, AccountName, AccountDomain, AccountObjectId, AccountUpn, InitiatingProcessSHA1, InitiatingProcessSHA256, InitiatingProcessMD5, InitiatingProcessFileName, InitiatingProcessId, InitiatingProcessCreationTime, InitiatingProcessFolderPath, InitiatingProcessParentFileName, InitiatingProcessParentId, InitiatingProcessParentCreationTime\n| limit {}'  # noqa: E501
         PROCESS_DETAILS_QUERY_SUFFIX = '\n| summarize by SHA1,FileName,SHA256,MD5 | join DeviceFileCertificateInfo on SHA1 | summarize by FileName,SHA1,SHA256,IsSigned,Signer,SignatureType,Issuer,CertificateExpirationTime,IsTrusted,IsRootSignerMicrosoft\n| limit {}'  # noqa: E501
         BEACONING_EVIDENCE_QUERY_SUFFIX = '\n| project Timestamp, DeviceId, DeviceName, ActionType, RemoteIP, RemotePort, RemoteUrl, LocalIP, LocalPort, Protocol, LocalIPType, RemoteIPType, InitiatingProcessSHA1, InitiatingProcessSHA256, InitiatingProcessMD5, InitiatingProcessFileName\n| limit {}'  # noqa: E501
-        POWERSHELL_EXECUTION_PROCESS_KNOWN_QUERY_SUFFIX = '| project Timestamp, FileName, FolderPath, ProcessVersionInfoProductName, ProcessCommandLine, ProcessCreationTime, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine, InitiatingProcessFolderPath, InitiatingProcessSignerType, InitiatingProcessSignatureStatus\n| limit {}'  # noqa: E501
+        POWERSHELL_EXECUTION_PROCESS_QUERY_SUFFIX = '| project Timestamp, FileName, FolderPath, ProcessVersionInfoProductName, ProcessCommandLine, ProcessCreationTime, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine, InitiatingProcessFolderPath, InitiatingProcessSignerType, InitiatingProcessSignatureStatus,DeviceId,DeviceName\n| limit {}'  # noqa: E501
+        POWERSHELL_EXECUTION_PROCESS_UNSIGNED_QUERY_SUFFIX = '\n| summarize by InitiatingProcessFolderPath,InitiatingProcessFileName,InitiatingProcessParentFileName,InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessVersionInfoProductName,InitiatingProcessCommandLine,InitiatingProcessSignerType,InitiatingProcessSignatureStatus'  # noqa: E501
 
         def __init__(self,
                      limit: str,
@@ -661,23 +662,40 @@ class HuntingQueryBuilder:
 
         def build_process_excecution_powershell_query(self):
             query_dict = assign_params(
-                FileName=self._file_name,
-                SHA1=self._sha1,
-                SHA256=self._sha256,
-                MD5=self._md5,
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
                 DeviceName=self._device_name,
                 DeviceId=self._device_id
             )
             query = HuntingQueryBuilder.build_generic_query(
-                query_prefix=self.POWERSHELL_EXECUTION_PROCESS_KNOWN_QUERY_PREFIX,
-                query_suffix=self.POWERSHELL_EXECUTION_PROCESS_KNOWN_QUERY_SUFFIX.format(self._limit),
+                query_prefix=self.POWERSHELL_EXECUTION_PROCESS_QUERY_PREFIX,
+                query_suffix=self.POWERSHELL_EXECUTION_PROCESS_QUERY_SUFFIX.format(self._limit),
                 query_dict=query_dict,
                 query_operation=self._query_operation)
 
             return query
 
         def build_powershell_execution_unsigned_files_query(self):
-            return self.POWERSHELL_EXECUTION_PROCESS_UNKNOWN_QUERY
+            query_dict = assign_params(
+                InitiatingProcessFileName=self._file_name,
+                InitiatingProcessSHA1=self._sha1,
+                InitiatingProcessSHA256=self._sha256,
+                InitiatingProcessMD5=self._md5,
+                DeviceName=self._device_name,
+                DeviceId=self._device_id
+            )
+            query = self.POWERSHELL_EXECUTION_PROCESS_UNSIGNED_QUERY_PREFIX
+            if query_dict:
+                query += ' and'
+
+            return HuntingQueryBuilder.build_generic_query(
+                query_prefix=query,
+                query_suffix=self.POWERSHELL_EXECUTION_PROCESS_UNSIGNED_QUERY_SUFFIX,
+                query_dict=query_dict,
+                query_operation=self._query_operation
+            )
 
     class NetworkConnections:
         """QUERY PREFIX"""

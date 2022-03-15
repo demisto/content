@@ -1848,7 +1848,7 @@ class TestHuntingQueryBuilder:
             actual = pd.build_process_excecution_powershell_query()
             assert actual == expected
 
-        def test_build_powershell_execution_process_unknown_query(self):
+        def test_build_powershell_execution_unsigned_files_query(self):
             """
             Tests powershell_execution_unsigned_files query
 
@@ -1864,6 +1864,27 @@ class TestHuntingQueryBuilder:
                 limit='1',
                 query_operation='and',
                 query_purpose='powershell_execution_unsigned_files'
+            )
+            actual = pd.build_powershell_execution_unsigned_files_query()
+            assert actual == expected
+
+        def test_build_powershell_execution_unsigned_files_query__with_md5(self):
+            """
+            Tests powershell_execution_unsigned_files query
+
+            Given:
+                - NetworkConnections inited with md5 query arg
+            When:
+                - calling build_powershell_execution_unsigned_files_query
+            Then:
+                - return a powershell_execution_unsigned_files query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['ProcessDetails']['powershell_execution_unsigned_files__md5']
+            pd = HuntingQueryBuilder.ProcessDetails(
+                limit='1',
+                query_operation='and',
+                query_purpose='powershell_execution_unsigned_files',
+                md5='1'
             )
             actual = pd.build_powershell_execution_unsigned_files_query()
             assert actual == expected
