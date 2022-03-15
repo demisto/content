@@ -4,10 +4,11 @@ import os
 import shutil
 import sys
 import logging
+from packaging.version import Version
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_constants import IGNORED_FILES, PACKS_FULL_PATH
 from Tests.scripts.utils.log_util import install_logging
-from demisto_sdk.commands.common.tools import LooseVersion, str2bool, get_files_in_dir
+from demisto_sdk.commands.common.tools import str2bool, get_files_in_dir
 from pathlib import Path
 
 ARTIFACT_NAME = 'content_marketplace_packs.zip'
@@ -173,7 +174,7 @@ def get_latest_pack_zip_from_pack_files(pack, pack_files):
     for current_file_path in pack_files:
         current_pack_name = os.path.splitext(os.path.basename(current_file_path))[0]
         if current_pack_name == pack and current_file_path.endswith('.zip'):
-            current_pack_zip_version = LooseVersion(os.path.basename(os.path.dirname(current_file_path)))
+            current_pack_zip_version = Version(os.path.basename(os.path.dirname(current_file_path)))
             if not latest_zip_version or latest_zip_version < current_pack_zip_version:
                 latest_zip_version = current_pack_zip_version
                 latest_zip_path = current_file_path

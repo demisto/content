@@ -140,7 +140,7 @@ configuration:
   name: hec_token
   required: false
   type: 4
-- display: 'HEC URL (e.g: https://localhost:8088).'
+- display: 'HEC BASE URL (e.g: https://localhost:8088 or https://example.splunkcloud.com/).'
   name: hec_url
   required: false
   type: 0
@@ -174,7 +174,7 @@ configuration:
   additionalinfo: The limit of how many events to retrieve per each one of the enrichment
     types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not
     recommended).
-- display: 'Advanced: Extensive logging (for debugging purposes) - Please use this option unless advised otherwise.'
+- display: 'Advanced: Extensive logging (for debugging purposes) - Please do not use this option unless advised otherwise.'
   name: extensive_logs
   type: 8
   required: false

@@ -1,0 +1,81 @@
+{
+    "description": "Maps Wiz Issue fields for use in Integration Playbooks.",
+    "feed": false,
+    "id": "Wiz Mapper",
+    "mapping": {
+        "Wiz Issue": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Details": {
+                    "complex": null,
+                    "simple": "control.description"
+                },
+                "Wiz Cloud Account": {
+                    "complex": null,
+                    "simple": "entitySnapshot.subscriptionExternalId"
+                },
+                "Wiz Cloud Account Name": {
+                    "complex": null,
+                    "simple": "entitySnapshot.subscriptionName"
+                },
+                "Wiz Cloud Platform": {
+                    "complex": null,
+                    "simple": "entitySnapshot.cloudPlatform"
+                },
+                "Wiz Details": {
+                    "complex": null,
+                    "simple": "control.description"
+                },
+                "Wiz Issue ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Wiz Issue Note": {
+                    "complex": null,
+                    "simple": "note"
+                },
+                "Wiz Resource ID": {
+                    "complex": null,
+                    "simple": "entitySnapshot.providerId"
+                },
+                "Wiz Resource Region": {
+                    "complex": null,
+                    "simple": "entitySnapshot.region"
+                },
+                "Wiz Resource Type": {
+                    "complex": null,
+                    "simple": "entitySnapshot.type"
+                },
+                "Wiz Resource Native Type": {
+                    "complex": null,
+                    "simple": "entitySnapshot.nativeType"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "issue.severity"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "details": {
+                    "complex": null,
+                    "simple": "control.description"
+                },
+                "name": {
+                    "complex": null,
+                    "simple": "control.name"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "control.severity"
+                }
+            }
+        }
+    },
+    "name": "Wiz Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -8,14 +8,16 @@ configuration:
   name: url
   required: true
   type: 0
-- display: ID or Client ID - see Detailed Instructions (?)
-  name: _auth_id
+- displaypassword: ID or Client ID - see Detailed Instructions (?)
+  name: creds_auth_id
   required: false
-  type: 0
-- display: Token or Tenant ID - see Detailed Instructions (?)
-  name: _tenant_id
+  type: 9
+  hiddenusername: true
+- displaypassword: Token or Tenant ID - see Detailed Instructions (?)
+  name: creds_tenant_id
   required: false
-  type: 0
+  type: 9
+  hiddenusername: true
 - displaypassword: Key or Client Secret - see Detailed Instructions (?)
   name: credentials
   required: false
@@ -68,12 +70,21 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: ID or Client ID - see Detailed Instructions (?)
+  name: _auth_id
+  required: false
+  type: 0
+  hidden: true
+- display: Token or Tenant ID - see Detailed Instructions (?)
+  name: _tenant_id
+  required: false
+  type: 0
+  hidden: true
 - display: Key or Client Secret (Deprecated)
   name: enc_key
   required: false
   type: 4
   hidden: true
-  additionalinfo: Use the "Key or Client Secret - see Detailed Instructions (?) (Recommended)" parameter instead.
 - display: ID or Client ID - see Detailed Instructions (?) (Deprecated)
   name: auth_id
   required: false
@@ -1006,6 +1017,13 @@ script:
       name: htmlBody
       required: false
       secret: false
+    - default: false
+      description: Email addresses that need to be used to reply to the message. Supports
+        comma-separated values.
+      isArray: true
+      name: replyTo
+      required: false
+      secret: false
     deprecated: false
     description: Sends an email using Microsoft Graph.
     execution: false
@@ -1038,6 +1056,9 @@ script:
     - contextPath: MicrosoftGraph.Email.bccRecipients
       description: The BCC recipients of the email.
       type: String
+    - contextPath: MicrosoftGraph.Email.replyTo
+      description: The replyTo recipients of the email.
+      type: String
   - arguments:
     - default: false
       description: The ID of the message.
@@ -1062,6 +1083,26 @@ script:
       isArray: false
       name: from
       required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of War Room entry IDs that contain files,
+        which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
+      isArray: true
+      name: attachIDs
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of names of attachments to display in the
+        email to send. Must be the same number of elements as attachIDs.
+      isArray: true
+      name: attachNames
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of CIDs to embed attachments within the email itself.
+      isArray: true
+      name: attachCIDs
+      required: false
       secret: false
     deprecated: false
     description: The replies to the recipients of a message.
@@ -1177,7 +1218,7 @@ script:
     - contextPath: MicrosoftGraph.SentMail.ID
       description: The immutable ID of the message.
       type: String
-  dockerimage: demisto/crypto:1.0.0.24380
+  dockerimage: demisto/crypto:1.0.0.27243
   feed: false
   isfetch: true
   longRunning: false

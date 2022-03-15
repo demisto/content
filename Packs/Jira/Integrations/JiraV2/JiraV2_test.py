@@ -1,6 +1,5 @@
 from optparse import OptionParser
 from unittest.mock import Mock
-
 import demistomock as demisto
 import pytest
 
@@ -123,6 +122,26 @@ def test_issue_query_command_with_results(mocker):
     mocker.patch("JiraV2.run_query", return_value=QUERY_ISSUE_RESPONSE)
     _, outputs, _ = issue_query_command("status!=Open", max_results=1)
     assert outputs == QUERY_ISSUE_RESULT
+
+
+def test_issue_query_command_with_custom_fields_with_results(mocker, requests_mock):
+    """
+    Given
+    - Jira issue query command and extraFields parameters
+
+    When
+    - Sending HTTP request and getting one issues from the query
+
+    Then
+    - Verify outputs
+    """
+    from JiraV2 import issue_query_command
+    from test_data.raw_response import QUERY_ISSUE_RESPONSE, EXPECTED_RESP
+    from test_data.expected_results import QUERY_ISSUE_RESULT_WITH_CUSTOM_FIELDS
+    requests_mock.get('https://localhost/rest/api/latest/search/', json=QUERY_ISSUE_RESPONSE)
+    mocker.patch("JiraV2.get_custom_field_names", return_value=EXPECTED_RESP)
+    _, outputs, _ = issue_query_command("status!=Open", extra_fields="Owner", max_results=1)
+    assert outputs == QUERY_ISSUE_RESULT_WITH_CUSTOM_FIELDS
 
 
 def test_fetch_incidents_no_incidents(mocker):
@@ -406,7 +425,7 @@ def test_get_mapping_fields(mocker):
     ]
 
 
-def test_get_new_attachment_return_result(mocker):
+def test_get_new_attachment_return_result(requests_mock):
     """
     Given:
         - attachment related to an issue
@@ -422,17 +441,13 @@ def test_get_new_attachment_return_result(mocker):
     from test_data.expected_results import JIRA_ATTACHMENT
     from dateparser import parse
 
-    class file:
-        def __init__(self):
-            self.content = b"content"
-
-    file_content = file()
-    mocker.patch("JiraV2.jira_req", return_value=file_content)
+    requests_mock.get('https://localhost/rest/attachment/content/14848', json={})
+    requests_mock.get('https://localhost/rest/attachment/14848', json={'filename': 'download.png'})
     res = get_attachments(JIRA_ATTACHMENT, parse("1996-11-25T16:29:35.277764067Z"))
     assert res[0]["File"] == "download.png"
 
 
-def test_get_all_attachment_return_result(mocker):
+def test_get_all_attachment_return_result(requests_mock):
     """
     Given:
         - attachment related to an issue
@@ -448,18 +463,16 @@ def test_get_all_attachment_return_result(mocker):
     from test_data.expected_results import JIRA_ATTACHMENT_ALL
     from dateparser import parse
 
-    class file:
-        def __init__(self):
-            self.content = b"content"
+    for attachment in JIRA_ATTACHMENT_ALL:
+        requests_mock.get(attachment.get('content'), json={})
+        requests_mock.get(attachment.get('self'), json={'filename': attachment.get('filename')})
 
-    file_content = file()
-    mocker.patch("JiraV2.jira_req", return_value=file_content)
     res = get_attachments(
         JIRA_ATTACHMENT_ALL, parse("1996-11-25T16:29:35.277764067Z"), only_new=False
     )
-    assert res[0]["File"] == "download.png"
-    assert res[1]["File"] == "download1.png"
-    assert res[2]["File"] == "download2.png"
+    assert res[0]["File"] == "filename1"
+    assert res[1]["File"] == "filename2"
+    assert res[2]["File"] == "filename3"
 
 
 def test_get_new_attachment_without_return_new_attachment(mocker):
@@ -1161,11 +1174,18 @@ def test_get_issue_and_attachments(mocker, get_attachments_arg, should_get_attac
     """
     from test_data.raw_response import GET_ISSUE_RESPONSE
     from JiraV2 import get_issue
+    from requests import Response
 
     def jira_req_mock(method: str, resource_url: str, body: str = '', link: bool = False, resp_type: str = 'text',
                       headers: dict = None, files: dict = None):
 
-        if resp_type == 'json':
+        response = Response()
+        response.status_code = 200
+        response._content = b'{"filename": "filename"}'
+
+        if resource_url == 'rest/attachment/15451':
+            return response
+        elif resp_type == 'json':
             return GET_ISSUE_RESPONSE
         else:
             return type("RequestObjectNock", (OptionParser, object), {"content": 'Some zip data'})
@@ -1253,3 +1273,53 @@ def test_get_issue_outputs(mocker):
     _, outputs, _ = get_issue('id')
 
     assert outputs == GET_ISSUE_OUTPUTS_RESULT
+
+
+def test_get_custom_field_names(mocker, requests_mock):
+    from JiraV2 import get_custom_field_names
+    from test_data.raw_response import FIELDS_RESPONSE, EXPECTED_RESP
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+    requests_mock.get('https://localhost/rest/api/latest/field', json=FIELDS_RESPONSE)
+    res = get_custom_field_names()
+    assert res == EXPECTED_RESP
+
+
+def test_get_attachment_data_request(mocker, requests_mock):
+    """
+    Given:
+        - An attachment data.
+    When
+        - Running the get_attachment_data command.
+    Then
+        - Ensure the command does not fail due to a wrong url.
+    """
+    from JiraV2 import get_attachment_data
+    from test_data.raw_response import ATTACHMENT
+
+    mocker.patch.object(demisto, "params", return_value=integration_params)
+    requests_mock.get('https://localhost/rest/api/2/attachment/content/16188', json={})
+    requests_mock.get('https://localhost/rest/api/2/attachment/16188', json={'filename': 'filename'})
+
+    assert get_attachment_data(ATTACHMENT), 'There was a request to the wrong url'
+
+
+def test_get_attachment_data_url_processing(mocker, requests_mock):
+    """
+    Given:
+        - An attachment data.
+    When
+        - Running the get_attachment_data command.
+    Then
+        - Ensure the filename output is correct, and the req_path is correct.
+    """
+    from JiraV2 import get_attachment_data
+    from test_data.raw_response import ATTACHMENT
+
+    request = requests_mock.get('https://localhost/rest/api/2/attachment/content/16188', json={})
+    requests_mock.get('https://localhost/rest/api/2/attachment/16188', json={'filename': 'filename'})
+    mocker.patch.object(demisto, "params", return_value=integration_params)
+    filename, _ = get_attachment_data(ATTACHMENT)
+
+    assert filename == 'filename'
+    assert request.last_request.path == '/rest/api/2/attachment/content/16188'

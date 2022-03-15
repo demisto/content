@@ -190,6 +190,8 @@ tasks:
       replyTo: {}
       subject:
         simple: EWS search-mailbox test
+      from:
+        simple: testbox@demistodev.onmicrosoft.com
       to:
         simple: demistoadmin@demisto.int
     separatecontext: false

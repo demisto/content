@@ -1133,23 +1133,47 @@ def test_build_search_human_readable(mocker):
         Test headers are calculated correctly:
             * comma-separated, space-separated
             * support commas and spaces inside header values (if surrounded with parenthesis)
-
+            * rename headers
     """
     func_patch = mocker.patch('SplunkPy.update_headers_from_field_names')
     results = [
-        {'ID': 1, 'Header with space': 'h1', 'header3': 1, 'header_without_space': '1234'},
-        {'ID': 2, 'Header with space': 'h2', 'header3': 2, 'header_without_space': '1234'},
+        {'ID': 1, 'Header with space': 'h1', 'header3': 1, 'header_without_space': '1234',
+         'old_header_1': '1', 'old_header_2': '2'},
+        {'ID': 2, 'Header with space': 'h2', 'header3': 2, 'header_without_space': '1234',
+         'old_header_1': '1', 'old_header_2': '2'},
     ]
     args = {
         'query': 'something | table ID "Header with space" header3 header_without_space '
-                 'comma,separated "Single,Header,with,Commas" | something else'
+                 'comma,separated "Single,Header,with,Commas" old_header_1 old_header_2 | something else'
+                 ' | rename old_header_1 AS new_header_1 old_header_2 AS new_header_2'
     }
     expected_headers = ['ID', 'Header with space', 'header3', 'header_without_space',
-                        'comma', 'separated', 'Single,Header,with,Commas']
+                        'comma', 'separated', 'Single,Header,with,Commas', 'new_header_1', 'new_header_2']
 
     splunk.build_search_human_readable(args, results)
     headers = func_patch.call_args[0][1]
     assert headers == expected_headers
+
+
+def test_build_search_human_readable_multi_table_in_query(mocker):
+    """
+    Given:
+        multiple table headers in query
+
+    When:
+        building a human readable table as part of splunk-search
+
+    Then:
+        Test headers are calculated correctly:
+            * all expected header exist without duplications
+    """
+    args = {"query": " table header_1, header_2 | stats state_1, state_2 | table header_1, header_2, header_3, header_4"}
+    results = [
+        {'header_1': 'val_1', 'header_2': 'val_2', 'header_3': 'val_3', 'header_4': 'val_4'},
+    ]
+    expected_headers_hr = "|header_1|header_2|header_3|header_4|\n|---|---|---|---|"
+    hr = splunk.build_search_human_readable(args, results)
+    assert expected_headers_hr in hr
 
 
 @pytest.mark.parametrize('polling', [False, True])
@@ -1352,3 +1376,26 @@ def test_labels_with_non_str_values(mocker):
     labels = incidents[0]["labels"]
     assert len(labels) >= 7
     assert all(isinstance(label['value'], str) for label in labels)
+
+
+def test_empty_string_as_app_param_value(mocker):
+    """
+    Given:
+        - A mock to demisto.params that contains an 'app' key with an empty string as its value
+
+    When:
+        - Run splunk.get_connection_args() function
+
+    Then:
+        - Validate that the value of the 'app' key in connection_args is '-'
+    """
+
+    # prepare
+    mock_params = {'app': '', 'host': '111', 'port': '111'}
+    mocker.patch('demistomock.params', return_value=mock_params)
+
+    # run
+    connection_args = splunk.get_connection_args()
+
+    # validate
+    assert connection_args.get('app') == '-'
