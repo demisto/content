@@ -18,7 +18,7 @@
 	"file": false,
 	"updateAfter": 0,
 	"mergeContext": false,
-	"formatScript": "",
+	"formatScript": "FormatACTIURL",
 	"contextPath": "IAIR(val.value \u0026\u0026 val.value===obj.value)",
 	"contextValue": "value",
 	"excludedBrands": [],
