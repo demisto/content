@@ -44,7 +44,8 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- display: Use system proxy settings
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
   required: false
   type: 8

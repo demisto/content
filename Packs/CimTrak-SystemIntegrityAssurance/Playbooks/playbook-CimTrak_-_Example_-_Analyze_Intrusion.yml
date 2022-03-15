@@ -180,7 +180,7 @@ tasks:
       File is not malicious:
       - "3"
     note: false
-    quietmode: 0
+    quietmode: 1
     separatecontext: false
     skipunavailable: false
     task:
@@ -210,7 +210,7 @@ tasks:
       '#none#':
       - "6"
     note: false
-    quietmode: 0
+    quietmode: 1
     scriptarguments:
       hash:
         complex:
@@ -253,7 +253,7 @@ tasks:
       '#none#':
       - "9"
     note: false
-    quietmode: 0
+    quietmode: 1
     scriptarguments:
       hash:
         complex:
@@ -296,7 +296,7 @@ tasks:
       '#none#':
       - "7"
     note: false
-    quietmode: 0
+    quietmode: 1
     scriptarguments:
       hash:
         complex:
@@ -339,7 +339,7 @@ tasks:
       '#none#':
       - "8"
     note: false
-    quietmode: 0
+    quietmode: 1
     scriptarguments:
       hash:
         complex:
@@ -379,7 +379,7 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     note: false
-    quietmode: 0
+    quietmode: 1
     scriptarguments:
       ObjectDetaildIds:
         simple: ${inputs.lObjectDetailID}
@@ -413,7 +413,7 @@ tasks:
       '#none#':
       - "10"
     note: false
-    quietmode: 0
+    quietmode: 1
     scriptarguments:
       hash:
         complex:
@@ -456,7 +456,7 @@ tasks:
       '#none#':
       - "12"
     note: false
-    quietmode: 0
+    quietmode: 1
     scriptarguments:
       hash:
         complex:
@@ -496,7 +496,7 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     note: false
-    quietmode: 0
+    quietmode: 1
     separatecontext: false
     skipunavailable: false
     task:
@@ -526,7 +526,7 @@ tasks:
       '#none#':
       - "13"
     note: false
-    quietmode: 0
+    quietmode: 1
     scriptarguments:
       ObjectSubType:
         simple: "10"
@@ -561,7 +561,7 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     note: false
-    quietmode: 0
+    quietmode: 1
     scriptarguments:
       objectId:
         simple: ${CimTrak.Objects.objectId}
