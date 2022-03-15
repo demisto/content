@@ -176,7 +176,7 @@ class HuntingQueryBuilder:
             self._sha256 = HuntingQueryBuilder.get_filter_values(sha256)
             self._md5 = HuntingQueryBuilder.get_filter_values(md5)
             self._device_id = HuntingQueryBuilder.get_filter_values(device_id)
-            self._remote_ip_count = HuntingQueryBuilder.get_filter_values(remote_ip_count)
+            self._remote_ip_count = remote_ip_count
 
         def build_network_connections_query(self):
             query_dict = assign_params(
@@ -205,8 +205,8 @@ class HuntingQueryBuilder:
                 DeviceName=self._device_name,
                 DeviceId=self._device_id,
             )
-            remote_ip_count_query = '' if not self._remote_ip_count else '| where RemoteIPCount > ' \
-                                                                         f'{self._remote_ip_count}'
+            remote_ip_count_query = '' if not self._remote_ip_count else ' where RemoteIPCount > ' \
+                                                                         f'{self._remote_ip_count} |'
 
             query = HuntingQueryBuilder.build_generic_query(
                 query_prefix=self.SMB_CONNECTIONS_QUERY_PREFIX,
@@ -270,7 +270,7 @@ class HuntingQueryBuilder:
         """QUERY SUFFIX"""
         SCHEDULE_JOB_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, InitiatingProcessAccountDomain, InitiatingProcessAccountName, AdditionalFields\n| limit {}'  # noqa: E501
         REGISTRY_ENTRY_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, RegistryKey, RegistryValueType, PreviousRegistryValueData, RegistryValueName, PreviousRegistryValueName, PreviousRegistryKey, InitiatingProcessFileName\n| limit {}'  # noqa: E501
-        STARTUP_FOLDER_CHANGES_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine InitiatingProcessFileName\n| limit {}'  # noqa: E501
+        STARTUP_FOLDER_CHANGES_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit {}'  # noqa: E501
         NEW_SERVICE_CREATED_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, RegistryKey, RegistryValueName, RegistryValueType, RegistryValueData, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit {}'  # noqa: E501
         SERVICE_UPDATED_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, ActionType, RegistryKey, PreviousRegistryKey, RegistryValueName, PreviousRegistryValueName, RegistryValueType, RegistryValueData, PreviousRegistryValueData, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit {}'  # noqa: E501
         FILE_REPLACED_QUERY_SUFFIX = '\n| project Timestamp, DeviceName, ActionType, FileName, FolderPath, InitiatingProcessFileName, InitiatingProcessVersionInfoProductName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine\n| limit {}'  # noqa: E501

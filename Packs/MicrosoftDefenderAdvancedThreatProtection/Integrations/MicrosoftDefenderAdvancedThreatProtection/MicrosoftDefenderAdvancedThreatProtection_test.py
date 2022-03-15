@@ -1402,10 +1402,30 @@ class TestHuntingQueryBuilder:
             lme = HuntingQueryBuilder.LateralMovementEvidence(
                 limit='1',
                 query_operation='and',
-                md5='1,2'
+                md5='1,2',
             )
             actual = lme.build_smb_connections_query()
-            EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['smb_connections'] = actual
+            assert actual == expected
+
+        def test_build_smb_connections_query__with_remote_ip_count(self):
+            """
+            Tests smb connections query with remote_ip_count
+
+            Given:
+                - LateralMovementEvidence inited with md5 and remote_ip_count
+            When:
+                - calling build_smb_connections_query
+            Then:
+                - return a smb_connections query
+            """
+            expected = EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['smb_connections_w_remote_ip_count']
+            lme = HuntingQueryBuilder.LateralMovementEvidence(
+                limit='1',
+                query_operation='and',
+                md5='1,2',
+                remote_ip_count=25
+            )
+            actual = lme.build_smb_connections_query()
             assert actual == expected
 
         def test_build_credential_dumping_query(self):
@@ -1426,26 +1446,6 @@ class TestHuntingQueryBuilder:
                 device_name='1'
             )
             actual = lme.build_credential_dumping_query()
-            assert actual == expected
-
-        def test_build_network_enumeration_query(self):
-            """
-            Tests build_network_enumeration_query
-
-            Given:
-                - LateralMovementEvidence inited with device_name
-            When:
-                - calling build_network_enumeration_query
-            Then:
-                - return a valid credential network enumeration query
-            """
-            expected = EXPECTED_HUNTING_QUERIES['LateralMovementEvidence']['network_enumeration']
-            lme = HuntingQueryBuilder.LateralMovementEvidence(
-                limit=10,
-                query_operation='or',
-                device_name='1'
-            )
-            actual = lme.build_network_enumeration_query()
             assert actual == expected
 
         def test_build_rdp_attempts_query(self):
