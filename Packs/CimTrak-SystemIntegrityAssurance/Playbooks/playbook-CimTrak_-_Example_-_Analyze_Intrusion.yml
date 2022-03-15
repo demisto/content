@@ -1,6 +1,5 @@
 id: CimTrak - Example - Analyze Intrusion
-version: 4
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: CimTrak - Example - Analyze Intrusion
 starttaskid: "0"
 tasks:
@@ -12,8 +11,10 @@ tasks:
       id: 10ca1b00-1e5f-42eb-8c37-80ce4d9af7d2
       version: -1
       name: ""
+      description: Entry
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -74,9 +75,7 @@ tasks:
       id: b8690ae1-c523-44df-863f-05478638ec67
       version: -1
       name: Check if file is malicious
-      description: "Gets a value and return it. This is to be used in playbook conditional
-        tasks - get a value from incident field, label or context, and act accordingly.
-        \nIf an array is returned. the first value will be the decision making value."
+      description: "Gets a value and return it. This is to be used in playbook conditional tasks - get a value from incident field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
       type: condition
       iscommand: false
       brand: ""
@@ -458,11 +457,7 @@ tasks:
       id: 1ae2fee7-75b8-4795-8a82-bafc40451577
       version: -1
       name: Manually remediate  the incident
-      description: "Review the incident to determine if the account activity is malicious.\n\nIf
-        malicious, consider the following:\n* Quarantine the account/ endpoint \n*
-        Revoke the account password\n* Query the account/ IPs logs in the SIEM\n*
-        Block the external IPs in the firewall/ proxy\n* Check the account's privileges
-        and change if needed"
+      description: "Review the incident to determine if the account activity is malicious.\n\nIf malicious, consider the following:\n* Quarantine the account/ endpoint \n* Revoke the account password\n* Query the account/ IPs logs in the SIEM\n* Block the external IPs in the firewall/ proxy\n* Check the account's privileges and change if needed"
       type: regular
       iscommand: false
       brand: ""
@@ -503,7 +498,7 @@ inputs:
   playbookInputQuery:
     query: ""
     queryEntity: indicators
-    results: null
+    results:
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -511,8 +506,8 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue: null
-        fromvalue: null
+        tovalue:
+        fromvalue:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: true
@@ -523,6 +518,10 @@ inputs:
       accessor: objectDetailId}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: Example to analyze intrusion
