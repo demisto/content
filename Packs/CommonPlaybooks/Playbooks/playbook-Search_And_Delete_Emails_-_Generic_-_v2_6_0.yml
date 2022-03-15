@@ -554,9 +554,18 @@ tasks:
             value:
               complex:
                 root: inputs.O365ExchangeLocation
-                transformers:
-                - operator: StringToArray
-                - operator: count
+                  transformers:
+                  - operator: RegexExtractAll
+                    args:
+                      error_if_no_match: { }
+                      ignore_case: { }
+                      multi_line: { }
+                      period_matches_newline: { }
+                      regex:
+                        value:
+                          simple: '@'
+                      unpack_matches: { }
+                  - operator: count
             iscontext: true
           right:
             value:
