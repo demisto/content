@@ -27,3 +27,6 @@ ignore=IF113
 
 [file:incidentfield-Content_Updates_Auto_Install.json]
 ignore=IF113
+
+[known_words]
+PB
