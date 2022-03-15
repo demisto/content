@@ -1,5 +1,5 @@
 {
-    "name": "Symantec Data Loss Prevention (Beta)",
+    "name": "Symantec Data Loss Prevention",
     "description": "Symantec Data Loss Prevention enables you to discover, monitor and protect your sensitive corporate information.",
     "support": "xsoar",
     "currentVersion": "2.0.0",
