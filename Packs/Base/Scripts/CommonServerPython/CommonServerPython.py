@@ -7020,7 +7020,7 @@ except Exception as ex:
 
 def add_sensitive_log_strs(sensitive_str):
     """
-    Adds the received string to both LOG and DebuggerLogger, the logger will mask the string each time he encounters it.
+    Adds the received string to both LOG and DebugLogger. The logger will mask the string each time he encounters it.
 
     :type sensitive_str: ``str``
     :param sensitive_str: The string to be replaced.
