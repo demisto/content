@@ -114,6 +114,10 @@ script:
     description: Gets the matches from a given retrohunt job's id or the latest by default.
     execution: false
     name: vt-retrohunt-get-indicators
+  - deprecated: false
+    description: 'This command will reset your fetch history.'
+    execution: false
+    name: vt-reset-fetch-indicators
   dockerimage: demisto/python3:3.9.8.24399
   feed: true
   isfetch: false
