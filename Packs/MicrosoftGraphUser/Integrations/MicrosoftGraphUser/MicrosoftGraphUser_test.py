@@ -113,27 +113,32 @@ def test_get_unsupported_chars_in_user():
     assert len(get_unsupported_chars_in_user(invalid_user).difference(set(invalid_chars))) == 0
 
 
-RESPONSE_WITH_LOCATION = {'Location': 'https://example.com'}
+RESPONSE_WITH_LOCATION = {'Location': 'https://example-location.com'}
+OUTPUT_PASSWORD_CHANGED_LOCATION = 'The password of user user has been changed to an auto-generated one. ' \
+                                   'Check the change status on https://example-location.com'
+OUTPUT_PASSWORD_CHANGED_NO_LOCATION = 'The password of user user has been changed successfully.'
 
 
-@pytest.mark.parametrize('password,password_response', (('new_password', {}),
-                                                        (None, RESPONSE_WITH_LOCATION),
-                                                        ('', RESPONSE_WITH_LOCATION)
-                                                        )
-                         )
-def test_change_on_premise_password(requests_mock, password, password_response):
+@pytest.mark.parametrize('password,password_response,expected_output', (
+        ('new_password', {}, OUTPUT_PASSWORD_CHANGED_NO_LOCATION),
+        (None, RESPONSE_WITH_LOCATION, OUTPUT_PASSWORD_CHANGED_LOCATION),
+        ('', RESPONSE_WITH_LOCATION, OUTPUT_PASSWORD_CHANGED_LOCATION)
+))
+def test_change_on_premise_password(requests_mock, password: str, password_response: dict, expected_output: str):
     from MicrosoftGraphUser import (change_password_user_on_premise_command, MsGraphClient)
 
     requests_mock.post('https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token', json={})
-    requests_mock.get(
-        'https://base_url/users/user/authentication/passwordMethods',
-        json={'value': [{'id': 'the_id'}]}
-    )
-    requests_mock.post(
-        'https://base_url/users/user/authentication/passwordMethods/the_id/resetPassword',
-        json=password_response
+    id_ = 'the_id'
+
+    requests_mock.get('https://base_url/users/user/authentication/passwordMethods', json={'value': [{'id': id_}]})
+    mocked_password_change_request = requests_mock.post(
+        f'https://base_url/users/user/authentication/passwordMethods/{id_}/resetPassword',
+        json=password_response,
+        status_code=202
     )
 
     client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'https://base_url', 'verify', 'proxy',
                            'self_deployed', 'redirect_uri', 'auth_code')
-    change_password_user_on_premise_command(client=client, args=dict(user='user', password=password))
+    output, _, _ = change_password_user_on_premise_command(client=client, args=dict(user='user', password=password))
+    assert mocked_password_change_request.call_count == 1
+    assert output == expected_output
