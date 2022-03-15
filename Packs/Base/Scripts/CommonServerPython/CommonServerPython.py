@@ -6506,6 +6506,7 @@ class CommandRunner:
                             res = {}
                         results.append(CommandRunner.Result(command, args, brand_name, module_name, res))
             except ValueError as e:
+                # We expect this error when the command is not supported.
                 demisto.debug(str(e))
         return results, errors
 

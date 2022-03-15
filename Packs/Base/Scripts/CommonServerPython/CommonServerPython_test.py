@@ -4484,7 +4484,7 @@ class TestExecuteCommandsMultipleResults:
 
         def execute_command_mock(command, args):
             if command == 'unsupported':
-                raise ValueError()
+                raise ValueError("Command is not supported")
             return entries
         demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
                                                    side_effect=execute_command_mock)
