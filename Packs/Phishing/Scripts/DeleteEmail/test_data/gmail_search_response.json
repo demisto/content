@@ -1,0 +1,182 @@
+[
+  {
+    "historyId": "72259829",
+    "id": "17f8886f87a78d38",
+    "internalDate": "1647263006000",
+    "labelIds": [
+      "UNREAD",
+      "CATEGORY_PERSONAL",
+      "INBOX"
+    ],
+    "payload": {
+      "body": {
+        "size": 0
+      },
+      "filename": "",
+      "headers": [
+        {
+          "name": "Delivered-To",
+          "value": "admin@demistodev.com"
+        },
+        {
+          "name": "Received",
+          "value": "by 2002:ac8:405c:0:0:0:0:0 with SMTP id j28csp2658045qtl;        Mon, 14 Mar 2022 06:03:41 -0700 (PDT)"
+        },
+        {
+          "name": "X-Google-Smtp-Source",
+          "value": "ABdhPJybRUSOOBy4sx2Gpw3+soehlfwr6NvvqBqRX2uU6ph6iO9O5L3hPvWw0y3lwAM/Vf+x5u92"
+        },
+        {
+          "name": "X-Received",
+          "value": "by 2002:a5b:20f:0:b0:628:6a2b:ee2c with SMTP id z15-20020a5b020f000000b006286a2bee2cmr18194626ybl.175.1647263021493;        Mon, 14 Mar 2022 06:03:41 -0700 (PDT)"
+        },
+        {
+          "name": "ARC-Seal",
+          "value": "i=1; a=rsa-sha256; t=1647263021; cv=none;        d=google.com; s=arc-20160816;        b=Sjq/UEHEvj2pxT61hbqe2z/HrnvTIoaJQWNBg/nHShoZDaS801j4LtOnrkFp2rv5Kj         VTbFbUIb+Iatr1CLcqIO4X5r0yOQnTQHViZn0Zs5l7vqSpXJ+ZkW2X+ubicwu6LHx3wo         mlymeV/bFbMrKlHWP7eKdH8TYTYlyl9XY1p1UvutEdq7CGC6dmpQaETrAaX5oMjM72zp         anIos8dSIT6y+2G1S6PCQwh9uVil4LpJyvjEkIOPSUb6AOC/rJsKiwe8s1lqF3jblzUt         1dnyzCaCXi9wO/Pi3mhqS8FeRVUFR6PvKCq8LrVTq2XQWp/oTNgSW5QLJ4L3Tm7TvcPn         DQnQ=="
+        },
+        {
+          "name": "ARC-Message-Signature",
+          "value": "i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;        h=to:subject:message-id:date:from:mime-version:dkim-signature         :dkim-signature;        bh=VTB5nlU04fIAVSLDbcPIQcaQrI69v+14R/RIFkMYt18=;        b=dlWjXDebCVM38mfhux4PQI4DmPpwTGHzMAJMX51ZT+ByNx3eZtKEOwQsSXYwhs5Wfw         WGHkvHwLhDtkeBtDhelwSfwjKp1GmiGpLN6Na50jQxP312vPNR5t6zZ4CsaJcj3KDEWc         M1RrtVw1iJR9ljM+Wkf3FddGnZRxwrMoZ1Dy6lA47rjW3C+wYAhHkI+s+hBDxyA3AJl9         216lxMXRTR7kWs8o9Yxch06Pp3hNoYqZ+h1nU7htmWmYCwpSAnsLulz83pChHZgeUvOm         FtnS+MInGYWOuBIC2rSWgPk5T0X6pCrgGegg029LWswyPIbNNuQXZm+DDw/9sZ7UCfEK         UKUA=="
+        },
+        {
+          "name": "ARC-Authentication-Results",
+          "value": "i=1; mx.google.com;       dkim=pass header.i=@paloaltonetworks.com header.s=PPS12012017 header.b=DLm+j9Fy;       dkim=pass header.i=@paloaltonetworks-com.20210112.gappssmtp.com header.s=20210112 header.b=mTC6oQTE;       spf=pass (google.com: domain of nmaimon@paloaltonetworks.com designates 67.231.156.123 as permitted sender) smtp.mailfrom=nmaimon@paloaltonetworks.com;       dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=paloaltonetworks.com"
+        },
+        {
+          "name": "Return-Path",
+          "value": "",<nmaimon@paloaltonetworks.com>""
+        },
+        {
+          "name": "Received",
+          "value": "from mx0b-00169c01.pphosted.com (mx0b-00169c01.pphosted.com. [67.231.156.123])        by mx.google.com with ESMTPS id b81-20020a811b54000000b002d6a9da9270si8068293ywb.360.2022.03.14.06.03.41        for <admin@demistodev.com>        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);        Mon, 14 Mar 2022 06:03:41 -0700 (PDT)"
+        },
+        {
+          "name": "Received-SPF",
+          "value": "pass (google.com: domain of nmaimon@paloaltonetworks.com designates 67.231.156.123 as permitted sender) client-ip=67.231.156.123;"
+        },
+        {
+          "name": "Authentication-Results",
+          "value": "mx.google.com;       dkim=pass header.i=@paloaltonetworks.com header.s=PPS12012017 header.b=DLm+j9Fy;       dkim=pass header.i=@paloaltonetworks-com.20210112.gappssmtp.com header.s=20210112 header.b=mTC6oQTE;       spf=pass (google.com: domain of nmaimon@paloaltonetworks.com designates 67.231.156.123 as permitted sender) smtp.mailfrom=nmaimon@paloaltonetworks.com;       dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=paloaltonetworks.com"
+        },
+        {
+          "name": "Received",
+          "value": "from pps.filterd (m0281121.ppops.net [127.0.0.1]) by mx0b-00169c01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22ECWoW6029659 for <admin@demistodev.com>; Mon, 14 Mar 2022 06:03:40 -0700"
+        },
+        {
+          "name": "DKIM-Signature",
+          "value": "v=1; a=rsa-sha256; c=relaxed/relaxed; d=paloaltonetworks.com; h=mime-version : from : date : message-id : subject : to : content-type; s=PPS12012017; bh=VTB5nlU04fIAVSLDbcPIQcaQrI69v+14R/RIFkMYt18=; b=DLm+j9Fyj08L+ZP4rBnVN56tsU+E0WHdXPMCl3ui5+21NHMAPldDn8qnWrjcSXTrdR6+ lvigEknMUdAJ8Kn6LNFjTgv1dzQ1I2gzRNrI/5Z/yxvHBVY5u030RRwOljm/SuajUaJD s/M4mJDk8SO3ehel6EX47NvjSRbKqfptjHKr2YBj2sGd0dh+0XRINJVswxgBusSXXdxm 9HP4qWicPJhCDZYtPrRB7PyHQQWhdTozBjqxnD2m1vQKi+0J/FVHsFoFnY66imQs2dET gIAvqlczA4vIdjL1cye9nS7e8KEHVYguYJVdmMhgGsbphr58yoAejcy5xCscdupq8/iT 8g=="
+        },
+        {
+          "name": "Received",
+          "value": "from mail-pg1-f199.google.com (mail-pg1-f199.google.com [209.85.215.199]) by mx0b-00169c01.pphosted.com (PPS) with ESMTPS id 3et5t98213-1 (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT) for <admin@demistodev.com>; Mon, 14 Mar 2022 06:03:39 -0700"
+        },
+        {
+          "name": "Received",
+          "value": "by mail-pg1-f199.google.com with SMTP id bj8-20020a056a02018800b0035ec8c16f0bso10030243pgb.11        for <admin@demistodev.com>; Mon, 14 Mar 2022 06:03:39 -0700 (PDT)"
+        },
+        {
+          "name": "DKIM-Signature",
+          "value": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=paloaltonetworks-com.20210112.gappssmtp.com; s=20210112;        h=mime-version:from:date:message-id:subject:to;        bh=VTB5nlU04fIAVSLDbcPIQcaQrI69v+14R/RIFkMYt18=;        b=mTC6oQTEh0x37PWTxX4HQtuZqZibXc2W/ybMUqoDSNYsJ9AoU7dE6ca0m/n8o7e3BU         cpq+gnZBBDHVOkG66qHF7Wj5H6+g3mmTVKww/vO6HcmgaZ4SPC1Th9Qc96dKLlHtXPsK         oA/V3enUOtyzLGjSkyE0Q/CjLNVIbX86oL4DLup90mRbcdkqu2XCdMSKJ3moZWEyttTt         J430VYeCYLKc1V103q73eEL7+Ec8DetMDhTRSEMs7p4trPzMNEgcudB00y5pWedREDQB         LGmA/95vccW7QbNeE/0Oq5bAAWwthrnxAnGZT7ecU7Vpe3B+578/jGe8mWtaebKw72de         dNcg=="
+        },
+        {
+          "name": "X-Google-DKIM-Signature",
+          "value": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=1e100.net; s=20210112;        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;        bh=VTB5nlU04fIAVSLDbcPIQcaQrI69v+14R/RIFkMYt18=;        b=jM867Hw76ouxftERpH2C5PNSdE6LIT8PwfRpz7kAOONwRXRkVz4mzPqyO0k0rFt6+l         aUJWPd8H+QGQic3WcJFr7Oy+EHr8xFzf9oZSsNfvA+X2MKkvUT8+Hf+GWlLdubdaIBF4         wnZ8WCZtQEQen+3hQeGF8mOg9BcPX7IrICVHZqnoc0wkRXo18cLiS1AKaqIWj1NmjZoE         ZmCpq+mxRuy5gNHXSaFL/8gtUO3NrALyeNhGVmG20JRM3yXMU1BiKapC/pIVbwjWRXMt         IkNUNxkUqkwl5mXuzq03ki+8fA2JvPsZyY31Ytt9J3V3jiqOLqpqN8A5STejc3cT9JvN         j0mg=="
+        },
+        {
+          "name": "X-Gm-Message-State",
+          "value": "AOAM530VoftPSkw2L7I5km2MsLYym4v+owMeTmahOdvsk6Ae7pyXwnhA Ol2eeoKPHN7SNFznxr04+uMX7mKwIbtHEdM/nHHlK/GGG8kU1nhQ8pspdkC1OC1UOiEkyWr7Bit oxyo/qpWTkR88WSkcrqWSNjMjfeLTQg=="
+        },
+        {
+          "name": "X-Received",
+          "value": "by 2002:a17:902:ca0d:b0:151:df4b:76a1 with SMTP id w13-20020a170902ca0d00b00151df4b76a1mr23954536pld.67.1647263018223;        Mon, 14 Mar 2022 06:03:38 -0700 (PDT)"
+        },
+        {
+          "name": "X-Received",
+          "value": "by 2002:a17:902:ca0d:b0:151:df4b:76a1 with SMTP id w13-20020a170902ca0d00b00151df4b76a1mr23954511pld.67.1647263017888; Mon, 14 Mar 2022 06:03:37 -0700 (PDT)"
+        },
+        {
+          "name": "MIME-Version",
+          "value": "1.0"
+        },
+        {
+          "name": "From",
+          "value": "Noy Maimon <nmaimon@paloaltonetworks.com>"
+        },
+        {
+          "name": "Date",
+          "value": "Mon, 14 Mar 2022 15:03:26 +0200"
+        },
+        {
+          "name": "Message-ID",
+          "value": "",<CAPrqz58uOgsrmoYQLGhBHF1L00aMO2qSFx4sAmN0zSt1MMBarg@mail.gmail.com>""
+        },
+        {
+          "name": "Subject",
+          "value": "attachment mail EWS365, Gmail, sec & comp"
+        },
+        {
+          "name": "To",
+          "value": "admin@demistodev.com, sr-test01@demistodev.onmicrosoft.com, sr-test02@demistodev.onmicrosoft.com"
+        },
+        {
+          "name": "Content-Type",
+          "value": "multipart/alternative; boundary="00000000000008925405da2d4fba""
+        },
+        {
+          "name": "X-Proofpoint-GUID",
+          "value": "ryv-CX4krDqcud2X8-RheBtBn5WQx4Hx"
+        },
+        {
+          "name": "X-Proofpoint-ORIG-GUID",
+          "value": "ryv-CX4krDqcud2X8-RheBtBn5WQx4Hx"
+        },
+        {
+          "name": "X-Proofpoint-Virus-Version",
+          "value": "vendor=baseguard engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514 definitions=2022-03-14_04,2022-03-14_01,2022-02-23_01"
+        },
+        {
+          "name": "X-Proofpoint-Spam-Details",
+          "value": "rule=outbound_spam_notspam policy=outbound_spam score=0 adultscore=0 suspectscore=0 impostorscore=0 spamscore=0 lowpriorityscore=0 bulkscore=0 mlxlogscore=277 mlxscore=0 priorityscore=1501 clxscore=1015 phishscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000 definitions=main-2203140082"
+        }
+      ],
+      "mimeType": "multipart/alternative",
+      "partId": "",
+      "parts": [
+        {
+          "body": {
+            "data": "DQo=",
+            "size": 2
+          },
+          "filename": "",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "text/plain; charset="UTF-8""
+            }
+          ],
+          "mimeType": "text/plain",
+          "partId": "0"
+        },
+        {
+          "body": {
+            "data": "PGRpdiBkaXI9Imx0ciI-PGJyPjwvZGl2Pg0K",
+            "size": 27
+          },
+          "filename": "",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "text/html; charset="UTF-8""
+            }
+          ],
+          L
+          "mimeType": "text/html",
+          "partId": "1"
+        }
+      ]
+    },
+    "sizeEstimate": 7502,
+    "snippet": "",
+    "threadId": "17f8886f87a78d38"
+  }
+]

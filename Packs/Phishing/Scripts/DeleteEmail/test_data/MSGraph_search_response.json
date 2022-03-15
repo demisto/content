@@ -1,0 +1,73 @@
+[
+    {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('sr-test01%40demistodev.onmicrosoft.com')/messages",
+        "value": [
+            {
+                "@odata.etag": "W/\"CQAAABYAAABhdrqWZNreTp5Cv4fwzfP6AAG2fdZT\"",
+                "bccRecipients": [],
+                "body": {
+                    "content": "\u003chtml\u003e\u003chead\u003e\r\n\u003cmeta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"\u003e\u003c/head\u003e\u003cbody\u003e\u003cdiv dir=\"ltr\"\u003e\u003cbr\u003e\u003c/div\u003e\u003c/body\u003e\u003c/html\u003e",
+                    "contentType": "html"
+                },
+                "bodyPreview": "",
+                "categories": [],
+                "ccRecipients": [],
+                "changeKey": "CQAAABYAAABhdrqWZNreTp5Cv4fwzfP6AAG2fdZT",
+                "conversationId": "AAQkAGNhNWU3NWI4LTZkZTUtNGExYy04YTM4LTU2OTk2NjA3ODkwMQAQAC2zZdJlc7FHvEL8tROGntk=",
+                "conversationIndex": "AQHYN6QELbNl0mVzsUe8Qvy1E4ae2Q==",
+                "createdDateTime": "2022-03-14T13:04:20Z",
+                "flag": {
+                    "flagStatus": "notFlagged"
+                },
+                "from": {
+                    "emailAddress": {
+                        "address": "nmaimon@paloaltonetworks.com",
+                        "name": "Noy Maimon"
+                    }
+                },
+                "hasAttachments": false,
+                "id": "AAMkAGNhNWU3NWI4LTZkZTUtNGExYy04YTM4LTU2OTk2NjA3ODkwMQBGAAAAAABmIEZvc-v7T6BVfPay-H0jBwBhdrqWZNreTp5Cv4fwzfP6AAAAAAEMAABhdrqWZNreTp5Cv4fwzfP6AAG23zvWAAA=",
+                "importance": "normal",
+                "inferenceClassification": "focused",
+                "internetMessageId": "\u003cCAPrqz5_NW2vW3ExFXk9SK_cstBnHfe2oY1aXgSpX7oYq=B1WHw@mail.gmail.com\u003e",
+                "isDeliveryReceiptRequested": null,
+                "isDraft": false,
+                "isRead": false,
+                "isReadReceiptRequested": false,
+                "lastModifiedDateTime": "2022-03-14T13:04:20Z",
+                "parentFolderId": "AAMkAGNhNWU3NWI4LTZkZTUtNGExYy04YTM4LTU2OTk2NjA3ODkwMQAuAAAAAABmIEZvc-v7T6BVfPay-H0jAQBhdrqWZNreTp5Cv4fwzfP6AAAAAAEMAAA=",
+                "receivedDateTime": "2022-03-14T13:04:20Z",
+                "replyTo": [],
+                "sender": {
+                    "emailAddress": {
+                        "address": "nmaimon@paloaltonetworks.com",
+                        "name": "Noy Maimon"
+                    }
+                },
+                "sentDateTime": "2022-03-14T13:03:59Z",
+                "subject": "attachment mail graph, EWS v2",
+                "toRecipients": [
+                    {
+                        "emailAddress": {
+                            "address": "admin@demistodev.com",
+                            "name": "admin@demistodev.com"
+                        }
+                    },
+                    {
+                        "emailAddress": {
+                            "address": "sr-test01@demistodev.onmicrosoft.com",
+                            "name": "sr test01"
+                        }
+                    },
+                    {
+                        "emailAddress": {
+                            "address": "sr-test02@demistodev.onmicrosoft.com",
+                            "name": "sr test02"
+                        }
+                    }
+                ],
+                "webLink": "https://outlook.office365.com/owa/?ItemID=AAMkAGNhNWU3NWI4LTZkZTUtNGExYy04YTM4LTU2OTk2NjA3ODkwMQBGAAAAAABmIEZvc%2Fv7T6BVfPay%2FH0jBwBhdrqWZNreTp5Cv4fwzfP6AAAAAAEMAABhdrqWZNreTp5Cv4fwzfP6AAG23zvWAAA%3D\u0026exvsurl=1\u0026viewmodel=ReadMessageItem"
+            }
+        ]
+    }
+]

@@ -1,0 +1,244 @@
+[
+  {
+    "author": "nmaimon@paloaltonetworks.com",
+    "body": "",
+    "datetimeCreated": "2022-03-14T13:04:18Z",
+    "datetimeReceived": "2022-03-14T13:04:18Z",
+    "datetimeSent": "2022-03-14T13:03:59Z",
+    "hasAttachments": "False",
+    "headers": [
+      {
+        "name": "Received",
+        "value": "from DU0PR07MB8418.eurprd07.prod.outlook.com (2603:10a6:10:352::16) by VI1PR07MB6525.eurprd07.prod.outlook.com with HTTPS; Mon, 14 Mar 2022 13:04:18 +0000"
+      },
+      {
+        "name": "Received",
+        "value": "from AS9PR06CA0378.eurprd06.prod.outlook.com (2603:10a6:20b:460::18) by DU0PR07MB8418.eurprd07.prod.outlook.com (2603:10a6:10:352::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.10; Mon, 14 Mar 2022 13:04:16 +0000"
+      },
+      {
+        "name": "Received",
+        "value": "from VE1EUR01FT030.eop-EUR01.prod.protection.outlook.com (2603:10a6:20b:460:cafe::23) by AS9PR06CA0378.outlook.office365.com (2603:10a6:20b:460::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.25 via Frontend Transport; Mon, 14 Mar 2022 13:04:16 +0000"
+      },
+      {
+        "name": "Received",
+        "value": "from mx0b-00169c01.pphosted.com (67.231.148.124) by VE1EUR01FT030.mail.protection.outlook.com (10.152.2.228) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.22 via Frontend Transport; Mon, 14 Mar 2022 13:04:13 +0000"
+      },
+      {
+        "name": "Received",
+        "value": "from pps.filterd (m0048493.ppops.net [127.0.0.1])\tby mx0a-00169c01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22ECqPwG013223\tfor <sr-test02@demistodev.onmicrosoft.com>; Mon, 14 Mar 2022 06:04:12 -0700"
+      },
+      {
+        "name": "Received",
+        "value": "from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])\tby mx0a-00169c01.pphosted.com (PPS) with ESMTPS id 3et63hr1yk-1\t(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)\tfor <sr-test02@demistodev.onmicrosoft.com>; Mon, 14 Mar 2022 06:04:11 -0700"
+      },
+      {
+        "name": "Received",
+        "value": "by mail-pj1-f69.google.com with SMTP id cp14-20020a17090afb8e00b001c6018fe017so2633702pjb.4        for <sr-test02@demistodev.onmicrosoft.com>; Mon, 14 Mar 2022 06:04:11 -0700 (PDT)"
+      },
+      {
+        "name": "Authentication-Results",
+        "value": "spf=pass (sender IP is 67.231.148.124) smtp.mailfrom=paloaltonetworks.com; dkim=pass (signature was verified) header.d=paloaltonetworks.com;dmarc=pass action=none header.from=paloaltonetworks.com;compauth=pass reason=100"
+      },
+      {
+        "name": "Received-SPF",
+        "value": "Pass (protection.outlook.com: domain of paloaltonetworks.com designates 67.231.148.124 as permitted sender) receiver=protection.outlook.com; client-ip=67.231.148.124; helo=mx0b-00169c01.pphosted.com;"
+      },
+      {
+        "name": "DKIM-Signature",
+        "value": "v=1; a=rsa-sha256; c=relaxed/relaxed; d=paloaltonetworks.com; h=mime-version : from : date : message-id : subject : to : content-type; s=PPS12012017; bh=D6+8CX47hx3SwwUmbaUDRASOhkgYQ1kWWm1XqCsnjL0=; b=RVtzQ59EU80HZOJhtfX6j/RUAhutlU6G5pZSKjrZhvohbgvDKrnY7qKbzyIs+IDFlhhg WchPVp3IHErU5eVly9aZGFAHrQuwTu9u4eKaZcuY5mQCBbNa2g69IspNmFqj1ORCTPZm PLXSl+8rD7vabB6BUEABorhDIV6iD0X1btlLi6FiI98M9kMbOn0Ykm6aUzpAu/zVa5ev 6yDL4xku/aF3xwOq9nxVVIlfivCs+roPlzd7YZzN8seK62IsAR9LAbVuFGuI/fl8RN9y 61B22rCHZEyM1cT4LTILPkYaxBLW5k20fDfu3jjJ4cqtqWXKLgeLGw9uf1b7RutazNbA EA== "
+      },
+      {
+        "name": "DKIM-Signature",
+        "value": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=paloaltonetworks-com.20210112.gappssmtp.com; s=20210112;        h=mime-version:from:date:message-id:subject:to;        bh=D6+8CX47hx3SwwUmbaUDRASOhkgYQ1kWWm1XqCsnjL0=;        b=erRtYheJYp/sF2LNIoFRVyOIpdIjTfyXLXzk8ywrXRIwEyEc5CT7crSkI3cV3moPxZ         73j6lhS0tuinqfSacR7GmUEky4/3L8fVBQtxs88FFWE7gRRczcgO8Yi/1uNCZnupV2kr         ZgwOG7DKWk0RQc6omrlgMLxXh22pNYiU1q2t5cdun4GDAVMSM9psz8veZ0viR0yt0O6Q         dwi6m0OEmqk8DnmRuEcITPmRHqmTuw88pc8ezESlvNN5c0NEOiltxaijXtIiaGL3KcEI         vaia3nlAQuMI7SXXig5aWMcfirFE/Y6nImcPPgF0w1jBhaSgL58bqQ8DGg6eTBMMUjz+         dCuw=="
+      },
+      {
+        "name": "X-Google-DKIM-Signature",
+        "value": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=1e100.net; s=20210112;        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;        bh=D6+8CX47hx3SwwUmbaUDRASOhkgYQ1kWWm1XqCsnjL0=;        b=tGkBtafVu4XOJeaoc3kMmEdyeQUGL3klVF14UFW83Zz2g3lJ+nKEuhHTp3KCs1kekX         nEgSrO2zHAlJDiIeYGLSKSDfsJdJtqqII6Z/e4x24JVMk7dibMgvJy9BC7nPxLhqeBZA         SnHJ9Pb4aEvJWfU+mPzlzgrxRaHVi9+9u01TvadtdeCC+wqQZT4Hw9X1FpMUlypntuuS         iNla/btYmV177aP7HcvZRXz0USiKr3ZFMz2l3YAC0vdf1b2RDma7HGyEeOajfZI6VAXv         jZdvNoLk3aocqT/Y6F2xliQxvjH5XqtMzXMzP52turrsPctXsQi77kOEWYCNUR1x3kul         8MwQ=="
+      },
+      {
+        "name": "X-Gm-Message-State",
+        "value": "AOAM533i3ExqV/Q9Ebwvkt7/40IMLPUFsBpSUSqe8i8uqiXYZAfXRzqq\tRW7LBDEpnkHDis1EiKgJ3zlsfFM9fE74YAlsxdclUmj6NT5op1dnvAw67HOBFBHVgsQCBGejYhD\trodK5tyhEEe4ghGoNBdiKy7pCGe0tD9kGZHwdAu9SwuB9uXjBJGk="
+      },
+      {
+        "name": "X-Received",
+        "value": "by 2002:a17:902:ca0d:b0:151:df4b:76a1 with SMTP id w13-20020a170902ca0d00b00151df4b76a1mr23957011pld.67.1647263050814;        Mon, 14 Mar 2022 06:04:10 -0700 (PDT)"
+      },
+      {
+        "name": "X-Received",
+        "value": "by 2002:a17:902:ca0d:b0:151:df4b:76a1 with SMTP id w13-20020a170902ca0d00b00151df4b76a1mr23956990pld.67.1647263050475; Mon, 14 Mar 2022 06:04:10 -0700 (PDT)"
+      },
+      {
+        "name": "X-Google-Smtp-Source",
+        "value": "ABdhPJxcaFoNOt2n4oKGezycfnRtHynNyAD6aKIk0k4sTmAu6ljaKgNWISoXFPUDHQoZoMzQIq+80Vr/gRNEmHjAg1M="
+      },
+      {
+        "name": "MIME-Version",
+        "value": "1.0"
+      },
+      {
+        "name": "Date",
+        "value": "Mon, 14 Mar 2022 15:03:59 +0200"
+      },
+      {
+        "name": "Message-ID",
+        "value": "<CAPrqz5_NW2vW3ExFXk9SK_cstBnHfe2oY1aXgSpX7oYq=B1WHw@mail.gmail.com>"
+      },
+      {
+        "name": "Subject",
+        "value": "attachment mail graph, EWS v2"
+      },
+      {
+        "name": "Content-Type",
+        "value": "multipart/alternative"
+      },
+      {
+        "name": "X-Proofpoint-GUID",
+        "value": "QLhZq8yMGUoMv2Qg-v-y7cDy6UXzm1-X"
+      },
+      {
+        "name": "X-Proofpoint-ORIG-GUID",
+        "value": "QLhZq8yMGUoMv2Qg-v-y7cDy6UXzm1-X"
+      },
+      {
+        "name": "X-Proofpoint-Virus-Version",
+        "value": "vendor=baseguard engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514 definitions=2022-03-14_04,2022-03-14_01,2022-02-23_01"
+      },
+      {
+        "name": "X-Proofpoint-Spam-Details",
+        "value": "rule=outbound_spam_notspam policy=outbound_spam score=3 mlxlogscore=158 priorityscore=1501 adultscore=0 lowpriorityscore=0 phishscore=0 bulkscore=0 malwarescore=0 suspectscore=0 clxscore=1015 mlxscore=3 spamscore=3 impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000 definitions=main-2203140082"
+      },
+      {
+        "name": "Return-Path",
+        "value": "nmaimon@paloaltonetworks.com"
+      },
+      {
+        "name": "X-MS-Exchange-Organization-ExpirationStartTime",
+        "value": "14 Mar 2022 13:04:14.8860 (UTC)"
+      },
+      {
+        "name": "X-MS-Exchange-Organization-ExpirationStartTimeReason",
+        "value": "OriginalSubmit"
+      },
+      {
+        "name": "X-MS-Exchange-Organization-ExpirationInterval",
+        "value": "1:00:00:00.0000000"
+      },
+      {
+        "name": "X-MS-Exchange-Organization-ExpirationIntervalReason",
+        "value": "OriginalSubmit"
+      },
+      {
+        "name": "X-MS-Exchange-Organization-Network-Message-Id",
+        "value": "33b2457c-eb95-4cbb-0eb9-08da05bb2417"
+      },
+      {
+        "name": "X-EOPAttributedMessage",
+        "value": "0"
+      },
+      {
+        "name": "X-EOPTenantAttributedMessage",
+        "value": "ebac1a16-81bf-449b-8d43-5732c3c1d999:0"
+      },
+      {
+        "name": "X-MS-Exchange-Organization-MessageDirectionality",
+        "value": "Incoming"
+      },
+      {
+        "name": "X-MS-PublicTrafficType",
+        "value": "Email"
+      },
+      {
+        "name": "X-MS-Exchange-Organization-AuthSource",
+        "value": "VE1EUR01FT030.eop-EUR01.prod.protection.outlook.com"
+      },
+      {
+        "name": "X-MS-Exchange-Organization-AuthAs",
+        "value": "Anonymous"
+      },
+      {
+        "name": "X-MS-Office365-Filtering-Correlation-Id",
+        "value": "33b2457c-eb95-4cbb-0eb9-08da05bb2417"
+      },
+      {
+        "name": "X-MS-TrafficTypeDiagnostic",
+        "value": "DU0PR07MB8418:EE_"
+      },
+      {
+        "name": "X-MS-Exchange-AtpMessageProperties",
+        "value": "SL"
+      },
+      {
+        "name": "X-MS-Exchange-Organization-SCL",
+        "value": "1"
+      },
+      {
+        "name": "X-Microsoft-Antispam",
+        "value": "BCL:0;"
+      },
+      {
+        "name": "X-Forefront-Antispam-Report",
+        "value": "CIP:67.231.148.124;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mx0b-00169c01.pphosted.com;PTR:mx0a-00169c01.pphosted.com;CAT:NONE;SFS:(13230001)(4636009)(26005)(33964004)(6666004)(9686003)(336012)(564344004)(1096003)(42186006)(356005)(7636003)(86362001)(8676002)(55446002);DIR:INB;"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-OriginalArrivalTime",
+        "value": "14 Mar 2022 13:04:13.9954 (UTC)"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-Network-Message-Id",
+        "value": "33b2457c-eb95-4cbb-0eb9-08da05bb2417"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-Id",
+        "value": "ebac1a16-81bf-449b-8d43-5732c3c1d999"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-AuthSource",
+        "value": "VE1EUR01FT030.eop-EUR01.prod.protection.outlook.com"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-AuthAs",
+        "value": "Anonymous"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-FromEntityHeader",
+        "value": "Internet"
+      },
+      {
+        "name": "X-MS-Exchange-Transport-CrossTenantHeadersStamped",
+        "value": "DU0PR07MB8418"
+      },
+      {
+        "name": "X-MS-Exchange-Transport-EndToEndLatency",
+        "value": "00:00:04.1789224"
+      },
+      {
+        "name": "X-MS-Exchange-Processed-By-BccFoldering",
+        "value": "15.20.5081.013"
+      },
+      {
+        "name": "X-Microsoft-Antispam-Mailbox-Delivery",
+        "value": "ucf:0;jmr:0;auth:0;dest:I;ENG:(910001)(944506458)(944626604)(920097)(930097);"
+      },
+      {
+        "name": "X-Microsoft-Antispam-Message-Info",
+        "value": "rFRbSqYkcKGepgmMrzqhyuUmRS0vgg3AlDxAIM0DpLEwV14ZKoA9iQoEe/Yb0y1BQn952vH67ssXReTz1NIn0EB9lCyONZNt2FivGcee+LSb6SrRgE3xXJbhX2zo254F9rRh2nvTyHQEQQUygy3EJv+DqFZvPYnX9tQVHXCDZKv2B4cBr48fNuMw3Xc4h2mNLjbP3n4nIqIZ2bUlbGLYvo4WbP+ZMhhLmpWVZ7YsRiCeIXzFd/a1CwjCbaNWbNcvUw7c4uKGGEd3XrmWkRNhWWAC2lDzYPEi3+UYhhOBph+RNgfkeOLmxyDc5R0124sVOGpqDu4lA9Z4Clyu5yLwuZ+hsRv6fpTVFESxY6vamgBTi4Y+I7rT+SWrTHakmIZgRxGFqea2cZFzpBMSw3ZGgocMFlSTwjr+IJjySfNRaEhirMDfPvBt1tStNhWxY3bkmYsQ+0t4Hdk2wApDA8oqr0CN4Fu53owAf7ZOrnzYe5/83MqMcI1HET0J0/ThV+cRIezj2EB3/CnM7TqfGhBRsAIFbZ7EF4JiVdeMYetB8wNr9Agu3TrJurJXK5iC503hQ1PFLsPLIOJT0y7THaAJyNzdY09OrE+OnK9X9SNyTqvSWvbf02WbOimJ0+6LvvsCXDEd0J3TXQMk3MisDH6/GE/GDzdM44bYa9BUcqB1mAZtj+dAoW+FV44ACCd7h6reyoHHJHHRpepoEyiMi1S62VGb8W7RCbsoghaMKk1Rkw0yQFYzWFLf4/0m2W6McYCZjyyYARQ9MKFA3oUNzAh3NVijIv6IlmFApwTQSrdxMxb28HmGyro7m5NAiRJvFEFCIG4v7tI1qvy+pOIFcBzJOItmuL9FtpR56f1YGsv92riBz2NN4wqqKe5VuSdPX/qbUWWC1Uor8xPfMpjgge9fJzVcHOWmoQWWVUVefo37zLFX27/RMr6EuM2XFmvlwF8ZthZu5wSrxDpgY6z8XqeGxKhIJ2Xz8NjuKWuMrdpj+zK8dRG1MJdjgt98pcTeitubY20+XU+YNEf2qMS79qaXEZ/gKFMKReyFUR1bmEpa42M5wceRFyBNYk6sJgSsOpHA85lcg5Vpj1LWuccDND3uajhfIvfIj9qFp2+Lmt1Pv8hZcGOULIp7B35L7v/ERTYtcbLWwRhysBTgapWZnNk2OjQBhzJGlEcZ5y83p0Lq1a1lRcntCM+t0k8PyHVQW4yDYUA8rCXnkD8amJ3tz6/KIydP5F+j0xgcx8bR8TyOQQ/1pcronIjUXsb4ZgYn43qXXH0yC+GTOmGt3ZKsWGGRQMKxDDg4trbzHFePLRRDJAR+sXHvyXqAokBAXOoGas1mmJNqf9cC3+8TnauR+HollosP+Xky42RHvayucwb1t428xs8aWriWQoUPvtDlHDHu+t8++X3gVxqs1wVeEjJrimYtOhK7ifLztaHdcG+2ocjQQ8v4uRT9yGbTignUiyQi54/9gXSThFUTrYomFj0cS69QCRURdQVw1qF64XjWv8FaKNXfy+xmlCzGwvCzsiZ4g+9cYz4W/RhmEgimT18L/5iVqIUbfhv18BGTKzOzau7KG9bUL7jP/8KOSH50KePeiO7Qg659YaFRzWzRRcbwHkeu9HSACOXZoFUEpav24ynAT4Y26t+xpaJ8Tgae9ef+gNNu+fkfiEGUEkowJMPeEfGVuoBy5S7RHB1u8OdvwFpP34KutVoF3JpY6guKh3hXmFFBgvbMHtwus3lMN7SgcRmMDLoO06Aqk4+tgYxPdr8u8yh9xFTmZzVW8YnZpL3lgYzImUfIpcm+dOdVB9FY2siu9BJ0lkYUNy+51YcugKaqzminxTOI7CJC2PJrVzNtNTJaEC7k90ZcsqB5yJg9RQ=="
+      }
+    ],
+    "importance": "Normal",
+    "isRead": "False",
+    "itemId": "AAMkAGIxMGY0ZThkLWQyZGItNDU0MC04NjQ0LWI3YmNjMDM1YTlmZQBGAAAAAABH2fzqX5dLT4G6BheRUdJcBwA7Xf6pDi2dQ5jEQH0EI5vGAAAAAAEMAAA7Xf6pDi2dQ5jEQH0EI5vGAAG7ip67AAA=",
+    "lastModifiedTime": "2022-03-14T13:04:18Z",
+    "mailbox": "sr-test02@demistodev.onmicrosoft.com",
+    "messageId": "<CAPrqz5_NW2vW3ExFXk9SK_cstBnHfe2oY1aXgSpX7oYq=B1WHw@mail.gmail.com>",
+    "receivedBy": "sr-test02@demistodev.onmicrosoft.com",
+    "sender": "nmaimon@paloaltonetworks.com",
+    "size": 50513,
+    "subject": "attachment mail graph, EWS v2",
+    "textBody": "",
+    "toRecipients": [
+      "admin@demistodev.com",
+      "sr-test01@demistodev.onmicrosoft.com",
+      "sr-test02@demistodev.onmicrosoft.com"
+    ]
+  }
+]

@@ -1,0 +1,12 @@
+[
+  {
+    "action": "soft-deleted",
+    "itemId": "AAMkAGIxMGY0ZThkLWQyZGItNDU0MC04NjQ0LWI3YmNjMDM1YTlmZQBGAAAAAABH2fzqX5dLT4G6BheRUdJcBwA7Xf6pDi2dQ5jEQH0EI5vGAAAAAAEMAAA7Xf6pDi2dQ5jEQH0EI5vGAAG7ip66AAA=",
+    "messageId": "<CAPrqz58uOgsrmoYQLGhBHF1L00aMO2qSFx4sAmN0zSt1MMBarg@mail.gmail.com>"
+  }
+]
+
+mail not found: empty list
+delete from no auth:
+Failed to execute ews-search-mailbox. Error details:
+The SMTP address has no mailbox associated with it.

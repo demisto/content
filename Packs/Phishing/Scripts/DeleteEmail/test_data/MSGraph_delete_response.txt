@@ -1,0 +1,11 @@
+### Message has been deleted successfully
+|Message ID|User ID|
+|---|---|
+| AAMkAGNhNWU3NWI4LTZkZTUtNGExYy04YTM4LTU2OTk2NjA3ODkwMQBGAAAAAABmIEZvc-v7T6BVfPay-H0jBwBhdrqWZNreTp5Cv4fwzfP6AAAAAAEMAABhdrqWZNreTp5Cv4fwzfP6AAG23zvWAAA= | sr-test01@demistodev.onmicrosoft.com |
+
+if file was already deleted:
+results return but it should be empty, as that file is not there (empty after filtering by id). i think ther is somethnig wrong with the query but cant find it.
+
+deleting an email that is not configured: Error details:
+Error in API call [404] - Not Found
+{"error": {"code": "ErrorInvalidUser", "message": "The requested user 'nmaimon@paloaltonetworks.com' is invalid.", "innerError": {"date": "2022-03-14T16:54:32", "request-id": "03b8350d-9c6f-4021-871a-51b7a4ec4177", "client-request-id": "03b8350d-9c6f-4021-871a-51b7a4ec4177"}}}
