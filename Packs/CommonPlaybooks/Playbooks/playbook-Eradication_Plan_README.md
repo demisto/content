@@ -32,7 +32,7 @@ Set
 | EndpointID | The endpoint ID. | alert.agentid | Optional |
 | FilePath | The file path for the file deletion task. | foundIncidents.CustomFields.initiatorpath | Optional |
 | Username | The username to reset the password for. | foundIncidents.CustomFields.username | Optional |
-| FileRemediation | Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. <br/>For example, Choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and executes only file quarantine. | Delete | Optional |
+| FileRemediation | Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. <br/>For example, choosing choosing 'Delete' ignores the 'Quarantine file' task under the containment playbook and executes only file deletion. | Delete | Optional |
 
 ## Playbook Outputs
 ---
