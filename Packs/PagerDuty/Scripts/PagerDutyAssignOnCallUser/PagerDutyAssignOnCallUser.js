@@ -15,7 +15,7 @@ if (selectedUser === null) {
     return 'error : could not find user from PagerDuty OnCall now!';
 }
 
-res = executeCommand('getUserByEmail', {userEmail: selectedUser.email});
+res = executeCommand('getUserByEmail', {userEmail: selectedUser.Email});
 
 if (res[0].Type == entryTypes.error) {
     return res[0];
