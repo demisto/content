@@ -6417,7 +6417,7 @@ class CommandRunner:
             """
 
             :param commands: The commands list or a single command
-            :type commands: Union[str, List[str]]
+            :type commands: str + List[str]
             :param args_lst: The args list or a single args
             :type args_lst: List[Dict] + Dict
             :param brand: The brand to use
@@ -6514,7 +6514,7 @@ class CommandRunner:
         """
         Given a list of commands, return a list of results (to pass to return_results).
 
-        :param commands: A list of
+        :param commands: A list of commands.
         :type commands: ``List[Command]``
         :return: list of results
         """
@@ -6526,10 +6526,15 @@ class CommandRunner:
 
         summary_md = CommandRunner.get_results_summary(full_results, full_errors)
         command_results = [res.result for res in full_results]
-        if not command_results and full_errors:  # no results were given but there are errors
-            errors = ["{instance}: {msg}".format(instance=err.instance, msg=err.result) for err in full_errors]
-            error_msg = '\n'.join(['Script failed. The following errors were encountered: '] + errors)
+        if not command_results:
+            if full_errors:  # no results were given but there are errors
+                errors = ["{instance}: {msg}".format(instance=err.instance, msg=err.result) for err in full_errors]
+                error_msg = '\n'.join(['Script failed. The following errors were encountered: '] + errors)
+            else:
+                error_msg = 'The commands that run are not supported in this Instance. ' \
+                            'Try to configure the integrations in XSOAR settings.'
             raise DemistoException(error_msg)
+
         command_results.append(CommandResults(readable_output=summary_md))
         return command_results
 
