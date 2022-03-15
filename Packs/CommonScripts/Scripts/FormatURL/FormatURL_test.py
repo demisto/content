@@ -49,6 +49,12 @@ NOT_FORMAT_TO_FORMAT = [  # Start of http:/ replacements.
     # End of Sanity test, no replacement should be done.
 ]
 
+BRACKETS_URL_TO_FORMAT = [('https://test1.test-api.com/test1/test2/s.testing]',
+                           'https://test1.test-api.com/test1/test2/s.testing'),
+                          ('https://test1.test-api.com]', 'https://test1.test-api.com'),
+                          ('https://test1.test-api.com[', 'https://test1.test-api.com'),
+                          ('https://test1.test-api.com', 'https://test1.test-api.com')]
+
 ATP_REDIRECTS = [('https://na01.safelinks.protection.outlook.com/?url=https%3A%2F%2Foffice.memoriesflower.com'
                   '%2FPermission%2Foffice.php&data=01%7C01%7Cdavid.levin%40mheducation.com'
                   '%7C0ac9a3770fe64fbb21fb08d50764c401%7Cf919b1efc0c347358fca0928ec39d8d5%7C0&sdata=PEoDOerQnha'
@@ -126,6 +132,21 @@ class TestFormatURL:
         """
         from FormatURL import replace_protocol
         assert replace_protocol(non_formatted_url) == expected
+
+    @pytest.mark.parametrize('non_formatted_url, expected', BRACKETS_URL_TO_FORMAT)
+    def test_remove_brackets_from_end_of_url(self, non_formatted_url: str, expected: str):
+        """
+        Given:
+        - non_formatted_url: A URL.
+
+        When:
+        - calling remove_brackets_from_end_of_url
+
+        Then:
+        - Ensure url was formatted properly.
+        """
+        from FormatURL import remove_brackets_from_end_of_url
+        assert remove_brackets_from_end_of_url(non_formatted_url) == expected
 
     @pytest.mark.parametrize('url_, expected', FORMAT_URL_TEST_DATA)
     def test_format_url(self, url_: str, expected: Union[List[str], str]):
