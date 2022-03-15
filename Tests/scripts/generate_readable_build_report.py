@@ -1,3 +1,4 @@
+import json
 import os
 import re
 from demisto_sdk.commands.test_content.execute_test_content import _add_pr_comment
@@ -61,16 +62,19 @@ def get_failing_ut():
     return 'no failing unit tests on this one. nice job!\n'
 
 
-def get_failing_validations():
-    failed_validations = get_artifact_data(ARTIFACTS_FOLDER, 'failed_validations_file.txt')
+def test_get_failing_validations():
+
+    file = open(os.path.join(ARTIFACTS_FOLDER, 'validate_outputs.json'), 'r')
+    failed_validations = json.load(file)
+    validate_summary = {}
     if failed_validations:
-        summary = 'There are some failing sdk validations. here is a list of them\n'
-        failed_validations_list = failed_validations.split('\n')
-        for failed_validation in failed_validations_list:
-            summary += failed_validation + '\n'
-        with open(summary_file, 'a') as f:
-            f.write(summary)
-        return f'you have {len(failed_validations_list)} failed validations on this push.\n'
+        for failed_validation in failed_validations:
+            # TODO concat according to packs
+            file_path = failed_validation.get('filePath')
+            error_code = failed_validation.get('errorCode')
+            message = failed_validation.get('message')
+            validate_summary.setdefault(file_path, []).append(f"{error_code} - {message}")
+        return f'you have {len(failed_validations)} failed validations on this push.\n'
     return 'no failing validations on this one. nice job!\n'
 
 

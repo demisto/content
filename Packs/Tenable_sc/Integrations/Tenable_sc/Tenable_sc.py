@@ -1825,6 +1825,7 @@ try:
         get_vulnerability_command()
     elif demisto.command() == 'tenable-sc-delete-scan':
         delete_scan_command()
+        delete_scan_command()
     elif demisto.command() == 'tenable-sc-get-device':
         get_device_command()
     elif demisto.command() == 'tenable-sc-list-users':
