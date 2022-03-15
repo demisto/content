@@ -48,7 +48,20 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The CimTrak integration helps you detect unexpected system/device/config modifications and automatically respond/react to threats
+description: >-
+  The CimTrak integration helps you detect unexpected system/device/config
+  modifications and automatically respond/react to threats
+detaileddescription: >
+  ***
+  ## CimTrak
+  - Fill in the URL to your App Server
+  - Create an API Key in the CimTrak Management Console and populate in XSOAR
+  - Fill in the Repository IP relative to the App Server (IE: If App Server is
+  running on the same machine as the Repository you can use 127.0.0.1)
+  - Fill in Repository Port
+  - Once configured all unreconciled items from CimTrak will be brought into
+  XSOAR.
+  ---
 display: CimTrak - System Integrity Assurance
 name: CimTrak
 script:
@@ -437,7 +450,7 @@ script:
     - contextPath: CommandStatus.errorDescription
       description: Error description of request
       type: string
-    - contextPath: CimTrak.TicketTask.taskId
+    - contextPath: CimTrak.TicketTask.id
       description: Ticket Task Id
       type: number
     - contextPath: CimTrak.TicketTask.ticketId
@@ -522,14 +535,17 @@ script:
       description: Assignee Name
       type: string
   - arguments:
-    - name: title
+    - description: Title of ticket
+      name: title	  
     - defaultValue: "1"
       description: A priority from 1-5
       name: priority
-    - name: description
+    - description: Ticket description
+      name: description
     - description: Either both start date must be valid and startDate < endDate OR they must both be blank (no dates) - if not supplied, we will fallback to the ticket dates
       name: startDate
-    - name: endDate
+    - description: Ticket end date
+      name: endDate
     - description: For integration with external ticketing systems.
       name: externalTicketNumber
     - description: A string describing an external ticketing system.
@@ -551,10 +567,13 @@ script:
     - defaultValue: "0"
       description: These 4 values are taken as a set and only one value will get used.  Here is their priority order
       name: assignedToUserId
-    - name: assignedToUser
+    - description: Assigned to user
+      name: assignedToUser
     - defaultValue: "0"
+      description: Assigned to group Id
       name: assignedToGroupId
-    - name: assignedToGroup
+    - description: Assigned to group
+      name: assignedToGroup
     description: Creates a ticket.
     name: add-ticket
     outputs:
@@ -567,7 +586,7 @@ script:
     - contextPath: CommandStatus.errorDescription
       description: Error description of request
       type: string
-    - contextPath: CimTrak.Ticket.taskId
+    - contextPath: CimTrak.Ticket.id
       description: Ticket Id
       type: number
     - contextPath: CimTrak.Ticket.ticketNumber
@@ -702,7 +721,7 @@ script:
     - contextPath: CommandStatus.errorDescription
       description: Error description of request
       type: string
-    - contextPath: CimTrak.Ticket.taskId
+    - contextPath: CimTrak.Ticket.id
       description: Ticket Id
       type: number
     - contextPath: CimTrak.Ticket.ticketNumber
