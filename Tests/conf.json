@@ -4366,6 +4366,20 @@
             ]
         },
         {
+            "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_URL",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "CrowdStrike Falcon X"
+            ]
+        },
+        {
+            "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "CrowdStrike Falcon X"
+            ]
+        },
+        {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
             "integrations": [
@@ -5420,7 +5434,8 @@
         "Cortex Data Lake",
         "Mail Listener v2",
         "EDL",
-        "Create-Mock-Feed-Relationships"
+        "Create-Mock-Feed-Relationships",
+        "CrowdStrike Falcon X"
     ],
     "private_tests": [
         "HelloWorldPremium_Scan-Test",
