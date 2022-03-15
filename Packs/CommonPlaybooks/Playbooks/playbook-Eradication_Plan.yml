@@ -2,13 +2,12 @@ id: Eradication Plan
 version: -1
 name: Eradication Plan
 description: |-
-  This playbook handles all the eradication actions available with XSIAM.
-  The playbook allows to eradicate the incident with one of the following tasks:
+  This playbook handles all the eradication actions available with Cortex XSIAM, including the following tasks:
   * Reset user password
   * Delete file
-  * Kill process (currently, the playbook supports terminating a process by name)
+  * Kill process (currently, the playbook supports terminating a process by name)  
 
-  The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+  Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
 starttaskid: "0"
 tasks:
   "0":
@@ -50,7 +49,7 @@ tasks:
       id: eeb8f845-7954-4f9f-81ad-4d675aac7086
       version: -1
       name: Should delete the file?
-      description: Whether to delete the file automatically, manually or not at all.
+      description: Whether to delete the file automatically, manually, or not at all.
       type: condition
       iscommand: false
       brand: ""
@@ -143,7 +142,7 @@ tasks:
       id: 72c569d3-0951-4897-87df-ed27c3facf76
       version: -1
       name: Should terminate the process?
-      description: Whether to terminate the process automatically, manually or not at all.
+      description: Whether to terminate the process automatically, manually, or not at all.
       type: condition
       iscommand: false
       brand: ""
@@ -216,7 +215,7 @@ tasks:
       id: 393a2a05-9342-45d1-8c2b-55300af80c2d
       version: -1
       name: Auto password reset
-      description: Expires the password of an Active Directory user.
+      description: Invalidates the password of an Active Directory user.
       script: '|||ad-expire-password'
       type: regular
       iscommand: true
@@ -251,7 +250,7 @@ tasks:
       id: e991e0e1-23d1-4b43-8bc6-a749552e6401
       version: -1
       name: Should reset the user's password?
-      description: Whether to reset the user's password automatically, manually or not at all.
+      description: Whether to reset the user's password automatically, manually, or not at all.
       type: condition
       iscommand: false
       brand: ""
@@ -661,7 +660,7 @@ tasks:
       id: d914e93f-9869-49b4-8c60-0fc48799d369
       version: -1
       name: Choose users to reset password
-      description: Asks which user's password should be reset. If no value is selected, the following tasks will be ignored.
+      description: Asks which user passwords to reset. If no value is selected, the following tasks will be ignored.
       type: collection
       iscommand: false
       brand: ""
@@ -702,7 +701,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Should reset the following users password?
+          simple: Should reset the following user password?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -788,7 +787,7 @@ tasks:
       id: 9d1b9ae5-69c7-4884-82a4-ec32488ff0e4
       version: -1
       name: Password reset
-      description: Expires the password of an Active Directory user.
+      description: Invalidates the password of an Active Directory user.
       script: '|||ad-expire-password'
       type: regular
       iscommand: true
@@ -1105,7 +1104,7 @@ inputs:
   value:
     simple: Auto
   required: false
-  description: Boolean. Set to 'true' if you want to execute the eradication playbook automatically.
+  description: Set to True to execute the eradication playbook automatically.
   playbookInputQuery:
 - key: EndpointID
   value:
@@ -1129,13 +1128,13 @@ inputs:
       root: foundIncidents.CustomFields
       accessor: username
   required: false
-  description: The username to reset password for.
+  description: The username to reset the password for.
   playbookInputQuery:
 - key: FileRemediation
   value:
     simple: Delete
   required: false
-  description: "Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. \ne.g. Choosing 'Delete' will ignore the 'Quarantine file' task under the containment playbook and will execute only file deletion and vice versa."
+  description: "Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. \nFor example, choosing 'Delete' ignores the 'Quarantine file' task under the containment playbook and executes only file deletion."
   playbookInputQuery:
 outputs: []
 tests:
