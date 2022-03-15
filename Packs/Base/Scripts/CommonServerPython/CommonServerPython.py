@@ -9053,7 +9053,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
 
 def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field='id'):
     """
-    Remove duplicates incidents from response
+    Remove duplicate incidents from response and returns the incidents till limit
 
     :type incidents_res: ``list``
     :param incidents_res: The incidents from response
@@ -9061,10 +9061,13 @@ def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limi
     :type last_run: ``dict``
     :param last_run: The LastRun object
 
+    :type fetch_limit: ``int``
+    :param fetch_limit: The incidents limit to return
+
     :type id_field: ``str``
     :param id_field: The incident id field
 
-    :return: The Incidents after filtering duplicates
+    :return: The incidents till limit after filtering duplicates
     :rtype: ``list``
     """
     found_incidents = last_run.get('found_incident_ids', {})
@@ -9138,7 +9141,25 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     return new_found_incidents_ids
 
 
-def update_found_incident_ids(last_run, incidents, look_back, id_field='id'):
+def get_found_incident_ids(last_run, incidents, look_back, id_field='id'):
+    """
+    Gets the found incident ids
+
+    :type last_run: ``dict``
+    :param last_run: The LastRun object
+
+    :type incidents: ``list``
+    :param incidents: List of incidents
+
+    :type look_back: ``int``
+    :param look_back: The look back time in minutes
+
+    :type id_field: ``str``
+    :param id_field: The incident id field
+
+    :return: The new incidents ids
+    :rtype: ``dict``
+    """
 
     found_incidents = last_run.get('found_incident_ids', {})
     current_time = int(time.time())
@@ -9153,7 +9174,40 @@ def update_found_incident_ids(last_run, incidents, look_back, id_field='id'):
 
 def get_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
                                 created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
+    """
+    Gets an updated LastRun object
 
+    :type last_run: ``dict``
+    :param last_run: The LastRun object
+
+    :type incidents: ``list``
+    :param incidents: List of incidents
+
+    :type fetch_limit: ``int``
+    :param fetch_limit: The fetch limit
+
+    :type look_back: ``int``
+    :param look_back: The time to look back in fetch in minutes
+
+    :type start_fetch_time: ``str``
+    :param start_fetch_time: The start time to fetch
+
+    :type end_fetch_time: ``str``
+    :param end_fetch_time: The end time to fetch
+
+    :type created_time_field: ``str``
+    :param created_time_field: The incident created time field
+
+    :type date_format: ``str``
+    :param date_format: The date format
+
+    :type increase_last_run_time: ``bool``
+    :param increase_last_run_time: Whether to increase the last run time with one millisecond
+
+    :return: The updated LastRun object
+    :rtype: ``Dict``
+    """
+    
     if len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
@@ -9178,7 +9232,7 @@ def get_updated_last_run_object(last_run, incidents, fetch_limit, look_back, sta
 def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
                            created_time_field, id_field='id', date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
     """
-    Sets the next run
+    Updates the LastRun object
 
     :type last_run: ``dict``
     :param last_run: The LastRun object
@@ -9207,17 +9261,14 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
     :type date_format: ``str``
     :param date_format: The date format
 
-    :type save_remained_incidents_in_last_run: ``bool``
-    :param save_remained_incidents_in_last_run: Whether to save the remained incidents in the last run object
-
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
 
     :return: The new last run object and list of incidents
-    :rtype: ``Tuple``
+    :rtype: ``Dict``
     """
 
-    found_incidents = update_found_incident_ids(last_run, incidents, look_back, id_field)
+    found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field)
 
     updated_last_run = get_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
                                                    created_time_field, date_format, increase_last_run_time)

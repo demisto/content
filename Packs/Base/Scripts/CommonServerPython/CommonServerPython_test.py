@@ -6367,6 +6367,9 @@ class TestFetchWithLookBack:
     ]
     
     def example_fetch_incidents(self):
+        """
+        An example fetch for testing
+        """
 
         from CommonServerPython import get_fetch_run_time_range, filter_incidents_by_duplicates_and_limit, \
             update_last_run_object
@@ -6426,7 +6429,16 @@ class TestFetchWithLookBack:
          {'limit': 3, 'time': INCIDENTS[3]['created']}),
     ])
     def test_regular_fetch(self, mocker, params, result_phase1, result_phase2, expected_last_run):
+        """
+        Given:
+        - Connfiguration fetch parameters (incidents limit and first fetch time)
 
+        When:
+        - Running the example fetch incidents
+
+        Then:
+        - Ensure the return incidents and LastRun object as expected
+        """
         self.LAST_RUN = {}
 
         mocker.patch.object(demisto, 'params', return_value=params)
@@ -6469,7 +6481,16 @@ class TestFetchWithLookBack:
     ])
     def test_fetch_with_look_back(self, mocker, params, result_phase1, result_phase2, result_phase3,
                                   expected_last_run_phase1, expected_last_run_phase2, new_incidents, index):
+        """
+        Given:
+        - Connfiguration fetch parameters (incidents limit, first fetch time and look back)
 
+        When:
+        - Running the example fetch incidents and creating new incidents between fetch calles
+
+        Then:
+        - Ensure the return incidents and LastRun object as expected
+        """
         self.LAST_RUN = {}
         incidents = self.INCIDENTS[:]
 
