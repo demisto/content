@@ -12,10 +12,6 @@ if [ -n "$DEMISTO_SDK_NIGHTLY" ]; then
     exit 0
 fi
 
-if [ -n "$BUCKET_UPLOAD" ]; then
-    exit 0
-fi
-
 if [ -z "$CI_COMMIT_BRANCH" ]; then
     # simply compare against origin/master. Local testing case..
     DIFF_COMPARE=origin/master
