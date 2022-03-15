@@ -1168,7 +1168,7 @@ def get_vulnerability_command():
 
     context = {}
 
-    context['TenableSC.ScanResults.Vulnerability(val.ID=={})'.format(vuln_id)] = createContext(scan_result['Vulnerability'], removeNull=True)
+    context['TenableSC.ScanResults.Vulnerability(val.ID===obj.ID)'] = createContext(scan_result['Vulnerability'], removeNull=True)
 
     if len(cves_output) > 0:
         context['CVE(val.ID===obj.ID)'] = createContext(cves_output)
