@@ -17,7 +17,7 @@
     "locked": false,
     "name": "CimTrak Incident",
     "onChangeRepAlg": 0,
-    "playbookId": "c526be83-711d-4212-8b5a-e618470f1958",
+    "playbookId": "CimTrak - Example - Analyze Intrusion",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,

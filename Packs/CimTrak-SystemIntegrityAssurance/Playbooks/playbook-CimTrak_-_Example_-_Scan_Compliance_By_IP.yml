@@ -2,11 +2,10 @@ contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
     itemVersion: ""
-    packID: 25043b93-4265-49a0-8858-04aed0ec4edd
     propagationLabels:
     - all
     toServerVersion: ""
-id: a28a5a93-7020-4221-82de-bfc9ec85a86d
+id: CimTrak - Example - Scan Compliance By IP
 inputs:
 - description: ""
   key: IP
