@@ -312,8 +312,10 @@ def _test_module(client):
     # test the client can reach the case list
     try:
         client.cases
+    except JSONDecodeError as exc:
+        raise RuntimeError('False API key provided to FTK Connect.')
     except DemistoException as exc:
-        raise RuntimeError(str(exc))
+        raise RuntimeError('Authentication with FTK Connect failed.')
 
     return "ok"
 
