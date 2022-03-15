@@ -4,15 +4,27 @@
         "System Diagnostics and Health Check"
     ],
     "caseInsensitive": true,
-    "cliName": "healthcheckinvestigationsbiggerthan10mb",
+    "cliName": "healthcheckdockercontainersstats",
     "closeForm": false,
     "columns": [
         {
-            "displayName": "Incident ID",
+            "displayName": "Name",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "incidentid",
+            "key": "name",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 700
+        },
+        {
+            "displayName": "Container ID",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "containerid",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -20,63 +32,45 @@
             "width": 150
         },
         {
-            "displayName": "Incident ID",
+            "displayName": "cpu_usage",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "incidentid",
+            "key": "cpu_usage",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 100
         },
         {
-            "displayName": "Date",
+            "displayName": "mem_usage",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "date",
+            "key": "mem_usage",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Amount of entries",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "amountofentries",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Size",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "size",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
+            "width": 100
         }
     ],
     "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_healthcheckinvestigationsbiggerthan10mb",
+    "id": "incident_healthcheckdockercontainersstats",
     "isReadOnly": false,
     "locked": false,
-    "name": "Health Check Investigations bigger than 10MB",
+    "name": "Health Check Docker Containers Stats",
     "neverSetAsRequired": false,
+    "openEnded": false,
     "ownerOnly": false,
     "required": false,
     "sla": 0,
@@ -87,5 +81,5 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "5.5.0"
 }

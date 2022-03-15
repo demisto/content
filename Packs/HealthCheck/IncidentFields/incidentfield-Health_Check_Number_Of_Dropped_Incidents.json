@@ -4,17 +4,18 @@
         "System Diagnostics and Health Check"
     ],
     "caseInsensitive": true,
-    "cliName": "healthchecknumberofinvestigationsinputoutputbiggerthan10mb",
+    "cliName": "healthchecknumberofdroppedincidents",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_healthchecknumberofinvestigationsinputoutputbiggerthan10mb",
+    "id": "incident_healthchecknumberofdroppedincidents",
     "isReadOnly": false,
     "locked": false,
-    "name": "Health Check Number of investigations input / output bigger than 10MB",
+    "name": "Health Check Number Of Dropped Incidents",
     "neverSetAsRequired": false,
+    "openEnded": false,
     "ownerOnly": false,
     "required": false,
     "sla": 0,
@@ -25,5 +26,5 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "5.5.0"
 }
