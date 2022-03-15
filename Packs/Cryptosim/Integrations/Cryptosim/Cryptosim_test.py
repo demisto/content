@@ -46,10 +46,7 @@ def test_correlation_alerts_command(requests_mock):
                         json=mock_response)
     client = Client(base_url="https://test.com", verify=False, auth=("test", "test"), proxy=False)
 
-    args = {
-        'startDate': '2022-01-20T12:00:00',
-        'endDate': '2022-01-20T24:00:00'
-    }
-    results = correlation_alerts_command(client, args)
+
+    results = correlation_alerts_command(client)
     assert results.outputs.keys() == ['StatusCode', 'Data', 'OutParameters']
     assert results.outputs_prefix == 'Correlations'
