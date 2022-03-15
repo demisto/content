@@ -1888,6 +1888,27 @@ def slack_send_file():
         demisto.results('Could not send the file to Slack.')
 
 
+def handle_tags_in_message_sync(message: str) -> str:
+    """
+    Handles user tags in a slack send message
+
+    Args:
+        message: The slack message
+
+    Returns:
+        The tagged slack message
+    """
+    matches = re.finditer(USER_TAG_EXPRESSION, message)
+    for match in matches:
+        slack_user = get_user_by_name(match.group(1))
+        if slack_user:
+            message = message.replace(match.group(0), f"<@{slack_user.get('id')}>")
+        else:
+            message = re.sub(USER_TAG_EXPRESSION, r'\1', message)
+    resolved_message = re.sub(URL_EXPRESSION, r'\1', message)
+    return resolved_message
+
+
 def send_message(destinations: list, entry: str, ignore_add_url: bool, integration_context: dict, message: str,
                  thread_id: str, blocks: str):
     """
@@ -1960,7 +1981,8 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
     body: dict = {}
 
     if message:
-        body['text'] = message
+        clean_message = handle_tags_in_message_sync(message)
+        body['text'] = clean_message
     if blocks:
         block_list = json.loads(blocks, strict=False)
         body['blocks'] = block_list
@@ -2397,7 +2419,8 @@ def slack_edit_message():
         'ts': thread_id
     }
     if message:
-        body['text'] = message
+        clean_message = handle_tags_in_message_sync(message)
+        body['text'] = clean_message
     if blocks:
         block_list = json.loads(blocks, strict=False)
         body['blocks'] = block_list
