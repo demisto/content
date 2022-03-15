@@ -545,7 +545,7 @@ script:
       type: string
   - arguments:
     - description: Title of ticket
-      name: title  
+      name: title
     - defaultValue: "1"
       description: A priority from 1-5
       name: priority
