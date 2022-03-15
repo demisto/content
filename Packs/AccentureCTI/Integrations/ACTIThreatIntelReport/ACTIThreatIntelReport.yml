@@ -45,9 +45,9 @@ script:
   commands:
   - name: acti-getThreatIntelReport
     arguments:
-    - name: url
+    - name: uuid
       default: true
-      description: url for viewing Intelligence Alert/Report (IA/IR) in the ACTI IntelGraph platform.
+      description: uuid of Intelligence Alert/Report (IA/IR) in the ACTI IntelGraph platform.
       isArray: false
       required: true
     outputs:
@@ -92,9 +92,6 @@ script:
       type: String
     - contextPath: IAIR.severity
       description: Provides severity rating. This field is specific to Intelligence Alert, for example, '4'
-      type: String
-    - contextPath: IAIR.key
-      description: The key of the IAIR, for example, 'c0ea8f2f-372c-44d1-ad81-efde4971110e'
       type: String
     - contextPath: IAIR.mitigation
       description: Provides info on how to mitigate. This field is specific to Intelligence Alert, for example, '## Expert, Experienced Advice Will be CriticalTo minimize targeting opportunities...'

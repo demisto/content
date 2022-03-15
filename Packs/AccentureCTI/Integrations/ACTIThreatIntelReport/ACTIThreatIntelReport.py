@@ -12,6 +12,8 @@ ENDPOINTS = {
     'document': '/rest/document'
 }
 ATTACHMENT_LINK = 'https://intelgraph.idefense.com/rest/files/download'
+IA_URL= 'https://intelgraph.idefense.com/#/node/intelligence_alert/view/'
+IR_URL= 'https://intelgraph.idefense.com/#/node/intelligence_report/view/'
 
 
 class Client(BaseClient):
@@ -92,12 +94,11 @@ def fix_markdown(text):
 def getThreatReport_command(client: Client, args: dict, reliability: DBotScoreReliability):
     try:
         result = {}
-        ia_ir_url: str = str(args.get('url'))
-        ia_ir_uuid: str = ia_ir_url.split('/')[-1]
+        ia_ir_uuid: str = str(args.get('uuid'))
         result = client.document_download(url_suffix=f'/v0/{ia_ir_uuid}')
-        custom_indicator = _ia_ir_extract(result, reliability, ia_ir_url)
+        custom_indicator,iair_link = _ia_ir_extract(result, reliability)
         return CommandResults(indicator=custom_indicator, raw_response=result,
-                              readable_output=f"Report has been fetched!\nUUID: {result['uuid']}\nURL to view report:{ia_ir_url}")
+                              readable_output=f"Report has been fetched!\nUUID: {result['uuid']}\nLink to view report:{iair_link}")
 
     except Exception as e:
         if 'Failed to parse json object from response' in e.args[0]:
@@ -107,7 +108,7 @@ def getThreatReport_command(client: Client, args: dict, reliability: DBotScoreRe
             raise e
 
 
-def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability, ia_ir_url: str):
+def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
     """
     """
     threat_types = Res.get('threat_types', '')
@@ -121,7 +122,6 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability, ia_ir_url: str)
         'display_text': Res.get('display_text', 'NA'),
         'dynamic_properties': Res.get('dynamic_properties', 'NA'),
         'index_timestamp': Res.get('index_timestamp', 'NA'),
-        'key': Res.get('key', 'NA'),
         'last_modified': Res.get('last_modified', 'NA'),
         'last_published': Res.get('last_published', 'NA'),
         'links': Res.get('links', 'NA'),
@@ -139,6 +139,7 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability, ia_ir_url: str)
         context['summary'] = fix_markdown(Res.get('summary', 'NA'))
         severity_dbot_score = Common.DBotScore.NONE
         indicatortype = 'ACTI Intelligence Report'
+        iair_link: str = IR_URL + uuid
     else:
         severity_dbot_score = Res.get('severity', 'NA')
         if severity_dbot_score != 'NA':
@@ -155,12 +156,13 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability, ia_ir_url: str)
             fqlink = 'NA'
         context['attachment_links'] = fqlink
         indicatortype = 'ACTI Intelligence Alert'
-    dbot_score = Common.DBotScore(indicator=ia_ir_url, indicator_type=DBotScoreType.CUSTOM,
+        iair_link: str = IA_URL + uuid
+    dbot_score = Common.DBotScore(indicator=iair_link, indicator_type=DBotScoreType.CUSTOM,
                                   integration_name='ACTI Threat Intelligence Report',
                                   score=severity_dbot_score, reliability=reliability)
     custom_indicator = Common.CustomIndicator(indicator_type=indicatortype, dbot_score=dbot_score,
-                                              value=ia_ir_url, data=context, context_prefix='IAIR')
-    return custom_indicator
+                                              value=iair_link, data=context, context_prefix='IAIR')
+    return custom_indicator,iair_link
 
 
 def main():
