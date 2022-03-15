@@ -20,7 +20,7 @@ import types
 import urllib
 from random import randint
 import xml.etree.cElementTree as ET
-from collections import OrderedDict, namedtuple
+from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
 from distutils.version import LooseVersion
