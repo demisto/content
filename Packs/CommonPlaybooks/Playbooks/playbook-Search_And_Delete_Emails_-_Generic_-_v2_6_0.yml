@@ -555,7 +555,7 @@ tasks:
               complex:
                 root: inputs.O365ExchangeLocation
                 transformers:
-                - operator: ExtractEmailTransformer
+                - operator: StringToArray
                 - operator: count
             iscontext: true
           right:
