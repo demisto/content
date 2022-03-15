@@ -49,8 +49,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-  defaultvalue: 7 days
-- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   required: false
   type: 0
