@@ -9,7 +9,7 @@ description: |-
   * Block indicators
   * Clear user session (currently, the playbook supports only Okta)
 
-**Note:** The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
+Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
 starttaskid: "0"
 tasks:
   "0":
