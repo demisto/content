@@ -322,12 +322,12 @@ def test_get_incidents_list_command(mocker):
     client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
                     headers={"Content-type": "application/json"})
     args = {}
-    mock_response = util_load_json('/Users/bachen/dev/demisto/content/Packs/SymantecDLP/Integrations/SymantecDLPV2/test_data/incidents_list_response.json')
+    mock_response = util_load_json('test_data/incidents_list_response.json')
 
     mocker.patch.object(client, 'get_incidents_request', return_value=mock_response)
 
     incidents_response = list_incidents_command(client, args)
-    expected_response = util_load_json('/Users/bachen/dev/demisto/content/Packs/SymantecDLP/Integrations/SymantecDLPV2/test_data/incidents_list_context.json')
+    expected_response = util_load_json('test_data/incidents_list_context.json')
     assert incidents_response.outputs == expected_response
 
 
@@ -345,12 +345,12 @@ def test_get_incidents_list_command_with_filters(mocker):
     client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
                     headers={"Content-type": "application/json"})
     args = {'severity': 'High, Medium', 'status_id': '21, 42'}
-    mock_response = util_load_json('/Users/bachen/dev/demisto/content/Packs/SymantecDLP/Integrations/SymantecDLPV2/test_data/incidents_list_response_with_filters.json')
+    mock_response = util_load_json('test_data/incidents_list_response_with_filters.json')
 
     mocker.patch.object(client, 'get_incidents_request', return_value=mock_response)
 
     incidents_response = list_incidents_command(client, args)
-    expected_response = util_load_json('/Users/bachen/dev/demisto/content/Packs/SymantecDLP/Integrations/SymantecDLPV2/test_data/incidents_list_context_with_filters.json')
+    expected_response = util_load_json('test_data/incidents_list_context_with_filters.json')
     assert incidents_response.outputs == expected_response
 
 
@@ -368,13 +368,13 @@ def test_get_incident_details_command(mocker):
     client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
                     headers={"Content-type": "application/json"})
     args = {'incident_id': '3620', 'custom_attributes': 'all'}
-    static_mock_response = util_load_json('/Users/bachen/dev/demisto/content/Packs/SymantecDLP/Integrations/SymantecDLPV2/test_data/incident_static_attributes_first.json')
-    editable_mock_response = util_load_json('/Users/bachen/dev/demisto/content/Packs/SymantecDLP/Integrations/SymantecDLPV2/test_data/incident_editable_attributes_first.json')
+    static_mock_response = util_load_json('test_data/incident_static_attributes_first.json')
+    editable_mock_response = util_load_json('test_data/incident_editable_attributes_first.json')
 
     mocker.patch.object(client, 'get_incident_static_attributes_request', return_value=static_mock_response)
     mocker.patch.object(client, 'get_incident_editable_attributes_request', return_value=editable_mock_response)
 
     incidents_response = get_incident_details_command(client, args)
-    expected_response = util_load_json('/Users/bachen/dev/demisto/content/Packs/SymantecDLP/Integrations/SymantecDLPV2/test_data/incident_details_context.json')
+    expected_response = util_load_json('test_data/incident_details_context.json')
     assert incidents_response.outputs == expected_response
 
