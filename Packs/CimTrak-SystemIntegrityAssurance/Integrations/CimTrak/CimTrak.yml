@@ -56,7 +56,7 @@ configuration:
 - name: max_fetch
   required: false
   type: 0
-  defaultvalue: '50
+  defaultvalue: '50'
 description: >-
   The CimTrak integration helps you detect unexpected system/device/config
   modifications and automatically respond/react to threats
@@ -82,9 +82,9 @@ script:
     - defaultValue: "50"
       description: Ending number of record to get
       name: End
-    - description: 'Filter array to limit results IE: [{name: id, operator:>, value:5}]'
+    - description: "Filter array to limit results IE: [{name: id, operator:>, value:5}]"
       name: Filter
-    - description: 'Sort array to sort data IE: [{field: id, descending: False}]'
+    - description: "Sort array to sort data IE: [{field: id, descending: False}]"
       name: Sorts
     description: Returns Events from the event log
     name: get-events
@@ -218,7 +218,7 @@ script:
   - arguments:
     - description: The hash of the file to analyze.
       name: Hash
-    description: Submits a file's hash for analysis and returns the results.
+    description: "Submits a file's hash for analysis and returns the results."
     name: file-analysis-by-hash
     outputs:
     - contextPath: CommandStatus.status
