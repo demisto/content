@@ -4,15 +4,15 @@ var res = executeCommand('PagerDuty-get-users-on-call-now',
         schedule_ids: args.schedule_ids
     });
 
-if (res[0].Type == entryTypes.error) {
-    return res[0]
+if (!res[0].Contents) {
+    throw 'Empty response from PagerDuty.';
 }
 
 var usersOnCall = res[0].Contents;
 var selectedUser = usersOnCall[0];
 
-if (selectedUser === null) {
-    return 'error : could not find user from PagerDuty OnCall now!';
+if (!selectedUser) {
+    throw 'PagerDuty user not found.';
 }
 
 res = executeCommand('getUserByEmail', {userEmail: selectedUser.Email});
