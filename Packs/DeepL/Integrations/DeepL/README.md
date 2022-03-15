@@ -1,5 +1,5 @@
 This integration uses DeepL (https://www.deepl.com/) to translate text or files
-This integration was integrated and tested with version xx of DeepL
+This integration was integrated and tested with DeepL
 
 ## Configure DeepL on Cortex XSOAR
 
