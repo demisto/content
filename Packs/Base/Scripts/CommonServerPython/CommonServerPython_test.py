@@ -6353,8 +6353,8 @@ class TestFetchWithLookBack:
     
     def example_fetch_incidents(self):
 
-        from CommonServerPython import get_fetch_run_time_range, look_for_incidents_in_last_run, remove_duplicate_incidents_from_response, \
-            set_next_fetch_run
+        from CommonServerPython import get_fetch_run_time_range, filter_incidents_by_duplicates_and_limit, \
+            update_last_run_object
 
         incidents = []
 
@@ -6371,24 +6371,17 @@ class TestFetchWithLookBack:
         if not last_run.get('limit'):
             last_run['limit'] = fetch_limit
 
-        incidents = look_for_incidents_in_last_run(last_run)
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run, first_fetch, look_back, time_zone)
-
-        if incidents:
-            last_run, incidents = set_next_fetch_run(last_run, incidents, fetch_limit_param, start_fetch_time, end_fetch_time, look_back, 
-                                                    'created', 'incident_id')
-            demisto.setLastRun(last_run)
-            return incidents
 
         query = self.build_query(start_fetch_time, end_fetch_time, fetch_limit, return_incidents_by_limit)
         incident_res = self.get_incidents_request(query)
 
-        incidents = remove_duplicate_incidents_from_response(incident_res, last_run, 'incident_id')
+        incidents = filter_incidents_by_duplicates_and_limit(incident_res, last_run, fetch_limit_param, 'incident_id')
 
-        new_last_run, incidents = set_next_fetch_run(last_run, incidents, fetch_limit_param, start_fetch_time, end_fetch_time, look_back,
-                                                    'created', 'incident_id')
+        last_run = update_last_run_object(last_run, incidents, fetch_limit_param, start_fetch_time, end_fetch_time,
+                                          look_back, 'created', 'incident_id')
 
-        demisto.setLastRun(new_last_run)
+        demisto.setLastRun(last_run)
         return incidents
 
     @staticmethod
@@ -6409,18 +6402,18 @@ class TestFetchWithLookBack:
         self.LAST_RUN = new_last_run
 
     @pytest.mark.parametrize('params, result_phase1, result_phase2, expected_last_run', [
-        ({'limit': 2, 'first_fetch': '40 minutes', 'return_incidents_by_limit': False}, [INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
-         {'found_incident_ids': {}, 'limit': 2, 'time': INCIDENTS[3]['created']}),
-        ({'limit': 3, 'first_fetch': '40 minutes', 'return_incidents_by_limit': False}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [],
-         {'found_incident_ids': {}, 'limit': 3, 'time': INCIDENTS[4]['created']}),
-        ({'limit': 2, 'first_fetch': '2 hours', 'return_incidents_by_limit': False}, [INCIDENTS[1], INCIDENTS[2]], [INCIDENTS[3], INCIDENTS[4]],
-         {'found_incident_ids': {}, 'limit': 2, 'time': INCIDENTS[2]['created']}),
-        ({'limit': 3, 'first_fetch': '2 hours', 'return_incidents_by_limit': False}, [INCIDENTS[1], INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
-         {'found_incident_ids': {}, 'limit': 3, 'time': INCIDENTS[3]['created']}),
-        ({'limit': 3, 'first_fetch': '40 minutes', 'return_incidents_by_limit': True}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [],
-         {'found_incident_ids': {}, 'limit': 3, 'time': INCIDENTS[4]['created']}),
-        ({'limit': 3, 'first_fetch': '2 hours', 'return_incidents_by_limit': True}, [INCIDENTS[1], INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
-         {'found_incident_ids': {}, 'limit': 3, 'time': INCIDENTS[3]['created']}),
+        ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
+         {'limit': 2, 'time': INCIDENTS[3]['created']}),
+        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [],
+         {'limit': 3, 'time': INCIDENTS[4]['created']}),
+        ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2]], [INCIDENTS[3], INCIDENTS[4]],
+         {'limit': 2, 'time': INCIDENTS[2]['created']}),
+        ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
+         {'limit': 3, 'time': INCIDENTS[3]['created']}),
+        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [],
+         {'limit': 3, 'time': INCIDENTS[4]['created']}),
+        ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
+         {'limit': 3, 'time': INCIDENTS[3]['created']}),
     ])
     def test_regular_fetch(self, mocker, params, result_phase1, result_phase2, expected_last_run):
 

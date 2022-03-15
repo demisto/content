@@ -9051,24 +9051,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     return last_run_time.strftime(date_format), now.strftime(date_format)
 
 
-def look_for_incidents_in_last_run(last_run):
-    """
-    Looks for incident in the LastRun object
-
-    :type last_run: ``dict``
-    :param last_run: The LastRun object
-
-    :return: The Incidents from LastRun
-    :rtype: ``list``
-    """
-    incidents = []
-    if 'remained_incidents' in last_run and len(last_run['remained_incidents']) > 0:
-        incidents = last_run['remained_incidents']
-
-    return incidents
-
-
-def remove_duplicate_incidents_from_response(incidents_res, last_run, id_field='id'):
+def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field='id'):
     """
     Remove duplicates incidents from response
 
@@ -9091,7 +9074,7 @@ def remove_duplicate_incidents_from_response(incidents_res, last_run, id_field='
         if incident[id_field] not in found_incidents:
             incidents.append(incident)
 
-    return incidents
+    return incidents[:fetch_limit]
 
 
 def get_latest_incident_created_time(incidents, created_time_field, date_format='%Y-%m-%dT%H:%M:%S',
@@ -9155,9 +9138,44 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     return new_found_incidents_ids
 
 
-def set_next_fetch_run(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
-                       created_time_field, id_field='id', date_format='%Y-%m-%dT%H:%M:%S', save_remained_incidents_in_last_run=False,
-                       increase_last_run_time=False):
+def update_found_incident_ids(last_run, incidents, look_back, id_field='id'):
+
+    found_incidents = last_run.get('found_incident_ids', {})
+    current_time = int(time.time())
+
+    for incident in incidents:
+        found_incidents[incident[id_field]] = current_time
+
+    found_incidents = remove_old_incidents_ids(found_incidents, current_time, look_back)
+
+    return found_incidents
+
+
+def get_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
+                           created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
+
+    if len(incidents) == 0:
+        new_last_run = {
+            'time': end_fetch_time,
+            'limit': fetch_limit,
+        }
+    elif len(incidents) < fetch_limit or look_back == 0:
+        latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
+                                                                        increase_last_run_time)
+        new_last_run = {
+            'time': latest_incident_fetched_time,
+            'limit': fetch_limit,
+        }
+    else:
+        new_last_run = {
+            'time': start_fetch_time,
+            'limit': last_run.get('limit') + fetch_limit,
+        }
+
+    return new_last_run
+
+def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
+                           created_time_field, id_field='id', date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
     """
     Sets the next run
 
@@ -9197,42 +9215,18 @@ def set_next_fetch_run(last_run, incidents, fetch_limit, start_fetch_time, end_f
     :return: The new last run object and list of incidents
     :rtype: ``Tuple``
     """
-    found_incidents = last_run.get('found_incident_ids', {})
-    current_time = int(time.time())
 
-    incidents_from_limit = incidents[fetch_limit:]
-    incidents = incidents[:fetch_limit]
+    found_incidents = update_found_incident_ids(last_run, incidents, look_back, id_field)
 
-    for incident in incidents:
-        found_incidents[incident[id_field]] = current_time
+    updated_last_run = get_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
+                                                   created_time_field, date_format, increase_last_run_time)
 
-    found_incidents = remove_old_incidents_ids(found_incidents, current_time, look_back)
+    if found_incidents:
+        updated_last_run.update({'found_incident_ids': found_incidents})
 
-    if len(incidents) == 0:
-        new_last_run = {
-            'time': end_fetch_time,
-            'limit': fetch_limit,
-            'found_incident_ids': found_incidents
-        }
-    elif len(incidents) < fetch_limit or look_back == 0:
-        latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
-                                                                        increase_last_run_time)
-        new_last_run = {
-            'time': latest_incident_fetched_time,
-            'limit': fetch_limit,
-            'found_incident_ids': found_incidents
-        }
-    else:
-        new_last_run = {
-            'time': start_fetch_time,
-            'limit': last_run.get('limit') + fetch_limit,
-            'found_incident_ids': found_incidents
-        }
+    last_run.update(updated_last_run)
 
-    if save_remained_incidents_in_last_run:
-        new_last_run['remained_incidents'] = incidents_from_limit
-
-    return new_last_run, incidents
+    return last_run
 
 
 ###########################################
