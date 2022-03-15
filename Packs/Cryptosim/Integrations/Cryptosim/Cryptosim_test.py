@@ -28,7 +28,7 @@ def test_correlations_command(requests_mock):
         "Content-Type": "application/json",
         'Authorization': authValue
     }
-    client = Client(base_url="https://test.com",verify=False,headers=headersproxy=False)
+    client = Client(base_url="https://test.com",verify=False,headers=headers, proxy=False)
 
     results = correlations_command(client)
     assert results.outputs.keys() == ['StatusCode', 'Data', 'OutParameters']
