@@ -2,15 +2,14 @@ id: Endpoint Investigation Plan
 version: -1
 name: Endpoint Investigation Plan
 description: |-
-  This playbook handles all the endpoint investigation actions available with XSIAM.
-  The playbook allows to investigate and hunt for more information using one of the following tasks:
+  This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:
   * Pre-defined MITRE Tactics
   * Host fields (Host ID)
   * Attacker fields (Attacker IP, External host)
   * MITRE techniques
-  * File hash (currently, the playbook supports only SHA256)
+  * File hash (currently, the playbook supports only SHA256)  
 
-  The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+  Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
 starttaskid: "0"
 tasks:
   "0":
@@ -51,7 +50,7 @@ tasks:
       id: 81e61b1f-bd6c-4751-856d-c11bdd35354f
       version: -1
       name: Should hunt for Discovery techniques?
-      description: Whether to hunt for discovery techniques or not.
+      description: Whether to hunt for discovery techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -95,7 +94,7 @@ tasks:
       id: 26f1e9ec-dddf-454a-8d1c-e770f7a0a4d7
       version: -1
       name: Should hunt for Persistence techniques?
-      description: Whether to hunt for persistence techniques or not.
+      description: Whether to hunt for persistence techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -140,7 +139,7 @@ tasks:
       id: 6631c326-a3b2-4bf9-859e-e7718e61eb1e
       version: -1
       name: Should hunt for Initial Access techniques?
-      description: Whether to hunt for initial access techniques or not.
+      description: Whether to hunt for initial access techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -185,7 +184,7 @@ tasks:
       id: 018c1cab-9901-43fa-8995-ee0325036bcb
       version: -1
       name: Should hunt for Privilege Escalation techniques?
-      description: Whether to hunt for privilege escalation techniques or not.
+      description: Whether to hunt for privilege escalation techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -230,7 +229,7 @@ tasks:
       id: baa1e20f-4b89-4ef2-86e4-2eaf12d733c2
       version: -1
       name: Should hunt for Defense Evasion techniques?
-      description: Whether to hunt for defense evasion techniques or not.
+      description: Whether to hunt for defense evasion techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -275,7 +274,7 @@ tasks:
       id: 6daefce0-8773-4e2b-84c0-c298adf12464
       version: -1
       name: Should hunt for Execution techniques?
-      description: Whether to hunt for execution techniques or not.
+      description: Whether to hunt for execution techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -320,7 +319,7 @@ tasks:
       id: b0f80114-76f0-4a92-8e6c-b74f4ee31de6
       version: -1
       name: Should hunt for Lateral Movement techniques?
-      description: Whether to hunt for lateral movement techniques or not.
+      description: Whether to hunt for lateral movement techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -365,7 +364,7 @@ tasks:
       id: 87c3bced-78d4-49ce-83a9-e99b8df241e3
       version: -1
       name: Should hunt for Collection techniques?
-      description: Whether to hunt for collection techniques or not.
+      description: Whether to hunt for collection techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -410,7 +409,7 @@ tasks:
       id: 09238f4e-5ee7-498b-893b-1cce9fb3c997
       version: -1
       name: Should investigate by attacker fields?
-      description: Whether to hunt by the attacker indicators or not.
+      description: Whether to hunt by the attacker indicators.
       type: condition
       iscommand: false
       brand: ""
@@ -467,7 +466,7 @@ tasks:
       id: c896ea76-878a-43f4-80bd-5d5be9f46fc2
       version: -1
       name: Should hunt by host fields?
-      description: Whether to hunt by the host fields or not.
+      description: Whether to hunt by the host fields.
       type: condition
       iscommand: false
       brand: ""
@@ -529,7 +528,7 @@ tasks:
       id: 7553edad-1b98-4459-834c-07f66fe82731
       version: -1
       name: Should investigate by MITRE techniques?
-      description: Whether to hunt by MITRE technique or not.
+      description: Whether to hunt by MITRE technique.
       type: condition
       iscommand: false
       brand: ""
@@ -580,7 +579,7 @@ tasks:
       id: d2a6e731-c4f1-4e1c-8cfe-ff42b7726e8a
       version: -1
       name: Should investigate by file hash?
-      description: Whether to hunt by file hash or not.
+      description: Whether to hunt by file hash.
       type: condition
       iscommand: false
       brand: ""
@@ -940,7 +939,7 @@ tasks:
       id: 1ff80560-73b2-4e6d-8713-fdbddb0c8958
       version: -1
       name: Should hunt for CnC techniques?
-      description: Whether to hunt for command and control techniques or not.
+      description: Whether to hunt for command and control techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -985,7 +984,7 @@ tasks:
       id: 21f9942f-6dd3-426f-8e9a-eb3ae3a2fb4b
       version: -1
       name: Should hunt for Impact techniques?
-      description: Whether to hunt for impact techniques or not.
+      description: Whether to hunt for impact techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -1090,7 +1089,7 @@ tasks:
       id: 9cd16df8-9f8c-4040-81e9-345ffb028daf
       version: -1
       name: Should hunt for suspicious Reconnaissance techniques?
-      description: Whether to hunt for reconnaissance techniques or not.
+      description: Whether to hunt for reconnaissance techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -1166,7 +1165,7 @@ tasks:
       version: -1
       name: Hunt Reconnaissance techniques
       description: |-
-        Searches Demisto incidents.
+        Searches Cortex XSOAR incidents.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
@@ -1208,7 +1207,7 @@ tasks:
       version: -1
       name: Hunt Initial Access techniques
       description: |-
-        Searches Demisto incidents.
+        Searches Cortex XSOAR incidents.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
@@ -1969,88 +1968,88 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Boolean. Set to 'true' if you want to hunt for identified alerts with MITRE Reconnaissance techniques.
+  description: Set to True to hunt for identified alerts with MITRE Reconnaissance techniques.
   playbookInputQuery:
 - key: HuntInitialAccessTechniques
   value:
     simple: "True"
   required: false
-  description: Boolean. Set to 'true' if you want to hunt for identified alerts with MITRE Access techniques.
+  description: Set to True to hunt for identified alerts with MITRE Access techniques.
   playbookInputQuery:
 - key: HuntExecutionTechniques
   value:
     simple: "True"
   required: false
-  description: Boolean. Set to 'true' if you want to hunt for identified alerts with MITRE Execution techniques.
+  description: Set to True to hunt for identified alerts with MITRE Execution techniques.
   playbookInputQuery:
 - key: HuntPersistenceTechniques
   value:
     simple: "True"
   required: false
-  description: Boolean. Set to 'true' if you want to hunt for identified alerts with MITRE Persistence techniques.
+  description: Set to True to hunt for identified alerts with MITRE Persistence techniques.
   playbookInputQuery:
 - key: HuntPrivilegeEscalationTechniques
   value:
     simple: "True"
   required: false
-  description: Boolean. Set to 'true' if you want to hunt for identified alerts with MITRE Privilege Escalation techniques.
+  description: Set to True to hunt for identified alerts with MITRE Privilege Escalation techniques.
   playbookInputQuery:
 - key: HuntDefenseEvasionTechniques
   value:
     simple: "True"
   required: false
-  description: Boolean. Set to 'true' if you want to hunt for identified alerts with MITRE Defense Evasion techniques.
+  description: Set to True to hunt for identified alerts with MITRE Defense Evasion techniques.
   playbookInputQuery:
 - key: HuntDiscoveryTechniques
   value:
     simple: "True"
   required: false
-  description: Boolean. Set to 'true' if you want to hunt for identified alerts with MITRE Discovery techniques.
+  description: Set to True to hunt for identified alerts with MITRE Discovery techniques.
   playbookInputQuery:
 - key: HuntLateralMovementTechniques
   value:
     simple: "True"
   required: false
-  description: Boolean. Set to 'true' if you want to hunt for identified alerts with MITRE Lateral Movement techniques.
+  description: Set to True to hunt for identified alerts with MITRE Lateral Movement techniques.
   playbookInputQuery:
 - key: HuntCollectionTechniques
   value:
     simple: "True"
   required: false
-  description: Boolean. Set to 'true' if you want to hunt for MITRE Collection techniques identified alerts.
+  description: Set to True to hunt for MITRE Collection techniques identified alerts.
   playbookInputQuery:
 - key: HuntCnCTechniques
   value:
     simple: "True"
   required: false
-  description: Boolean. Set to 'true' if you want to hunt for identified alerts with MITRE Command and Control techniques.
+  description: Set to True to hunt for identified alerts with MITRE Command and Control techniques.
   playbookInputQuery:
 - key: HuntImpactTechniques
   value:
     simple: "True"
   required: false
-  description: Boolean. Set to 'true' if you want to hunt for identified alerts with MITRE Impact techniques.
+  description: Set to True to hunt for identified alerts with MITRE Impact techniques.
   playbookInputQuery:
 - key: HuntAttacker
   value: {}
   required: false
-  description: Boolean. Set to 'true' if you want to hunt the attacker IP address or external hostname.
+  description: Set to True to hunt the attacker IP address or external hostname.
   playbookInputQuery:
 - key: HuntByTechnique
   value: {}
   required: false
-  description: Boolean. Set to 'true' if you want to hunt by a specific MITRE technique.
+  description: Set to True to hunt by a specific MITRE technique.
   playbookInputQuery:
 - key: HuntByHost
   value: {}
   required: false
-  description: Boolean. Set to 'true' if you want to hunt by the endpoint ID. The agentID input must be provided as well.
+  description: Set to True to hunt by the endpoint ID. The agentID input must be provided as well.
   playbookInputQuery:
 - key: HuntByFile
   value: {}
   required: false
   description: |-
-    Boolean. Set to 'true' if you want to hunt by a specific file hash.
+    Boolean. Set to True to hunt by a specific file hash.
     Supports SHA256.
   playbookInputQuery:
 - key: agentID
@@ -2062,29 +2061,29 @@ inputs:
 - key: attackerRemoteIP
   value: {}
   required: false
-  description: The IP address of the attacker. The 'HuntAttacker' inputs should also be set to 'true'.
+  description: The IP address of the attacker. The 'HuntAttacker' inputs should also be set to True.
   playbookInputQuery:
 - key: attackerExternalHost
   value: {}
   required: false
-  description: The external host used by the attacker. The 'HuntAttacker' inputs should also be set to 'true'.
+  description: The external host used by the attacker. The 'HuntAttacker' inputs should also be set to True.
   playbookInputQuery:
 - key: mitreTechniqueID
   value: {}
   required: false
-  description: A MITRE technique identifier. The 'HuntByTechnique' inputs should also be set to 'true'.
+  description: A MITRE technique identifier. The 'HuntByTechnique' inputs should also be set to True.
   playbookInputQuery:
 - key: FileSHA256
   value: {}
   required: false
-  description: The file SHA256. The 'HuntByFile' inputs should also be set to 'true'.
+  description: The file SHA256. The 'HuntByFile' inputs should also be set to True.
   playbookInputQuery:
 - key: timeRange
   value:
     simple: 24 hours ago
   required: false
   description: |-
-    A time range to execute the hunting over.
+    A time range to execute the hunting in.
     The input should be in the following format:
     * 1 day ago
     * 2 minutes ago
