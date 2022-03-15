@@ -126,7 +126,7 @@ def cve_command(client: Client, args: dict) -> Union[List[CommandResults], Comma
                 outputs_key_field='ID',
                 outputs=data,
                 raw_response=response,
-                indicator=indicator
+                indicator=indicator,
             )
         command_results.append(cr)
 
