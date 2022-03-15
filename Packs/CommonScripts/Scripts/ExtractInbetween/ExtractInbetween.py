@@ -35,12 +35,12 @@ def extract_inbetween(value: str, start: str, end: str) -> str:
 def main():
     args = demisto.args()
     value = args.get('value')
-    start = args.get('start')
-    end = args.get('end')
-    #try:
-    return_results(extract_inbetween(value, start, end))
-    #except Exception as err:
-    #    return_error(f"An error occurred - {err}")
+    start = args.get('from')
+    end = args.get('to')
+    try:
+        return_results(extract_inbetween(value, start, end))
+    except Exception as err:
+        return_error(f"An error occurred - {err}")
 
 
 if __name__ in ["__main__", "__builtin__", "builtins"]:
