@@ -6408,7 +6408,7 @@ class ConcurrentCommandRunner:
     """
     class CommandExecuter:
         """
-        Class for the needed data to execute a command.
+        Data class with the data required to execute a command.
 
         :return: None
         :rtype: ``None``
