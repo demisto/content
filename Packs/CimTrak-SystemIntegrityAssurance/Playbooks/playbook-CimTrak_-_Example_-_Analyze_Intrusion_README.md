@@ -33,6 +33,3 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-## Playbook Image
----
-![CimTrak - Example - Analyze Intrusion](Insert the link to your image here)

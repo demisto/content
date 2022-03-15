@@ -1,21 +1,17 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
     propagationLabels:
     - all
-    toServerVersion: ""
 id: CimTrak - Example - Scan Compliance By IP
 inputs:
 - description: ""
   key: IP
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: ::ffff:127.0.0.1
 name: CimTrak - Example - Scan Compliance By IP
 outputs: []
-sourceplaybookid: cab75012-c8d7-4563-8df9-5f4a6b39b14d
 starttaskid: "0"
 tasks:
   "0":
@@ -36,6 +32,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 858b1aac-8b0d-441c-870f-1b8152034805
     timertriggers: []
     type: start
@@ -162,3 +159,7 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: Example on how to run a compliance scan for an agent based on IP address

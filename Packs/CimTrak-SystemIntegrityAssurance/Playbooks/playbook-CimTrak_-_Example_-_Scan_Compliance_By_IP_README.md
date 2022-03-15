@@ -28,6 +28,3 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-## Playbook Image
----
-![CimTrak - Example - Scan Compliance By IP](Insert the link to your image here)

@@ -48,15 +48,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 25043b93-4265-49a0-8858-04aed0ec4edd
-    propagationLabels: []
-    toServerVersion: ""
-description: The CimTrak integration helps you detect unexpected system/device/config
-  modifications and automatically respond/react to threats
+description: The CimTrak integration helps you detect unexpected system/device/config modifications and automatically respond/react to threats
 display: CimTrak - System Integrity Assurance
 name: CimTrak
 script:
@@ -252,8 +244,7 @@ script:
   - arguments:
     - description: The array of file hashes to check against the trusted file registry.
       name: Hashes
-    description: "Description\r\nIssues a request to check a list of files (specified\
-      \ by hashes) against the trusted file registry."
+    description: "Description\r\nIssues a request to check a list of files (specified by hashes) against the trusted file registry."
     name: check-file-against-trusted-file-registry-by-hash
     outputs:
     - contextPath: CommandStatus.status
@@ -271,8 +262,7 @@ script:
   - arguments:
     - description: Array of object detail IDs of file to check IE:42,43
       name: ObjectDetaildIds
-    description: This function sets a file (or list of files) as the authoritative
-      baseline.
+    description: This function sets a file (or list of files) as the authoritative baseline.
     name: promote-authoritative-baseline-files
     outputs:
     - contextPath: CommandStatus.status
@@ -299,8 +289,7 @@ script:
   - arguments:
     - description: Array of object detail IDs of file to check IE:42,43
       name: ObjectDetaildIds
-    description: This function removes a file (or list of files) from being the authoritaive
-      baseline.
+    description: This function removes a file (or list of files) from being the authoritaive baseline.
     name: demote-authoritative-baseline-files
     outputs:
     - contextPath: CommandStatus.status
@@ -321,11 +310,9 @@ script:
   - arguments:
     - description: Task ID
       name: taskId
-    - description: 'The requested disposition of the specified task. Valid dispositions
-        are: ["COMPLETED", "REJECTED", "ASSIGNED"]'
+    - description: 'The requested disposition of the specified task. Valid dispositions are: ["COMPLETED", "REJECTED", "ASSIGNED"]'
       name: Disposition
-    description: Updates the tasks specified in taskIdArray to the disposition specified
-      in the disposition parameter.
+    description: Updates the tasks specified in taskIdArray to the disposition specified in the disposition parameter.
     name: update-task-disposition
     outputs:
     - contextPath: CommandStatus.status
@@ -344,8 +331,7 @@ script:
       description: Status
       type: string
   - arguments: []
-    description: This function gets ticket information from  a CimTrak Master Repository.
-      This function returns an array of ticket objects.
+    description: This function gets ticket information from  a CimTrak Master Repository. This function returns an array of ticket objects.
     name: get-tickets
     outputs:
     - contextPath: CommandStatus.status
@@ -439,8 +425,7 @@ script:
       description: Ticket events
       type: string
   - arguments: []
-    description: This function gets ticket task information from  a CimTrak Master
-      Repository. This function returns an array of ticket task objects.
+    description: This function gets ticket task information from  a CimTrak Master Repository. This function returns an array of ticket task objects.
     name: get-ticket-tasks
     outputs:
     - contextPath: CommandStatus.status
@@ -542,9 +527,7 @@ script:
       description: A priority from 1-5
       name: priority
     - name: description
-    - description: Either both start date must be valid and startDate < endDate OR
-        they must both be blank (no dates) - if not supplied, we will fallback to
-        the ticket dates
+    - description: Either both start date must be valid and startDate < endDate OR they must both be blank (no dates) - if not supplied, we will fallback to the ticket dates
       name: startDate
     - name: endDate
     - description: For integration with external ticketing systems.
@@ -554,25 +537,19 @@ script:
     - defaultValue: "false"
       description: Associated events will get promoted to the Authoritative Baseline
       name: autoPromote
-    - description: This value is defaulted.  If you are admin then "ASSIGNED", else
-        "AWAITING_APPROVAL"
+    - description: This value is defaulted.  If you are admin then "ASSIGNED", else "AWAITING_APPROVAL"
       name: disposition
     - defaultValue: "false"
-      description: Non admins can create tickets for themselves only and in that case
-        this value is replaced with "false".  If an admin creates a ticket, the passed
-        value is used, otherwise default to "false".
+      description: Non admins can create tickets for themselves only and in that case this value is replaced with "false".  If an admin creates a ticket, the passed value is used, otherwise default to "false".
       name: requiresAcknowledgement
     - defaultValue: "false"
-      description: Non admins can create tickets for themselves only and in that case
-        this value is replaced with "true".  If an admin creates a ticket, the passed
-        value is used, otherwise the default is "true".
+      description: Non admins can create tickets for themselves only and in that case this value is replaced with "true".  If an admin creates a ticket, the passed value is used, otherwise the default is "true".
       name: requiresAssessment
     - defaultValue: "false"
       description: Requires confirmation
       name: requiresConfirmation
     - defaultValue: "0"
-      description: These 4 values are taken as a set and only one value will get used.  Here
-        is their priority order
+      description: These 4 values are taken as a set and only one value will get used.  Here is their priority order
       name: assignedToUserId
     - name: assignedToUser
     - defaultValue: "0"
@@ -807,8 +784,7 @@ script:
       description: Ticket events
       type: string
   - arguments:
-    - description: Either ticketId or taskId will be 0.  A comment is added either
-        at the ticket level or the task level.
+    - description: Either ticketId or taskId will be 0.  A comment is added either at the ticket level or the task level.
       name: ticketId
     - description: 'Some Comment '
       name: comment
@@ -951,8 +927,7 @@ script:
   - arguments:
     - description: Object Id
       name: objectId
-    description: Returns the subGenerations for an object group (specified by object
-      ID.
+    description: Returns the subGenerations for an object group (specified by object ID.
     name: get-sub-generations
     outputs:
     - contextPath: CommandStatus.status
@@ -1010,8 +985,7 @@ script:
       name: subGenerationId
     - description: Notes
       name: notes
-    description: Deploys a specific version of an object group.  All existing files
-      will be overwritten with the specified set.
+    description: Deploys a specific version of an object group.  All existing files will be overwritten with the specified set.
     name: deploy
     outputs:
     - contextPath: CommandStatus.status
@@ -1026,8 +1000,7 @@ script:
   - arguments:
     - description: Object Id
       name: objectId
-    description: This function returns an entire data structure describing an object
-      group.
+    description: This function returns an entire data structure describing an object group.
     name: get-object-group
     outputs:
     - contextPath: CommandStatus.status
@@ -1303,8 +1276,7 @@ script:
   - arguments:
     - description: Object Detail Id
       name: objectDetailId
-    description: This function returns the contents of the requested file encoded
-      in base64.
+    description: This function returns the contents of the requested file encoded in base64.
     name: view-file
     outputs:
     - contextPath: CommandStatus.status
@@ -1326,9 +1298,7 @@ script:
       name: objectId
     - description: Parameters for report
       name: ReportParameters
-    description: This function runs the report specified by the report name. The report
-      name can be obtained from the getReportHeaders API. The report's parameters
-      can be obtained from the getReportArguments API.
+    description: This function runs the report specified by the report name. The report name can be obtained from the getReportHeaders API. The report's parameters can be obtained from the getReportArguments API.
     name: run-report-by-name
     outputs:
     - contextPath: CommandStatus.status
@@ -1366,8 +1336,7 @@ script:
     - defaultValue: "-1"
       description: 'The record ID of the compliance scan. '
       name: ComplianceScanId
-    description: This function returns the benchmarks and/or compliance mappings for
-      the complance policy specified by the object ID.
+    description: This function returns the benchmarks and/or compliance mappings for the complance policy specified by the object ID.
     name: get-current-compliance-items
     outputs:
     - contextPath: CommandStatus.status
@@ -2326,3 +2295,6 @@ script:
   script: ''
   subtype: python3
   type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
