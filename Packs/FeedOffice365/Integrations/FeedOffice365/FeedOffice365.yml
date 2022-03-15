@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Office 365 Feed
+  id: Office 365 Feed - Test
   version: -1
 configuration:
 - display: Fetch indicators
@@ -113,8 +113,8 @@ description: The Office 365 IP Address and URL web service is a read-only API pr
   integration fetches indicators from the service, with which you can create a list
   (allow list, block list, EDL, etc.) for your SIEM or firewall service to ingest and
   apply to its policy rules.
-display: Office 365 Feed
-name: Office 365 Feed
+display: Office 365 Feed - Test
+name: Office 365 Feed - Test
 script:
   commands:
   - arguments:
