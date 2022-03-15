@@ -100,7 +100,7 @@ class Client(BaseClient):
         """
         data = {"limit": limit, "select": INCIDENTS_LIST_BODY}
         if creation_date or status_id or severity or incident_type:
-            data['filter']: Dict[str, Any] = {"booleanOperator": "AND", "filterType": "booleanLogic", "filters": []}
+            data['filter'] = {"booleanOperator": "AND", "filterType": "booleanLogic", "filters": []}
             if creation_date:
                 data['filter']['filters'].append(  # type: ignore
                     create_filter_dict(filter_type="localDateTime", filter_by="creationDate",
@@ -504,19 +504,21 @@ def get_readable_output_incident_history(incident_history_list: List[dict]):
 
 def get_context_incident_history(incident_history_list: List[dict]):
     history_context = []
-    incident_id = str(incident_history_list[0].get('incidentId'))
+    incident_id = arg_to_number(incident_history_list[0].get('incidentId'))
     for incident_history in incident_history_list:
         incident_history.pop('incidentId')
         incident_history.pop('incidentHistoryActionI18nKey')
         incident_history.pop('internationalized')
-    history_context.append({"incidentId": incident_id, "incidentHistory": incident_history_list})
+    history_context.append({"ID": incident_id, "incidentHistory": incident_history_list})
 
     return history_context
 
 
-def create_update_body(incident_id: Optional[int], data_owner_email: str, data_owner_name: str, note: str,
-                       incident_status_id: str, remediation_status_name: str, remediation_location: str, severity: str,
-                       custom_attributes: List[str]):
+def create_update_body(incident_id: Optional[int], data_owner_email: str = None, data_owner_name: str = None,
+                       note: str = None,
+                       incident_status_id: str = None, remediation_status_name: str = None,
+                       remediation_location: str = None,
+                       severity: str = None, custom_attributes: List[str] = None):
     data: Dict[str, Any] = {
         "incidentIds": [incident_id],
     }
@@ -574,7 +576,7 @@ def get_incident_details_fetch(client, incident):
                                                        incident_type=incident_type)
     # In case of getting 401 (Unauthorized incident) - will get missing data
     except DemistoException as e:
-        if '401' in str(e.res):
+        if '401' in str(e):
             incident_details = get_details_unauthorized_incident(incident)
     return incident_details
 
@@ -697,20 +699,19 @@ def get_incident_details_command(client: Client, args: Dict[str, Any]):
             outputs=incident_details,
         )
     except DemistoException as e:
-        if '401' in str(e.res):
-            return_error(f"Error {e.res}: Incident access not authorized or the incident does not exist.")
+        if '401' in str(e):
+            raise DemistoException(f"Error 401: Incident access not authorized or the incident does not exist. {e.res}")
         else:
-            return_error(f"Error {e.res}")
+            raise DemistoException(f"Error {e.res}")
 
 
 def list_incident_status_command(client: Client) -> CommandResults:
     incidents_status_result = client.get_incidents_status_request()
-    list_incidents_status_hr = get_hr_context_incidents_status(incidents_status_result)
 
     return CommandResults(
         readable_output=tableToMarkdown(
             "Symantec DLP incidents status",
-            camelize(list_incidents_status_hr),
+            camelize(incidents_status_result),
             removeNull=True,
         ),
         outputs_prefix='SymantecDLP.IncidentStatus',
@@ -797,12 +798,12 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
 
     incidents = []
     if incident_severities:
-        incident_severities = [INCIDENT_SEVERITY_MAPPING[severity] for severity in incident_severities]  # type: ignore
+        incident_severities = [INCIDENT_SEVERITY_MAPPING[severity] for severity in incident_severities]
     if incident_types:
         incident_types = [INCIDENT_TYPE_MAPPING[incident_type] for incident_type in incident_types]
     incidents_data_list = client.get_incidents_request(creation_date=last_update_time, status_id=incident_status_id,
-                                                       severity=incident_severities, incident_type=incident_types,
-                                                       limit=fetch_limit, order_by="ASC")
+                                                       severity=incident_severities,  # type: ignore
+                                                       incident_type=incident_types, limit=fetch_limit, order_by="ASC")
     incidents_data_list = incidents_data_list.get('incidents', [])
     if incidents_data_list:
 

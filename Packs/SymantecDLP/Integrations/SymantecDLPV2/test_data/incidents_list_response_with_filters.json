@@ -13,7 +13,7 @@
             "policyId": 2,
             "detectionDate": "2022-03-06T09:23:41.46",
             "detectionServerId": 1,
-            "senderIPAddress": "172.31.25.150",
+            "senderIPAddress": "1.1.1.1",
             "incidentId": 3616,
             "severityId": 2,
             "incidentStatusId": 21
@@ -31,7 +31,7 @@
             "policyId": 41,
             "detectionDate": "2022-03-06T09:23:41.46",
             "detectionServerId": 1,
-            "senderIPAddress": "172.31.25.150",
+            "senderIPAddress": "1.1.1.1",
             "incidentId": 3615,
             "severityId": 1,
             "incidentStatusId": 21

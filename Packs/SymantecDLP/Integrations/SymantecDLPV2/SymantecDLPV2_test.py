@@ -175,6 +175,187 @@ def test_parse_creation_date(creation_date, expected_result):
     assert parse_creation_date(creation_date) == expected_result
 
 
+def test_create_update_body():
+    """
+    Given
+    - Arguments to update in the incident.
+    When
+    - Run create_update_body function
+    Then
+    - Ensure the body is created successfully
+    """
+    from SymantecDLPV2 import create_update_body
+
+    update_body = create_update_body(incident_id=3620, data_owner_email='testing@gmail.com', note='test note',
+                                     custom_attributes=['1:test'])
+    assert update_body == {'incidentIds': [3620], 'dataOwnerEmail': 'testing@gmail.com',
+                           'incidentNotes': [{'note': 'test note'}],
+                           'incidentCustomAttributes': [{'columnIndex': 1, 'value': 'test'}]}
+
+
+# COMMANDS UNITESTS
+
+
+def test_get_incidents_list_command(mocker):
+    """
+    Given
+    - Get incidents command with no arguments.
+    When
+    - Run get incidents list command
+    Then
+    - Ensure response
+    """
+    from SymantecDLPV2 import Client, list_incidents_command
+
+    client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
+                    headers={"Content-type": "application/json"})
+    args = {}
+    mock_response = util_load_json('test_data/incidents_list_response.json')
+
+    mocker.patch.object(client, 'get_incidents_request', return_value=mock_response)
+
+    incidents_response = list_incidents_command(client, args)
+    expected_response = util_load_json('test_data/incidents_list_context.json')
+    assert incidents_response.outputs == expected_response
+
+
+def test_get_incidents_list_command_with_filters(mocker):
+    """
+    Given
+    - Get incidents command with arguments.
+    When
+    - Run get incidents list command
+    Then
+    - Ensure response
+    """
+    from SymantecDLPV2 import Client, list_incidents_command
+
+    client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
+                    headers={"Content-type": "application/json"})
+    args = {'severity': 'High, Medium', 'status_id': '21, 42'}
+    mock_response = util_load_json('test_data/incidents_list_response_with_filters.json')
+
+    mocker.patch.object(client, 'get_incidents_request', return_value=mock_response)
+
+    incidents_response = list_incidents_command(client, args)
+    expected_response = util_load_json('test_data/incidents_list_context_with_filters.json')
+    assert incidents_response.outputs == expected_response
+
+
+def test_get_incident_details_command(mocker):
+    """
+    Given
+    - Get incidents details.
+    When
+    - Run get incident details command
+    Then
+    - Ensure response
+    """
+    from SymantecDLPV2 import Client, get_incident_details_command
+
+    client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
+                    headers={"Content-type": "application/json"})
+    args = {'incident_id': '3620', 'custom_attributes': 'all'}
+    static_mock_response = util_load_json('test_data/incident_static_attributes_first.json')
+    editable_mock_response = util_load_json('test_data/incident_editable_attributes_first.json')
+
+    mocker.patch.object(client, 'get_incident_static_attributes_request', return_value=static_mock_response)
+    mocker.patch.object(client, 'get_incident_editable_attributes_request', return_value=editable_mock_response)
+
+    incidents_response = get_incident_details_command(client, args)
+    expected_response = util_load_json('test_data/incident_details_context.json')
+    assert incidents_response.outputs == expected_response
+
+
+def test_get_incident_details_unauthorized_command(mocker):
+    """
+    Given
+    - Get incidents details.
+    When
+    - Run get incident details commandnfailed on 401 error
+    Then
+    - Ensure getting error
+    """
+    from SymantecDLPV2 import Client, get_incident_details_command
+
+    client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
+                    headers={"Content-type": "application/json"})
+    args = {'incident_id': '3620', 'custom_attributes': 'all'}
+    mock_response = util_load_json('test_data/incident_details_error.json')
+    mocker.patch.object(client, '_http_request', side_effect=DemistoException(mock_response, res=mock_response))
+
+    with pytest.raises(DemistoException):
+        get_incident_details_command(client, args)
+
+
+def test_list_incident_status_command(mocker):
+    """
+    Given
+    - Get incidents status command
+    When
+    - Run get incidents status command
+    Then
+    - Ensure response
+    """
+    from SymantecDLPV2 import Client, list_incident_status_command
+
+    client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
+                    headers={"Content-type": "application/json"})
+    mock_response = util_load_json('test_data/incidents_status_response.json')
+
+    mocker.patch.object(client, 'get_incidents_status_request', return_value=mock_response)
+
+    incidents_response = list_incident_status_command(client)
+    expected_response = util_load_json('test_data/incidents_status_context.json')
+    assert incidents_response.outputs == expected_response
+
+
+def test_get_incident_history_command(mocker):
+    """
+    Given
+    - Get incident history command with arguments.
+    When
+    - Run get incident history command
+    Then
+    - Ensure response
+    """
+    from SymantecDLPV2 import Client, get_incident_history_command
+
+    client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
+                    headers={"Content-type": "application/json"})
+    args = {'incident_id': '3536'}
+
+    mock_response = util_load_json('test_data/incident_history_response.json')
+
+    mocker.patch.object(client, 'get_incident_history_request', return_value=mock_response)
+
+    history_response = get_incident_history_command(client, args)
+    expected_response = util_load_json('test_data/incident_history_context.json')
+    assert history_response.outputs == expected_response
+
+
+def test_get_list_remediation_status(mocker):
+    """
+    Given
+    - Get remediation status command
+    When
+    - Run get remediation status command
+    Then
+    - Ensure response
+    """
+    from SymantecDLPV2 import Client, get_list_remediation_status
+
+    client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
+                    headers={"Content-type": "application/json"})
+    mock_response = util_load_json('test_data/remediation_status_response.json')
+
+    mocker.patch.object(client, 'get_list_remediation_status_request', return_value=mock_response)
+
+    incidents_response = get_list_remediation_status(client)
+    expected_response = util_load_json('test_data/remediation_status_context.json')
+    assert incidents_response.outputs == expected_response
+
+
 @freeze_time("2022-03-07T13:34:14Z")
 def test_fetch_incidents__single(requests_mock):
     """Tests the fetch-incidents function single incident
@@ -305,76 +486,37 @@ def test_fetch_incidents__last_run_no_fetch(requests_mock):
     assert len(incidents) == 0
 
 
-# COMMANDS UNITESTS
-
-
-def test_get_incidents_list_command(mocker):
+def test_get_incident_details_fetch(mocker):
     """
-    Given
-    - Get incidents command with no arguments.
-    When
-    - Run get incidents list command
-    Then
-    - Ensure response
+    Given:
+        Fetch incident with 401 error
+    When:
+        Fetching incidents
+    Then:
+        Make sure that the fetch is not getting an error and return partial data on this incident.
     """
-    from SymantecDLPV2 import Client, list_incidents_command
+    from SymantecDLPV2 import Client, get_incident_details_fetch
+    incident_data = {
+        "policyVersion": 4,
+        "messageType": "HTTP",
+        "policyId": 2,
+        "detectionDate": "2022-03-06T15:23:39.197",
+        "messageTypeId": 3,
+        "messageSource": "NETWORK",
+        "detectionServerId": 1,
+        "matchCount": 3,
+        "severityId": 1,
+        "creationDate": "2022-03-06T15:23:53.245",
+        "incidentId": 3620,
+        "incidentStatusId": 1
+    }
+    mock_response = util_load_json('test_data/incident_details_error.json')
 
-    client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
+    client = Client(base_url="https://SymantecDLPV2.com", auth=("test", "pass"), verify=False, proxy=False,
                     headers={"Content-type": "application/json"})
-    args = {}
-    mock_response = util_load_json('test_data/incidents_list_response.json')
-
-    mocker.patch.object(client, 'get_incidents_request', return_value=mock_response)
-
-    incidents_response = list_incidents_command(client, args)
-    expected_response = util_load_json('test_data/incidents_list_context.json')
-    assert incidents_response.outputs == expected_response
-
-
-def test_get_incidents_list_command_with_filters(mocker):
-    """
-    Given
-    - Get incidents command with arguments.
-    When
-    - Run get incidents list command
-    Then
-    - Ensure response
-    """
-    from SymantecDLPV2 import Client, list_incidents_command
-
-    client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
-                    headers={"Content-type": "application/json"})
-    args = {'severity': 'High, Medium', 'status_id': '21, 42'}
-    mock_response = util_load_json('test_data/incidents_list_response_with_filters.json')
-
-    mocker.patch.object(client, 'get_incidents_request', return_value=mock_response)
-
-    incidents_response = list_incidents_command(client, args)
-    expected_response = util_load_json('test_data/incidents_list_context_with_filters.json')
-    assert incidents_response.outputs == expected_response
-
-
-def test_get_incident_details_command(mocker):
-    """
-    Given
-    - Get incidents details.
-    When
-    - Run get incident details command
-    Then
-    - Ensure response
-    """
-    from SymantecDLPV2 import Client, get_incident_details_command
-
-    client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
-                    headers={"Content-type": "application/json"})
-    args = {'incident_id': '3620', 'custom_attributes': 'all'}
-    static_mock_response = util_load_json('test_data/incident_static_attributes_first.json')
-    editable_mock_response = util_load_json('test_data/incident_editable_attributes_first.json')
-
-    mocker.patch.object(client, 'get_incident_static_attributes_request', return_value=static_mock_response)
-    mocker.patch.object(client, 'get_incident_editable_attributes_request', return_value=editable_mock_response)
-
-    incidents_response = get_incident_details_command(client, args)
-    expected_response = util_load_json('test_data/incident_details_context.json')
-    assert incidents_response.outputs == expected_response
-
+    mocker.patch.object(client, '_http_request', side_effect=DemistoException(mock_response, res=mock_response))
+    response = get_incident_details_fetch(client, incident_data)
+    assert response == {'ID': 3620, 'creationDate': '2022-03-06T15:23:53.245', 'policyId': 2, 'severityId': 'High',
+                        'incidentStatusId': 1, 'detectionDate': '2022-03-06T15:23:39.197', 'policyVersion': 4,
+                        'messageSource': 'NETWORK', 'messageType': 'HTTP', 'matchCount': 3,
+                        'description': 'Notice: Incident contains partial data only'}

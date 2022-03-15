@@ -350,15 +350,6 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "severity",
-                                "height": 22,
-                                "id": "73fb3620-9dfe-11ec-b0bb-29a4b916d4ff",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "sourcestatus",
                                 "height": 22,
                                 "id": "7c5c71d0-9dfe-11ec-b0bb-29a4b916d4ff",

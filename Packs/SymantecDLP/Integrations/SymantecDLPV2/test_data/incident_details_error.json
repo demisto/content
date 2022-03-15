@@ -1,0 +1,7 @@
+{
+  "status": 401,
+  "message": "Incident access not authorized or the incident does not exist.",
+  "i18nKey": {
+    "i18nKey": "incidentId.incident.not.authorized"
+  }
+}
