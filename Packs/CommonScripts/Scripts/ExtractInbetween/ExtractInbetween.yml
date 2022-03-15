@@ -18,6 +18,7 @@ args:
   description: The starting value.
 - name: end
   description: The ending value.
+  required: true
 scripttarget: 0
 subtype: python3
 runonce: false
