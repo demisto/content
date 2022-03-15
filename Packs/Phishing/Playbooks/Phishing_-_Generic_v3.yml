@@ -1,5 +1,7 @@
 id: Phishing - Generic v3
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Phishing - Generic v3
 description: "This playbook investigates and remediates a potential phishing incident. It engages with the user that triggered the incident while investigating the incident itself.\nNote: Final remediation tasks are always decided by a human analyst. "
 starttaskid: "0"
@@ -402,6 +404,9 @@ tasks:
         complex:
           root: incident
           accessor: emailcc
+      EmailFileToExtract:
+        complex:
+          root: inputs.EmailFileToExtract
       EmailFormat:
         complex:
           root: incident
@@ -432,13 +437,6 @@ tasks:
       GetOriginalEmail:
         complex:
           root: inputs.GetOriginalEmail
-      UserID:
-        complex:
-          root: incident
-          accessor: reporteremailaddress
-      EmailFileToExtract:
-        complex:
-          root: inputs.EmailFileToExtract
       MessageID:
         complex:
           root: incident
@@ -447,6 +445,10 @@ tasks:
         complex:
           root: incident
           accessor: emailsubject
+      UserID:
+        complex:
+          root: incident
+          accessor: reporteremailaddress
     separatecontext: true
     view: |-
       {
@@ -498,10 +500,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 1f47203a-c0b2-478d-84b1-87ac3e659604
+    taskid: f0a914bc-d536-4578-84f2-d001f9ea3b8f
     type: playbook
     task:
-      id: 1f47203a-c0b2-478d-84b1-87ac3e659604
+      id: f0a914bc-d536-4578-84f2-d001f9ea3b8f
       version: -1
       name: Search And Delete Emails - Generic v2
       description: 'This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations: * EWS * Office 365 * Gmail * Agari Phishing Defense'
@@ -533,7 +535,29 @@ tasks:
         simple: Search for potential phishing
       O365ExchangeLocation:
         complex:
-          root: inputs.O365ExchangeLocation
+          root: .
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              else:
+                value:
+                  simple: incident.reportedemailto
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.O365ExchangeLocation
+                iscontext: true
+              options: {}
+              rhs:
+                value:
+                  simple: All
+              then:
+                value:
+                  simple: All
       O365ExchangeLocationExclusion:
         complex:
           root: inputs.O365ExchangeLocationExclusion
@@ -542,6 +566,8 @@ tasks:
       SearchAndDeleteIntegration:
         complex:
           root: inputs.SearchAndDeleteIntegration
+      SearchThisWeek:
+        simple: "true"
       Subject:
         complex:
           root: incident
@@ -550,8 +576,6 @@ tasks:
         complex:
           root: incident
           accessor: emailto
-      SearchThisWeek:
-        simple: "true"
     separatecontext: true
     loop:
       iscommand: false
@@ -710,7 +734,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -277.5,
+          "x": -250,
           "y": 4180
         }
       }
@@ -755,7 +779,7 @@ tasks:
       {
         "position": {
           "x": 352.5,
-          "y": 4190
+          "y": 4180
         }
       }
     note: false
@@ -805,8 +829,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1000,
-          "y": 4190
+          "x": 950,
+          "y": 4180
         }
       }
     note: false
@@ -867,8 +891,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 690,
-          "y": 5030
+          "x": 670,
+          "y": 5040
         }
       }
     note: false
@@ -935,9 +959,9 @@ tasks:
       Email:
         complex:
           root: incident
+          accessor: reporteremailaddress
           transformers:
           - operator: uniq
-          accessor: reporteremailaddress
       InternalDomains:
         complex:
           root: inputs.InternalDomains
@@ -1715,7 +1739,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1000,
+          "x": 950,
           "y": 4765
         }
       }
@@ -1848,7 +1872,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1000,
+          "x": 950,
           "y": 4040
         }
       }
@@ -1908,7 +1932,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -277.5,
+          "x": -250,
           "y": 4040
         }
       }
@@ -2031,7 +2055,7 @@ tasks:
       id: 374e403a-75c8-456c-8ebf-e76f33c3d501
       version: -1
       name: Check Microsoft's Headers?
-      description: "Whether to check Microsoft's proprietary email headers."
+      description: Whether to check Microsoft's proprietary email headers.
       type: condition
       iscommand: false
       brand: ""
@@ -2147,7 +2171,7 @@ tasks:
       id: 80e1c4c2-b760-493f-8038-a5e7f9201cb2
       version: -1
       name: Detonate URL?
-      description: "Whether to detonate URLs in supported sandboxes."
+      description: Whether to detonate URLs in supported sandboxes.
       type: condition
       iscommand: false
       brand: ""
@@ -2192,10 +2216,10 @@ tasks:
       version: -1
       name: Predict Phishing URLs
       description: Predicts phishing URLs using a pre-trained model.
+      scriptName: DBotPredictURLPhishing
       type: regular
       iscommand: false
       brand: ""
-      scriptName: DBotPredictURLPhishing
     nexttasks:
       '#none#':
       - "84"
@@ -2610,30 +2634,16 @@ tasks:
       id: eb6d4a67-11c9-4fb1-825e-aeb5ad70dc57
       version: -1
       name: Check if original email was retrieved
-      description: ""
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "43"
       "yes":
       - "28"
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 352.5,
-          "y": 4460
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
     conditions:
     - label: "yes"
       condition:
@@ -2644,6 +2654,21 @@ tasks:
                 root: incident
                 accessor: reportedemailfrom
             iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 352.5,
+          "y": 4480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -2666,7 +2691,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 6140,
-        "width": 3212.5,
+        "width": 3162.5,
         "x": -1832.5,
         "y": -710
       }
@@ -2726,12 +2751,9 @@ inputs:
     This is only applicable if the SearchAndDeleteIntegration input is set to "O365".
   playbookInputQuery:
 - key: O365ExchangeLocation
-  value:
-    complex:
-      root: incident
-      accessor: emailto
+  value: {}
   required: false
-  description: The exchange location. Determines from where to search and delete emails using O365 playbooks. Use the value "All" to search all mailboxes, or use ${incident.emailto} to search and delete the email only from the recipient's inbox. Note - Searching all mailboxes may take a significant amount of time. - This input is used only when searching and deleting emails in O365 and only applies if the SearchAndDeleteIntegration input is set to O365.
+  description: The exchange location. Determines from where to search and delete emails using O365 playbooks. Use the value "All" to search all mailboxes. If no input provided, it will search and delete the email only from the recipient's mailboxes. Note - Searching all mailboxes may take a significant amount of time. This input is used only when searching and deleting emails in O365 and only applies if the SearchAndDeleteIntegration input is set to O365.
   playbookInputQuery:
 - key: O365AllowNotFoundSearchLocations
   value:
@@ -2822,6 +2844,3 @@ outputs: []
 tests:
 - Phishing v2 - Test - Incident Starter
 fromversion: 6.1.0
-contentitemexportablefields:
-  contentitemfields: {}
-system: true

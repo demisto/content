@@ -47,8 +47,7 @@ tasks:
       id: 0a7ca589-107b-48e4-8705-2becca697165
       version: -1
       name: Search And Delete Emails - EWS
-      description: This playbook searches EWS to identify and delete emails with similar
-        attributes of a malicious email.
+      description: This playbook searches EWS to identify and delete emails with similar attributes of a malicious email.
       playbookName: Search And Delete Emails - EWS
       type: playbook
       iscommand: false
@@ -109,7 +108,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1510
         }
       }
     note: false
@@ -121,10 +120,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 5d27f641-bdaf-47ba-8e33-f27ad29eff1a
+    taskid: b17bdcb8-c603-448c-8fd6-77bca91e7e2f
     type: playbook
     task:
-      id: 5d27f641-bdaf-47ba-8e33-f27ad29eff1a
+      id: b17bdcb8-c603-448c-8fd6-77bca91e7e2f
       version: -1
       name: O365 - Security And Compliance - Search And Delete
       description: |-
@@ -173,7 +172,7 @@ tasks:
       {
         "position": {
           "x": -380,
-          "y": 1230
+          "y": 1320
         }
       }
     note: false
@@ -191,9 +190,7 @@ tasks:
       id: 421d875d-ff1a-4808-8451-228e23cd6605
       version: -1
       name: In what integration should emails be searched and deleted?
-      description: Checks which integration and playbook should run the
-        search and delete action, by checking the SearchAndDeleteIntegration playbook
-        input.
+      description: Checks which integration and playbook should run the search and delete action, by checking the SearchAndDeleteIntegration playbook input.
       type: condition
       iscommand: false
       brand: ""
@@ -531,14 +528,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: d2db2ba7-3e13-47ce-8fd2-0842b89a386f
+    taskid: 7db64c69-57c5-4457-8779-2363bcdd4714
     type: condition
     task:
-      id: d2db2ba7-3e13-47ce-8fd2-0842b89a386f
+      id: 7db64c69-57c5-4457-8779-2363bcdd4714
       version: -1
       name: From where should emails be searched and deleted?
-      description: Checks whether a target to search and delete emails from was specified.
-        Determined by the O365ExchangeLocation playbook input.
+      description: Checks whether a target to search and delete emails from was specified. Determined by the O365ExchangeLocation playbook input.
       type: condition
       iscommand: false
       brand: ""
@@ -553,15 +549,18 @@ tasks:
     conditions:
     - label: Recipient's Mailbox
       condition:
-      - - operator: isEqualString
+      - - operator: greaterThan
           left:
             value:
               complex:
                 root: inputs.O365ExchangeLocation
+                transformers:
+                - operator: ExtractEmailTransformer
+                - operator: count
             iscontext: true
           right:
             value:
-              simple: SingleMailbox
+              simple: "0"
           ignorecase: true
     - label: All Mailboxes
       condition:
@@ -579,7 +578,7 @@ tasks:
       {
         "position": {
           "x": -770,
-          "y": 610
+          "y": 700
         }
       }
     note: false
@@ -597,9 +596,7 @@ tasks:
       id: 25801150-ef91-4ccc-8275-5ca5225fc857
       version: -1
       name: Manually decide where to search & delete the email
-      description: Allows the analyst to decide where to search for and delete the
-        email - from the recipient's mailbox, or from all available
-        mailboxes?
+      description: Allows the analyst to decide where to search for and delete the email - from the recipient's mailbox, or from all available mailboxes?
       type: condition
       iscommand: false
       brand: ""
@@ -613,7 +610,7 @@ tasks:
       {
         "position": {
           "x": -770,
-          "y": 820
+          "y": 910
         }
       }
     note: false
@@ -625,10 +622,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: ac91c4b3-329f-4341-894e-4cb9a92ab88e
+    taskid: d4e2df0d-57ad-45e8-8def-023393fdc1b3
     type: regular
     task:
-      id: ac91c4b3-329f-4341-894e-4cb9a92ab88e
+      id: d4e2df0d-57ad-45e8-8def-023393fdc1b3
       version: -1
       name: Set all mailboxes to be searched
       description: Set a value in context under the key you entered.
@@ -649,7 +646,7 @@ tasks:
       {
         "position": {
           "x": -1090,
-          "y": 1020
+          "y": 1110
         }
       }
     note: false
@@ -661,10 +658,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 586e6f48-4fd2-489d-8948-f5327f2e431d
+    taskid: b1056daa-1e07-41e9-883b-19aa4fc847fa
     type: regular
     task:
-      id: 586e6f48-4fd2-489d-8948-f5327f2e431d
+      id: b1056daa-1e07-41e9-883b-19aa4fc847fa
       version: -1
       name: Set the "email to" as the mailbox to search
       description: Set a value in context under the key you entered.
@@ -680,13 +677,21 @@ tasks:
         simple: ExchangeLocation
       value:
         complex:
-          root: inputs.To
+          root: inputs.O365ExchangeLocation
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ' '
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -500,
-          "y": 1020
+          "y": 1110
         }
       }
     note: false
@@ -889,7 +894,7 @@ tasks:
       {
         "position": {
           "x": -1620,
-          "y": 1230
+          "y": 1320
         }
       }
     note: false
@@ -977,7 +982,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 1525,
         "width": 3530,
         "x": -1620,
         "y": 50
@@ -1012,8 +1017,7 @@ inputs:
 - key: SearchAndDeleteIntegration
   value: {}
   required: true
-  description: The integration in which to run the search and delete action. Can be
-    O365, Gmail, EWS, or Agari Phishing Defense.
+  description: The integration in which to run the search and delete action. Can be O365, Gmail, EWS, or Agari Phishing Defense.
   playbookInputQuery:
 - key: O365ExchangeLocation
   value:
@@ -1021,14 +1025,12 @@ inputs:
       root: incident
       accessor: emailto
   required: false
-  description: Used only in O365. A comma-separated list of mailboxes/distribution groups
-    to include, or use the value "All" to include all.
+  description: Used only in O365. A comma-separated list of mailboxes/distribution groups to include, or use the value "All" to include all.
   playbookInputQuery:
 - key: O365KQL
   value: {}
   required: false
-  description: Used only in O365. Text search string or a query that is formatted
-    using the Keyword Query Language (KQL).
+  description: Used only in O365. Text search string or a query that is formatted using the Keyword Query Language (KQL).
   playbookInputQuery:
 - key: O365Description
   value: {}
@@ -1040,25 +1042,17 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Used only in O365. Whether to include mailboxes other than regular
-    user mailboxes in the compliance search.
+  description: Used only in O365. Whether to include mailboxes other than regular user mailboxes in the compliance search.
   playbookInputQuery:
 - key: O365DeleteType
   value: {}
   required: false
-  description: Used only in O365. The delete type to perform on the search results.
-    Possible values are Hard or Soft, or leave empty to select manually (Hard = Unrecoverable,
-    Soft=Recoverable).
+  description: Used only in O365. The delete type to perform on the search results. Possible values are Hard or Soft, or leave empty to select manually (Hard = Unrecoverable, Soft=Recoverable).
   playbookInputQuery:
 - key: O365ExchangeLocationExclusion
   value: {}
   required: false
-  description: "Used only when searching and deleting emails in O365. The exchange
-    location. Determines where to search and delete emails searched using O365
-    playbooks. Use the value 'All' to search all mailboxes, use 'SingleMailbox' to
-    search and delete the email only from the recipient's inbox, or use 'Manual'
-    to decide manually for every incident. Note: Searching all mailboxes may take
-    a significant amount of time."
+  description: 'Used only when searching and deleting emails in O365. The exchange location. Determines where to search and delete emails searched using O365 playbooks. Use the value ''All'' to search all mailboxes, use ''SingleMailbox'' to search and delete the email only from the recipient''s inbox, or use ''Manual'' to decide manually for every incident. Note: Searching all mailboxes may take a significant amount of time.'
   playbookInputQuery:
 - key: To
   value:
