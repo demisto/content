@@ -49,11 +49,14 @@ NOT_FORMAT_TO_FORMAT = [  # Start of http:/ replacements.
     # End of Sanity test, no replacement should be done.
 ]
 
-BRACKETS_URL_TO_FORMAT = [('https://test1.test-api.com/test1/test2/s.testing]',
-                           'https://test1.test-api.com/test1/test2/s.testing'),
-                          ('https://test1.test-api.com]', 'https://test1.test-api.com'),
-                          ('https://test1.test-api.com[', 'https://test1.test-api.com'),
-                          ('https://test1.test-api.com', 'https://test1.test-api.com')]
+BRACKETS_URL_TO_FORMAT = [
+    ('https://test1.test-api.com/test1/test2/s.testing]', 'https://test1.test-api.com/test1/test2/s.testing'),
+    ('https://test1.test-api.com/test1/test2/s]testing]', 'https://test1.test-api.com/test1/test2/s]testing'),
+    ('https://test1.test-api.com/test1/test2/s]testing', 'https://test1.test-api.com/test1/test2/s]testing'),
+    ('https://test1.test-api.com]', 'https://test1.test-api.com'),
+    ('https://test1.test-api.com[', 'https://test1.test-api.com'),
+    ('https://test1.test-api.com', 'https://test1.test-api.com'),
+]
 
 ATP_REDIRECTS = [('https://na01.safelinks.protection.outlook.com/?url=https%3A%2F%2Foffice.memoriesflower.com'
                   '%2FPermission%2Foffice.php&data=01%7C01%7Cdavid.levin%40mheducation.com'
