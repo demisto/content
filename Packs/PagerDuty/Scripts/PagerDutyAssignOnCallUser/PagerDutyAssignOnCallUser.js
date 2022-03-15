@@ -8,8 +8,8 @@ if (res[0].Type == entryTypes.error) {
     return res[0]
 }
 
-var usersOnCall = res[0].Contents.oncalls;
-var selectedUser = usersOnCall[0].user;
+var usersOnCall = res[0].Contents;
+var selectedUser = usersOnCall[0];
 
 if (selectedUser === null) {
     return 'error : could not find user from PagerDuty OnCall now!';
