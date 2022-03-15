@@ -2060,8 +2060,8 @@ Removes egress rule from a security group. To remove a rule, the values that you
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | groupId | The ID of the security group. | Required | 
-| fromPort | The start of port range for the TCP and UDP protocols. In case ipProtocol is specified, this argument will be ignored. | Optional | 
-| toPort | The end of port range for the TCP and UDP protocols. In case ipProtocol is specified, this argument will be ignored. | Optional | 
+| fromPort | The start of port range for the TCP and UDP protocols. | Optional | 
+| toPort | The end of port range for the TCP and UDP protocols. | Optional | 
 | cidrIp | The CIDR IPv4 address range. | Optional | 
 | ipProtocol | The IP protocol name (tcp , udp , icmp) or number. Use -1 to specify all protocols. | Optional | 
 | sourceSecurityGroupName | The name of the source security group. The source security group must be in the same VPC. | Optional | 
