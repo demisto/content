@@ -58,7 +58,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-description: Symantec Data Loss Prevention enables you to discover, monitor and protect
+description: Symantec Data Loss Prevention version 15.7 enables you to discover, monitor and protect
   your sensitive corporate information.
 display: Symantec Data Loss Prevention v2
 name: Symantec Data Loss Prevention v2

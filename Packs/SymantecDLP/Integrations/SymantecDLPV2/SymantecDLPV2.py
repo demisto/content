@@ -19,7 +19,7 @@ INCIDENT_TYPE_MAPPING = {
     'Discover': 'DISCOVER',
     'Endpoint': 'ENDPOINT'
 }
-INCIDENT_SEVERITY_MAPPING = {
+INCIDENT_SEVERITY_MAPPING: Dict[str, int] = {
     'Info': 4,
     'Low': 3,
     'Medium': 2,
@@ -100,21 +100,21 @@ class Client(BaseClient):
         """
         data = {"limit": limit, "select": INCIDENTS_LIST_BODY}
         if creation_date or status_id or severity or incident_type:
-            data['filter'] = {"booleanOperator": "AND", "filterType": "booleanLogic", "filters": []}
+            data['filter']: Dict[str, Any] = {"booleanOperator": "AND", "filterType": "booleanLogic", "filters": []}
             if creation_date:
-                data['filter']['filters'].append(
+                data['filter']['filters'].append(  # type: ignore
                     create_filter_dict(filter_type="localDateTime", filter_by="creationDate",
                                        filter_value=[creation_date], operator="GT"))
             if status_id:
-                data['filter']['filters'].append(
+                data['filter']['filters'].append(  # type: ignore
                     create_filter_dict(filter_type="long", filter_by="incidentStatusId",
                                        filter_value=status_id, operator="IN"))
             if severity:
-                data['filter']['filters'].append(
+                data['filter']['filters'].append(  # type: ignore
                     create_filter_dict(filter_type="long", filter_by="severityId",
                                        filter_value=severity, operator="IN"))
             if incident_type:
-                data['filter']['filters'].append(
+                data['filter']['filters'].append(  # type: ignore
                     create_filter_dict(filter_type="string", filter_by="messageSource",
                                        filter_value=incident_type, operator="IN"))
             if order_by:
@@ -268,7 +268,7 @@ def get_readable_output_incident_details(incidents_list: List[dict]):
     for incident in incidents_list:
         readable_output.append(assign_params(**{
             'ID': incident.get('incidentId'),
-            'Severity': get_severity_name_by_id(arg_to_number(incident.get('severityId'))),
+            'Severity': get_severity_name_by_id(incident.get('severityId')),
             'Incident Type': incident.get('messageSource'),
             'Creation Date': incident.get('creationDate'),
             'Detection Date': incident.get('detectionDate'),
@@ -514,7 +514,7 @@ def get_context_incident_history(incident_history_list: List[dict]):
     return history_context
 
 
-def create_update_body(incident_id: int, data_owner_email: str, data_owner_name: str, note: str,
+def create_update_body(incident_id: Optional[int], data_owner_email: str, data_owner_name: str, note: str,
                        incident_status_id: str, remediation_status_name: str, remediation_location: str, severity: str,
                        custom_attributes: List[str]):
     data: Dict[str, Any] = {
@@ -619,12 +619,11 @@ def list_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResul
     incident_types_dlp = [INCIDENT_TYPE_MAPPING[incident_type] for incident_type in incident_types]
     limit = arg_to_number(args.get('limit', 50))
     page = arg_to_number(args.get('page', 1))
-    if page <= 0:
+    if page and page <= 0:
         page = 1
-
     incidents_result = client.get_incidents_request(creation_date, status_ids, severities_dlp, incident_types_dlp,
-                                                    limit * page)
-    incidents_result = pagination(incidents_result['incidents'], limit=limit, page=page)
+                                                    limit * page)  # type: ignore
+    incidents_result = pagination(incidents_result['incidents'], limit=limit, page=page)  # type: ignore
     list_incidents_hr = get_readable_output_incidents_list(incidents_result)
     context_incidents_list = get_context_incidents_list(incidents_result)
 
@@ -666,7 +665,7 @@ def update_incident_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def get_incident_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_incident_details_command(client: Client, args: Dict[str, Any]):
     try:
         incident_id = args.get('incident_id', '')
         custom_attributes = args.get('custom_attributes', '')
@@ -798,7 +797,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
 
     incidents = []
     if incident_severities:
-        incident_severities = [INCIDENT_SEVERITY_MAPPING[severity] for severity in incident_severities]
+        incident_severities = [INCIDENT_SEVERITY_MAPPING[severity] for severity in incident_severities]  # type: ignore
     if incident_types:
         incident_types = [INCIDENT_TYPE_MAPPING[incident_type] for incident_type in incident_types]
     incidents_data_list = client.get_incidents_request(creation_date=last_update_time, status_id=incident_status_id,
