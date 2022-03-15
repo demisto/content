@@ -1,0 +1,19 @@
+commonfields:
+  id: da6d49a0-8b62-421e-8dce-9ffc16be9b6d
+  version: 13
+vcShouldKeepItemLegacyProdMachine: false
+name: FormatACTIURL
+script: ''
+type: python
+tags:
+- indicator-format
+comment: Helps to fetch ACTI Intelligence Report/Alert URL and converts it to uuid.
+enabled: true
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.10.1.26972
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
