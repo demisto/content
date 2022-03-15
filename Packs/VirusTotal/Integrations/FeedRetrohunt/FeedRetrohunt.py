@@ -43,19 +43,32 @@ class Client(BaseClient):
 
     def list_job_matches(
             self,
-            limit=40,
+            limit: int = 40,
             job_id: str = ''
-    ) -> dict:
+    ) -> list:
         """ Retrieve matches for a given retrohunt job (latest by default).
         """
+        context_key = 'last_retrohunt_job_id'
         if not job_id:
             jobs = self._http_request(
                 'GET',
                 'intelligence/retrohunt_jobs'
             )
-            if not jobs.get('data'):
-                return {}
-            job_id = jobs.get('data')[0].get('id')
+
+            try:
+                finished_jobs = [job for job in jobs['data'] if job.get('attributes').get('status') == 'finished']
+            except KeyError:
+                return []
+
+            if len(finished_jobs) == 0:
+                return []
+
+            job_id = finished_jobs[0].get('id')
+            # Ignore already processed job
+            demisto.setIntegrationContext({context_key: job_id})
+            last_job_id = demisto.getIntegrationContext().get(context_key)
+            if last_job_id == job_id:
+                return []
 
         response = self._http_request(
             'GET',
@@ -185,6 +198,12 @@ def get_indicators_command(client: Client,
         outputs={},
     )
 
+def reset_last_job_id():
+    """
+    Reset last job ib from the integration context
+    """
+    demisto.setIntegrationContext({})
+    return CommandResults(readable_output='Fetch history deleted successfully')
 
 def main():
     """
@@ -226,6 +245,9 @@ def main():
             # This is the command that fetches a limited number of indicators
             # from the feed source and displays them in the war room.
             return_results(get_indicators_command(client, params, args))
+        
+        elif command == "vt-reset-fetch-indicators":
+            return_results(reset_last_job_id())
 
         elif command == 'fetch-indicators':
             # This is the command that initiates a request to the feed endpoint
