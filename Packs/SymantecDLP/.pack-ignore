@@ -3,3 +3,6 @@ ignore=IN126
 
 [file:README.md]
 ignore=RM104
+
+[file:SymantecDLPV2.yml]
+ignore=IN121

@@ -19,7 +19,7 @@ INCIDENT_TYPE_MAPPING = {
     'Discover': 'DISCOVER',
     'Endpoint': 'ENDPOINT'
 }
-INCIDENT_SEVERITY_MAPPING: Dict[str, int] = {
+INCIDENT_SEVERITY_MAPPING = {
     'Info': 4,
     'Low': 3,
     'Medium': 2,
@@ -536,7 +536,7 @@ def create_update_body(incident_id: Optional[int], data_owner_email: str = None,
         data.update({'remediationLocation': remediation_location})
     if severity:
         data.update({'severity': severity})
-    custom_attributes_list = build_custom_attributes_update(custom_attributes)
+    custom_attributes_list = build_custom_attributes_update(custom_attributes)  # type: ignore
     if custom_attributes_list:
         data.update({'incidentCustomAttributes': custom_attributes_list})
     return data
@@ -798,7 +798,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
 
     incidents = []
     if incident_severities:
-        incident_severities = [INCIDENT_SEVERITY_MAPPING[severity] for severity in incident_severities]
+        incident_severities = [INCIDENT_SEVERITY_MAPPING[severity] for severity in incident_severities]  # type: ignore
     if incident_types:
         incident_types = [INCIDENT_TYPE_MAPPING[incident_type] for incident_type in incident_types]
     incidents_data_list = client.get_incidents_request(creation_date=last_update_time, status_id=incident_status_id,
