@@ -6408,7 +6408,7 @@ class CommandRunner:
     """
     class Command:
         """
-        Class for the needed data to execute a command.
+        Data class with the data required to execute a command.
 
         :return: None
         :rtype: ``None``
@@ -6417,7 +6417,7 @@ class CommandRunner:
             """
 
             :param commands: The commands list or a single command
-            :type commands: List[str] + str
+            :type commands: Union[str, List[str]]
             :param args_lst: The args list or a single args
             :type args_lst: List[Dict] + Dict
             :param brand: The brand to use
