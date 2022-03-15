@@ -48,6 +48,15 @@ configuration:
   name: proxy
   required: false
   type: 8
+  defaultvalue: 7 days
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+- name: max_fetch
+  required: false
+  type: 0
+  defaultvalue: '50
 description: >-
   The CimTrak integration helps you detect unexpected system/device/config
   modifications and automatically respond/react to threats
@@ -2307,7 +2316,7 @@ script:
     - contextPath: CimTrak.Object.agentObjectId
       description: Agent Object Id
       type: number
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.1.26972
   isfetch: true
   longRunning: true
   runonce: false
