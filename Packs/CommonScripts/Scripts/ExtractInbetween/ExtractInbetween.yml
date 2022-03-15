@@ -7,6 +7,7 @@ type: python
 tags:
 - transformer
 - general
+- Utility
 comment: Extract a value from between two other values.
 enabled: true
 args:
