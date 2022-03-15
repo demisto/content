@@ -6350,6 +6350,21 @@ class TestFetchWithLookBack:
             'created': (datetime.utcnow() - timedelta(minutes=9)).strftime('%Y-%m-%dT%H:%M:%S')
         }
     ]
+
+    NEW_INCIDENTS = [
+        {
+            'incident_id': 6,
+            'created': (datetime.utcnow() - timedelta(minutes=49)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 7,
+            'created': (datetime.utcnow() - timedelta(minutes=25)).strftime('%Y-%m-%dT%H:%M:%S')
+        },
+        {
+            'incident_id': 8,
+            'created': (datetime.utcnow() - timedelta(minutes=23)).strftime('%Y-%m-%dT%H:%M:%S')
+        }
+    ]
     
     def example_fetch_incidents(self):
 
@@ -6363,7 +6378,6 @@ class TestFetchWithLookBack:
         look_back = int(params.get('look_back', 0))
         first_fetch = params.get('first_fetch')
         time_zone = params.get('time_zone', 0)
-        return_incidents_by_limit = params.get('return_incidents_by_limit', True)
 
         last_run = demisto.getLastRun()
         fetch_limit = last_run.get('limit') or fetch_limit_param
@@ -6373,7 +6387,7 @@ class TestFetchWithLookBack:
 
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run, first_fetch, look_back, time_zone)
 
-        query = self.build_query(start_fetch_time, end_fetch_time, fetch_limit, return_incidents_by_limit)
+        query = self.build_query(start_fetch_time, end_fetch_time, fetch_limit)
         incident_res = self.get_incidents_request(query)
 
         incidents = filter_incidents_by_duplicates_and_limit(incident_res, last_run, fetch_limit_param, 'incident_id')
@@ -6385,7 +6399,7 @@ class TestFetchWithLookBack:
         return incidents
 
     @staticmethod
-    def build_query(start_time, end_time, limit, return_incidents_by_limit):
+    def build_query(start_time, end_time, limit, return_incidents_by_limit=True):
         query = {'from': start_time, 'to': end_time}
         if return_incidents_by_limit:
             query['limit'] = limit
@@ -6410,10 +6424,6 @@ class TestFetchWithLookBack:
          {'limit': 2, 'time': INCIDENTS[2]['created']}),
         ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
          {'limit': 3, 'time': INCIDENTS[3]['created']}),
-        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [],
-         {'limit': 3, 'time': INCIDENTS[4]['created']}),
-        ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
-         {'limit': 3, 'time': INCIDENTS[3]['created']}),
     ])
     def test_regular_fetch(self, mocker, params, result_phase1, result_phase2, expected_last_run):
 
@@ -6435,24 +6445,33 @@ class TestFetchWithLookBack:
 
         assert incidents_phase2 == result_phase2
 
-    @pytest.mark.parametrize('params, result_phase1, result_phase2, result_phase3, expected_last_run_phase1, expected_last_run_phase2, new_incidents', [
+    @pytest.mark.parametrize('params, result_phase1, result_phase2, result_phase3, expected_last_run_phase1, expected_last_run_phase2, new_incidents, index', [
         (
-            {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]], [],
+            {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS[2], INCIDENTS[3]], [NEW_INCIDENTS[0], INCIDENTS[4]], [],
             {'found_incident_ids': {3: '', 4: ''}, 'limit': 4}, {'found_incident_ids': {3: '', 4: '', 5: '', 6: ''}, 'limit': 6},
-            [{'incident_id': 6, 'created': (datetime.utcnow() - timedelta(minutes=40)).strftime('%Y-%m-%dT%H:%M:%S')}]
+            [NEW_INCIDENTS[0]], 2
         ),
         (
-            {'limit': 2, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS[2], INCIDENTS[3]], [], [INCIDENTS[4]],
-            {'found_incident_ids': {3: '', 4: ''}, 'limit': 4}, {'found_incident_ids': {3: '', 4: '', 5: '', 6: ''}, 'limit': 6},
-            [{'incident_id': 6, 'created': (datetime.utcnow() - timedelta(minutes=25)).strftime('%Y-%m-%dT%H:%M:%S')},
-             {'incident_id': 7, 'created': (datetime.utcnow() - timedelta(minutes=23)).strftime('%Y-%m-%dT%H:%M:%S')}]
+            {'limit': 2, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS[2], INCIDENTS[3]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [INCIDENTS[4]],
+            {'found_incident_ids': {3: '', 4: ''}, 'limit': 4}, {'found_incident_ids': {3: '', 4: '', 7: '', 8: ''}, 'limit': 6},
+            [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
+        ),
+        (
+            {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15}, [INCIDENTS[0], INCIDENTS[1], INCIDENTS[2]], [NEW_INCIDENTS[0], INCIDENTS[3], INCIDENTS[4]], [],
+            {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6}, {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}, 'limit': 9},
+            [NEW_INCIDENTS[0]], 2
+        ),
+        (
+            {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [],
+            {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6}, {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
+            [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
         ),
     ])
     def test_fetch_with_look_back(self, mocker, params, result_phase1, result_phase2, result_phase3,
-                                          expected_last_run_phase1, expected_last_run_phase2, new_incidents):
+                                  expected_last_run_phase1, expected_last_run_phase2, new_incidents, index):
 
         self.LAST_RUN = {}
-        incidents = self.INCIDENTS
+        incidents = self.INCIDENTS[:]
 
         mocker.patch.object(demisto, 'params', return_value=params)
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
@@ -6463,19 +6482,26 @@ class TestFetchWithLookBack:
 
         assert incidents_phase1 == result_phase1
         assert self.LAST_RUN['limit'] == expected_last_run_phase1['limit']
+        assert self.LAST_RUN['found_incident_ids'].keys() == expected_last_run_phase1['found_incident_ids'].keys()
         for inc in incidents_phase1:
             assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
 
         next_run_phase1 = self.LAST_RUN['time']
-        self.INCIDENTS = incidents[:2] + new_incidents + incidents[2:]
+        self.INCIDENTS = incidents[:index] + new_incidents + incidents[index:]
 
         # Run second fetch
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
         incidents_phase2 = self.example_fetch_incidents()
 
-        assert incidents_phase2 == new_incidents + result_phase2
+        assert incidents_phase2 == result_phase2
         assert self.LAST_RUN['limit'] == expected_last_run_phase2['limit']
-        assert next_run_phase1 == self.LAST_RUN['time']
+        assert self.LAST_RUN['found_incident_ids'].keys() == expected_last_run_phase2['found_incident_ids'].keys()
+
+        if len(incidents_phase2) >= params.get('limit'):
+            assert next_run_phase1 == self.LAST_RUN['time']
+        else:
+            assert incidents_phase2[-1]['created'] == self.LAST_RUN['time']
+
         for inc in incidents_phase2:
             assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
 
@@ -6484,8 +6510,6 @@ class TestFetchWithLookBack:
         incidents_phase3 = self.example_fetch_incidents()
 
         assert incidents_phase3 == result_phase3
-        if len(new_incidents) > 1:
-            assert self.LAST_RUN['time'] == self.INCIDENTS[-1]['created']
 
         # Remove new incidents from self.INCIDENTS
         self.INCIDENTS = incidents

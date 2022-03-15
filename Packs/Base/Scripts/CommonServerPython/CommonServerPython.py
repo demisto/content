@@ -9152,7 +9152,7 @@ def update_found_incident_ids(last_run, incidents, look_back, id_field='id'):
 
 
 def get_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
-                           created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
+                                created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
 
     if len(incidents) == 0:
         new_last_run = {
@@ -9173,6 +9173,7 @@ def get_updated_last_run_object(last_run, incidents, fetch_limit, look_back, sta
         }
 
     return new_last_run
+
 
 def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
                            created_time_field, id_field='id', date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
