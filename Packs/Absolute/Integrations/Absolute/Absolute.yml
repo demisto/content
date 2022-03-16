@@ -3,20 +3,19 @@ commonfields:
   id: Absolute
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
+- defaultvalue: https://cc.absolute.com
+  display: Your Absolute server URL
   name: url
+  required: true
+  type: 0
+- additionalinfo: Absolute Token ID
+  display: Token ID
+  name: token
   required: true
   type: 0
 - displaypassword: Secret Key
   additionalinfo: The Secret Key to use for connection
-  name: credentials
-  required: true
-  hiddenusername: true
-  type: 9
-- displaypassword: Token ID
-  additionalinfo: The Token ID to use for connection
-  name: credentials
+  name: secret_key
   required: true
   hiddenusername: true
   type: 9
@@ -224,6 +223,170 @@ script:
     description: 'Creates a new Remove Freeze request for one or more devices, regardless of their Freeze status. You can submit Remove Freeze requests to perform the following actions: unfreeze frozen devices, remove newly submitted Freeze requests or remove outstanding Scheduled and Offline Freeze requests.'
     execution: false
     name: absolute-device-remove-freeze-request
+  - arguments:
+    - default: false
+      description: The system-defined, unique identifier of the Freeze request.
+      isArray: false
+      name: request_uid
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets detailed information about the Freeze request specified by request_uid.
+    execution: false
+    name: absolute-device-freeze-request-get
+    outputs:
+    - contextPath: Absolute.FreezeRequestDetail.ID
+      description: The system-defined, unique identifier of the Freeze request.
+      type: String
+  - arguments:
+    - default: false
+      description: The system-defined, unique identifier of the Freeze message.
+      isArray: false
+      name: message_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets all of the Freeze messages that are configured for the account by the given message_id. If message_id is not given all the messages will be returned.
+    execution: false
+    name: absolute-device-freeze-message-list
+    outputs:
+    - contextPath: Absolute.FreezeMessage.ID
+      description: The system-defined, unique identifier of the Freeze message.
+      type: String
+    - contextPath: Absolute.FreezeMessage.Name
+      description: The user-defined name for the Freeze message.
+      type: String
+    - contextPath: Absolute.FreezeMessage.Content
+      description: The user-defined, HTML coded message that shows on a devices when a Freeze is applied.
+      type: String
+    - contextPath: Absolute.FreezeMessage.CreatedBy
+      description: The username of the entity that created the Freeze message.
+      type: String
+    - contextPath: Absolute.FreezeMessage.ChangedBy
+      description: The username of the entity that last updated the Freeze message.
+      type: String
+    - contextPath: Absolute.FreezeMessage.CreatedUTC
+      description: The date and time when the Freeze message was created.
+      type: String
+    - contextPath: Absolute.FreezeMessage.ChangedUTC
+      description: The date and time when the Freeze message was last modified.
+      type: String
+  - arguments:
+    - default: false
+      description: The user-defined, HTML coded message that shows on a devices when a Device Freeze is applied. Should be in an HTML format with 1-4000 characters.
+      isArray: false
+      name: html_message
+      required: true
+      secret: false
+    - default: false
+      description: The user-defined name for the Device Freeze message. The name should be a string with 1-255 characters.
+      isArray: false
+      name: message_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a new Freeze message for the account.
+    execution: false
+    name: absolute-device-freeze-message-create
+    outputs:
+    - contextPath: Absolute.FreezeMessage.MessageUid
+      description: The system-defined, unique identifier of the Freeze message.
+      type: String
+  - arguments:
+    - default: false
+      description: The user-defined, HTML coded message that shows on a devices when a Device Freeze is applied. Should be in an HTML format with 1-4000 characters.
+      isArray: false
+      name: html_message
+      required: true
+      secret: false
+    - default: false
+      description: The user-defined name for the Device Freeze message. The name should be a string with 1-255 characters.
+      isArray: false
+      name: message_name
+      required: true
+      secret: false
+    - default: false
+      description: The system-defined, unique identifier of the Freeze message.
+      isArray: false
+      name: message_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates the content of an existing Freeze message.
+    execution: false
+    name: absolute-device-freeze-message-update
+  - arguments:
+    - default: false
+      description: The system-defined, unique identifier of the Freeze message.
+      isArray: false
+      name: message_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes an existing Freeze message for the account.
+    execution: false
+    name: absolute-device-freeze-message-delete
+  - arguments:
+    - default: false
+      description: A comma separateed list of device UIDs should be unenrolled.
+      isArray: true
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Initiates an unenroll request on a list of eligible devices.
+    execution: false
+    name: absolute-device-unenroll
+    outputs:
+    - contextPath: Absolute.DeviceUnenroll.DeviceUid
+      description: The unique GUID identifier of the device.
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.SystemName
+      description: The The name assigned to the device.
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.Username
+      description: The unique user name of the user who was logged into the device at the time of the agent call.
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.EligibleStatus
+      description: 'The eligibility status of the device. Possible vales are: 0 for eligible, 1 for inactive or disabled and 2 for stolen.'
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.Serial
+      description: The identification number that is assigned to the device by the device manufacturer.
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.ESN
+      description: The unique Electronic SerialNumber (ESN) that is assigned to the agent installed on the device.
+      type: String
+  - arguments:
+    - default: false
+      description: A custom filter - todo edit this.
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a flat list of device records and the corresponding software application data for each device on the account that you have access to or that meets the given filter.
+    execution: false
+    name: absolute-device-application-list
+    outputs:
+    - contextPath: Absolute.DeviceUnenroll.DeviceUid
+      description: The unique GUID identifier of the device.
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.SystemName
+      description: The The name assigned to the device.
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.Username
+      description: The unique user name of the user who was logged into the device at the time of the agent call.
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.EligibleStatus
+      description: 'The eligibility status of the device. Possible vales are: 0 for eligible, 1 for inactive or disabled and 2 for stolen.'
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.Serial
+      description: The identification number that is assigned to the device by the device manufacturer.
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.ESN
+      description: The unique Electronic SerialNumber (ESN) that is assigned to the agent installed on the device.
+      type: String
+
   isfetch: false
   runonce: false
   script: '-'
