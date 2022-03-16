@@ -8,21 +8,26 @@ import pytest
 import demistomock as demisto
 
 CAMPAIGN_WITH_DURATION_RESULT = """
-                <div style="display: grid; grid-template-columns: auto auto auto auto auto auto; width: 300px;">
-                <div style="font-size: 25px; ">&#128345;</div>
-                <div style="font-size: 30px; text-align: center;">30</div>
-                <div style="font-size: 30px; text-align: center;">:</div>
-                <div style="font-size: 30px; text-align: center;">22</div>
-                <div style="font-size: 30px; text-align: center;">:</div>
-                <div style="font-size: 30px; text-align: center;">39</div>
-                <div style="font-size: 15px; text-align: center; padding-top: 10px;"></div>
-                <div style="font-size: 15px; text-align: center; padding-top: 10px;">Days</div>
-                <div style="font-size: 15px; text-align: center; padding-top: 10px;"></div>
-                <div style="font-size: 15px; text-align: center; padding-top: 10px;">Hours</div>
-                <div style="font-size: 15px; text-align: center; padding-top: 10px;"></div>
-                <div style="font-size: 15px; text-align: center; padding-top: 10px;">Minutes</div>
-                </div>
+                <table>
+                <tr>
+                <th style="font-size: 25px;">&#128345;</th>
+                <th style="font-size: 30px;">30</th>
+                <th style="font-size: 30px;">:</th>
+                <th style="font-size: 30px;">22</th>
+                <th style="font-size: 30px;">:</th>
+                <th style="font-size: 30px;">39</th>
+                </tr>
+                <tr>
+                <td style="font-size: 15px; text-align: center"></td>
+                <td style="font-size: 15px; text-align: center">Days</td>
+                <td style="font-size: 15px; text-align: center"></td>
+                <td style="font-size: 15px; text-align: center">Hours</td>
+                <td style="font-size: 15px; text-align: center"></td>
+                <td style="font-size: 15px; text-align: center">Minutes</td>
+                </tr>
+                </table>
         """
+
 
 CURRENT_TIME_MOCK = "05-08-2021 14:40:22"
 
