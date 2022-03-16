@@ -30,7 +30,7 @@ Fetches intelligence alerts and reports from ACTI IntelGraph to XSOAR platform.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | URL to fetches Intelligence Alerts & Intelligence Reports. | Optional | 
+| uuid | UUID to fetch Intelligence Alerts & Intelligence Reports. | Yes | 
 
 
 #### Context Output
@@ -60,13 +60,13 @@ Fetches intelligence alerts and reports from ACTI IntelGraph to XSOAR platform.
 
 
 #### Command Example
-```!acti-getThreatIntelReport url=https://intelgraph.idefense.com/#/node/intelligence_alert/view/8b8b48f1-92a0-411a-a073-3241f6819f8b```
+```!acti-getThreatIntelReport uuid=8b8b48f1-92a0-411a-a073-3241f6819f8b```
 
 #### Context Example
 ```json
 {
     "DBotScore": {
-        "Indicator": "https://intelgraph.idefense.com/#/node/intelligence_alert/view/8b8b48f1-92a0-411a-a073-3241f6819f8b",
+        "Indicator": "8b8b48f1-92a0-411a-a073-3241f6819f8b",
         "Reliability": "B - Usually reliable",
         "Score": 2,
         "Type": "ACTI Intelligence Alert",
@@ -77,7 +77,7 @@ Fetches intelligence alerts and reports from ACTI IntelGraph to XSOAR platform.
         "last_published": "2020-06-26T01:14:56.000Z",
         "index_timestamp": "2022-02-11T17:24:03.604Z",
         "display_text": "SITREP: Cybersecurity Risks Related to COVID-19",
-        "value": "https://intelgraph.idefense.com/#/node/intelligence_alert/view/8b8b48f1-92a0-411a-a073-3241f6819f8b",
+        "value": "8b8b48f1-92a0-411a-a073-3241f6819f8b",
         "sources_external": {},
         "last_modified":"2022-02-11T17:21:48.000Z",
         "dynamic_properties": {},
@@ -90,7 +90,6 @@ Fetches intelligence alerts and reports from ACTI IntelGraph to XSOAR platform.
         "analysis": "##COVID-19 Introduces Cyberthreat Opportunities####Exploitation of Work-from-Home.....",
         "attachment_links": "- https://intelgraph.idefense.com/rest/files/download/08/f0/05/7f1f609e7659dc......",
         "severity": 4,
-        "key":"c0ea8f2f-372c-44d1-ad81-efde4971110e",
         "mitigation": "##Expert, Experienced Advice Will be CriticalTo minimize targeting opportunities...."
     }
 }
@@ -100,5 +99,5 @@ Fetches intelligence alerts and reports from ACTI IntelGraph to XSOAR platform.
 
 >Report has been fetched!
 ><br>UUID: 8b8b48f1-92a0-411a-a073-3241f6819f8b
-><br>URL to view report:https://intelgraph.idefense.com/#/node/intelligence_alert/view/8b8b48f1-92a0-411a-a073-3241f6819f8b
+><br>Link to view report: https://intelgraph.idefense.com/#/node/intelligence_alert/view/8b8b48f1-92a0-411a-a073-3241f6819f8b
 

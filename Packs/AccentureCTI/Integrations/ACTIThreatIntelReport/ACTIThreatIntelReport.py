@@ -12,8 +12,8 @@ ENDPOINTS = {
     'document': '/rest/document'
 }
 ATTACHMENT_LINK = 'https://intelgraph.idefense.com/rest/files/download'
-IA_URL= 'https://intelgraph.idefense.com/#/node/intelligence_alert/view/'
-IR_URL= 'https://intelgraph.idefense.com/#/node/intelligence_report/view/'
+IA_URL = 'https://intelgraph.idefense.com/#/node/intelligence_alert/view/'
+IR_URL = 'https://intelgraph.idefense.com/#/node/intelligence_report/view/'
 
 
 class Client(BaseClient):
@@ -96,9 +96,9 @@ def getThreatReport_command(client: Client, args: dict, reliability: DBotScoreRe
         result = {}
         ia_ir_uuid: str = str(args.get('uuid'))
         result = client.document_download(url_suffix=f'/v0/{ia_ir_uuid}')
-        custom_indicator,iair_link = _ia_ir_extract(result, reliability)
+        custom_indicator, iair_link = _ia_ir_extract(result, reliability)
         return CommandResults(indicator=custom_indicator, raw_response=result,
-                              readable_output=f"Report has been fetched!\nUUID: {result['uuid']}\nLink to view report:{iair_link}")
+                              readable_output=f"Report has been fetched!\nUUID: {result['uuid']}\nLink to view report: {iair_link}") # noqa
 
     except Exception as e:
         if 'Failed to parse json object from response' in e.args[0]:
@@ -156,13 +156,13 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
             fqlink = 'NA'
         context['attachment_links'] = fqlink
         indicatortype = 'ACTI Intelligence Alert'
-        iair_link: str = IA_URL + uuid
+        iair_link = IA_URL + uuid
     dbot_score = Common.DBotScore(indicator=uuid, indicator_type=DBotScoreType.CUSTOM,
                                   integration_name='ACTI Threat Intelligence Report',
                                   score=severity_dbot_score, reliability=reliability)
     custom_indicator = Common.CustomIndicator(indicator_type=indicatortype, dbot_score=dbot_score,
                                               value=uuid, data=context, context_prefix='IAIR')
-    return custom_indicator,iair_link
+    return custom_indicator, iair_link
 
 
 def main():
