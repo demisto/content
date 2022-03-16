@@ -9030,6 +9030,73 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
     return dec
 
 
+def get_pack_version(pack_name=''):
+    """
+    Get a pack version.
+    The version can be retrieved either by a pack name, script name or integration name.
+    To get the version of any pack just send the pack name as mentioned in the pack metadata file as a func argument.
+
+    To get the version of a script/integration just call the function without pack_name.
+    The version of the pack that the script/integration is part of will be returned.
+
+
+    Args:
+        pack_name (str): the pack name as mentioned in the pack metadata file to query its version.
+            use only if querying by a pack name.
+
+    Returns:
+        str: the requested pack version, empty string in-case not found.
+
+    """
+    # query by pack name
+    if pack_name:
+        entity_name = pack_name
+        body_request = {'packsQuery': entity_name}
+        query_type = 'pack'
+    # query by integration name
+    elif demisto.callingContext.get('integration'):  # True means its integration, False means its script/automation.
+        entity_name = demisto.callingContext.get('IntegrationBrand') or ''
+        body_request = {'integrationsQuery': entity_name}
+        query_type = 'integration'
+    # query by script/automation name
+    else:
+        entity_name = (demisto.callingContext.get('context') or {}).get('ScriptName') or ''
+        body_request = {'automationQuery': entity_name}
+        query_type = 'automation'
+
+    packs_body_response = demisto.internalHttpRequest(
+        'POST', '/contentpacks/marketplace/search', json.dumps(body_request)
+    )
+    packs_body_response = json.loads(ast.literal_eval(json.dumps(packs_body_response.get('body'))))
+    packs = packs_body_response.get('packs') or []
+
+    if len(packs) == 0 and  query_type == 'integration':
+        # do the code here to extract the integration search endpoint
+        integrations = demisto.internalHttpRequest('POST', '/settings/integration/search', json.dumps({}))
+        integrations = integrations.get('configurations') or []
+        for integration in integrations:
+            if integration.get('id') == entity_name and integration.get('display'):
+                body_request['integrationsQuery'] = integration.get('display')
+                packs_body_response = demisto.internalHttpRequest(
+                    'POST', '/contentpacks/marketplace/search', json.dumps(body_request)
+                )
+                packs_body_response = json.loads(ast.literal_eval(json.dumps(packs_body_response.get('body'))))
+                packs = packs_body_response.get('packs') or []
+                break
+    # if the search provided more than 1 result, it is possible that the script/integration/pack name was a substring
+    # to other script pack, hence it is required to make sure that the entity that was searched is in the correct pack.
+    if query_type == 'integration' or query_type == 'automation':
+        for pack in packs:
+            for content_entity in (pack.get('contentItems') or {}).get(query_type) or []:
+                if (content_entity.get('name') or '') == entity_name:
+                    return pack.get('currentVersion')
+    else:
+        for pack in packs:
+            if pack.get('name') == entity_name:
+                return pack.get('currentVersion')
+    return ''
+
+
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
 ###########################################
