@@ -3486,7 +3486,7 @@ Lists all lables in a Users Gmail.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | The user's email address. The special value **me** can be used to indicate the authenticated user.. | Required | 
+| user-id | The user's email address. The special value '*me*' can be used to indicate the authenticated user. | Required | 
 
 
 #### Context Output
