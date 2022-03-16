@@ -6446,9 +6446,12 @@ class CommandRunner:
             :param args_lst: list of args
             :return:
             """
-            if not isinstance(commands, list) or not isinstance(args_lst, list) or len(commands) != len(args_lst):
-                raise DemistoException('commands and arg_lst arguments given are not valid')
-
+            if not isinstance(commands, list):
+                raise DemistoException('commands argument is not a list')
+            if not isinstance(args_lst, list):
+                raise DemistoException('args_lst argument is not a list')
+            if len(commands) != len(args_lst):
+                raise DemistoException('commands and args_lst should be in the same size')
 
     class Result:
         """
@@ -6507,7 +6510,7 @@ class CommandRunner:
                         results.append(CommandRunner.Result(command, args, brand_name, module_name, res))
             except ValueError as e:
                 # We expect this error when the command is not supported.
-                demisto.debug(str(e))  # todo add comment in log
+                demisto.debug('demisto.executeCommand received and error: {e}'.format(e=str(e)))
         return results, errors
 
     @staticmethod
@@ -6550,7 +6553,7 @@ class CommandRunner:
         results_summary_table = []
         headers = ['Instance', 'Command', 'Result', 'Comment']
         for res in results:
-            # don't care about using in command
+            # don't care about using arg in command
             res.args.pop('using', None)
             res.args.pop('using-brand', None)
             command = {'command': res.command,
@@ -6562,7 +6565,7 @@ class CommandRunner:
                                           'Comment': None})
 
         for err in errors:
-            # don't care about using in command
+            # don't care about using arg in command
             err.args.pop('using', None)
             err.args.pop('using-brand', None)
             command = {'command': err.command,
