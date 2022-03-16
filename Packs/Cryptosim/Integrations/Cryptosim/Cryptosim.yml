@@ -56,14 +56,14 @@ script:
       name: endDate
       required: true
       secret: false
-    - default: true
+    - default: false
       defaultValue: false
       description: 'Boolean, show only solved correlations if the parameter is true, otherwise take all correlations'
       isArray: false
       name: showSolved
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: -1
       description: 'If user want to take specific correlation, can take it when ID of correlation is given as parameter.'
       isArray: false
@@ -76,42 +76,42 @@ script:
       name: containStr
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: -1
       description: 'The risk level of correlation rules to filter. Default: -1. Default get all.'
       isArray: false
       name: risk
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: null
       description: 'This  used  to  search  the  source  IP address in the request. E.g.: “srcIPPort”: “127.0.0.1”'
       isArray: false
       name: srcIPPort
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: null
       description: 'This  used  to  search  the  destination  IP address in the request. E.g.: “dest IPPort”: “127.0.0.1”'
       isArray: false
       name: destIPPort
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: null
       description: 'This  is  used  to  filter  the  responses using the source port. E.g.: “srcPort”: “6335”'
       isArray: false
       name: srcPort
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: null
       description: 'This  is  used  to  filter  the  responses using the source port. E.g.: “destPort”: “6335”'
       isArray: false
       name: destPort
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: 'equal'
       description: 'risk operator name. It can be equal, greaternumber, greaterorequalnumber, lessnumber, lessnumberorequal, notequal. Default: equal'
       isArray: false
