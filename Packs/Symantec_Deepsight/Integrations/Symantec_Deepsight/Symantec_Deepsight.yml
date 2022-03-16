@@ -20,8 +20,8 @@ configuration:
   name: unsecure
   required: false
   type: 8
-description: Leverage Symantec Deepsight Intelligence
-display: Symantec Deepsight Intelligence (Beta)
+description: Deprecated. Use ACTI Vulnerability Query instead.
+display: Symantec Deepsight Intelligence (Deprecated)
 name: Symantec Deepsight Intelligence
 script:
   commands:
@@ -110,13 +110,13 @@ script:
       description: The MATI report identification date
       type: date
     - contextPath: Deepsight.IP.ReputationValues.Reputation
-      description: A value that combines an item’s behaviors exhibited, confidence in the listing, hostility of the item, consecutive listings and listing ratio; values range from 1 to 10 with higher values representing a worse reputation
+      description: A value that combines an item's behaviors exhibited, confidence in the listing, hostility of the item, consecutive listings and listing ratio; values range from 1 to 10 with higher values representing a worse reputation
       type: number
     - contextPath: Deepsight.IP.ReputationValues.Confidence
       description: Shows our confidence on whether the listing is correct or a false positive with values ranging from 1 to 5 with higher values representing more confidence in the listing
       type: number
     - contextPath: Deepsight.IP.ReputationValues.Hostility
-      description: Enumerates the IP address’ hostility level with values ranging from 1 to 5 with higher values representing a more hostile item
+      description: Enumerates the IP address hostility level with values ranging from 1 to 5 with higher values representing a more hostile item
       type: number
     - contextPath: IP.Malicious.Description
       description: Description of the malicious IP
@@ -212,13 +212,13 @@ script:
       description: The time and date that the domain last appeared in the database
       type: date
     - contextPath: Deepsight.Domain.ReputationValues.Reputation
-      description: A value that combines an item’s behaviors exhibited, confidence in the listing, hostility of the item, consecutive listings and listing ratio; values range from 1 to 10 with higher values representing a worse reputation
+      description: A value that combines an item's behaviors exhibited, confidence in the listing, hostility of the item, consecutive listings and listing ratio; values range from 1 to 10 with higher values representing a worse reputation
       type: number
     - contextPath: Deepsight.Domain.ReputationValues.Confidence
       description: Shows our confidence on whether the listing is correct or a false positive with values ranging from 1 to 5 with higher values representing more confidence in the listing
       type: number
     - contextPath: Deepsight.Domain.ReputationValues.Hostility
-      description: ' Enumerates the IP address’ hostility level with values ranging from 1 to 5 with higher values representing a more hostile item'
+      description: 'Enumerates the IP address hostility level with values ranging from 1 to 5 with higher values representing a more hostile item'
       type: string
     - contextPath: Deepsight.Domain.Domain
       description: The domain itself
@@ -369,6 +369,7 @@ script:
   subtype: python2
   type: python
 tests:
-- Symantec Deepsight Test
+- No test
 beta: true
 fromversion: 5.0.0
+deprecated: true
