@@ -1,4 +1,4 @@
-category: Utilities
+category: Network Security
 commonfields:
   id: Ncurion
   version: -1
@@ -60,26 +60,6 @@ script:
   - arguments: []
     name: ncurion-get-log-list
     outputs:
-    - contextPath: Ncurion.sensor.ID
-      type: string
-    - contextPath: Ncurion.sensor.Name
-      type: string
-    - contextPath: Ncurion.sensor.Host
-      type: string
-    - contextPath: Ncurion.sensor.Log_storage_month_period
-      type: string
-    - contextPath: Ncurion.sensor.Useno
-      type: string
-    - contextPath: Ncurion.sensor.Sync_state
-      type: string
-    - contextPath: Ncurion.sensor.Is_connected
-      type: string
-    - contextPath: Ncurion.sensor.Description
-      type: string
-    - contextPath: Ncurion.sensor.Created_at
-      type: date
-    - contextPath: Ncurion.sensor.Updated_at
-      type: date
   dockerimage: demisto/python3:3.9.5.21272
   isFetchSamples: true
   isfetch: true
