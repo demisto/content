@@ -341,7 +341,7 @@ class Client(BaseClient):
         res = self._http_request('GET', "record:host", params=params)
         return res
 
-    def create_record(self, suffix: Optional[str], **kwargs: Union[str, int, None]) -> Dict:
+    def create_record(self, suffix: Optional[str], **kwargs: Union[str, int, None]) -> Dict[str, Dict]:
         """Creates new record.
         Args:
             suffix: The infoblox object to be used as a url path.
@@ -381,7 +381,7 @@ class Client(BaseClient):
             Response JSON
         """
         suffix = "record:host"
-        payload = '{ "name":"' + str(host) + '","ipv4addrs":[{"ipv4addr":"' + str(ipadd) + '"}]}'
+        payload = {"name": str(host), "ipv4addrs": [{"ipv4addr": str(ipadd)}]}
         headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
 
         rule = self._http_request('POST', suffix, headers=headers, data=payload)
@@ -397,7 +397,7 @@ class Client(BaseClient):
                 {"ipv4addr": str(ipv4addr)}
             ]
         }
-        res = self._http_request('PUT', f"{refid}", params=params, json_data=payload)
+        res = self._http_request('PUT', refid, params=params, json_data=payload)
         return res
 
     def update_a_record(self, refid: str, ipv4addr: str, name: Optional[str], comment: Optional[str]):
@@ -405,11 +405,11 @@ class Client(BaseClient):
             "_return_as_object": 1
         }
         payload = {
-            "ipv4addr": str(ipv4addr),
+            "ipv4addr": ipv4addr,
             "name": name,
             "comment": comment
         }
-        res = self._http_request('PUT', f"{refid}", params=params, json_data=payload)
+        res = self._http_request('PUT', refid, params=params, json_data=payload)
         return res
 
     def delete_host(self, refid: Optional[str]) -> Dict:
@@ -422,7 +422,7 @@ class Client(BaseClient):
         """
         headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
 
-        suffix = "record:host/" + str(refid)
+        suffix = f"record:host/{refid}"
 
         rule = self._http_request('DELETE', suffix, headers=headers)
         return rule
@@ -445,16 +445,16 @@ def parse_demisto_exception(error: DemistoException, field_in_error: str = 'text
     return DemistoException(err_msg)
 
 
-def results_to_context_data(results: Union[Dict, List], to_list: bool) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
-    if to_list:
-        context_data = []
+def results_to_context_data(results: Union[Dict, List]) -> List[Dict[str, Any]]:
+    context_data: List[Dict[str, Any]] = list()
+    if isinstance(results, list):
         for result in results:
             fixed_keys_obj = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
                               result.items()}
             context_data.append(fixed_keys_obj)
-    else:
-        context_data = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                        results.items()}
+    elif isinstance(results, dict):
+        context_data = [{RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for
+                         key, val in results.items()}]
     return context_data
 
 
@@ -475,7 +475,9 @@ def get_ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict, Dic
     Returns:
         Outputs
     """
-    ip = str(args.get('ip'))
+    ip = args.get('ip')
+    if not ip:
+        ip = ''
     raw_response = client.get_ip(ip)
     ip_list = raw_response.get('result')
 
@@ -506,7 +508,7 @@ def search_related_objects_by_ip_command(client: Client, args: Dict) -> Tuple[st
     results = raw_response.get('result')
     if not results:
         return f'{INTEGRATION_NAME} - No objects associated with ip: {ip} were found', {}, {}
-    context_data = results_to_context_data(results, to_list=True)
+    context_data = results_to_context_data(results)
     title = f'{INTEGRATION_NAME} - IP: {ip} search results.'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.IPRelatedObjects(val.ReferenceID && val.ReferenceID === obj.ReferenceID)':
@@ -572,7 +574,7 @@ def list_response_policy_zones_command(client: Client, args: Dict) -> Tuple[str,
     results = raw_response.get('result')
     if not results:
         return f'{INTEGRATION_NAME} - No Response Policy Zones were found', {}, {}
-    context_data = results_to_context_data(results, to_list=True)
+    context_data = results_to_context_data(results)
     display_first_x_results = f'(first {max_results} results)' if max_results else ''
     title = f'{INTEGRATION_NAME} - Response Policy Zones list {display_first_x_results}:'
     context = {
@@ -590,7 +592,7 @@ def create_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str
     Returns:
         Outputs
     """
-    fqdn = args.get('fqdn')
+    fqdn = args.get('FQDN')
     rpz_policy = args.get('rpz_policy')
     rpz_severity = args.get('rpz_severity')
     substitute_name = args.get('substitute_name')
@@ -599,7 +601,7 @@ def create_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str
         raise DemistoException('Response policy zone with policy SUBSTITUTE requires a substitute name')
     raw_response = client.create_response_policy_zone(fqdn, rpz_policy, rpz_severity, substitute_name, rpz_type)
     results = raw_response.get('result', {})
-    context_data = results_to_context_data(results, to_list=False)
+    context_data = results_to_context_data(results)
     title = f'{INTEGRATION_NAME} - Response Policy Zone: {fqdn} has been created'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)': context_data}
@@ -649,7 +651,7 @@ def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
         raise DemistoException('Substitute (domain name) rules requires a substitute name argument')
     raw_response = client.create_rpz_rule(rule_type, object_type, name, rp_zone, view, substitute_name, comment)
     results = raw_response.get('result', {})
-    context_data = results_to_context_data(results, to_list=False)
+    context_data = results_to_context_data(results)
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': context_data}
@@ -675,7 +677,7 @@ def create_a_substitute_record_rule_command(client: Client, args: Dict) -> Tuple
     raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
                                                         comment=comment, ipv4addr=ipv4addr)
     results = raw_response.get('result', {})
-    context_data = results_to_context_data(results, to_list=False)
+    context_data = results_to_context_data(results)
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': context_data}
@@ -701,7 +703,7 @@ def create_aaaa_substitute_record_rule_command(client: Client, args: Dict) -> Tu
     raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
                                                         comment=comment, ipv6addr=ipv6addr)
     results = raw_response.get('result', {})
-    context_data = results_to_context_data(results, to_list=False)
+    context_data = results_to_context_data(results)
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': context_data}
@@ -729,7 +731,7 @@ def create_mx_substitute_record_rule_command(client: Client, args: Dict) -> Tupl
                                                         comment=comment, mail_exchanger=mail_exchanger,
                                                         preference=preference)
     results = raw_response.get('result', {})
-    context_data = results_to_context_data(results, to_list=False)
+    context_data = results_to_context_data(results)
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': context_data}
@@ -759,7 +761,7 @@ def create_naptr_substitute_record_rule_command(client: Client, args: Dict) -> T
                                                         replacement=replacement)
 
     results = raw_response.get('result', {})
-    context_data = results_to_context_data(results, to_list=False)
+    context_data = results_to_context_data(results)
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': context_data}
@@ -789,7 +791,7 @@ def create_ptr_substitute_record_rule_command(client: Client, args: Dict) -> Tup
                                                         comment=comment, ptrdname=ptrdname, ipv4addr=ipv4addr,
                                                         ipv6addr=ipv6addr)
     results = raw_response.get('result', {})
-    context_data = results_to_context_data(results, to_list=False)
+    context_data = results_to_context_data(results)
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': context_data}
@@ -819,7 +821,7 @@ def create_srv_substitute_record_rule_command(client: Client, args: Dict) -> Tup
                                                         comment=comment, port=port, priority=priority, target=target,
                                                         weight=weight)
     results = raw_response.get('result', {})
-    context_data = results_to_context_data(results, to_list=False)
+    context_data = results_to_context_data(results)
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': context_data}
@@ -845,7 +847,7 @@ def create_txt_substitute_record_rule_command(client: Client, args: Dict) -> Tup
     raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
                                                         comment=comment, text=text)
     results = raw_response.get('result', {})
-    context_data = results_to_context_data(results, to_list=False)
+    context_data = results_to_context_data(results)
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': context_data}
@@ -871,7 +873,7 @@ def create_ipv4_substitute_record_rule_command(client: Client, args: Dict) -> Tu
     raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
                                                         comment=comment, ipv4addr=ipv4addr)
     results = raw_response.get('result', {})
-    context_data = results_to_context_data(results, to_list=False)
+    context_data = results_to_context_data(results)
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': context_data}
@@ -897,7 +899,7 @@ def create_ipv6_substitute_record_rule_command(client: Client, args: Dict) -> Tu
     raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
                                                         comment=comment, ipv6addr=ipv6addr)
     results = raw_response.get('result', {})
-    context_data = results_to_context_data(results, to_list=False)
+    context_data = results_to_context_data(results)
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': context_data}
@@ -918,8 +920,8 @@ def enable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     raw_response = client.change_rule_status(reference_id, disable=False)
 
     results = raw_response.get('result', {})
-    context_data: Dict = results_to_context_data(results, to_list=False)
-    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {context_data.get("Name")} has been enabled'
+    context_data = results_to_context_data(results)
+    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {context_data[0].get("Name")} has been enabled'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': context_data}
     human_readable = tableToMarkdown(title, context_data, headerTransform=pascalToSpace)
@@ -939,8 +941,8 @@ def disable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     raw_response = client.change_rule_status(reference_id, disable=True)
 
     results = raw_response.get('result', {})
-    context_data: Dict = results_to_context_data(results, to_list=False)
-    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {context_data.get("Name")} has been disabled'
+    context_data = results_to_context_data(results)
+    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {context_data[0].get("Name")} has been disabled'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': context_data}
     human_readable = tableToMarkdown(title, context_data, headerTransform=pascalToSpace)
@@ -989,7 +991,7 @@ def search_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     results = raw_response.get('result')
     if not results:
         return f'No rules with name: {rule_name} of type: {object_type} were found', {}, raw_response
-    context_data = results_to_context_data(results, to_list=True)
+    context_data = results_to_context_data(results)
     title = f'{INTEGRATION_NAME} - Search result for: {rule_name}: '
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.RulesSearchResults(val.Name && val.Name === obj.Name)': context_data
@@ -1019,7 +1021,7 @@ def list_hosts_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     results = raw_response.get('result')
     if not results:
         return f'{INTEGRATION_NAME} - No hosts were found', {}, {}
-    context_data = results_to_context_data(results, to_list=True)
+    context_data = results_to_context_data(results)
     title = f'{INTEGRATION_NAME} - List of Host Records: '
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.Host(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': context_data}
@@ -1033,7 +1035,7 @@ def list_records_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     results = raw_response.get('result')
     if not results:
         return f'{INTEGRATION_NAME} - No records associated to {zone} were found', {}, {}
-    context_data = results_to_context_data(results, to_list=True)
+    context_data = results_to_context_data(results)
     title = f'{INTEGRATION_NAME} - List of All Records: '
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.Record(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': context_data}
@@ -1047,7 +1049,7 @@ def search_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, D
     results = raw_response.get("result")
     if not results:
         return f'{INTEGRATION_NAME} - No records associated to {name} were found', {}, {}
-    context_data = results_to_context_data(results, to_list=True)
+    context_data = results_to_context_data(results)
     title = f'{INTEGRATION_NAME} - Search for a Host Record: {name}'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.Host(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': context_data}
@@ -1061,7 +1063,8 @@ def create_a_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     infoblox_object_type = 'record:a'
     raw_response = client.create_record(infoblox_object_type, name=name, ipv4addr=ipv4addr)
     results = raw_response.get('result')
-    context_data = results_to_context_data(results, to_list=False)
+    assert isinstance(results, dict)
+    context_data = results_to_context_data(results)
     title = f'{INTEGRATION_NAME} - A Record: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ARecord(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': context_data}
@@ -1089,7 +1092,7 @@ def update_host_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
     ipv4addr = str(args.get("ipv4addr"))
     raw_response = client.update_host_ip(ref_id, ipv4addr)
     results = raw_response.get('result')
-    context_data = results_to_context_data(results, to_list=False)
+    context_data = results_to_context_data(results)
     title = f"{INTEGRATION_NAME} - Updated a Host's IP with new IP address: {ipv4addr}"
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.Host(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': context_data}
@@ -1133,7 +1136,6 @@ def delete_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, D
     if ref_id:
         raw_response = client.delete_host(ref_id)
         deleted_ref_id = raw_response.get('result')
-        demisto.results(raw_response)
         title = f'{INTEGRATION_NAME} - Deleted a host successfully with reference id: {deleted_ref_id}'
         return title, {}, {}
     else:
@@ -1194,6 +1196,8 @@ def main():  # pragma: no cover
     try:
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
+        else:
+            raise NotImplementedError(f'{command} command is not implemented.')
     # Log exceptions
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} - {e}'
