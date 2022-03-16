@@ -7,12 +7,9 @@ function guid() {
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
 var sync = params.sync;
-function setLock(guid, info) {
+function setLock(guid, info, version) {
     if (sync) {
-        var versionedIntegrationContext = getVersionedIntegrationContext(true, true) || {};
-        var integrationContext = versionedIntegrationContext.context;
-        integrationContext[lockName] = {guid: guid, info: info};
-        setVersionedIntegrationContext(integrationContext, true, versionedIntegrationContext.version);
+        mergeVersionedIntegrationContext({newContext : {[lockName] : {guid: guid, info: info}}, version : version});
     } else {
         var integrationContext = getIntegrationContext() || {};
         integrationContext[lockName] = {guid: guid, info: info};
@@ -25,13 +22,13 @@ function setLock(guid, info) {
         if (!integrationContext[lockName]) {
             integrationContext[lockName] = {};
         }
-        return integrationContext[lockName];
+        return [integrationContext[lockName], versionedIntegrationContext.version];
     } else {
         var integrationContext = getIntegrationContext() || {};
         if (!integrationContext[lockName]) {
             integrationContext[lockName] = {};
         }
-        return integrationContext[lockName];
+        return [integrationContext[lockName], null];
     }
 }
 var lockName = args.name || 'Default';
@@ -41,28 +38,30 @@ switch (command) {
         return 'ok';
 
     case 'demisto-lock-get':
-        var lockTimeout = args.timeout || params.timeout;
+        var lockTimeout = args.timeout || params.timeout || 600;
         var lockInfo = 'Locked by incident #' + incidents[0].id + '.';
         lockInfo += (args.info) ? ' Additional info: ' + args.info :'';
 
         var guid = guid();
         var time = 0;
-        var lock = getLock();
+        var lock, version;
 
-        while (lock.guid !== guid && time++ < lockTimeout) {
-            wait(1);
-            lock = getLock();
+        do{
+            [lock, version] = getLock();
             if (lock.guid === guid) {
-                continue;
+                break;
             }
             if (!lock.guid) {
                 try {
-                    setLock(guid, lockInfo);
+                    setLock(guid, lockInfo, version);
                 } catch(err) {
                     logDebug(err.message)
                 }
             }
-        }
+            wait(1);
+        } while (time++ < lockTimeout) ;
+
+        [lock, version] = getLock();
 
         if (lock.guid === guid) {
             var md = '### Demisto Locking Mechanism\n';
@@ -78,9 +77,13 @@ switch (command) {
         break;
 
     case 'demisto-lock-release':
-        integrationContext = getVersionedIntegrationContext(sync);
-        integrationContext[lockName] = {};
-        setVersionedIntegrationContext(integrationContext, sync);
+        if(sync)   {
+            mergeVersionedIntegrationContext({newContext : {[lockName] : 'remove'}, retries : 5});
+        } else {
+            integrationContext = getVersionedIntegrationContext(sync);
+            delete integrationContext[lockName];
+            setVersionedIntegrationContext(integrationContext, sync);
+        }
 
         var md = '### Demisto Locking Mechanism\n';
         md += 'Lock released successfully';
