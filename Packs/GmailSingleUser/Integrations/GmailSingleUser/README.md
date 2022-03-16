@@ -7,18 +7,19 @@ Use the Gmail Single User integration to send emails and fetch emails as inciden
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Gmail Single User.
 3. Click **Add instance** to create and configure a new integration instance.
-    | **Parameter Name** | **Description** |**Required** |
-    | --- | --- | --- |
-    | email | Gmail of the user | True |
-    | code | Auth Code (run the !gmail-auth-link command to start the auth flow - see the Application Authorization Flow section) | False |
-    | client_id | Client ID (Optional: use your own app - see Application Authorization Flow section) | False |
-    | incidentType | Incident type | False |
-    | isFetch | Fetch incidents | False |
-    | fetch_time | First fetch timestamp, in days | False |
-    | query | Events query (e.g., "from:example@demisto.com") | False |
-    | fetch_limit | Maximum number of emails to pull per fetch. Default is 50.<br/>The maximum number is 200 emails per fetch (even if a higher number is configured). | False | 
-    | insecure | Trust any certificate (not secure) | False |
-    | proxy | Use system proxy settings | False |
+
+| **Parameter Name** | **Description**                                                                                                                                    | **Required** |
+|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| email              | Gmail of the user                                                                                                                                  | True         |
+| code               | Auth Code (run the !gmail-auth-link command to start the auth flow - see the Application Authorization Flow section)                               | False        |
+| client_id          | Client ID (Optional: use your own app - see Application Authorization Flow section)                                                                | False        |
+| incidentType       | Incident type                                                                                                                                      | False        |
+| isFetch            | Fetch incidents                                                                                                                                    | False        |
+| fetch_time         | First fetch timestamp, in days                                                                                                                     | False        |
+| query              | Events query (e.g., "from:example@demisto.com")                                                                                                    | False        |
+| fetch_limit        | Maximum number of emails to pull per fetch. Default is 50.<br/>The maximum number is 200 emails per fetch (even if a higher number is configured). | False        | 
+| insecure           | Trust any certificate (not secure)                                                                                                                 | False        |
+| proxy              | Use system proxy settings                                                                                                                          | False        |
 
 ## Application Authorization Flow
 
