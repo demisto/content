@@ -595,8 +595,8 @@ class TestMergeVersionBlocks:
         assert '- **accountRep**' in rn
 
     @pytest.mark.parametrize('pack_versions_dict', [
-        ({'1.0.1':"#### Scripts\n***Breaking Change*** some change\n##### entity1\n- Fixed something",
-        '1.0.2':"#### Scripts\n***Breaking Changes*** some changes\n##### GetIncidentsByQuery"})])
+        ({'1.0.1': "#### Scripts\n***Breaking Change*** some change\n##### entity1\n- Fixed something",
+          '1.0.2': "#### Scripts\n***Breaking Changes*** some changes\n##### GetIncidentsByQuery"})])
     def test_merge_rns(self, pack_versions_dict):
         """
             Given:
