@@ -58,6 +58,18 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Lists all labels in the user's mailbox.
+    execution: false
+    name: gmail-labels-list
+  - arguments:
+    - default: true
+      description: The user's email address. The "me" special value can be used to
+        indicate the authenticated user.
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    deprecated: false
     description: Deletes a Gmail user.
     execution: false
     name: gmail-delete-user
