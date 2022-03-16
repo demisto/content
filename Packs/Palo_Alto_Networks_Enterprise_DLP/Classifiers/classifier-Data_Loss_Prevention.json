@@ -9,9 +9,13 @@
             "dontMapEventToLabels": true,
             "internalMapping": {
                 "App": {
-                    "complex": null,
-                    "simple": "channel"
-                },
+					"complex": null,
+					"simple": "incidentDetails.app_details.name"
+				},
+				"DLP Channel": {
+					"complex": null,
+					"simple": "channel"
+				},
                 "PAN DLP Data Profile Name": {
                     "complex": null,
                     "simple": "dataProfileName"
@@ -33,6 +37,10 @@
                     "complex": null,
                     "simple": "region"
                 },
+                "DLP Report ID": {
+					"complex": null,
+					"simple": "reportId"
+				},
                 "PAN DLP Tenant ID": {
                     "complex": null,
                     "simple": "tenantId"

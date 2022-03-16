@@ -91,16 +91,24 @@ script:
             - CONFIRMED_SENSITIVE
             - CONFIRMED_FALSE_POSITIVE
             - EXCEPTION_REQUESTED
+            - EXCEPTION_GRANTED
           description: The user feedback
         - name: user_id
           required: true
           description: The id of the user from whom the feedback is collected
         - name: region
           description: The region where the incident was originated
+        - name: report_id
+          description: The DLP report id, needed only for granting exemption
+        - name: dlp_channel
+          description: The DLP channel, needed only for granting exemption
     outputs:
       - contextPath: DLP.IncidentUpdate.success
         description: Whether or not the update was successful
         type: boolean
+      - contextPath: DLP.IncidentUpdate.exemption_duration
+        description: Exemption duration, only available for "EXCEPTION_GRANTED"
+        type: number
     description: Update a DLP incident with user feedback
   - name: pan-dlp-exemption-eligible
     arguments:
@@ -133,7 +141,7 @@ script:
     description: Get the Slack bot message to send to the user for gathering feedback
   dockerimage: demisto/python3:3.10.1.26972
   isFetchSamples: true
-  longRunning: false
+  longRunning: true
   runonce: false
   script: '-'
   subtype: python3

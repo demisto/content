@@ -87,7 +87,25 @@
                                 "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            }
+                            },
+                            {
+								"endCol": 2,
+								"fieldId": "dlpreportid",
+								"height": 22,
+								"id": "a7fd5e00-a3c4-11ec-a74a-c515d4360dc1",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dlpchannel",
+								"height": 22,
+								"id": "aaa23f40-a3c4-11ec-a74a-c515d4360dc1",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
                         ],
                         "maxW": 3,
                         "name": "Case Details",

@@ -9,6 +9,8 @@ from enum import Enum
 from datetime import datetime
 import math
 from string import Template
+import bz2
+import base64
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -33,6 +35,7 @@ class FeedbackStatus(Enum):
     CONFIRMED_FALSE_POSITIVE = 'CONFIRMED_FALSE_POSITIVE'
     EXCEPTION_REQUESTED = 'EXCEPTION_REQUESTED'
     OPERATIONAL_ERROR = 'OPERATIONAL_ERROR'
+    EXCEPTION_GRANTED = 'EXCEPTION_GRANTED'
 
 
 class Client(BaseClient):
@@ -169,7 +172,8 @@ class Client(BaseClient):
         resp, status_code = self._get_dlp_api_call(url)
         return resp
 
-    def update_dlp_incident(self, incident_id: str, feedback: FeedbackStatus, user_id: str, region: str):
+    def update_dlp_incident(self, incident_id: str, feedback: FeedbackStatus, user_id: str, region: str,
+                            report_id: str, dlp_channel: int):
         """
                 Update Incident with user provided feedback
                 Args:
@@ -179,7 +183,9 @@ class Client(BaseClient):
                 Returns: DLP Incident json
                 """
         payload = {
-            'user_id': user_id
+            'user_id': user_id,
+            'report_id': report_id,
+            'service_name': dlp_channel
         }
         url = f'{UPDATE_INCIDENT_URL}/{incident_id}?feedback_type={feedback.value}&region={region}'
         return self._post_dlp_api_call(url, payload)
@@ -303,19 +309,32 @@ def print_debug_msg(msg: str):
     demisto.debug(f'PAN-DLP-Msg - {msg}')
 
 
-def update_incident(client: Client, incident_id: str, feedback: str, user_id: str, region: str):
+def update_incident(client: Client, incident_id: str, feedback: str, user_id: str, region: str,
+                    report_id: str, dlp_channel: int):
     feedback_enum = FeedbackStatus[feedback.upper()]
-    result_json, status = client.update_dlp_incident(incident_id, feedback_enum, user_id, region)
+    result_json, status = client.update_dlp_incident(incident_id, feedback_enum, user_id, region, report_id, dlp_channel)
     result = {
         'success': status == 200,
         'feedback': feedback_enum.value
     }
+
+    if feedback_enum == FeedbackStatus.EXCEPTION_GRANTED:
+        minutes = result_json['expiration_duration_in_minutes']
+        result['exemption_duration'] = minutes / 60
+
     results = CommandResults(
         outputs_prefix='DLP.IncidentUpdate',
         outputs_key_field='feedback',
         outputs=result
     )
     demisto.results(results.to_context())
+
+
+def parse_incident_details(compressed_details: str):
+    details_byte_data = bz2.decompress(base64.b64decode(compressed_details))
+    details_string = details_byte_data.decode('utf-8')
+    details_obj = json.loads(details_string)
+    return details_obj
 
 
 def fetch_incidents(client: Client, start_time: int, end_time: int, regions: str):
@@ -328,6 +347,8 @@ def fetch_incidents(client: Client, start_time: int, end_time: int, regions: str
         for raw_incident in raw_incidents:
             raw_incident['region'] = region
             incident_creation_time = dateparser.parse(raw_incident['createdAt'])
+            parsed_details = parse_incident_details(raw_incident['incidentDetails'])
+            raw_incident['incidentDetails'] = parsed_details
             event_dump = json.dumps(raw_incident)
             incident = {
                 'name': f'Palo Alto Networks DLP Incident {raw_incident["incidentId"]}',
@@ -450,7 +471,9 @@ def main():
             feedback = args.get('feedback')
             user_id = args.get('user_id')
             region = args.get('region')
-            update_incident(client, incident_id, feedback, user_id, region)
+            report_id = args.get('report_id')
+            dlp_channel = args.get('dlp_channel')
+            update_incident(client, incident_id, feedback, user_id, region, report_id, dlp_channel)
         elif demisto.command() == 'pan-dlp-exemption-eligible':
             exemption_eligible(args, params)
         elif demisto.command() == 'pan-dlp-slack-message':

@@ -119,12 +119,14 @@ Updates a DLP incident with user feedback
 | user_id | The user whose upload triggered the DLP incident | Required |
 | feedback | User's feedback to the incident | Required |
 | region | The region in which the DLP incident was generated | Required | 
-
+| report_id | The DLP report id for the incident | Optional |
+| dlp_channel | The DLP channel in which the incident originated from | Optional |
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 |  DLP.IncidentUpdate.success | bool | Whether or not the update is successful. | 
+|  DLP.IncidentUpdate.exemption_duration | bool | The effective duration for the exemption in hours |
 
 ### pan-dlp-exemption-eligible
 *** 
