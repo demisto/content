@@ -1,0 +1,1 @@
+Ncurion is a container-based, standardized detection engine that protects the nature of intrusion detection, improves performance, and effectively responds to changing network attacks in the cyber market. It can detect vulnerability-based attacks such as networks, OS, web, and applications, as well as various types of network attacks and malicious code.

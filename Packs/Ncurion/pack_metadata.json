@@ -1,0 +1,17 @@
+{
+    "name": "Ncurion",
+    "description": "Ncurion is a container-based, standardized detection engine that protects the nature of intrusion detection, improves performance, and effectively responds to changing network attacks in the cyber market. It can detect vulnerability-based attacks such as networks, OS, web, and applications, as well as various types of network attacks and malicious code.\nYou can collect Ncurion data and check the log server list through the interworking script.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "shleeNc",
+    "url": "",
+    "email": "",
+    "created": "2022-03-16T06:56:01Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "shleeNc"
+    ]
+}
