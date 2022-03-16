@@ -60,7 +60,7 @@ script:
     deprecated: false
     description: Lists all labels in the user's mailbox.
     execution: false
-    name: gmail-labels-list
+    name: gmail-list-labels
   - arguments:
     - default: true
       description: The user's email address. The "me" special value can be used to
