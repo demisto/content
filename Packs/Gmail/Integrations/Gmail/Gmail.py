@@ -672,6 +672,13 @@ def list_users_command():
     return users_to_entry('Users:', users, next_page_token)
 
 
+def list_labels_command():
+    args = demisto.args()
+    user_key = args.get('user-id')
+
+    return list_labels(user_key)
+
+
 def list_users(domain, customer=None, query=None, sort_order=None, view_type='admin_view',
                show_deleted=False, max_results=100, projection='basic', custom_field_mask=None, page_token=None):
     command_args = {
@@ -927,6 +934,20 @@ def delete_user(user_key):
     service.users().delete(**command_args).execute()
 
     return 'User {} have been deleted.'.format(command_args['userKey'])
+
+
+def list_labels(user_key):
+    command_args = {
+        'userKey': user_key,
+    }
+
+    service = get_service(
+        'admin',
+        'directory_v1',
+        ['https://www.googleapis.com/auth/admin.directory.user'])
+    res = service.users().labels.list(**command_args).execute()
+
+    return res
 
 
 def get_user_role_command():
@@ -2034,6 +2055,7 @@ def main():
     ''' EXECUTION CODE '''
     COMMANDS = {
         'gmail-list-users': list_users_command,
+        'gmail-list-labels': list_labels_command,
         'gmail-get-user': get_user_command,
         'gmail-create-user': create_user_command,
         'gmail-delete-user': delete_user_command,
