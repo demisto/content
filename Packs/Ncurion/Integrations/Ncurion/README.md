@@ -40,22 +40,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 #### Context Output
 
 | **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Ncurion.sensor.ID | string |  | 
-| Ncurion.sensor.Name | string |  | 
-| Ncurion.sensor.Host | string |  | 
-| Ncurion.sensor.Log_storage_month_period | string |  | 
-| Ncurion.sensor.Useno | string |  | 
-| Ncurion.sensor.Sync_state | string |  | 
-| Ncurion.sensor.Is_connected | string |  | 
-| Ncurion.sensor.Description | string |  | 
-| Ncurion.sensor.Created_at | date |  | 
-| Ncurion.sensor.Updated_at | date |  | 
+
 
 
 #### Command Example
 ``` ```
 
 #### Human Readable Output
-
-
