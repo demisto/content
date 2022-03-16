@@ -101,9 +101,21 @@ IP_RES_JSON = {
 IP_INTEL_JSON = {'results': [
     {
         'key': '0.0.0.0',
-        'title': 'my intelligence alert',
+        'title': 'my intelligence alert1',
         'type': 'intelligence_alert',
         'uuid': 'e5d40481-bea4-4d33-95d2-e029cff28084'
+    },
+    {
+        'key': '0.0.0.0',
+        'title': 'my intelligence alert2',
+        'type': 'intelligence_alert',
+        'uuid': 'e5d40481-bea4-4d33-95d2-e029cff28085'
+    },
+    {
+        'key': '0.0.0.0',
+        'title': 'my intelligence alert3',
+        'type': 'intelligence_alert',
+        'uuid': 'e5d40481-bea4-4d33-95d2-e029cff28086'
     },
     {
         'key': '0.0.0.0',
