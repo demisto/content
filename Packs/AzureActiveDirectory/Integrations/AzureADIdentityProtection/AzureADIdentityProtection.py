@@ -294,6 +294,7 @@ def get_last_fetch_time(last_run, params):
         # handle first time fetch
         first_fetch = f"{params.get('first_fetch') or '1 days'} ago"
         default_fetch_datetime = dateparser.parse(date_string=first_fetch, date_formats=[DATE_FORMAT])
+        assert default_fetch_datetime is not None, f'failed parsing {first_fetch}'
         last_fetch = str(default_fetch_datetime.isoformat(timespec='milliseconds'))
 
     last_fetch = date_str_to_azure_format(last_fetch)

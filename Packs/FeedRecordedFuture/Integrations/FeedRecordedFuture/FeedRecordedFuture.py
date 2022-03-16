@@ -157,7 +157,8 @@ class Client(BaseClient):
                              " requests made to Recorded Future. ")
             else:
                 return_error(
-                    '{} - exception in request: {} {}'.format(self.SOURCE_NAME, response.status_code, response.content))
+                    '{} - exception in request: {} {}'
+                    .format(self.SOURCE_NAME, response.status_code, response.content))  # type: ignore
 
         if service == 'connectApi':
             response_content = gzip.decompress(response.content)

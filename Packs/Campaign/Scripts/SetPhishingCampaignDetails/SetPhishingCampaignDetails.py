@@ -51,10 +51,13 @@ class SetPhishingCampaignDetails:
     def _get_most_updated_incident_id(self, campaign_incidents: list) -> str:
         # Assuming campaign_incidents contains at least the new incident.
         last_occurred = dateparser.parse(campaign_incidents[0]["occurred"])
+        assert last_occurred is not None
         last_id = campaign_incidents[0]["id"]
         for incident in campaign_incidents:
-            if last_occurred < dateparser.parse(incident["occurred"]):
-                last_occurred = dateparser.parse(incident["occurred"])
+            occurred = dateparser.parse(incident["occurred"])
+            assert occurred is not None, f'failed parsing {incident["occurred"]}'
+            if last_occurred < occurred:
+                last_occurred = occurred
                 last_id = incident["id"]
         return last_id
 

@@ -1317,9 +1317,9 @@ def parse_ip_addresses(ip_addresses: List[Dict]) -> List[Dict]:
                 'Status': item['operationalStatus']
             }
         else:
-            mac_addresses[current_mac]['IPAddresses'].append(item['ipAddress'])
+            mac_addresses[current_mac]['IPAddresses'].append(item['ipAddress'])  # type: ignore
 
-    return list(mac_addresses.values())
+    return list(mac_addresses.values())  # type: ignore
 
 
 def print_ip_addresses(parsed_ip_addresses: List[Dict]) -> str:
@@ -2352,7 +2352,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
             last_fetch_time = last_fetch_time + "Z"
 
     else:
-        last_fetch_time = datetime.strftime(first_fetch_time, TIME_FORMAT)
+        last_fetch_time = datetime.strftime(first_fetch_time, TIME_FORMAT)  # type: ignore
 
     latest_created_time = dateparser.parse(last_fetch_time,
                                            settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
@@ -2379,8 +2379,8 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
                                       settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
         if last_fetch_time:
-            if alert_time <= dateparser.parse(last_fetch_time,
-                                              settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'}):
+            parsed = dateparser.parse(last_fetch_time, settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
+            if alert_time <= parsed:  # type: ignore
                 demisto.debug(f"{INTEGRATION_NAME} - alert {str(alert)} was created at {alert['alertCreationTime']}."
                               f' Skipping.')
                 continue
@@ -2392,12 +2392,12 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
         })
 
         # Update last run and add incident if the incident is newer than last fetch
-        if alert_time > latest_created_time:
-            latest_created_time = alert_time
+        if alert_time > latest_created_time:  # type: ignore
+            latest_created_time = alert_time  # type: ignore
 
     # last alert is the newest as we ordered by it ascending
     demisto.debug(f'got {len(incidents)} incidents from the API.')
-    last_run['last_alert_fetched_time'] = datetime.strftime(latest_created_time, TIME_FORMAT)
+    last_run['last_alert_fetched_time'] = datetime.strftime(latest_created_time, TIME_FORMAT)  # type: ignore
     return incidents, last_run
 
 

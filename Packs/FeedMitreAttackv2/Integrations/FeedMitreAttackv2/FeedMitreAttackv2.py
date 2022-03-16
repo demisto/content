@@ -303,7 +303,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
         }
     }
-    generic_mapping_fields.update(mapping_by_type.get(indicator_type, {}))
+    generic_mapping_fields.update(mapping_by_type.get(indicator_type, {}))  # type: ignore
     return generic_mapping_fields
 
 

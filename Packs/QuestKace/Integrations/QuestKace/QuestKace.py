@@ -828,6 +828,7 @@ def parse_incidents(items: list, fetch_limit: str, time_format: str, parsed_last
             break
 
         incident_created_time = dateparser.parse(item['created'])
+        assert incident_created_time is not None, f"could not parse {item['created']}"
 
         incident = {
             'name': item['title'],

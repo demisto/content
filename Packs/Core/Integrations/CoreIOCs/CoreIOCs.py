@@ -161,7 +161,9 @@ def get_iocs(page=0, size=200, query=None) -> List:
 def demisto_expiration_to_core(expiration) -> int:
     if expiration and not expiration.startswith('0001'):
         try:
-            return int(parse(expiration).astimezone(timezone.utc).timestamp() * 1000)
+            expiration_date = parse(expiration)
+            assert expiration_date is not None, f'could not parse {expiration}'
+            return int(expiration_date.astimezone(timezone.utc).timestamp() * 1000)
         except ValueError:
             pass
     return -1

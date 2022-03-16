@@ -732,6 +732,7 @@ def fetch_incidents(client: Client,
         investigation_created_time = investigation.get('created_time')
         created_time = dateparser.parse(investigation_created_time,
                                         settings={'RETURN_AS_TIMEZONE_AWARE': False})
+        assert created_time is not None, f"could not parse {investigation_created_time}"
         incident = {
             'name': investigation.get('title'),
             'occurred': created_time.strftime(DATE_FORMAT)[:-4] + "Z",

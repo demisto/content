@@ -2597,7 +2597,9 @@ def fetch_incidents(
         last_fetch_date = datetime.fromtimestamp(last_fetch_timestamp / 1000)
         last_fetch = last_fetch_date
     else:
-        first_fetch_date = dateparser.parse(first_fetch_time).replace(tzinfo=None)
+        first_fetch_time_date = dateparser.parse(first_fetch_time)
+        assert first_fetch_time_date is not None, f'could not parse {first_fetch_time}'
+        first_fetch_date = first_fetch_time_date.replace(tzinfo=None)
         last_fetch = first_fetch_date
     incidents = []
     next_run = last_fetch

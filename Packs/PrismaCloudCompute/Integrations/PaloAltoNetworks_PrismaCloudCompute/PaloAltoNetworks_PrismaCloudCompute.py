@@ -476,7 +476,8 @@ def parse_date_string_format(date_string: str, new_format: str = "%B %d, %Y %H:%
         str: date as a new format, in case of a failure returns the original date string.
     """
     try:
-        return dateparser.parse(date_string=date_string).strftime(new_format)
+        parsed_date = dateparser.parse(date_string=date_string)  # type: ignore
+        return parsed_date.strftime(new_format)  # type: ignore
     except AttributeError:
         return date_string
 

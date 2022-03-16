@@ -690,14 +690,14 @@ def get_clicks_command(client: Client, is_blocked: bool, interval: str = None, t
         raise Exception('Must provide interval or time_range.')
     if interval and time_range:
         raise Exception('Must provide only one of the arguments interval or time_range.')
-    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):
+    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):  # type: ignore
         raise Exception('The maximum time range is 7 days')
-    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):
+    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):  # type: ignore
         raise Exception('The minimum time range is thirty seconds.')
 
-    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):
+    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):  # type: ignore
         end = datetime.utcnow().strftime(DATE_FORMAT)
-        start = dateparser.parse(time_range).strftime(DATE_FORMAT)
+        start = dateparser.parse(time_range).strftime(DATE_FORMAT)  # type: ignore
         intervals = [f'{start}/{end}']
     else:
         intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # type: ignore
@@ -799,14 +799,14 @@ def get_messages_command(client: Client, is_blocked: bool, interval: str = None,
         raise Exception('Must provide interval or time_range.')
     if interval and time_range:
         raise Exception('Must provide only one of the arguments interval or time_range.')
-    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):
+    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):  # type: ignore
         raise Exception('The maximum time range is 7 days')
-    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):
+    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):  # type: ignore
         raise Exception('The minimum time range is thirty seconds.')
 
-    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):
+    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):  # type: ignore
         end = datetime.utcnow().strftime(DATE_FORMAT)
-        start = dateparser.parse(time_range).strftime(DATE_FORMAT)
+        start = dateparser.parse(time_range).strftime(DATE_FORMAT)  # type: ignore
         intervals = [f'{start}/{end}']
     else:
         intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # type: ignore
@@ -865,17 +865,18 @@ def list_campaigns_command(client: Client, interval: str = None, limit: str = No
         raise Exception('Must provide interval or time_range.')
     if interval and time_range:
         raise Exception('Must provide only one of the arguments interval or time_range.')
-    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):
+    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):  # type: ignore
         raise Exception('The maximum time range is 7 days')
-    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):
+    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):  # type: ignore
         raise Exception('The minimum time range is thirty seconds.')
 
-    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):
+    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):  # type: ignore
         end = datetime.utcnow().strftime(DATE_FORMAT)
-        start = dateparser.parse(time_range).strftime(DATE_FORMAT)
+        start = dateparser.parse(time_range).strftime(DATE_FORMAT)  # type: ignore
         intervals = [f'{start}/{end}']
     else:
-        intervals = handle_interval(dateparser.parse(time_range), is_days_interval=True) if time_range else [
+        intervals = handle_interval(dateparser.parse(time_range),  # type: ignore
+                                    is_days_interval=True) if time_range else [  # type: ignore
             interval]  # type: ignore
 
     outputs = []
@@ -1108,14 +1109,14 @@ def list_issues_command(client: Client, interval: str = None, threat_status: str
         raise Exception('Must provide interval or time_range.')
     if interval and time_range:
         raise Exception('Must provide only one of the arguments interval or time_range.')
-    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):
+    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):  # type: ignore
         raise Exception('The maximum time range is 7 days')
-    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):
+    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):  # type: ignore
         raise Exception('The minimum time range is thirty seconds.')
 
-    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):
+    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):  # type: ignore
         end = datetime.utcnow().strftime(DATE_FORMAT)
-        start = dateparser.parse(time_range).strftime(DATE_FORMAT)
+        start = dateparser.parse(time_range).strftime(DATE_FORMAT)  # type: ignore
         intervals = [f'{start}/{end}']
     else:
         intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # type: ignore

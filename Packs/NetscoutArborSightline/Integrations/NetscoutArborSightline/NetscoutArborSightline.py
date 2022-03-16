@@ -713,7 +713,7 @@ def main() -> None:
         first_fetch = None
         if first_fetch_dt := arg_to_datetime(params.get('first_fetch', '3 days')):
             first_fetch = first_fetch_dt.isoformat()
-        max_fetch = min(arg_to_number(params.get('max_fetch', 50)), 100)
+        max_fetch = min(arg_to_number(params.get('max_fetch')) or 50, 100)
         alert_class = argToList(params.get('alert_class'))
         alert_type = argToList(params.get('alert_type'))
         if alert_class and alert_type:

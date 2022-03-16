@@ -127,7 +127,7 @@ is one with sufficient permissions to access that incident.\n' + get_error(respo
 def main():
     args = demisto.args()
     query = args.get("query")
-    max_incidents = arg_to_number(args.get("max_incidents", "300"))
+    max_incidents = arg_to_number(args.get("max_incidents")) or 300
     max_incidents = min(max_incidents, 1000)
     rest_api_instance = args.get("rest_api_instance")
     rest_api_instance_to_use = get_rest_api_instance_to_use() if not rest_api_instance else rest_api_instance

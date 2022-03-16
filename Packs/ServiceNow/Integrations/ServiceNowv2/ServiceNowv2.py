@@ -2392,7 +2392,9 @@ def get_modified_remote_data_command(
         mirror_limit: str = '100',
 ) -> GetModifiedRemoteDataResponse:
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'}).strftime('%Y-%m-%d %H:%M:%S')
+    parsed_date = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})
+    assert parsed_date is not None, f'could not parse {remote_args.last_update}'
+    last_update = parsed_date.strftime('%Y-%m-%d %H:%M:%S')
 
     demisto.debug(f'Running get-modified-remote-data command. Last update is: {last_update}')
 

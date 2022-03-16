@@ -314,10 +314,13 @@ def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
             if len(tokens) == 2:
                 time_from = dateparser.parse(tokens[0], settings={'TIMEZONE': 'UTC'})
                 time_to = dateparser.parse(tokens[1], settings={'TIMEZONE': 'UTC'})
+                assert time_from is not None and time_to is not None
                 return {'from': int(time_from.timestamp()) * 1000, 'to': int(time_to.timestamp()) * 1000}
         else:
             relative = dateparser.parse(time_to_convert, settings={'TIMEZONE': 'UTC'})
-            return {'relativeTime': int((datetime.utcnow() - relative).total_seconds()) * 1000}
+            now_date = datetime.utcnow()
+            assert now_date is not None and relative is not None
+            return {'relativeTime': int((now_date - relative).total_seconds()) * 1000}
 
         raise ValueError(f'Invalid timeframe: {time_to_convert}')
     except Exception as exc:

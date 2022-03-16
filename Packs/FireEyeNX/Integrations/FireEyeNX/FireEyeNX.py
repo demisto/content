@@ -361,9 +361,11 @@ def get_incidents_for_alert(**kwargs) -> list:
             if count >= kwargs['fetch_limit']:
                 break
 
+            occurred_date = dateparser.parse(context_alert.get('occurred', ''))
+            assert occurred_date is not None
             incident = {
                 'name': context_alert.get('name', ''),
-                'occurred': dateparser.parse(context_alert.get('occurred', '')).strftime(
+                'occurred': occurred_date.strftime(
                     DATE_FORMAT_WITH_MICROSECOND),
                 'rawJSON': json.dumps(context_alert)
             }

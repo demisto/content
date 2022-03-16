@@ -352,7 +352,9 @@ def get_comments_for_alert(
         if XSOAR_EXCLUDE_MESSAGE in ["comment"]:
             continue
 
-        if dateparser.parse(c["datetime_created"]) <= last_update:
+        date_created = dateparser.parse(c["datetime_created"])
+        assert date_created
+        if date_created <= last_update:
             continue
 
         comments.append(c)
@@ -562,6 +564,7 @@ def was_alert_first_escalated(
             end_of_group
         ):
             escalation_time = dateparser.parse(escalation["time"])
+            assert escalation_time is not None
             # Only check against the first escalation to this organization
             return escalation_time > since
 
@@ -592,6 +595,7 @@ def fetch_incidents(
         )
         existing_ids = []
 
+    assert oldest_alert_time
     org_name = client.active_user["organization"]["name"]
     org_psa_id = client.active_user["organization"]["psa_id"]
     start_time_iso = oldest_alert_time.isoformat()
@@ -609,7 +613,9 @@ def fetch_incidents(
     newest_ids = []
     escalation_time = oldest_alert_time
     for alert in alerts:
-        escalation_time = max(escalation_time, get_alert_org_escalation_time(alert))
+        alert_orig_escalation_time = get_alert_org_escalation_time(alert)
+        assert alert_orig_escalation_time is not None and alert_orig_escalation_time is not None
+        escalation_time = max(escalation_time, alert_orig_escalation_time)
         alert_id = str(alert["id"])
 
         if alert_id in existing_ids:
@@ -672,7 +678,7 @@ def get_remote_data(
             parsed_args.last_update,
             settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True},
         )
-
+        assert last_update_utc is not None
         entries = get_notes_for_alert(
             client,
             investigation,
