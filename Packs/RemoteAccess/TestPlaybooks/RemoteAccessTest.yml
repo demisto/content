@@ -22,7 +22,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 65
+          "y": 50
         }
       }
     note: false
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 30f641af-a0da-4d20-8aec-a7d9487a30f9
+    taskid: 50232081-3658-470f-86a0-ea3f7e9f9575
     type: regular
     task:
-      id: 30f641af-a0da-4d20-8aec-a7d9487a30f9
+      id: 50232081-3658-470f-86a0-ea3f7e9f9575
       version: -1
       name: Create File In Cortex XSOAR
       description: |
@@ -53,13 +53,13 @@ tasks:
       data:
         simple: test
       filename:
-        simple: test.txt
+        simple: original-name.txt
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 225
+          "y": 195
         }
       }
     note: false
@@ -71,12 +71,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: d9d20c2e-eb0a-44fc-88de-afd728ea5905
+    taskid: 0be6ab59-d575-4f92-84b9-665a2f47e1e7
     type: regular
     task:
-      id: d9d20c2e-eb0a-44fc-88de-afd728ea5905
+      id: 0be6ab59-d575-4f92-84b9-665a2f47e1e7
       version: -1
-      name: Copy File To Remote
+      name: Copy File To Remote Using destination_path
       description: Copies the given file from Cortex XSOAR to the remote machine.
       script: RemoteAccess v2|||copy-to
       type: regular
@@ -87,7 +87,7 @@ tasks:
       - "4"
     scriptarguments:
       destination_path:
-        simple: test-TPB/test.txt
+        simple: test-TPB/new-name.txt
       entry_id:
         complex:
           root: File
@@ -99,7 +99,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 400
+          "y": 370
         }
       }
     note: false
@@ -135,7 +135,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 575
+          "y": 545
         }
       }
     note: false
@@ -147,10 +147,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 906f4e99-0181-4fd8-841f-b005631a54da
+    taskid: c9765d75-7701-4d5e-8659-c9d6a39ca81c
     type: condition
     task:
-      id: 906f4e99-0181-4fd8-841f-b005631a54da
+      id: c9765d75-7701-4d5e-8659-c9d6a39ca81c
       version: -1
       name: Validate File Is Found In ls
       type: condition
@@ -158,7 +158,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "6"
+      - "13"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -172,12 +172,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: test.txt
+              simple: new-name.txt
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 750
+          "y": 720
         }
       }
     note: false
@@ -189,10 +189,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: dc689ec6-0b7d-4eb4-841a-8132e4a4e144
+    taskid: cb0d0406-388c-47e9-821a-ff3a980f6385
     type: regular
     task:
-      id: dc689ec6-0b7d-4eb4-841a-8132e4a4e144
+      id: cb0d0406-388c-47e9-821a-ff3a980f6385
       version: -1
       name: Copy File To Local
       description: Copies the given file from the remote machine to Cortex XSOAR.
@@ -207,13 +207,13 @@ tasks:
       file_name:
         simple: test-file-from-remote.txt
       file_path:
-        simple: test-TPB/test.txt
+        simple: test-TPB/new-name.txt
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 925
+          "y": 1595
         }
       }
     note: false
@@ -253,7 +253,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1100
+          "y": 1770
         }
       }
     note: false
@@ -279,7 +279,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1450
+          "y": 2120
         }
       }
     note: false
@@ -307,13 +307,170 @@ tasks:
       - "8"
     scriptarguments:
       cmd:
-        simple: rm -rf test-TPB
+        simple: rm -rf test-TPB test-dest-dir
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1275
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 50456777-7684-4b89-8a41-402cf81842d2
+    type: regular
+    task:
+      id: 50456777-7684-4b89-8a41-402cf81842d2
+      version: -1
+      name: Copy File To Remote Using dest-dir
+      description: Copies the given file from Cortex XSOAR to the remote machine.
+      script: RemoteAccess v2|||copy-to
+      type: regular
+      iscommand: true
+      brand: RemoteAccess v2
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      dest-dir:
+        simple: test-dest-dir
+      entry_id:
+        complex:
+          root: File
+          accessor: EntryID
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: aba57f84-d4ed-4d21-8846-7d7715bae2b5
+    type: condition
+    task:
+      id: aba57f84-d4ed-4d21-8846-7d7715bae2b5
+      version: -1
+      name: Validate File Is Found In ls
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: RemoteAccess.Command
+                accessor: output
+            iscontext: true
+          right:
+            value:
+              simple: original-name.txt
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 5300762b-72a0-4e19-83a3-9a22762ee277
+    type: regular
+    task:
+      id: 5300762b-72a0-4e19-83a3-9a22762ee277
+      version: -1
+      name: Run ls Command Remote
+      description: Run command on remote system with ssh
+      script: '|||ssh'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      cmd:
+        simple: ls test-dest-dir
+      command:
+        simple: ls test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 7124011c-06cb-4f3d-8bce-4dcb7c7518a7
+    type: regular
+    task:
+      id: 7124011c-06cb-4f3d-8bce-4dcb7c7518a7
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: RemoteAccess
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -328,10 +485,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1450,
+        "height": 2135,
         "width": 380,
         "x": 50,
-        "y": 65
+        "y": 50
       }
     }
   }
