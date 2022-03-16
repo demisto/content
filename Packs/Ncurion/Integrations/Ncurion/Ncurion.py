@@ -90,12 +90,6 @@ def get_log_list(base_url, username, password):
     data = log_list.text
     items = json.loads(data)
     context_entry = raw_response_to_context_rules(items)
-    title = f'{INTEGRATION_NAME} - List of applications objects:'
-    entry_white_list_count = switch_list_to_list_counter(context_entry)
-
-    presented_output = ['ID', 'Name', 'Host', 'Log_storage_month_period', 'Useno',
-                        'Sync_state', 'Is_connected', 'Description', 'Created_at', 'Updated_at']
-
     api_log_out(base_url, access_token, refresh_token, headers1)
     results = CommandResults(
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.logsever',
@@ -114,10 +108,6 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int], firs
     if len(log_server_id) == 0:
         return('ok')
     else:
-        if last_fetch is None:
-            last_fetch = first_fetch_time
-        else:
-            last_fetch = last_fetch
             max_fetch = demisto.params().get('max_fetch')
             #incidents: List[Dict[str, Any]] = []
             incidents = []
@@ -146,7 +136,7 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int], firs
         "refresh_token": refresh_token
     })
     remove_url = base_url + '/napi/api/v1/apikey/remove'
-    logout = requests.request("POST", remove_url, headers=headers1, data=logout, verify=verify_certificate)
+    requests.request("POST", remove_url, headers=headers1, data=logout, verify=verify_certificate)
     return next_run, incidents
 
 
@@ -157,7 +147,7 @@ def api_log_out(base_url, access_token, refresh_token, headers1):
     })
     remove_url = base_url + '/napi/api/v1/apikey/remove'
     verify_certificate = not demisto.params().get('insecure', False)
-    logout = requests.request("POST", remove_url, headers=headers1, data=logout, verify=verify_certificate)
+    requests.request("POST", remove_url, headers=headers1, data=logout, verify=verify_certificate)
 
 
 def main():
@@ -186,7 +176,8 @@ def main():
                 "Content-Type": "application/json"
             }
             response = requests.request("POST", api_url, data=payload, headers=headers, verify=False)
-            return_outputs('ok')
+            if response.status_code == 200:
+                return_outputs('ok')
         elif command == 'fetch-incidents':
             next_run, incidents = fetch_incidents(
                 base_url, username, password,
