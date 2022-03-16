@@ -7,6 +7,7 @@ import re
 import json
 import base64
 from datetime import datetime, timedelta
+from typing import *
 import httplib2
 import urlparse
 from distutils.util import strtobool
@@ -456,6 +457,28 @@ def users_to_entry(title, response, next_page_token=None):
     }
 
 
+def labels_to_entry(title, response, user_key):
+    context = []
+
+    for label in response:
+        context.append({
+            'UserID': user_key,
+            'Name': label.get('name'),
+            'ID': label.get('id')
+        })
+    headers = ['Name', 'ID']
+    human_readable = tableToMarkdown(title, context, headers, removeNull=True)
+
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {'Label(val.ID == obj.ID && val.Name == obj.Name && val.UserID == obj.UserID)': context}
+    }
+
+
 def autoreply_to_entry(title, response, user_id):
     autoreply_context = []
     for autoreply_data in response:
@@ -675,8 +698,8 @@ def list_users_command():
 def list_labels_command():
     args = demisto.args()
     user_key = args.get('user-id')
-
-    return list_labels(user_key)
+    labels = list_labels(user_key)
+    return labels_to_entry('Labels for UserID {}:'.format(user_key), labels, user_key)
 
 
 def list_users(domain, customer=None, query=None, sort_order=None, view_type='admin_view',
@@ -940,14 +963,13 @@ def list_labels(user_key):
     command_args = {
         'userKey': user_key,
     }
-
     service = get_service(
-        'admin',
-        'directory_v1',
-        ['https://www.googleapis.com/auth/admin.directory.user'])
-    res = service.users().labels.list(**command_args).execute()
-
-    return res
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.readonly'])
+    results = service.users().labels().list(userId=user_key).execute()
+    labels = results.get('labels', [])
+    return labels
 
 
 def get_user_role_command():
