@@ -132,10 +132,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: |-
-  Cortex XSOAR integrates with Mandiant Advantage Threat Intelligence 
-  to bring the power of Mandiant’s front line intelligence into the XSOAR platform, 
-  helping users quickly identify and remediate the most serious threats to their networks.
+description: Retrieves indicators from the Mandiant Advantage Feed.
 display: Mandiant Advantage Feed
 name: FeedMandiant
 script:
