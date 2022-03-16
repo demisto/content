@@ -58,7 +58,7 @@ def extract_inbetween(value: str, start: str, end: str) -> str:
             end_index = end_indicies[-1]
             value = value[start_index:end_index]
     else:
-        return_error("The input value must be a string")
+        return_error("ERROR: The input value must be a string")
     return value
 
 
