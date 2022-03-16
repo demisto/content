@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - transformer
-- general
+- string
 - Utility
 comment: Extract a value from between two other values.
 enabled: true
