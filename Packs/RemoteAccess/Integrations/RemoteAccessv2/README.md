@@ -98,14 +98,14 @@ Copies the given file from Cortex XSOAR to the remote machine.
 `copy-to`
 #### Input
 
-| **Argument Name**   | **Description**                                                                                                                                                                                             | **Required** |
-|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| entry_id            | Entry ID of the file to be copied from Cortex XSOAR to the remote machine.                                                                                                                                  | Optional     | 
-| destination_path    | Destination of the path of the copied file in the remote machine. Defaults to the `entry_id` file path if not specified.                                                                                    | Optional     | 
-| additional_password | Password. Required to match the Additional Password parameter if it was supplied in order to run the command.                                                                                               | Optional     | 
-| timeout             | Timeout for command, in seconds. Default is 10.0 seconds.                                                                                                                                                   | Optional     |
-| dest-dir            | Destination of the directory to copy the file to in the remote machine. Creates the desitnation directory in the remote machine if it does not exist. | Optional     | 
-| entry               | This input is deprecated. Please use the `entry_id` input instead.                                                                                                                                          | Optional     | 
+| **Argument Name**   | **Description**                                                                                                                                                                                                                                   | **Required** |
+|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| entry_id            | Entry ID of the file to be copied from Cortex XSOAR to the remote machine.                                                                                                                                                                        | Optional     | 
+| destination_path    | Destination of the path of the copied file in the remote machine. Defaults to the `entry_id` file name if not specified.                                                                                                                          | Optional     | 
+| additional_password | Password. Required to match the Additional Password parameter if it was supplied in order to run the command.                                                                                                                                     | Optional     | 
+| timeout             | Timeout for command, in seconds. Default is 10.0 seconds.                                                                                                                                                                                         | Optional     |
+| dest-dir            | Destination of the directory to copy the file to in the remote machine. The file name of the `entry_id` will be used as the file name in the destination directory. Creates the destination directory in the remote machine if it does not exist. | Optional     | 
+| entry               | This input is deprecated. Please use the `entry_id` input instead.                                                                                                                                                                                | Optional     | 
 
 
 #### Context Output
@@ -188,12 +188,9 @@ Copies the given file from the remote machine to Cortex XSOAR.
 | Remote Access Command Name | Old Command Argument Name | New Command Name |
 | --- | --- | --- |
 | ssh | system | **Argument was removed** |
-| copy-to | dest-dir | destination_path |
-| copy-to | entry | entry_id |
 | copy-to | system | **Argument was removed** |
 | copy-to | fileID | **Argument was removed** |
 | copy-to | system | **Argument was removed** |
-| copy-from | file | file_path |
 | copy-from | **Argument did not exist** | copy-from | file_name |
 | copy-from | system | **Argument was removed** |
 
