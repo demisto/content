@@ -6,48 +6,67 @@ from typing import Dict, Any
 import traceback
 
 
+def schedule_next_command(args):
+    """
+    Handle the creation of the ScheduleCommand object
+    Returns:
+        ScheduleCommand object that will cal this script again.
+    """
+    polling_args = {
+        'interval_in_seconds': 60,
+        'polling': True,
+        **args,
+    }
+    return ScheduledCommand(
+        command='!DeleteEmail',
+        next_run_in_seconds=60,
+        args=polling_args,
+        timeout_in_seconds=600)
 
 
-def security_and_compliance_delete_mail(search_name, args):
-    if not search_name:
-        # first time, creating the search
-        search_name = f'search_for_delete_{time()}'
-        execute_command('o365-sc-new-search', {'kql': query, 'search_name': search_name, 'using-brand': delete_from_brand})
-        execute_command('o365-sc-start-search', {'search_name': search_name, 'using-brand': delete_from_brand})
-        polling_args = {
-                'interval_in_seconds': 60,
-                'polling': True,
-                **args,
-            }
-        scheduled_command = ScheduledCommand(
-            command='!DeleteEmail',
-            next_run_in_seconds=60,
-            args=polling_args,
-            timeout_in_seconds=600)
-        return CommandResults(scheduled_command=scheduled_command)
-    # the search already exists, but not finished
-    results = execute_command('o365-sc-get-search', {'search_name': search_name, 'using-brand': delete_from_brand})
-    if results.get('Status') != 'Complete':
-        # schedule next poll
-        polling_args = {
-            'interval_in_seconds': 60,
-            'polling': True,
-            **args
-        }
-        scheduled_command = ScheduledCommand(
-            command='!DeleteEmail',
-            next_run_in_seconds=60,
-            args=polling_args,
-            timeout_in_seconds=600)
-        return CommandResults(scheduled_command=scheduled_command)
-    # the search is finished
-    if results.get('SuccessResults'):
-        # the email was found
-        execute_command('o365-sc-new-search-action', {'search_name': search_name, 'purge_type': delete_type, 'using-brand': delete_from_brand})
-        need here to do another generic polling - need to make it nicer
+def security_and_compliance_delete_mail(user_id, email_subject, delete_from_brand, delete_type, args):
+    query = f'from:{user_id} AND subject:{email_subject}'
+    search_name = args.get('search_name')
+    is_finished_searching = args.get('is_finished_searching')
+
+    if not is_finished_searching:
+        if not search_name:
+            # first time, creating the search
+            search_name = f'search_for_delete_{time()}'
+            execute_command('o365-sc-new-search', {'kql': query, 'search_name': search_name, 'using-brand': delete_from_brand})
+            execute_command('o365-sc-start-search', {'search_name': search_name, 'using-brand': delete_from_brand})
+            args['search_name'] = search_name
+
+        # the search already exists, but not finished
+        results = execute_command('o365-sc-get-search', {'search_name': search_name, 'using-brand': delete_from_brand})
+
+        if results.get('Status') != 'Complete':
+            return CommandResults(scheduled_command=schedule_next_command(args))
+
+        # the search is finished
+        if results.get('SuccessResults'):
+            # the email was found
+            execute_command('o365-sc-new-search-action', {'search_name': search_name, 'purge_type': delete_type,
+                                                          'using-brand': delete_from_brand})
+            args['is_finished_searching'] = True
+            return CommandResults(scheduled_command=schedule_next_command(args))
+    else:
+        results = execute_command('o365-sc-get-search-action', {'search_action_name': search_name, 'using-brand': delete_from_brand})
+        if results.get('Status') != 'Complete':
+            return CommandResults(scheduled_command=schedule_next_command(args))
+        execute_command('o365-sc-remove-search-action', {'search_action_name': search_name, 'using-brand': delete_from_brand})
+        execute_command('o365-sc-remove-search', {'search_name': search_name, 'using-brand': delete_from_brand})
+        return 'Success'
+
 
 def main():
     try:
+        # need to have: a dict with brand name and function name
+        # create function for each integration
+        # raise errors that can be related to failed deletion
+        # add skipped
+        # check security and compliance
+        # add agari
         args = demisto.args()
         delete_type = args.get('delete_type')
         incident_info = demisto.incident()
@@ -56,7 +75,7 @@ def main():
         user_id = custom_fields.get('reportedemailto')
         email_subject = custom_fields.get('reportedemailsubject')
         message_id = custom_fields.get("reportedemailmessageid")
-        deletion_status = 'failure'
+        result = ''
         deletion_failure_reason = ''
 
         # Gmail
@@ -76,7 +95,16 @@ def main():
         elif delete_from_brand == 'SecurityAndCompliance':
             search_name = args.get('search_name')
             delete_type = f'{delete_type}Delete'
+            try:
+                result = security_and_compliance_delete_mail(user_id, email_subject, delete_from_brand, delete_type, args)
+                if not isinstance(result, str):
+                    return result
 
+            except Exception as e:
+                result = 'Failed'
+                deletion_failure_reason = f'Failed trying to delete email: {e}'
+            finally:
+                return result, deletion_failure_reason
 
         # EWS
         elif delete_from_brand in ['EWSO365', 'EWS v2']:
