@@ -8723,8 +8723,13 @@ class UniversalCommand:
     @staticmethod
     def download_software(topology: Topology, version: str,
                           sync: bool = False, device_filter_str: Optional[str] = None) -> DownloadSoftwareCommandResult:
-        """Download the given software version to the device. This is an async command, and returns
-        immediately."""
+        """
+        Download the given software version to the device. This is an async command, and returns
+        immediately.
+
+        :param device_filter_str: The filter string to match devices against
+        :param `Topology` class instance
+        """
         result = []
         for device in topology.all(filter_string=device_filter_str):
             device.software.download(version, sync=sync)
@@ -8741,6 +8746,14 @@ class UniversalCommand:
     def install_software(topology: Topology, version: str,
                          sync: bool = False, device_filter_str: Optional[str] =None) -> InstallSoftwareCommandResult:
 
+        """
+        Start the installation process for the given software version.
+
+        :param version The software version to install
+        :param sync: Whether to install in a synchronous or async manner - defaults to false
+        :param device_filter_str: The filter string to match devices against
+        :param `Topology` class instance
+        """
         result = []
         for device in topology.all(filter_string=device_filter_str):
             device.software.install(version, sync=sync)
@@ -8773,7 +8786,6 @@ class UniversalCommand:
 
         result = []
         for device in topology.active_devices(device_filter_string):
-            job_type = "Commit"
             job_id = device.commit()
             if isinstance(device, Panorama):
                 device_type = "Panorama"
@@ -8783,7 +8795,7 @@ class UniversalCommand:
             result.append(CommitStatus(
                 hostid=resolve_host_id(device),
                 job_id=job_id,
-                commit_type=job_type,
+                commit_type="Commit",
                 status="started",
                 device_type=device_type
             ))
