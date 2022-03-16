@@ -5,13 +5,6 @@ from CommonServerPython import *  # noqa: F401
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
-NONCE_LENGTH = 64
-API_KEY_LENGTH = 128
-
-INTEGRATION_CONTEXT_BRAND = 'Core'
-INTEGRATION_NAME = 'Cortex Core - IR'
-
 ALERT_GENERAL_FIELDS = {
     'detection_modules',
     'alert_full_description',
@@ -173,7 +166,7 @@ ALERT_EVENT_AZURE_FIELDS = {
 }
 
 
-class Client(BaseClient):
+class CoreClient(BaseClient):
 
     def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
         self.timeout = timeout
