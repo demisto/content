@@ -1,5 +1,6 @@
 import os
 import re
+import pytest
 from Utils.release_notes_generator import (get_release_notes_dict,
                                            generate_release_notes_summary,
                                            get_pack_entities,
@@ -592,3 +593,26 @@ class TestMergeVersionBlocks:
         rn = construct_entities_block(entities_data)
         assert '### Indicator Types' in rn
         assert '- **accountRep**' in rn
+
+    @pytest.mark.parametrize('pack_versions_dict', [
+        ({'1.0.1':"#### Scripts\n***Breaking Change*** some change\n##### entity1\n- Fixed something",
+        '1.0.2':"#### Scripts\n***Breaking Changes*** some changes\n##### GetIncidentsByQuery"})])
+    def test_merge_rns(self, pack_versions_dict):
+        """
+            Given:
+                - Case 1: pack_versions_dict of two consecutive versions, both containing changes announcments,
+                One of them contain entity with description and one of them contain entity with an empty description.
+            When:
+                - Using merge_version_blocks function.
+            Then:
+                Ensure that the merge was done correctly.
+                - Case 1: Should create a merged RN with both anouncments as the top descrition of the category
+                and one entity with descrition. The other entity with the empty description should be omitted.
+        """
+        rn_block, latest_version = merge_version_blocks(pack_versions_dict)
+        print(rn_block)
+        assert '##### GetIncidentsByQuery' not in rn_block
+        assert '***Breaking Change***' in rn_block
+        assert '***Breaking Changes***' in rn_block
+        assert rn_block.endswith('##### entity1\n- Fixed something')
+        assert latest_version == '1.0.2'

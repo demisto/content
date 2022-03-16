@@ -126,7 +126,6 @@ def construct_entities_block(entities_data: dict) -> str:
         pretty_entity_type = re.sub(r'(\w)([A-Z])', r'\1 \2', entity_type)
         release_notes += f'#### {pretty_entity_type}\n'
         orderd_entities_description = collections.OrderedDict(sorted(entities_description.items()))
-        
         for name, description in orderd_entities_description.items():
             if entity_type in ('Connections', 'IncidentTypes', 'IndicatorTypes', 'Layouts', 'IncidentFields',
                                'Incident Types', 'Indicator Types', 'Incident Fields'):
@@ -335,7 +334,7 @@ def merge_version_blocks(pack_versions_dict: dict) -> Tuple[str, str]:
             # blocks of entity name and related release notes comments
             entity_section = section[1] or section[3]
             entities_data.setdefault(entity_type, {})
-            if (entity_section.strip()).startswith('***'):   
+            if (entity_section.strip()).startswith('***'):
                 entity_section = "##### " + entity_section
             # extract release notes comments by entity
             # assuming all entity titles start with level 5 header ("#####") and then a list of all comments
