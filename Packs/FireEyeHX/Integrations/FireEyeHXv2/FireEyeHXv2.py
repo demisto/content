@@ -983,10 +983,11 @@ class Client(BaseClient):
         try:
             return self._http_request(
                 method='GET',
-                url_suffix=f"/indicators/{category}/{name}"
+                url_suffix=f"/indicators/{category}/{name}",
+                raise_on_status=True
             )["data"]
-        except Exception as e:
-            if '404' in str(e):
+        except DemistoException as e:
+            if e.res and e.res.response_code == 404:
                 raise ValueError(f"The indicator '{name}' was not found")
             else:
                 raise ValueError(e)
@@ -1004,13 +1005,17 @@ class Client(BaseClient):
             demisto.debug(str(e))
             raise ValueError('Failed to parse response body')
 
-    def get_indicator_conditions_request(self, category, name, offset):
+    def get_indicator_conditions_request(self, category: str, name: str, offset: int, enabled: Optional[bool] = True):
         """
         returns a list of json objects, each representing an indicator condition
         if no results are found- returns None
 
+        the enabled argument is only passed to FireEye if not None.
         """
-        params = {'offset': offset, 'enabled': True}
+        params = {'offset': offset}
+
+        if enabled is not None:
+            params['enabled'] = enabled
 
         try:
             return self._http_request(
@@ -1421,7 +1426,8 @@ def get_all_enabled_conditions(client: Client, indicator_category, indicator_nam
         conditions_partial_results = client.get_indicator_conditions_request(
             indicator_category,
             indicator_name,
-            offset=offset
+            offset=offset,
+            enabled=True,
         )['data']['entries']
         if not conditions_partial_results:
             break
@@ -2270,12 +2276,12 @@ def get_indicators_command(client: Client, args: Dict[str, Any]) -> CommandResul
         'alerted': 'stats.alerted_agents'
     }
 
-    if args.get('limit'):
-        args['limit'] = int(args['limit'])
-    if args.get('alerted'):
-        args['alerted'] = args['alerted'] == 'yes'
-    if args.get('sort'):
-        args['sort'] = sort_map.get(args.get('sort', ''))
+    if limit := args.get('limit'):
+        args['limit'] = int(limit)
+    if alerted := args.get('alerted'):
+        args['alerted'] = alerted == 'yes'
+    if sort := args.get('sort'):
+        args['sort'] = sort_map.get(sort)
 
     # get all results
     indicators = get_all_indicators(
