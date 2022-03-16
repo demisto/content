@@ -4625,7 +4625,7 @@ class TestGetResultsWrapper:
                             CommandRunner.Command(brand='my-brand2', commands=['command1', 'command2'], args_lst=[{'arg1': 'val1'}, {'arg2': 'val2'}]),
                             CommandRunner.Command(brand='my-brand3', commands='error-command', args_lst={'bad_arg': 'bad_val'}),
                             CommandRunner.Command(brand='brand-no-exist', commands='unsupported-command', args_lst={'arg': 'val'})]
-        mocker.patch.object(CommandRunner, 'execute_commands_multiple_results',
+        mocker.patch.object(CommandRunner, 'execute_commands',
                             side_effect=TestGetResultsWrapper.execute_command_mock)
         results = CommandRunner.run_commands_with_summary(command_wrappers)
         assert len(results) == 4  # 1 error (brand3)
@@ -4672,7 +4672,7 @@ class TestGetResultsWrapper:
                                                   commands='unsupported-command',
                                                   args_lst={'arg': 'val'}),
                             ]
-        mocker.patch.object(CommandRunner, 'execute_commands_multiple_results',
+        mocker.patch.object(CommandRunner, 'execute_commands',
                             side_effect=TestGetResultsWrapper.execute_command_mock)
         with pytest.raises(DemistoException) as e:
             CommandRunner.run_commands_with_summary(command_wrappers)
