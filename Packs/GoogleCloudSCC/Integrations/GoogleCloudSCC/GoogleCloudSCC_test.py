@@ -815,6 +815,7 @@ def test_get_http_client_with_proxy(mocker, client):
 
     Given:
     - proxy
+
       insecure
       path to custom certificate
 
