@@ -7588,7 +7588,7 @@ class Topology:
 
     def firewall_devices(self) -> ValuesView[Firewall]:
         """
-        Retunrs the firewall devices in the topology
+        Returns the firewall devices in the topology
         """
         return self.firewall_objects.values()
 
@@ -7722,7 +7722,7 @@ class Topology:
             api_password=password,
         )
         # Set the timeout
-        device.timeout = 120
+        device.timeout = DEVICE_TIMEOUT
         topology = cls()
         topology.add_device_object(device)
 
@@ -8991,7 +8991,7 @@ class FirewallCommand:
     @staticmethod
     def change_status(topology: Topology, hostid: str, state: str) -> HighAvailabilityStateStatus:
         firewall = list(topology.firewalls(filter_string=hostid))[0]
-        run_op_command(firewall, FirewallCommand.REQUEST_STATE_PREFIX + f" {state}")
+        run_op_command(firewall, f'{FirewallCommand.REQUEST_STATE_PREFIX} {state}')
         return HighAvailabilityStateStatus(
             hostid=resolve_host_id(firewall),
             state=state
@@ -9124,11 +9124,9 @@ def dataclasses_to_command_results(result: Any, empty_result_message: str = "No 
     :param empty_result_message: If the result data is non
     """
     if not result:
-        command_result = CommandResults(
+        return CommandResults(
             readable_output=empty_result_message,
         )
-        return_results(command_result)
-        return command_result
 
     # Convert the dataclasses into dicts
     outputs: Union[list, dict] = {}
