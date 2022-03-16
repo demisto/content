@@ -2452,7 +2452,7 @@
             "playbookID": "Active Directory - Get User Manager Details - Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_80k",
-            "fromversion": "4.5.0"
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Kafka V2",
