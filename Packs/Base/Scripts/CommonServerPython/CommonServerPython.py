@@ -7203,6 +7203,21 @@ except Exception as ex:
     demisto.info('Failed initializing DebugLogger: {}'.format(ex))
 
 
+def add_sensitive_log_strs(sensitive_str):
+    """
+    Adds the received string to both LOG and DebugLogger. The logger will mask the string each time he encounters it.
+
+    :type sensitive_str: ``str``
+    :param sensitive_str: The string to be replaced.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    if _requests_logger:
+        _requests_logger.int_logger.add_replace_strs(sensitive_str)
+    LOG.add_replace_strs(sensitive_str)
+
+
 def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
     """
         Parses the date_string function to the corresponding datetime object.
