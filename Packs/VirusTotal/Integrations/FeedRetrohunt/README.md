@@ -29,6 +29,11 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Gets the matches from a given retrohunt job's id or the latest by default.
 
+### vt-retrohunt-reset-fetch-indicators
+***
+Reset the last processed job's id
+
+
 
 #### Base Command
 

@@ -54,7 +54,7 @@ class Client(BaseClient):
                 'GET',
                 'intelligence/retrohunt_jobs'
             )
-
+            # Test
             try:
                 finished_jobs = [job for job in jobs['data'] if job.get('attributes').get('status') == 'finished']
             except KeyError:
@@ -198,12 +198,14 @@ def get_indicators_command(client: Client,
         outputs={},
     )
 
+
 def reset_last_job_id():
     """
     Reset last job ib from the integration context
     """
     demisto.setIntegrationContext({})
     return CommandResults(readable_output='Fetch history deleted successfully')
+
 
 def main():
     """
@@ -245,8 +247,8 @@ def main():
             # This is the command that fetches a limited number of indicators
             # from the feed source and displays them in the war room.
             return_results(get_indicators_command(client, params, args))
-        
-        elif command == "vt-reset-fetch-indicators":
+
+        elif command == "vt-retrohunt-reset-fetch-indicators":
             return_results(reset_last_job_id())
 
         elif command == 'fetch-indicators':
