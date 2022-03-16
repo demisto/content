@@ -113,7 +113,6 @@ def fetch_incidents(base_url, username, password, last_run: Dict[str, int], firs
 
     if len(log_server_id) == 0:
         return('ok')
-        break
     else:
         if last_fetch is None:
             last_fetch = first_fetch_time
