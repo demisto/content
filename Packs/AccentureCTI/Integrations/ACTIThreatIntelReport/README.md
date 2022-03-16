@@ -51,7 +51,6 @@ Fetches intelligence alerts and reports from ACTI IntelGraph to XSOAR platform.
 | IAIR.analysis | String | The analysis of the IA/IR, for example, 'COVID-19 Introduces Cyberthreat Opportunities...' |
 | IAIR.attachment_links | String | Provides with the document links related to the Intelligence Alert. This field is specific to Intelligence Alert, for example, 'https://intelgraph.idefense.com/rest/files/download/...' |
 | IAIR.severity | String | Provides severity rating. This field is specific to Intelligence Alert, for example, '4' |
-| IAIR.key | String | The key of the IAIR, for example, 'c0ea8f2f-372c-44d1-ad81-efde4971110e' |
 | IAIR.mitigation | String | Provides info on how to mitigate. This field is specific to Intelligence Alert, for example, '## Expert, Experienced Advice Will be CriticalTo minimize targeting opportunities...' |
 | IAIR.conclusion | String | Provides conclusion of the report. This field is specific to Intelligence Report. |
 | IAIR.summary | String | Provides with a summary of the report. This field is specific to Intelligence Report. |
