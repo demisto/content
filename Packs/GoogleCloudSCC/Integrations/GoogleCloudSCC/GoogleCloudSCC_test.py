@@ -825,7 +825,7 @@ def test_get_http_client_with_proxy(mocker, client):
     - Ensure command that proxy, insecure and certificate path should set in Http object
     """
     mocker.patch('GoogleCloudSCC.handle_proxy', return_value={"https": "admin:password@127.0.0.1:3128"})
-    mocker.patch.dict(os.environ, {"SSL_CERT_FILE": "path/to/cert"})
+    mocker.patch.dict(os.environ, {"REQUESTS_CA_BUNDLE": "path/to/cert"})
     http_obj = client.get_http_client_with_proxy(True, True)
 
     assert http_obj.proxy_info.proxy_host == "127.0.0.1"
