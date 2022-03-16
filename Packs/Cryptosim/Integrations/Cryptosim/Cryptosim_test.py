@@ -1,6 +1,6 @@
 import base64
 import Cryptosim
-from Cryptosim import Client, correlation_alerts_command, correlations_command, fecth_incidents
+from Cryptosim import Client, correlation_alerts_command, correlations_command, fetch_incidents
 
 
 authorization = "admin:admin"
@@ -35,6 +35,6 @@ def test_correlation_alerts_command(client):
 
 def test_fetch_incidents(client):
 
-    next_run, incidents = fecth_incidents(client)
+    next_run, incidents = fetch_incidents(client)
     assert next_run == {"lastRun": "2018-10-24T14:13:20+00:00"}
     assert isinstance(incidents, list)
