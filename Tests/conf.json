@@ -4428,7 +4428,7 @@
                     }
                 }
             },
-            "incident_configuration":{
+            "instance_configuration":{
                 "classifier_id":"EWS v2",
                 "incoming_mapper_id":"EWS v2-mapper"
             },
