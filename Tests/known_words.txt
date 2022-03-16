@@ -5,12 +5,15 @@ playbook
 firewalls
 IOCs
 Emails
+centric
 IncidentsPerFeed
 McAfee
 Endpoints
 IOC
-Deprecated
+deprecated
 EPOFindSystem
+TaegisXDR
+Taegis
 boolean
 xdr
 Darktrace
@@ -61,6 +64,7 @@ NetwitnessQuery
 Deprecated
 SQS
 ACM
+SQL
 unicode
 CloudWatchLogs
 GuardDuty
@@ -82,6 +86,8 @@ OAuth
 Qualys
 Attivo
 Botsink
+Dbot
+OTX
 QRadar
 AdditionalPollingCommandName
 FireEye
@@ -102,3 +108,5 @@ fieldSearchValue
 Classifiers
 SentinelOne
 URLs
+hostname
+EDR
