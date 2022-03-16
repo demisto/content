@@ -72,12 +72,12 @@ def test_getThreatReport_ia_command():
 
     expected_output = expected_output_ia
 
-    url_to_check = {'url': 'https://intelgraph.idefense.com/#/node/intelligence_alert/view/a487dfdc-08b4-4909-82ea-2d934c27d901'}
+    uuid_to_check = {'uuid': 'a487dfdc-08b4-4909-82ea-2d934c27d901'}
 
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_res)
         client = Client(API_URL, 'api_token', True, False, '/rest/document')
-        results = getThreatReport_command(client, url_to_check, DBotScoreReliability.B)
+        results = getThreatReport_command(client, uuid_to_check, DBotScoreReliability.B)
         output = results.to_context().get('EntryContext', {})
         assert output.get('IAIR(val.value && val.value == obj.value)', []) == expected_output.get('IA')
         assert output.get(DBOT_SCORE, []) == expected_output.get('DBot')
@@ -101,12 +101,12 @@ def test_getThreatReport_ir_command():
 
     expected_output = expected_output_ir
 
-    url_to_check = {'url': 'https://intelgraph.idefense.com/#/node/intelligence_report/view/bdc9d16f-6040-4894-8544-9c98986a41fd'}
+    uuid_to_check = {'uuid': 'bdc9d16f-6040-4894-8544-9c98986a41fd'}
 
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_res)
         client = Client(API_URL, 'api_token', True, False, '/rest/document')
-        results = getThreatReport_command(client, url_to_check, DBotScoreReliability.B)
+        results = getThreatReport_command(client, uuid_to_check, DBotScoreReliability.B)
         output = results.to_context().get('EntryContext', {})
         assert output.get('IAIR(val.value && val.value == obj.value)', []) == expected_output.get('IR')
         assert output.get(DBOT_SCORE, []) == expected_output.get('DBot')
@@ -119,12 +119,12 @@ def test_getThreatReport_not_found():
 
     expected_output = 'No report was found for UUID: a487dfdc-08b4-49a09-82ea-2d934c27d901 !!'
 
-    url_to_check = {'url': 'https://intelgraph.idefense.com/#/node/intelligence_alert/view/a487dfdc-08b4-49a09-82ea-2d934c27d901'}
+    uuid_to_check = {'uuid': 'a487dfdc-08b4-49a09-82ea-2d934c27d901'}
 
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_res)
         client = Client(API_URL, 'api_token', True, False, '/rest/document')
-        results = getThreatReport_command(client, url_to_check, DBotScoreReliability.B)
+        results = getThreatReport_command(client, uuid_to_check, DBotScoreReliability.B)
         output = results.to_context().get('HumanReadable')
         assert expected_output in output
 
