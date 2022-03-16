@@ -4627,7 +4627,7 @@ class TestGetResultsWrapper:
                             CommandRunner.Command(brand='brand-no-exist', commands='unsupported-command', args_lst={'arg': 'val'})]
         mocker.patch.object(CommandRunner, 'execute_commands_multiple_results',
                             side_effect=TestGetResultsWrapper.execute_command_mock)
-        results = CommandRunner.run_commands(command_wrappers)
+        results = CommandRunner.run_commands_with_summary(command_wrappers)
         assert len(results) == 4  # 1 error (brand3)
         assert all(res == 'Good' for res in results[:-1])
         assert isinstance(results[-1], CommandResults)
@@ -4675,7 +4675,7 @@ class TestGetResultsWrapper:
         mocker.patch.object(CommandRunner, 'execute_commands_multiple_results',
                             side_effect=TestGetResultsWrapper.execute_command_mock)
         with pytest.raises(DemistoException) as e:
-            CommandRunner.run_commands(command_wrappers)
+            CommandRunner.run_commands_with_summary(command_wrappers)
             assert 'Command did not succeeded' in e.value
             assert 'Script failed. The following errors were encountered:' in e.value
 

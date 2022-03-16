@@ -6507,11 +6507,11 @@ class CommandRunner:
                         results.append(CommandRunner.Result(command, args, brand_name, module_name, res))
             except ValueError as e:
                 # We expect this error when the command is not supported.
-                demisto.debug(str(e))
+                demisto.debug(str(e))  # todo add comment in log
         return results, errors
 
     @staticmethod
-    def run_commands(commands):
+    def run_commands_with_summary(commands):
         """
         Given a list of commands, return a list of results (to pass to return_results).
 
