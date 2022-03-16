@@ -4378,7 +4378,7 @@ class TestExecuteCommandsMultipleResults:
         Given:
             - A successful command with a single entry as output.
         When:
-            - Calling execute_commands_multiple_results.
+            - Calling execute_commands.
         Then:
             - Assert that only the Contents value is returned.
         """
@@ -4408,7 +4408,7 @@ class TestExecuteCommandsMultipleResults:
         Given:
             - A successful command with several entries as output.
         When:
-            - Calling execute_commands_multiple_results.
+            - Calling execute_commands.
         Then:
             - Assert that the "Contents" values of all entries are returned.
         """
@@ -4439,7 +4439,7 @@ class TestExecuteCommandsMultipleResults:
         Given:
             - A successful command with several entries as output.
         When:
-            - Calling execute_commands_multiple_results.
+            - Calling execute_commands.
         Then:
             - Assert that the entire entries are returned.
         """
@@ -4518,7 +4518,7 @@ class TestExecuteCommandsMultipleResults:
         Given:
             - List of commands and list of args.
         When:
-            - Calling execute_commands_multiple_results with multiple commands to get multiple results.
+            - Calling execute_commands with multiple commands to get multiple results.
         Then:
             - Assert that the results list and the errors list returned as should've been
         """
@@ -4549,7 +4549,7 @@ class TestExecuteCommandsMultipleResults:
         Given:
             - List of commands and list of args which is invalid
         When:
-            - Calling execute_commands_multiple_results.
+            - Calling execute_commands.
         Then:
             - Assert that error is given.
         """
@@ -4569,7 +4569,7 @@ class TestExecuteCommandsMultipleResults:
         Given:
             - Provide instance and brand to command wrapper
         When:
-            - Calling execute_commands_multiple_results
+            - Calling execute_commands
         Then:
             - Assert that the `demisto.executeCommand` runned with `using` and `using-brand`.
         """
