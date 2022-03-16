@@ -202,10 +202,11 @@ tasks:
       id: d02aa83c-3736-4cbc-8fae-cc62aa030f41
       version: -1
       name: domain
-      script: '|||domain'
+      description: Checks the reputation of the given domain.
+      script: MISP V3|||domain
       type: regular
       iscommand: true
-      brand: ""
+      brand: MISP V3
     nexttasks:
       '#none#':
       - "5"
@@ -307,10 +308,11 @@ tasks:
       id: f42664bb-c0a8-4319-879f-bca14e1e88b8
       version: -1
       name: email
-      script: '|||email'
+      description: Checks the reputation of the given email address.
+      script: MISP V3|||email
       type: regular
       iscommand: true
-      brand: ""
+      brand: MISP V3
     nexttasks:
       '#none#':
       - "7"
@@ -412,10 +414,11 @@ tasks:
       id: 9c05fd19-ae35-4a6b-8f16-eda8851d11b4
       version: -1
       name: file
-      script: '|||file'
+      description: Checks the file reputation of the given hash.
+      script: MISP V3|||file
       type: regular
       iscommand: true
-      brand: ""
+      brand: MISP V3
     nexttasks:
       '#none#':
       - "9"
@@ -517,10 +520,11 @@ tasks:
       id: 37c4feb4-c635-4bb8-8859-8399deacc66f
       version: -1
       name: url
-      script: '|||url'
+      description: Checks the reputation of the given URL.
+      script: MISP V3|||url
       type: regular
       iscommand: true
-      brand: ""
+      brand: MISP V3
     nexttasks:
       '#none#':
       - "11"
@@ -622,10 +626,11 @@ tasks:
       id: f46e493e-9571-4ca5-802c-3fca041d4ee9
       version: -1
       name: ip
-      script: '|||ip'
+      description: Checks the reputation of an IP address.
+      script: MISP V3|||ip
       type: regular
       iscommand: true
-      brand: ""
+      brand: MISP V3
     nexttasks:
       '#none#':
       - "13"

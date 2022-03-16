@@ -24,7 +24,7 @@
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
-    "description": "Resource native type in Wiz, e.g. virtualMachine",
+    "description": "Resource type in Wiz, e.g. VIRTUAL_MACHINE",
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.0.0"
