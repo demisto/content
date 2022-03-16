@@ -58,7 +58,7 @@ class MandiantClient(BaseClient):
         self.tags = tags
         self.enrichment = enrichment
 
-        LOG.add_replace_strs(self._get_token())
+        add_sensitive_log_strs(self._get_token())
 
     def _get_token(self) -> str:
         """
