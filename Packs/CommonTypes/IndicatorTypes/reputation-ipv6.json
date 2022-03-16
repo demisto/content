@@ -30,7 +30,7 @@
             "complex": null
         },
         "geolocation": {
-            "simple": "IP.Geo.Location",
+            "simple": "IPv6.Geo.Location",
             "complex": null
         },
         "internal": {
