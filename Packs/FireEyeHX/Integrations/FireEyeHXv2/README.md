@@ -1403,7 +1403,7 @@ Get a list of indicators.
 | FireEyeHX.Indicators._id | Unknown | FireEye unique indicator ID. | 
 | FireEyeHX.Indicators.name | Unknown | The indicator name as displayed in the UI. | 
 | FireEyeHX.Indicators.description | Unknown | Indicator description. | 
-| FireEyeHX.Indicators.category.name | Unknown | Catagory name. | 
+| FireEyeHX.Indicators.category.name | Unknown | Category name. |
 | FireEyeHX.Indicators.created_by | Unknown | The "Created By" field as displayed in UI | 
 | FireEyeHX.Indicators.active_since | Unknown | Date indicator became active. | 
 | FireEyeHX.Indicators.stats.source_alerts | Unknown | Total number of source alerts associated with this indicator. | 
@@ -1534,7 +1534,7 @@ Get a specific indicator details.
 | FireEyeHX.Indicators._id | Unknown | FireEye unique indicator ID. | 
 | FireEyeHX.Indicators.name | Unknown | The indicator name as displayed in the UI. | 
 | FireEyeHX.Indicators.description | Unknown | Indicator description. | 
-| FireEyeHX.Indicators.category.name | Unknown | Catagory name. | 
+| FireEyeHX.Indicators.category.name | Unknown | Category name. |
 | FireEyeHX.Indicators.created_by | Unknown | The "Created By" field as displayed in UI | 
 | FireEyeHX.Indicators.active_since | Unknown | Date indicator became active. | 
 | FireEyeHX.Indicators.stats.source_alerts | Unknown | Total number of source alerts associated with this indicator. | 
