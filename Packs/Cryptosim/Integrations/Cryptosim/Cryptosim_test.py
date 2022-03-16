@@ -10,7 +10,7 @@ base64_auth = base64_byte.decode('utf-8')
 authValue = "Basic " + base64_auth 
 
 test_client = Client(
-    server='https://127.0.0.1',
+    base_url='https://127.0.0.1',
     verify=False,
     proxy=False,
     headers = {
