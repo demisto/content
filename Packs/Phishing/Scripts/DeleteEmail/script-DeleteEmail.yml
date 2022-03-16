@@ -1,0 +1,181 @@
+args:
+- default: false
+  description: 'ADD'
+  isArray: false
+  name: email_delete_type
+  required: true
+  secret: false
+- default: false
+  description: 'ADD'
+  isArray: false
+  name: delete_from_brand
+  required: false
+  secret: false
+comment: '[Enter a description of the script, including what function it performs and any important information users need to know, for example required permissions.]'
+commonfields:
+  id: DeleteEmail
+  version: -1
+enabled: false
+name: DeleteEmail
+outputs:
+- contextPath: BaseScript.Output
+  description: '[Enter a description of the data returned in this output.]'
+  type: String
+script: >
+  register_module_line('DeleteEmail', 'start', __line__())
+
+  """Base Script for Cortex XSOAR (aka Demisto)
+
+
+  This is an empty script with some basic structure according
+
+  to the code conventions.
+
+
+  MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
+
+
+  Developer Documentation: https://xsoar.pan.dev/docs/welcome
+
+  Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
+
+  Linting: https://xsoar.pan.dev/docs/integrations/linting
+
+
+  """
+
+
+
+
+
+
+  from typing import Dict, Any
+
+  import traceback
+
+
+
+  ''' STANDALONE FUNCTION '''
+
+
+
+  # TODO: REMOVE the following dummy function:
+
+  def basescript_dummy(dummy: str) -> Dict[str, str]:
+      """Returns a simple python dict with the information provided
+      in the input (dummy).
+
+      :type dummy: ``str``
+      :param dummy: string to add in the dummy dict that is returned
+
+      :return: dict as {"dummy": dummy}
+      :rtype: ``str``
+      """
+
+      return {"dummy": dummy}
+  # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+
+
+
+  ''' COMMAND FUNCTION '''
+
+
+
+  # TODO: REMOVE the following dummy command function
+
+  def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
+
+      dummy = args.get('dummy', None)
+      if not dummy:
+          raise ValueError('dummy not specified')
+
+      # Call the standalone function and get the raw response
+      result = basescript_dummy(dummy)
+
+      return CommandResults(
+          outputs_prefix='DeleteEmail',
+          outputs_key_field='',
+          outputs=result,
+      )
+  # TODO: ADD additional command functions that translate XSOAR inputs/outputs
+
+
+
+  ''' MAIN FUNCTION '''
+
+
+
+  def main():
+      try:
+          args = demisto.args()
+          delete_type = args.get('email_delete_type')
+          delete_from_brand = args.get('delete_from_brand', demisto.get(demisto.context(), "incident.sourceBrand"))
+
+          user_id = demisto.get(demisto.context(), "incident.reportedemailto")
+          email_subject = demisto.get(demisto.context(), "incident.reportedemailsubject")
+          message_id = demisto.get(demisto.context(), "incident.reportedemailmessageid")
+          deletion_status = 'failure'
+          deletion_failure_reason = ''
+
+          # Gmail
+          if delete_from_brand == 'Gmail':  # TODO: should be single user?
+              query = f'Rfc822msgid{demisto.get(demisto.context(), "incident.reportedemailmessageid")}'
+              result = execute_command('gmail-search', {'user-id': user_id, 'query': query})
+              gmail_message_id = result.get('Contents')[0].get('ID')
+              resp = execute_command('gmail-delete-mail', {'user-id': user_id, 'message-id': gmail_message_id})
+              if 'successfully' in result:
+                  deletion_status = 'Success'
+              else:
+                  deletion_failure_reason = 'Unknown'
+
+          # Security & Compliance
+          elif delete_from_brand == 'SecurityAndCompliance':
+              delete_type = f'{delete_type}Delete'
+              query = f'from:{user_id} AND subject:{email_subject}'
+              result = execute_command('o365-sc-new-search', {'kql': query, 'purge_type': delete_type})
+              if 'successfully' in result:
+                  deletion_status = 'Success'
+              else:
+                  deletion_failure_reason = 'Unknown'
+
+          # EWS
+          elif delete_from_brand in ['EWSO365', 'EWS v2']:
+              delete_type = f'{delete_type.lower()}-deleted'
+              result = execute_command('ews-search-mailbox', {'target-mailbox': user_id, 'message-id': message_id})
+              item_id = result.get('Contents')[0].get('itemId')
+              resp = execute_command('ews-delete-items', {'item-ids': item_id, 'delete-type': delete_type})
+
+          # Agari Phishing Defense
+          elif delete_from_brand == 'Agari Phishing Defense':
+              agari_message_id = demisto.get(demisto.context(), 'incident.apdglobalmessageid')
+              resp = execute_command('apd-remediate-message', {'operation': 'delete', 'id': agari_message_id})
+
+          # O365 Outlook Mail
+          elif delete_from_brand == 'MicrosoftGraphMail':
+              result = execute_command('msgraph-mail-list-emails',
+                                       {'user_id': user_id, 'odata': f'$filter=internetMessageId eq {message_id}'})
+              internal_id = result.get('Contents')[0].get('ID')
+              resp = execute_command('msgraph-mail-delete-email', {'user_id': user_id, 'message_id': internal_id})
+
+          print(resp)
+      except Exception as ex:
+          demisto.error(traceback.format_exc())  # print the traceback
+          return_error(f'Failed to execute DeleteEmail. Error: {str(ex)}')
+
+
+  ''' ENTRY POINT '''
+
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+
+  register_module_line('DeleteEmail', 'end', __line__())
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.7.24076
+fromversion: '6.1'

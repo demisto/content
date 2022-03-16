@@ -1,0 +1,36 @@
+args:
+- default: Soft
+  description: # TODO: add a description indicating how hard and soft are different in each integration, ask ido
+  isArray: false
+  name: delete_type
+  required: false
+  secret: false
+  auto: PREDEFINED
+  predefined:
+    - Soft
+    - Hard
+- default: false
+  description: 'The brand of which you wish to delete this email from. the default value is the incident using brand.'
+  isArray: false
+  name: delete_from_brand
+  required: false
+  secret: false
+comment: 'Use this script to delete a reported phishing email from the mailbox it was reported to'
+commonfields:
+  id: DeleteEmail
+  version: -1
+enabled: false
+name: DeleteEmail
+outputs:
+- contextPath: BaseScript.Output
+  description: '[Enter a description of the data returned in this output.]'
+  type: String
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.7.24076
+fromversion: '6.1'
