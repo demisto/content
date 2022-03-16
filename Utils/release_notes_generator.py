@@ -1,3 +1,4 @@
+import collections
 import re
 import os
 import sys
@@ -124,11 +125,15 @@ def construct_entities_block(entities_data: dict) -> str:
     for entity_type, entities_description in sorted(entities_data.items()):
         pretty_entity_type = re.sub(r'(\w)([A-Z])', r'\1 \2', entity_type)
         release_notes += f'#### {pretty_entity_type}\n'
-        for name, description in entities_description.items():
+        orderd_entities_description = collections.OrderedDict(sorted(entities_description.items()))
+        
+        for name, description in orderd_entities_description.items():
             if entity_type in ('Connections', 'IncidentTypes', 'IndicatorTypes', 'Layouts', 'IncidentFields',
                                'Incident Types', 'Indicator Types', 'Incident Fields'):
                 release_notes += f'- **{name}**\n{description}\n'
-            else:
+            elif name.startswith("***"):
+                release_notes += f'{name}\n{description}\n'
+            elif description.strip():
                 release_notes += f'##### {name}\n{description}\n'
 
     return release_notes
@@ -330,7 +335,8 @@ def merge_version_blocks(pack_versions_dict: dict) -> Tuple[str, str]:
             # blocks of entity name and related release notes comments
             entity_section = section[1] or section[3]
             entities_data.setdefault(entity_type, {})
-
+            if (entity_section.strip()).startswith('***'):   
+                entity_section = "##### " + entity_section
             # extract release notes comments by entity
             # assuming all entity titles start with level 5 header ("#####") and then a list of all comments
             entity_comments = ENTITY_SECTION_REGEX.findall(entity_section)
@@ -344,7 +350,6 @@ def merge_version_blocks(pack_versions_dict: dict) -> Tuple[str, str]:
                     entities_data[entity_type][entity_name] += f'{entity_comment.strip()}\n'
                 else:
                     entities_data[entity_type][entity_name] = f'{entity_comment.strip()}\n'
-
     pack_release_notes = construct_entities_block(entities_data).strip()
 
     return pack_release_notes, latest_version
