@@ -58,34 +58,6 @@
                 ]
             }
         },
-        "domainname": {
-            "simple": "",
-            "complex": {
-                "root": "Account",
-                "filters": [],
-                "accessor": "Domain",
-                "transformers": [
-                    {
-                        "operator": "uniq",
-                        "args": {}
-                    }
-                ]
-            }
-        },
-        "emailaddress": {
-            "simple": "",
-            "complex": {
-                "root": "Account",
-                "filters": [],
-                "accessor": "Email.Address",
-                "transformers": [
-                    {
-                        "operator": "uniq",
-                        "args": {}
-                    }
-                ]
-            }
-        },
         "groups": {
             "simple": "",
             "complex": {
@@ -100,97 +72,9 @@
                 ]
             }
         },
-        "indicatoridentification": {
-            "simple": "",
-            "complex": {
-                "root": "Account",
-                "filters": [],
-                "accessor": "ID",
-                "transformers": [
-                    {
-                        "operator": "toUpperCase",
-                        "args": {}
-                    },
-                    {
-                        "operator": "uniq",
-                        "args": {}
-                    }
-                ]
-            }
-        },
-        "organizationalunitou": {
-            "simple": "",
-            "complex": {
-                "root": "Account",
-                "filters": [],
-                "accessor": "OrganizationUnit",
-                "transformers": [
-                    {
-                        "operator": "uniq",
-                        "args": {}
-                    }
-                ]
-            }
-        },
-        "username": {
-            "simple": "",
-            "complex": {
-                "root": "Account",
-                "filters": [],
-                "accessor": "Username",
-                "transformers": [
-                    {
-                        "operator": "uniq",
-                        "args": {}
-                    }
-                ]
-            }
-        },
-        "associations": {
-            "simple": "",
-            "complex": {
-                "root": "Account",
-                "filters": [],
-                "accessor": "Associations",
-                "transformers": [
-                    {
-                        "operator": "uniq",
-                        "args": {}
-                    }
-                ]
-            }
-        },
-        "reportedby": {
-            "simple": "",
-            "complex": {
-                "root": "Account",
-                "filters": [],
-                "accessor": "ReportedBy",
-                "transformers": [
-                    {
-                        "operator": "uniq",
-                        "args": {}
-                    }
-                ]
-            }
-        },
         "stixid": {
             "simple": "STIXID",
             "complex": null
-        },
-        "threattypes": {
-            "simple": "",
-            "complex": {
-                "root": "Account",
-                "filters": [],
-                "accessor": "ThreatTypes",
-                "transformers": [
-                    {
-                        "operator": "uniq",
-                        "args": {}
-                    }
-                ]
-            }
         },
         "trafficlightprotocol": {
             "simple": "",
