@@ -1,52 +1,48 @@
-commonfields:
-  id: QualysV2_schedule-scan-update-fix
-  version: -1
-vcShouldKeepItemLegacyProdMachine: false
-name: QualysV2_schedule-scan-update-fix
-display: QualysV2_schedule-scan-update-fix
 category: Utilities
-description: Qualys Vulnerability Management lets you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
+commonfields:
+  id: QualysV2
+  version: -1
 configuration:
-- display: Server URL
+- defaultvalue: https://qualysguard.qg2.apps.qualys.com
+  display: Server URL
   name: url
-  defaultvalue: https://qualysguard.qg2.apps.qualys.com
-  type: 0
   required: true
+  type: 0
 - display: Username
   name: credentials
-  type: 9
   required: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
+description: Qualys Vulnerability Management lets you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
+display: Qualys v2
+name: QualysV2
 script:
-  script: ''
-  type: python
   commands:
-  - name: qualys-ip-list
-    arguments:
-    - name: ips
-      description: Show only certain IP addresses/ranges.
-    - name: network_id
-      description: Restrict the request to a certain custom network ID.
-    - name: tracking_method
-      auto: PREDEFINED
+  - arguments:
+    - description: Show only certain IP addresses/ranges.
+      name: ips
+    - description: Restrict the request to a certain custom network ID.
+      name: network_id
+    - auto: PREDEFINED
+      description: Show only IP addresses/ranges which have a certain tracking method.
+      name: tracking_method
       predefined:
       - IP
       - DNS
       - NETBIOS
-      description: Show only IP addresses/ranges which have a certain tracking method.
-    - name: compliance_enabled
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Specify 1 to list compliance IP addresses in the user’s account. These hosts are assigned to the policy compliance module. Specify 0 to get host that are not assigned to the policy compliance module.
+      name: compliance_enabled
       predefined:
       - "0"
       - "1"
-      description: Specify 1 to list compliance IP addresses in the user’s account. These hosts are assigned to the policy compliance module. Specify 0 to get host that are not assigned to the policy compliance module.
     - name: certview_enabled
       auto: PREDEFINED
       predefined:
@@ -55,28 +51,28 @@ script:
       description: (Optional) Specify 1 to list IP addresses in the user’s account assigned to the Certificate View module. Specify 0 to list IP addresses that are not assigned to the Certificate View module. Note - This option will be supported when Certificate View GA is released and is enabled for your account.
     - name: limit
       description: Specify a positive numeric value to limit the amount of results in the requested list.
+    description: View a list of IP addresses in the user account.
+    name: qualys-ip-list
     outputs:
     - contextPath: Qualys.IP.Address
       description: IP addresses.
     - contextPath: Qualys.IP.Range
       description: IP range.
-    description: View a list of IP addresses in the user account.
-  - name: qualys-report-list
-    arguments:
-    - name: id
-      description: Specify a report ID of a report that is saved in the Report Share storage space.
-    - name: state
-      auto: PREDEFINED
+  - arguments:
+    - description: Specify a report ID of a report that is saved in the Report Share storage space.
+      name: id
+    - auto: PREDEFINED
+      description: Specify reports with a certain state.
+      name: state
       predefined:
       - Running
       - Finished
       - Canceled
       - Errors
-      description: Specify reports with a certain state.
-    - name: user_login
-      description: Specify a user login ID to get reports launched by the specified user login ID
-    - name: expires_before_datetime
-      description: Specify the date and time to get only reports that expire before it. use YYYY-MM-DD[THH:MM:SSZ] like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago, 3 days ago, last week.
+    - description: Specify a user login ID to get reports launched by the specified user login ID
+      name: user_login
+    - description: 'Specify the date and time to get only reports that expire before it. use YYYY-MM-DD[THH:MM:SSZ] like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago, 3 days ago, last week.'
+      name: expires_before_datetime
     - name: client_id
       description: (Optional) Id assigned to the client (Consultant type subscriptions).
     - name: client_name
@@ -106,8 +102,8 @@ script:
     - contextPath: Qualys.Report.EXPIRATION_DATETIME
       description: Report expiration datetime.
     description: Get a list of generated reports in the system
-  - name: qualys-vm-scan-list
-    arguments:
+    name: qualys-report-list
+  - arguments:
     - name: scan_ref
       description: Show only a scan with a certain scan referenc ecode.
     - name: state
@@ -172,6 +168,8 @@ script:
       description: (Optional) Specify 1 to hide target information from the scan list. Specify 0 to display the target information.
     - name: limit
       description: Specify a positive numeric value to limit the amount of results in the requested list
+    description: Lists vulnerability scans in the user’s account
+    name: qualys-vm-scan-list
     outputs:
     - contextPath: Qualys.Scan.REF
       description: Scan REF.
@@ -201,7 +199,6 @@ script:
       description: Scan Deafualt Flag.
     - contextPath: Qualys.Scan.USER_LOGIN
       description: The user that created the scan.
-    description: Lists vulnerability scans in the user’s account
   - name: qualys-scap-scan-list
     arguments:
     - name: scan_ref
@@ -501,7 +498,7 @@ script:
     - name: vm_scan_since
       description: 'Show hosts that were last scanned for vulnerabilities since a certain date and time (optional). Hosts that were the target of a vulnerability scan since the date/time will be shown. use YYYY-MM-DD[THH:MM:SSZ] like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago, 3 days ago, last week. Permissions: An Auditor cannot specify this parameter.'
     - name: no_compliance_scan_since
-      description: (Optional) Show compliance hosts not scanned since a certain date and time (optional). This parameter is invalid for an Express Lite user. use YYYY-MM-DD[THH:MM:SSZ] like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago, 3 days ago, last week.
+      description: '(Optional) Show compliance hosts not scanned since a certain date and time (optional). This parameter is invalid for an Express Lite user. use YYYY-MM-DD[THH:MM:SSZ] like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago, 3 days ago, last week.'
     - name: use_tags
       auto: PREDEFINED
       predefined:
@@ -537,7 +534,7 @@ script:
       - "1"
       description: (Optional) Specify 1 to display asset tags associated with each host in the XML output.
     - name: host_metadata
-      description: 'Specify the name of the cloud provider to show the assets managed by the cloud provider. Valid values: ec2, google, azure'
+      description: "Specify the name of the cloud provider to show the assets managed by the cloud provider. Valid values: ec2, google, azure"
     - name: host_metadata_fields
       description: (Optional when host_metadata is specified) Specify metadata fields to only return data for certain attributes.
     - name: show_cloud_tags
@@ -633,29 +630,29 @@ script:
     - name: ag_titles
       description: (Optional) Show excluded hosts belonging to asset groups with certain strings in the asset group title. One or more asset group titles may be specified. Multiple entries are comma separated (for example, My+First+Asset+Group,Another+Asset+Group).
     - name: use_tags
+      description: (Optional) Specify 0 (the default) if you want to select hosts based on IP addresses/ranges and/or asset groups. Specify 1 if you want to select hosts based on asset tags.
       auto: PREDEFINED
       predefined:
       - "0"
       - "1"
-      description: (Optional) Specify 0 (the default) if you want to select hosts based on IP addresses/ranges and/or asset groups. Specify 1 if you want to select hosts based on asset tags.
     - name: tag_include_selector
-      auto: PREDEFINED
-      predefined:
-      - any
-      - all
       description: (Optional when use_tags=1) Specify "any" (the default) to include excluded hosts that match at least one of the selected tags. Specify "all" to include excluded hosts that match all of the selected tags.
-    - name: tag_exclude_selector
       auto: PREDEFINED
       predefined:
       - any
       - all
+    - name: tag_exclude_selector
       description: (Optional when use_tags=1) Specify "any" (the default) to ignore excluded hosts that match at least one of the selected tags. Specify "all" to ignore excluded hosts that match all of the selected tags.
+      auto: PREDEFINED
+      predefined:
+      - any
+      - all
     - name: tag_set_by
+      description: (Optional when use_tags=1) Specify "id" (the default) to select a tag set by providing tag IDs. Specify "name" to select a tag set by providing tag names.
       auto: PREDEFINED
       predefined:
       - id
       - name
-      description: (Optional when use_tags=1) Specify "id" (the default) to select a tag set by providing tag IDs. Specify "name" to select a tag set by providing tag names.
     - name: tag_set_include
       description: (Optional when use_tags=1) Specify a tag set to include. Excluded hosts that match these tags will be included. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated.
     - name: tag_set_exclude
@@ -779,7 +776,7 @@ script:
     - name: last_modified_before
       description: Used to filter the XML output to show only vulnerabilities last modified before a certain date and time. When specified vulnerabilities last modified by a user or by the service will be shown. use YYYY-MM-DD[THH:MM:SSZ] like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago, 3 days ago, last week.
     - name: last_modified_by_user_after
-      description: Used to filter the XML output to show only vulnerabilities last modified by a user after a certain date and time. use YYYY-MM-DD[THH:MM:SSZ] like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago, 3 days ago, last week.
+      description: 'Used to filter the XML output to show only vulnerabilities last modified by a user after a certain date and time. use YYYY-MM-DD[THH:MM:SSZ] like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago, 3 days ago, last week.'
     - name: last_modified_by_user_before
       description: Used to filter the XML output to show only vulnerabilities last modified by a user before a certain date and time. use YYYY-MM-DD[THH:MM:SSZ] like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago, 3 days ago, last week.
     - name: last_modified_by_service_after
@@ -874,7 +871,7 @@ script:
   - name: qualys-group-list
     arguments:
     - name: ids
-      description: Show only asset groups with certain IDs. Multiple IDs are comma separated.
+      description: 'Show only asset groups with certain IDs. Multiple IDs are comma separated.'
     - name: id_min
       description: Show only asset groups with certain IDs. Multiple IDs are comma separated.
     - name: id_max
@@ -1166,7 +1163,7 @@ script:
       - "1"
       description: Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to scan all IP addresses defined in tags. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected.
     - name: iscanner_id
-      description: 'The IDs of the scanner appliances to be used. Multiple entries are comma separated. For an Express Lite user, Internal Scanning must be enabled in the user''s account. One of these parameters must also be specified in a request: iscanner_name, iscanner_id, default_scanner, scanners_in_ag, scanners_in_tagset. When none of these are specified, External scanners are used. These parameters are mutually exclusive and cannot be specified in the same request: iscanner_id and iscanner_name.'
+      description: "The IDs of the scanner appliances to be used. Multiple entries are comma separated. For an Express Lite user, Internal Scanning must be enabled in the user's account. One of these parameters must also be specified in a request: iscanner_name, iscanner_id, default_scanner, scanners_in_ag, scanners_in_tagset. When none of these are specified, External scanners are used. These parameters are mutually exclusive and cannot be specified in the same request: iscanner_id and iscanner_name."
     - name: iscanner_name
       description: Specifies the name of the Scanner Appliance for the map, when the map target has private use internal IPs. Using Express Lite, Internal Scanning must be enabled in your account.
     - name: default_scanner
@@ -1537,6 +1534,7 @@ script:
     description: Launches a map report.
     execution: true
   - name: qualys-report-launch-host-based-findings
+    description: Run host based findings report
     arguments:
     - name: template_id
       required: true
@@ -1577,7 +1575,6 @@ script:
     - contextPath: Qualys.ScheduleScan.TEXT
       description: Qualys response for the scan based findings.
       type: String
-    description: Run host based findings report
     execution: true
   - name: qualys-report-launch-scan-based-findings
     arguments:
@@ -1616,6 +1613,7 @@ script:
       type: String
     description: launches a scan report including scan based findings
   - name: qualys-report-launch-patch
+    description: Run patch report
     arguments:
     - name: template_id
       required: true
@@ -1653,9 +1651,9 @@ script:
     - contextPath: Qualys.ScheduleScan.TEXT
       description: Qualys response for the launch patch.
       type: String
-    description: Run patch report
     execution: true
   - name: qualys-report-launch-remediation
+    description: Run remediation report
     arguments:
     - name: template_id
       required: true
@@ -1699,9 +1697,9 @@ script:
     - contextPath: Qualys.ScheduleScan.TEXT
       description: Qualys response for the launch remediation.
       type: String
-    description: Run remediation report
     execution: true
   - name: qualys-report-launch-compliance
+    description: Run compliance report
     arguments:
     - name: template_id
       required: true
@@ -1740,9 +1738,9 @@ script:
     - contextPath: Qualys.ScheduleScan.TEXT
       description: Qualys response for the launch compliance.
       type: String
-    description: Run compliance report
     execution: true
   - name: qualys-report-launch-compliance-policy
+    description: Run compliance policy report
     arguments:
     - name: template_id
       required: true
@@ -1788,7 +1786,6 @@ script:
     - contextPath: Qualys.ScheduleScan.TEXT
       description: Qualys response for the launch compliance policy.
       type: String
-    description: Run compliance policy report
     execution: true
   - name: qualys-ip-restricted-list
     arguments:
@@ -2445,7 +2442,11 @@ script:
       type: String
     description: Gets a list of the supported time zone codes.
     execution: true
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.1.26972
   runonce: false
+  script: ''
   subtype: python3
-sourcemoduleid: QualysV2
+  type: python
+tests:
+- QualysVulnerabilityManagement-Test
+fromversion: 5.5.0
