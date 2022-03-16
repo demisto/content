@@ -53,7 +53,7 @@
         "tags": {
             "simple": "",
             "complex": {
-                "root": "File",
+                "root": "Infrastructure",
                 "filters": [],
                 "accessor": "Tags",
                 "transformers": [
