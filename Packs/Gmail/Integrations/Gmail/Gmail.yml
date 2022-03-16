@@ -71,6 +71,15 @@ script:
     - contextPath: GmailLabel.ID
       description: The label ID.
       type: String
+    - contextPath: GmailLabel.Type
+      description: The label type.
+      type: String
+    - contextPath: GmailLabel.Message List Visibility
+      description: The label message list visibility.
+      type: String
+    - contextPath: GmailLabel.Label List Visibility
+      description: The label list visbility.
+      type: String
   - arguments:
     - default: true
       description: The user's email address. The "me" special value can be used to

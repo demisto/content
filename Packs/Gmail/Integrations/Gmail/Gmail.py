@@ -464,9 +464,12 @@ def labels_to_entry(title, response, user_key):
         context.append({
             'UserID': user_key,
             'Name': label.get('name'),
-            'ID': label.get('id')
+            'ID': label.get('id'),
+            "Type": label.get('type'),
+            "Message List Visibility": label.get('messageListVisibility'),
+            "Label List Visibility": label.get('labelListVisibility')
         })
-    headers = ['Name', 'ID']
+    headers = ['Name', 'ID', 'Type', 'Message List Visibility', 'Label List Visibility']
     human_readable = tableToMarkdown(title, context, headers, removeNull=True)
 
     return {
