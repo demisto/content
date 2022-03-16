@@ -195,8 +195,8 @@ def ip_command(client: Client, args: dict, reliability: DBotScoreReliability, do
             for report in reports:
                 ir.append(report.split("/")[-1])
 
-        context ={
-            "intelligence_alerts": ia ,
+        context = {
+            "intelligence_alerts": ia,
             "intelligence_reports": ir
         }
 
@@ -243,8 +243,8 @@ def url_command(client: Client, args: dict, reliability: DBotScoreReliability, d
             for report in reports:
                 ir.append(report.split("/")[-1])
 
-        context ={
-            "intelligence_alerts": ia ,
+        context = {
+            "intelligence_alerts": ia,
             "intelligence_reports": ir
         }
 
@@ -292,8 +292,8 @@ def domain_command(client: Client, args: dict, reliability: DBotScoreReliability
             for report in reports:
                 ir.append(report.split("/")[-1])
 
-        context ={
-            "intelligence_alerts": ia ,
+        context = {
+            "intelligence_alerts": ia,
             "intelligence_reports": ir
         }
 
@@ -382,8 +382,8 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, 
             for report in reports:
                 ir.append(report.split("/")[-1])
 
-        context ={
-            "intelligence_alerts": ia ,
+        context = {
+            "intelligence_alerts": ia,
             "intelligence_reports": ir
         }
 
