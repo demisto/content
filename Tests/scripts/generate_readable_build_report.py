@@ -1,6 +1,6 @@
 import json
 import os
-import re
+# import re
 from demisto_sdk.commands.test_content.execute_test_content import _add_pr_comment
 from demisto_sdk.commands.test_content.execute_test_content import ParallelLoggingManager
 # from json2html import *
@@ -40,8 +40,7 @@ def create_pr_comment(validate_pr_comment, unit_tests_pr_comment):
     comment = ''
     comment += validate_pr_comment
     comment += unit_tests_pr_comment
-    comment += f'here is a link to the full report: ' \
-               f'https://xsoar.docs.pan.run/-/content/-/jobs/{JOB_ID}/artifacts/artifacts/summary.html'
+    comment += f'here is a link to the full report: https://xsoar.docs.pan.run/-/content/-/jobs/{JOB_ID}/artifacts/artifacts/summary.html'
     return comment
 
 
