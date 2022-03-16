@@ -6429,6 +6429,8 @@ class CommandRunner:
             if isinstance(commands, str) and isinstance(args_lst, dict):
                 commands = [commands]
                 args_lst = [args_lst]
+            if isinstance(commands, str) and isinstance(args_lst, list):
+                commands = [commands for _ in range(len(args_lst))]
             self._is_valid(commands, args_lst)
             self.commands = commands
             self.args_lst = args_lst
@@ -6448,9 +6450,9 @@ class CommandRunner:
             :return:
             """
             if not isinstance(commands, list):
-                raise DemistoException('commands argument is not a list')
+                raise DemistoException('Expected "commands" argument to be a list. received: {}'.format(type(commands)))
             if not isinstance(args_lst, list):
-                raise DemistoException('args_lst argument is not a list')
+                raise DemistoException('Expected "args_lst" argument to be a list. received: {}'.format(type(args_lst)))
             if len(commands) != len(args_lst):
                 raise DemistoException('commands and args_lst should be in the same size')
 
@@ -6511,13 +6513,15 @@ class CommandRunner:
                         results.append(CommandRunner.Result(command, args, brand_name, module_name, res))
             except ValueError as e:
                 # We expect this error when the command is not supported.
-                demisto.debug('demisto.executeCommand received and error: {e}'.format(e=str(e)))
+                demisto.debug('demisto.executeCommand received an error because the command is not supported:'
+                              ' {e}'.format(e=str(e)))
         return results, errors
 
     @staticmethod
     def run_commands_with_summary(commands):
         """
         Given a list of commands, return a list of results (to pass to return_results).
+        In addition, it will create a `CommandResult` of the summary of the commands, which is a `readable_output`.
 
         :param commands: A list of commands.
         :type commands: ``List[Command]``
