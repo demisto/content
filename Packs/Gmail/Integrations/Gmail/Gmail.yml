@@ -74,13 +74,13 @@ script:
     execution: false
     name: gmail-delete-user
     outputs:
-    - contextPath: Label.UserID
+    - contextPath: GmailLabel.UserID
       description: The UserID the label belongs to.
       type: String
-    - contextPath: Label.Name
+    - contextPath: GmailLabel.Name
       description: The name of the label.
       type: String
-    - contextPath: Label.ID
+    - contextPath: GmailLabel.ID
       description: The label ID.
       type: String
   - arguments:

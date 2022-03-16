@@ -475,7 +475,7 @@ def labels_to_entry(title, response, user_key):
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
-        'EntryContext': {'Label(val.ID == obj.ID && val.Name == obj.Name && val.UserID == obj.UserID)': context}
+        'EntryContext': {'GmailLabel(val.ID == obj.ID && val.Name == obj.Name && val.UserID == obj.UserID)': context}
     }
 
 
