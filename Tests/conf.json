@@ -116,6 +116,16 @@
             "playbookID": "FireEyeNX-Test"
         },
         {
+            "integrations": "FireEyeHX v2",
+            "playbookID": "FireEyeHX_v2",
+            "fromversion": "6.2.0",
+            "timeout": 1200
+        },
+        {
+            "integrations": "FireEyeHX v2",
+            "playbookID": "FireEyeHXv2_without_polling"
+        },
+        {
             "integrations": "EmailRepIO",
             "playbookID": "TestEmailRepIOPlaybook",
             "fromversion": "5.0.0"
@@ -2561,10 +2571,6 @@
             "integrations": "Have I Been Pwned? V2"
         },
         {
-            "integrations": "Symantec Deepsight Intelligence",
-            "playbookID": "Symantec Deepsight Test"
-        },
-        {
             "playbookID": "ExtractDomainFromEmailTest"
         },
         {
@@ -2942,11 +2948,13 @@
         },
         {
             "integrations": "EWSO365",
+            "instance_names": "ewso365_dev_team",
             "playbookID": "EWS_O365_test",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "EWSO365",
+            "instance_names": "ewso365_dev_team",
             "playbookID": "EWS_O365_send_mail_test",
             "fromversion": "5.0.0"
         },
@@ -5014,7 +5022,6 @@
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance - Issue 27112",
         "Prisma_Access-Test": "unskip after we will get Prisma Access instance - Issue 27112",
-        "Symantec Deepsight Test": "Issue 22971",
         "TestProofpointFeed": "Issue 22229",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
         "NetWitness Endpoint Test": "Issue 19878",
@@ -5114,7 +5121,6 @@
         "whois_test": "Issue 25648",
         "Autoextract - Test": "Issue 45293",
         "LogRhythm-Test-Playbook": "Issue 27164",
-        "Azure WAF - Test": "Issue 33741",
         "GSuiteAdmin-Test": "Issue 34784",
         "Microsoft_365_Defender-Test": "Issue 39390",
         "Tanium Threat Response - Request File Download v2 - Test": "Issue 46326",
@@ -5122,15 +5128,20 @@
         "EWS_O365_send_mail_test": "Issue 44200",
         "Phishing Investigation - Generic v2 - Campaign Test": "Issue 44740",
         "Cisco Umbrella Test": "Issue 24338",
-        "Azure NSG - Test": "Issue 33217",
         "Unit42 Intel Objects Feed - Test": "Issue 44100",
         "Fetch Indicators Test": "Issue 45490",
         "FormattedDateToEpochTest": "Issue 26724",
         "CrowdstrikeFalconSandbox2 Test": "Issue 46845",
-        "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)": "Issue 44543"
+        "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)": "Issue 44543",
+        "CarbonBlackLiveResponseCloud-Test": "Issue 39282",
+        "Panorama Best Practise - Test": "Issue 43826",
+        "JsonToTable - Test Playbook": "Issue 44302",
+        "Recorded Future Test": "Issue 26741",
+        "Git_Integration-Test": "Issue 37800",
+        "RecordedFutureFeed - Test": "Issue 43923"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Vertica": "No insance issue 45719",
         "Ipstack": "Usage limit reached (Issue 38063)",
@@ -5226,16 +5237,16 @@
         "AzureRiskyUsers": "No instance - developed by Qmasters",
         "AzureKeyVault": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        
+
         "_comment4": "~~~ OTHER ~~~",
         "Anomali ThreatStream v2": "Will be deprecated soon.",
         "Anomali ThreatStream": "Will be deprecated soon.",
@@ -5419,7 +5430,7 @@
         "HelloWorldPremium-Test"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
