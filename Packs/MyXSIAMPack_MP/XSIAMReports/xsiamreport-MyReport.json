@@ -1,0 +1,15 @@
+{
+  "dashboards_data": [
+    {
+      "name": "MyReport",
+      "description": "description",
+      "layout": {}
+    }
+  ],
+  "widgets_data": [
+    {
+      "widg_name": "MyWidget",
+      "widg_desc": "description"
+    }
+  ]
+}

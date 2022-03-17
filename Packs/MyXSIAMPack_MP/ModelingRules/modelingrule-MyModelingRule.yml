@@ -1,0 +1,89 @@
+- name: My Rule
+  fromxsiamversion: 3.3
+  tags: a
+  rules: >
+    [MODEL: dataset="okta_saas", model="Network", version=0.7]
+    | alter outcome_result = json_extract_scalar(outcome, "$.result")
+    | alter XDM_Audit_Main_identity_uuid = json_extract_scalar(actor, "$.id"),
+            XDM_Audit_Main_identity_type = json_extract_scalar(actor, "$.type"),
+    	XDM_Audit_Main_identity_name = json_extract_scalar(client, "$.geographicalContext.city"),
+    	XDM_Audit_Main_cloud_zone = json_extract_scalar(client, "$.zone"),
+    	XDM_Audit_triggered_by_ipv4 = json_extract_scalar(client,"$.ipAddress"),
+    	XDM_Audit_triggered_by_location_city = json_extract_scalar(client, "$.geographicalContext.city"),
+    	XDM_Audit_triggered_by_location_country = json_extract_scalar(client, "$.geographicalContext.country"),
+    	XDM_Audit_triggered_by_location_geo_lat = json_extract_scalar(client, "$.geographicalContext.geolocation.lat"),
+    	XDM_Audit_triggered_by_location_geo_lon = json_extract_scalar(client, "$.geographicalContext.geolocation.lon"),
+    	XDM_Audit_Main_operation_type = eventType,
+    	XDM_Audit_Main_outcome = if(outcome_result="SUCCESS", "SUCCESS", outcome_result="FAILURE", "FAILED", outcome_result="ALLOW", "SUCCESS", outcome_result="DENY", "FAILED", outcome_result="CHALLENGE", "PARTIAL", "UNKNOWN"),
+    	XDM_Audit_Main_reason = json_extract_scalar(outcome, "$.reason"),
+        XDM_Audit_audited_resource_id = json_extract_scalar(`target`, "$.[0].alternateId"),
+    	XDM_Audit_audited_resource_type =  json_extract_scalar(`target`, "$.[0].type");
+
+    [MODEL: dataset="okta_on", model="Network", version=0.7]
+    | alter outcome_result = json_extract_scalar(outcome, "$.result")
+    | alter  XDM_Auth_Client_host_device_type = json_extract_scalar(Client, "$.device"),
+            XDM_Auth_Client_host_device_id = json_extract_scalar(Client, "$.id"),
+            XDM_Auth_Client_ipv4 = json_extract_scalar(Client, "$.ipAddress"),
+            XDM_Auth_Client_location_city = json_extract_scalar(Client, "$.geographicalContext.city"),
+            XDM_Auth_Client_location_country = json_extract_scalar(Client, "$.geographicalContext.country"),
+            XDM_Auth_Client_location_geo_lat = json_extract_scalar(Client, "$.geographicalContext.geolocation.lat"),
+            XDM_Auth_Client_location_geo_lan = json_extract_scalar(Client, "$.geographicalContext.geolocation.lan"),
+            XDM_Auth_Main_session_id = json_extract_scalar(authenticationContext, "$.externalSessionId"),
+            XDM_Auth_Main_logon_type = eventType,
+            XDM_Auth_Main_outcome = if(outcome_result="SUCCESS", "SUCCESS", outcome_result="FAILURE", "FAILED", outcome_result="ALLOW", "SUCCESS", outcome_result="DENY", "FAILED", outcome_result="CHALLENGE", "PARTIAL", "UNKNOWN"),
+            XDM_Auth_Main_reason = json_extract_scalar(outcome, "$.reason"),
+            XDM_Auth_Target_host_device_id = json_extract_scalar(`target`, "$.id"),
+            XDM_Auth_Target_host_device_type = json_extract_scalar(`target`, "$.type");
+
+  samples: {
+    "okta_on_prem": [
+      {
+        "cefVersion": "CEF:0",
+        "cefDeviceVendor": "Zscaler",
+        "cefDeviceProduct": "NSSWeblog",
+        "cefDeviceVersion": "5.0",
+        "cefDeviceEventClassId": "Allowed",
+        "cefName": "Allowed",
+        "cefSeverity": "3",
+        "act": "Allowed",
+        "app": "HTTPS",
+        "cat": "Corporate Marketing",
+        "dhost": "ib.adnxs.com",
+        "dst": "104.254.148.166",
+        "src": "192.168.180.132",
+        "in": "926",
+        "outcome": "302",
+        "out": "917",
+        "request": "ib.adnxs.com/getuid?=https://cms-xch-chicago.33across.com/match?us_privacy&bidder_id=90&external_user_id=$UID",
+        "rt": 1625475433000,
+        "sourceTranslatedAddress": "208.184.75.37",
+        "requestClientApplication": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:87.0) Gecko/20100101 Firefox/87.0",
+        "requestMethod": "GET",
+        "suser": "SC-branch",
+        "spriv": "SC-branch",
+        "externalId": "6981363825645649921",
+        "fileType": "None",
+        "reason": "Allowed",
+        "destinationServiceName": "General Browsing",
+        "cn1": 0,
+        "cn1Label": "riskscore",
+        "cs1": "Default Department",
+        "cs1Label": "dept",
+        "cs2": "Business and Economy",
+        "cs2Label": "urlsupercat",
+        "cs3": "General Browsing",
+        "cs3Label": "appclass",
+        "cs4": "None",
+        "cs4Label": "malwarecat",
+        "cs5": "None",
+        "cs5Label": "threatname",
+        "cs6": "None",
+        "cs6Label": "dlpeng",
+        "ZscalerNSSWeblogURLClass": "Business Use",
+        "ZscalerNSSWeblogDLPDictionaries": "None",
+        "requestContext": "de.tynt.com/deb/?mxch&rthtml&id0010b00002Mq2FYAAZ&ruhttps://ads.servenobid.com/sync?pid304&uid33XUSERID33X",
+        "contenttype": "text/html",
+        "unscannabletype": "None",
+        "deviceowner": "NA",
+        "devicehostname": "NA"
+      }]}
