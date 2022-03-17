@@ -13,6 +13,7 @@ from CommonServerPython import *
 INTEGRATION_NAME = "VirusTotal"
 COMMAND_PREFIX = "vt"
 INTEGRATION_ENTRY_CONTEXT = "VirusTotal"
+EXECUTION_METRICS = ExecutionMetrics()
 
 INDICATOR_TYPE = {
     'ip': FeedIndicatorType.IP,
@@ -21,7 +22,6 @@ INDICATOR_TYPE = {
     'file': FeedIndicatorType.File,
     'url': FeedIndicatorType.URL
 }
-
 
 """ RELATIONSHIP TYPE"""
 RELATIONSHIP_TYPE = {
@@ -111,7 +111,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'ip_addresses/{ip}?relationships={relationships}'
+            f'ip_addresses/{ip}?relationships={relationships}', ok_codes=(429, 200)
         )
 
     def file(self, file: str, relationships: str = '') -> dict:
@@ -121,7 +121,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'files/{file}?relationships={relationships}'
+            f'files/{file}?relationships={relationships}', ok_codes=(429, 200)
         )
 
     def url(self, url: str, relationships: str = ''):
@@ -131,7 +131,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'urls/{encode_url_to_base64(url)}?relationships={relationships}'
+            f'urls/{encode_url_to_base64(url)}?relationships={relationships}', ok_codes=(429, 200)
         )
 
     def domain(self, domain: str, relationships: str = '') -> dict:
@@ -141,7 +141,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'domains/{domain}?relationships={relationships}'
+            f'domains/{domain}?relationships={relationships}', ok_codes=(429, 200)
         )
 
     # endregion
@@ -1532,7 +1532,8 @@ def encode_url_to_base64(url: str) -> str:
 # region Reputation commands
 
 
-def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
+def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[
+    CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
@@ -1543,11 +1544,12 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
         raise_if_ip_not_valid(ip)
         try:
             raw_response = client.ip(ip, relationships)
-            if raw_response.status_code == 204:
-                results.append(CommandResults(error_type=ErrorTypes.RATE_LIMITED, execution_count=1))
-
+            if raw_response.get('error', {}).get('code') == "QuotaExceededError":
+                EXECUTION_METRICS.increment_error(ErrorTypes.QUOTA_ERROR, call_count=1)
+                raise DemistoException(f"Could not process IP: '{ip}'\n {raw_response.get('error', {})}")
         except Exception as exception:
             # If anything happens, just keep going
+            EXECUTION_METRICS.increment_error(ErrorTypes.GENERAL_ERROR, call_count=1)
             demisto.debug(f'Could not process IP: "{ip}"\n {str(exception)}')
             continue
         results.append(
@@ -1563,21 +1565,26 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
     files = argToList(args['file'])
     extended_data = argToBoolean(args.get('extended_data'))
     results: List[CommandResults] = list()
+    items_remaining = len(files)
     for file in files:
         raise_if_hash_not_valid(file)
         try:
             raw_response = client.file(file, relationships)
-            if raw_response.status_code == 204:
-                results.append(CommandResults(error_type=ErrorTypes.RATE_LIMITED, execution_count=1))
+            if raw_response.get('error', {}).get('code') == "QuotaExceededError":
+                EXECUTION_METRICS.increment_error(ErrorTypes.QUOTA_ERROR, call_count=1)
+                continue
             results.append(build_file_output(client, score_calculator, file, raw_response, extended_data))
+            items_remaining = items_remaining - 1
         except Exception as exc:
             # If anything happens, just keep going
+            EXECUTION_METRICS.increment_error(ErrorTypes.GENERAL_ERROR, call_count=1)
             results.append(CommandResults(readable_output=f'Could not process file: "{file}"\n {str(exc)}'))
 
     return results
 
 
-def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
+def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[
+    CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
@@ -1590,17 +1597,21 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
             raw_response = client.url(
                 url, relationships
             )
-            if raw_response.status_code == 204:
-                results.append(CommandResults(error_type=ErrorTypes.RATE_LIMITED, execution_count=1))
+            demisto.results(raw_response)
+            if raw_response.get('error', {}).get('code') == "QuotaExceededError":
+                EXECUTION_METRICS.increment_error(ErrorTypes.QUOTA_ERROR, call_count=1)
+                continue
         except Exception as exception:
             # If anything happens, just keep going
             demisto.debug(f'Could not process URL: "{url}".\n {str(exception)}')
+            EXECUTION_METRICS.increment_error(ErrorTypes.GENERAL_ERROR, call_count=1)
             continue
         results.append(build_url_output(client, score_calculator, url, raw_response, extended_data))
     return results
 
 
-def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
+def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[
+    CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
@@ -1610,11 +1621,13 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
     for domain in domains:
         try:
             raw_response = client.domain(domain, relationships)
-            if raw_response.status_code == 204:
-                results.append(CommandResults(error_type=ErrorTypes.RATE_LIMITED, execution_count=1))
+            if raw_response.get('error', {}).get('code') == "QuotaExceededError":
+                EXECUTION_METRICS.increment_error(ErrorTypes.QUOTA_ERROR, call_count=1)
+                continue
         except Exception as exception:
             # If anything happens, just keep going
             demisto.debug(f'Could not process domain: "{domain}"\n {str(exception)}')
+            EXECUTION_METRICS.increment_error(ErrorTypes.GENERAL_ERROR, call_count=1)
             continue
         results.append(
             build_domain_output(client, score_calculator, domain, raw_response, argToBoolean(args.get('extended_data')))
@@ -2124,6 +2137,7 @@ def main(params: dict, args: dict, command: str):
     else:
         raise NotImplementedError(f'Command {command} not implemented')
     return_results(results)
+    EXECUTION_METRICS.dispatch_report()
 
 
 if __name__ in ('builtins', '__builtin__', '__main__'):

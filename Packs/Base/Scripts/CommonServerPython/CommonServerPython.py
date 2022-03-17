@@ -256,6 +256,7 @@ class EntryType(object):
     WARNING = 11
     MAP_ENTRY_TYPE = 15
     WIDGET = 17
+    EXECUTION_METRICS = 19
 
 
 class IncidentStatus(object):
@@ -472,12 +473,10 @@ class ErrorTypes(object):
     :return: None
     :rtype: ``None``
     """
-    RATE_LIMITED = 'RateLimited'
-    GENERAL = 'General'
-    AUTHENTICATION = 'Authentication'
-    CLIENT_ERROR = 'ClientError'
-    SERVER_ERROR = 'ServerError'
-    NETWORK_ERROR = 'NetworkError'
+    QUOTA_ERROR = 'QuotaError'
+    GENERAL_ERROR = 'GeneralError'
+    AUTH_ERROR = 'AuthError'
+    SERVICE_ERROR = 'ServiceError'
 
 
 class FeedIndicatorType(object):
@@ -5439,6 +5438,7 @@ class ScheduledCommand:
             next_run_in_seconds,  # type: int
             args=None,  # type: Optional[Dict[str, Any]]
             timeout_in_seconds=None,  # type: Optional[int]
+            items_remaining=0,  # type: Optional[int]
     ):
         self.raise_error_if_not_supported()
         self._command = command
@@ -5450,6 +5450,7 @@ class ScheduledCommand:
         self._next_run = str(next_run_in_seconds)
         self._args = args
         self._timeout = str(timeout_in_seconds) if timeout_in_seconds else None
+        self._items_remaining = items_remaining
 
     @staticmethod
     def raise_error_if_not_supported():
@@ -5464,7 +5465,8 @@ class ScheduledCommand:
             PollingCommand=self._command,
             NextRun=self._next_run,
             PollingArgs=self._args,
-            Timeout=self._timeout
+            Timeout=self._timeout,
+            PollingItemsRemaining=self._items_remaining
         )
 
 
@@ -6108,8 +6110,8 @@ class CommandResults:
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
-                 mark_as_note=False, scheduled_command=None, relationships=None, entry_type=None, error_type=None, execution_count=0):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int, str) -> None  # noqa: E501
+                 mark_as_note=False, scheduled_command=None, relationships=None, entry_type=None, execution_metrics=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, ExectionMetrics) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
@@ -6122,8 +6124,6 @@ class CommandResults:
         self.indicators = indicators  # type: Optional[List[Common.Indicator]]
         self.indicator = indicator  # type: Optional[Common.Indicator]
         self.entry_type = entry_type  # type: int
-        self.error_type = error_type
-        self.execution_count = execution_count
 
         self.outputs_prefix = outputs_prefix
 
@@ -6150,6 +6150,7 @@ class CommandResults:
         self.scheduled_command = scheduled_command
 
         self.relationships = relationships
+        self.execution_metrics = execution_metrics
 
     def to_context(self):
         outputs = {}  # type: dict
@@ -6162,6 +6163,7 @@ class CommandResults:
         indicators_timeline = []  # type: ignore[assignment]
         ignore_auto_extract = False  # type: bool
         mark_as_note = False  # type: bool
+        execution_metrics = None  # type: ignore[assignment]
 
         indicators = [self.indicator] if self.indicator else self.indicators
 
@@ -6210,6 +6212,11 @@ class CommandResults:
         if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
             content_format = EntryFormat.TEXT
 
+        if self.execution_metrics:
+            self.entry_type = EntryType.EXECUTION_METRICS
+            raw_response = 'Metrics reported successfully.'
+            execution_metrics = self.execution_metrics
+
         return_entry = {
             'Type': self.entry_type,
             'ContentsFormat': content_format,
@@ -6220,13 +6227,11 @@ class CommandResults:
             'IgnoreAutoExtract': True if ignore_auto_extract else False,
             'Note': mark_as_note,
             'Relationships': relationships,
+            'ExecutionMetrics': execution_metrics
         }
         if self.scheduled_command:
             return_entry.update(self.scheduled_command.to_results())
-        if self.error_type:
-            return_entry.update({'ErrorType': self.error_type})
-        if self.execution_count:
-            return_entry.update({'ExecutionCount': self.execution_count})
+
         return return_entry
 
 
@@ -6419,6 +6424,55 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
     })
     if exit:
         sys.exit(0)
+
+class ExecutionMetrics:
+    def __init__(self):
+        self.execution_metrics = []
+        self.general_errors = 0
+        self.quota_errors = 0
+        self.auth_errors = 0
+        self.service_errors = 0
+        self.custom_error = None
+        self.custom_error_count = 0
+
+    def increment_error(self, error_type, call_count=0):
+        self._add_value_to_metric(error_type, call_count)
+
+    @staticmethod
+    def _add_value_to_metric(value, error_type):
+        _current_error_count = getattr(ExecutionMetrics, error_type)
+        setattr(ExecutionMetrics, error_type, _current_error_count + value)
+
+    def dispatch_report(self):
+        if self.general_errors:
+            self.execution_metrics.append({
+                'ErrorType': ErrorTypes.GENERAL_ERROR,
+                'ApiCalls': self.general_errors
+            })
+        if self.quota_errors:
+            self.execution_metrics.append({
+                'ErrorType': ErrorTypes.QUOTA_ERROR,
+                'ApiCalls': self.quota_errors
+            })
+        if self.auth_errors:
+            self.execution_metrics.append({
+                'ErrorType': ErrorTypes.AUTH_ERROR,
+                'ApiCalls': self.auth_errors
+            })
+        if self.service_errors:
+            self.execution_metrics.append({
+                'ErrorType': ErrorTypes.SERVICE_ERROR,
+                'ApiCalls': self.service_errors
+            })
+        if self.custom_error:
+            self.execution_metrics.append({
+                'ErrorType': self.custom_error,
+                'ApiCalls': self.custom_error_count
+            })
+        if len(self.execution_metrics) > 0:
+            return_results(results=CommandResults(execution_metrics=self.execution_metrics).to_context())
+        else:
+            demisto.debug('No metrics to report.')
 
 
 def execute_command(command, args, extract_contents=True, fail_on_error=True):

@@ -16,6 +16,7 @@ TYPES = {
 
 INTEGRATION_NAME = 'GoogleSafeBrowsing'
 URL_OUTPUT_PREFIX = 'GoogleSafeBrowsing.URL'
+EXECUTION_METRICS = ExecutionMetrics()
 
 
 class Client(BaseClient):
@@ -107,9 +108,6 @@ def handle_errors(result: Dict) -> None:
     status_code = result.get('StatusCode', 0)
     result_body = result.get('Body')
 
-    if result_body == '' and status_code == 204:
-        raise Exception('No content received. Possible API rate limit reached.')
-
     if 200 < status_code < 299:
         raise Exception(f'Failed to perform request, request status code: {status_code}.')
 
@@ -173,13 +171,23 @@ def url_command(client: Client, args: Dict[str, Any]) -> Union[List[CommandResul
 
     if result.get('StatusCode'):
         if result.get('StatusCode') == 204:
-            ScheduledCommand.raise_error_if_not_supported()
-            scheduled_command = ScheduledCommand(
-                command='url',
-                next_run_in_seconds=5,
-                args=args,
-                timeout_in_seconds=600)
-            return CommandResults(scheduled_command=scheduled_command, error_type=ErrorTypes.RATE_LIMITED, execution_count=1)
+            try:
+                ScheduledCommand.raise_error_if_not_supported()
+                if not args.get('polling', False):
+                    EXECUTION_METRICS.increment_error(ErrorTypes.QUOTA_ERROR, call_count=1)
+                polling_args = {
+                    'polling': True,
+                    **args
+                }
+                scheduled_command = ScheduledCommand(
+                    command='url',
+                    next_run_in_seconds=5,
+                    args=polling_args,
+                    timeout_in_seconds=600)
+                return CommandResults(scheduled_command=scheduled_command)
+            except DemistoException:
+                demisto.debug("Scheduled commands are not supported on this version of XSOAR.")
+                raise Exception('No content received. Possible API rate limit reached.')
         else:
             handle_errors(result)
 
@@ -265,6 +273,7 @@ def main() -> None:
 
         elif demisto.command() == 'url':
             return_results(url_command(client, demisto.args()))
+            EXECUTION_METRICS.dispatch_report()
 
     # Log exceptions and return errors
     except Exception as e:
