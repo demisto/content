@@ -67,6 +67,7 @@ run-validations:
       else
         # replace slashes ('/') in the branch name, if exist, with underscores ('_')
         UNDERSCORE_CI_BRANCH=${CI_COMMIT_BRANCH//\//_}
+        wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" "https://github.com/demisto/content-test-conf/archive/$UNDERSCORE_CI_BRANCH.zip" --no-check-certificate -q || {
           if [ "$?" != "0" ]; then
             echo "No such branch in content-test-conf: $UNDERSCORE_CI_BRANCH"
           else
