@@ -12,6 +12,8 @@ Endpoints
 IOC
 deprecated
 EPOFindSystem
+TaegisXDR
+Taegis
 boolean
 xdr
 Darktrace
@@ -84,6 +86,8 @@ OAuth
 Qualys
 Attivo
 Botsink
+Dbot
+OTX
 QRadar
 AdditionalPollingCommandName
 FireEye

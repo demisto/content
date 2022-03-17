@@ -1,12 +1,12 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-import requests
 import json
 import shutil
-from typing import List, Dict
+from typing import Dict, List
+
+import requests
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -246,17 +246,60 @@ def make_edit_request_for_an_object(obj_id, obj_type, params):
 
 def make_indicator_reputation_request(indicator_type, value, generic_context):
     # Search for the indicator ID by keyword:
-    url_suffix = '/search?query={0}&limit=1'.format(value)
-    res = tq_request('GET', url_suffix)
+    body = {}
+    if indicator_type == 'ip':
+        tq_type = "IP Address"
+    elif indicator_type == 'url':
+        tq_type = "URL"
+
+        is_httpx = False
+        if value.startswith('http://'):
+            value_without_proto = value.replace('http://', '')
+            is_httpx = True
+        elif value.startswith('https://'):
+            value_without_proto = value.replace('https://', '')
+            is_httpx = True
+
+        if is_httpx:
+            body = {"criteria": {"+or": [{"value": {"+equals": value}}, {"value": {"+equals": value_without_proto}}]},
+                    "filters": {"type_name": tq_type}}
+        else:
+            body = {
+                "criteria": {"value": {"+equals": value}},
+                "filters": {"type_name": tq_type}
+            }
+
+    elif indicator_type == 'domain':
+        tq_type = "FQDN"
+    elif indicator_type == 'email':
+        tq_type = "Email Address"
+
+    if indicator_type == 'file':
+        body = {"criteria": {"value": {"+equals": value}},
+                "filters": {
+                    "+or": [{"type_name": "MD5"}, {"type_name": "SHA-1"}, {"type_name": "SHA-256"}, {"type_name": "SHA-384"},
+                            {"type_name": "SHA-512"}]}}
+    elif tq_type != "URL":
+        body = {
+            "criteria": {"value": {"+equals": value}},
+            "filters": {"type_name": tq_type}
+        }
+
+    url_suffix = '/indicators/query?limit=500&offset=0&sort=id'
+
+    res = tq_request(
+        method="POST",
+        url_suffix=url_suffix,
+        params=body
+    )
 
     indicators: List[Dict] = []
     for obj in res.get('data', []):
-        if obj.get('object') == 'indicator':
+        if 'id' in obj:
             # Search for detailed information about the indicator
-            url_suffix = '/indicators/{0}?with=attributes,sources,score,type'.format(obj.get('id'))
+            url_suffix = f'/indicators/{obj.get("id")}?with=attributes,sources,score,type'
             res = tq_request('GET', url_suffix)
             indicators.append(indicator_data_to_demisto_format(res['data']))
-
     indicators = indicators or [{'Value': value, 'TQScore': -1}]
     entry_context = aggregate_search_results(
         indicators=indicators,
