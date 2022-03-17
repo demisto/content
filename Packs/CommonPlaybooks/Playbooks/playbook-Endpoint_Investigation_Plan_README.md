@@ -1,4 +1,4 @@
-This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:  
+This playbook uses the EDR and insights data to detect abnormal and malicious activity and includes the following tasks:  
 * Pre-defined MITRE Tactics
 * Host fields (Host ID)
 * Attacker fields (Attacker IP, External host)
@@ -55,4 +55,6 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Endpoint Investigation Plan](https://raw.githubusercontent.com/demisto/content/f3d7d9140f4d82efde1704ed92b8de3176c35b2e/Packs/CommonPlaybooks/doc_files/Endpoint_Investigation_Plan.png)
+![Endpoint Investigation Plan][]
+
+[]: https://raw.githubusercontent.com/demisto/content/f3d7d9140f4d82efde1704ed92b8de3176c35b2e/Packs/CommonPlaybooks/doc_files/Endpoint_Investigation_Plan.png
