@@ -57,6 +57,11 @@ Fetches intelligence alerts and reports from ACTI IntelGraph to XSOAR platform.
 | IAIR.dynamic_properties | String | Provides with the dynamic properties related to the intelligence alert/report. |
 | IAIR.links | String | Provides details of the linked fields related to the intelligence alert/report. |
 | IAIR.sources_external | String | Provides with external sources related to the intelligence alert/report. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor that was used to calculate the score. |
+| DBotScore.Score | String | The actual score. |
 
 
 #### Command Example
