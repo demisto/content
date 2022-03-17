@@ -918,7 +918,7 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
 
 
 def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: int, latest_created_time: datetime,
-                      last_incident_number: int):
+                      last_incident_number):
     """Processing the raw incidents
     Args:
         raw_incidents: The incidents that were fetched from the API.
