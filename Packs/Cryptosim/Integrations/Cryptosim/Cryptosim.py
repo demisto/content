@@ -15,10 +15,15 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 class Client(BaseClient):
 
-    def correlation_alerts(self, end_time=None):
+    def correlation_alerts(self, start_time=None):
         args = demisto.args()
-        end_time = datetime.now() if not end_time else end_time
-        start_time = end_time - timedelta(minutes=demisto.params().get('incidentFetchInterval', 360))
+        
+        end_time = datetime.now()
+        
+        interval_time = end_time - timedelta(minutes=demisto.params().get('incidentFetchInterval', 360))
+        
+        if start_time is None or start_time < interval_time:
+            start_time = interval_time
         parameters = {
             'startDate': args.get('startDate', start_time.isoformat()),
             'endDate': args.get('endDate', end_time.isoformat()),
@@ -107,7 +112,7 @@ def fetch_incidents(client: Client):
     last_fetch = last_run.get('last_fetch', first_fetch_time)
 
     incidentsList = []
-    alert_response = client.correlation_alerts(end_time=last_fetch)
+    alert_response = client.correlation_alerts(start_time=last_fetch)
     incident_data = alert_response['Data']
 
     for inc in incident_data:
