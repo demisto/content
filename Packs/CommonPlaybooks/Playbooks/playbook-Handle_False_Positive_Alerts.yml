@@ -1,6 +1,9 @@
 id: Handle False Positive Alerts
 version: -1
 name: Handle False Positive Alerts
+"marketplaces": [
+    "marketplacev2"
+]
 description: |
   This playbook handles false positive alerts.
 starttaskid: "0"
