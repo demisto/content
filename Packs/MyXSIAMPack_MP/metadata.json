@@ -1,5 +1,6 @@
 {
   "name": "My XSIAM Pack",
+  "id": "MyXSIAMPack_MP",
   "description": "some description",
   "support": "xsoar",
   "currentVersion": "1.0.0",
