@@ -51,6 +51,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 ### Indicators
+
 >|Value|Type|Rawjson|
 >|---|---|---|
 >| 1.1.1.1 | IP | value: 1.1.1.1<br>type: IP<br>tags: null |
