@@ -466,10 +466,10 @@ def labels_to_entry(title, response, user_key):
             'Name': label.get('name'),
             'ID': label.get('id'),
             "Type": label.get('type'),
-            "Message List Visibility": label.get('messageListVisibility'),
-            "Label List Visibility": label.get('labelListVisibility')
+            "MessageListVisibility": label.get('messageListVisibility'),
+            "LabelListVisibility": label.get('labelListVisibility')
         })
-    headers = ['Name', 'ID', 'Type', 'Message List Visibility', 'Label List Visibility']
+    headers = ['Name', 'ID', 'Type', 'MessageListVisibility', 'LabelListVisibility']
     human_readable = tableToMarkdown(title, context, headers, removeNull=True)
 
     return {

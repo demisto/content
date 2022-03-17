@@ -74,10 +74,10 @@ script:
     - contextPath: GmailLabel.Type
       description: The label type.
       type: String
-    - contextPath: GmailLabel.Message List Visibility
+    - contextPath: GmailLabel.MessageListVisibility
       description: The label message list visibility.
       type: String
-    - contextPath: GmailLabel.Label List Visibility
+    - contextPath: GmailLabel.LabelListVisibility
       description: The label list visbility.
       type: String
   - arguments:

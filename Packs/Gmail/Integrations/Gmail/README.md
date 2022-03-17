@@ -3497,8 +3497,8 @@ Lists all lables in a Users Gmail.
 | GmailLabel.ID | String | The label ID. | 
 | GmailLabel.UserID | String | The User ID the label belongs to. | 
 | GmailLabel.Type | String | The label type. | 
-| GmailLabel.Label List Visibility | String | The label list visibility. | 
-| GmailLabel.Message List Visibility | String | The label message list visibility. | 
+| GmailLabel.LabelListVisibility | String | The label list visibility. | 
+| GmailLabel.MessageListVisibility | String | The label message list visibility. | 
 
 
 #### Command Example
@@ -3509,8 +3509,8 @@ Lists all lables in a Users Gmail.
 [
     {
         "ID": "INBOX",
-        "Label List Visibility": "labelHide",
-        "Message List Visibility:: "hide",
+        "LabelListVisibility": "labelHide",
+        "MessageListVisibility:: "hide",
         "Name": "INBOX",
         "Type": "system",
         "UserID": "user@domain.io"
@@ -3521,7 +3521,7 @@ Lists all lables in a Users Gmail.
 #### Human Readable Output
 
 >### Labels for UserID me:
->|Name|ID|Type|Message List Visibility|Label List Visibility|
+>|Name|ID|Type|MessageListVisibility|LabelListVisibility|
 >|---|---|---|---|---|
 >| INBOX | INBOX | system | | |
 >| SPAM | SPAM | system | hide | labelShowIfUnread |
