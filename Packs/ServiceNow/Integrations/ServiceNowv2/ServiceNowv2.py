@@ -1,9 +1,10 @@
+import shutil
+from typing import Callable, Dict, Iterable, List, Tuple
 from urllib import parse
 
-import shutil
-from typing import List, Tuple, Dict, Callable, Iterable
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-from CommonServerPython import *
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -573,6 +574,25 @@ class Client(BaseClient):
                                                                   headers=oauth_params.get('headers', ''))
         else:
             self._auth = (self._username, self._password)
+
+    def generic_request(self, method: str, path: str, body: Optional[Dict] = None, headers: Optional[Dict] = None,
+                        sc_api: bool = False, cr_api: bool = False):
+        """Generic request to ServiceNow api.
+
+        Args:
+            (Required Arguments)
+            method (str) required: The HTTP method, for example, GET, POST, and so on.
+            path (str) required: The API endpoint.
+            (Optional Arguments)
+            body (dict): The body to send in a 'POST' request. Default is None.
+            header (dict): requests headers. Default is None.
+            sc_api: Whether to send the request to the Service Catalog API
+            cr_api: Whether to send the request to the Change Request REST API
+
+        Returns:
+            Resposne object or Exception
+        """
+        return self.send_request(path, method, body, headers=headers, sc_api=sc_api, cr_api=cr_api)
 
     def send_request(self, path: str, method: str = 'GET', body: dict = None, params: dict = None,
                      headers: dict = None, file=None, sc_api: bool = False, cr_api: bool = False):
@@ -2560,6 +2580,45 @@ def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Ite
     return item
 
 
+def generic_api_call_command(client: Client, args: Dict) -> Union[str, CommandResults]:
+    """make a call to ServiceNow api
+    Args:
+        (Required Arguments)
+        method (str) required: The HTTP method, for example, GET, POST, and so on.
+        url_suffix (str) required: The API endpoint.
+        (Optional Arguments)
+        body (dict): The body to send in a 'POST' request. Default is None.
+        header (dict): requests headers. Default is None.
+
+    Return:
+        Generic Api Response.
+    """
+    methods = ("GET", "POST", "PATCH", "DELETE")
+    method = str(args.get("method"))
+    path = str(args.get("path"))
+    headers = json.loads(str(args.get("headers", {})))
+    body: Dict = json.loads(str(args.get("body", {})))
+    sc_api: bool = argToBoolean(args.get("sc_api", False))
+    cr_api: bool = argToBoolean(args.get("cr_api", False))
+
+    if method.upper() not in methods:
+        return f"{method} method not supported.\nTry something from {', '.join(methods)}"
+
+    response = None
+    response = client.generic_request(method=method, path=path, body=body, headers=headers, sc_api=sc_api, cr_api=cr_api)
+
+    if response is not None:
+        resp = response
+        human_readable: str = f"Request for {method} method is successful"
+        return CommandResults(
+            outputs_prefix="ServiceNow.Generic.Response",
+            outputs=resp,
+            readable_output=human_readable,
+        )
+
+    return f"Request for {method} method is not successful"
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -2664,6 +2723,8 @@ def main():
             demisto.incidents(incidents)
         elif command == 'servicenow-get-ticket':
             demisto.results(get_ticket_command(client, args))
+        elif command == "servicenow-generic-api-call":
+            return_results(generic_api_call_command(client, args))
         elif command == 'get-remote-data':
             return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
         elif command == 'update-remote-system':
