@@ -7828,7 +7828,7 @@ class Topology:
                     if isinstance(container[1], Panorama):
                         return_containers.append(container)
                 if not isinstance(container[1], (Panorama, Firewall)):
-                    if container[1].name == container_name:  # type: ignore
+                    if container[1].name == container_name:
                         return_containers.append(container)
         else:
             return_containers = containers
