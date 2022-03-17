@@ -11,5 +11,5 @@ pswd: ""
 runonce: false
 dockerimage: demisto/powershell:7.2.1.26295
 runas: DBotWeakRole
-engineinfo: {}
-mainengineinfo: {}
+tests:
+- No Test
