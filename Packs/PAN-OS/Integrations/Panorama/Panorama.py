@@ -7517,6 +7517,8 @@ class Topology:
         Connect to Panorama and retrieves the full list of managed devices.
         This list will only retrieve devices that are connected to panorama.
         Devices are stored by their serial number.
+
+        :param device: Panorama PanDevice instance
         """
         ha_pair_dict = {}
         device_op_command_result = run_op_command(device, "show devices all")
@@ -7551,7 +7553,9 @@ class Topology:
         connected Firewalls, which are then also added to the object.
 
         This function also checks the HA state of all firewalls using the Panorama output.
-                """
+
+        :param device: Either Panorama or Firewall Pandevice instance
+        """
         if isinstance(device, Panorama):
             # Check if HA is active and if so, what the system state is.
             panorama_ha_state_result = run_op_command(device, "show high-availability state")
@@ -7612,6 +7616,8 @@ class Topology:
         """
         Yields active devices in the topology - Active refers to the HA state of the device. If the device
         is not in a HA pair, it is active by default.
+
+        :param filter_str: The filter string to filter the devices on
         """
         # If the ha_active_devices dict is not empty, we have gotten HA info from panorama.
         # This means we don't need to refresh the state.
@@ -7627,6 +7633,8 @@ class Topology:
     def active_top_level_devices(self, device_filter_string: Optional[str] = None):
         """
         Same as `active_devices`, but only returns top level devices as opposed to all active devices.
+
+        :param device_filter_string: The string to filter the devices by
         """
         return [x for x in self.top_level_devices() if x in self.active_devices(device_filter_string)]
 
@@ -7636,6 +7644,9 @@ class Topology:
         Filters a list of devices to find matching entries based on the string.
         If the filter string matches a device serial or IP exactly, then returns just that one device.
         If not, it will compare the device hostname instead for a match.
+
+        :param devices: The list of PanDevice instances to filter by the filter string
+        :param filter_str: The filter string to filter the devices on
         """
         # Exact match based on device serial number
         if not filter_str:
@@ -7653,7 +7664,11 @@ class Topology:
                 }
 
     def firewalls(self, filter_string: Optional[str] = None) -> Iterator[Firewall]:
-        """Returns an iterable of firewalls in the topology"""
+        """
+        Returns an iterable of firewalls in the topology
+
+        :param filter_str: The filter string to filter he devices on
+        """
         firewall_objects = Topology.filter_devices(self.firewall_objects, filter_string)
         if not firewall_objects:
             raise DemistoException("Filter string returned no devices known to this topology.")
@@ -7662,7 +7677,11 @@ class Topology:
             yield firewall
 
     def all(self, filter_string: Optional[str] = None) -> Iterator[Union[Firewall, Panorama]]:
-        """Returns an iterable for all devices in the topology"""
+        """
+        Returns an iterable for all devices in the topology
+
+        :param filter_str: The filter string to filter he devices on
+        """
         all_devices = {**self.firewall_objects, **self.panorama_objects}
         all_devices = Topology.filter_devices(all_devices, filter_string)
         # Raise if we get an empty dict back
@@ -7673,7 +7692,11 @@ class Topology:
             yield device
 
     def get_by_filter_str(self, filter_string: Optional[str] = None) -> dict:
-        """Filters all devices and returns a dictionary of matching."""
+        """
+        Filters all devices and returns a dictionary of matching.
+
+        :param filter_str: The filter string to filter he devices on
+        """
         return Topology.filter_devices({**self.firewall_objects, **self.panorama_objects}, filter_string)
 
     @classmethod
@@ -7683,6 +7706,11 @@ class Topology:
         into the topology instead of building it from each device.
         This function will convert each hostname/username/password/api_key combination into a PanDevice
         object type, add them into a new instance of `Topology`, then return it.
+
+        :param hostnames: A string of hostnames in CSV format, ex. hostname1,hostname2
+        :param username: The PAN-OS username
+        :param password: the PAN-OS password
+        :param api_key: The PAN-OS api key
         """
         topology = cls()
         for hostname in hostnames.split(","):
@@ -7715,6 +7743,10 @@ class Topology:
     def build_from_device(cls, ip: str, username: str, password: str):
         """
         Creates a PanDevice object out of a single IP/username/password and adds it to the topology.
+
+        :param ip: The IP address or hostname of the device
+        :param username: The PAN-OS username
+        :param password: the PAN-OS password
         """
         device: PanDevice = PanDevice.create_from_device(
             hostname=ip,
@@ -7735,6 +7767,8 @@ class Topology:
         """
         Given a firewall object that's proxied via Panorama, create a device that uses a direct API connection
         instead. Used by any command that can't be routed via Panorama.
+
+        :param firewall: The `Firewall` device to directly connect to
         """
         if firewall.hostname:
             # If it's already a direct connection
@@ -7757,6 +7791,10 @@ class Topology:
         """
         Given a device, returns all the possible configuration containers that can contain objects -
         vsys, device-groups, templates and template-stacks.
+
+        :param device_filter_string: The filter string to filter he devices on
+        :param container_name: The string name of the device group, template-stack, or vsys to return
+        :param top_level_devices_only: If set, only containers will be returned from the top level devices, usually Panorama.
         """
         containers = []
         # for device in self.all(device_filter_string):
@@ -8476,8 +8514,13 @@ def dataclass_from_dict(device: Union[Panorama, Firewall], object_dict: dict, cl
 
 
 def flatten_xml_to_dict(element: Element, object_dict: dict, class_type: Callable):
-    """Given an XML element, a dictionary, and a class, flattens the XML into the class.
+    """
+    Given an XML element, a dictionary, and a class, flattens the XML into the class.
     This is a recursive function that will resolve child elements.
+
+    :param element: XML element
+    :param object_dict: A dictionary to populate with the XML tag text
+    :param class_type: The class type that this XML will be converted to - filters the XML tags by it's attributes
     """
     for child_element in element:
         tag = child_element.tag
@@ -8502,6 +8545,10 @@ def dataclass_from_element(
     """
     Turns an XML `Element` Object into an instance of the provided dataclass. Dataclass paramaters must match
     child XML tags exactly.
+
+    :param device: Instance of `Panorama` or `Firewall` object
+    :param class_type: The dataclass to convert the XML into
+    :param element: The XML element to convert to the dataclass of type `class_type`
     """
     object_dict = {}
     if not element:
@@ -8524,6 +8571,8 @@ def dataclass_from_element(
 def resolve_host_id(device: PanDevice):
     """
     Gets the ID of the host from a PanDevice object. This may be an IP address or serial number.
+
+    :param device: `Pandevice` object instance, can also be a `Firewall` or `Panorama` type.
     """
     host_id: str = ""
     if device.hostname:
@@ -8537,6 +8586,8 @@ def resolve_host_id(device: PanDevice):
 def resolve_container_name(container: Union[Panorama, Firewall, DeviceGroup, Template, Vsys]):
     """
     Gets the name of a given PanDevice container or if it's not a container, returns shared.
+
+    :param container: Named container, or device instance
     """
     if isinstance(container, (Panorama, Firewall)):
         return "shared"
@@ -8551,7 +8602,12 @@ class PanoramaCommand:
 
     @staticmethod
     def get_device_groups(topology: Topology, device_filter_str: str = None) -> List[DeviceGroupInformation]:
-        """Get all the device groups from Panorama and their associated devices."""
+        """
+        Get all the device groups from Panorama and their associated devices.
+
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        """
         result = []
         for device in topology.active_top_level_devices(device_filter_str):
             if isinstance(device, Panorama):
@@ -8569,7 +8625,12 @@ class PanoramaCommand:
 
     @staticmethod
     def get_template_stacks(topology: Topology, device_filter_str: str = None) -> List[TemplateStackInformation]:
-        """Get all the template-stacks from Panorama and their associated devices."""
+        """
+        Get all the template-stacks from Panorama and their associated devices.
+
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        """
 
         result = []
         for device in topology.active_top_level_devices(device_filter_str):
@@ -8593,8 +8654,15 @@ class PanoramaCommand:
             device_group_filter: Optional[List[str]] = None,
             template_stack_filter:  Optional[List[str]] = None
     ) -> List[PushStatus]:
-        """Pushes the pending configuration from Panorama to the firewalls. This is an async function,
-        and will only push if there is config pending."""
+        """
+        Pushes the pending configuration from Panorama to the firewalls. This is an async function,
+        and will only push if there is config pending.
+
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param device_group_filter: If provided, only the given named device groups will be pushed to devices
+        :param template_stack_filter: If provided, only the given named template-stacks will be pushed to devices
+        """
         result = []
 
         for device in topology.active_top_level_devices(device_filter_str):
@@ -8646,7 +8714,12 @@ class PanoramaCommand:
 
     @staticmethod
     def get_push_status(topology: Topology, match_job_ids: Optional[List[str]] = None) -> List[PushStatus]:
-        """Retrieves the status of a Panorama Push, using the given job ids."""
+        """
+        Retrieves the status of a Panorama Push, using the given job ids.
+
+        :param topology: `Topology` instance.
+        :param match_job_ids: If provided, only returns the jobs with the given ID.
+        """
         result: List[PushStatus] = []
         for device in topology.active_top_level_devices():
             response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
@@ -8691,7 +8764,12 @@ class UniversalCommand:
 
     @staticmethod
     def get_system_info(topology: Topology, device_filter_str: str = None) -> ShowSystemInfoCommandResult:
-        """Get the running system information"""
+        """
+        Get the running system information
+
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        """
         result_data: List[ShowSystemInfoResultData] = []
         summary_data: List[ShowSystemInfoSummaryData] = []
         for device in topology.all(filter_string=device_filter_str):
@@ -8709,7 +8787,12 @@ class UniversalCommand:
     @staticmethod
     def get_available_software(topology: Topology,
                                device_filter_str: Optional[str] = None) -> SoftwareVersionCommandResult:
-        """Get all available software updates"""
+        """
+        Get all available software updates
+
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        """
         summary_data = []
         for device in topology.all(filter_string=device_filter_str):
             device.software.check()
@@ -8727,8 +8810,10 @@ class UniversalCommand:
         Download the given software version to the device. This is an async command, and returns
         immediately.
 
-        :param device_filter_str: The filter string to match devices against
-        :param `Topology` class instance
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param sync: If provided, command will block while downloading
+        :param version: The software version to download
         """
         result = []
         for device in topology.all(filter_string=device_filter_str):
@@ -8768,7 +8853,12 @@ class UniversalCommand:
 
     @staticmethod
     def reboot(topology: Topology, hostid: str) -> RestartSystemCommandResult:
+        """
+        Reboots the system.
 
+        :param topology: `Topology` instance.
+        :param hostid: The host to reboot - this function will only ever reboot one device at a time.
+        """
         result = []
         for device in topology.all(filter_string=hostid):
             device.restart()
@@ -8783,7 +8873,12 @@ class UniversalCommand:
 
     @staticmethod
     def commit(topology: Topology, device_filter_string: Optional[str] = None) -> List[CommitStatus]:
-
+        """
+        Commits the configuration
+        
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        """
         result = []
         for device in topology.active_devices(device_filter_string):
             job_id = device.commit()
@@ -8804,6 +8899,12 @@ class UniversalCommand:
 
     @staticmethod
     def get_commit_job_status(topology: Topology, match_job_ids: Optional[List[str]] = None) -> List[CommitStatus]:
+        """
+        Gets the status of all the commit jobs on the device.
+        
+        :param topology: `Topology` instance.
+        :param match_job_ids: List of IDs to return
+        """
         result: List[CommitStatus] = []
         for device in topology.active_devices():
             response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
@@ -8832,6 +8933,12 @@ class UniversalCommand:
 
     @staticmethod
     def check_system_availability(topology: Topology, hostid: str) -> CheckSystemStatus:
+        """
+        Checks if the provided device is up by attempting to connect to it and run a show system info.
+
+        :param topology: `Topology` instance.
+        :param hostid: hostid of device to check.
+        """
         devices: dict = topology.get_by_filter_str(hostid)
         # first check if the system exists in the topology; if not, we've failed to connect altogether
         if not devices:
@@ -8856,6 +8963,16 @@ class UniversalCommand:
     @staticmethod
     def show_jobs(topology: Topology, device_filter_str: Optional[str] = None, job_type: Optional[str] = None,
                   status=None, id: Optional[int] = None) -> List[ShowJobsAllResultData]:
+
+        """
+        Returns all jobs running on the system.
+
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param job_type: Filters the results by the provided job type
+        :param status: Filters the results by the status of the job
+        :param id: Only returns the specific job by it's ID
+        """
         result_data = []
         for device in topology.all(filter_string=device_filter_str):
             response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
@@ -8890,6 +9007,12 @@ class FirewallCommand:
 
     @staticmethod
     def get_arp_table(topology: Topology, device_filter_str: Optional[str] = None) -> ShowArpCommandResult:
+        """
+        Gets the ARP (Address Resolution Protocol) table
+
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        """
         result_data: List[ShowArpCommandResultData] = []
         summary_data: List[ShowArpCommandSummaryData] = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
@@ -8908,6 +9031,12 @@ class FirewallCommand:
     def get_counter_global(
         topology: Topology, device_filter_str: Optional[str] = None
     ) -> ShowCounterGlobalCommmandResult:
+        """
+        Gets the global counter details
+
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        """
         result_data: List[ShowCounterGlobalResultData] = []
         summary_data: List[ShowCounterGlobalSummaryData] = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
@@ -8925,6 +9054,12 @@ class FirewallCommand:
     def get_routing_summary(
         topology: Topology, device_filter_str: Optional[str] = None
     ) -> ShowRouteSummaryCommandResult:
+        """
+        Gets the routing summary table
+
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        """
         summary_data = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
             response = run_op_command(firewall, FirewallCommand.ROUTING_SUMMARY_COMMAND)
@@ -8940,6 +9075,12 @@ class FirewallCommand:
     def get_bgp_peers(
         topology: Topology, device_filter_str: Optional[str] = None
     ) -> ShowRoutingProtocolBGPCommandResult:
+        """
+        Gets all BGP peers
+
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        """
         summary_data = []
         result_data = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
@@ -8956,6 +9097,12 @@ class FirewallCommand:
 
     @staticmethod
     def get_device_state(topology: Topology, device_filter_str: str):
+        """
+        Returns an exported device state, as binary data
+
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        """
         for firewall in topology.firewalls(filter_string=device_filter_str):
             # Connect directly to the firewall
             direct_firewall_connection: Firewall = topology.get_direct_device(firewall)
@@ -8964,7 +9111,12 @@ class FirewallCommand:
 
     @staticmethod
     def get_ha_status(topology: Topology, device_filter_str: Optional[str] = None) -> List[ShowHAState]:
+        """
+        Gets the HA status of the device. If HA is not enabled, assumes the device is active.
 
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        """
         result: List[ShowHAState] = []
         for firewall in topology.all(filter_string=device_filter_str):
             firewall_host_id: str = resolve_host_id(firewall)
