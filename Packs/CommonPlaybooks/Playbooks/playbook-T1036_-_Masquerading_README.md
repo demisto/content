@@ -59,4 +59,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![T1036 - Masquerading](Insert the link to your image here)
+![T1036 - Masquerading](https://raw.githubusercontent.com/demisto/content/9ba638f5406703f9fba50ca0f6e68cc7824d9872/Packs/CommonPlaybooks/doc_files/Endpoint_Investigation_Plan.png)
