@@ -152,8 +152,8 @@ def describe_instances_command(args, aws_client):
             if 'KeyName' in instance:
                 data[i].update({'KeyName': instance['KeyName']})
 
-        instance.update({'Region': obj['_user_provided_options']['region_name']})
-        output.append(instance)
+            instance.update({'Region': obj['_user_provided_options']['region_name']})
+            output.append(instance)
 
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
