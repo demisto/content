@@ -31,17 +31,7 @@ configuration:
   name: use_persistent
   required: false
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 94806677-b9ef-4012-8caa-e000b7ad1979
-    propagationLabels:
-    - all
-    toServerVersion: ""
-description: Integration to provide connectivity to IBM DB2 using the python ibm_db2
-  library.
+description: Integration to provide connectivity to IBM DB2 using the python ibm_db2 library.
 display: DB2
 name: DB2
 script:
@@ -56,11 +46,9 @@ script:
     - defaultValue: "0"
       description: The offset at which to start the result
       name: skip
-    - description: A comma separated list of names which will be replaced in query
-        having ':<name>'
+    - description: A comma separated list of names which will be replaced in query having ':<name>'
       name: bind_variables_name
-    - description: A comma separated list of values corresponding to `bind_variables_name`
-        or values in order of '?' mark to be replaced in query
+    - description: A comma separated list of values corresponding to `bind_variables_name` or values in order of '?' mark to be replaced in query
       name: bind_variables_values
     description: Running a DB2 query command
     name: db2-query
@@ -69,3 +57,6 @@ script:
   script: ''
   subtype: python3
   type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

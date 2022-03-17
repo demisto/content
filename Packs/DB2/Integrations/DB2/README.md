@@ -1,5 +1,5 @@
 Integration to provide connectivity to IBM DB2 using the python ibm_db2 library.
-This integration was integrated and tested with version xx of DB2
+This integration was integrated and tested with version 0.1 of DB2
 
 ## Configure DB2 on Cortex XSOAR
 

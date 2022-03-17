@@ -53,7 +53,7 @@ VALUES = {
         "SQL_CURSOR_KEYSET_DRIVEN": ibm_db.SQL_CURSOR_KEYSET_DRIVEN,
         "SQL_CURSOR_DYNAMIC": ibm_db.SQL_CURSOR_DYNAMIC,
         "SQL_CURSOR_STATIC": ibm_db.SQL_CURSOR_STATIC,
-    }
+    },
 }
 
 
@@ -106,7 +106,7 @@ class Client:
         return connect_parameters_dict
 
     @property
-    def URL(self) -> str:
+    def create_url(self) -> str:
         """
         Create URL for making connection to given host
 
@@ -163,10 +163,10 @@ class Client:
         try:
             if self.use_persistent:
                 demisto.info("Initializing Persistent connection")
-                conn = ibm_db.pconnect(self.URL, "", "", conn_options=self._options())
+                conn = ibm_db.pconnect(self.create_url, "", "", conn_options=self._options())
             else:
                 demisto.info("Initializing Non-Persistent connection")
-                conn = ibm_db.connect(self.URL, "", "", conn_options=self._options())
+                conn = ibm_db.connect(self.create_url, "", "", conn_options=self._options())
 
         except Exception:
             demisto.error(f"Connection State:\n{ibm_db.conn_error}")
@@ -198,7 +198,10 @@ class Client:
 
         if isinstance(bindvars, dict):
             try:
-                def repl(x, bindvars=bindvars): return f"'{bindvars[x.group(0).strip(':')]}'"  # noqa: E731
+
+                def repl(x, bindvars=bindvars):
+                    return f"'{bindvars[x.group(0).strip(':')]}'"
+
                 query = re.sub(COLON_REGEX, repl=repl, string=query)
             except KeyError as err:
                 demisto.error(f"{err.args[0]} key not found in bind names")
@@ -269,7 +272,10 @@ def clear(message: str):
     Returns:
         string with clean message
     """
-    def repl(x): return ''  # noqa: E731
+
+    def repl(x):
+        return ""
+
     return (re.sub(CLEAN, repl=repl, string=message)).strip()
 
 
@@ -299,7 +305,7 @@ def bind_variables(names: str, values: str) -> Any:
 """ COMMAND FUNCTIONS """
 
 
-def query_command(client: Client, args: Dict, *_) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+def query_command(client: Client, args: Dict, *_) -> CommandResults:
     """
     Executes the db2 query with the connection that was configured in the Client
 
@@ -324,20 +330,19 @@ def query_command(client: Client, args: Dict, *_) -> Tuple[str, Dict[str, Any], 
         human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers, removeNull=True)
 
         context = {"Result": table, "Query": sql_query, "DbName": f"{client.dbname}"}
-        entry_context: Dict = {"DB2(val.Query && val.Query === obj.Query)": {"DB2": context}}
         client.close()
 
-        return human_readable, entry_context, table
-
+        return CommandResults(
+            outputs_prefix="DB2",
+            outputs_key_field="Query",
+            outputs=context,
+            raw_response=result,
+            readable_output=human_readable,
+        )
     except Exception as err:
         client.close()
-
-        # In case there is no query executed and only an action e.g - insert, delete, update
-        # the result will raise an exception when we try to read the data from it
-        if str(err) == "Column information cannot be retrieved: ":
-            human_readable = "Command executed"
-            return human_readable, {}, []
-        raise DemistoException(err)
+        demisto.error(f"error:\n {err}")
+        return CommandResults(readable_output="No results found")
 
 
 def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
@@ -364,7 +369,7 @@ def main():
     use_persistent = params.get("use_persistent")
 
     command = demisto.command()
-    demisto.debug(f"Command being called is {command}")
+    demisto.debug(f"command being called is {command}")
 
     try:
         client = Client(
@@ -383,12 +388,12 @@ def main():
             "db2-query": query_command,
         }
         if command in commands:
-            return_outputs(*commands[command](client, demisto.args(), command))
+            return_results(*commands[command](client, demisto.args(), command))
         else:
             raise NotImplementedError(f"{command} is not an existing DB2 command")
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"failed to execute {command} command.\nerror:\n{str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
