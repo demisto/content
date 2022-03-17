@@ -15,13 +15,13 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 class Client(BaseClient):
 
-    def correlation_alerts(self):
+    def correlation_alerts(self, end_time=None):
         args = demisto.args()
-        endTime = datetime.now()
-        startTime = endTime - timedelta(minutes=demisto.params().get('incidentFetchInterval', 360))
+        end_time = datetime.now() if not end_time else end_time
+        start_time = end_time - timedelta(minutes=demisto.params().get('incidentFetchInterval', 360))
         parameters = {
-            'startDate': args.get('startDate', startTime.isoformat()),
-            'endDate': args.get('endDate', endTime.isoformat()),
+            'startDate': args.get('startDate', start_time.isoformat()),
+            'endDate': args.get('endDate', end_time.isoformat()),
             'showSolved': args.get('showSolved', False),
             'crrPluginId': args.get('crrPluginId', -1),
             'containStr': args.get('containStr', None),
@@ -68,14 +68,11 @@ def correlation_alerts_command(client: Client):
 
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
-
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
-
     :type client: ``Client``
     :param Client: client to use
-
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
@@ -111,7 +108,7 @@ def fetch_incidents(client: Client):
     last_fetch = last_run.get('last_fetch', first_fetch_time)
 
     incidentsList=[]
-    alert_response = client.correlation_alerts()
+    alert_response = client.correlation_alerts(end_time=last_fetch)
     incident_data = alert_response['Data']
 
     for inc in incident_data:
@@ -185,13 +182,13 @@ def get_client(params):
 
 ''' MAIN FUNCTION '''
 
-
 def main() -> None:
     """main function, parses params and runs command functions
 
     :return:
     :rtype:
     """
+    params = demisto.params()
     params = demisto.params()
 
     demisto.debug(f'Command being called is {demisto.command()}')
