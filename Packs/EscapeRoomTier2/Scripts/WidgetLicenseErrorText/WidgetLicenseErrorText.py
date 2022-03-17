@@ -137,7 +137,6 @@ def main():
         if not is_correct_date_range(from_times, to_times):
             text = WRONG_DATE_RANGE_HINT
         elif not is_valid_license():
-        # elif not is_valid_license_temp(from_times, to_times):
             incident_id = get_incident_with_license()
             text = INVALID_LICENSE_HINT.format(incident_id=incident_id)
         else:

@@ -18,8 +18,10 @@ Only the worthy shall pass.
 
 
 def download_clip(verify_ssl=False):
-    res = requests.get('https://github.com/demisto/content/raw/EscapeRoomMaterials/Packs/EscapeRoomTier1/Resources/WelcomeClip.mp4',
-                       verify=verify_ssl)
+    res = requests.get(
+        'https://github.com/demisto/content/raw/EscapeRoomMaterials/Packs/EscapeRoomTier1/Resources/WelcomeClip.mp4',
+        verify=verify_ssl
+    )
     res.raise_for_status()
 
     return res.content

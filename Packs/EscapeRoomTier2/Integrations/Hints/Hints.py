@@ -37,7 +37,6 @@ def get_server_url():
     return f'https://{match.group(1)}'
 
 
-
 def hint(args: Dict[str, Any]) -> CommandResults:
     text = args.get('text', '')
 
