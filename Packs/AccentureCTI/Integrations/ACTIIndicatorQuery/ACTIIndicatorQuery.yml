@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ACTI Indicator Query
+  id: ACTI Indicator Query Nirmal
   version: -1
 configuration:
 - display: URL
@@ -38,8 +38,8 @@ configuration:
   type: 8
   required: false
 description: ACTI provides intelligence regarding security threats and vulnerabilities.
-display: ACTI Indicator Query
-name: ACTI Indicator Query
+display: ACTI Indicator Query Nirmal
+name: ACTI Indicator Query Nirmal
 script:
   commands:
   - name: ip

@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ACTI Threat Intelligence Report
+  id: ACTI Threat Intelligence Report Nirmal
   version: -1
 configuration:
 - display: URL
@@ -39,11 +39,12 @@ configuration:
   required: false
   type: 8
 description: ACTI Threat Intelligence Report fetches intelligence alerts and reports from ACTI IntelGraph to XSOAR platform.
-display: ACTI Threat Intelligence Report
-name: ACTI Threat Intelligence Report
+display: ACTI Threat Intelligence Report Nirmal
+name: ACTI Threat Intelligence Report Nirmal
 script:
   commands:
   - name: acti-getThreatIntelReport
+    description: Fetches Intelligence Alerts & Intelligence Reports.
     arguments:
     - name: uuid
       default: true
@@ -111,7 +112,21 @@ script:
     - contextPath: IAIR.sources_external
       description: Provides with external sources related to the intelligence alert/report.
       type: String
-    description: Fetches Intelligence Alerts & Intelligence Reports.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor that was used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: String
 
   isfetch: false
   runonce: false
