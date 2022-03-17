@@ -1589,25 +1589,113 @@ script:
       required: true
     description: Delete data acquisition.
     name: fireeye-hx-delete-data-acquisition
-  - arguments:
-    - description: The indicator category.
-      name: category
+  - name: fireeye-hx-delete-indicator-condition
+    arguments:
+    - name: category
       required: true
-    - description: The indicator name. The name of the indicator. Use the `uri_name` value.
-      name: indicator_name
+      description: The indicator category.
+    - name: indicator_name
       required: true
-    - description: The condition type.
-      name: type
+      description: The indicator name. The name of the indicator. Use the `uri_name` value.
+    - name: type
       required: true
       auto: PREDEFINED
       predefined:
-        - 'presence'
-        - 'execution'
-    - description: The condition ID. It is part of the response when you request a list of all conditions known to the HX Series appliance.
-      name: condition_id
+      - presence
+      - execution
+      description: The condition type.
+    - name: condition_id
       required: true
+      description: The condition ID. It is part of the response when you request a list of all conditions known to the HX Series appliance.
     description: Delete an indicator condiction.
-    name: fireeye-hx-delete-indicator-condition
+  - name: fireeye-hx-list-indicator-category
+    arguments:
+    - name: search
+      description: Performs a search of indicator categories. Searchable values are based on the name, display_name, retention_policy, ui_edit_policy, ui_signature_enabled, ui_source_alerts_enabled
+    - name: name
+      description: Filter for indicator categories with the specified name
+    - name: display_name
+      description: Filter for indicator categories with given display name
+    - name: retention_policy
+      auto: PREDEFINED
+      predefined:
+      - manual
+      - auto
+      - intel
+      description: Retention policy
+    - name: ui_edit_policy
+      auto: PREDEFINED
+      predefined:
+      - full
+      - edit_delete
+      - delete
+      - read_only
+      description: UI edit policy
+    - name: ui_signature_enabled
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: UI Signature enabled
+    - name: ui_source_alerts_enabled
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: UI source alerts enabled
+    - name: share_mode
+      auto: PREDEFINED
+      predefined:
+      - restricted
+      - unrestricted
+      - silent
+      - visible
+      - any
+      description: Share mode
+    - name: limit
+      description: number of results to return
+      defaultValue: "50"
+    - name: offset
+      description: result offset
+      defaultValue: "0"
+    outputs:
+    - contextPath: FireEyeHX.IndicatorCategory.uri_name
+      description: Policy ID
+      type: number
+    - contextPath: FireEyeHX.IndicatorCategory.name
+      description: Name
+      type: string
+    - contextPath: FireEyeHX.IndicatorCategory._revision
+      description: Revision
+      type: number
+    - contextPath: FireEyeHX.IndicatorCategory.display_name
+      description: Display Name
+      type: string
+    - contextPath: FireEyeHX.IndicatorCategory.retention_policy
+      description: Retention policy
+      type: string
+    - contextPath: FireEyeHX.IndicatorCategory.ui_edit_policy
+      description: UI edit policy
+      type: string
+    - contextPath: FireEyeHX.IndicatorCategory.ui_signature_enabled
+      description: UI signature enabled
+      type: boolean
+    - contextPath: FireEyeHX.IndicatorCategory.ui_source_alerts_enabled
+      description: UI source alerts enabled
+      type: boolean
+    - contextPath: FireEyeHX.IndicatorCategory.share_mode
+      description: Share mode
+      type: string
+    description: List indicator categories.
+  - name: fireeye-hx-delete-indicator
+    arguments:
+    - name: category
+      required: true
+      description: The category name.
+    - name: indicator_name
+      required: true
+      description: The name of the indicator. Use the `uri_name` value.
+    description: Delete an indicator.
   isfetch: true
   runonce: false
   script: "-"

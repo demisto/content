@@ -671,7 +671,8 @@ class Client(BaseClient):
 
         headers = {'Accept': 'application/json'}
 
-        super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=range(200, 205), headers=headers, auth=auth)
+        super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=tuple(range(200, 205)), headers=headers,
+                         auth=auth)
 
         self._headers['X-FeApi-Token'] = self.get_token_request()
 
@@ -1041,7 +1042,8 @@ class Client(BaseClient):
         return self._http_request(
             method="DELETE",
             url_suffix=f"/indicators/{category}/{indicator_name}/conditions/{condition_type}/{condition_id}",
-            ok_codes=(204,)
+            ok_codes=(204,),
+            raise_on_status=True,
         )
 
     def new_indicator_request(self, category):
@@ -1057,6 +1059,46 @@ class Client(BaseClient):
         except Exception as e:
             demisto.debug(str(e))
             raise ValueError('Failed to parse response body, unexpected response structure from the server.')
+
+    def delete_indicator(self, indicator_name: str, category: str):
+        return self._http_request(
+            method="DELETE",
+            url_suffix=f"/indicators/{category}/{indicator_name}",
+            ok_codes=(204,),
+            raise_on_status=True,
+        )
+
+    def list_indicator_categories(self,
+                                  search: Optional[str],
+                                  name: Optional[str],
+                                  display_name: Optional[str],
+                                  retention_policy: Optional[str],
+                                  ui_edit_policy: Optional[str],
+                                  ui_signature_enabled: Optional[bool],
+                                  ui_source_alerts_enabled: Optional[bool],
+                                  share_mode: Optional[str],
+                                  limit: int = 50,
+                                  offset: int = 0,
+                                  ):
+        params = {'limit': limit, 'offset': offset}
+        params.update(assign_params(
+            search=search,
+            name=name,
+            display_name=display_name,
+            retention_policy=retention_policy,
+            ui_edit_policy=ui_edit_policy,
+            ui_signature_enabled=ui_signature_enabled,
+            ui_source_alerts_enabled=ui_source_alerts_enabled,
+            share_mode=share_mode,
+        ))
+
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/indicator_categories",
+            params=params,
+            ok_codes=(200,),
+            raise_on_status=True,
+        )
 
     """
     SEARCHES REQUEST
@@ -2340,6 +2382,70 @@ def get_indicator_command(client: Client, args: Dict[str, Any]) -> List[CommandR
     ), get_indicator_conditions(client, args)]
 
 
+def delete_indicator_command(client: Client, args: Dict[str, str]) -> CommandResults:
+    # XSOAR yml makes sure the args exist
+    indicator_name = args['indicator_name']
+    category = args['category']
+
+    human_readable_args = f'{indicator_name=}, {category=}'
+
+    try:
+        response = client.delete_indicator(indicator_name, category)
+        human_readable = f'Successfully deleted {human_readable_args}'
+    except DemistoException as e:  # invalid http status code
+        response = e.res
+        human_readable = f'Failed deleting {human_readable_args}: {str(e)}'
+
+    return CommandResults(
+        outputs_prefix='FireEyeHX.Indicators',
+        readable_output=human_readable,
+        raw_response=response,
+    )
+
+
+def list_indicator_categories(client: Client, args: Dict[str, Any]) -> CommandResults:
+    # The following may be None or int
+    if limit := args.get('limit'):
+        limit = int(limit)
+    if offset := args.get('offset'):
+        offset = int(offset)
+
+    # The following may be None or bool
+    if ui_signature_enabled := args.get('ui_signature_enabled'):
+        ui_signature_enabled = argToBoolean(ui_signature_enabled)
+    if ui_source_alerts_enabled := args.get('ui_source_alerts_enabled'):
+        ui_source_alerts_enabled = argToBoolean(ui_source_alerts_enabled)
+
+    response = client.list_indicator_categories(
+        search=args.get('search'),
+        name=args.get('name'),
+        display_name=args.get('display_name'),
+        retention_policy=args.get('retention_policy'),
+        ui_edit_policy=args.get('ui_edit_policy'),
+        ui_signature_enabled=ui_signature_enabled,
+        ui_source_alerts_enabled=ui_source_alerts_enabled,
+        share_mode=args.get('share_mode'),
+        offset=offset,
+        limit=limit,
+    )
+
+    data = response.get('data', {})
+    total = data.get('total')
+    entries = data.get('entries', [])
+
+    readable_entries = [{
+        'Policy ID': entry.get('_id'),
+        'Name': entry.get('name'),
+    } for entry in entries]
+
+    return CommandResults(
+        outputs_prefix='FireEyeHX.IndicatorCategory',
+        outputs=entries,
+        readable_output=tableToMarkdown(f'{total} Indicator categories found', readable_entries),
+        raw_response=response
+    )
+
+
 def append_conditions_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Append conditions to indicator
@@ -2740,8 +2846,9 @@ def main() -> None:
         "fireeye-hx-assign-host-set-policy": assign_host_set_policy_command,
         "fireeye-hx-delete-host-set-policy": delete_host_set_policy_command,
         "fireeye-hx-approve-containment": approve_containment_command,
-        "fireeye-hx-list-containment": get_list_containment_command
-
+        "fireeye-hx-list-containment": get_list_containment_command,
+        'fireeye-hx-delete-indicator': delete_indicator_command,
+        'fireeye-hx-list-indicator-category': list_indicator_categories,
     }
 
     params = demisto.params()
