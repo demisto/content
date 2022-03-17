@@ -9,8 +9,8 @@ permissions:
 jobs:
   contribution_form_filled_verification:
     runs-on: ubuntu-latest
-    # This status check only runs for: forked PRS that don't contain the '[Marketplace Contribution]' in their title, the head branch is not a test branch and the PR don't have the 'Contribution Form Filled' label.
-    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == true && contains(github.head_ref, 'xsoar-bot-contrib-ContributionTestPack') == false && contains(github.event.pull_request.labels.*.name, 'Contribution Form Filled') == false && contains(github.event.pull_request.title, '[Marketplace Contribution]') == false
+    # This status check only runs for: forked PRS that don't contain the '[Marketplace Contribution]' in their title and the head branch is not a test branch.
+    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == true && contains(github.head_ref, 'xsoar-bot-contrib-ContributionTestPack') == false && contains(github.event.pull_request.title, '[Marketplace Contribution]') == false
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -34,27 +34,3 @@ jobs:
           echo "Checking if contribution form needs to be filled for PR: $PR_NUMBER"
           cd Utils/github_workflow_scripts
           pipenv run ./check_if_needs_to_fill_contribution_form.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN
-  contribution_labels_filled_verification:
-    runs-on: ubuntu-latest
-    if: |
-      (
-        github.repository == 'demisto/content' &&
-        github.event.pull_request.head.repo.fork == true
-      ) &&
-      (
-        contains(github.event.pull_request.labels.*.name, 'Contribution Form Filled') == false ||
-        (
-          contains(github.event.pull_request.labels.*.name, 'Contribution Form Filled') == true &&
-          contains(github.event.pull_request.labels.*.name, 'Community') == false &&
-          contains(github.event.pull_request.labels.*.name, 'Partner') == false &&
-          contains(github.event.pull_request.labels.*.name, 'internal') == false
-        )
-      )
-    steps:
-      - name: Contirbution labels were not found
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          CURRENT_LABELS: ${{ github.event.pull_request.labels.*.name }}
-        run: |
-          echo "PR $PR_NUMBER labels $CURRENT_LABELS must contain 'Contribution Form Filled' label and one of 'Community'/'Partner'/'internal' labels"
-          exit 1
