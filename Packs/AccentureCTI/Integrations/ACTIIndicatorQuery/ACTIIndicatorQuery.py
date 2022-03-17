@@ -160,7 +160,27 @@ def test_module(client: Client) -> str:
         client.threat_indicator_search(url_suffix='/v0')
         return 'ok'
     except Exception as e:
-        raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {e}.")
+            raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {e}.")
+
+
+def iair_to_context(analysis_info: dict):
+    ia, ir = [], []
+    alerts = analysis_info.get('Intelligence Alerts', [])
+    reports = analysis_info.get('Intelligence Reports', [])
+    if type(alerts) is dict:
+        alerts = list(analysis_info.get('Intelligence Alerts', []).values())
+        for alert in alerts:
+            ia.append(alert.split("/")[-1])
+    if type(reports) is dict:
+        reports = list(analysis_info.get('Intelligence Reports', []).values())
+        for report in reports:
+            ir.append(report.split("/")[-1])
+
+    context = {
+        "intelligence_alerts": ia,
+        "intelligence_reports": ir
+    }
+    return context
 
 
 def ip_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client) -> List[CommandResults]:
@@ -180,26 +200,10 @@ def ip_command(client: Client, args: dict, reliability: DBotScoreReliability, do
     command_results = []
 
     for analysis_result in analysis_results:
-        ia, ir = [], []
         analysis_info: dict = analysis_result.get('analysis_info', {})
         analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
         dbot = analysis_result.get('dbot')
-        alerts = analysis_info.get('Intelligence Alerts', [])
-        reports = analysis_info.get('Intelligence Reports', [])
-        if type(alerts) is dict:
-            alerts = list(analysis_info.get('Intelligence Alerts', []).values())
-            for alert in alerts:
-                ia.append(alert.split("/")[-1])
-        if type(reports) is dict:
-            reports = list(analysis_info.get('Intelligence Reports', []).values())
-            for report in reports:
-                ir.append(report.split("/")[-1])
-
-        context = {
-            "intelligence_alerts": ia,
-            "intelligence_reports": ir
-        }
-
+        context = iair_to_context(analysis_info)
         readable_output = tableToMarkdown('Results', analysis_info)
         indicator = Common.IP(analysis_info.get('Name', ''), dbot)
         command_results.append(CommandResults(indicator=indicator,
@@ -228,29 +232,12 @@ def url_command(client: Client, args: dict, reliability: DBotScoreReliability, d
     command_results = []
 
     for analysis_result in analysis_results:
-        ia, ir = [], []
         analysis_info: dict = analysis_result.get('analysis_info', {})
         analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
         dbot = analysis_result.get('dbot')
-        alerts = analysis_info.get('Intelligence Alerts', [])
-        reports = analysis_info.get('Intelligence Reports', [])
-        if type(alerts) is dict:
-            alerts = list(analysis_info.get('Intelligence Alerts', []).values())
-            for alert in alerts:
-                ia.append(alert.split("/")[-1])
-        if type(reports) is dict:
-            reports = list(analysis_info.get('Intelligence Reports', []).values())
-            for report in reports:
-                ir.append(report.split("/")[-1])
-
-        context = {
-            "intelligence_alerts": ia,
-            "intelligence_reports": ir
-        }
-
+        context = iair_to_context(analysis_info)
         readable_output = tableToMarkdown('Results', analysis_info)
         indicator = Common.URL(analysis_info.get('Name', ''), dbot)
-
         command_results.append(CommandResults(indicator=indicator,
                                               outputs=context,
                                               raw_response=res,
@@ -266,7 +253,7 @@ def url_command(client: Client, args: dict, reliability: DBotScoreReliability, d
     return command_results
 
 
-def domain_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client) -> List[CommandResults]:
+def domain_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client) -> List[CommandResults]:
 
     domains: list = argToList(args.get('domain'))
 
@@ -277,29 +264,12 @@ def domain_command(client: Client, args: dict, reliability: DBotScoreReliability
     command_results = []
 
     for analysis_result in analysis_results:
-        ia, ir = [], []
         analysis_info: dict = analysis_result.get('analysis_info', {})
         analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
         dbot = analysis_result.get('dbot')
-        alerts = analysis_info.get('Intelligence Alerts', [])
-        reports = analysis_info.get('Intelligence Reports', [])
-        if type(alerts) is dict:
-            alerts = list(analysis_info.get('Intelligence Alerts', []).values())
-            for alert in alerts:
-                ia.append(alert.split("/")[-1])
-        if type(reports) is dict:
-            reports = list(analysis_info.get('Intelligence Reports', []).values())
-            for report in reports:
-                ir.append(report.split("/")[-1])
-
-        context = {
-            "intelligence_alerts": ia,
-            "intelligence_reports": ir
-        }
-
+        context = iair_to_context(analysis_info)
         readable_output = tableToMarkdown('Results', analysis_info)
         indicator = Common.Domain(analysis_info.get('Name', ''), dbot)
-
         command_results.append(CommandResults(indicator=indicator,
                                               outputs=context,
                                               raw_response=res,
@@ -370,22 +340,7 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability, 
             'LastSeen': str(last_seen_format)
         }
         analysis_info = _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client)
-        ia, ir = [], []
-        alerts = analysis_info.get('Intelligence Alerts', [])
-        reports = analysis_info.get('Intelligence Reports', [])
-        if type(alerts) is dict:
-            alerts = list(analysis_info.get('Intelligence Alerts', []).values())
-            for alert in alerts:
-                ia.append(alert.split("/")[-1])
-        if type(reports) is dict:
-            reports = list(analysis_info.get('Intelligence Reports', []).values())
-            for report in reports:
-                ir.append(report.split("/")[-1])
-
-        context = {
-            "intelligence_alerts": ia,
-            "intelligence_reports": ir
-        }
+        context = iair_to_context(analysis_info)
 
     return CommandResults(indicator=indicator,
                           outputs=context,
@@ -462,7 +417,7 @@ def main():
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
-        Exception("IDefense error: Please provide a valid value for the Source Reliability parameter")
+        Exception("ACTI error: Please provide a valid value for the Source Reliability parameter")
 
     commands = {
         'url': url_command,
