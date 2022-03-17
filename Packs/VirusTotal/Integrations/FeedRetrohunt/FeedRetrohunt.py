@@ -41,6 +41,19 @@ class Client(BaseClient):
             raise ValueError(f'Could not parse returned data as indicator. \n\nError message: {err}')
         return result
 
+    def fetch_jobs(self):
+        return self._http_request(
+            'GET',
+            'intelligence/retrohunt_jobs'
+        )
+
+    def fetch_job_matches(self, job_id: str, limit: int = 40, cursor: str = None) -> dict:
+        return self._http_request(
+            'GET',
+            'intelligence/retrohunt_jobs/{}/matching_files'.format(job_id),
+            params=assign_params(limit=min(limit, 40), cursor=cursor)
+        )
+
     def list_job_matches(
             self,
             limit: int = 40,
@@ -49,12 +62,9 @@ class Client(BaseClient):
         """ Retrieve matches for a given retrohunt job (latest by default).
         """
         context_key = 'last_retrohunt_job_id'
+
         if not job_id:
-            jobs = self._http_request(
-                'GET',
-                'intelligence/retrohunt_jobs'
-            )
-            # Test
+            jobs = self.fetch_jobs()
             try:
                 finished_jobs = [job for job in jobs['data'] if job.get('attributes').get('status') == 'finished']
             except KeyError:
@@ -64,28 +74,20 @@ class Client(BaseClient):
                 return []
 
             job_id = finished_jobs[0].get('id')
-            # Ignore already processed job
-            demisto.setIntegrationContext({context_key: job_id})
             last_job_id = demisto.getIntegrationContext().get(context_key)
             if last_job_id == job_id:
                 return []
+            # Ignore already processed job
+            demisto.setIntegrationContext({context_key: job_id})
 
-        response = self._http_request(
-            'GET',
-            'intelligence/retrohunt_jobs/{}/matching_files'.format(job_id),
-            params=assign_params(limit=min(limit, 40))
-        )
+        response = self.fetch_job_matches(job_id, limit)
         matches = response.get('data', [])
 
         # If response.data length is less than limit and there are more pages,
         # get the next pages until limit is reached or there are no more pages.
         cursor = response.get('meta', {}).get('cursor')
         while(cursor and len(matches) < limit):
-            response = self._http_request(
-                'GET',
-                'intelligence/retrohunt_jobs/{}/matching_files?cursor={}'.format(job_id, cursor),
-                params=assign_params(limit=min(limit, 40), cursor=response.get('meta').get('cursor'))
-            )
+            response = self.fetch_job_matches(job_id, limit, cursor)
             matches.extend(response.get('data', []))
             cursor = response.get('meta', {}).get('cursor')
 
