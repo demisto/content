@@ -160,7 +160,7 @@ def test_module(client: Client) -> str:
         client.threat_indicator_search(url_suffix='/v0')
         return 'ok'
     except Exception as e:
-            raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {e}.")
+        raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {e}.")
 
 
 def iair_to_context(analysis_info: dict):
@@ -253,7 +253,7 @@ def url_command(client: Client, args: dict, reliability: DBotScoreReliability, d
     return command_results
 
 
-def domain_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client) -> List[CommandResults]:
+def domain_command(client: Client, args: dict, reliability: DBotScoreReliability, doc_search_client: Client) -> List[CommandResults]:  # noqa
 
     domains: list = argToList(args.get('domain'))
 
