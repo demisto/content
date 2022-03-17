@@ -6,6 +6,8 @@ STR = """qa2-test-9997333835008
 qa2-test-9994443226862
 qa2-test-9997461765391
 """
+MARKETPLACE_TEST_BUCKET = 'marketplace-ci-build/content/builds'
+MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsiam'
 
 
 def main():
@@ -14,14 +16,24 @@ def main():
     from google.cloud import storage
     storage_client = storage.Client()
 
-    bucket = storage_client.bucket('marketplace-v2-dist-dev')
+    bucket = storage_client.bucket('marketplace-ci-build')
+    from_bucket = 'content/builds/xsiam-build-instances/2576350/marketplacev2/content'
+    blob = bucket.blob(from_bucket)
+    to_bucket = 'upload-flow/builds-xsiam/xsoar-content-1'
+
+    copied_index = bucket.copy_blob(
+        blob=blob, destination_bucket='marketplace-v2-dist-dev', new_name=to_bucket
+    )
+    if copied_index.exists():
+        logging.success(f"Finished uploading to storage.")
+
     # blob = bucket.blob('upload-flow/builds-xsiam/')
     # blob.upload_from_string('')
     # logging.info('Created folder for xsiambuilds')
 
-    blob = bucket.blob('upload-flow/builds-xsiam/qa2-test-9997333835008/')
-    blob.upload_from_string('')
-    logging.info('Created folder qa2-test-9997333835008')
+    # blob = bucket.blob('upload-flow/builds-xsiam/qa2-test-9994443226862/')
+    # blob.upload_from_string('')
+    # logging.info('Created folder qa2-test-9997333835008')
     #
     # s = blob.download_as_string()
     # logging.info(f'{s=}')
