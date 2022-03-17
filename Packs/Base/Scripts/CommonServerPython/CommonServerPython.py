@@ -18,6 +18,9 @@ import time
 import traceback
 import types
 import urllib
+import gzip
+import secrets
+import string
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -9013,6 +9016,82 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
         return inner
 
     return dec
+
+def generate_random_64_string() -> str:
+    return "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
+
+def send_events_to_xsiam(events: Union[str, list], vendor: str, product: str, data_format=None):
+    """
+    Send the fetched events into the XDR data-collector private api.
+
+    :type events: ``Union[str, list]``
+    :param events: The events to send to send to XSIAM server. Should be of the following:
+        1. List of strings or dicts where each string or dict represents an event.
+        2. String containing raw events separated by a new line.
+
+    :type vendor: ``str``
+    :param vendor: The vendor corresponding to the integration that originated the events.
+
+    :type product: ``str`` 
+    :parm product: The product corresponding to the integration that originated the events.
+    
+    :type data_format: ``str``
+    :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
+        events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
+
+    """
+    data = events
+    # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
+    if isinstance(events, list):
+        # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
+        if isinstance(events[0], dict):
+            events = [json.dumps(event) for event in events]
+            data_format = 'json'
+        # Separating each event with a new line
+        data = '\n'.join(events)
+
+    if not data_format:
+        data_format = 'text'
+
+    xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
+    xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
+    xsiam_url = f'https://api-{xsiam_domain}'
+    headers = {
+        'authorization': xsiam_api_token,
+        'format': data_format,
+        'product': product,
+        'vendor': vendor,
+        'content-encoding': 'gzip'
+    }
+
+    header_msg = f'Error sending new events into XSIAM. \n'
+    def events_error_handler(response: requests.Response):
+        """
+        Internal function to parse the XSIAM API errors
+        """
+        try:
+            response = response.json()
+            error = res.reason
+            if response.get('error').lower == 'false':
+                xsiam_server_err_msg = response.get('error')
+                error += ": " + xsiam_server_err_msg
+
+        except ValueError:
+            error = '\n{}'.format(res.text)
+
+        api_call_info = f'Parameters used:\n' \
+                        f'\tURL: {xsiam_url}\n' \
+                        f'\tHeaders: {json.dumps(headers, indent=8)}\n\n' \
+                        f'Error received:\n\t{error}'
+        demisto.error(header_msg + api_call_info)
+        raise DemistoException(header_msg + error, DemistoException)
+
+    zipped_data = gzip.compress(data.encode('utf-8'))
+    client = BaseClient(base_url=xsiam_url)
+    res = client._http_request(method='POST', full_url=urljoin(xsiam_url, '/logs/v1/xsiam'), data=zipped_data, headers=headers,
+                               error_handler=events_error_handler)
+    if xsiam_server_err_msg := res.get('error').lower == 'false':
+        raise DemistoException(header_msg + xsiam_server_err_msg)
 
 
 ###########################################

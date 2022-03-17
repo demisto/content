@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import gzip
 import demistomock as demisto
 import copy
 import json
@@ -18,7 +19,7 @@ from CommonServerPython import set_to_integration_context_with_retries, xml2json
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg
+    remove_duplicates_from_list_arg, send_events_to_xsiam
 import CommonServerPython
 
 try:
@@ -6421,4 +6422,40 @@ Exception: WTF?!!!'''
         result = CommonServerPython.fix_traceback_line_numbers(traceback)
         assert result == expected_traceback
 
+
+class TestSendEventsToXSIAMTest:
+
+    from test_data.send_events_to_xsiam_data import events_dict
+    test_data = events_dict
+
+    @staticmethod
+    def get_license_custom_field_mock(arg: str):
+        if 'token' in arg:
+            return "TOKEN"
+        elif 'url' in arg:
+            return "url"
+
+    @pytest.mark.parametrize('events_use_case', [
+        'json_events', 'text_list_events', 'text_events', 'cef_events'
+    ])
+    def test_send_events_to_xsiam_positive(self, mocker, events_use_case):
+        """
+
+        """
+        from CommonServerPython import BaseClient
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        _http_request_mock = mocker.patch.object(BaseClient, '_http_request')
+
+        events = self.test_data[events_use_case]['events']
+        data_format = self.test_data[events_use_case].get('format')
+
+        send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format)
+
+        expected_format = self.test_data[events_use_case]['expected_format']
+        expected_data = self.test_data[events_use_case]['expected_data']
+
+        arguments_called = _http_request_mock.call_args[1]
+        decompressed_data = gzip.decompress(arguments_called['data']).decode("utf-8")
+        assert arguments_called['headers']['format'] == expected_format
+        assert decompressed_data == expected_data
 
