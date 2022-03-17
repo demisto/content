@@ -192,7 +192,7 @@ tasks:
       id: 687360e6-7e9e-48bb-80df-7b01a6be74f5
       version: -1
       name: Display email information in layout
-      description: Updates Demisto incident fields using data from the email object.
+      description: Updates Cortex XSOAR incident fields using data from the email object.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
