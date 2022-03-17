@@ -1,4 +1,5 @@
 import urllib.parse
+from json import JSONDecodeError
 from typing import Tuple, Pattern
 
 from CommonServerPython import *
@@ -1066,6 +1067,7 @@ class Client(BaseClient):
             url_suffix=f"/indicators/{category}/{indicator_name}",
             ok_codes=(204,),
             raise_on_status=True,
+            resp_type='response'
         )
 
     def list_indicator_categories(self,
@@ -2394,10 +2396,17 @@ def delete_indicator_command(client: Client, args: Dict[str, str]) -> CommandRes
         human_readable = f'Successfully deleted {human_readable_args}'
     except DemistoException as e:  # invalid http status code
         response = e.res
-        human_readable = f'Failed deleting {human_readable_args}: {str(e)}'
+        message = None
+        try:
+            message = response.json().get('message')
+        except JSONDecodeError:
+            pass
+        if not message:
+            message = str(e)
+
+        human_readable = f'Failed deleting {human_readable_args}: {message}'
 
     return CommandResults(
-        outputs_prefix='FireEyeHX.Indicators',
         readable_output=human_readable,
         raw_response=response,
     )
