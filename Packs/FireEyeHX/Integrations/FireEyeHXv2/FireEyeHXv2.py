@@ -2389,16 +2389,16 @@ def delete_indicator_command(client: Client, args: Dict[str, str]) -> CommandRes
     indicator_name = args['indicator_name']
     category = args['category']
 
-    human_readable_args = f'{indicator_name=}, {category=}'
+    human_readable_args = f'indicator {indicator_name} from the {category} category'
 
     try:
-        response = client.delete_indicator(indicator_name, category)
+        client.delete_indicator(indicator_name, category)  # raises on error
         human_readable = f'Successfully deleted {human_readable_args}'
-    except DemistoException as e:  # invalid http status code
-        response = e.res
+
+    except DemistoException as e:
         message = None
         try:
-            message = response.json().get('message')
+            message = e.res.json().get('message')
         except JSONDecodeError:
             pass
         if not message:
@@ -2406,10 +2406,7 @@ def delete_indicator_command(client: Client, args: Dict[str, str]) -> CommandRes
 
         human_readable = f'Failed deleting {human_readable_args}: {message}'
 
-    return CommandResults(
-        readable_output=human_readable,
-        raw_response=response,
-    )
+    return CommandResults(readable_output=human_readable)
 
 
 def list_indicator_categories(client: Client, args: Dict[str, Any]) -> CommandResults:
