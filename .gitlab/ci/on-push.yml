@@ -32,8 +32,6 @@ trigger-private-build:
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
 run-unittests-and-lint:
-  tags:
-    - gce-europe-west4
   extends:
     - .run-unittests-and-lint
   rules:
