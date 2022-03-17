@@ -1,6 +1,7 @@
 import json
 import traceback
 from typing import Dict, List, Optional, Tuple, Union
+from datetime import datetime
 
 import demistomock as demisto  # noqa: F401
 import requests
@@ -99,14 +100,15 @@ def get_log_list(base_url, username, password):
     return_results(results)
 
 
-def fetch_incidents(base_url, username, password, last_run: Dict[str, int], first_fetch_time: Optional[int]) -> Tuple[Dict[str, int], List[dict]]:
+def fetch_incidents(base_url, username, password, last_run: Dict[str, int], first_fetch_time: Optional[int]) 
+                    -> Tuple[Dict[str, int], List[dict]]:
     access_token, refresh_token, headers1 = login(base_url, username, password)
     log_list = loglist(base_url, access_token, refresh_token, headers1)
     log_server_id = [e["id"] for e in log_list if e["is_connected"] == True]
     last_fetch = last_run.get('last_fetch', None)
 
     if len(log_server_id) == 0:
-        return('ok')
+        return_output('ok')
     else:
             max_fetch = demisto.params().get('max_fetch')
             #incidents: List[Dict[str, Any]] = []
