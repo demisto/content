@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 6df3bbec-c56e-48f8-85a7-798192b6eb0a
+    taskid: 3aee0937-266f-4d36-8a61-dd635a29d5ce
     type: regular
     task:
-      id: 6df3bbec-c56e-48f8-85a7-798192b6eb0a
+      id: 3aee0937-266f-4d36-8a61-dd635a29d5ce
       version: -1
       name: 'Check previous alerts '
       description: |-
@@ -166,8 +166,8 @@ tasks:
     task:
       id: e26a72e6-844c-498b-89e2-00d189f6d392
       version: -1
-      name: Cortex XDR - File Reputation
-      playbookName: Cortex XDR - File Reputation
+      name: File Reputation
+      playbookName: File Reputation
       type: playbook
       iscommand: false
       brand: ""
@@ -351,10 +351,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 87809c88-af51-4631-82f2-4e613059876f
+    taskid: 3e01eb38-593d-426d-8b86-59f793ab1131
     type: playbook
     task:
-      id: 87809c88-af51-4631-82f2-4e613059876f
+      id: 3e01eb38-593d-426d-8b86-59f793ab1131
       version: -1
       name: IP Enrichment - Generic v2
       description: |-
@@ -530,21 +530,34 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 14b8e260-85f6-4260-8ae6-27cd5181893d
+    taskid: 9d2786ee-3f56-4a0f-8dbd-3bf0c6c83cdd
     type: playbook
     task:
-      id: 14b8e260-85f6-4260-8ae6-27cd5181893d
+      id: 9d2786ee-3f56-4a0f-8dbd-3bf0c6c83cdd
       version: -1
       name: URL Enrichment - Generic v2
       playbookName: URL Enrichment - Generic v2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Enrich URLs using one or more integrations.'
     nexttasks:
       '#none#':
       - "28"
+    scriptarguments:
+      Rasterize:
+        simple: "True"
+      URL:
+        complex:
+          root: inputs.URL
+      VerifyURL:
+        simple: "False"
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -767,7 +780,7 @@ tasks:
     task:
       id: 17cd03fd-03fc-4304-8b2b-04d8885d18ab
       version: -1
-      name: Search IOCs
+      name: Entity Enrichment
       type: title
       iscommand: false
       brand: ""
@@ -796,10 +809,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: ee170aa5-56b8-4843-8602-5db5aba92d42
+    taskid: 89e23087-05ef-44f5-80c8-0d918606b33e
     type: condition
     task:
-      id: ee170aa5-56b8-4843-8602-5db5aba92d42
+      id: 89e23087-05ef-44f5-80c8-0d918606b33e
       version: -1
       name: Is there a user?
       description: "Is there a user?"
@@ -825,7 +838,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3390,
+          "x": 3370,
           "y": 570
         }
       }
@@ -850,12 +863,12 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "40"
+      - "47"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3150,
+          "x": 3130,
           "y": 740
         }
       }
@@ -898,26 +911,35 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: efc15331-62f1-4be3-87dd-cb972e98ad84
+    taskid: b34d66ca-84c5-4673-8bc7-22e3ae3e0003
     type: playbook
     task:
-      id: efc15331-62f1-4be3-87dd-cb972e98ad84
+      id: b34d66ca-84c5-4673-8bc7-22e3ae3e0003
       version: -1
       name: AWS IAM - User enrichment
       playbookName: AWS IAM - User enrichment
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Enrich AWS IAM user information from AWS Identity and Access Management.'
     nexttasks:
       '#none#':
       - "25"
+    scriptarguments:
+      username:
+        complex:
+          root: inputs.awsUser
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
-          "x": 3150,
-          "y": 900
+          "x": 3130,
+          "y": 1115
         }
       }
     note: false
@@ -929,10 +951,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: c0d7d6d1-fe25-4402-8dd0-9b9179a4da7f
+    taskid: 33fac12f-926b-44f5-84af-3191e8ded66b
     type: playbook
     task:
-      id: c0d7d6d1-fe25-4402-8dd0-9b9179a4da7f
+      id: 33fac12f-926b-44f5-84af-3191e8ded66b
       version: -1
       name: Account Enrichment - Generic v2.1
       description: |-
@@ -946,12 +968,21 @@ tasks:
     nexttasks:
       '#none#':
       - "25"
+    scriptarguments:
+      Username:
+        complex:
+          root: inputs.User
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
           "x": 3630,
-          "y": 900
+          "y": 960
         }
       }
     note: false
@@ -998,21 +1029,30 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 8febea3c-7dfe-4014-8e9f-727f69f0a610
+    taskid: 7a5f5b09-325b-4998-80e2-7c720f73f30b
     type: playbook
     task:
-      id: 8febea3c-7dfe-4014-8e9f-727f69f0a610
+      id: 7a5f5b09-325b-4998-80e2-7c720f73f30b
       version: -1
       name: Domain Enrichment - Generic v2
       playbookName: Domain Enrichment - Generic v2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Enrich domains using one or more integrations.'
     nexttasks:
       '#none#':
       - "45"
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -1161,6 +1201,45 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 7f18102e-5e5c-4057-8f7c-aadb91bd6b26
+    type: condition
+    task:
+      id: 7f18102e-5e5c-4057-8f7c-aadb91bd6b26
+      version: -1
+      name: Is AWS IAM integration available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "40"
+    scriptarguments:
+      brandname:
+        simple: AWS - IAM
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3130,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1175,6 +1254,7 @@ view: |-
       "37_25_#default#": 0.25,
       "44_25_#default#": 0.1,
       "45_25_yes": 0.16,
+      "47_25_#default#": 0.68,
       "9_35_yes": 0.3,
       "9_36_#default#": 0.56
     },
@@ -1282,6 +1362,11 @@ inputs:
   required: false
   description: Domain to enrich and give verdict.
   playbookInputQuery:
+- key: awsUser
+  value: {}
+  required: false
+  description: Name of the AWS IAM user to enrich.
+  playbookInputQuery: null
 outputs:
 - contextPath: PreviousVerdict
   description: Suspected verdict for previous alerts.

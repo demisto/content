@@ -41,7 +41,7 @@ tasks:
     task:
       id: be9db9ac-960d-4191-8d6a-d11b21bb1b91
       version: -1
-      name: Add the host IP to Alert Exclusion list
+      name: Add the source IP to Alert Exclusion list
       description: Adds exclusion.
       script: '|||core-add-exclusion'
       type: regular
@@ -60,7 +60,7 @@ tasks:
                     {
                       "SEARCH_FIELD": "action_local_ip",
                       "SEARCH_TYPE": "CONTAINS",
-                      "SEARCH_VALUE": "${inputs.HostIP}"
+                      "SEARCH_VALUE": "${inputs.sourceIP}"
                     },
                     {
                       "SEARCH_FIELD": "alert_name",
@@ -728,14 +728,11 @@ view: |-
   }
 inputs:
 - key: ShouldCloseAutomatically
-  value:
-    complex:
-      root: alert
-      accessor: initiatormd5
+  value: {}
   required: false
   description: Should we close alerts as false positive automatically? Specify true/false.
   playbookInputQuery:
-- key: HostIP
+- key: sourceIP
   value:
     complex:
       root: alert
