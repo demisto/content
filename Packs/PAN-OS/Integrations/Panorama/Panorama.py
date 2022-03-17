@@ -9154,6 +9154,13 @@ class FirewallCommand:
 
     @staticmethod
     def change_status(topology: Topology, hostid: str, state: str) -> HighAvailabilityStateStatus:
+        """
+        Changes the HA status of the  device to the specified state.
+
+        :param topology: `Topology` instance.
+        :param hostid: The ID of the host to change
+        :param state: The HA state to change the device to
+        """
         firewall = list(topology.firewalls(filter_string=hostid))[0]
         run_op_command(firewall, f'{FirewallCommand.REQUEST_STATE_PREFIX} {state}')
         return HighAvailabilityStateStatus(
@@ -9163,6 +9170,12 @@ class FirewallCommand:
 
     @staticmethod
     def get_routes(topology: Topology, device_filter_str: Optional[str] = None) -> ShowRoutingRouteCommandResult:
+        """
+        Gets the entire routing table.
+
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        """
         summary_data = []
         result_data = []
         for firewall in topology.firewalls(filter_string=device_filter_str):
