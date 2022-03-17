@@ -1,4 +1,4 @@
-This playbook uses the EDR and insights data to detect abnormal and malicious activity and includes the following tasks:  
+This playbook uses the EDR and insights data to detect abnormal and malicious activity and provide out of the box queries based on:  
 * Pre-defined MITRE Tactics
 * Host fields (Host ID)
 * Attacker fields (Attacker IP, External host)
